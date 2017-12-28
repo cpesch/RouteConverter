@@ -36,6 +36,8 @@ import slash.navigation.babel.GarminPoiFormat;
 import slash.navigation.babel.HoluxM241BinaryFormat;
 import slash.navigation.babel.MagellanMapSendFormat;
 import slash.navigation.babel.NationalGeographicTopo3Format;
+import slash.navigation.babel.OziExplorerRouteFormat;
+import slash.navigation.babel.OziExplorerTrackFormat;
 import slash.navigation.babel.OziExplorerWaypointFormat;
 import slash.navigation.babel.TomTomPoiFormat;
 import slash.navigation.babel.TourExchangeFormat;
@@ -342,12 +344,6 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertGarminMapSource6ToGarminMapSource5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());
-        convertRoundtrip(TEST_PATH + "large.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());
-    }
-
-    @Test
     public void testConvertGarminMapSource6ToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml21Format());
@@ -408,12 +404,6 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertGarminMapSource5ToGarminMapSource5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
-        convertRoundtrip(TEST_PATH + "large.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
-    }
-
-    @Test
     public void testConvertGarminMapSource5ToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new Kml21Format());
@@ -425,12 +415,6 @@ public class ConvertIT {
     public void testConvertGpx10ToGarminMapSource5() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new GarminMapSource5Format());
         convertRoundtrip(TEST_PATH + "from10trk.gpx", new Gpx10Format(), new GarminMapSource5Format());
-    }
-
-    @Test
-    public void testConvertGpx11ToGarminMapSource5() throws IOException {
-        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new GarminMapSource5Format());
-        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminMapSource5Format());
     }
 
     @Test
@@ -587,6 +571,13 @@ public class ConvertIT {
     @Test
     public void testConvertOziExplorerWaypointToTop50() throws IOException {
         convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerWaypointFormat(), new OvlFormat());
+    }
+
+    @Test
+    public void testConvertOziExplorerToMagicMapsIkt() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerRouteFormat(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerTrackFormat(), new MagicMapsIktFormat());
+        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerWaypointFormat(), new MagicMapsIktFormat());
     }
 
     @Test

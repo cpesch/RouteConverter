@@ -237,7 +237,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         args = considerShellScriptForBabel(babel, args);
 
         int exitValue = execute(babel, args, timeout);
-        log.info("Executed '" + args + "' with exit value: " + exitValue + " target exists: " + target.exists());
+        log.fine("Executed '" + args + "' with exit value: " + exitValue + " target exists: " + target.exists());
         return exitValue == 0;
     }
 
@@ -294,7 +294,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             log.severe("Couldn't read final response: " + e);
         }
 
-        log.info("Executed '" + process + "' with exit value: " + exitValue);
+        log.info("Executed '" + process.toString() + "' with exit value: " + exitValue);
         return exitValue;
     }
 
@@ -458,7 +458,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                 throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
             copyAndClose(new FileInputStream(targetFile), target);
-            log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+            log.info("Successfully converted " + sourceFile + " to " + targetFile);
         } finally {
             delete(sourceFile);
             delete(targetFile);
@@ -477,7 +477,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
                 throw new IOException("Could not convert " + sourceFile + " to " + targetFile);
 
             copyAndClose(new FileInputStream(targetFile), target);
-            log.fine("Successfully converted " + sourceFile + " to " + targetFile);
+            log.info("Successfully converted " + sourceFile + " to " + targetFile);
         } finally {
             delete(sourceFile);
             delete(targetFile);

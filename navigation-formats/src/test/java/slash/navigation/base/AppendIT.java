@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import org.junit.Test;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
@@ -36,9 +37,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static slash.navigation.base.NavigationFormatConverter.asFormat;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.NavigationTestCase.assertRouteNameEquals;
 
-public class AppendIT extends NavigationTestCase {
+public class AppendIT {
     private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     private static boolean isStoringRouteName(NavigationFormat format) {
@@ -106,102 +112,128 @@ public class AppendIT extends NavigationTestCase {
         }
     }
 
+    @Test
     public void testAppendTomTomRouteToMTP0607() throws IOException {
         append(TEST_PATH + "from-mtp0607.bcr", TEST_PATH + "large.itn");
     }
 
+    @Test
     public void testAppendBcrToKml() throws IOException {
         append(TEST_PATH + "from20.kml", TEST_PATH + "large.bcr");
     }
 
+    @Test
     public void testAppendKmlToGpx() throws IOException {
         append(TEST_PATH + "large10.gpx", TEST_PATH + "from21.kml");
     }
 
+    @Test
     public void testAppendGpxToKml() throws IOException {
         append(TEST_PATH + "from20.kml", TEST_PATH + "large11.gpx");
     }
 
+    @Test
     public void testAppendKmlToTomTomRoute() throws IOException {
         append(TEST_PATH + "large.itn", TEST_PATH + "large20.kml");
     }
 
+    @Test
     public void testAppendGpxToExcel() throws IOException {
         append(TEST_PATH + "from10.gpx", TEST_PATH + "from.xls");
         append(TEST_PATH + "from11.gpx", TEST_PATH + "from.xlsx");
     }
 
+    @Test
     public void testAppendGarminMapSource5ToGarminMapSource6() throws IOException {
+        // writing Mapsource 5 seems limited to 1 position
         append(TEST_PATH + "from.gdb", TEST_PATH + "from.mps");
     }
 
+    @Test
     public void testAppendGarminMapSource6ToGarminMapSource5() throws IOException {
+        // writing Mapsource 5 seems limited to 1 position
         append(TEST_PATH + "from.mps", TEST_PATH + "from.gdb");
     }
 
+    @Test
     public void testAppendTourExchangeToGarminMapSource6() throws IOException {
         append(TEST_PATH + "from.gdb", TEST_PATH + "from.tef");
     }
 
+    @Test
     public void testAppendGarminPcx5ToNmea() throws IOException {
         append(TEST_PATH + "from.nmea", TEST_PATH + "from-pcx5.wpt");
     }
 
+    @Test
     public void testAppendNmeaToNmn4() throws IOException {
         append(TEST_PATH + "from.nmea", TEST_PATH + "from-nmn4.rte");
     }
 
+    @Test
     public void testAppendNmeaToNmn5() throws IOException {
         append(TEST_PATH + "from.nmea", TEST_PATH + "from-nmn5.rte");
     }
 
+    @Test
     public void testAppendNmeaToNmn6() throws IOException {
         append(TEST_PATH + "from.nmea", TEST_PATH + "from-nmn6.rte");
     }
 
+    @Test
     public void testAppendNmn4ToNmea() throws IOException {
         append(TEST_PATH + "from-nmn4.rte", TEST_PATH + "from.nmea");
     }
 
+    @Test
     public void testAppendNmn5ToNmea() throws IOException {
         append(TEST_PATH + "from-nmn5.rte", TEST_PATH + "from.nmea");
     }
 
+    @Test
     public void testAppendNmn6ToNmea() throws IOException {
         append(TEST_PATH + "from-nmn6.rte", TEST_PATH + "from.nmea");
     }
 
+    @Test
     public void testAppendTrkToKml() throws IOException {
         append(TEST_PATH + "from21.kml", TEST_PATH + "from-gpstuner.trk");
     }
 
     // Wgs84Position & subclasses
 
+    @Test
     public void testAppendWgs84ToWgs84() throws IOException {
         append(TEST_PATH + "from-gpstuner.trk", TEST_PATH + "from-gpstuner.trk");
     }
 
+    @Test
     public void testAppendNmeaToWgs84() throws IOException {
         append(TEST_PATH + "from-gpstuner.trk", TEST_PATH + "from.nmea");
     }
 
+    @Test
     public void testAppendNmnToWgs84() throws IOException {
         append(TEST_PATH + "from-gpstuner.trk", TEST_PATH + "from-nmn5.rte");
     }
 
+    @Test
     public void testAppendWgs84ToNmea() throws IOException {
         append(TEST_PATH + "from.nmea", TEST_PATH + "from-gpstuner.trk");
     }
 
+    @Test
     public void testAppendWgs84ToNmn() throws IOException {
         append(TEST_PATH + "from-nmn5.rte", TEST_PATH + "from-gpstuner.trk");
     }
 
+    @Test
     public void testAppendGopalRouteToGopalTrack() throws IOException {
         append(TEST_PATH + "from-gopal3.xml", TEST_PATH + "from-gopal.trk");
         append(TEST_PATH + "from-gopal5.xml", TEST_PATH + "from-gopal.trk");
     }
 
+    @Test
     public void testAppendGopalTrackToGopalRoute() throws IOException {
         append(TEST_PATH + "from-gopal.trk", TEST_PATH + "from-gopal3.xml");
         append(TEST_PATH + "from-gopal.trk", TEST_PATH + "from-gopal5.xml");
@@ -209,40 +241,49 @@ public class AppendIT extends NavigationTestCase {
 
     // GkPosition
 
+    @Test
     public void testAppendWgs84ToGk() throws IOException {
         append(TEST_PATH + "from.pth", TEST_PATH + "from-gpstuner.trk");
     }
 
+    @Test
     public void testAppendGkToWgs84() throws IOException {
         append(TEST_PATH + "from-gpstuner.trk", TEST_PATH + "from.pth");
     }
 
+    @Test
     public void testAppendGkToNmea() throws IOException {
         append(TEST_PATH + "from-gpstuner.trk", TEST_PATH + "from.pth");
     }
 
+    @Test
     public void testAppendGkToNmn() throws IOException {
         append(TEST_PATH + "from-gpstuner.trk", TEST_PATH + "from.pth");
     }
 
+    @Test
     public void testAppendNmeaToGk() throws IOException {
         append(TEST_PATH + "from.pth", TEST_PATH + "from.nmea");
     }
 
+    @Test
     public void testAppendNmnToGk() throws IOException {
         append(TEST_PATH + "from.pth", TEST_PATH + "from-nmn4.rte");
     }
 
     // Wintec formats
 
+    @Test
     public void testAppendTk1ToTes() throws IOException {
         append(TEST_PATH + "from.tes", TEST_PATH + "from.tk1");
     }
 
+    @Test
     public void testAppendTesToTk1() throws IOException {
         append(TEST_PATH + "from.tk1", TEST_PATH + "from.tes");
     }
 
+    @Test
     public void testAppendTesToTk2() throws IOException {
         append(TEST_PATH + "from.tk2", TEST_PATH + "from.tes");
     }

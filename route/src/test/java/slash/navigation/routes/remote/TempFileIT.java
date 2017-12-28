@@ -20,7 +20,6 @@
 package slash.navigation.routes.remote;
 
 import org.junit.Test;
-import slash.common.io.Files;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,6 +28,7 @@ import static java.io.File.createTempFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertNotEquals;
+import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.Transfer.decodeUri;
 
@@ -54,7 +54,7 @@ public class TempFileIT {
         String prefix = removeExtension(decodedName);
         if (prefix.length() < 3)
             prefix = "rcc" + prefix;
-        File file = createTempFile(prefix, Files.getExtension(decodedName));
+        File file = createTempFile(prefix, getExtension(decodedName));
         File tmp = new File(file.getParentFile(), decodedName);
         if (!tmp.exists()) {
             if (file.renameTo(tmp))

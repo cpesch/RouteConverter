@@ -39,6 +39,7 @@ import static java.util.Arrays.sort;
 import static org.junit.Assert.assertFalse;
 import static slash.common.TestCase.assertEquals;
 import static slash.common.io.Files.collectFiles;
+import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationTestCase.*;
 
 public class ReadIT {
@@ -66,7 +67,7 @@ public class ReadIT {
         readFiles(extension, new TestFileCallback() {
             @SuppressWarnings({"unchecked"})
             public void test(File file) throws IOException {
-                ParserResult result = parser.read(file);
+                ParserResult result = parser.read(file, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(file.getName())));
                 assertNotNull(result);
                 assertTrue("Cannot read route from " + file, result.isSuccessful());
                 assertNotNull(result.getFormat());

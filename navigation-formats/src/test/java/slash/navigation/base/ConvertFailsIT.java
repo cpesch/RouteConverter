@@ -24,6 +24,7 @@ import junit.framework.AssertionFailedError;
 import org.junit.Test;
 import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.GarminMapSource5Format;
+import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.GarminPoiDbFormat;
 import slash.navigation.babel.GarminPoiFormat;
 import slash.navigation.babel.MagellanMapSendFormat;
@@ -32,13 +33,11 @@ import slash.navigation.babel.OziExplorerTrackFormat;
 import slash.navigation.babel.OziExplorerWaypointFormat;
 import slash.navigation.babel.TourExchangeFormat;
 import slash.navigation.gpx.Gpx10Format;
+import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
-import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 import slash.navigation.ovl.OvlFormat;
-
-import java.io.IOException;
 
 import static slash.navigation.base.ConvertBase.convertRoundtrip;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
@@ -68,8 +67,8 @@ public class ConvertFailsIT {
 
     @Test
     public void testConvertTourExchangeToGarminMapSource5Fails() {
-        // Garmin file contains only 1 instead of expected 49 positions
-        assertException(AssertionFailedError.class, new NavigationTestCaseThrowsException() {
+        // Mapsource file contains only 1 instead of expected 49 positions
+        assertException(AssertionError.class, new NavigationTestCaseThrowsException() {
             public void run() throws Exception {
                 convertRoundtrip(TEST_PATH + "from.tef", new TourExchangeFormat(), new GarminMapSource5Format());
             }
@@ -77,7 +76,31 @@ public class ConvertFailsIT {
     }
 
     @Test
-    public void testConvertOziExplorerTrackToTop50() {
+    public void testConvertGarminMapSource5Fails() {
+        // Mapsource file contains only 1 instead of expected 46 positions
+        assertException(AssertionFailedError.class, new NavigationTestCaseThrowsException() {
+            public void run() throws Exception {
+                convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
+                convertRoundtrip(TEST_PATH + "large.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
+                convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());
+                convertRoundtrip(TEST_PATH + "large.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());
+            }
+        });
+    }
+
+    @Test
+    public void testConvertGpx11ToGarminMapSource5Fails() {
+        // Mapsource file contains only 1 instead of expected 46 positions
+        assertException(AssertionError.class, new NavigationTestCaseThrowsException() {
+            public void run() throws Exception {
+        convertRoundtrip(TEST_PATH + "from11.gpx", new Gpx11Format(), new GarminMapSource5Format());
+        convertRoundtrip(TEST_PATH + "from11trk.gpx", new Gpx11Format(), new GarminMapSource5Format());
+            }
+        });
+    }
+
+    @Test
+    public void testConvertOziExplorerTrackToTop50Fails() {
         // differences in conversion: Target longitude 0 does not exist
         assertException(AssertionFailedError.class, new NavigationTestCaseThrowsException() {
             public void run() throws Exception {
@@ -87,14 +110,7 @@ public class ConvertFailsIT {
     }
 
     @Test
-    public void testConvertOziExplorerToMagicMapsIkt() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-ozi.rte", new OziExplorerRouteFormat(), new MagicMapsIktFormat());
-        convertRoundtrip(TEST_PATH + "from-ozi.plt", new OziExplorerTrackFormat(), new MagicMapsIktFormat());
-        convertRoundtrip(TEST_PATH + "from-ozi.wpt", new OziExplorerWaypointFormat(), new MagicMapsIktFormat());
-    }
-
-    @Test
-    public void testConvertOziExplorerToMagicMapsPth() {
+    public void testConvertOziExplorerToMagicMapsPthFails() {
         // differences in conversion: 2.6141469644200224 is not within +5.0E-6 of -17.954639 to -17.954728773195
         assertException(AssertionFailedError.class, new NavigationTestCaseThrowsException() {
             public void run() throws Exception {
@@ -131,7 +147,7 @@ public class ConvertFailsIT {
         // in routes positions with the same name have the same coordinates
         // in waypoint lists positions with the same coordinates are eliminated
         // Garmin file contains only 37 instead of expected 46 positions
-        assertException(AssertionFailedError.class, new NavigationTestCaseThrowsException() {
+        assertException(AssertionError.class, new NavigationTestCaseThrowsException() {
             public void run() throws Exception {
                 convertRoundtrip(TEST_PATH + "from.wpr", new AlanWaypointsAndRoutesFormat(), new GarminMapSource5Format());
             }

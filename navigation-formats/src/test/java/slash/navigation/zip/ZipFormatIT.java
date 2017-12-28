@@ -5,7 +5,6 @@ import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
 import slash.navigation.gpx.Gpx11Format;
-import slash.navigation.kml.Kml22Format;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,7 +30,7 @@ public class ZipFormatIT {
                 parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(".zip"));
         assertNotNull(result);
         assertEquals(7, result.getAllRoutes().size());
-        assertEquals(Kml22Format.class, result.getFormat().getClass());
+        assertEquals(Gpx11Format.class, result.getFormat().getClass());
     }
 
     @Test

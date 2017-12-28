@@ -43,6 +43,10 @@ public class ExcelPosition extends BaseNavigationPosition {
         this.mapping = mapping;
     }
 
+    public ExcelPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
+        throw new UnsupportedOperationException();
+    }
+
     Row getRow() {
         return row;
     }
