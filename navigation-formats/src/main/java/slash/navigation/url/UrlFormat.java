@@ -61,10 +61,6 @@ public class UrlFormat extends BaseUrlFormat {
         return false;
     }
 
-    public boolean isSupportsMultipleRoutes() {
-        throw new UnsupportedOperationException();
-    }
-
     public boolean isWritingRouteCharacteristics() {
         throw new UnsupportedOperationException();
     }

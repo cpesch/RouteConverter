@@ -148,17 +148,13 @@ public abstract class NavigationTestCase extends TestCase {
         assertEquals(trim(expected, 64), trim(was, 64));
     }
 
-    private static void assertException(Class exceptionClass, NavigationTestCaseThrowsException runner) {
+    public static void assertException(Class exceptionClass, NavigationTestCaseThrowsException runner) {
         try {
             runner.run();
             fail("Worked?");
         } catch (Throwable throwable) {
             assertTrue("Wrong exception: " + throwable.getClass().getName(), exceptionClass.isInstance(throwable));
         }
-    }
-
-    public static void assertTestFails(NavigationTestCaseThrowsException runner) {
-        assertException(IndexOutOfBoundsException.class, runner);
     }
 
     static boolean isReallyUnprecise(NavigationFormat format) {

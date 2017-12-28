@@ -66,7 +66,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
     }
 
     public boolean isSupportsMultipleRoutes() {
-        throw new UnsupportedOperationException();
+       return false;
     }
 
     public boolean isWritingRouteCharacteristics() {
