@@ -108,6 +108,7 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
     private ColumnType parseCellValue(String value) {
         value = trim(value);
         if (value != null) {
+            value = value.replaceAll(" ", "");
             for (ColumnType columnType : ColumnType.values()) {
                 if (columnType.toString().equalsIgnoreCase(value))
                     return columnType;

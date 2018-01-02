@@ -36,10 +36,10 @@ import static org.apache.poi.ss.usermodel.CellType.STRING;
 public enum ColumnType {
     Latitude(NUMERIC, "Breite", "Breitengrad"),
     Longitude(NUMERIC, "L\u00e4nge", "L\u00e4ngengrad"),
-    Elevation(NUMERIC, "Altitude", "H\u00f6he"),
+    Elevation(NUMERIC, "H\u00f6he", "Altitude"),
     Speed(NUMERIC, "Geschwindigkeit"),
-    Time(NUMERIC, "Timestamp", "Zeit"),
-    Description(STRING, "Comment", "Beschreibung", "Kommentar"),
+    Time(NUMERIC, "Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
+    Description(STRING, "Beschreibung", "Comment", "Kommentar"),
     Unsupported(STRING);
 
     private CellType cellType;
