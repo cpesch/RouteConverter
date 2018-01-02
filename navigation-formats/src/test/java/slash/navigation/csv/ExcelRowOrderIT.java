@@ -24,6 +24,8 @@ import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 import static java.io.File.createTempFile;
 import static junit.framework.TestCase.assertEquals;
@@ -44,7 +46,8 @@ public class ExcelRowOrderIT {
         File target = createTempFile("target", getExtension(SOURCE));
         parser.write(route, route.getFormat(), target);
 
-        ParserResult result = parser.read(target);
+        List<NavigationFormat> formats = Arrays.<NavigationFormat>asList(new Excel97Format(), new Excel2008Format());
+        ParserResult result = parser.read(target, formats);
         route = result.getTheRoute();
         return route;
     }
@@ -169,6 +172,22 @@ public class ExcelRowOrderIT {
     }
 
     @Test
+    public void testMoveMiddlePositionToBottomWithoffset() throws IOException {
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+
+        route.bottom(2, 1);
+
+        route = writeAndReadFile(route);
+
+        assertEquals("A", route.getPosition(0).getDescription());
+        assertEquals("B", route.getPosition(1).getDescription());
+        assertEquals("D", route.getPosition(2).getDescription());
+        assertEquals("E", route.getPosition(3).getDescription());
+        assertEquals("C", route.getPosition(4).getDescription());
+        assertEquals("F", route.getPosition(5).getDescription());
+    }
+
+    @Test
     public void testMoveMiddlePositionUp() throws IOException {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
 
@@ -179,6 +198,38 @@ public class ExcelRowOrderIT {
         assertEquals("A", route.getPosition(0).getDescription());
         assertEquals("B", route.getPosition(1).getDescription());
         assertEquals("D", route.getPosition(2).getDescription());
+        assertEquals("C", route.getPosition(3).getDescription());
+        assertEquals("E", route.getPosition(4).getDescription());
+        assertEquals("F", route.getPosition(5).getDescription());
+    }
+
+    @Test
+    public void testMoveMiddlePositionToTop() throws IOException {
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+
+        route.top(3, 0);
+
+        route = writeAndReadFile(route);
+
+        assertEquals("D", route.getPosition(0).getDescription());
+        assertEquals("A", route.getPosition(1).getDescription());
+        assertEquals("B", route.getPosition(2).getDescription());
+        assertEquals("C", route.getPosition(3).getDescription());
+        assertEquals("E", route.getPosition(4).getDescription());
+        assertEquals("F", route.getPosition(5).getDescription());
+    }
+
+    @Test
+    public void testMoveMiddlePositionToTopWithOffset() throws IOException {
+        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+
+        route.top(3, 1);
+
+        route = writeAndReadFile(route);
+
+        assertEquals("A", route.getPosition(0).getDescription());
+        assertEquals("D", route.getPosition(1).getDescription());
+        assertEquals("B", route.getPosition(2).getDescription());
         assertEquals("C", route.getPosition(3).getDescription());
         assertEquals("E", route.getPosition(4).getDescription());
         assertEquals("F", route.getPosition(5).getDescription());

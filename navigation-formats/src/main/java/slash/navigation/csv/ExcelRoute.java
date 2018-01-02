@@ -114,41 +114,55 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         return sheet.getWorkbook();
     }
 
-    protected void Amove(int index, int upOrDown) {
-        if(upOrDown == -1) {
-            // TODO replace index row with index-1 row
-        } else {
-            // shift row to the end
-            ExcelPosition next = getPosition(index + upOrDown);
-            int nextIndex = next.getRow().getRowNum();
-            sheet.shiftRows(nextIndex, nextIndex, sheet.getLastRowNum() - nextIndex + 1);
+    public void top(int index, int topOffset) {
+        // shift index row to the end
+        ExcelPosition row = getPosition(index);
+        int rowForIndex = row.getRow().getRowNum();
+        sheet.shiftRows(rowForIndex, rowForIndex, sheet.getLastRowNum() - rowForIndex + 1);
 
-            // move source row to target row
-            ExcelPosition position = getPosition(index);
-            int rowForIndex = position.getRow().getRowNum();
-            sheet.shiftRows(rowForIndex, rowForIndex, upOrDown);
+        // move all rows between topOffset and rowForIndex one down
+        sheet.shiftRows(topOffset + 1, rowForIndex - 1, 1);
 
-            // move target row from the end to previous source row
-            sheet.shiftRows(sheet.getLastRowNum(), sheet.getLastRowNum(), rowForIndex - sheet.getLastRowNum());
-        }
-        super.move(index, upOrDown);
+        // move index row from the end to topOffset row
+        int lastRowNum = sheet.getLastRowNum();
+        sheet.shiftRows(lastRowNum, lastRowNum, topOffset - lastRowNum + 1);
+
+        super.top(index, topOffset);
     }
 
-    public void down(int fromIndex, int toIndex) {
-        // shift to row to the end
-        ExcelPosition to = getPosition(toIndex);
-        int toPositionIndex = to.getRow().getRowNum();
-        sheet.shiftRows(toPositionIndex, toPositionIndex, sheet.getLastRowNum() - toPositionIndex + 1);
+    public void bottom(int index, int bottomOffset) {
+        // shift index row to the end
+        ExcelPosition row = getPosition(index);
+        int rowForIndex = row.getRow().getRowNum();
+        int lastRowNum = sheet.getLastRowNum();
+        sheet.shiftRows(rowForIndex, rowForIndex, lastRowNum - rowForIndex + 1);
 
-        // move from row to to row
-        ExcelPosition fromPosition = getPosition(fromIndex);
-        int fromPositionIndex = fromPosition.getRow().getRowNum();
-        sheet.shiftRows(fromPositionIndex, fromPositionIndex, toIndex - fromIndex);
+        // move all rows between rowForIndex and lastRowNum-bottomOffset one up
+        sheet.shiftRows(rowForIndex + 1, lastRowNum - bottomOffset, -1);
 
-        // move from row from the end to to row
-        sheet.shiftRows(sheet.getLastRowNum(), sheet.getLastRowNum(), fromPositionIndex - sheet.getLastRowNum());
+        // move index row from the end to lastRowNum-bottomOffset row
+        lastRowNum = sheet.getLastRowNum();
+        sheet.shiftRows(lastRowNum, lastRowNum, -bottomOffset - 1);
 
-        super.down(fromIndex, toIndex);
+        super.bottom(index, bottomOffset);
+    }
+
+    protected void move(int firstIndex, int secondIndex) {
+        // shift secondIndex row to the end
+        ExcelPosition second = getPosition(secondIndex);
+        int rowForSecondIndex = second.getRow().getRowNum();
+        sheet.shiftRows(rowForSecondIndex, rowForSecondIndex, sheet.getLastRowNum() - rowForSecondIndex + 1);
+
+        // move first row to secondIndex
+        ExcelPosition first = getPosition(firstIndex);
+        int rowForFirstIndex = first.getRow().getRowNum();
+        sheet.shiftRows(rowForFirstIndex, rowForFirstIndex, secondIndex - firstIndex);
+
+        // move secondIndex row from the end to firstIndex row
+        int lastRowNum = sheet.getLastRowNum();
+        sheet.shiftRows(lastRowNum, lastRowNum, rowForFirstIndex - lastRowNum);
+
+        super.move(firstIndex, secondIndex);
     }
 
     public void add(int index, ExcelPosition position) {
@@ -163,11 +177,10 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
     }
 
     public ExcelPosition remove(int index) {
-        Row row = getPosition(index).getRow();
-        int rowIndex = row.getRowNum() + 1;
+        int rowForIndex = getPosition(index).getRow().getRowNum() + 1;
         int lastRowNum = sheet.getLastRowNum();
         // shift all rows one forward to index
-        sheet.shiftRows(rowIndex, lastRowNum, -1);
+        sheet.shiftRows(rowForIndex, lastRowNum, -1);
         // remove last row
         sheet.removeRow(sheet.getRow(lastRowNum));
 
