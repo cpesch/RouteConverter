@@ -172,7 +172,7 @@ public class ExcelRowOrderIT {
     }
 
     @Test
-    public void testMoveMiddlePositionToBottomWithoffset() throws IOException {
+    public void testMoveMiddlePositionToBottomWithOffset() throws IOException {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
 
         route.bottom(2, 1);
