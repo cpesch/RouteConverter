@@ -194,20 +194,12 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         positions.set(topOffset, move);
     }
 
-    protected void move(int firstIndex, int secondIndex) { // TODO could replace up() and down()
+    public void move(int firstIndex, int secondIndex) {
         List<P> positions = getPositions();
         P from = positions.get(firstIndex);
         P to = positions.get(secondIndex);
         positions.set(firstIndex, to);
         positions.set(secondIndex, from);
-    }
-
-    public void down(int fromIndex, int toIndex) {
-        move(fromIndex, toIndex);
-    }
-
-    public void up(int fromIndex, int toIndex) {
-        move(fromIndex, toIndex);
     }
 
     public void bottom(int index, int bottomOffset) {

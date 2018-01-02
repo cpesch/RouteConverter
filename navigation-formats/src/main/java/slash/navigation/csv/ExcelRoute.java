@@ -147,7 +147,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         super.bottom(index, bottomOffset);
     }
 
-    protected void move(int firstIndex, int secondIndex) {
+    public void move(int firstIndex, int secondIndex) {
         // shift secondIndex row to the end
         ExcelPosition second = getPosition(secondIndex);
         int rowForSecondIndex = second.getRow().getRowNum();

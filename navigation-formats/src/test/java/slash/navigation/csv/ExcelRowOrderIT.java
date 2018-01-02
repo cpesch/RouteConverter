@@ -127,7 +127,7 @@ public class ExcelRowOrderIT {
     public void testMoveMiddlePositionDown() throws IOException {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
 
-        route.down(2, 3);
+        route.move(2, 3);
 
         route = writeAndReadFile(route);
 
@@ -143,7 +143,7 @@ public class ExcelRowOrderIT {
     public void testMoveMiddlePositionTwoDown() throws IOException {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
 
-        route.down(2, 4);
+        route.move(2, 4);
 
         route = writeAndReadFile(route);
 
@@ -191,7 +191,7 @@ public class ExcelRowOrderIT {
     public void testMoveMiddlePositionUp() throws IOException {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
 
-        route.up(2, 3);
+        route.move(2, 3);
 
         route = writeAndReadFile(route);
 

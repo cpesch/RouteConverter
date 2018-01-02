@@ -422,7 +422,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         int[] reverted = Range.revert(rows);
 
         for (int i = 0; i < reverted.length; i++) {
-            getRoute().down(reverted.length - i - 1, reverted[i]);
+            getRoute().move(reverted.length - i - 1, reverted[i]);
         }
         fireTableRowsUpdated(0, reverted[0]);
     }
@@ -431,7 +431,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         Arrays.sort(rowIndices);
 
         for (int row : rowIndices) {
-            getRoute().up(row, row - delta);
+            getRoute().move(row, row - delta);
             fireTableRowsUpdated(row - delta, row);
         }
     }
@@ -440,7 +440,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         int[] reverted = Range.revert(rowIndices);
 
         for (int row : reverted) {
-            getRoute().down(row, row + delta);
+            getRoute().move(row, row + delta);
             fireTableRowsUpdated(row, row + delta);
         }
     }
@@ -458,7 +458,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         Arrays.sort(rows);
 
         for (int i = 0; i < rows.length; i++) {
-            getRoute().up(getRowCount() - rows.length + i, rows[i]);
+            getRoute().move(getRowCount() - rows.length + i, rows[i]);
         }
         fireTableRowsUpdated(rows[0], getRowCount() - 1);
     }
