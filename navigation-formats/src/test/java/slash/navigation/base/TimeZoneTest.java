@@ -34,7 +34,9 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import static com.jcabi.matchers.RegexMatchers.matchesPattern;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static slash.common.TestCase.*;
 import static slash.common.io.Transfer.parseXMLTime;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -67,7 +69,7 @@ public class TimeZoneTest {
         dateFormat.setTimeZone(java.getTimeZone());
         assertEquals(TimeZone.getTimeZone("GMT+00:00"), dateFormat.getTimeZone());
         String javaTime = dateFormat.format(java.getTime().getTime());
-        assertEquals("6/7/07 2:04 PM", javaTime);
+        assertThat(javaTime, matchesPattern("6/7/07,? 2:04 PM"));
         Calendar parsed = parseXMLTime(xml).getCalendar();
         assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
         assertCalendarEquals(parsed, java);
@@ -82,7 +84,7 @@ public class TimeZoneTest {
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
         dateFormat.setTimeZone(java.getTimeZone());
         String javaTime = dateFormat.format(java.getTime().getTime());
-        assertEquals("6/7/07 2:04 PM", javaTime);
+        assertThat(javaTime, matchesPattern("6/7/07,? 2:04 PM"));
         Calendar parsed = parseXMLTime(xml).getCalendar();
         assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
         java.roll(Calendar.HOUR, 2);
