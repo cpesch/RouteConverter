@@ -185,7 +185,7 @@ public class BcrRouteTest {
         route.up(1, 0);
         assertPositions(b, a, c);
         route.up(2, 0);
-        assertPositions(c, b, a);
+        assertPositions(c, a, b);
     }
 
     @Test
@@ -199,7 +199,7 @@ public class BcrRouteTest {
         route.down(0, 1);
         assertPositions(b, a, c);
         route.down(0, 2);
-        assertPositions(a, c, b);
+        assertPositions(c, a, b);
     }
 
     @Test
