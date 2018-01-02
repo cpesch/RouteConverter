@@ -21,19 +21,10 @@
 package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import slash.navigation.base.ParserContext;
-import slash.navigation.gpx.binding11.ExtensionsType;
-import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.gpx.binding11.MetadataType;
-import slash.navigation.gpx.binding11.ObjectFactory;
-import slash.navigation.gpx.binding11.RteType;
-import slash.navigation.gpx.binding11.TrkType;
-import slash.navigation.gpx.binding11.TrksegType;
-import slash.navigation.gpx.binding11.WptType;
+import slash.navigation.gpx.binding11.*;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;
-import slash.navigation.gpx.trackpoint2.TrackPointExtensionT;
 import slash.navigation.gpx.trip1.ViaPointExtensionT;
 
 import javax.xml.bind.JAXBElement;
@@ -47,23 +38,9 @@ import java.util.Iterator;
 import java.util.List;
 
 import static slash.common.io.Transfer.formatDouble;
-import static slash.common.io.Transfer.formatInt;
-import static slash.common.io.Transfer.formatXMLTime;
-import static slash.common.io.Transfer.isEmpty;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseXMLTime;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.common.NavigationConversion.formatBigDecimal;
-import static slash.navigation.common.NavigationConversion.formatElevation;
-import static slash.navigation.common.NavigationConversion.formatHeading;
-import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
-import static slash.navigation.common.NavigationConversion.formatPosition;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsDouble;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
-import static slash.navigation.common.NavigationConversion.formatTemperatureAsDouble;
-import static slash.navigation.common.NavigationConversion.formatTemperatureAsString;
+import static slash.common.io.Transfer.*;
+import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.common.NavigationConversion.*;
 import static slash.navigation.gpx.GpxUtil.marshal11;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
 
@@ -200,22 +177,15 @@ public class Gpx11Format extends GpxFormat {
             for (Object any : extensions.getAny()) {
                 if (any instanceof JAXBElement) {
                     Object anyValue = ((JAXBElement) any).getValue();
-                    if (anyValue instanceof TrackPointExtensionT) {
-                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                    if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
                         result = asKmh(trackPoint.getSpeed());
                     }
 
                 } else if (any instanceof Element) {
                     Element element = (Element) any;
-
-                    // TrackPointExtension v1
-                    if ("TrackPointExtension".equals(element.getLocalName())) {
-                        Node firstChild = element.getFirstChild();
-                        if (firstChild != null && "speed".equals(firstChild.getLocalName()))
-                            result = asKmh(parseDouble(firstChild.getTextContent()));
-
-                    // generic reading of speed elements
-                    } else if ("speed".equals(element.getLocalName()))
+                    // TODO validate trekbuddyExtensions
+                    if ("speed".equalsIgnoreCase(element.getLocalName()))
                         result = asKmh(parseDouble(element.getTextContent()));
                 }
             }
@@ -234,7 +204,7 @@ public class Gpx11Format extends GpxFormat {
         return (JAXBElement<String>) any;
     }
 
-    private boolean isRemoveEmptyTrackPointExtension(TrackPointExtensionT trackPoint) {
+    private boolean isRemoveEmptyTrackPointExtension(slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
         return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getCourse()) && isEmpty(trackPoint.getSpeed());
     }
 
@@ -265,8 +235,8 @@ public class Gpx11Format extends GpxFormat {
             // this is if I create the extensions with JAXB
             if (any instanceof JAXBElement) {
                 Object anyValue = ((JAXBElement) any).getValue();
-                if (anyValue instanceof TrackPointExtensionT) {
-                    TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
                     if (foundSpeed || isEmpty(speed)) {
                         if (isRemoveEmptyTrackPointExtension(trackPoint))
                             iterator.remove();
@@ -281,7 +251,7 @@ public class Gpx11Format extends GpxFormat {
 
         if (!foundSpeed && !isEmpty(speed)) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
-            TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
             trackPointExtensionT.setSpeed(formatSpeedAsDouble(asMs(speed)));
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
@@ -294,14 +264,15 @@ public class Gpx11Format extends GpxFormat {
             for (Object any : extensions.getAny()) {
                 if (any instanceof JAXBElement) {
                     Object anyValue = ((JAXBElement) any).getValue();
-                    if (anyValue instanceof TrackPointExtensionT) {
-                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                    if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
                         result = formatDouble(trackPoint.getCourse());
                     }
 
                 } else if (any instanceof Element) {
                     Element element = (Element) any;
-                    if ("course".equals(element.getLocalName()))
+                    // TODO validate trekbuddyExtensions
+                    if ("course".equalsIgnoreCase(element.getLocalName()))
                         result = parseDouble(element.getTextContent());
                 }
             }
@@ -338,8 +309,8 @@ public class Gpx11Format extends GpxFormat {
             // this is if I create the extensions with JAXB
             if (any instanceof JAXBElement) {
                 Object anyValue = ((JAXBElement) any).getValue();
-                if (anyValue instanceof TrackPointExtensionT) {
-                    TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
                     if (foundHeading || isEmpty(heading)) {
                         if (isRemoveEmptyTrackPointExtension(trackPoint))
                             iterator.remove();
@@ -354,7 +325,7 @@ public class Gpx11Format extends GpxFormat {
 
         if (!foundHeading && !isEmpty(heading)) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
-            TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
             trackPointExtensionT.setCourse(formatHeading(heading));
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
@@ -367,21 +338,23 @@ public class Gpx11Format extends GpxFormat {
             for (Object any : extensions.getAny()) {
                 if (any instanceof JAXBElement) {
                     Object anyValue = ((JAXBElement) any).getValue();
-                    if (anyValue instanceof TrackPointExtensionT) {
-                        TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
-                        result = trackPoint.getAtemp();
+                    if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT) {
+                        slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint = (slash.navigation.gpx.garmin3.TrackPointExtensionT) anyValue;
+                        result = asKmh(trackPoint.getTemperature());
+
+                        // TODO add TrackPointExtensionV1 here
+
+                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                        result = asKmh(trackPoint.getAtemp());
+                        if (result == null)
+                            result = asKmh(trackPoint.getWtemp());
                     }
 
                 } else if (any instanceof Element) {
                     Element element = (Element) any;
-
-                    // TrackPointExtension v1
-                    if ("TrackPointExtension".equals(element.getLocalName())) {
-                        Node firstChild = element.getFirstChild();
-                        if (firstChild != null && "atemp".equals(firstChild.getLocalName())) {
-                            result = parseDouble(firstChild.getTextContent());
-                        }
-                    }
+                    if ("temperature".equalsIgnoreCase(element.getLocalName()))
+                        result = parseDouble(element.getTextContent());
                 }
             }
         }
@@ -415,8 +388,8 @@ public class Gpx11Format extends GpxFormat {
             // this is if I create the extensions with JAXB
             if (any instanceof JAXBElement) {
                 Object anyValue = ((JAXBElement) any).getValue();
-                if (anyValue instanceof TrackPointExtensionT) {
-                    TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
                     if (foundTemperature || isEmpty(temperature)) {
                         if (isRemoveEmptyTrackPointExtension(trackPoint))
                             iterator.remove();
@@ -431,7 +404,7 @@ public class Gpx11Format extends GpxFormat {
 
         if (!foundTemperature && !isEmpty(temperature)) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
-            TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
             trackPointExtensionT.setAtemp(formatTemperatureAsDouble(temperature));
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
