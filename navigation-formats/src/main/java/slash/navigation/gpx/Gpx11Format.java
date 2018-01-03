@@ -184,7 +184,6 @@ public class Gpx11Format extends GpxFormat {
 
                 } else if (any instanceof Element) {
                     Element element = (Element) any;
-                    // TODO validate trekbuddyExtensions
                     if ("speed".equalsIgnoreCase(element.getLocalName()))
                         result = asKmh(parseDouble(element.getTextContent()));
                 }
@@ -271,7 +270,6 @@ public class Gpx11Format extends GpxFormat {
 
                 } else if (any instanceof Element) {
                     Element element = (Element) any;
-                    // TODO validate trekbuddyExtensions
                     if ("course".equalsIgnoreCase(element.getLocalName()))
                         result = parseDouble(element.getTextContent());
                 }
@@ -340,15 +338,19 @@ public class Gpx11Format extends GpxFormat {
                     Object anyValue = ((JAXBElement) any).getValue();
                     if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT) {
                         slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint = (slash.navigation.gpx.garmin3.TrackPointExtensionT) anyValue;
-                        result = asKmh(trackPoint.getTemperature());
+                        result = trackPoint.getTemperature();
 
-                        // TODO add TrackPointExtensionV1 here
+                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
+                        slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
+                        result = trackPoint.getAtemp();
+                        if (result == null)
+                            result = trackPoint.getWtemp();
 
                     } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
                         slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
-                        result = asKmh(trackPoint.getAtemp());
+                        result = trackPoint.getAtemp();
                         if (result == null)
-                            result = asKmh(trackPoint.getWtemp());
+                            result = trackPoint.getWtemp();
                     }
 
                 } else if (any instanceof Element) {

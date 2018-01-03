@@ -25,7 +25,6 @@ import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
 import slash.navigation.gpx.trackpoint2.TrackPointExtensionT;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
@@ -39,7 +38,7 @@ import static slash.navigation.gpx.GpxUtil.toXml;
 public class GpxFormatTest {
 
     @Test
-    public void testWritingTrekBuddyExtensions() throws IOException, JAXBException {
+    public void testWritingTrekBuddyExtensions() throws IOException {
         slash.navigation.gpx.binding11.ObjectFactory gpxFactory = new slash.navigation.gpx.binding11.ObjectFactory();
         slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
         ExtensionsType extensionsType = gpxFactory.createExtensionsType();
@@ -53,7 +52,7 @@ public class GpxFormatTest {
     }
 
     @Test
-    public void testWritingGarminTrackPointExtensions() throws IOException, JAXBException {
+    public void testWritingGarminTrackPointExtensions() throws IOException {
         slash.navigation.gpx.binding11.ObjectFactory gpxFactory = new slash.navigation.gpx.binding11.ObjectFactory();
         slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
         TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
