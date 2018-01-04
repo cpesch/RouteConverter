@@ -1072,8 +1072,9 @@ public class MapsforgeMapView implements MapView {
         return metersPerPixel * pixel;
     }
 
-    private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) {
-        int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
+    private void selectPosition(LatLong latLong, Double threshold, boolean replaceSelection) {
+        int row = positionsModel.getClosestPosition(latLong.longitude, latLong.latitude, threshold);
+        log.info("Selecting position at " + latLong + ", row is " + row);
         if (row != -1 && !mapViewMoverAndZoomer.isMousePressedOnMarker())
             positionsSelectionModel.setSelectedPositions(new int[]{row}, replaceSelection);
     }
@@ -1083,7 +1084,7 @@ public class MapsforgeMapView implements MapView {
             LatLong latLong = getMousePosition();
             if (latLong != null) {
                 Double threshold = getThresholdForPixel(latLong, 15);
-                selectPosition(latLong.longitude, latLong.latitude, threshold, true);
+                selectPosition(latLong, threshold, true);
             }
         }
     }
@@ -1093,7 +1094,7 @@ public class MapsforgeMapView implements MapView {
             LatLong latLong = getMousePosition();
             if (latLong != null) {
                 Double threshold = getThresholdForPixel(latLong, 15);
-                selectPosition(latLong.longitude, latLong.latitude, threshold, false);
+                selectPosition(latLong, threshold, false);
             }
         }
     }
@@ -1119,14 +1120,16 @@ public class MapsforgeMapView implements MapView {
             LatLong latLong = getMousePosition();
             if (latLong != null) {
                 int row = getAddRow();
+                log.info("Adding position at " + latLong + " to row " + row);
                 insertPosition(row, latLong.longitude, latLong.latitude);
             }
         }
     }
 
     private class DeletePositionAction extends FrameAction {
-        private void removePosition(Double longitude, Double latitude, Double threshold) {
-            int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
+        private void removePosition(LatLong latLong, Double threshold) {
+            int row = positionsModel.getClosestPosition(latLong.longitude, latLong.latitude, threshold);
+            log.info("Deleting position at " + latLong + " from row " + row);
             if (row != -1) {
                 positionsModel.remove(new int[]{row});
             }
@@ -1136,7 +1139,7 @@ public class MapsforgeMapView implements MapView {
             LatLong latLong = getMousePosition();
             if (latLong != null) {
                 Double threshold = getThresholdForPixel(latLong, 15);
-                removePosition(latLong.longitude, latLong.latitude, threshold);
+                removePosition(latLong, threshold);
             }
         }
     }
