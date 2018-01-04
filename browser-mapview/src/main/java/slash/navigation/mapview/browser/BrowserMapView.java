@@ -499,7 +499,7 @@ public abstract class BrowserMapView implements MapView {
                     render.addAll(selectedPositions);
                     NavigationPosition centerPosition = render.size() > 0 ? new BoundingBox(render).getCenter() : null;
                     selectPositions(render, recenter ? centerPosition : null);
-                    log.info("Selected positions updated for " + render.size() + " positions , reason: " +
+                    log.info("Selected positions updated for " + render.size() + " positions, reason: " +
                             selectionUpdateReason + ", recentering: " + recenter + " to: " + centerPosition);
                     lastTime = currentTimeMillis();
                 }
