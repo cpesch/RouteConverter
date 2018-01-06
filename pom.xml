@@ -206,11 +206,6 @@
                     <artifactId>versions-maven-plugin</artifactId>
                     <version>2.3</version>
                 </plugin>
-                <plugin>
-                    <groupId>com.zenjava</groupId>
-                    <artifactId>javafx-maven-plugin</artifactId>
-                    <version>8.8.4-SNAPSHOT</version>
-                </plugin>
 
                 <plugin>
                     <groupId>com.akathist.maven.plugins.launch4j</groupId>
@@ -411,7 +406,6 @@
         <module>RouteConverterLinuxOffline</module>
         <module>RouteConverterMacOffline</module>
         <module>RouteConverterWindowsOffline</module>
-        <module>RouteConverterWebstart</module>
         <module>time-album-pro</module>
         <module>TimeAlbumProLinux</module>
         <module>TimeAlbumProMac</module>

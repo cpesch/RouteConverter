@@ -21,8 +21,6 @@
 package slash.navigation.gui;
 
 import slash.navigation.gui.jarinjar.ClassPathExtender;
-import slash.navigation.jnlp.SingleInstance;
-import slash.navigation.jnlp.SingleInstanceCallback;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -140,20 +138,6 @@ public abstract class Application {
         return extender.getClassLoader();
     }
 
-    private SingleInstance singleInstance;
-
-    private void initializeSingleInstance() {
-        try {
-            singleInstance = new SingleInstance(new SingleInstanceCallback() {
-                public void newActivation(String[] args) {
-                    Application.this.parseNewActivationArgs(args);
-                }
-            });
-        } catch (Throwable t) {
-            // intentionally left empty
-        }
-    }
-
     public static <T extends Application> void launch(final Class<T> applicationClass, final String[] bundleNames, final String[] args) {
         final ClassLoader contextClassLoader = extendClassPath();
         if (contextClassLoader != null)
@@ -173,7 +157,6 @@ public abstract class Application {
                     Application application = create(applicationClass);
                     setInstance(application);
                     application.getContext().setBundle(bundle);
-                    application.initializeSingleInstance();
                     application.startup();
                     application.parseInitialArgs(args);
                 } catch (Exception e) {
@@ -236,8 +219,6 @@ public abstract class Application {
     }
 
     void end() {
-        if (singleInstance != null)
-            singleInstance.dispose();
         Runtime.getRuntime().exit(0);
     }
 }

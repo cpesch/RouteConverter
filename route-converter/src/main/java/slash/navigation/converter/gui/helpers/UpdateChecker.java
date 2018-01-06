@@ -85,7 +85,6 @@ public class UpdateChecker {
                     System.getProperty("os.name"),
                     System.getProperty("os.version"),
                     System.getProperty("os.arch"),
-                    System.getProperty("javawebstart.version"),
                     getStartTime());
             result.setParameters(parameters);
         } catch (Throwable t) {

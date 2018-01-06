@@ -124,8 +124,6 @@ public class Version {
     public String getOperationSystem() {
         if (name != null)
             return name;
-        if (System.getProperty("javawebstart.version") != null)
-            return "Webstart";
         return "?";
     }
 

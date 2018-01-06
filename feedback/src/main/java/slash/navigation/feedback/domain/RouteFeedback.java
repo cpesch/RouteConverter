@@ -139,7 +139,7 @@ public class RouteFeedback {
     public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,
                                  String javaVersion, String javaBits,
                                  String osName, String osVersion, String osArch,
-                                 String webstartVersion, long startTime) throws IOException {
+                                 long startTime) throws IOException {
         log.fine("Checking for update for version " + routeConverterVersion);
         Post request = new Post(rootUrl + UPDATE_CHECK_URI, credentials);
         request.addString("id", valueOf(startTime));
@@ -152,8 +152,6 @@ public class RouteFeedback {
         request.addString("rcStartCount", Long.toString(startCount));
         request.addString("rcVersion", routeConverterVersion);
         request.addString("rcBits", routeConverterBits);
-        if (webstartVersion != null)
-            request.addString("webstartVersion", webstartVersion);
         return request.executeAsString().replace("\"", "");
     }
 

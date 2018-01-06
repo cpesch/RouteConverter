@@ -52,13 +52,6 @@ public class VersionTest {
     public void testGetPlatform() {
         assertEquals("Windows", new Version(null, null, "Windows").getOperationSystem());
         assertEquals("?", new Version(null, null, null).getOperationSystem());
-        try {
-            System.setProperty("javawebstart.version", "1.0");
-            assertEquals("Webstart", new Version(null, null, null).getOperationSystem());
-        }
-        finally {
-            System.clearProperty("javawebstart.version");
-        }
     }
 
     @Test
