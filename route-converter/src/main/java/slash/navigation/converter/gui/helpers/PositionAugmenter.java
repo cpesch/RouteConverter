@@ -410,7 +410,7 @@ public class PositionAugmenter {
     }
 
     int findPredecessorWithTime(PositionsModel positionsModel, int index) {
-        while (index-- != -1) {
+        while (index-- > 0) {
             NavigationPosition position = positionsModel.getPosition(index);
             if (position.hasTime())
                 return index;
@@ -419,7 +419,7 @@ public class PositionAugmenter {
     }
 
     int findSuccessorWithTime(PositionsModel positionsModel, int index) {
-        while (index++ < positionsModel.getRowCount()) {
+        while (index++ < positionsModel.getRowCount() - 1) {
             NavigationPosition position = positionsModel.getPosition(index);
             if (position.hasTime())
                 return index;

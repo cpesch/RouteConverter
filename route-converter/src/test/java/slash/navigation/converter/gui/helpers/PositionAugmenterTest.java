@@ -28,8 +28,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
-import java.text.ParseException;
-
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.calendar;
@@ -50,20 +48,22 @@ public class PositionAugmenterTest {
     }
 
     @Test
-    public void testFindPredecessorWithTime() throws ParseException {
+    public void testFindPredecessorWithTime() {
         assertEquals(-1, augmenter.findPredecessorWithTime(model, 0));
-        assertEquals(1, augmenter.findPredecessorWithTime(model, 1));
+        assertEquals(-1, augmenter.findPredecessorWithTime(model, 1));
         assertEquals(1, augmenter.findPredecessorWithTime(model, 2));
-        assertEquals(3, augmenter.findPredecessorWithTime(model, 3));
+        assertEquals(1, augmenter.findPredecessorWithTime(model, 3));
         assertEquals(3, augmenter.findPredecessorWithTime(model, 4));
+        assertEquals(3, augmenter.findPredecessorWithTime(model, 5));
     }
 
     @Test
-    public void testFindSuccessorWithTime() throws ParseException {
+    public void testFindSuccessorWithTime() {
         assertEquals(1, augmenter.findSuccessorWithTime(model, 0));
-        assertEquals(1, augmenter.findSuccessorWithTime(model, 1));
+        assertEquals(3, augmenter.findSuccessorWithTime(model, 1));
         assertEquals(3, augmenter.findSuccessorWithTime(model, 2));
-        assertEquals(3, augmenter.findSuccessorWithTime(model, 3));
+        assertEquals(-1, augmenter.findSuccessorWithTime(model, 3));
         assertEquals(-1, augmenter.findSuccessorWithTime(model, 4));
+        assertEquals(-1, augmenter.findSuccessorWithTime(model, 5));
     }
 }
