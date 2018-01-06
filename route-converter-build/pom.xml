@@ -12,12 +12,14 @@
 
     <pluginRepositories>
         <pluginRepository>
-            <id>vineetmanohar-release-repo</id>
-            <name>Vineet Manohar Release Repo</name>
-            <url>http://repo.vineetmanohar.com/releases</url>
+            <id>oss-sonatype-snapshots</id>
+            <url>https://oss.sonatype.org/content/groups/public/</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </pluginRepository>
     </pluginRepositories>
-
+    
     <properties>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <!-- workaround for http://jira.codehaus.org/browse/MASSEMBLY-603 -->
@@ -48,23 +50,6 @@
                     <doUpdate>false</doUpdate>
                     <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.vineetmanohar</groupId>
-                <artifactId>maven-twitter-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <configuration>
-                            <twitterStatus>Version ${project.version} of RouteConverter released to http://www.routeconverter.com</twitterStatus>
-                        </configuration>
-                        <id>deploy</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>tweet</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>

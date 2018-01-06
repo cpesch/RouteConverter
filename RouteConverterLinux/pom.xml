@@ -115,10 +115,17 @@
                 </executions>
                 <configuration>
                     <archive>target/RouteConverterLinux.jar</archive>
-                    <keystore>${keystorePath}</keystore>
-                    <alias>${keystoreAlias}</alias>
+                    <arguments>
+                        <argument>-certchain</argument>
+                        <argument>${bundlePath}</argument>
+                    </arguments>
+                    <keystore>NONE</keystore>
+                    <tsa>http://time.certum.pl</tsa>
+                    <storetype>PKCS11</storetype>
                     <storepass>${keystorePassword}</storepass>
-                    <keypass>${keyPassword}</keypass>
+                    <providerClass>sun.security.pkcs11.SunPKCS11</providerClass>
+                    <providerArg>${providerArg}</providerArg>
+                    <alias>${alias}</alias>
                     <removeExistingSignatures>true</removeExistingSignatures>
                 </configuration>
             </plugin>

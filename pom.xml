@@ -209,9 +209,9 @@
                     <version>2.3</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>webstart-maven-plugin</artifactId>
-                    <version>1.0-beta-7</version>
+                    <groupId>com.zenjava</groupId>
+                    <artifactId>javafx-maven-plugin</artifactId>
+                    <version>8.8.4-SNAPSHOT</version>
                 </plugin>
 
                 <plugin>
@@ -223,11 +223,6 @@
                     <groupId>com.coderplus.maven.plugins</groupId>
                     <artifactId>copy-rename-maven-plugin</artifactId>
                     <version>1.0.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>com.vineetmanohar</groupId>
-                    <artifactId>maven-twitter-plugin</artifactId>
-                    <version>0.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.owasp</groupId>
