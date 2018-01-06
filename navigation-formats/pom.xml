@@ -70,6 +70,7 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
+            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -81,6 +82,7 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
+            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>com.github.virtuald</groupId>
