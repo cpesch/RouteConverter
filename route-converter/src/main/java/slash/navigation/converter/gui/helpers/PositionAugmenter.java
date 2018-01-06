@@ -383,7 +383,7 @@ public class PositionAugmenter {
                     public void performOnStart() {
                     }
 
-                    public boolean run(int index, NavigationPosition position) throws Exception {
+                    public boolean run(int index, NavigationPosition position) {
                         NavigationPosition predecessor = index > 0 && index < positionsModel.getRowCount() ? positionsModel.getPosition(index - 1) : null;
                         if (predecessor != null) {
                             String previousSpeed = formatSpeed(position.getSpeed());
@@ -410,21 +410,19 @@ public class PositionAugmenter {
     }
 
     int findPredecessorWithTime(PositionsModel positionsModel, int index) {
-        while (index != -1) {
+        while (index-- != -1) {
             NavigationPosition position = positionsModel.getPosition(index);
             if (position.hasTime())
                 return index;
-            index--;
         }
         return -1;
     }
 
     int findSuccessorWithTime(PositionsModel positionsModel, int index) {
-        while (index < positionsModel.getRowCount()) {
+        while (index++ < positionsModel.getRowCount()) {
             NavigationPosition position = positionsModel.getPosition(index);
             if (position.hasTime())
                 return index;
-            index++;
         }
         return -1;
     }
@@ -473,7 +471,7 @@ public class PositionAugmenter {
                         successorIndex = findSuccessorWithTime(positionsModel, rows[rows.length-1]);
                     }
 
-                    public boolean run(int index, NavigationPosition position) throws Exception {
+                    public boolean run(int index, NavigationPosition position) {
                         if (predecessorIndex != -1 && successorIndex != -1) {
                             CompactCalendar previousTime = position.getTime();
                             CompactCalendar nextTime = interpolateTime(positionsModel, index, predecessorIndex, successorIndex);
@@ -526,7 +524,7 @@ public class PositionAugmenter {
                     public void performOnStart() {
                     }
 
-                    public boolean run(int index, NavigationPosition position) throws Exception {
+                    public boolean run(int index, NavigationPosition position) {
                         String previousDescription = position.getDescription();
                         int number = numberingStrategy.equals(Absolute_Position_Within_Position_List) ? index : findRelativeIndex(rows, index);
                         String nextDescription = getNumberedPosition(position, number, digitCount, numberPattern);
