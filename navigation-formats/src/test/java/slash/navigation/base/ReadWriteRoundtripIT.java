@@ -78,7 +78,8 @@ public class ReadWriteRoundtripIT {
 
     @Test
     public void testGarminMapSource6ReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.gdb");
+        readWriteRoundtrip(TEST_PATH + "from2.gdb");
+        readWriteRoundtrip(TEST_PATH + "from3.gdb");
         readWriteRoundtrip(TEST_PATH + "from10.gdb");
         readWriteRoundtrip(TEST_PATH + "from10trk.gdb");
     }

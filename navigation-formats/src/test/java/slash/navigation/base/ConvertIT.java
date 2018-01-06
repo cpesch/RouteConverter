@@ -345,10 +345,10 @@ public class ConvertIT {
 
     @Test
     public void testConvertGarminMapSource6ToKml() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml20Format());
-        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml22BetaFormat());
-        convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from2.gdb", new GarminMapSource6Format(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from3.gdb", new GarminMapSource6Format(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from2.gdb", new GarminMapSource6Format(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from3.gdb", new GarminMapSource6Format(), new Kml22Format());
     }
 
     @Test

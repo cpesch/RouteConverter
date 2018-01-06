@@ -82,7 +82,7 @@ public class ConvertFailsIT {
             public void run() throws Exception {
                 convertRoundtrip(TEST_PATH + "from.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
                 convertRoundtrip(TEST_PATH + "large.mps", new GarminMapSource5Format(), new GarminMapSource5Format());
-                convertRoundtrip(TEST_PATH + "from.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());
+                convertRoundtrip(TEST_PATH + "from3.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());
                 convertRoundtrip(TEST_PATH + "large.gdb", new GarminMapSource6Format(), new GarminMapSource5Format());
             }
         });

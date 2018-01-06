@@ -146,18 +146,18 @@ public class AppendIT {
     @Test
     public void testAppendGarminMapSource5ToGarminMapSource6() throws IOException {
         // writing Mapsource 5 seems limited to 1 position
-        append(TEST_PATH + "from.gdb", TEST_PATH + "from.mps");
+        append(TEST_PATH + "from3.gdb", TEST_PATH + "from.mps");
     }
 
     @Test
     public void testAppendGarminMapSource6ToGarminMapSource5() throws IOException {
         // writing Mapsource 5 seems limited to 1 position
-        append(TEST_PATH + "from.mps", TEST_PATH + "from.gdb");
+        append(TEST_PATH + "from.mps", TEST_PATH + "from2.gdb");
     }
 
     @Test
     public void testAppendTourExchangeToGarminMapSource6() throws IOException {
-        append(TEST_PATH + "from.gdb", TEST_PATH + "from.tef");
+        append(TEST_PATH + "from2.gdb", TEST_PATH + "from.tef");
     }
 
     @Test
