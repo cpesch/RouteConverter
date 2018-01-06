@@ -14,78 +14,78 @@
         <build>
             <plugins>
                 <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-shade-plugin</artifactId>
+                    <groupId>com.zenjava</groupId>
+                    <artifactId>javafx-maven-plugin</artifactId>
+                    <configuration>
+                        <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
+                        <j2seVersion>1.7+</j2seVersion>
+                        <appName>RouteConverter</appName>
+                        <needShortcut>true</needShortcut>
+                        <needMenu>true</needMenu>
+                        <allPermissions>true</allPermissions>
+                    </configuration>
                     <executions>
                         <execution>
+                            <!-- required before build-native, creates target/jfx/app -->
+                            <id>create-jfxjar</id>
                             <phase>package</phase>
                             <goals>
-                                <goal>shade</goal>
+                                <goal>build-jar</goal>
                             </goals>
+                        </execution>
+                        <execution>
+                            <!-- creates target/jfx/web -->
+                            <id>create-jnlp-bundle</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>build-native</goal>
+                            </goals>
+                            <!-- this configuration is only specific to this execution -->
                             <configuration>
-                                <transformers>
-                                    <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                        <manifestEntries>
-                                            <Specification-Title>${project.name}</Specification-Title>
-                                            <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
-                                            <Specification-Vendor>Christian Pesch</Specification-Vendor>
-                                            <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
-                                            <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
-                                            <Permissions>all-permissions</Permissions>
-                                            <Codebase>www.routeconverter.com</Codebase>
-                                            <Application-Name>RouteConverter</Application-Name>
-                                        </manifestEntries>
-                                    </transformer>
-                                </transformers>
-                                <filters>
-                                    <filter>
-                                        <artifact>*:*</artifact>
-                                        <excludes>
-                                            <exclude>META-INF/*.txt</exclude>
-                                            <exclude>META-INF/LICENSE*</exclude>
-                                            <exclude>META-INF/NOTICE*</exclude>
-                                            <exclude>META-INF/maven/</exclude>
-                                        </excludes>
-                                    </filter>
-                                </filters>
+                                <!-- as we only want to create the JNLP-package, use fixed bundler-ID -->
+                                <bundler>jnlp</bundler>
+
+                                <bundleArguments>
+                                    <!-- this makes the JNLP-file having permissions being set -->
+                                    <!-- AND it is the trigger for signing jar-files using jarsigner -->
+                                    <jnlp.allPermisions>true</jnlp.allPermisions>
+
+                                    <!-- the JNLP-bundler is a bit picky about its parametes, it does not use <appName> -->
+                                    <jnlp.outfile>release</jnlp.outfile>
+                                </bundleArguments>
+
+                                <!-- this setting is required for the new "jarsigner"-feature -->
+                                <noBlobSigning>true</noBlobSigning>
+
+                                <!-- these are required, please change them for your own requirements -->
+                                <keyStoreAlias>${alias}</keyStoreAlias>
+                                <keyStorePassword>${keystorePassword}</keyStorePassword>
+
+                                <!-- as this keystore is no file, please disable file-checks -->
+                                <skipKeyStoreChecking>true</skipKeyStoreChecking>
+                                <!-- this is new too and required, as PKCS11 does not want some keypass -->
+                                <skipKeypassWhileSigning>true</skipKeypassWhileSigning>
+
+                                <!-- this is used for additional parameters for the jarsigner command -->
+                                <additionalJarsignerParameters>
+                                    <additionalJarsignerParameter>-keystore</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>NONE</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>-storetype</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>PKCS11</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>-tsa</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>http://time.certum.pl</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>-providerClass</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>sun.security.pkcs11.SunPKCS11</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>-providerArg</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>${providerArg}</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>-certChain</additionalJarsignerParameter>
+                                    <additionalJarsignerParameter>${bundlePath}</additionalJarsignerParameter>                                </additionalJarsignerParameters>
+
+                                <!-- the jnlp-bundler gets a bit messy, lots of files, so we want to mimic "jfx:web"-folder-structure -->
+                                <nativeOutputDir>${project.build.directory}/jfx/web</nativeOutputDir>
                             </configuration>
                         </execution>
                     </executions>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>webstart-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>jnlp-inline</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <dependencies>
-                            <excludes>
-                                <exclude>slash.navigation:route-converter-license</exclude>
-                            </excludes>
-                        </dependencies>
-                        <jnlp>
-                            <outputFile>${project.name}.jnlp</outputFile>
-                            <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
-                        </jnlp>
-                        <sign>
-                            <keystore>${keystorePath}</keystore>
-                            <alias>${keystoreAlias}</alias>
-                            <storepass>${keystorePassword}</storepass>
-                            <keypass>${keyPassword}</keypass>
-                            <keystoreConfig>
-                                <delete>false</delete>
-                                <gen>false</gen>
-                            </keystoreConfig>
-                        </sign>
-                        <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
-                    </configuration>
                 </plugin>
             </plugins>
         </build>
