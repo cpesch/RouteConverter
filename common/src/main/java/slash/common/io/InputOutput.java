@@ -23,6 +23,7 @@ package slash.common.io;
 import java.io.*;
 
 import static org.apache.commons.io.IOUtils.copyLarge;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 
 /**
  * As a pipe reads from input and writes to output.
@@ -66,5 +67,9 @@ public class InputOutput {
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         copyAndClose(input, output);
         return output.toByteArray();
+    }
+
+    public static String readFileToString(File file) throws IOException {
+        return new String(readBytes(new FileInputStream(file)), UTF8_ENCODING);
     }
 }

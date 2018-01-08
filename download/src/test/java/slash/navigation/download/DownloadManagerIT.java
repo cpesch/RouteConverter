@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import slash.common.io.InputOutput;
 import slash.common.type.CompactCalendar;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.Head;
@@ -38,8 +39,6 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
-import static slash.common.io.InputOutput.readBytes;
-import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.DownloadManager.WAIT_TIMEOUT;
@@ -65,10 +64,6 @@ public class DownloadManagerIT {
 
     private DownloadManager manager;
     private File target, queueFile;
-
-    private String readFileToString(File file) throws IOException {
-        return new String(readBytes(new FileInputStream(file)), UTF8_ENCODING);
-    }
 
     private void writeStringToFile(File file, String string) throws FileNotFoundException {
         PrintWriter writer = new PrintWriter(new FileOutputStream(file));
@@ -106,7 +101,7 @@ public class DownloadManagerIT {
 
     private static final Object notificationMutex = new Object();
 
-    void waitFor(final Download download, final State expectedState) {
+    private void waitFor(final Download download, final State expectedState) {
         final boolean[] found = new boolean[1];
         found[0] = false;
 
@@ -144,7 +139,7 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testInvalidUrl() throws IOException {
+    public void testInvalidUrl() {
         Download download = manager.queueForDownload("Does not exist", DOWNLOAD + "doesntexist.txt", Copy, new FileAndChecksum(target, null), null);
         waitFor(download, Failed);
 
@@ -159,7 +154,7 @@ public class DownloadManagerIT {
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
-        String actual = readFileToString(target);
+        String actual = InputOutput.readFileToString(target);
         assertEquals(EXPECTED, actual);
     }
 
@@ -244,7 +239,7 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testHeadWithoutETag() throws IOException {
+    public void testHeadWithoutETag() {
         assertTrue(target.delete());
 
         Download download = manager.queueForDownload("HEAD for 447 Bytes", DOWNLOAD + "447bytes.txt", Head, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1)), null);
@@ -255,7 +250,7 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testHeadWithETag() throws IOException {
+    public void testHeadWithETag() {
         assertTrue(target.delete());
 
         Download download = manager.queueForDownload("HEAD for 447 Bytes", DOWNLOAD + "447bytes.txt", Head, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1)), null);
@@ -273,12 +268,12 @@ public class DownloadManagerIT {
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
-        String actual = readFileToString(target);
+        String actual = InputOutput.readFileToString(target);
         assertEquals(EXPECTED, actual);
     }
 
     @Test
-    public void testDownloadWithWrongContentLength() throws IOException {
+    public void testDownloadWithWrongContentLength() {
         assertTrue(target.delete());
 
         Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, 4711L, SHA1)), null);
@@ -289,7 +284,7 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testDownloadWithWrongSHA1() throws IOException {
+    public void testDownloadWithWrongSHA1() {
         assertTrue(target.delete());
 
         Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, "notdefined")), null);
@@ -300,7 +295,7 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testDownloadWithWrongLastModified() throws IOException {
+    public void testDownloadWithWrongLastModified() {
         assertTrue(target.delete());
 
         Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, new FileAndChecksum(target, new Checksum(fromMillis(0L), CONTENT_LENGTH, SHA1)), null);
@@ -314,7 +309,7 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testDownloadWithWrongETag() throws IOException {
+    public void testDownloadWithWrongETag() {
         assertTrue(target.delete());
 
         Download download = manager.queueForDownload("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1)), null);
@@ -333,12 +328,12 @@ public class DownloadManagerIT {
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
-        String actual = readFileToString(target);
+        String actual = InputOutput.readFileToString(target);
         assertEquals(EXPECTED, actual);
     }
 
     @Test
-    public void testNotModifiedDownload() throws IOException {
+    public void testNotModifiedDownload() {
         Download download = new Download("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1)), null);
         download.setETag(ETAG);
         Download queued = manager.queue(download, true);
@@ -346,7 +341,7 @@ public class DownloadManagerIT {
     }
 
     @Test
-    public void testJustQueued() throws IOException {
+    public void testJustQueued() {
         Download download = new Download("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1)), null);
         download.setState(Succeeded);
         Download queued = manager.queue(download, false);
@@ -389,7 +384,7 @@ public class DownloadManagerIT {
             assertEquals(Succeeded, download.getState());
 
             assertTrue(extracted.getFile().exists());
-            String actual = readFileToString(extracted.getFile());
+            String actual = InputOutput.readFileToString(extracted.getFile());
             assertEquals(EXPECTED, actual);
         } finally {
             if (extracted.getFile().exists())
@@ -413,7 +408,7 @@ public class DownloadManagerIT {
             assertEquals(Succeeded, download.getState());
 
             assertTrue(extracted.getFile().exists());
-            String actual = readFileToString(extracted.getFile());
+            String actual = InputOutput.readFileToString(extracted.getFile());
             assertEquals(EXPECTED, actual);
         } finally {
             if (extracted.getFile().exists())
