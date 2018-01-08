@@ -5,5 +5,7 @@
 // Generated on: 2015.06.09 at 05:55:17 PM CEST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/route-catalog", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/route-catalog", elementFormDefault = QUALIFIED)
 package slash.navigation.routes.remote.binding;
+
+import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;

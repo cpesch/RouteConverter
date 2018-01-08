@@ -5,5 +5,7 @@
 // Generated on: 2016.07.02 at 08:56:34 AM MESZ 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/tileserver-catalog", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/tileserver-catalog", elementFormDefault = QUALIFIED)
 package slash.navigation.mapview.tileserver.binding;
+
+import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;

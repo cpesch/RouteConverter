@@ -5,11 +5,14 @@
 // Generated on: 2010.06.29 at 05:04:10 PM MESZ 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = NokiaLandmarkExchangeUtil.LMX_NAMESPACE_URI, elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED, xmlns = {
-		@XmlNs(prefix = "", namespaceURI = NokiaLandmarkExchangeUtil.LMX_NAMESPACE_URI),
-		@XmlNs(prefix = "lm", namespaceURI = NokiaLandmarkExchangeUtil.LMX_NAMESPACE_URI)})
+@javax.xml.bind.annotation.XmlSchema(namespace = LMX_NAMESPACE_URI, elementFormDefault = QUALIFIED, xmlns = {
+		@XmlNs(prefix = "", namespaceURI = LMX_NAMESPACE_URI),
+		@XmlNs(prefix = "lm", namespaceURI = LMX_NAMESPACE_URI)})
 package slash.navigation.lmx.binding;
 import javax.xml.bind.annotation.XmlNs;
 
 import slash.navigation.lmx.NokiaLandmarkExchangeUtil;
+
+import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
+import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.LMX_NAMESPACE_URI;
 

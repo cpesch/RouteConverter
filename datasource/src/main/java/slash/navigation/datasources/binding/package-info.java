@@ -5,5 +5,7 @@
 // Generated on: 2015.10.28 at 03:39:26 PM CET 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/datasource-catalog", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/datasource-catalog", elementFormDefault = QUALIFIED)
 package slash.navigation.datasources.binding;
+
+import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
