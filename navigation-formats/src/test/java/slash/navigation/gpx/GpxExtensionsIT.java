@@ -1,25 +1,59 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
 package slash.navigation.gpx;
 
 import org.junit.Test;
+import slash.navigation.base.AllNavigationFormatRegistry;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.gpx.binding11.ExtensionsType;
+import slash.navigation.gpx.binding11.GpxType;
+import slash.navigation.gpx.trackpoint2.TrackPointExtensionT;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static java.io.File.createTempFile;
+import static org.apache.commons.lang.StringUtils.EMPTY;
+import static org.apache.commons.lang.StringUtils.indexOfDifference;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
-import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+import static slash.common.io.InputOutput.readFileToString;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.readGpxFile;
+import static slash.navigation.gpx.GpxUtil.toXml;
 
 public class GpxExtensionsIT {
 
-    private GpxPosition readPosition(String fileName) throws Exception {
+    private GpxRoute readRoute(String fileName) throws Exception {
         List<GpxRoute> routes = readGpxFile(new Gpx11Format(), fileName);
         assertNotNull(routes);
         assertEquals(1, routes.size());
-        GpxRoute route = routes.get(0);
+        return routes.get(0);
+    }
+
+    private GpxPosition readPosition(String fileName) throws Exception {
+        GpxRoute route = readRoute(fileName);
         assertEquals(1, route.getPositionCount());
         return route.getPosition(0);
     }
@@ -69,5 +103,26 @@ public class GpxExtensionsIT {
         checkPositionBasics(position);
         assertDoubleEquals(15.12, position.getSpeed());
         assertDoubleEquals(124.5, position.getHeading());
+    }
+
+    private File writeRoute(GpxRoute route) throws IOException {
+        File target = createTempFile("target", ".gpx");
+        NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+        parser.write(Collections.<BaseRoute>singletonList(route), new Gpx11Format(), target);
+        return target;
+    }
+
+    @Test
+    public void testWriteGarminGpxExtensionv3Temperature() throws Exception {
+        GpxRoute route = readRoute(TEST_PATH + "garmin-gpx-extension-v3.gpx");
+        GpxPosition position = route.getPosition(0);
+        assertDoubleEquals(25.0, position.getTemperature());
+
+        position.setTemperature(19.8);
+
+        File file = writeRoute(route);
+
+        String after = readFileToString(file);
+        assertTrue(after.contains("<gpxx:Temperature>19.8</gpxx:Temperature>"));
     }
 }

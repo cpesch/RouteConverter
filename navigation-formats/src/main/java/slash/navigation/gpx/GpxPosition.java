@@ -45,6 +45,7 @@ import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
 
 public class GpxPosition extends Wgs84Position {
     private String reason;
+    private GpxPositionExtension positionExtension;
 
     public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
         this(longitude, latitude, elevation, speed, time, description, null);
@@ -55,14 +56,13 @@ public class GpxPosition extends Wgs84Position {
     }
 
     public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed, Double heading,
-                       Double temperature, CompactCalendar time, String description, BigDecimal hdop, BigDecimal pdop,
+                       GpxPositionExtension positionExtension, CompactCalendar time, String description, BigDecimal hdop, BigDecimal pdop,
                        BigDecimal vdop, BigInteger satellites, Object origin) {
-        this(formatDouble(longitude), formatDouble(latitude),
-                formatDouble(elevation), speed, time, description, origin);
+        this(formatDouble(longitude), formatDouble(latitude), formatDouble(elevation), speed, time, description, origin);
         // avoid overwriting values determined by setDescription() with a null value
         if (heading != null)
             setHeading(heading);
-        setTemperature(temperature);
+        this.positionExtension = positionExtension;
         setHdop(formatDouble(hdop));
         setPdop(formatDouble(pdop));
         setVdop(formatDouble(vdop));
@@ -102,6 +102,19 @@ public class GpxPosition extends Wgs84Position {
 
     public String getReason() {
         return reason;
+    }
+
+
+    GpxPositionExtension getPositionExtension() {
+        return positionExtension;
+    }
+
+    public Double getTemperature() {
+        return getPositionExtension().getTemperature();
+    }
+
+    public void setTemperature(Double temperature) {
+        getPositionExtension().setTemperature(temperature);
     }
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {

@@ -119,7 +119,7 @@ public class Gpx11Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
-                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType), getHeading(wptType), getTemperature(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType), getHeading(wptType), new GpxPositionExtension(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
             }
         }
         return positions;
@@ -129,7 +129,7 @@ public class Gpx11Format extends GpxFormat {
         List<GpxPosition> positions = new ArrayList<>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
-                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType), getHeading(wptType), getTemperature(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType), getHeading(wptType), new GpxPositionExtension(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
 
                 ExtensionsType extensions = wptType.getExtensions();
                 if (extensions != null) {
@@ -153,7 +153,7 @@ public class Gpx11Format extends GpxFormat {
     private List<GpxPosition> extractWayPoints(List<WptType> wptTypes) {
         List<GpxPosition> positions = new ArrayList<>();
         for (WptType wptType : wptTypes) {
-            positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType), getHeading(wptType), getTemperature(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+            positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType), getHeading(wptType), new GpxPositionExtension(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
         }
         return positions;
     }
@@ -163,7 +163,7 @@ public class Gpx11Format extends GpxFormat {
         if (trkType != null) {
             for (TrksegType trkSegType : trkType.getTrkseg()) {
                 for (WptType wptType : trkSegType.getTrkpt()) {
-                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType), getHeading(wptType), getTemperature(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
+                    positions.add(new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), getSpeed(wptType), getHeading(wptType), new GpxPositionExtension(wptType), parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), wptType.getHdop(), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType));
                 }
             }
         }
@@ -329,89 +329,6 @@ public class Gpx11Format extends GpxFormat {
         }
     }
 
-    private Double getTemperature(WptType wptType) {
-        Double result = null;
-        ExtensionsType extensions = wptType.getExtensions();
-        if (extensions != null) {
-            for (Object any : extensions.getAny()) {
-                if (any instanceof JAXBElement) {
-                    Object anyValue = ((JAXBElement) any).getValue();
-                    if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT) {
-                        slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint = (slash.navigation.gpx.garmin3.TrackPointExtensionT) anyValue;
-                        result = trackPoint.getTemperature();
-
-                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
-                        slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
-                        result = trackPoint.getAtemp();
-                        if (result == null)
-                            result = trackPoint.getWtemp();
-
-                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
-                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
-                        result = trackPoint.getAtemp();
-                        if (result == null)
-                            result = trackPoint.getWtemp();
-                    }
-
-                } else if (any instanceof Element) {
-                    Element element = (Element) any;
-                    if ("temperature".equalsIgnoreCase(element.getLocalName()))
-                        result = parseDouble(element.getTextContent());
-                }
-            }
-        }
-        return result;
-    }
-
-    private void setTemperature(WptType wptType, Double temperature) {
-        if (wptType.getExtensions() == null)
-            wptType.setExtensions(new ObjectFactory().createExtensionsType());
-        @SuppressWarnings("ConstantConditions")
-        List<Object> anys = wptType.getExtensions().getAny();
-
-        boolean foundTemperature = false;
-        Iterator<Object> iterator = anys.iterator();
-        while (iterator.hasNext()) {
-            Object any = iterator.next();
-
-            // this is parsed
-            if (any instanceof Element) {
-                Element element = (Element) any;
-                if ("atemp".equals(element.getLocalName())) {
-                    if (foundTemperature || isEmpty(temperature))
-                        iterator.remove();
-                    else {
-                        element.setTextContent(formatTemperatureAsString(temperature));
-                        foundTemperature = true;
-                    }
-                }
-            }
-
-            // this is if I create the extensions with JAXB
-            if (any instanceof JAXBElement) {
-                Object anyValue = ((JAXBElement) any).getValue();
-                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
-                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
-                    if (foundTemperature || isEmpty(temperature)) {
-                        if (isRemoveEmptyTrackPointExtension(trackPoint))
-                            iterator.remove();
-                    }
-                    else {
-                        trackPoint.setAtemp(formatTemperatureAsDouble(temperature));
-                        foundTemperature = true;
-                    }
-                }
-            }
-        }
-
-        if (!foundTemperature && !isEmpty(temperature)) {
-            slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
-            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-            trackPointExtensionT.setAtemp(formatTemperatureAsDouble(temperature));
-            anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
-        }
-    }
-
     private void setExtension(WptType wptType, String extensionNameToRemove, String extensionNameToAdd, Object extensionToAdd) {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
@@ -491,7 +408,8 @@ public class Gpx11Format extends GpxFormat {
         wptType.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
         setSpeed(wptType, isWriteSpeed() ? position.getSpeed() : null);
         setHeading(wptType, isWriteHeading() ? position.getHeading() : null);
-        setTemperature(wptType, isWriteTemperature() ? position.getTemperature() : null);
+        if (!isWriteTemperature())
+            position.setTemperature(null);
         wptType.setTime(isWriteTime() ? formatXMLTime(position.getTime()) : null);
         wptType.setName(isWriteName() ? asName(position.getDescription()) : null);
         wptType.setDesc(isWriteName() ? asDesc(position.getDescription(), wptType.getDesc()) : null);

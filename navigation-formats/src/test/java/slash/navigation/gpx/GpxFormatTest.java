@@ -38,36 +38,6 @@ import static slash.navigation.gpx.GpxUtil.toXml;
 public class GpxFormatTest {
 
     @Test
-    public void testWritingTrekBuddyExtensions() throws IOException {
-        slash.navigation.gpx.binding11.ObjectFactory gpxFactory = new slash.navigation.gpx.binding11.ObjectFactory();
-        slash.navigation.gpx.trekbuddy.ObjectFactory tbFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
-        ExtensionsType extensionsType = gpxFactory.createExtensionsType();
-        extensionsType.getAny().add(tbFactory.createSpeed(formatBigDecimal(123.45, 2)));
-        GpxType gpx = gpxFactory.createGpxType();
-        assertNotNull(gpx);
-        gpx.setExtensions(extensionsType);
-        assertNotNull(gpx);
-        String string = toXml(gpx);
-        assertTrue(string.contains("<nmea:speed>123.45</nmea:speed>"));
-    }
-
-    @Test
-    public void testWritingGarminTrackPointExtensions() throws IOException {
-        slash.navigation.gpx.binding11.ObjectFactory gpxFactory = new slash.navigation.gpx.binding11.ObjectFactory();
-        slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
-        TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-        trackPointExtensionT.setSpeed(123.456);
-        ExtensionsType extensionsType = gpxFactory.createExtensionsType();
-        extensionsType.getAny().add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
-        GpxType gpx = gpxFactory.createGpxType();
-        assertNotNull(gpx);
-        gpx.setExtensions(extensionsType);
-        assertNotNull(gpx);
-        String string = toXml(gpx);
-        assertTrue(string.contains("<gpxtpx:speed>123.456</gpxtpx:speed>"));
-    }
-
-    @Test
     public void testExtractSpeed() {
         Gpx10Format format = new Gpx10Format();
         assertDoubleEquals(9.0, format.parseSpeed("9Km/h"));
