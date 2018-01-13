@@ -30,8 +30,8 @@
             <groupId>com.sun</groupId>
             <artifactId>javafx</artifactId>
             <version>jdk7</version>
-            <scope>provided</scope>
             <classifier>stripped</classifier>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
