@@ -23,9 +23,6 @@ import org.junit.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.gpx.binding11.ExtensionsType;
-import slash.navigation.gpx.binding11.GpxType;
-import slash.navigation.gpx.trackpoint2.TrackPointExtensionT;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,15 +30,12 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.io.File.createTempFile;
-import static org.apache.commons.lang.StringUtils.EMPTY;
-import static org.apache.commons.lang.StringUtils.indexOfDifference;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.InputOutput.readFileToString;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.readGpxFile;
-import static slash.navigation.gpx.GpxUtil.toXml;
 
 public class GpxExtensionsIT {
 
