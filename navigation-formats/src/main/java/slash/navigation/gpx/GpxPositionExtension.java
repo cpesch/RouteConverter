@@ -113,9 +113,13 @@ public class GpxPositionExtension {
     }
 
     public void setTemperature(Double temperature) {
-        if (wptType.getExtensions() == null)
+        if (wptType.getExtensions() == null) {
+            // do not introduce extension element if there is no data
+            if(temperature == null)
+                return;
+
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
-        @SuppressWarnings("ConstantConditions")
+        }
         List<Object> anys = wptType.getExtensions().getAny();
 
         // replace existing values
@@ -157,13 +161,5 @@ public class GpxPositionExtension {
             trackPointExtensionT.setAtemp(formatTemperatureAsDouble(temperature));
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
-
-// TODO: handle NULL values, removing extension if there is not data inside
-
-// Strategy:
-// 1. remember where read from
-// 2. write back if there is an element
-// 3. if new: create TPEv2 - TODO make sure whole file has just TPEv2
-// 4. TODO if changed but not in <TPEv2: migrate whole file "one level up"
     }
 }
