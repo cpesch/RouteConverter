@@ -157,11 +157,14 @@ public class GpxPosition extends Wgs84Position {
     }
 
     public Double getTemperature() {
-        return getPositionExtension().getTemperature();
+        return getPositionExtension() != null ? getPositionExtension().getTemperature() : super.getTemperature();
     }
 
     public void setTemperature(Double temperature) {
-        getPositionExtension().setTemperature(temperature);
+        if (getPositionExtension() != null)
+            getPositionExtension().setTemperature(temperature);
+        else
+            super.setTemperature(temperature);
     }
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {
