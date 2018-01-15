@@ -170,20 +170,20 @@ public class GpxPositionExtension {
 
     private boolean isEmptyExtension(slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint) {
         return isEmpty(trackPoint.getDepth()) && isEmpty(trackPoint.getTemperature()) &&
-                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny() == null || trackPoint.getExtensions().getAny().size() == 0);
+                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().size() == 0);
     }
 
     private boolean isEmptyExtension(slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
         return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getCad()) && isEmpty(trackPoint.getDepth()) &&
                 isEmpty(trackPoint.getHr()) && isEmpty(trackPoint.getWtemp()) &&
-                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny() == null || trackPoint.getExtensions().getAny().size() == 0);
+                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().size() == 0);
     }
 
     private boolean isEmptyExtension(slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
         return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getBearing()) && isEmpty(trackPoint.getCad()) &&
                 isEmpty(trackPoint.getCourse()) &&  isEmpty(trackPoint.getDepth()) && isEmpty(trackPoint.getHr()) &&
                 isEmpty(trackPoint.getSpeed()) && isEmpty(trackPoint.getWtemp()) &&
-                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny() == null || trackPoint.getExtensions().getAny().size() == 0);
+                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().size() == 0);
     }
 
     public void removeEmptyExtensions() {
