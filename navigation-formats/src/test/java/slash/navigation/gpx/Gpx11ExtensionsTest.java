@@ -20,6 +20,7 @@
 package slash.navigation.gpx;
 
 import org.junit.Test;
+import slash.common.io.Transfer;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.gpx.binding11.*;
@@ -28,6 +29,7 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.List;
 
@@ -80,6 +82,271 @@ public class Gpx11ExtensionsTest {
         new Gpx11Format().write(routes, outputStream);
         return new String(outputStream.toByteArray(), UTF8_ENCODING);
     }
+
+
+    @Test
+    public void testWriteHeading() throws Exception {
+        WptType trkptType = createWptType();
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        position1.setHeading(168.4);
+
+        String after = writeGpx(routes1);
+
+        List<GpxRoute> routes2 = readGpx(after);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertDoubleEquals(168.4, position2.getHeading());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position2.getPositionExtension().getExtensionTypes());
+    }
+
+    @Test
+    public void testWriteTrackpoint2Heading() throws Exception {
+        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+        trackPointExtensionT.setCourse(new BigDecimal(168.4));
+        ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
+        extensionsType.getAny().add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
+
+        WptType trkptType = createWptType();
+        trkptType.setExtensions(extensionsType);
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        assertDoubleEquals(168.4, position1.getHeading());
+
+        position1.setHeading(273.9);
+
+        String after1 = writeGpx(routes1);
+
+        List<GpxRoute> routes2 = readGpx(after1);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertDoubleEquals(273.9, position2.getHeading());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position2.getPositionExtension().getExtensionTypes());
+
+        position2.setHeading(null);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertNull(position3.getHeading());
+        assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
+        assertFalse(after2.contains("<extensions"));
+        assertFalse(after2.contains(":TrackPointExtension"));
+    }
+
+    @Test
+    public void testWriteTrackpoint2HeadingAndBearing() throws Exception {
+        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+        trackPointExtensionT.setCourse(new BigDecimal(168.4));
+        trackPointExtensionT.setBearing(new BigDecimal(2.2));
+        ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
+        extensionsType.getAny().add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
+
+        WptType trkptType = createWptType();
+        trkptType.setExtensions(extensionsType);
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        position1.setHeading(273.9);
+
+        String after1 = writeGpx(routes1);
+
+        List<GpxRoute> routes2 = readGpx(after1);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertDoubleEquals(273.9, position2.getHeading());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position2.getPositionExtension().getExtensionTypes());
+        // <gpxtpx:bearing> remains unchanged
+        assertTrue(after1.contains("<gpxtpx:bearing>2.2"));
+
+        position2.setHeading(null);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertNull(position3.getHeading());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position3.getPositionExtension().getExtensionTypes());
+    }
+
+    @Test
+    public void testWriteUnknownHeading() throws Exception {
+        JAXBElement<String> element = new JAXBElement<>(new QName("http://www.unknown.com/course", "course"), String.class, "168.4");
+        ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
+        extensionsType.getAny().add(element);
+
+        WptType trkptType = createWptType();
+        trkptType.setExtensions(extensionsType);
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        assertDoubleEquals(168.4, position1.getHeading());
+
+        position1.setHeading(273.9);
+
+        String after1 = writeGpx(routes1);
+        System.out.println(after1);
+
+        List<GpxRoute> routes2 = readGpx(after1);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertDoubleEquals(273.9, position2.getHeading());
+        assertEquals(new HashSet<>(singletonList(Text)), position2.getPositionExtension().getExtensionTypes());
+
+        position2.setHeading(null);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertNull(position3.getHeading());
+        assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
+        // setting heading to null removes the complete extensions element
+        assertFalse(after2.contains("<extensions"));
+        assertFalse(after2.contains(":TrackPointExtension"));
+    }
+
+
+    @Test
+    public void testWriteSpeed() throws Exception {
+        WptType trkptType = createWptType();
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        position1.setSpeed(32.4);
+
+        String after = writeGpx(routes1);
+
+        List<GpxRoute> routes2 = readGpx(after);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertDoubleEquals(32.4, position2.getSpeed());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position2.getPositionExtension().getExtensionTypes());
+    }
+
+    @Test
+    public void testWriteTrackpoint2Speed() throws Exception {
+        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+        trackPointExtensionT.setSpeed(32.4);
+        ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
+        extensionsType.getAny().add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
+
+        WptType trkptType = createWptType();
+        trkptType.setExtensions(extensionsType);
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        assertDoubleEquals(116.64, position1.getSpeed());
+
+        position1.setSpeed(273.9);
+
+        String after1 = writeGpx(routes1);
+
+        List<GpxRoute> routes2 = readGpx(after1);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertDoubleEquals(273.96, position2.getSpeed());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position2.getPositionExtension().getExtensionTypes());
+
+        position2.setSpeed(null);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertNull(position3.getSpeed());
+        assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
+        assertFalse(after2.contains("<extensions"));
+        assertFalse(after2.contains(":TrackPointExtension"));
+    }
+
+    @Test
+    public void testWriteTrackpoint2SpeedAndBearing() throws Exception {
+        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+        trackPointExtensionT.setCourse(new BigDecimal(168.4));
+        trackPointExtensionT.setBearing(new BigDecimal(2.2));
+        ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
+        extensionsType.getAny().add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
+
+        WptType trkptType = createWptType();
+        trkptType.setExtensions(extensionsType);
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        position1.setSpeed(32.4);
+
+        String after1 = writeGpx(routes1);
+
+        List<GpxRoute> routes2 = readGpx(after1);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertDoubleEquals(32.4, position2.getSpeed());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position2.getPositionExtension().getExtensionTypes());
+        // <gpxtpx:bearing> remains unchanged
+        assertTrue(after1.contains("<gpxtpx:bearing>2.2"));
+
+        position2.setSpeed(null);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertNull(position3.getSpeed());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position3.getPositionExtension().getExtensionTypes());
+    }
+
+    @Test
+    public void testWriteUnknownSpeed() throws Exception {
+        JAXBElement<String> element = new JAXBElement<>(new QName("http://www.unknown.com/speed", "speed"), String.class, "168.4");
+        ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
+        extensionsType.getAny().add(element);
+
+        WptType trkptType = createWptType();
+        trkptType.setExtensions(extensionsType);
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        assertDoubleEquals(606.24, position1.getSpeed());
+
+        position1.setSpeed(32.4);
+
+        String after1 = writeGpx(routes1);
+        System.out.println(after1);
+
+        List<GpxRoute> routes2 = readGpx(after1);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertDoubleEquals(32.4, position2.getSpeed());
+        assertEquals(new HashSet<>(singletonList(Text)), position2.getPositionExtension().getExtensionTypes());
+
+        position2.setSpeed(null);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertNull(position3.getSpeed());
+        assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
+        // setting speed to null removes the complete extensions element
+        assertFalse(after2.contains("<extensions"));
+        assertFalse(after2.contains(":TrackPointExtension"));
+    }
+
 
     @Test
     public void testWriteTemperature() throws Exception {
@@ -251,8 +518,9 @@ public class Gpx11ExtensionsTest {
 
         String before = toXml(gpx);
         List<GpxRoute> routes1 = readGpx(before);
-
         GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        assertDoubleEquals(25.0, position1.getTemperature());
+
         position1.setTemperature(19.8);
 
         String after1 = writeGpx(routes1);

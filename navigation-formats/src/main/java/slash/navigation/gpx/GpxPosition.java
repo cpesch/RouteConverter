@@ -36,6 +36,8 @@ import static slash.navigation.base.RouteComments.parseDescription;
 import static slash.navigation.base.RouteComments.parseTripmasterHeading;
 import static slash.navigation.base.WaypointType.UserWaypoint;
 import static slash.navigation.gpx.GpxFormat.TRIPMASTER_REASON_PATTERN;
+import static slash.navigation.gpx.GpxFormat.parseHeading;
+import static slash.navigation.gpx.GpxFormat.parseSpeed;
 
 /**
  * Represents a position in a GPS Exchange Format (.gpx) file.
@@ -55,13 +57,23 @@ public class GpxPosition extends Wgs84Position {
         super(longitude, latitude, elevation, speed, time, description, origin);
     }
 
+    // GPX 1.0
     public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, Double speed, Double heading,
-                       GpxPositionExtension positionExtension, CompactCalendar time, String description, BigDecimal hdop, BigDecimal pdop,
-                       BigDecimal vdop, BigInteger satellites, Object origin) {
+                       CompactCalendar time, String description, BigDecimal hdop, BigDecimal pdop, BigDecimal vdop,
+                       BigInteger satellites, Object origin) {
         this(formatDouble(longitude), formatDouble(latitude), formatDouble(elevation), speed, time, description, origin);
-        // avoid overwriting values determined by setDescription() with a null value
-        if (heading != null)
-            setHeading(heading);
+        this.heading = heading;
+        setHdop(formatDouble(hdop));
+        setPdop(formatDouble(pdop));
+        setVdop(formatDouble(vdop));
+        setSatellites(formatInt(satellites));
+    }
+
+    // GPX 1.1
+    public GpxPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, GpxPositionExtension positionExtension,
+                       CompactCalendar time, String description, BigDecimal hdop, BigDecimal pdop, BigDecimal vdop,
+                       BigInteger satellites, Object origin) {
+        this(formatDouble(longitude), formatDouble(latitude), formatDouble(elevation), null, time, description, origin);
         this.positionExtension = positionExtension;
         setHdop(formatDouble(hdop));
         setPdop(formatDouble(pdop));
@@ -94,6 +106,19 @@ public class GpxPosition extends Wgs84Position {
                 this.reason = trim(matcher.group(2));
             }
         } */
+
+        // TODO is this the correct place?
+        if(isEmpty(getHeading()))
+            setHeading(parseHeading(description));
+        if(isEmpty(getSpeed()))
+            setHeading(parseSpeed(description));
+        /*
+        result = parseSpeed(wptType.getCmt());
+        if (result == null)
+            result = parseSpeed(wptType.getName());
+        if (result == null)
+            result = parseSpeed(wptType.getDesc());
+        */
     }
 
     public String getCity() {
@@ -107,6 +132,28 @@ public class GpxPosition extends Wgs84Position {
 
     GpxPositionExtension getPositionExtension() {
         return positionExtension;
+    }
+
+    public Double getHeading() {
+        return getPositionExtension() != null ? getPositionExtension().getHeading() : super.getHeading();
+    }
+
+    public void setHeading(Double heading) {
+        if (getPositionExtension() != null)
+            getPositionExtension().setHeading(heading);
+        else
+            super.setHeading(heading);
+    }
+
+    public Double getSpeed() {
+        return getPositionExtension() != null ? getPositionExtension().getSpeed() : super.getSpeed();
+    }
+
+    public void setSpeed(Double speed) {
+        if (getPositionExtension() != null)
+            getPositionExtension().setSpeed(speed);
+        else
+            super.setSpeed(speed);
     }
 
     public Double getTemperature() {

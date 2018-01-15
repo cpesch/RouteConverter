@@ -26,16 +26,17 @@ import slash.navigation.gpx.binding11.WptType;
 import slash.navigation.gpx.garmin3.TrackPointExtensionT;
 
 import javax.xml.bind.JAXBElement;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.navigation.common.NavigationConversion.formatTemperatureAsDouble;
-import static slash.navigation.common.NavigationConversion.formatTemperatureAsString;
+import static slash.navigation.common.NavigationConversion.*;
+import static slash.navigation.common.NavigationConversion.formatHeading;
 import static slash.navigation.gpx.GpxExtensionType.*;
+import static slash.navigation.gpx.GpxFormat.asKmh;
+import static slash.navigation.gpx.GpxFormat.asMs;
 
 /**
  * Represents a temperature, heading or speed extension to a {@link GpxPosition}
@@ -46,6 +47,7 @@ import static slash.navigation.gpx.GpxExtensionType.*;
 
 public class GpxPositionExtension {
     private WptType wptType;
+    private static final Set<String> WELL_KNOWN_ELEMENT_NAMES = new HashSet<>(asList("course", "speed", "temperature"));
 
     GpxPositionExtension(WptType wptType) {
         this.wptType = wptType;
@@ -70,13 +72,140 @@ public class GpxPositionExtension {
 
                 } else if (any instanceof Element) {
                     Element element = (Element) any;
-                    if ("temperature".equalsIgnoreCase(element.getLocalName())) {
+                    if (isWellKnownElementName(element)) {
                         extensionTypes.add(Text);
                     }
                 }
             }
         }
         return extensionTypes;
+    }
+
+    private boolean isWellKnownElementName(Element element) {
+        return WELL_KNOWN_ELEMENT_NAMES.contains(element.getLocalName().toLowerCase());
+    }
+
+    public Double getHeading() {
+        Double result = null;
+
+        ExtensionsType extensions = wptType.getExtensions();
+        if (extensions != null) {
+            for (Object any : extensions.getAny()) {
+                if (any instanceof JAXBElement) {
+                    Object anyValue = ((JAXBElement) any).getValue();
+                    if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                        result = formatDouble(trackPoint.getCourse());
+                    }
+
+                } else if (any instanceof Element) {
+                    Element element = (Element) any;
+                    if ("course".equalsIgnoreCase(element.getLocalName()))
+                        result = parseDouble(element.getTextContent());
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public void setHeading(Double heading) {
+        if (wptType.getExtensions() == null) {
+            // do not introduce extension element if there is no data
+            if(heading == null)
+                return;
+
+            wptType.setExtensions(new ObjectFactory().createExtensionsType());
+        }
+        List<Object> anys = wptType.getExtensions().getAny();
+
+        boolean foundHeading = false;
+        for (Object any : anys) {
+            if (any instanceof JAXBElement) {
+                Object anyValue = ((JAXBElement) any).getValue();
+                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                    trackPoint.setCourse(formatHeading(heading));
+                    foundHeading = true;
+                }
+
+            } else if (any instanceof Element) {
+                Element element = (Element) any;
+                if ("course".equalsIgnoreCase(element.getLocalName())) {
+                    element.setTextContent(formatHeadingAsString(heading));
+                    foundHeading = true;
+                }
+            }
+        }
+
+        if (!foundHeading) {
+            slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
+            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+            trackPointExtensionT.setCourse(formatHeading(heading));
+            anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
+        }
+    }
+
+    public Double getSpeed() {
+        Double result = null;
+
+        ExtensionsType extensions = wptType.getExtensions();
+        if (extensions != null) {
+            for (Object any : extensions.getAny()) {
+                if (any instanceof JAXBElement) {
+                    Object anyValue = ((JAXBElement) any).getValue();
+                    if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                        result = asKmh(trackPoint.getSpeed());
+                    }
+
+                } else if (any instanceof Element) {
+                    Element element = (Element) any;
+                    if ("speed".equalsIgnoreCase(element.getLocalName()))
+                        result = asKmh(parseDouble(element.getTextContent()));
+                }
+            }
+        }
+
+        return result;
+    }
+
+    public void setSpeed(Double speed) {
+        if (wptType.getExtensions() == null) {
+            // do not introduce extension element if there is no data
+            if(speed == null)
+                return;
+
+            wptType.setExtensions(new ObjectFactory().createExtensionsType());
+        }
+        List<Object> anys = wptType.getExtensions().getAny();
+
+        boolean foundSpeed = false;
+        for (Object any : anys) {
+            if (any instanceof JAXBElement) {
+                Object anyValue = ((JAXBElement) any).getValue();
+                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                    trackPoint.setSpeed(formatSpeedAsDouble(asMs(speed)));
+                    foundSpeed = true;
+                }
+
+            } else if (any instanceof Element) {
+                Element element = (Element) any;
+                if ("speed".equalsIgnoreCase(element.getLocalName())) {
+                    element.setTextContent(formatSpeedAsString(asMs(speed)));
+                    foundSpeed = true;
+                }
+            }
+        }
+
+        // create new TrackPointExtension v2 element if there was no existing value found
+        if (!foundSpeed) {
+            slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
+            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+            trackPointExtensionT.setSpeed(formatSpeedAsDouble(asMs(speed)));
+            anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
+        }
     }
 
     public Double getTemperature() {
@@ -124,7 +253,6 @@ public class GpxPositionExtension {
         }
         List<Object> anys = wptType.getExtensions().getAny();
 
-        // replace existing values
         boolean foundTemperature = false;
         for (Object any : anys) {
             if (any instanceof JAXBElement) {
@@ -214,9 +342,10 @@ public class GpxPositionExtension {
 
             } else if (any instanceof Element) {
                 Element element = (Element) any;
-                if ("temperature".equalsIgnoreCase(element.getLocalName()))
+                if (isWellKnownElementName(element)) {
                     if (isEmpty(parseDouble(element.getTextContent())))
                         iterator.remove();
+                }
             }
         }
 

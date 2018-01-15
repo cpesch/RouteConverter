@@ -80,7 +80,7 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return asDescription(name, description);
     }
 
-    protected Double parseSpeed(String description) {
+    static Double parseSpeed(String description) {
         if (description != null) {
             Matcher tripMasterMatcher = TRIPMASTER_SPEED_PATTERN.matcher(description);
             if (tripMasterMatcher.matches())
@@ -95,7 +95,7 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return null;
     }
 
-    protected Double parseHeading(String description) {
+    static Double parseHeading(String description) {
         if (description != null) {
             Matcher qstartzPattern = QSTARTZ_SPEED_PATTERN.matcher(description);
             if (qstartzPattern.matches())
@@ -104,13 +104,13 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return null;
     }
 
-    protected Double asKmh(Double metersPerSecond) {
+    static Double asKmh(Double metersPerSecond) {
         if (metersPerSecond == null)
             return null;
         return msToKmh(metersPerSecond);
     }
 
-    protected Double asMs(Double kiloMetersPerHour) {
+    static Double asMs(Double kiloMetersPerHour) {
         if (kiloMetersPerHour == null)
             return null;
         return kmhToMs(kiloMetersPerHour);
