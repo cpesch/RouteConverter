@@ -191,7 +191,6 @@ public class GpxPositionExtension {
             return;
 
         List<Object> anys = wptType.getExtensions().getAny();
-
         for (Iterator<Object> iterator = anys.iterator(); iterator.hasNext(); ) {
             Object any = iterator.next();
 

@@ -372,11 +372,7 @@ public class Gpx11Format extends GpxFormat {
 
         @SuppressWarnings("ConstantConditions")
         List<Object> anys = trkType.getExtensions().getAny();
-        if (anys == null)
-            return;
-
-        Iterator<Object> iterator = anys.iterator();
-        while (iterator.hasNext()) {
+        for (Iterator<Object> iterator = anys.iterator(); iterator.hasNext(); ) {
             Object any = iterator.next();
 
             if (any instanceof Element) {
