@@ -117,9 +117,9 @@ public class Gpx11ExtensionsTest {
         GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
         position1.setTemperature(19.8);
 
-        String after = writeGpx(routes1);
+        String after1 = writeGpx(routes1);
 
-        List<GpxRoute> routes2 = readGpx(after);
+        List<GpxRoute> routes2 = readGpx(after1);
         GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
         assertDoubleEquals(19.8, position2.getTemperature());
         assertEquals(new HashSet<>(singletonList(Garmin3)), position2.getPositionExtension().getExtensionTypes());
@@ -131,10 +131,10 @@ public class Gpx11ExtensionsTest {
         List<GpxRoute> routes3 = readGpx(after2);
         GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
         assertNull(position3.getTemperature());
-        assertEquals(new HashSet<>(singletonList(Garmin3)), position3.getPositionExtension().getExtensionTypes());
-        // setting temperature to null removes <temperature> element but leaves <gpxx:TrackPointExtension/>
-        assertTrue(after2.contains("<extensions>"));
-        assertTrue(after2.contains("<gpxx:TrackPointExtension/>"));
+        assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
+        // setting temperature to null removes the complete extensions element
+        assertFalse(after2.contains("<extensions"));
+        assertFalse(after2.contains(":TrackPointExtension"));
     }
 
     @Test
@@ -155,14 +155,37 @@ public class Gpx11ExtensionsTest {
         GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
         position1.setTemperature(19.8);
 
-        String after = writeGpx(routes1);
+        String after1 = writeGpx(routes1);
 
-        List<GpxRoute> routes2 = readGpx(after);
+        List<GpxRoute> routes2 = readGpx(after1);
         GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
         assertDoubleEquals(19.8, position2.getTemperature());
         assertEquals(new HashSet<>(singletonList(TrackPoint1)), position2.getPositionExtension().getExtensionTypes());
         // <gpxtpx1:wtemp> remains unchanged
-        assertTrue(after.contains("<gpxtpx1:wtemp>22.0</gpxtpx1:wtemp>"));
+        assertTrue(after1.contains("<gpxtpx1:wtemp>22.0</gpxtpx1:wtemp>"));
+
+        position2.setTemperature(null);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertDoubleEquals(22.0, position3.getTemperature());
+        assertEquals(new HashSet<>(singletonList(TrackPoint1)), position3.getPositionExtension().getExtensionTypes());
+        // setting temperature to null removes the Atemp element
+
+        position3.setTemperature(null);
+
+        String after3 = writeGpx(routes3);
+
+        List<GpxRoute> routes4 = readGpx(after3);
+        GpxPosition position4 = getFirstPositionOfFirstRoute(routes4);
+        assertNull(position4.getTemperature());
+
+        assertEquals(new HashSet<>(), position4.getPositionExtension().getExtensionTypes());
+        // setting temperature to null twice removes the complete extensions element
+        assertFalse(after3.contains("<extensions"));
+        assertFalse(after3.contains(":TrackPointExtension"));
     }
 
     @Test
@@ -183,14 +206,37 @@ public class Gpx11ExtensionsTest {
         GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
         position1.setTemperature(19.8);
 
-        String after = writeGpx(routes1);
+        String after1 = writeGpx(routes1);
 
-        List<GpxRoute> routes2 = readGpx(after);
+        List<GpxRoute> routes2 = readGpx(after1);
         GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
         assertDoubleEquals(19.8, position2.getTemperature());
         assertEquals(new HashSet<>(singletonList(TrackPoint2)), position2.getPositionExtension().getExtensionTypes());
         // <gpxtpx:wtemp> remains unchanged
-        assertTrue(after.contains("<gpxtpx:wtemp>22.0</gpxtpx:wtemp>"));
+        assertTrue(after1.contains("<gpxtpx:wtemp>22.0</gpxtpx:wtemp>"));
+
+        position2.setTemperature(null);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertDoubleEquals(22.0, position3.getTemperature());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position3.getPositionExtension().getExtensionTypes());
+        // setting temperature to null removes the Atemp element
+
+        position3.setTemperature(null);
+
+        String after3 = writeGpx(routes3);
+
+        List<GpxRoute> routes4 = readGpx(after3);
+        GpxPosition position4 = getFirstPositionOfFirstRoute(routes4);
+        assertNull(position4.getTemperature());
+
+        assertEquals(new HashSet<>(), position4.getPositionExtension().getExtensionTypes());
+        // setting temperature to null twice removes the complete extensions element
+        assertFalse(after3.contains("<extensions"));
+        assertFalse(after3.contains(":TrackPointExtension"));
     }
 
     @Test
@@ -209,11 +255,23 @@ public class Gpx11ExtensionsTest {
         GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
         position1.setTemperature(19.8);
 
-        String after = writeGpx(routes1);
+        String after1 = writeGpx(routes1);
 
-        List<GpxRoute> routes2 = readGpx(after);
+        List<GpxRoute> routes2 = readGpx(after1);
         GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
         assertDoubleEquals(19.8, position2.getTemperature());
         assertEquals(new HashSet<>(singletonList(Text)), position2.getPositionExtension().getExtensionTypes());
+
+        position2.setTemperature(null);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertNull(position3.getTemperature());
+        assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
+        // setting temperature to null removes the complete extensions element
+        assertFalse(after2.contains("<extensions"));
+        assertFalse(after2.contains(":TrackPointExtension"));
     }
 }

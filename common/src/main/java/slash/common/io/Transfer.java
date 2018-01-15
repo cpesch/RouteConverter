@@ -261,6 +261,10 @@ public class Transfer {
         return string == null || string.length() == 0;
     }
 
+    public static boolean isEmpty(Short aShort) {
+        return aShort == null || aShort == 0;
+    }
+
     public static boolean isEmpty(Integer integer) {
         return integer == null || integer == 0;
     }

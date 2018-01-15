@@ -203,10 +203,6 @@ public class Gpx11Format extends GpxFormat {
         return (JAXBElement<String>) any;
     }
 
-    private boolean isRemoveEmptyTrackPointExtension(slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
-        return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getCourse()) && isEmpty(trackPoint.getSpeed());
-    }
-
     private void setSpeed(WptType wptType, Double speed) {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
@@ -237,7 +233,7 @@ public class Gpx11Format extends GpxFormat {
                 if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
                     slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
                     if (foundSpeed || isEmpty(speed)) {
-                        if (isRemoveEmptyTrackPointExtension(trackPoint))
+                        if (false) // TODO isRemoveEmptyTrackPointExtension(trackPoint))
                             iterator.remove();
                     }
                     else {
@@ -310,7 +306,7 @@ public class Gpx11Format extends GpxFormat {
                 if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
                     slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
                     if (foundHeading || isEmpty(heading)) {
-                        if (isRemoveEmptyTrackPointExtension(trackPoint))
+                        if (false) // TODO isRemoveEmptyTrackPointExtension(trackPoint))
                             iterator.remove();
                     }
                     else {
@@ -417,8 +413,7 @@ public class Gpx11Format extends GpxFormat {
         wptType.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);
         wptType.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatBigDecimal(position.getVdop(), 6) : null);
         wptType.setSat(isWriteAccuracy() && position.getSatellites() != null ? formatInt(position.getSatellites()) : null);
-        if (wptType.getExtensions() != null && wptType.getExtensions().getAny().size() == 0)
-            wptType.setExtensions(null);
+        position.getPositionExtension().removeEmptyExtensions();
         return wptType;
     }
 

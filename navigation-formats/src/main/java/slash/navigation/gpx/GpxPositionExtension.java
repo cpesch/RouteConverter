@@ -27,9 +27,11 @@ import slash.navigation.gpx.garmin3.TrackPointExtensionT;
 
 import javax.xml.bind.JAXBElement;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.navigation.common.NavigationConversion.formatTemperatureAsDouble;
 import static slash.navigation.common.NavigationConversion.formatTemperatureAsString;
@@ -134,14 +136,17 @@ public class GpxPositionExtension {
 
                 } else if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
                     slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
+                    if(isEmpty(trackPoint.getAtemp()) && isEmpty(temperature))
+                        trackPoint.setWtemp(null);
                     trackPoint.setAtemp(formatTemperatureAsDouble(temperature));
-                    // do not overwrite Wtemp
+
                     foundTemperature = true;
 
                 } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
                     slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                    if(isEmpty(trackPoint.getAtemp()) && isEmpty(temperature))
+                        trackPoint.setWtemp(null);
                     trackPoint.setAtemp(formatTemperatureAsDouble(temperature));
-                    // do not overwrite Wtemp
                     foundTemperature = true;
                 }
 
@@ -161,5 +166,62 @@ public class GpxPositionExtension {
             trackPointExtensionT.setAtemp(formatTemperatureAsDouble(temperature));
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
+    }
+
+    private boolean isEmptyExtension(slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint) {
+        return isEmpty(trackPoint.getDepth()) && isEmpty(trackPoint.getTemperature()) &&
+                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny() == null || trackPoint.getExtensions().getAny().size() == 0);
+    }
+
+    private boolean isEmptyExtension(slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
+        return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getCad()) && isEmpty(trackPoint.getDepth()) &&
+                isEmpty(trackPoint.getHr()) && isEmpty(trackPoint.getWtemp()) &&
+                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny() == null || trackPoint.getExtensions().getAny().size() == 0);
+    }
+
+    private boolean isEmptyExtension(slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
+        return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getBearing()) && isEmpty(trackPoint.getCad()) &&
+                isEmpty(trackPoint.getCourse()) &&  isEmpty(trackPoint.getDepth()) && isEmpty(trackPoint.getHr()) &&
+                isEmpty(trackPoint.getSpeed()) && isEmpty(trackPoint.getWtemp()) &&
+                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny() == null || trackPoint.getExtensions().getAny().size() == 0);
+    }
+
+    public void removeEmptyExtensions() {
+        if (wptType.getExtensions() == null)
+            return;
+
+        List<Object> anys = wptType.getExtensions().getAny();
+
+        for (Iterator<Object> iterator = anys.iterator(); iterator.hasNext(); ) {
+            Object any = iterator.next();
+
+            if (any instanceof JAXBElement) {
+                Object anyValue = ((JAXBElement) any).getValue();
+                if (anyValue instanceof TrackPointExtensionT) {
+                    TrackPointExtensionT trackPoint = (TrackPointExtensionT) anyValue;
+                    if(isEmptyExtension(trackPoint))
+                        iterator.remove();
+
+                } else if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
+                    slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
+                    if(isEmptyExtension(trackPoint))
+                        iterator.remove();
+
+                } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                    if(isEmptyExtension(trackPoint))
+                        iterator.remove();
+                }
+
+            } else if (any instanceof Element) {
+                Element element = (Element) any;
+                if ("temperature".equalsIgnoreCase(element.getLocalName()))
+                    if (isEmpty(parseDouble(element.getTextContent())))
+                        iterator.remove();
+            }
+        }
+
+        if (wptType.getExtensions() != null && wptType.getExtensions().getAny().size() == 0)
+            wptType.setExtensions(null);
     }
 }
