@@ -10,7 +10,7 @@ bin\xjc -verbose -d generated -p slash.navigation.lmx.binding c:\Development\Rou
 bin\xjc -verbose -d generated -p slash.navigation.tcx.binding1 c:\Development\RouteConverter\navigation-formats\src\main\doc\tcx\TrainingCenterDatabasev1.xsd
 bin\xjc -verbose -d generated -p slash.navigation.tcx.binding2 c:\Development\RouteConverter\navigation-formats\src\main\doc\tcx\TrainingCenterDatabasev2.xsd
 bin\xjc -verbose -d generated -p slash.navigation.kml.binding20 c:\Development\RouteConverter\kml\src\main\doc\kml20.xsd
-bin\xjc -verbose -d generated -p slash.navigation.kml.binding21 c:\Development\RouteConverter\kml\src\main\doc\kml21.xsd
+bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\kml\src\main\java -p slash.navigation.kml.binding21 c:\Development\RouteConverter\kml\src\main\doc\kml21.xsd
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\kml\src\main\java c:\Development\RouteConverter\kml\src\main\doc\ogckml22.xsd -b c:\Development\RouteConverter\kml\src\main\doc\ogckml22.xjb
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\kml\src\main\java c:\Development\RouteConverter\kml\src\main\doc\kml22gx.xsd -b c:\Development\RouteConverter\kml\src\main\doc\kml22gx.xjb
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\kml\src\main\java c:\Development\RouteConverter\kml\src\main\doc\kml22beta.xsd -b c:\Development\RouteConverter\kml\src\main\doc\kml22beta.xjb
