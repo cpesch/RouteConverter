@@ -28,6 +28,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class PhotonServiceIT {
     private PhotonService service = new PhotonService();
@@ -50,9 +51,9 @@ public class PhotonServiceIT {
         assertEquals("Hoher Gaif, Garmisch-Partenkirchen, Bavaria, Germany", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
         assertEquals("Atlas Buoy 0.00E 0.00N", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
-        assertEquals("South Pole Station Airport", service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
+        assertTrue(service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)).contains("South Pole"));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
-        assertEquals("South Pole Station Airport", service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
+        assertTrue(service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)).contains("South Pole"));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
 }
