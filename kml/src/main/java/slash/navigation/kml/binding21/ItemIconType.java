@@ -8,15 +8,9 @@
 
 package slash.navigation.kml.binding21;
 
-import java.util.ArrayList;
-import java.util.List;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
+import java.util.List;
 
 
 /**
@@ -49,7 +43,7 @@ public class ItemIconType
 {
 
     @XmlElementRef(name = "state", namespace = "http://earth.google.com/kml/2.1", type = JAXBElement.class, required = false)
-    protected List<JAXBElement<List<ItemIconStateEnum>>> state;
+    protected List<JAXBElement<ItemIconStateEnum>> state;
     @XmlElement(required = true)
     @XmlSchemaType(name = "anyURI")
     protected String href;
@@ -77,10 +71,13 @@ public class ItemIconType
      * 
      */
     public List<JAXBElement<List<ItemIconStateEnum>>> getState() {
+        /*
         if (state == null) {
             state = new ArrayList<JAXBElement<List<ItemIconStateEnum>>>();
         }
         return this.state;
+        */
+        return null;
     }
 
     /**
