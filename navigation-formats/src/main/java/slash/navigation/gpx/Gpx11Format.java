@@ -255,7 +255,8 @@ public class Gpx11Format extends GpxFormat {
         wptType.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);
         wptType.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatBigDecimal(position.getVdop(), 6) : null);
         wptType.setSat(isWriteAccuracy() && position.getSatellites() != null ? formatInt(position.getSatellites()) : null);
-        position.getPositionExtension().removeEmptyExtensions();
+        if (position.getPositionExtension() != null)
+            position.getPositionExtension().removeEmptyExtensions();
         return wptType;
     }
 
