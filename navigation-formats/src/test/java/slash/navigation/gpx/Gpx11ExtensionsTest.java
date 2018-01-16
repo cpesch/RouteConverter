@@ -20,7 +20,6 @@
 package slash.navigation.gpx;
 
 import org.junit.Test;
-import slash.common.io.Transfer;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.gpx.binding11.*;
