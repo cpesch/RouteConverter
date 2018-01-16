@@ -281,7 +281,7 @@ public class NavigationFormatRegistry {
         List<NavigationFormat> result = new ArrayList<>();
         for (Class<? extends NavigationFormat> formatClass : formats) {
             try {
-                NavigationFormat format = formatClass.newInstance();
+                NavigationFormat format = formatClass.getDeclaredConstructor().newInstance();
                 if (includeReadableFormats && format.isSupportsReading() && includeReadFormat(format) ||
                         includeWritableFormats && format.isSupportsWriting())
                     result.add(format);

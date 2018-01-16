@@ -58,6 +58,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.io.File.createTempFile;
+import static java.lang.Integer.parseInt;
 import static java.lang.Math.abs;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.HOUR;
@@ -240,7 +241,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         if (exifDirectory == null)
             return null;
         Object fieldValue = exifDirectory.getFieldValue(tag);
-        return fieldValue != null ? new Integer(fieldValue.toString()) : null;
+        return fieldValue != null ? parseInt(fieldValue.toString()) : null;
     }
 
     private RationalNumber parseExifRationalNumber(TiffImageMetadata metadata, TagInfo tag) throws ImageReadException {

@@ -68,7 +68,7 @@ public class GoPalTrackFormatTest {
         assertDoubleEquals(12.95, position.getHeading());
         assertDoubleEquals(30.0394, position.getSpeed());
         assertDoubleEquals(3.000001, position.getHdop());
-        assertEquals(new Integer(4), position.getSatellites());
+        assertEquals(Integer.valueOf(4), position.getSatellites());
         DateFormat format = DateFormat.getDateTimeInstance();
         format.setTimeZone(UTC);
         String actual = format.format(position.getTime().getTime());
@@ -112,7 +112,7 @@ public class GoPalTrackFormatTest {
         assertDoubleEquals(334.4, position.getHeading());
         assertDoubleEquals(20.7424, position.getSpeed());
         assertDoubleEquals(1.000000, position.getHdop());
-        assertEquals(new Integer(8), position.getSatellites());
+        assertEquals(Integer.valueOf(8), position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2010, 7, 19, 9, 22, 58);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());

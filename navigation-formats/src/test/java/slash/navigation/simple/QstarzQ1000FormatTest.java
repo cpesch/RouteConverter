@@ -56,7 +56,7 @@ public class QstarzQ1000FormatTest {
         assertDoubleEquals(245.512, position.getElevation());
         assertDoubleEquals(0.759, position.getSpeed());
         assertDoubleEquals(1.4, position.getHdop());
-        assertEquals(new Integer(8), position.getSatellites());
+        assertEquals(Integer.valueOf(8), position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2010, 12, 28, 23, 1, 43);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());

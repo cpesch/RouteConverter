@@ -232,7 +232,7 @@ public class NmeaFormatTest {
         assertDoubleEquals(9.0567266667, position.getLongitude());
         assertDoubleEquals(-48.6239566667, position.getLatitude());
         assertDoubleEquals(16.76, position.getElevation());
-        assertEquals(new Integer(8), position.getSatellites());
+        assertEquals(Integer.valueOf(8), position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(1970, 1, 1, 13, 4, 41, 89);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -251,7 +251,7 @@ public class NmeaFormatTest {
         assertDoubleEquals(8.8429466667, position.getLongitude());
         assertDoubleEquals(48.954852, position.getLatitude());
         assertDoubleEquals(265.2, position.getElevation());
-        assertEquals(new Integer(12), position.getSatellites());
+        assertEquals(Integer.valueOf(12), position.getSatellites());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(1970, 1, 1, 16, 26, 22, 0);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -308,7 +308,7 @@ public class NmeaFormatTest {
         assertNull(position.getDescription());
         assertDoubleEquals(0.73, position.getHdop());
         assertDoubleEquals(73.9, position.getElevation());
-        assertEquals(new Integer(17), position.getSatellites());
+        assertEquals(Integer.valueOf(17), position.getSatellites());
     }
 
     @Test

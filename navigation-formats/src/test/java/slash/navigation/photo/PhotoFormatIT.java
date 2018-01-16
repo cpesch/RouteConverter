@@ -66,20 +66,20 @@ public class PhotoFormatIT {
         assertDoubleEquals(53.026513333333334, position.getLatitude());
         assertNull(position.getSpeed());
         assertEquals(calendar(2010, 8, 31, 8, 30, 58), position.getTime());
-        assertEquals(new Integer(10), position.getSatellites());
+        assertEquals(Integer.valueOf(10), position.getSatellites());
         assertNull(position.getHdop());
         assertNull(position.getPdop());
         assertNull(position.getVdop());
         assertNull(position.getHeading());
         assertEquals("NIKON CORPORATION", position.getMake());
         assertEquals("NIKON D90", position.getModel());
-        assertEquals(new Integer(1024), position.getWidth());
-        assertEquals(new Integer(680), position.getHeight());
+        assertEquals(Integer.valueOf(1024), position.getWidth());
+        assertEquals(Integer.valueOf(680), position.getHeight());
         assertRationalNumberEquals(new RationalNumber(50, 10), position.getfNumber());
         assertRationalNumberEquals(new RationalNumber(10, 8000), position.getExposure());
-        assertEquals(new Integer(0), position.getFlash());
+        assertEquals(Integer.valueOf(0), position.getFlash());
         assertRationalNumberEquals(new RationalNumber(700, 10), position.getFocal());
-        assertEquals(new Integer(200), position.getPhotographicSensitivity());
+        assertEquals(Integer.valueOf(200), position.getPhotographicSensitivity());
     }
 
     @Test
@@ -105,11 +105,11 @@ public class PhotoFormatIT {
         assertNull(position.getHeading());
         assertEquals("Palm", position.getMake());
         assertEquals("Pre", position.getModel());
-        assertEquals(new Integer(1520), position.getWidth());
-        assertEquals(new Integer(2032), position.getHeight());
+        assertEquals(Integer.valueOf(1520), position.getWidth());
+        assertEquals(Integer.valueOf(2032), position.getHeight());
         assertRationalNumberEquals(new RationalNumber(24, 10), position.getfNumber());
         assertRationalNumberEquals(new RationalNumber(1, 65536000), position.getExposure());
-        assertEquals(new Integer(24), position.getFlash());
+        assertEquals(Integer.valueOf(24), position.getFlash());
         assertRationalNumberEquals(new RationalNumber(100, 41), position.getFocal());
         assertNull(position.getPhotographicSensitivity());
     }
@@ -194,20 +194,20 @@ public class PhotoFormatIT {
             assertDoubleEquals(50.0, position2.getLatitude());
             assertDoubleEquals(40.0, position2.getSpeed());
             assertCalendarEquals(calendar(2014, 2, 11, 15, 3, 25), position2.getTime());
-            assertEquals(new Integer(4), position2.getSatellites());
+            assertEquals(Integer.valueOf(4), position2.getSatellites());
             assertNull(position2.getHdop());
             assertDoubleEquals(2.0, position2.getPdop());
             assertNull(position2.getVdop());
             assertDoubleEquals(111.0, position2.getHeading());
             assertEquals("make", position2.getMake());
             assertEquals("model", position2.getModel());
-            assertEquals(new Integer(1024), position2.getWidth());
-            assertEquals(new Integer(512), position2.getHeight());
+            assertEquals(Integer.valueOf(1024), position2.getWidth());
+            assertEquals(Integer.valueOf(512), position2.getHeight());
             assertRationalNumberEquals(new RationalNumber(53, 10), position2.getfNumber());
             assertRationalNumberEquals(new RationalNumber(11, 8000), position2.getExposure());
-            assertEquals(new Integer(1), position2.getFlash());
+            assertEquals(Integer.valueOf(1), position2.getFlash());
             assertRationalNumberEquals(new RationalNumber(35, 1), position2.getFocal());
-            assertEquals(new Integer(800), position.getPhotographicSensitivity());
+            assertEquals(Integer.valueOf(800), position.getPhotographicSensitivity());
 
             assertTrue(target.delete());
         } finally {

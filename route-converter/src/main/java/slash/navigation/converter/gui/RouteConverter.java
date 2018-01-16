@@ -70,6 +70,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.*;
@@ -350,7 +351,7 @@ public class RouteConverter extends SingleFrameApplication {
     private MapView createMapView(String className) {
         try {
             Class<?> aClass = Class.forName(className);
-            return (MapView) aClass.newInstance();
+            return (MapView) aClass.getDeclaredConstructor().newInstance();
         } catch (Throwable t) {
             log.info("Cannot create " + className + ": " + t);
             return null;
@@ -1067,8 +1068,8 @@ public class RouteConverter extends SingleFrameApplication {
                     public void run() {
                         PanelInTab panelInTab;
                         try {
-                            panelInTab = panelInTabClass.newInstance();
-                        } catch (InstantiationException | IllegalAccessException e) {
+                            panelInTab = panelInTabClass.getDeclaredConstructor().newInstance();
+                        } catch (InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
                             throw new RuntimeException(e);
                         }
                         panel.add(panelInTab.getRootComponent());
