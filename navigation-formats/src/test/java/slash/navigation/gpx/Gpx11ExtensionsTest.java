@@ -194,7 +194,6 @@ public class Gpx11ExtensionsTest {
         position1.setHeading(273.9);
 
         String after1 = writeGpx(routes1);
-        System.out.println(after1);
 
         List<GpxRoute> routes2 = readGpx(after1);
         GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
@@ -326,7 +325,6 @@ public class Gpx11ExtensionsTest {
         position1.setSpeed(32.4);
 
         String after1 = writeGpx(routes1);
-        System.out.println(after1);
 
         List<GpxRoute> routes2 = readGpx(after1);
         GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);

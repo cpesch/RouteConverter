@@ -29,4 +29,4 @@ bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\download
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\route\src\main\java -p slash.navigation.routes.remote.binding c:\Development\RouteConverter\route\src\main\doc\route-catalog.xsd
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\browser-mapview\src\main\java -p slash.navigation.mapview.tileserver.binding c:\Development\RouteConverter\browser-mapview\src\main\doc\tileserver-catalog.xsd
 
-
+xjc -verbose -d kml/src/main/java -p slash.navigation.kml.binding21 kml/src/main/doc/kml21.xsd
