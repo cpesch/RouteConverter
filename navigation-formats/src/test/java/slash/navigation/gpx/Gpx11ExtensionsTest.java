@@ -402,6 +402,90 @@ public class Gpx11ExtensionsTest {
     }
 
     @Test
+    public void testWriteGarmin3TemperatureThenSpeed() throws Exception {
+        slash.navigation.gpx.garmin3.TrackPointExtensionT trackPointExtensionT = garmin3Factory.createTrackPointExtensionT();
+        trackPointExtensionT.setTemperature(25.0);
+        trackPointExtensionT.setDepth(1.0);
+        ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
+        extensionsType.getAny().add(garmin3Factory.createTrackPointExtension(trackPointExtensionT));
+
+        WptType trkptType = createWptType();
+        trkptType.setExtensions(extensionsType);
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        position1.setTemperature(19.8);
+
+        String after1 = writeGpx(routes1);
+
+        List<GpxRoute> routes2 = readGpx(after1);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertDoubleEquals(19.8, position2.getTemperature());
+        assertEquals(new HashSet<>(singletonList(Garmin3)), position2.getPositionExtension().getExtensionTypes());
+
+        position2.setSpeed(13.68);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertDoubleEquals(19.8, position3.getTemperature());
+        assertDoubleEquals(13.68, position3.getSpeed());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position3.getPositionExtension().getExtensionTypes());
+        assertFalse(after2.contains("gpxx:TrackPointExtension"));
+        assertTrue(after2.contains("gpxtpx:TrackPointExtension"));
+        assertTrue(after2.contains("gpxtpx:depth"));
+    }
+
+    @Test
+    public void testWriteTrackpoint1TemperatureThenSpeed() throws Exception {
+        slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPointExtensionT = trackpoint1Factory.createTrackPointExtensionT();
+        trackPointExtensionT.setAtemp(25.0);
+        trackPointExtensionT.setCad(new Short("6"));
+        trackPointExtensionT.setDepth(1.0);
+        trackPointExtensionT.setHr(new Short("70"));
+        trackPointExtensionT.setWtemp(22.0);
+        ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
+        extensionsType.getAny().add(trackpoint1Factory.createTrackPointExtension(trackPointExtensionT));
+
+        WptType trkptType = createWptType();
+        trkptType.setExtensions(extensionsType);
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        position1.setTemperature(19.8);
+
+        String after1 = writeGpx(routes1);
+
+        List<GpxRoute> routes2 = readGpx(after1);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertDoubleEquals(19.8, position2.getTemperature());
+        assertEquals(new HashSet<>(singletonList(TrackPoint1)), position2.getPositionExtension().getExtensionTypes());
+
+        position2.setSpeed(13.68);
+
+        String after2 = writeGpx(routes2);
+
+        List<GpxRoute> routes3 = readGpx(after2);
+        GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
+        assertDoubleEquals(19.8, position3.getTemperature());
+        assertDoubleEquals(13.68, position3.getSpeed());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position3.getPositionExtension().getExtensionTypes());
+        assertFalse(after2.contains("gpxx:TrackPointExtension"));
+        assertTrue(after2.contains("gpxtpx:TrackPointExtension"));
+        assertTrue(after2.contains("gpxtpx:cad"));
+        assertTrue(after2.contains("gpxtpx:depth"));
+        assertTrue(after2.contains("gpxtpx:hr"));
+        assertTrue(after2.contains("gpxtpx:wtemp"));
+    }
+
+    @Test
     public void testWriteTrackpoint1Temperature() throws Exception {
         slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPointExtensionT = trackpoint1Factory.createTrackPointExtensionT();
         trackPointExtensionT.setAtemp(25.0);
