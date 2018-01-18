@@ -20,8 +20,7 @@
 
 package slash.navigation.csv;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.*;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 
@@ -76,8 +75,17 @@ public class ExcelPosition extends BaseNavigationPosition {
         if (index == null)
             return null;
         Cell cell = row.getCell(index);
-        if (cell == null)
+        if (cell == null) {
             cell = row.createCell(index, type.getCellType());
+
+            if(type.equals(Time)) {
+                Workbook workbook = row.getSheet().getWorkbook();
+                CellStyle cellStyle = workbook.createCellStyle();
+                CreationHelper createHelper = workbook.getCreationHelper();
+                cellStyle.setDataFormat(createHelper.createDataFormat().getFormat("m/d/yy h:mm"));
+                cell.setCellStyle(cellStyle);
+            }
+        }
         return cell;
     }
 
