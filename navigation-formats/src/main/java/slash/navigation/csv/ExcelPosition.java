@@ -20,6 +20,7 @@
 
 package slash.navigation.csv;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
@@ -43,7 +44,15 @@ public class ExcelPosition extends BaseNavigationPosition {
     }
 
     public ExcelPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
-        throw new UnsupportedOperationException();
+        Workbook workbook = new HSSFWorkbook();
+        Sheet sheet = workbook.createSheet("new sheet");
+        this.row = sheet.createRow(0);
+        setLongitude(longitude);
+        setLatitude(latitude);
+        setElevation(elevation);
+        setSpeed(speed);
+        setTime(time);
+        setDescription(description);
     }
 
     Row getRow() {
@@ -105,7 +114,7 @@ public class ExcelPosition extends BaseNavigationPosition {
         Cell cell = getOrCreateCell(type);
         if (cell != null) {
             if (value != null)
-                cell.setCellValue(value.getCalendar());
+                cell.setCellValue(value.getTime());
             else
                 cell.setCellValue(0);
         }

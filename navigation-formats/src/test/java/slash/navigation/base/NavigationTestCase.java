@@ -108,6 +108,7 @@ import java.util.List;
 import static java.io.File.separator;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
+import static java.lang.Math.round;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Transfer.isEmpty;
@@ -330,7 +331,7 @@ public abstract class NavigationTestCase extends TestCase {
                 if (targetPosition.getElevation() != -0.09)
                     assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
             } else if (targetFormat instanceof GarminPcx5Format) {
-                assertEquals((double) Math.round(sourcePosition.getElevation()), targetPosition.getElevation());
+                assertEquals(sourcePosition.getElevation(), targetPosition.getElevation(), 1.0);
             } else if (targetFormat instanceof OziExplorerFormat || targetFormat instanceof NmeaFormat ||
                     targetFormat instanceof CompeGPSDataFormat) {
                 assertNearBy(sourcePosition.getElevation(), targetPosition.getElevation(), 0.1);
