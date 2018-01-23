@@ -61,7 +61,7 @@ public abstract class CompeGPSDataFormat extends BabelFormat {
 
     protected abstract RouteCharacteristics getRouteCharacteristics();
 
-    protected GpxRoute sanitizeRoute(GpxRoute route) {
+    protected GpxRoute sanitizeRouteAfterReading(GpxRoute route) {
         route.setCharacteristics(getRouteCharacteristics());
         return route;
     }

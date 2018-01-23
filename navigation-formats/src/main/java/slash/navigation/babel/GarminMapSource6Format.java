@@ -21,7 +21,14 @@
 package slash.navigation.babel;
 
 import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.gpx.GpxFormat;
+import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Reads and writes Garmin MapSource 6.x (.gdb) files.
@@ -56,5 +63,36 @@ public class GarminMapSource6Format extends BabelFormat implements MultipleRoute
 
     protected boolean isStreamingCapable() {
         return true;
+    }
+
+    private String makeUnique(String key, Set<String> keys) {
+        String unique = key;
+        int number = 2;
+        System.out.println("");
+        while (keys.contains(unique)) {
+            unique = key + "@" + number;
+            number++;
+        }
+        return unique;
+    }
+
+    private List<GpxPosition> makeDescriptionsUnique(List<GpxPosition> positions, Set<String> names) {
+        List<GpxPosition> result = new ArrayList<>();
+        for(GpxPosition position : positions) {
+            String name = makeUnique(asName(position.getDescription()), names);
+            names.add(name);
+            String description = asDescription(name, asDesc(position.getDescription()));
+            result.add(new GpxPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), position.getSpeed(), position.getTime(), description));
+        }
+        return result;
+    }
+
+    protected List<GpxRoute> modifyBeforeWriting(List<GpxRoute> routes) {
+        List<GpxRoute> result = new ArrayList<>();
+        Set<String> names = new HashSet<>();
+        for(GpxRoute route : routes) {
+            result.add(new GpxRoute(route.getFormat(), route.getCharacteristics(), route.getName(), route.getDescription(), makeDescriptionsUnique(route.getPositions(), names)));
+        }
+        return result;
     }
 }

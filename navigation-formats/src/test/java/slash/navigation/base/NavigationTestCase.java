@@ -581,6 +581,9 @@ public abstract class NavigationTestCase extends TestCase {
             if (index != -1)
                 return trim(description.substring(index + 1));
         }
+        int index = description.indexOf('@');
+        if (index != -1)
+            return trim(description.substring(0, index) + description.substring(index + 2));
         return description;
     }
 
@@ -732,7 +735,7 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (targetFormat instanceof Route66Format)
                 assertEquals("Description " + index + " does not match", toMixedCase(sourcePosition.getDescription()), description);
             else if (sourceFormat instanceof GarminMapSource5Format || sourceFormat instanceof GarminMapSource6Format ||
-                    targetFormat instanceof GarminMapSource5Format) {
+                    targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminMapSource6Format) {
                 String sourceName = getGarminMapSource6PositionDescription(sourcePosition);
                 String targetName = getGarminMapSource6PositionDescription(targetPosition);
                 assertEquals("Description " + index + " does not match", sourceName, targetName);

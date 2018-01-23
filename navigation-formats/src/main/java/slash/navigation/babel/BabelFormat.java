@@ -46,6 +46,7 @@ import java.util.prefs.Preferences;
 import static java.io.File.createTempFile;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
@@ -414,7 +415,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
 
         List<GpxRoute> result = new ArrayList<>();
         for (GpxRoute aRoute : routes) {
-            GpxRoute route = sanitizeRoute(aRoute);
+            GpxRoute route = sanitizeRouteAfterReading(aRoute);
             if (isValidRoute(route))
                 result.add(route);
         }
@@ -425,7 +426,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return true;
     }
 
-    protected GpxRoute sanitizeRoute(GpxRoute route) {
+    protected GpxRoute sanitizeRouteAfterReading(GpxRoute route) {
         return route;
     }
 
@@ -451,11 +452,16 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }
     }
 
+    protected List<GpxRoute> modifyBeforeWriting(List<GpxRoute> routes) {
+        return routes;
+    }
+
     public void write(GpxRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         File sourceFile = null, targetFile = null;
         try {
             sourceFile = createTempFile("babel-write-source", "." + BABEL_INTERFACE_FORMAT_NAME, getTemporaryDirectory());
-            getGpxFormat().write(route, new FileOutputStream(sourceFile), startIndex, endIndex, getBabelCharacteristics());
+            GpxRoute write = modifyBeforeWriting(singletonList(route)).get(0);
+            getGpxFormat().write(write, new FileOutputStream(sourceFile), startIndex, endIndex, getBabelCharacteristics());
             targetFile = createTempFile("babel-write-target", getExtension(), getTemporaryDirectory());
 
             boolean successful = startBabel(sourceFile, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(route), getWriteCommandExecutionTimeOutPreference());
@@ -474,7 +480,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         File sourceFile = null, targetFile = null;
         try {
             sourceFile = createTempFile("babel-write-all-source", "." + BABEL_INTERFACE_FORMAT_NAME, getTemporaryDirectory());
-            getGpxFormat().write(routes, new FileOutputStream(sourceFile));
+            getGpxFormat().write(modifyBeforeWriting(routes), new FileOutputStream(sourceFile));
             targetFile = createTempFile("babel-write-all-target", getExtension(), getTemporaryDirectory());
 
             boolean successful = startBabel(sourceFile, BABEL_INTERFACE_FORMAT_NAME, targetFile, getFormatName(), getGlobalOptions(), getFormatOptions(routes.get(0)), getWriteCommandExecutionTimeOutPreference());

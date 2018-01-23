@@ -50,7 +50,7 @@ public abstract class OziExplorerFormat extends BabelFormat implements MultipleR
         return true;
     }
 
-    protected GpxRoute sanitizeRoute(GpxRoute route) {
+    protected GpxRoute sanitizeRouteAfterReading(GpxRoute route) {
         // all routes except for the first start with an 0.0/0.0/RPTxxx waypoint
         if(route != null &&
                 route.getPositionCount() > 0 &&
