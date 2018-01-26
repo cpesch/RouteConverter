@@ -59,7 +59,13 @@ public class Excel2008Format extends ExcelFormat {
 
     public void write(ExcelRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         Workbook workbook = route.getWorkbook();
-        workbook.write(target);
+        try {
+            workbook.write(target);
+        }
+        finally {
+            target.flush();
+            target.close();
+        }
     }
 
     public void write(List<ExcelRoute> routes, OutputStream target) throws IOException {
@@ -70,6 +76,12 @@ public class Excel2008Format extends ExcelFormat {
         if(!(workbook instanceof XSSFWorkbook))
             throw new IllegalArgumentException("Workbook " + workbook + " is not XSSFWorkbook");
 
-        workbook.write(target);
+        try {
+            workbook.write(target);
+        }
+        finally {
+            target.flush();
+            target.close();
+        }
     }
 }
