@@ -53,13 +53,8 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
     public abstract void read(BufferedReader reader, String encoding, ParserContext<R> context) throws IOException;
 
     protected void write(R route, OutputStream target, String encoding, int startIndex, int endIndex) throws IOException {
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, encoding));
-        try {
+        try (PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, encoding))) {
             write(route, writer, startIndex, endIndex);
-        }
-        finally {
-            writer.flush();
-            writer.close();
         }
     }
 

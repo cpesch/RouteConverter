@@ -387,23 +387,22 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     private File createShellScript(String babelPath, List<String> args) throws IOException {
         File temp = createTempFile("gpsbabel", ".sh", getTemporaryDirectory());
         temp.deleteOnExit();
-        BufferedWriter writer = new BufferedWriter(new FileWriter(temp));
-        writer.write("#!/bin/sh");
-        writer.newLine();
-        writer.write("`which chmod` a+x \"" + babelPath + "\"");
-        writer.newLine();
-        // help Mac gpsbabel find its QtCore library
-        if (isMac()) {
-            writer.write("cd `dirname \"" + babelPath + "\"`");
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(temp))) {
+            writer.write("#!/bin/sh");
+            writer.newLine();
+            writer.write("`which chmod` a+x \"" + babelPath + "\"");
+            writer.newLine();
+            // help Mac gpsbabel find its QtCore library
+            if (isMac()) {
+                writer.write("cd `dirname \"" + babelPath + "\"`");
+                writer.newLine();
+            }
+            for (String arg : args) {
+                writer.write(arg);
+                writer.write(" ");
+            }
             writer.newLine();
         }
-        for (String arg : args) {
-            writer.write(arg);
-            writer.write(" ");
-        }
-        writer.newLine();
-        writer.flush();
-        writer.close();
         return temp;
     }
 

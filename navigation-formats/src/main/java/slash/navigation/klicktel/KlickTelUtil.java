@@ -63,14 +63,14 @@ class KlickTelUtil {
     }
 
 
-    public static void marshal(KDRoute route, OutputStream out) throws JAXBException {
+    public static void marshal(KDRoute route, OutputStream outputStream) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new JAXBElement<>(new QName(KLICKTEL_NAMESPACE_URI, "kDRoute"), KDRoute.class, route), out);
+                newMarshaller().marshal(new JAXBElement<>(new QName(KLICKTEL_NAMESPACE_URI, "kDRoute"), KDRoute.class, route), outputStream);
             }
             finally {
-                out.flush();
-                out.close();
+                outputStream.flush();
+                outputStream.close();
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e, e);

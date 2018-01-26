@@ -58,14 +58,14 @@ public class NokiaLandmarkExchangeUtil {
         return result;
     }
 
-    public static void marshal(Lmx lmx, OutputStream out) throws JAXBException {
+    public static void marshal(Lmx lmx, OutputStream outputStream) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new JAXBElement<>(new QName(LMX_NAMESPACE_URI, "lmx"), Lmx.class, lmx), out);
+                newMarshaller().marshal(new JAXBElement<>(new QName(LMX_NAMESPACE_URI, "lmx"), Lmx.class, lmx), outputStream);
             }
             finally {
-                out.flush();
-                out.close();
+                outputStream.flush();
+                outputStream.close();
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e, e);

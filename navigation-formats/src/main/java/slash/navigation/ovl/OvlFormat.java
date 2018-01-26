@@ -141,6 +141,9 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
             return false;
 
         OvlSection overlay = findSection(sections, OVERLAY_TITLE);
+        if(overlay == null)
+            return false;
+
         int symbolCount = getSymbolCount(overlay);
         if (symbolCount == 0)
             return false;
@@ -166,7 +169,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
             mapLage = new OvlSection(MAPLAGE_TITLE);
 
         OvlSection overlay = findSection(sections, OVERLAY_TITLE);
-        int symbolCount = getSymbolCount(overlay);
+        int symbolCount = overlay != null ? getSymbolCount(overlay) : 0;
 
         // process all sections with same group into one route
         Map<Integer, List<OvlSection>> sectionsByGroup = new LinkedHashMap<>();
@@ -294,8 +297,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
     }
 
     public void write(List<OvlRoute> routes, OutputStream target) throws IOException {
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, ISO_LATIN1_ENCODING));
-        try {
+        try(PrintWriter writer = new PrintWriter(new OutputStreamWriter(target, ISO_LATIN1_ENCODING))) {
             int symbols = 0;
             for (OvlRoute route : routes) {
                 writeSymbol(route, writer, 0, route.getPositionCount(), ++symbols);
@@ -306,10 +308,6 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
                 writeOverlay(first, writer, symbols);
                 writeMapLage(first, writer);
             }
-        }
-        finally {
-            writer.flush();
-            writer.close();
         }
     }
 }

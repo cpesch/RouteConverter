@@ -77,28 +77,28 @@ class GoPalUtil {
     }
 
 
-    public static void marshal3(slash.navigation.gopal.binding3.Tour tour, OutputStream out) throws JAXBException {
+    public static void marshal3(slash.navigation.gopal.binding3.Tour tour, OutputStream outputStream) throws JAXBException {
         try {
             try {
-                newMarshaller3().marshal(new JAXBElement<>(new QName(GOPAL_NAMESPACE_URI, "tour"), slash.navigation.gopal.binding3.Tour.class, tour), out);
+                newMarshaller3().marshal(new JAXBElement<>(new QName(GOPAL_NAMESPACE_URI, "tour"), slash.navigation.gopal.binding3.Tour.class, tour), outputStream);
             }
             finally {
-                out.flush();
-                out.close();
+                outputStream.flush();
+                outputStream.close();
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e, e);
         }
     }
 
-    public static void marshal5(slash.navigation.gopal.binding5.Tour tour, OutputStream out) throws JAXBException {
+    public static void marshal5(slash.navigation.gopal.binding5.Tour tour, OutputStream outputStream) throws JAXBException {
         try {
             try {
-                newMarshaller5().marshal(new JAXBElement<>(new QName(GOPAL_NAMESPACE_URI, "Tour"), slash.navigation.gopal.binding5.Tour.class, tour), out);
+                newMarshaller5().marshal(new JAXBElement<>(new QName(GOPAL_NAMESPACE_URI, "Tour"), slash.navigation.gopal.binding5.Tour.class, tour), outputStream);
             }
             finally {
-                out.flush();
-                out.close();
+                outputStream.flush();
+                outputStream.close();
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e, e);

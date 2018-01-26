@@ -91,17 +91,13 @@ public abstract class KmzFormat extends BaseKmlFormat {
         crc.reset();
         crc.update(bytes);
 
-        ZipOutputStream outputStream = new ZipOutputStream(target);
-        try {
+        try(ZipOutputStream outputStream = new ZipOutputStream(target)) {
             ZipEntry entry = new ZipEntry("doc.kml");
             entry.setSize(bytes.length);
             entry.setCrc(crc.getValue());
             outputStream.putNextEntry(entry);
             outputStream.write(bytes, 0, bytes.length);
             outputStream.finish();
-        } finally {
-            outputStream.flush();
-            outputStream.close();
         }
     }
 

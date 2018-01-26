@@ -65,13 +65,13 @@ class NavigonCruiserUtil {
         return result;
     }
 
-    public static void marshal(Route route, OutputStream out) throws JAXBException {
+    public static void marshal(Route route, OutputStream outputStream) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(route, out);
+                newMarshaller().marshal(route, outputStream);
             } finally {
-                out.flush();
-                out.close();
+                outputStream.flush();
+                outputStream.close();
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e, e);

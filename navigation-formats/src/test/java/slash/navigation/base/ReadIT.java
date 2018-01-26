@@ -95,14 +95,14 @@ public class ReadIT {
 
     @AfterClass
     public static void tearDown() throws IOException {
-        PrintStream out = new PrintStream(new FileOutputStream(createTempFile("comments", ".csv")));
+        PrintStream printStream = new PrintStream(new FileOutputStream(createTempFile("comments", ".csv")));
         String[] strings = comments.toArray(new String[comments.size()]);
         sort(strings);
         for (String string : strings) {
-            out.println(string);
+            printStream.println(string);
         }
-        out.flush();
-        out.close();
+        printStream.flush();
+        printStream.close();
     }
 
     @Test
