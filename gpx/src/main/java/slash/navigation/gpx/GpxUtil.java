@@ -73,24 +73,24 @@ public class GpxUtil {
         return result;
     }
 
-    public static Gpx unmarshal10(InputStream in) throws JAXBException {
+    public static Gpx unmarshal10(InputStream inputStream) throws JAXBException {
         Gpx result;
         try {
-            result = (Gpx) newUnmarshaller10().unmarshal(in);
+            result = (Gpx) newUnmarshaller10().unmarshal(inputStream);
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e);
         }
         return result;
     }
 
-    public static void marshal10(Gpx gpx, OutputStream out) throws JAXBException {
+    public static void marshal10(Gpx gpx, OutputStream outputStream) throws JAXBException {
         try {
             try {
-                newMarshaller10().marshal(new JAXBElement<>(new QName(GPX_10_NAMESPACE_URI, "gpx"), Gpx.class, gpx), out);
+                newMarshaller10().marshal(new JAXBElement<>(new QName(GPX_10_NAMESPACE_URI, "gpx"), Gpx.class, gpx), outputStream);
             }
             finally {
-                out.flush();
-                out.close();
+                outputStream.flush();
+                outputStream.close();
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e, e);
@@ -128,14 +128,14 @@ public class GpxUtil {
         newMarshaller11().marshal(new slash.navigation.gpx.binding11.ObjectFactory().createGpx(gpxType), writer);
     }
 
-    public static void marshal11(GpxType gpxType, OutputStream out) throws JAXBException {
+    public static void marshal11(GpxType gpxType, OutputStream outputStream) throws JAXBException {
         try {
             try {
-                newMarshaller11().marshal(new slash.navigation.gpx.binding11.ObjectFactory().createGpx(gpxType), out);
+                newMarshaller11().marshal(new slash.navigation.gpx.binding11.ObjectFactory().createGpx(gpxType), outputStream);
             }
             finally {
-                out.flush();
-                out.close();
+                outputStream.flush();
+                outputStream.close();
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e, e);

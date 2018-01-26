@@ -5,5 +5,7 @@
 // Generated on: 2018.01.16 at 09:21:13 PM MEZ 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://earth.google.com/kml/2.1", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@javax.xml.bind.annotation.XmlSchema(namespace = KML_21_NAMESPACE_URI, elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package slash.navigation.kml.binding21;
+
+import static slash.navigation.kml.KmlUtil.KML_21_NAMESPACE_URI;

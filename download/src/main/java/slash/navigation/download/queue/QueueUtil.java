@@ -54,13 +54,13 @@ class QueueUtil {
         return result;
     }
 
-    public static void marshal(QueueType queueType, OutputStream out) throws JAXBException {
+    public static void marshal(QueueType queueType, OutputStream outputStream) throws JAXBException {
         try {
             try {
-                newMarshaller().marshal(new ObjectFactory().createQueue(queueType), out);
+                newMarshaller().marshal(new ObjectFactory().createQueue(queueType), outputStream);
             } finally {
-                out.flush();
-                out.close();
+                outputStream.flush();
+                outputStream.close();
             }
         } catch (IOException e) {
             throw new JAXBException("Error while marshalling: " + e, e);
