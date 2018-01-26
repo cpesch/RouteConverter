@@ -124,7 +124,7 @@ public class ExcelRowOrderIT {
     }
 
     @Test
-    public void testMoveMiddlePositionDown() throws IOException {
+    public void testMoveMiddlePosition() throws IOException {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
 
         route.move(2, 3);
@@ -184,22 +184,6 @@ public class ExcelRowOrderIT {
         assertEquals("D", route.getPosition(2).getDescription());
         assertEquals("E", route.getPosition(3).getDescription());
         assertEquals("C", route.getPosition(4).getDescription());
-        assertEquals("F", route.getPosition(5).getDescription());
-    }
-
-    @Test
-    public void testMoveMiddlePositionUp() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
-
-        route.move(2, 3);
-
-        route = writeAndReadFile(route);
-
-        assertEquals("A", route.getPosition(0).getDescription());
-        assertEquals("B", route.getPosition(1).getDescription());
-        assertEquals("D", route.getPosition(2).getDescription());
-        assertEquals("C", route.getPosition(3).getDescription());
-        assertEquals("E", route.getPosition(4).getDescription());
         assertEquals("F", route.getPosition(5).getDescription());
     }
 
