@@ -18,12 +18,13 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.csv;
+package slash.navigation.excel;
 
 import org.junit.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
-import slash.navigation.base.SimpleRoute;
+import slash.navigation.excel.ExcelPosition;
+import slash.navigation.excel.ExcelRoute;
 
 import java.io.IOException;
 

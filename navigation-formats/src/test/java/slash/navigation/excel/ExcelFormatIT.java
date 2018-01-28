@@ -17,10 +17,12 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.csv;
+package slash.navigation.excel;
 
 import org.junit.Test;
 import slash.navigation.base.*;
+import slash.navigation.excel.Excel2008Format;
+import slash.navigation.excel.Excel97Format;
 
 import java.io.File;
 import java.io.IOException;

@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.csv;
+package slash.navigation.excel;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -28,6 +28,8 @@ import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.csv.ColumnType;
+import slash.navigation.csv.ColumnTypeToRowIndexMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -98,14 +100,14 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
         for (int i = 0, c = row.getPhysicalNumberOfCells(); i < c; i++) {
             Cell cell = row.getCell(i);
             String cellValue = cell.getStringCellValue();
-            ColumnType columnType = parseCellValue(cellValue);
+            ColumnType columnType = parseColumnType(cellValue);
             log.info(format("Column %d with name '%s' is identified as %s", i, cellValue, columnType));
             result.add(i, columnType);
         }
         return result;
     }
 
-    private ColumnType parseCellValue(String value) {
+    private ColumnType parseColumnType(String value) {
         value = trim(value);
         if (value != null) {
             value = value.replaceAll(" ", "");

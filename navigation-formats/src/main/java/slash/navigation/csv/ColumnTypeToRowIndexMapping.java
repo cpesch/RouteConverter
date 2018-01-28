@@ -30,7 +30,7 @@ import static slash.navigation.csv.ColumnType.*;
  */
 
 public class ColumnTypeToRowIndexMapping {
-    static final ColumnTypeToRowIndexMapping DEFAULT = new ColumnTypeToRowIndexMapping();
+    public static final ColumnTypeToRowIndexMapping DEFAULT = new ColumnTypeToRowIndexMapping();
     static {
         DEFAULT.add(0, Longitude);
         DEFAULT.add(1, Latitude);

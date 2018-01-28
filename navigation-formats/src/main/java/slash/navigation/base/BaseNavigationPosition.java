@@ -24,7 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.common.Bearing;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.csv.ExcelPosition;
+import slash.navigation.excel.ExcelPosition;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gpx.GpxPosition;

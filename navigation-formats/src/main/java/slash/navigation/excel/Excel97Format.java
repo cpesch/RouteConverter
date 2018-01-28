@@ -17,11 +17,11 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.csv;
+package slash.navigation.excel;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import slash.navigation.base.ParserContext;
 
 import java.io.IOException;
@@ -32,29 +32,29 @@ import java.util.List;
 import static org.apache.poi.ss.util.WorkbookUtil.createSafeSheetName;
 
 /**
- * Reads Excel 2008 (.xlsx) files.
+ * Reads Excel 97-2008 (.xls) files.
  *
  * @author Christian Pesch
  */
 
-public class Excel2008Format extends ExcelFormat {
+public class Excel97Format extends ExcelFormat {
     public String getName() {
-        return "Excel 2008 (" + getExtension() + ")";
+        return "Excel 97-2008 (" + getExtension() + ")";
     }
 
     public String getExtension() {
-        return ".xlsx";
+        return ".xls";
     }
 
     Sheet createSheet(String name) {
-        Workbook workbook = new XSSFWorkbook();
+        Workbook workbook = new HSSFWorkbook();
         return workbook.createSheet(createSafeSheetName(name));
     }
 
     public void read(InputStream source, ParserContext<ExcelRoute> context) throws Exception {
-        Workbook workbook = new XSSFWorkbook(source);
-        parseWorkbook(workbook, context);
-        // do not close Workbook since this would close the underlying OPCPackage which has to be open to write later
+        try (Workbook workbook = new HSSFWorkbook(source, false)) {
+            parseWorkbook(workbook, context);
+        }
     }
 
     public void write(ExcelRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
@@ -73,8 +73,8 @@ public class Excel2008Format extends ExcelFormat {
             return;
 
         Workbook workbook = routes.get(0).getWorkbook();
-        if(!(workbook instanceof XSSFWorkbook))
-            throw new IllegalArgumentException("Workbook " + workbook + " is not XSSFWorkbook");
+        if(!(workbook instanceof HSSFWorkbook))
+            throw new IllegalArgumentException("Workbook " + workbook + " is not HSSFWorkbook");
 
         try {
             workbook.write(target);

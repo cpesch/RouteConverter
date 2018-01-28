@@ -45,7 +45,7 @@ import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.copilot.CoPilotFormat;
-import slash.navigation.csv.ExcelFormat;
+import slash.navigation.excel.ExcelFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
