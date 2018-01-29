@@ -448,6 +448,18 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
+    public double getDistanceDifference(int index) {
+        List<P> positions = getPositions();
+        NavigationPosition previous = index > 0 ? positions.get(index - 1) : null;
+        NavigationPosition current = index < positions.size() ? positions.get(index) : null;
+        if (previous != null && current != null) {
+            Double distance = previous.calculateDistance(current);
+            if (distance != null)
+                return distance;
+        }
+        return 0;
+    }
+
     public long[] getTimesFromStart(int startIndex, int endIndex) {
         long[] result = new long[endIndex - startIndex + 1];
         List<P> positions = getPositions();
@@ -528,7 +540,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return result;
     }
 
-    public double getElevationDelta(int index) {
+    public double getElevationDifference(int index) {
         List<P> positions = getPositions();
         NavigationPosition previous = index > 0 ? positions.get(index - 1) : null;
         NavigationPosition current = index < positions.size() ? positions.get(index) : null;

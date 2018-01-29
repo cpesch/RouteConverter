@@ -30,6 +30,7 @@ import java.util.List;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_DIFFERENCE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**

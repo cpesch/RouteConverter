@@ -44,13 +44,7 @@ import java.util.Map;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_ASCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DESCEND_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_DIFFERENCE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.ImageHelper.resize;
 
 /**
@@ -242,12 +236,14 @@ public class OverlayPositionsModel implements PositionsModel {
                 return getImageAndFile(rowIndex);
             case DISTANCE_COLUMN_INDEX:
                 return getDistance(rowIndex);
+            case DISTANCE_DIFFERENCE_COLUMN_INDEX:
+                return getDistanceDifference(rowIndex);
             case ELEVATION_ASCEND_COLUMN_INDEX:
                 return getRoute().getElevationAscend(0, rowIndex);
             case ELEVATION_DESCEND_COLUMN_INDEX:
                 return getRoute().getElevationDescend(0, rowIndex);
             case ELEVATION_DIFFERENCE_COLUMN_INDEX:
-                return getRoute().getElevationDelta(rowIndex);
+                return getRoute().getElevationDifference(rowIndex);
         }
         return delegate.getValueAt(rowIndex, columnIndex);
     }
@@ -281,6 +277,25 @@ public class OverlayPositionsModel implements PositionsModel {
         if (getRoute().getCharacteristics().equals(Route)) {
             DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(rowIndex);
             return distanceAndTime != null ? distanceAndTime.getDistance() : null;
+        }
+
+        return null;
+    }
+
+    private Double getDistanceDifference(int rowIndex) {
+        if(getRoute().getCharacteristics().equals(Track)) {
+            return getRoute().getDistanceDifference(rowIndex);
+        }
+
+        if (getRoute().getCharacteristics().equals(Route) && rowIndex > 0) {
+            DistanceAndTime previous = indexToDistanceAndTime.get(rowIndex - 1);
+            DistanceAndTime current = indexToDistanceAndTime.get(rowIndex);
+            if(previous != null && current != null) {
+                Double d1 = previous.getDistance();
+                Double d2 = current.getDistance();
+                if(d1 != null && d2 != null)
+                    return d2 - d1;
+            }
         }
 
         return null;
