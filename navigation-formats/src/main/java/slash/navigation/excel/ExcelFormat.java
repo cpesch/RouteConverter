@@ -58,7 +58,7 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
     }
 
     public boolean isWritingRouteCharacteristics() {
-        return true;
+        return false;
     }
 
     @SuppressWarnings("unchecked")
