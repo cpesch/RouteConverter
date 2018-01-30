@@ -266,7 +266,7 @@ public abstract class RouteComments {
     private static final Pattern TRIPMASTER_HEADING_PATTERN = Pattern.compile("(Course|Cape|Kurs|Richtung) (\\d+)");
     private static final Pattern TRIPMASTER_14_PATTERN = Pattern.compile("(" + TRIPMASTER_REASONS + ") - (" + TIME + ") - (" + DOUBLE + ") m - (.+)");
     private static final Pattern TRIPMASTER_18_SHORT_STARTEND_PATTERN = Pattern.compile(
-            "(Start|Ende|Finish) : ((.+) - )?(.+) - (.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
+            "(Start|Ende|Finish) : ((.+) - )?(.+) - (.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") ([Kk])m");
     private static final Pattern TRIPMASTER_18_SHORT_WAYPOINT_PATTERN = Pattern.compile("(" + TIME + ") - (" + DOUBLE + ") m");
     private static final Pattern TRIPMASTER_25_SHORT_STARTEND_PATTERN = Pattern.compile(
             "(" + TIME + ") - ((Start|Ende|Finish) : (" + DATE + ") (" +  TIME + ")) - (" + DOUBLE + ") m");
@@ -275,16 +275,16 @@ public abstract class RouteComments {
     private static final Pattern TRIPMASTER_31_SHORT_STARTEND_PATTERN = Pattern.compile(
             "(" + TIME + ") - ((Start|Ende|Finish) : (" + DATE + ") (" +  TIME + ")) - (" + DOUBLE + ") m.*");
     private static final Pattern TRIPMASTER_MIDDLE_PATTERN = Pattern.compile(
-            "(" + TIME + ") - (" + TRIPMASTER_REASONS + ")(\\s?:\\s.+)? - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");
+            "(" + TIME + ") - (" + TRIPMASTER_REASONS + ")(\\s?:\\s.+)? - (" + DOUBLE + ") m - (" + DOUBLE + ") (Kk)m");
     private static final Pattern TRIPMASTER_LONG_NO_REASON_PATTERN = Pattern.compile(
-            "(" + TIME + ") - (.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m - (" + DOUBLE + ") (K|k)m/h( - \\d+)?");
+            "(" + TIME + ") - (.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (Kk)m - (" + DOUBLE + ") (Kk)m/h( - \\d+)?");
     private static final Pattern TRIPMASTER_LONG_PATTERN = Pattern.compile(
             "(" + TIME + ") - (Start : (.*?)|Finish : (.*?)|" + TRIPMASTER_REASONS + ")(\\s?:\\s.+)? - " +
-            "(" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m - (" + DOUBLE + ") (K|k)m/h( - \\d+)?");
+            "(" + DOUBLE + ") m - (" + DOUBLE + ") (Kk)m - (" + DOUBLE + ") (Kk)m/h( - \\d+)?");
     private static final Pattern ROUTECONVERTER_STARTEND_PATTERN = Pattern.compile(
-            "((Start|Ende|Finish) : (.+) : (" + DATE + ") (" +  TIME + ")) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m/h - (" + DOUBLE + ") deg.*");
+            "((Start|Ende|Finish) : (.+) : (" + DATE + ") (" +  TIME + ")) - (" + DOUBLE + ") m - (" + DOUBLE + ") (Kk)m/h - (" + DOUBLE + ") deg.*");
     private static final Pattern ROUTECONVERTER_INTERMEDIATE_PATTERN = Pattern.compile(
-            "(.+) : (" + TIME + ") - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m/h - (" + DOUBLE + ") deg.*");
+            "(.+) : (" + TIME + ") - (" + DOUBLE + ") m - (" + DOUBLE + ") (Kk)m/h - (" + DOUBLE + ") deg.*");
 
     /**
      * logpos encoding of the description:
