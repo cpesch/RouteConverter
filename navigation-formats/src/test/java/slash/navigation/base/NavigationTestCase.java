@@ -118,6 +118,7 @@ import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.BaseNavigationFormat.GENERATED_BY;
+import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
@@ -323,7 +324,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (sourcePosition.getElevation() != null && targetPosition.getElevation() != null) {
             if (targetFormat instanceof AlanWaypointsAndRoutesFormat ||
                     targetFormat instanceof TomTomPoiFormat ||
-                    (targetFormat instanceof MagellanMapSendFormat && targetCharacteristics.equals(RouteCharacteristics.Route)))
+                    (targetFormat instanceof MagellanMapSendFormat && targetCharacteristics.equals(Route)))
                 assertEquals(0.0, targetPosition.getElevation());
             else if (targetFormat instanceof BcrFormat) {
                 // skip silly from20.ovl in bcr coordinate
@@ -694,8 +695,8 @@ public abstract class NavigationTestCase extends TestCase {
                 String targetName = getGarminPoiPositionDescription(targetPosition);
                 assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Waypoints))
-                assertEquals("Description " + index + " does not match", garminUmlauts(trim(sourcePosition.getDescription().replace(",", ""), 50)), trim(trimSpeedDescription(description), 50));
-            else if (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(RouteCharacteristics.Route))
+                assertEquals("Description " + index + " does not match", garminUmlauts(trim(sourcePosition.getDescription().replace(",", ""), 50)), garminUmlauts(trim(trimSpeedDescription(description), 50)));
+            else if (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Route))
                 assertEquals("Description " + index + " does not match", garminUmlauts(trim(sourcePosition.getDescription().replace(",", ""), 8)), trim(trimSpeedDescription(description), 8));
             else if (targetFormat instanceof TomTomRouteFormat) {
                 String targetDescription = description;
