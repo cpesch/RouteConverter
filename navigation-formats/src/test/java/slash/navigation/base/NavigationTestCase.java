@@ -108,7 +108,6 @@ import java.util.List;
 import static java.io.File.separator;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
-import static java.lang.Math.round;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Transfer.isEmpty;
@@ -884,8 +883,8 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     private static String garminUmlauts(String str) {
-        return str.replace("\u00e4", "a").replace("\u00f6", "o").replace("\u00fc", "u").replace("\u00df", "$").replace("\u00d6", "O").
-                replace("ä", "a").replace("ö", "o").replace("ü", "u").replace("ß", "$").replace("Ö", "O");
+        return str.replace("\u00e4", "?").replace("\u00f6", "?").replace("\u00fc", "?").replace("\u00df", "$").replace("\u00d6", "?").
+                replace("\ufffd", "?");
     }
 
     private static String nameDescription(String str, int nameMaximum, int descriptionMaximum) {
