@@ -62,7 +62,8 @@ public class GpxPosition extends Wgs84Position {
                        CompactCalendar time, String description, BigDecimal hdop, BigDecimal pdop, BigDecimal vdop,
                        BigInteger satellites, Object origin) {
         this(formatDouble(longitude), formatDouble(latitude), formatDouble(elevation), speed, time, description, origin);
-        this.heading = heading;
+        if (heading != null)
+            this.heading = heading;
         setHdop(formatDouble(hdop));
         setPdop(formatDouble(pdop));
         setVdop(formatDouble(vdop));
@@ -111,7 +112,7 @@ public class GpxPosition extends Wgs84Position {
         if(isEmpty(getHeading()))
             setHeading(parseHeading(description));
         if(isEmpty(getSpeed()))
-            setHeading(parseSpeed(description));
+            setSpeed(parseSpeed(description));
         /*
         result = parseSpeed(wptType.getCmt());
         if (result == null)
