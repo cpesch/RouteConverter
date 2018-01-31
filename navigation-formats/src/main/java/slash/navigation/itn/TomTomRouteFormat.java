@@ -40,6 +40,7 @@ import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteComments.TRIPMASTER_DATE;
 import static slash.navigation.base.RouteComments.TRIPMASTER_TIME;
 
 /**
@@ -169,7 +170,26 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         return trim(description);
     }
 
-    private void formatName(StringBuilder buffer, TomTomPosition position, Double distance) {
+    String formatFirstOrLastName(TomTomPosition position, String firstOrLast, Double distance) {
+        StringBuilder buffer = new StringBuilder();
+        if (position.hasTime()) {
+            buffer.append(firstOrLast).append(" : ");
+        }
+        buffer.append(position.getDescription());
+        if (position.hasTime()) {
+            buffer.append(" : ").append(createDateFormat(TRIPMASTER_DATE).format(position.getTime().getTime()));
+            buffer.append(" - ").append(position.getElevation() != null ? position.getElevation() : 0).append(" m");
+            buffer.append(" - ").append(position.getSpeed() != null ? position.getSpeed() : 0).append(" Km/h");
+            buffer.append(" - ").append(position.getHeading() != null ? position.getHeading() : 0).append(" deg");
+        }
+        if(distance != null) {
+            buffer.append(" - ").append(distance.intValue()).append(" Km");
+        }
+        return buffer.toString();
+    }
+
+    String formatIntermediateName(TomTomPosition position, Double distance) {
+        StringBuilder buffer = new StringBuilder();
         buffer.append(position.getDescription());
         if (position.hasTime()) {
             buffer.append(" : ").append(createDateFormat(TRIPMASTER_TIME).format(position.getTime().getTime()));
@@ -180,20 +200,6 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
         if(distance != null) {
             buffer.append(" - ").append(distance.intValue()).append(" Km");
         }
-    }
-
-    String formatFirstOrLastName(TomTomPosition position, String firstOrLast, Double distance) {
-        StringBuilder buffer = new StringBuilder();
-        if (position.hasTime()) {
-            buffer.append(firstOrLast).append(" : ");
-        }
-        formatName(buffer, position, distance);
-        return buffer.toString();
-    }
-
-    String formatIntermediateName(TomTomPosition position, Double distance) {
-        StringBuilder buffer = new StringBuilder();
-        formatName(buffer, position, distance);
         return buffer.toString();
     }
     

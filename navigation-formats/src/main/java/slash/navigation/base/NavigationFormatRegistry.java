@@ -52,7 +52,6 @@ import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.csv.CsvCommaFormat;
-import slash.navigation.csv.CsvFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
 import slash.navigation.excel.MicrosoftExcel2008Format;
 import slash.navigation.excel.MicrosoftExcel97Format;
@@ -220,8 +219,6 @@ public class NavigationFormatRegistry {
         addFormat(PhotoFormat.class);
         addFormat(MicrosoftExcel97Format.class);
         addFormat(MicrosoftExcel2008Format.class);
-        addFormat(CsvCommaFormat.class);
-        addFormat(CsvSemicolonFormat.class);
 
         // kind of meta-format
         addFormat(ZipFormat.class);
@@ -253,6 +250,8 @@ public class NavigationFormatRegistry {
         addFormat(GoogleMapsUrlFormat.class);
         addFormat(MotoPlanerUrlFormat.class);
         addFormat(UrlFormat.class);
+        addFormat(CsvCommaFormat.class);
+        addFormat(CsvSemicolonFormat.class);
 
         // second try for broken files
         addFormat(GarbleColumbusGpsType1Format.class);

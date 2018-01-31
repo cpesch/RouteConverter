@@ -112,7 +112,8 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
             positions.add(new CsvPosition(rowAsMap));
         }
 
-        context.appendRoute(new CsvRoute(this, null, positions));
+        if (positions.size() > 0)
+            context.appendRoute(new CsvRoute(this, null, positions));
         return true;
     }
 

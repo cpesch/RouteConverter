@@ -174,7 +174,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public ExcelPosition asExcelPosition() {
+    public ExcelPosition asMicrosoftExcelPosition() {
         return new ExcelPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }
 
