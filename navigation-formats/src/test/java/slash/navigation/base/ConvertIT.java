@@ -50,8 +50,10 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
-import slash.navigation.excel.Excel2008Format;
-import slash.navigation.excel.Excel97Format;
+import slash.navigation.csv.CsvCommaFormat;
+import slash.navigation.csv.CsvSemicolonFormat;
+import slash.navigation.excel.MicrosoftExcel2008Format;
+import slash.navigation.excel.MicrosoftExcel97Format;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPal7RouteFormat;
@@ -182,21 +184,27 @@ public class ConvertIT {
     }
 
     @Test
+    public void testConvertGpxToCsv() throws IOException {
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new CsvCommaFormat());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new CsvSemicolonFormat());
+    }
+
+    @Test
     public void testConvertGpxToExcel() throws IOException {
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Excel97Format());
-        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Excel2008Format());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new MicrosoftExcel97Format());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new MicrosoftExcel2008Format());
     }
 
     @Test
     public void testConvertExcelToGpx() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.xls", new Excel97Format(), new Gpx10Format());
-        convertRoundtrip(TEST_PATH + "from.xlsx", new Excel2008Format(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from.xls", new MicrosoftExcel97Format(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from.xlsx", new MicrosoftExcel2008Format(), new Gpx11Format());
     }
 
     @Test
     public void testConvertExcelToKml() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.xls", new Excel97Format(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from.xlsx", new Excel2008Format(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from.xls", new MicrosoftExcel97Format(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from.xlsx", new MicrosoftExcel2008Format(), new Kml22Format());
     }
 
     @Test

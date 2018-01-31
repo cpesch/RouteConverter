@@ -17,20 +17,17 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.excel;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.csv.ColumnType;
-import slash.navigation.csv.ColumnTypeToRowIndexMapping;
 
 import static slash.common.io.Transfer.toDouble;
 import static slash.common.type.CompactCalendar.fromDate;
-import static slash.navigation.csv.ColumnType.*;
-import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
+import static slash.navigation.excel.ColumnType.*;
+import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
 
 /**
  * A position from Excel 97-2008 (.xls) and Excel 2008 (.xlsx) files.

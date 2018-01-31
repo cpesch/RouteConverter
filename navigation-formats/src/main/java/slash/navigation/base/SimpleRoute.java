@@ -23,6 +23,9 @@ package slash.navigation.base;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
+import slash.navigation.csv.CsvFormat;
+import slash.navigation.csv.CsvPosition;
+import slash.navigation.csv.CsvRoute;
 import slash.navigation.excel.ExcelFormat;
 import slash.navigation.excel.ExcelPosition;
 import slash.navigation.excel.ExcelRoute;
@@ -98,93 +101,101 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
-        List<BcrPosition> bcrPositions = new ArrayList<>();
-        for (P position : positions) {
-            bcrPositions.add(position.asMTPPosition());
+        List<BcrPosition> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asMTPPosition());
         }
-        return new BcrRoute(format, getName(), getDescription(), bcrPositions);
+        return new BcrRoute(format, getName(), getDescription(), positions);
+    }
+
+    protected CsvRoute asCsvFormat(CsvFormat format) {
+        List<CsvPosition> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asCsvPosition());
+        }
+        return new CsvRoute(format, getName(), positions);
     }
 
     protected ExcelRoute asExcelFormat(ExcelFormat format) {
-        List<ExcelPosition> excelPositions = new ArrayList<>();
-        ExcelRoute route = new ExcelRoute(format, getName(), excelPositions);
+        List<ExcelPosition> positions = new ArrayList<>();
+        ExcelRoute route = new ExcelRoute(format, getName(), positions);
         for (P position : getPositions()) {
             ExcelPosition excelPosition = route.createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), position.getSpeed(), position.getTime(), position.getDescription());
-            excelPositions.add(excelPosition);
+            positions.add(excelPosition);
         }
         return route;
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
-        List<GoPalPosition> gopalPositions = new ArrayList<>();
-        for (P position : positions) {
-            gopalPositions.add(position.asGoPalRoutePosition());
+        List<GoPalPosition> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asGoPalRoutePosition());
         }
-        return new GoPalRoute(format, getName(), gopalPositions);
+        return new GoPalRoute(format, getName(), positions);
     }
 
     protected GpxRoute asGpxFormat(GpxFormat format) {
-        List<GpxPosition> gpxPositions = new ArrayList<>();
-        for (P position : positions) {
-            gpxPositions.add(position.asGpxPosition());
+        List<GpxPosition> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asGpxPosition());
         }
-        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
+        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), positions);
     }
 
     protected SimpleRoute asPhotoFormat(PhotoFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (P position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
+        List<Wgs84Position> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        List<KmlPosition> kmlPositions = new ArrayList<>();
-        for (P position : positions) {
-            kmlPositions.add(position.asKmlPosition());
+        List<KmlPosition> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asKmlPosition());
         }
-        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
+        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), positions);
     }
 
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        List<NmeaPosition> nmeaPositions = new ArrayList<>();
-        for (P position : positions) {
-            nmeaPositions.add(position.asNmeaPosition());
+        List<NmeaPosition> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asNmeaPosition());
         }
-        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
+        return new NmeaRoute(format, getCharacteristics(), positions);
     }
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
-        List<NmnPosition> nmnPositions = new ArrayList<>();
-        for (P position : positions) {
-            nmnPositions.add(position.asNmnPosition());
+        List<NmnPosition> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asNmnPosition());
         }
-        return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
+        return new NmnRoute(format, getCharacteristics(), name, positions);
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (P position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
+        List<Wgs84Position> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), positions);
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (P position : positions) {
-            wgs84Positions.add(position.asWgs84Position());
+        List<Wgs84Position> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asWgs84Position());
         }
-        return new TcxRoute(format, getCharacteristics(), getName(), wgs84Positions);
+        return new TcxRoute(format, getCharacteristics(), getName(), positions);
     }
 
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        List<TomTomPosition> tomTomPositions = new ArrayList<>();
-        for (P position : positions) {
-            tomTomPositions.add(position.asTomTomRoutePosition());
+        List<TomTomPosition> positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            positions.add(position.asTomTomRoutePosition());
         }
-        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
+        return new TomTomRoute(format, getCharacteristics(), getName(), positions);
     }
 
     public boolean equals(Object o) {

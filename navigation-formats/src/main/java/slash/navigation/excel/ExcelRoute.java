@@ -28,8 +28,9 @@ import slash.navigation.base.*;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
-import slash.navigation.csv.ColumnType;
-import slash.navigation.csv.ColumnTypeToRowIndexMapping;
+import slash.navigation.csv.CsvFormat;
+import slash.navigation.csv.CsvPosition;
+import slash.navigation.csv.CsvRoute;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
@@ -57,7 +58,7 @@ import java.util.List;
 
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteComments.createRouteName;
-import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
+import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
 
 /**
  * An Excel route.
@@ -211,6 +212,14 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
+    }
+
+    protected CsvRoute asCsvFormat(CsvFormat format) {
+        List<CsvPosition> positions = new ArrayList<>();
+        for (ExcelPosition position : getPositions()) {
+            positions.add(position.asCsvPosition());
+        }
+        return new CsvRoute(format, getName(), positions);
     }
 
     protected ExcelRoute asExcelFormat(ExcelFormat format) {

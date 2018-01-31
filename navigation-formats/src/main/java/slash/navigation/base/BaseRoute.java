@@ -34,8 +34,12 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
-import slash.navigation.excel.Excel2008Format;
-import slash.navigation.excel.Excel97Format;
+import slash.navigation.csv.CsvCommaFormat;
+import slash.navigation.csv.CsvFormat;
+import slash.navigation.csv.CsvRoute;
+import slash.navigation.csv.CsvSemicolonFormat;
+import slash.navigation.excel.MicrosoftExcel2008Format;
+import slash.navigation.excel.MicrosoftExcel97Format;
 import slash.navigation.excel.ExcelFormat;
 import slash.navigation.excel.ExcelRoute;
 import slash.navigation.fpl.GarminFlightPlanFormat;
@@ -588,6 +592,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     protected abstract BcrRoute asBcrFormat(BcrFormat format);
 
+    protected abstract CsvRoute asCsvFormat(CsvFormat format);
+
     protected abstract ExcelRoute asExcelFormat(ExcelFormat format);
 
     protected abstract GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format);
@@ -665,17 +671,31 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public ExcelRoute asExcel97Format() {
-        if (getFormat() instanceof Excel97Format)
-            return (ExcelRoute) this;
-        return asExcelFormat(new Excel97Format());
+    public CsvRoute asCsvCommaFormat() {
+        if (getFormat() instanceof CsvCommaFormat)
+            return (CsvRoute) this;
+        return asCsvFormat(new CsvCommaFormat());
     }
 
     @SuppressWarnings("UnusedDeclaration")
-    public ExcelRoute asExcel2008Format() {
-        if (getFormat() instanceof Excel2008Format)
+    public CsvRoute asCsvSemicolonFormat() {
+        if (getFormat() instanceof CsvSemicolonFormat)
+            return (CsvRoute) this;
+        return asCsvFormat(new CsvSemicolonFormat());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public ExcelRoute asMicrosoftExcel97Format() {
+        if (getFormat() instanceof MicrosoftExcel97Format)
             return (ExcelRoute) this;
-        return asExcelFormat(new Excel2008Format());
+        return asExcelFormat(new MicrosoftExcel97Format());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public ExcelRoute asMicrosoftExcel2008Format() {
+        if (getFormat() instanceof MicrosoftExcel2008Format)
+            return (ExcelRoute) this;
+        return asExcelFormat(new MicrosoftExcel2008Format());
     }
 
     @SuppressWarnings("UnusedDeclaration")

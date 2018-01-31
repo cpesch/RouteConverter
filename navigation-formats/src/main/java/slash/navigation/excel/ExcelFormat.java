@@ -28,8 +28,6 @@ import slash.navigation.base.MultipleRoutesFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.csv.ColumnType;
-import slash.navigation.csv.ColumnTypeToRowIndexMapping;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,8 +35,8 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.csv.ColumnType.Unsupported;
-import static slash.navigation.csv.ColumnTypeToRowIndexMapping.DEFAULT;
+import static slash.navigation.excel.ColumnType.Unsupported;
+import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
 
 /**
  * The base of all Excel formats.

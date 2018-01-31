@@ -150,6 +150,18 @@ public class Transfer {
         return escape(string, escape, replacement, "");
     }
 
+
+    public static boolean isIsoLatin1ButReadWithUtf8(String string) {
+        if (string != null) {
+            for (int i = 0; i < string.length(); i++) {
+                char c = string.charAt(i);
+                if (c == '\ufffd')
+                    return true;
+            }
+        }
+        return false;
+    }
+
     public static Double formatDouble(BigDecimal aBigDecimal) {
         return aBigDecimal != null ? aBigDecimal.doubleValue() : null;
     }

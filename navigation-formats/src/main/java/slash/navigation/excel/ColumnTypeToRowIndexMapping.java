@@ -17,11 +17,11 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.csv;
+package slash.navigation.excel;
 
 import java.util.*;
 
-import static slash.navigation.csv.ColumnType.*;
+import static slash.navigation.excel.ColumnType.*;
 
 /**
  * Maps column types to indexes.
@@ -29,8 +29,8 @@ import static slash.navigation.csv.ColumnType.*;
  * @author Christian Pesch
  */
 
-public class ColumnTypeToRowIndexMapping {
-    public static final ColumnTypeToRowIndexMapping DEFAULT = new ColumnTypeToRowIndexMapping();
+class ColumnTypeToRowIndexMapping {
+    static final ColumnTypeToRowIndexMapping DEFAULT = new ColumnTypeToRowIndexMapping();
     static {
         DEFAULT.add(0, Longitude);
         DEFAULT.add(1, Latitude);

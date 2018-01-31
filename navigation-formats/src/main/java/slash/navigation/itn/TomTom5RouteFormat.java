@@ -31,7 +31,7 @@ public class TomTom5RouteFormat extends TomTomRouteFormat {
         return "Tom Tom 5 Route (*" + getExtension() + ")";
     }
 
-    protected boolean isIso885915ButReadWithUtf8(String string) {
+    protected boolean isIsoLatin1ButReadWithUtf8(String string) {
         return false;
     }
 }

@@ -30,6 +30,9 @@ import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
+import slash.navigation.csv.CsvFormat;
+import slash.navigation.csv.CsvPosition;
+import slash.navigation.csv.CsvRoute;
 import slash.navigation.excel.ExcelFormat;
 import slash.navigation.excel.ExcelPosition;
 import slash.navigation.excel.ExcelRoute;
@@ -142,6 +145,14 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
             bcrPositions.add(bcrPosition);
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
+    }
+
+    protected CsvRoute asCsvFormat(CsvFormat format) {
+        List<CsvPosition> positions = new ArrayList<>();
+        for (GpxPosition position : getPositions()) {
+            positions.add(position.asCsvPosition());
+        }
+        return new CsvRoute(format, getName(), positions);
     }
 
     protected ExcelRoute asExcelFormat(ExcelFormat format) {

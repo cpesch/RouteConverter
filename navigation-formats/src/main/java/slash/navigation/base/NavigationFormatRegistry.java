@@ -51,8 +51,11 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
-import slash.navigation.excel.Excel2008Format;
-import slash.navigation.excel.Excel97Format;
+import slash.navigation.csv.CsvCommaFormat;
+import slash.navigation.csv.CsvFormat;
+import slash.navigation.csv.CsvSemicolonFormat;
+import slash.navigation.excel.MicrosoftExcel2008Format;
+import slash.navigation.excel.MicrosoftExcel97Format;
 import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
@@ -215,8 +218,10 @@ public class NavigationFormatRegistry {
         addFormat(NmnRouteFormat.class);
         addFormat(ApeMapFormat.class);
         addFormat(PhotoFormat.class);
-        addFormat(Excel97Format.class);
-        addFormat(Excel2008Format.class);
+        addFormat(MicrosoftExcel97Format.class);
+        addFormat(MicrosoftExcel2008Format.class);
+        addFormat(CsvCommaFormat.class);
+        addFormat(CsvSemicolonFormat.class);
 
         // kind of meta-format
         addFormat(ZipFormat.class);

@@ -19,32 +19,27 @@
 */
 package slash.navigation.csv;
 
-import java.util.List;
+import slash.navigation.base.ParserContext;
 
-import static java.util.Arrays.asList;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 
 /**
- * Enumeration of supported column types.
+ * Reads semicolon separated CSV (.csv) files as Microsoft Excel produces them.
  *
  * @author Christian Pesch
  */
 
-enum ColumnType {
-    Latitude("Breite", "Breitengrad"),
-    Longitude("L\u00e4nge", "L\u00e4ngengrad"),
-    Elevation("H\u00f6he", "Altitude"),
-    Speed("Geschwindigkeit"),
-    Time("Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
-    Description("Beschreibung", "Comment", "Kommentar"),
-    Unsupported();
-
-    private List<String> alternativeNames;
-
-    ColumnType(String... alternativeNames) {
-        this.alternativeNames = asList(alternativeNames);
+public class CsvSemicolonFormat extends CsvFormat {
+    public String getName() {
+        return "CSV Semicolon (" + getExtension() + ")";
     }
 
-    public List<String> getAlternativeNames() {
-        return alternativeNames;
+    protected char getColumnSeparator() {
+        return ';';
     }
 }

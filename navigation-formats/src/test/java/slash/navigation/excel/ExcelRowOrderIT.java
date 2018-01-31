@@ -21,8 +21,6 @@ package slash.navigation.excel;
 
 import org.junit.Test;
 import slash.navigation.base.*;
-import slash.navigation.excel.Excel2008Format;
-import slash.navigation.excel.Excel97Format;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,7 +46,7 @@ public class ExcelRowOrderIT {
         File target = createTempFile("target", getExtension(SOURCE));
         parser.write(route, route.getFormat(), target);
 
-        List<NavigationFormat> formats = Arrays.<NavigationFormat>asList(new Excel97Format(), new Excel2008Format());
+        List<NavigationFormat> formats = Arrays.<NavigationFormat>asList(new MicrosoftExcel97Format(), new MicrosoftExcel2008Format());
         ParserResult result = parser.read(target, formats);
         route = result.getTheRoute();
         return route;

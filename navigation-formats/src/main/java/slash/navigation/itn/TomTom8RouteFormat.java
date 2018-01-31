@@ -20,6 +20,7 @@
 
 package slash.navigation.itn;
 
+import slash.common.io.Transfer;
 import slash.navigation.base.ParserContext;
 
 import java.io.IOException;
@@ -47,15 +48,8 @@ public class TomTom8RouteFormat extends TomTomRouteFormat {
         read(source, UTF8_ENCODING, context);
     }
 
-    protected boolean isIso885915ButReadWithUtf8(String string) {
-        if (string != null) {
-            for (int i = 0; i < string.length(); i++) {
-                char c = string.charAt(i);
-                if (c == '\ufffd')
-                    return true;
-            }
-        }
-        return false;
+    protected boolean isIsoLatin1ButReadWithUtf8(String string) {
+        return Transfer.isIsoLatin1ButReadWithUtf8(string);
     }
 
     public void write(TomTomRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {

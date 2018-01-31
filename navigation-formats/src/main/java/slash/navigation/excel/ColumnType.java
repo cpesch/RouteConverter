@@ -17,11 +17,15 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.csv;
+package slash.navigation.excel;
+
+import org.apache.poi.ss.usermodel.CellType;
 
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
+import static org.apache.poi.ss.usermodel.CellType.STRING;
 
 /**
  * Enumeration of supported column types.
@@ -30,18 +34,24 @@ import static java.util.Arrays.asList;
  */
 
 enum ColumnType {
-    Latitude("Breite", "Breitengrad"),
-    Longitude("L\u00e4nge", "L\u00e4ngengrad"),
-    Elevation("H\u00f6he", "Altitude"),
-    Speed("Geschwindigkeit"),
-    Time("Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
-    Description("Beschreibung", "Comment", "Kommentar"),
-    Unsupported();
+    Latitude(NUMERIC, "Breite", "Breitengrad"),
+    Longitude(NUMERIC, "L\u00e4nge", "L\u00e4ngengrad"),
+    Elevation(NUMERIC, "H\u00f6he", "Altitude"),
+    Speed(NUMERIC, "Geschwindigkeit"),
+    Time(NUMERIC, "Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
+    Description(STRING, "Beschreibung", "Comment", "Kommentar"),
+    Unsupported(STRING);
 
+    private CellType cellType;
     private List<String> alternativeNames;
 
-    ColumnType(String... alternativeNames) {
+    ColumnType(CellType cellType, String... alternativeNames) {
+        this.cellType = cellType;
         this.alternativeNames = asList(alternativeNames);
+    }
+
+    public CellType getCellType() {
+        return cellType;
     }
 
     public List<String> getAlternativeNames() {
