@@ -390,8 +390,6 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         try(BufferedWriter writer = new BufferedWriter(new FileWriter(temp))) {
             writer.write("#!/bin/sh");
             writer.newLine();
-            writer.write("`which chmod` a+x \"" + babelPath + "\"");
-            writer.newLine();
             // help Mac gpsbabel find its QtCore library
             if (isMac()) {
                 writer.write("cd `dirname \"" + babelPath + "\"`");
