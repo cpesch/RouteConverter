@@ -190,6 +190,12 @@ public class ConvertIT {
     }
 
     @Test
+    public void testConvertCsvToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-excel1.csv", new CsvSemicolonFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from-librecalc1.csv", new CsvCommaFormat(), new Gpx11Format());
+    }
+
+    @Test
     public void testConvertGpxToExcel() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new MicrosoftExcel97Format());
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new MicrosoftExcel2008Format());

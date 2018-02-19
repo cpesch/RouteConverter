@@ -22,21 +22,27 @@ package slash.navigation.csv;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.parseDate;
-import static slash.navigation.csv.ColumnType.*;
+import static slash.navigation.csv.ColumnType.Description;
+import static slash.navigation.csv.ColumnType.Elevation;
+import static slash.navigation.csv.ColumnType.Latitude;
+import static slash.navigation.csv.ColumnType.Longitude;
+import static slash.navigation.csv.ColumnType.Speed;
+import static slash.navigation.csv.ColumnType.Time;
 
 /**
  * A position from CSV (.csv) files.
  */
 
 public class CsvPosition extends BaseNavigationPosition {
-    private static final String DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm";
+    private static final String DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm:ss";
+    private static final String DATE_AND_TIME_WITHOUT_SECONDS_FORMAT = "dd.MM.yy HH:mm";
 
     private Map<String, String> rowAsMap;
 
@@ -45,13 +51,17 @@ public class CsvPosition extends BaseNavigationPosition {
     }
 
     public CsvPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
-        this(new HashMap<String, String>());
+        this(new LinkedHashMap<String, String>());
         setLongitude(longitude);
         setLatitude(latitude);
         setElevation(elevation);
         setSpeed(speed);
         setTime(time);
         setDescription(description);
+    }
+
+    Map<String, String> getRowAsMap() {
+        return rowAsMap;
     }
 
     private String getValueAsString(ColumnType type) {
@@ -74,7 +84,10 @@ public class CsvPosition extends BaseNavigationPosition {
 
     private CompactCalendar getValueAsTime(ColumnType type) {
         String value = getValueAsString(type);
-        return parseDate(value, DATE_AND_TIME_FORMAT);
+        CompactCalendar calendar = parseDate(value, DATE_AND_TIME_FORMAT);
+        if(calendar == null)
+            calendar = parseDate(value, DATE_AND_TIME_WITHOUT_SECONDS_FORMAT);
+        return calendar;
     }
 
     private void setValueAsString(ColumnType type, String value) {
