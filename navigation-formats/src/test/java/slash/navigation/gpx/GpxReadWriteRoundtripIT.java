@@ -79,9 +79,9 @@ public class GpxReadWriteRoundtripIT {
 
     private void checkUnprocessed(Gpx.Wpt wpt) {
         assertNotNull(wpt);
-        assertEquals("Waypoint1 Name", wpt.getName());
+        assertEquals("Waypoint1 13:29:25", wpt.getName());
         assertEquals("Comment", wpt.getCmt());
-        assertEquals("Description", wpt.getDesc());
+        assertEquals("Description1", wpt.getDesc());
         assertEquals("Source", wpt.getSrc());
         assertEquals("URL", wpt.getUrl());
         assertEquals("URLName", wpt.getUrlname());

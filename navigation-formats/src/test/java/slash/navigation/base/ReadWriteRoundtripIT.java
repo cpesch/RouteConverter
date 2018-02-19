@@ -70,13 +70,6 @@ public class ReadWriteRoundtripIT {
     }
 
     @Test
-    public void testGarminMapSource5ReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.mps");
-        readWriteRoundtrip(TEST_PATH + "from10.mps");
-        readWriteRoundtrip(TEST_PATH + "from10trk.mps");
-    }
-
-    @Test
     public void testGarminMapSource6ReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from2.gdb");
         readWriteRoundtrip(TEST_PATH + "from3.gdb");
@@ -302,10 +295,5 @@ public class ReadWriteRoundtripIT {
     public void testViaMichelinReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-poi.xvm");
         readWriteRoundtrip(TEST_PATH + "from-itinerary.xvm");
-    }
-
-    @Test
-    public void testXcsvReadWriteRoundtrip() throws IOException {
-        readWriteRoundtrip(TEST_PATH + "from.xcsv");
     }
 }
