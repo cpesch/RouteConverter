@@ -142,11 +142,6 @@ public class SplitIT {
     }
 
     @Test
-    public void testSplitGarminMapSource5ReadWriteRoundtrip() throws IOException {
-        splitReadWriteRoundtrip(TEST_PATH + "large.mps");
-    }
-
-    @Test
     public void testSplitNmn4ReadWriteRoundtrip() throws IOException {
         splitReadWriteRoundtrip(TEST_PATH + "large-nmn4.rte");
     }

@@ -94,7 +94,9 @@ public class NavigationFormatParser {
     private List<Integer> getPositionCounts(List<BaseRoute> routes) {
         List<Integer> positionCounts = new ArrayList<>();
         for (BaseRoute route : routes)
-            positionCounts.add(route.getPositionCount());
+            // guard against strange effects in tests only
+            if (route != null)
+                positionCounts.add(route.getPositionCount());
         return positionCounts;
     }
 

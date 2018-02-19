@@ -21,14 +21,7 @@
 package slash.navigation.babel;
 
 import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.gpx.GpxFormat;
-import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Reads and writes Garmin MapSource 6.x (.gdb) files.
@@ -65,6 +58,7 @@ public class GarminMapSource6Format extends BabelFormat implements MultipleRoute
         return true;
     }
 
+    /*
     private String makeUnique(String key, Set<String> keys) {
         String unique = key;
         int number = 2;
@@ -95,4 +89,5 @@ public class GarminMapSource6Format extends BabelFormat implements MultipleRoute
         }
         return result;
     }
+    */
 }
