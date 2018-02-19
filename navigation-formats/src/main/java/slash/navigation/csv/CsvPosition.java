@@ -98,8 +98,9 @@ public class CsvPosition extends BaseNavigationPosition {
         setValueAsString(type, formatDoubleAsString(value));
     }
 
-    private void setValueAsTime(ColumnType type, CompactCalendar value) {
-        setValueAsString(type, createDateFormat(DATE_AND_TIME_FORMAT).format(value.getTime().getTime()));
+    private void setValueAsTime(ColumnType type, CompactCalendar calendar) {
+        String value = calendar != null ? createDateFormat(DATE_AND_TIME_FORMAT).format(calendar.getTime().getTime()) : null;
+        setValueAsString(type, value);
     }
 
     public Double getLongitude() {
