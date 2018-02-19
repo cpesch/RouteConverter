@@ -49,6 +49,10 @@ public class GarminPoiDbFormat extends BabelFormat {
         return "garmin_poi";
     }
 
+    protected String[] getGlobalOptions() {
+        return new String[]{"-w"};
+    }
+
     protected List<RouteCharacteristics> getBabelCharacteristics() {
         return singletonList(Waypoints);
     }

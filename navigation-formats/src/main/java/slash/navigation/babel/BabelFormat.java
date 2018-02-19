@@ -203,7 +203,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     private void readStream(InputStream source, ParserContext<GpxRoute> context) throws Exception {
-        Process process = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS);
+        Process process = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, getGlobalOptions());
         Thread observer = observeProcess(process, getReadCommandExecutionTimeoutPreference());
         observer.start();
         InputStream target = process.getInputStream();
@@ -315,7 +315,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             sourceFile = createTempFile("babel-read-source", "." + getFormatName(), getTemporaryDirectory());
             copyAndClose(source, new FileOutputStream(sourceFile));
             targetFile = createTempFile("babel-read-target", "." + BABEL_INTERFACE_FORMAT_NAME, getTemporaryDirectory());
-            boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, ROUTE_WAYPOINTS_TRACKS, "", getReadCommandExecutionTimeoutPreference());
+            boolean successful = startBabel(sourceFile, getFormatName(), targetFile, BABEL_INTERFACE_FORMAT_NAME, getGlobalOptions(), "", getReadCommandExecutionTimeoutPreference());
             if (successful) {
                 try (InputStream target = new IllegalCharacterFilterInputStream(new FileInputStream(targetFile))) {
                     getGpxFormat().read(target, context);
