@@ -54,14 +54,18 @@ public class RecentUrlsModelTest {
 
     @Test
     public void testAddUrl() throws IOException {
-        URL url = createTempFile("recent", ".url").toURI().toURL();
+        File tempFile = createTempFile("recent", ".url");
+        tempFile.deleteOnExit();
+        URL url = tempFile.toURI().toURL();
         model.addUrl(url);
         assertEquals(singletonList(url), model.getUrls());
     }
 
     @Test
     public void testAddExistingUrl() throws IOException {
-        URL url = createTempFile("recent", ".url").toURI().toURL();
+        File tempFile = createTempFile("recent", ".url");
+        tempFile.deleteOnExit();
+        URL url = tempFile.toURI().toURL();
         model.addUrl(url);
         model.addUrl(url);
         model.addUrl(url);
@@ -70,9 +74,15 @@ public class RecentUrlsModelTest {
 
     @Test
     public void testReadExistingUrlBug() throws IOException {
-        URL first = createTempFile("first", ".url").toURI().toURL();
-        URL second = createTempFile("second", ".url").toURI().toURL();
-        URL third = createTempFile("third", ".url").toURI().toURL();
+        File firstTempFile = createTempFile("first", ".url");
+        firstTempFile.deleteOnExit();
+        URL first = firstTempFile.toURI().toURL();
+        File secondTempFile = createTempFile("second", ".url");
+        secondTempFile.deleteOnExit();
+        URL second = secondTempFile.toURI().toURL();
+        File thirdTempFile = createTempFile("third", ".url");
+        thirdTempFile.deleteOnExit();
+        URL third = thirdTempFile.toURI().toURL();
         model.addUrl(first);
         model.addUrl(second);
         model.addUrl(first);
@@ -84,7 +94,9 @@ public class RecentUrlsModelTest {
     public void testLatestFirst() throws IOException {
         List<URL> expected = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            URL url = createTempFile("recent-" + i + "-", ".url").toURI().toURL();
+            File tempFile = createTempFile("recent-" + i + "-", ".url");
+            tempFile.deleteOnExit();
+            URL url = tempFile.toURI().toURL();
             model.addUrl(url);
             expected.add(0, url);
             assertEquals(expected, model.getUrls());
@@ -95,7 +107,9 @@ public class RecentUrlsModelTest {
     public void testLimit() throws IOException {
         List<URL> collected = new ArrayList<>();
         for (int i = 0; i < 2 * LIMIT; i++) {
-            URL url = createTempFile("recent-" + i + "-", ".url").toURI().toURL();
+            File tempFile = createTempFile("recent-" + i + "-", ".url");
+            tempFile.deleteOnExit();
+            URL url = tempFile.toURI().toURL();
             model.addUrl(url);
             collected.add(0, url);
             List<URL> expected = collected.subList(0, min(i + 1, LIMIT));
@@ -109,7 +123,9 @@ public class RecentUrlsModelTest {
     public void testSkipNotExistentFiles() throws IOException {
         List<URL> collected = new ArrayList<>();
         for (int i = 0; i < LIMIT; i++) {
-            URL url = createTempFile("recent-" + i + "-", ".url").toURI().toURL();
+            File tempFile = createTempFile("recent-" + i + "-", ".url");
+            tempFile.deleteOnExit();
+            URL url = tempFile.toURI().toURL();
             model.addUrl(url);
             collected.add(0, url);
         }
