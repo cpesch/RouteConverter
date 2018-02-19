@@ -186,7 +186,6 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
     }
 
-
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<>();
         for (GpxPosition position : positions) {
