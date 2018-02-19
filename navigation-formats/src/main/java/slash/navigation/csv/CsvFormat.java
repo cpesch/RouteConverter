@@ -20,6 +20,8 @@
 package slash.navigation.csv;
 
 import com.fasterxml.jackson.databind.MappingIterator;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.SequenceWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 import slash.common.io.NotClosingUnderlyingInputStream;
@@ -30,6 +32,7 @@ import slash.navigation.common.NavigationPosition;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -101,15 +104,20 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
         List<CsvPosition> positions = new ArrayList<>();
 
         CsvSchema schema = CsvSchema.emptySchema().withHeader().withColumnSeparator(getColumnSeparator());
-        CsvMapper mapper = new CsvMapper();
-        MappingIterator<Map<String, String>> iterator = mapper.readerFor(Map.class).with(schema).readValues(reader);
-        while (iterator.hasNext()) {
-            Map<String, String> rowAsMap = iterator.next();
-            if (containsGarbage(rowAsMap)) {
-                log.warning(format("Found garbage in '%s'", rowAsMap));
-                return false;
+        ObjectReader objectReader = new CsvMapper().readerFor(LinkedHashMap.class).with(schema);
+        try {
+            MappingIterator<LinkedHashMap<String, String>> iterator = objectReader.readValues(reader);
+            while (iterator.hasNext()) {
+                LinkedHashMap<String, String> rowAsMap = iterator.next();
+                if (containsGarbage(rowAsMap)) {
+                    log.warning(format("Found garbage in '%s'", rowAsMap));
+                    return false;
+                }
+                positions.add(new CsvPosition(rowAsMap));
             }
-            positions.add(new CsvPosition(rowAsMap));
+        }
+        finally {
+            reader.close();
         }
 
         if (positions.size() > 0)
@@ -118,6 +126,19 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
     }
 
     public void write(CsvRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        throw new UnsupportedOperationException();
+        List<CsvPosition> positions = route.getPositions();
+
+        CsvSchema.Builder builder = new CsvSchema.Builder();
+        if (positions.size() > 0)
+            for (String key : positions.get(0).getRowAsMap().keySet())
+                builder = builder.addColumn(key);
+
+        CsvSchema schema = builder.build().withHeader().withColumnSeparator(getColumnSeparator());
+        try(SequenceWriter writer = new CsvMapper().writer(schema).writeValues(target)) {
+            for (int i = startIndex; i < endIndex; i++) {
+                CsvPosition position = positions.get(i);
+                writer.write(position.getRowAsMap());
+            }
+        }
     }
 }

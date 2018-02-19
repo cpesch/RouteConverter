@@ -23,22 +23,31 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.SimpleFormat;
 import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.excel.ExcelFormat;
+import slash.navigation.excel.ExcelPosition;
 import slash.navigation.excel.ExcelRoute;
+import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.GpxFormat;
+import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
+import slash.navigation.itn.TomTomPosition;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.BaseKmlFormat;
+import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
 import slash.navigation.nmea.BaseNmeaFormat;
+import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NmnFormat;
+import slash.navigation.nmn.NmnPosition;
 import slash.navigation.nmn.NmnRoute;
 import slash.navigation.photo.PhotoFormat;
 import slash.navigation.tcx.TcxFormat;
@@ -75,7 +84,7 @@ public class CsvRoute extends BaseRoute<CsvPosition, CsvFormat> {
     }
 
     public List<String> getDescription() {
-        throw new UnsupportedOperationException(); // TODO implement me
+        return null;
     }
 
     public List<CsvPosition> getPositions() {
@@ -87,15 +96,19 @@ public class CsvRoute extends BaseRoute<CsvPosition, CsvFormat> {
     }
 
     public void add(int index, CsvPosition position) {
-        throw new UnsupportedOperationException(); // TODO implement me
+        positions.add(index, position);
     }
 
     public CsvPosition createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
-        return null; // TODO fix me
+        return new CsvPosition(longitude, latitude, elevation, speed, time, description);
     }
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
-        return null; // TODO fix me
+        List<BcrPosition> bcrPositions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            bcrPositions.add(position.asMTPPosition());
+        }
+        return new BcrRoute(format, getName(), getDescription(), bcrPositions);
     }
 
     protected CsvRoute asCsvFormat(CsvFormat format) {
@@ -104,42 +117,98 @@ public class CsvRoute extends BaseRoute<CsvPosition, CsvFormat> {
     }
 
     protected ExcelRoute asExcelFormat(ExcelFormat format) {
-        return null; // TODO fix me
+        List<ExcelPosition> excelPositions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            excelPositions.add(position.asMicrosoftExcelPosition());
+        }
+        return new ExcelRoute(format, getName(), excelPositions);
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
-        return null; // TODO fix me
+        List<GoPalPosition> gopalPositions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            gopalPositions.add(position.asGoPalRoutePosition());
+        }
+        return new GoPalRoute(format, getName(), gopalPositions);
     }
 
     protected GpxRoute asGpxFormat(GpxFormat format) {
-        return null; // TODO fix me
-    }
-
-    protected SimpleRoute asPhotoFormat(PhotoFormat format) {
-        return null; // TODO fix me
+        List<GpxPosition> gpxPositions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            gpxPositions.add(position.asGpxPosition());
+        }
+        return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
-        return null; // TODO fix me
+        List<KmlPosition> kmlPositions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            kmlPositions.add(position.asKmlPosition());
+        }
+        return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
     }
 
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
-        return null; // TODO fix me
+        List<NmeaPosition> nmeaPositions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            nmeaPositions.add(position.asNmeaPosition());
+        }
+        return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
     }
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
-        return null; // TODO fix me
+        List<NmnPosition> nmnPositions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            nmnPositions.add(position.asNmnPosition());
+        }
+        return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
+    }
+
+    protected SimpleRoute asPhotoFormat(PhotoFormat format) {
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
-        return null; // TODO fix me
+        List<Wgs84Position> positions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            positions.add(position.asWgs84Position());
+        }
+        return new Wgs84Route(format, getCharacteristics(), positions);
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
-        return null; // TODO fix me
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new TcxRoute(format, getCharacteristics(), getName(), wgs84Positions);
     }
 
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
-        return null; // TODO fix me
+        List<TomTomPosition> tomTomPositions = new ArrayList<>();
+        for (CsvPosition position : getPositions()) {
+            tomTomPositions.add(position.asTomTomRoutePosition());
+        }
+        return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        CsvRoute csvRoute = (CsvRoute) o;
+
+        return (name != null ? name.equals(csvRoute.name) : csvRoute.name == null) &&
+                (positions != null ? positions.equals(csvRoute.positions) : csvRoute.positions == null);
+    }
+
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (positions != null ? positions.hashCode() : 0);
+        return result;
     }
 }
