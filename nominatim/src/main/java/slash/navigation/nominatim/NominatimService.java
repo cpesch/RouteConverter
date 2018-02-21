@@ -128,6 +128,7 @@ public class NominatimService implements GeocodingService {
             result += ", ";
         result += (parts.getPostcode() != null ? parts.getPostcode() : "") + " " +
                         (parts.getCity() != null ? parts.getCity() + ", " : "") +
+                        (parts.getState() != null ? parts.getState() + ", " : "") +
                         (parts.getCountry() != null ? parts.getCountry() : "");
         return trim(result);
     }
