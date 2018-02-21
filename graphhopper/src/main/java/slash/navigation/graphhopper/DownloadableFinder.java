@@ -55,7 +55,7 @@ public class DownloadableFinder {
     }
 
     private boolean existsFile(File file) {
-        return new java.io.File(directory, file.getUri()).exists();
+        return file != null && new java.io.File(directory, file.getUri()).exists();
     }
 
     public Downloadable getDownloadableFor(BoundingBox routeBoundingBox) {
@@ -81,7 +81,8 @@ public class DownloadableFinder {
 
             if (fileBoundingBox.contains(routeBoundingBox)) {
                 if (coveringFile == null ||
-                        !existsFile(coveringFile) && existsFile(file)) {
+                        !existsFile(coveringFile) && existsFile(file) ||
+                        coveringFile.getBoundingBox().contains(fileBoundingBox)) {
                     coveringFile = file;
                 }
             }

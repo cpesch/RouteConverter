@@ -47,7 +47,7 @@ public class DownloadableFinderIT {
     private File temporaryDirectory;
 
     @Before
-    public void setUp() throws IOException {
+    public void setUp() {
         temporaryDirectory = getTemporaryDirectory();
     }
 
