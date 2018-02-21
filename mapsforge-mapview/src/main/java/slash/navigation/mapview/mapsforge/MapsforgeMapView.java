@@ -124,6 +124,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.DELETE;
 import static javax.swing.event.TableModelEvent.INSERT;
@@ -244,15 +245,19 @@ public class MapsforgeMapView implements MapView {
 
                     LatLong latLong = asLatLong(positionWithLayer.getPosition());
                     Marker marker = new DraggableMarker(latLong, markerIcon, 8, -16) {
-                        public void onDrop(LatLong latLong) {
-                            int index = MapsforgeMapView.this.positionsModel.getIndex(positionWithLayer.getPosition());
+                        public void onDrop(final LatLong latLong) {
+                            final int index = MapsforgeMapView.this.positionsModel.getIndex(positionWithLayer.getPosition());
                             if(index == -1) {
                                 log.warning("Marker without position " + this);
                                 return;
                             }
 
-                            MapsforgeMapView.this.positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                                    Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
+                            invokeLater(new Runnable() {
+                                public void run() {
+                                    MapsforgeMapView.this.positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
+                                            Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
+                                }
+                            });
                         }
                     };
                     positionWithLayer.setLayer(marker);
@@ -857,8 +862,8 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void addLayers(final List<? extends ObjectWithLayer> withLayers) {
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
+//        invokeInAwtEventQueue(new Runnable() {
+//            public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
                     ObjectWithLayer withLayer = withLayers.get(i);
                     Layer layer = withLayer.getLayer();
@@ -871,8 +876,8 @@ public class MapsforgeMapView implements MapView {
                     } else
                         log.warning("Could not find layer for " + withLayer);
                 }
-            }
-        });
+//            }
+//        });
     }
 
     public void removeLayer(final Layer layer) {
@@ -885,8 +890,8 @@ public class MapsforgeMapView implements MapView {
     }
 
     private void removeLayers(final List<? extends ObjectWithLayer> withLayers, final boolean clearLayer) {
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
+//        invokeInAwtEventQueue(new Runnable() {
+//            public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
                     ObjectWithLayer withLayer = withLayers.get(i);
                     Layer layer = withLayer.getLayer();
@@ -901,8 +906,8 @@ public class MapsforgeMapView implements MapView {
                     if (clearLayer)
                         withLayer.setLayer(null);
                 }
-            }
-        });
+//            }
+//        });
     }
 
     private BoundingBox getMapBoundingBox() {
