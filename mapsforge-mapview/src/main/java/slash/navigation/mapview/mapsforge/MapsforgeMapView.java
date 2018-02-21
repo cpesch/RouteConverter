@@ -862,8 +862,8 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void addLayers(final List<? extends ObjectWithLayer> withLayers) {
-//        invokeInAwtEventQueue(new Runnable() {
-//            public void run() {
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
                     ObjectWithLayer withLayer = withLayers.get(i);
                     Layer layer = withLayer.getLayer();
@@ -876,8 +876,8 @@ public class MapsforgeMapView implements MapView {
                     } else
                         log.warning("Could not find layer for " + withLayer);
                 }
-//            }
-//        });
+            }
+        });
     }
 
     public void removeLayer(final Layer layer) {
@@ -890,8 +890,8 @@ public class MapsforgeMapView implements MapView {
     }
 
     private void removeLayers(final List<? extends ObjectWithLayer> withLayers, final boolean clearLayer) {
-//        invokeInAwtEventQueue(new Runnable() {
-//            public void run() {
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
                     ObjectWithLayer withLayer = withLayers.get(i);
                     Layer layer = withLayer.getLayer();
@@ -906,8 +906,8 @@ public class MapsforgeMapView implements MapView {
                     if (clearLayer)
                         withLayer.setLayer(null);
                 }
-//            }
-//        });
+            }
+        });
     }
 
     private BoundingBox getMapBoundingBox() {
