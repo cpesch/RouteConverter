@@ -45,13 +45,13 @@ public class NominatimServiceIT {
 
     @Test
     public void getAddressFor() throws IOException {
-        assertEquals("M\u00fcslieggstrasse, 8733 Eschenbach (SG), Schweiz/Suisse/Svizzera/Svizra", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
-        assertEquals("97506 Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
-        assertEquals("82467 Deutschland", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
+        assertEquals("M\u00fcslieggstrasse, 8733 Eschenbach (SG), Sankt Gallen, Schweiz/Suisse/Svizzera/Svizra", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
+        assertEquals("97506 Bayern, Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
+        assertEquals("82467 Bayern, Deutschland", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
-        assertEquals("Parroquia Isla Santa María (Floreana) (Cab. en Pto. Velasco Ibarra), Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
+        assertEquals("Parroquia Isla Santa María (Floreana) (Cab. en Pto. Velasco Ibarra), Provincia de Galápagos, Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
