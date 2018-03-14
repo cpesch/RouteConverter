@@ -46,14 +46,16 @@ public class PhotonServiceIT {
 
     @Test
     public void getAddressFor() throws IOException {
-        assertEquals("Isarenloch, 8733 Eschenbach (SG), Sankt Gallen, Switzerland", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
-        assertEquals("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
-        assertEquals("Hoher Gaif, Garmisch-Partenkirchen, Bavaria, Germany", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
+        assertEquals("Oberchamm, 8733 Eschenbach (SG), Sankt Gallen, Switzerland", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
+        assertEquals("Kirchplatz, 97506 Grafenrheinfeld, Bavaria, Germany", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
+        assertEquals("Mauerscharte, 82467 Garmisch-Partenkirchen, Bavaria, Germany", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
         assertEquals("Atlas Buoy 0.00E 0.00N", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
-        assertTrue(service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)).contains("South Pole"));
+        String address1 = service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0));
+        assertTrue(address1.contains("Southpole"));
         assertEquals(null, service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
-        assertTrue(service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)).contains("South Pole"));
+        String address2 = service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0));
+        assertTrue(address2.contains("Southpole"));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
 }
