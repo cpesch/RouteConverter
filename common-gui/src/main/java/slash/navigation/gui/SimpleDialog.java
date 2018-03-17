@@ -57,7 +57,7 @@ public abstract class SimpleDialog extends JDialog {
                 (int) bounds.getHeight() - (insets.top + insets.bottom));
         if (width != -1 && height != -1)
             setSize(width, height);
-        log.info("Dialog size is " + getSize());
+        log.info("Dialog " + getName() + " size is " + getSize());
 
         int x = crop(getName() + "x", getPreferencesX(),
                 (int) bounds.getX() + insets.left,
