@@ -580,7 +580,6 @@ public class ConvertPanel implements PanelInTab {
                         invokeLater(new Runnable() {
                             public void run() {
                                 formatAndRoutesModel.setRoutes(new FormatAndRoutes(format, result.getAllRoutes()));
-                                comboBoxChoosePositionList.setModel(formatAndRoutesModel);
                                 urlModel.setString(path);
                                 recentUrlsModel.addUrl(url);
 

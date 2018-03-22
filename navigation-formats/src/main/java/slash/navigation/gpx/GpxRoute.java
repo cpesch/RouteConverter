@@ -21,6 +21,7 @@
 package slash.navigation.gpx;
 
 import slash.common.type.CompactCalendar;
+import slash.common.type.ISO8601;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -56,9 +57,13 @@ import slash.navigation.tcx.TcxFormat;
 import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+import static slash.common.type.CompactCalendar.now;
+import static slash.common.type.ISO8601.formatDate;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -89,7 +94,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
     }
 
     public GpxRoute(GpxFormat format) {
-        this(format, Waypoints, "?", null, new ArrayList<GpxPosition>());
+        this(format, Waypoints, "?", singletonList("Created at " + formatDate(now())), new ArrayList<GpxPosition>());
     }
 
 
