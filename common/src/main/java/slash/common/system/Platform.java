@@ -55,8 +55,8 @@ public class Platform {
                 System.getProperty("java.version").compareTo("1.8.0") >= 0;
     }
 
-    public static boolean isJava9() {
-        return System.getProperty("java.version").compareTo("1.9.0") >= 0;
+    public static boolean isJava9OrLater() {
+        return System.getProperty("java.version").compareTo("9") >= 0;
     }
 
     public static String getJava() {

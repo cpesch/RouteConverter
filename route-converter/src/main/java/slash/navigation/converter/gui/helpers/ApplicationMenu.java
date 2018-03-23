@@ -28,7 +28,7 @@ import java.util.EventObject;
 import java.util.logging.Logger;
 
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.system.Platform.isJava9;
+import static slash.common.system.Platform.isJava9OrLater;
 
 /**
  * Creates an application menu for Mac OS X for RouteConverter.
@@ -117,7 +117,7 @@ public class ApplicationMenu {
         private static void createProxy(OSXHandler adapter, String handlerName) {
             try {
                 initializeApplicationObject();
-                Class<?> handlerClass = Class.forName((isJava9() ? "java.awt.desktop." : "com.apple.eawt.") + handlerName);
+                Class<?> handlerClass = Class.forName((isJava9OrLater() ? "java.awt.desktop." : "com.apple.eawt.") + handlerName);
                 Method setHandlerMethod = application.getClass().getDeclaredMethod("set" + handlerName, handlerClass);
                 Object osxAdapterProxy = Proxy.newProxyInstance(OSXHandler.class.getClassLoader(), new Class<?>[]{handlerClass}, adapter);
                 setHandlerMethod.invoke(application, osxAdapterProxy);

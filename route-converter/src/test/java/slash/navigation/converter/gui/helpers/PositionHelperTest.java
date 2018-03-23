@@ -31,13 +31,13 @@ import static java.text.DateFormat.*;
 import static java.util.Locale.GERMAN;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.calendar;
-import static slash.common.system.Platform.isJava9;
+import static slash.common.system.Platform.isJava9OrLater;
 import static slash.navigation.converter.gui.helpers.PositionHelper.parseDateTime;
 
 public class PositionHelperTest {
 
     private String asDefaultLocaleTime(String germanString) throws ParseException {
-        if(isJava9())
+        if(isJava9OrLater())
             germanString = germanString.replace(" ", ", ");
         DateFormat germanFormat = getDateTimeInstance(SHORT, MEDIUM, GERMAN);
         Date date = germanFormat.parse(germanString);
