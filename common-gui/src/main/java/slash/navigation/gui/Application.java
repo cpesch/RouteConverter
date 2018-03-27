@@ -106,6 +106,7 @@ public abstract class Application {
         for (String bundleName : bundleNames) {
             ResourceBundle bundle = ResourceBundle.getBundle(bundleName);
             if (lastBundle != null)
+                // this is considered an illegal access in Java 9 and later, have to look for alternatives once it's enforced
                 setParentBundle(bundle, lastBundle);
             lastBundle = bundle;
         }
