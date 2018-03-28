@@ -12,5 +12,4 @@ package slash.navigation.gpx.trip1;
 import javax.xml.bind.annotation.XmlNs;
 
 import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
-import static slash.navigation.gpx.GpxUtil.GARMIN_TRACKPOINT_EXTENSIONS_2_NAMESPACE_URI;
 import static slash.navigation.gpx.GpxUtil.GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI;

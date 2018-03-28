@@ -29,7 +29,6 @@ import slash.navigation.maps.MapManager;
 import slash.navigation.maps.RemoteMap;
 
 import javax.swing.*;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;

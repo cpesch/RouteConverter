@@ -20,8 +20,6 @@
 
 package slash.navigation.mapview.browser;
 
-import static org.junit.Assert.assertEquals;
-
 import static slash.common.type.HexadecimalNumber.decodeInt;
 
 import java.awt.*;

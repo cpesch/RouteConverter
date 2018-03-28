@@ -23,7 +23,6 @@ import org.w3c.dom.Element;
 import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.ObjectFactory;
 import slash.navigation.gpx.binding11.WptType;
-import slash.navigation.gpx.garmin3.TrackPointExtensionT;
 
 import javax.xml.bind.JAXBElement;
 import java.util.*;
@@ -33,7 +32,6 @@ import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.navigation.common.NavigationConversion.*;
-import static slash.navigation.common.NavigationConversion.formatHeading;
 import static slash.navigation.gpx.GpxExtensionType.*;
 import static slash.navigation.gpx.GpxFormat.asKmh;
 import static slash.navigation.gpx.GpxFormat.asMs;

@@ -11,8 +11,6 @@
 package slash.navigation.lmx.binding;
 import javax.xml.bind.annotation.XmlNs;
 
-import slash.navigation.lmx.NokiaLandmarkExchangeUtil;
-
 import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.LMX_NAMESPACE_URI;
 

@@ -19,15 +19,6 @@
 */
 package slash.navigation.csv;
 
-import slash.navigation.base.ParserContext;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.common.io.Transfer.UTF8_ENCODING;
-
 /**
  * Reads semicolon separated CSV (.csv) files as Microsoft Excel produces them.
  *

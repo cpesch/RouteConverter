@@ -87,7 +87,6 @@ import static java.util.Arrays.asList;
 import static java.util.Locale.GERMANY;
 import static java.util.Locale.US;
 import static javax.help.CSH.setHelpIDString;
-import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JOptionPane.*;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;

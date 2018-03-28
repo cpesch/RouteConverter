@@ -21,7 +21,6 @@
 package slash.navigation.gpx;
 
 import slash.common.type.CompactCalendar;
-import slash.common.type.ISO8601;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleFormat;
@@ -57,7 +56,6 @@ import slash.navigation.tcx.TcxFormat;
 import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.Arrays.asList;
