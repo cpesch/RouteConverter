@@ -209,8 +209,9 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             int readPositions = 0;
             //Ws ist möglich, dass bei einer "Position" überhaupt keine Koordinaten da
             //sind. Dieser Punkt muss trotzdem am Ende mitgezählt werden für die Anzahl.
-            //Daher nicht am Ende positions.size() == expectedPositionCount testen
-            while (fileContent.position() < fileContent.capacity() - 4) {
+            //Daher nicht auf Ende nur mit positions.size() == expectedPositionCount testen
+            while ((fileContent.position() < fileContent.capacity() - 4) && 
+                        (readPositions < expectedPositionCount)){
                 Wgs84Position position = readPosition(fileContent);
                 if (position != null)
                     positions.add(position);
