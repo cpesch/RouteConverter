@@ -436,7 +436,7 @@ public class RouteConverter extends SingleFrameApplication {
             location = 300;
         }
         mapSplitPane.setDividerLocation(location);
-        log.fine("Initialized map divider to " + location);
+        log.info("Initialized map divider to " + location);
     }
 
     public MapView getMapView() {
@@ -1150,7 +1150,7 @@ public class RouteConverter extends SingleFrameApplication {
                     location = mapSplitPane.getDividerLocation();
                     getMapView().resize();
                     preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, mapSplitPane.getDividerLocation());
-                    log.fine("Changed map divider to " + mapSplitPane.getDividerLocation());
+                    log.info("Changed map divider to " + mapSplitPane.getDividerLocation());
                     enableActions();
                 }
             }
@@ -1186,7 +1186,7 @@ public class RouteConverter extends SingleFrameApplication {
                         getMapView().resize();
                     }
                     preferences.putInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, profileSplitPane.getDividerLocation());
-                    log.finer("Changed profile divider to " + profileSplitPane.getDividerLocation());
+                    log.info("Changed profile divider to " + profileSplitPane.getDividerLocation());
                     enableActions();
                 }
             }
