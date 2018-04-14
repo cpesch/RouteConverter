@@ -34,5 +34,90 @@
         <string>10.7.4</string>
         <key>LSApplicationCategoryType</key>
         <string>Navigation</string>
+        <key>CFBundleDocumentTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeIconFiles</key>
+                <array><string>RouteConverter.icns</string></array>
+                <key>CFBundleTypeName</key>
+                <string>RouteConverter File</string>
+                <key>CFBundleTypeRole</key>
+                <string>Viewer</string>
+                <key>LSHandlerRank</key>
+                <string>Owner</string>
+                <key>LSItemContentTypes</key>
+                <array>
+                    <string>public.comma-separated-values-text</string>
+                    <string>slash.navigation.converter.gui.RouteConverter.gpx</string>
+                    <string>slash.navigation.converter.gui.RouteConverter.kml</string>
+                    <string>slash.navigation.converter.gui.RouteConverter.kmz</string>
+                    <string>slash.navigation.converter.gui.RouteConverter.nmea</string>
+                </array>
+            </dict>
+        </array>
+
+        <key>UTExportedTypeDeclarations</key>
+        <array>
+            <dict>
+                <key>UTTypeConformsTo</key>
+                <array><string>public.data</string></array>
+                <key>UTTypeDescription</key>
+                <string>GPS Exchange Format File</string>
+                <key>UTTypeIdentifier</key>
+                <string>slash.navigation.converter.gui.RouteConverter.gpx</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <string>gpx</string>
+                    <key>public.mime-type</key>
+                    <string>application/gpx+xml</string>
+                </dict>
+            </dict>
+            <dict>
+                <key>UTTypeConformsTo</key>
+                <array><string>public.data</string></array>
+                <key>UTTypeDescription</key>
+                <string>Google Earth File</string>
+                <key>UTTypeIdentifier</key>
+                <string>slash.navigation.converter.gui.RouteConverter.kml</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <string>kml</string>
+                    <key>public.mime-type</key>
+                    <string>application/vnd.google-earth.kml+xml</string>
+                </dict>
+            </dict>
+            <dict>
+                <key>UTTypeConformsTo</key>
+                <array><string>public.data</string></array>
+                <key>UTTypeDescription</key>
+                <string>Compressed Google Earth File</string>
+                <key>UTTypeIdentifier</key>
+                <string>slash.navigation.converter.gui.RouteConverter.kmz</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <string>kmz</string>
+                    <key>public.mime-type</key>
+                    <string>application/vnd.google-earth.kmz</string>
+                </dict>
+            </dict>
+            <dict>
+                <key>UTTypeConformsTo</key>
+                <array><string>public.data</string></array>
+                <key>UTTypeDescription</key>
+                <string>NMEA 0183 Sentences File</string>
+                <key>UTTypeIdentifier</key>
+                <string>slash.navigation.converter.gui.RouteConverter.nmea</string>
+                <key>UTTypeTagSpecification</key>
+                <dict>
+                    <key>public.filename-extension</key>
+                    <string>nmea</string>
+                    <key>public.mime-type</key>
+                    <string>text/nmea</string>
+                </dict>
+            </dict>
+        </array>
     </dict>
 </plist>
