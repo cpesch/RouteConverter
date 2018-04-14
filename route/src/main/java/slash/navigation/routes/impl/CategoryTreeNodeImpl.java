@@ -69,7 +69,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
         return super.getIndex(aNode);
     }
 
-    public Enumeration children() {
+    public Enumeration<TreeNode> children() {
         ensureInited();
         return super.children();
     }
@@ -87,7 +87,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
 
                 // make sure there are always children even if insert() is never called
                 if (children == null) {
-                    children = new Vector();
+                    children = new Vector<TreeNode>();
                 }
 
                 for (Category child : categoriesArray) {
