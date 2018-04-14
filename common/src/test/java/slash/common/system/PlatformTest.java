@@ -25,6 +25,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
+import static slash.common.system.Platform.isJavaLaterThan;
 
 public class PlatformTest {
     @Test
@@ -44,5 +45,27 @@ public class PlatformTest {
         assertFalse(isCurrentAtLeastMinimumVersion("1.6", "1.6.0_14"));
         assertFalse(isCurrentAtLeastMinimumVersion("1.6.0", "1.6.0_14"));
         assertFalse(isCurrentAtLeastMinimumVersion("1.6.0_13", "1.6.0_14"));
+    }
+
+    @Test
+    public void testIsJavaLaterThan() {
+        assertTrue(isJavaLaterThan("1.7.0", 6));
+        assertTrue(isJavaLaterThan("1.7.0", 7));
+        assertFalse(isJavaLaterThan("1.7.0", 8));
+        assertFalse(isJavaLaterThan("1.7.0", 9));
+        assertFalse(isJavaLaterThan("1.7.0", 10));
+
+        assertTrue(isJavaLaterThan("1.8.0", 7));
+        assertTrue(isJavaLaterThan("1.8.0", 8));
+        assertFalse(isJavaLaterThan("1.8.0", 9));
+        assertFalse(isJavaLaterThan("1.8.0", 10));
+
+        assertTrue(isJavaLaterThan("9", 8));
+        assertTrue(isJavaLaterThan("9", 9));
+        assertFalse(isJavaLaterThan("9", 10));
+
+        assertTrue(isJavaLaterThan("10", 8));
+        assertTrue(isJavaLaterThan("10", 9));
+        assertTrue(isJavaLaterThan("10", 10));
     }
 }

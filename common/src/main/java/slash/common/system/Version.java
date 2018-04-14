@@ -57,6 +57,10 @@ public class Version {
         return compareVersion(removeSnapshot(version), removeSnapshot(other.getVersion())) > 0;
     }
 
+    public boolean isLaterOrSameVersionThan(Version other) {
+        return compareVersion(removeSnapshot(version), removeSnapshot(other.getVersion())) >= 0;
+    }
+
     private static Scanner createScanner(String string) {
         Scanner result = new Scanner(string);
         result.useDelimiter("\\D");
