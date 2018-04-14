@@ -20,15 +20,21 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.converter.gui.RouteConverter;
+
+import java.io.File;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.EventObject;
+import java.util.List;
 import java.util.logging.Logger;
 
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.system.Platform.isJava9OrLater;
+import static slash.common.system.Platform.isJava8OrLater;
 
 /**
  * Creates an application menu for Mac OS X for RouteConverter.
@@ -42,6 +48,7 @@ public class ApplicationMenu {
     public void addApplicationMenuItems() {
         try {
             OSXHandler.setAboutHandler(this, getClass().getDeclaredMethod("about", EventObject.class));
+            OSXHandler.setOpenFilesHandler(this, getClass().getDeclaredMethod("openFiles", EventObject.class));
             OSXHandler.setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", EventObject.class));
             OSXHandler.setQuitHandler(this, getClass().getDeclaredMethod("quit", EventObject.class, Object.class));
         } catch (NoSuchMethodException | SecurityException e) {
@@ -69,6 +76,24 @@ public class ApplicationMenu {
     @SuppressWarnings("unused")
     public void about(EventObject event) {
         run("show-about");
+    }
+
+    private List<File> extractFiles(EventObject eventObject) throws Exception {
+        Class<?> eventClass = Class.forName((isJava8OrLater() ? "java.awt.desktop." : "com.apple.eawt.AppEvent.") + "OpenFilesEvent");
+        Method getFilesMethod = eventClass.getMethod("getFiles");
+        Object result = getFilesMethod.invoke(eventObject);
+        //noinspection unchecked
+        return (List<File>)result;
+    }
+
+    @SuppressWarnings("unused")
+    public void openFiles(EventObject event) throws Exception {
+        List<URL> urls = new ArrayList<>();
+        List<File> files = extractFiles(event);
+        for(File file : files) {
+            urls.add(file.toURI().toURL());
+        }
+        ((RouteConverter)slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(urls);
     }
 
     @SuppressWarnings("unused")
@@ -114,11 +139,11 @@ public class ApplicationMenu {
             }
         }
 
-        private static void createProxy(OSXHandler adapter, String handlerName) {
+        private static void createProxy(OSXHandler adapter, String handlerClassName, String setMethodName) {
             try {
                 initializeApplicationObject();
-                Class<?> handlerClass = Class.forName((isJava9OrLater() ? "java.awt.desktop." : "com.apple.eawt.") + handlerName);
-                Method setHandlerMethod = application.getClass().getDeclaredMethod("set" + handlerName, handlerClass);
+                Class<?> handlerClass = Class.forName((isJava8OrLater() ? "java.awt.desktop." : "com.apple.eawt.") + handlerClassName);
+                Method setHandlerMethod = application.getClass().getDeclaredMethod(setMethodName, handlerClass);
                 Object osxAdapterProxy = Proxy.newProxyInstance(OSXHandler.class.getClassLoader(), new Class<?>[]{handlerClass}, adapter);
                 setHandlerMethod.invoke(application, osxAdapterProxy);
             } catch (ClassNotFoundException e) {
@@ -140,7 +165,22 @@ public class ApplicationMenu {
                     }
                 }
             };
-            createProxy(adapter, "AboutHandler");
+            createProxy(adapter, "AboutHandler", "setAboutHandler");
+        }
+
+        static void setOpenFilesHandler(Object target, Method openFilesHandler) {
+            OSXHandler adapter = new OSXHandler("openFiles", target, openFilesHandler) {
+                public void callTarget(Object appleEvent) {
+                    if (appleEvent != null) {
+                        try {
+                            this.targetMethod.invoke(this.targetObject, appleEvent);
+                        } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InvocationTargetException e) {
+                            log.severe("Mac OS X Adapter could not talk to EAWT: " + getLocalizedMessage(e));
+                        }
+                    }
+                }
+            };
+            createProxy(adapter, "OpenFilesHandler", "setOpenFileHandler");
         }
 
         static void setPreferencesHandler(Object target, Method preferencesHandler) {
@@ -155,7 +195,7 @@ public class ApplicationMenu {
                     }
                 }
             };
-            createProxy(adapter, "PreferencesHandler");
+            createProxy(adapter, "PreferencesHandler", "setPreferencesHandler");
         }
 
         static void setQuitHandler(Object target, Method quitHandler) {
@@ -170,7 +210,7 @@ public class ApplicationMenu {
                     }
                 }
             };
-            createProxy(adapter, "QuitHandler");
+            createProxy(adapter, "QuitHandler", "setQuitHandler");
         }
 
 
