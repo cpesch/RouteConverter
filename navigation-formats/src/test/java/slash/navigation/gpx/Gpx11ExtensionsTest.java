@@ -444,9 +444,9 @@ public class Gpx11ExtensionsTest {
     public void testWriteTrackpoint1TemperatureThenSpeed() throws Exception {
         slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPointExtensionT = trackpoint1Factory.createTrackPointExtensionT();
         trackPointExtensionT.setAtemp(25.0);
-        trackPointExtensionT.setCad(new Short("6"));
+        trackPointExtensionT.setCad(Short.valueOf("6"));
         trackPointExtensionT.setDepth(1.0);
-        trackPointExtensionT.setHr(new Short("70"));
+        trackPointExtensionT.setHr(Short.valueOf("70"));
         trackPointExtensionT.setWtemp(22.0);
         ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
         extensionsType.getAny().add(trackpoint1Factory.createTrackPointExtension(trackPointExtensionT));
