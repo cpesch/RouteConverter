@@ -247,10 +247,14 @@ public class RouteConverter extends SingleFrameApplication {
 
     private void checkForJava7OrLater() {
         String currentVersion = System.getProperty("java.version");
-        String minimumVersion = "1.7";
-        if (!isCurrentAtLeastMinimumVersion(currentVersion, minimumVersion)) {
-            showMessageDialog(null, "Java " + currentVersion + " is not supported", "RouteConverter", ERROR_MESSAGE);
-            System.exit(6);
+        if (!isCurrentAtLeastMinimumVersion(currentVersion, "1.7.0_40")) {
+            showMessageDialog(null, "Java " + currentVersion + " does not support JavaFX. Please update to a later version.", "RouteConverter", ERROR_MESSAGE);
+            System.exit(7);
+        }
+
+        if (currentVersion.equals("1.8.0_161") || currentVersion.equals("1.8.0_162")) {
+            showMessageDialog(null, "Java " + currentVersion + " contains a fatal bug in JavaFX. Please update to an earlier or later version.", "RouteConverter", ERROR_MESSAGE);
+            System.exit(8);
         }
     }
 
