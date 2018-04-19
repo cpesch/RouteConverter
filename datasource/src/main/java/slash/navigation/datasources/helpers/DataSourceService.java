@@ -90,7 +90,7 @@ public class DataSourceService {
     }
 
     public Downloadable getDownloadable(String url) {
-        for (DataSource dataSource : dataSources) {
+        for (DataSource dataSource :  getDataSources()) {
             if(!url.startsWith(dataSource.getBaseUrl()))
                 continue;
 
@@ -105,7 +105,7 @@ public class DataSourceService {
     public Downloadable getDownloadable(File file) throws IOException {
         String filePath = asMetaDataComparablePath(file);
 
-        for (DataSource dataSource : dataSources) {
+        for (DataSource dataSource :  getDataSources()) {
             File directory = getApplicationDirectory(dataSource.getDirectory());
             String directoryPath = directory.getCanonicalPath();
 
