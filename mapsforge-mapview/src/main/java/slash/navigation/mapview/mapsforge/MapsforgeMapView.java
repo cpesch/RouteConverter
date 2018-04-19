@@ -24,7 +24,7 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
-import org.mapsforge.core.util.Parameters;
+import org.mapsforge.map.controller.FrameBufferController;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
@@ -36,10 +36,12 @@ import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.mapsforge.map.layer.overlay.Marker;
+import org.mapsforge.map.layer.renderer.MapWorkerPool;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.reader.MapFile;
+import org.mapsforge.map.reader.ReadBuffer;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
@@ -578,11 +580,11 @@ public class MapsforgeMapView implements MapView {
 
     private AwtGraphicMapView createMapView() {
         // Multithreaded map rendering
-        Parameters.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
+        MapWorkerPool.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
         // Maximum read buffer size
-        Parameters.MAXIMUM_BUFFER_SIZE = preferences.getInt(READ_BUFFER_SIZE_PREFERENCE,2500000);
+        ReadBuffer.MAXIMUM_BUFFER_SIZE = preferences.getInt(READ_BUFFER_SIZE_PREFERENCE,2500000);
         // No square frame buffer since the device orientation hardly changes
-        Parameters.SQUARE_FRAME_BUFFER = false;
+        FrameBufferController.SQUARE_FRAME_BUFFER = false;
 
         AwtGraphicMapView mapView = new AwtGraphicMapView();
         new MapViewResizer(mapView, mapView.getModel().mapViewDimension);
