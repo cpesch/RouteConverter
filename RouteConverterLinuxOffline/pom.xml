@@ -43,6 +43,7 @@
                                 <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
+                                        <!--
                                         <exclude>META-INF/*.inf</exclude>
                                         <exclude>META-INF/*.txt</exclude>
                                         <exclude>META-INF/LICENSE*</exclude>
@@ -54,6 +55,7 @@
                                         <exclude>*.html</exclude>
                                         <exclude>external.xpt</exclude>
                                         <exclude>version.txt</exclude>
+                                        -->
                                     </excludes>
                                 </filter>
                             </filters>
