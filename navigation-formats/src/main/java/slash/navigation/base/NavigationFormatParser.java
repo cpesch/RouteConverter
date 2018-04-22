@@ -398,8 +398,11 @@ public class NavigationFormatParser {
                                  ParserCallback parserCallback) {
         if (format instanceof NmnFormat)
             routeToWrite.removeDuplicates();
-        if (format instanceof NmnFormat && duplicateFirstPosition)
-            routeToWrite.add(0, ((NmnFormat) format).getDuplicateFirstPosition(routeToWrite));
+        if (format instanceof NmnFormat && duplicateFirstPosition) {
+            BaseNavigationPosition position = ((NmnFormat) format).getDuplicateFirstPosition(routeToWrite);
+            if (position != null)
+                routeToWrite.add(0, position);
+        }
         if (format instanceof CoPilotFormat && duplicateFirstPosition) {
             BaseNavigationPosition position = ((CoPilotFormat) format).getDuplicateFirstPosition(routeToWrite);
             if (position != null)

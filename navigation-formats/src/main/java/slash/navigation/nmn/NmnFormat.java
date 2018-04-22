@@ -55,6 +55,8 @@ public abstract class NmnFormat extends SimpleLineBasedFormat<NmnRoute> {
 
     public BaseNavigationPosition getDuplicateFirstPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
         List<BaseNavigationPosition> positions = route.getPositions();
+        if (positions.size() == 0)
+            return null;
         NavigationPosition first = positions.get(0);
         return new NmnPosition(first.getLongitude() + DUPLICATE_OFFSET,
                 first.getLatitude() + DUPLICATE_OFFSET, (Double)null, null, null, "Start:" + first.getDescription());
