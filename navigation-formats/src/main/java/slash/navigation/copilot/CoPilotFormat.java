@@ -85,6 +85,8 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
 
     public BaseNavigationPosition getDuplicateFirstPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
         List<BaseNavigationPosition> positions = route.getPositions();
+        if (positions.size() == 0)
+            return null;
         NavigationPosition first = positions.get(0);
         return asWgs84Position(first.getLongitude(), first.getLatitude(), "Start:" + first.getDescription());
     }
