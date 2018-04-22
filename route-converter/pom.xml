@@ -21,6 +21,7 @@
                             <goal>resources</goal>
                         </goals>
                         <configuration>
+                            <srcDir>src/main/resources</srcDir>
                             <encoding>UTF-8</encoding>
                             <includes>
                                 <include>**/RouteConverter*.properties</include>
