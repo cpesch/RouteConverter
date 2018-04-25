@@ -119,8 +119,8 @@
                     <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
                     <jvmArgs>
                         <jvmArg>-Xmx512m</jvmArg>
-                        <jvmArg>-Dapple.laf.useScreenMenuBar=true</jvmArg>
                     </jvmArgs>
+
                     <verbose>true</verbose>
                     <keyStore>${keystorePath}</keyStore>
                     <keyStoreAlias>${keystoreAlias}</keyStoreAlias>

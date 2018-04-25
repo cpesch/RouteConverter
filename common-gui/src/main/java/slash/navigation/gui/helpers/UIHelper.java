@@ -32,6 +32,7 @@ import static java.awt.Cursor.WAIT_CURSOR;
 import static java.awt.dnd.DragSource.DefaultMoveDrop;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
+import static slash.common.system.Platform.isMac;
 import static slash.common.system.Platform.isWindows;
 
 /**
@@ -56,6 +57,9 @@ public class UIHelper {
         }
         JFrame.setDefaultLookAndFeelDecorated(true);
         JDialog.setDefaultLookAndFeelDecorated(true);
+
+        if(isMac())
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
     }
 
     public static void setUseSystemProxies() {
