@@ -30,6 +30,7 @@
 
     <xsd:simpleType name="copyrightType">
         <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="Esri"/>
             <xsd:enumeration value="Google"/>
             <xsd:enumeration value="OpenStreetMap"/>
             <xsd:enumeration value="OutdoorActive"/>
