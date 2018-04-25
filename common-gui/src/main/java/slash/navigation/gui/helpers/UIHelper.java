@@ -32,6 +32,7 @@ import static java.awt.Cursor.WAIT_CURSOR;
 import static java.awt.dnd.DragSource.DefaultMoveDrop;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
+import static slash.common.system.Platform.isLinux;
 import static slash.common.system.Platform.isMac;
 import static slash.common.system.Platform.isWindows;
 
@@ -60,6 +61,16 @@ public class UIHelper {
 
         if(isMac())
             System.setProperty("apple.laf.useScreenMenuBar", "true");
+
+        // override what the JRE reads from the user's desktop settings as the user's desktop antialiased text preferences
+        // https://docs.oracle.com/javase/7/docs/technotes/guides/2d/flags.html#aaFonts
+        if (isLinux())
+            System.setProperty("awt.useSystemAAFontSettings", "lcd");
+
+        // enable the XRender-based Java 2D rendering pipeline for modern X11-based desktops, offering improved graphics performance
+        // https://docs.oracle.com/javase/7/docs/technotes/guides/2d/flags.html#xrender
+        if (isLinux())
+            System.setProperty("sun.java2d.xrender", "true");
     }
 
     public static void setUseSystemProxies() {
