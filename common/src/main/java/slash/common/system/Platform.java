@@ -60,10 +60,6 @@ public class Platform {
         return new Version(javaVersion).isLaterOrSameVersionThan(new Version(versionString));
     }
 
-    public static boolean isJava8OrLater() {
-        return isJavaLaterThan(System.getProperty("java.version"), 8);
-    }
-
     public static boolean isJava9OrLater() {
         return isJavaLaterThan(System.getProperty("java.version"), 9);
     }

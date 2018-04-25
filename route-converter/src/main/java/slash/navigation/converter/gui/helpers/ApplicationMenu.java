@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.system.Platform.isJava8OrLater;
+import static slash.common.system.Platform.isJava9OrLater;
 
 /**
  * Creates an application menu for Mac OS X for RouteConverter.
@@ -79,7 +79,7 @@ public class ApplicationMenu {
     }
 
     private List<File> extractFiles(EventObject eventObject) throws Exception {
-        Class<?> eventClass = Class.forName((isJava8OrLater() ? "java.awt.desktop." : "com.apple.eawt.AppEvent.") + "OpenFilesEvent");
+        Class<?> eventClass = Class.forName((isJava9OrLater() ? "java.awt.desktop." : "com.apple.eawt.AppEvent.") + "OpenFilesEvent");
         Method getFilesMethod = eventClass.getMethod("getFiles");
         Object result = getFilesMethod.invoke(eventObject);
         //noinspection unchecked
@@ -142,7 +142,7 @@ public class ApplicationMenu {
         private static void createProxy(OSXHandler adapter, String handlerClassName, String setMethodName) {
             try {
                 initializeApplicationObject();
-                Class<?> handlerClass = Class.forName((isJava8OrLater() ? "java.awt.desktop." : "com.apple.eawt.") + handlerClassName);
+                Class<?> handlerClass = Class.forName((isJava9OrLater() ? "java.awt.desktop." : "com.apple.eawt.") + handlerClassName);
                 Method setHandlerMethod = application.getClass().getDeclaredMethod(setMethodName, handlerClass);
                 Object osxAdapterProxy = Proxy.newProxyInstance(OSXHandler.class.getClassLoader(), new Class<?>[]{handlerClass}, adapter);
                 setHandlerMethod.invoke(application, osxAdapterProxy);
