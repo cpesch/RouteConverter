@@ -378,8 +378,6 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapView() {
-        mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener());
-
         try {
             File file = new File(getApplicationDirectory("tileservers"), "default.xml");
             getDownloadManager().executeDownload("RouteConverter Tile Servers", getApiUrl() + V1 + "tileservers/" + FORMAT_XML, Copy, file, new Runnable() {
@@ -441,6 +439,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
         mapSplitPane.setDividerLocation(location);
         log.info("Initialized map divider to " + location);
+        mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener());
     }
 
     public MapView getMapView() {
