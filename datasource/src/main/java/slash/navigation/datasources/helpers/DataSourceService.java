@@ -102,7 +102,7 @@ public class DataSourceService {
         return null;
     }
 
-    public Downloadable getDownloadable(File file) throws IOException {
+    public synchronized Downloadable getDownloadable(File file) throws IOException {
         String filePath = asMetaDataComparablePath(file);
 
         for (DataSource dataSource :  getDataSources()) {
