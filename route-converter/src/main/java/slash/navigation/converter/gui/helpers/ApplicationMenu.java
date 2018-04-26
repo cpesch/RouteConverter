@@ -78,11 +78,11 @@ public class ApplicationMenu {
         run("show-about");
     }
 
+    @SuppressWarnings("unchecked")
     private List<File> extractFiles(EventObject eventObject) throws Exception {
         Class<?> eventClass = Class.forName((isJava9OrLater() ? "java.awt.desktop." : "com.apple.eawt.AppEvent.") + "OpenFilesEvent");
         Method getFilesMethod = eventClass.getMethod("getFiles");
         Object result = getFilesMethod.invoke(eventObject);
-        //noinspection unchecked
         return (List<File>)result;
     }
 
