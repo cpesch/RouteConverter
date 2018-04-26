@@ -59,6 +59,8 @@ public class UIHelper {
         JFrame.setDefaultLookAndFeelDecorated(true);
         JDialog.setDefaultLookAndFeelDecorated(true);
 
+        // to get menus out of the window and into the menu bar
+        // https://developer.apple.com/library/content/documentation/Java/Conceptual/Java14Development/04-JavaUIToolkits/JavaUIToolkits.html
         if(isMac())
             System.setProperty("apple.laf.useScreenMenuBar", "true");
 
