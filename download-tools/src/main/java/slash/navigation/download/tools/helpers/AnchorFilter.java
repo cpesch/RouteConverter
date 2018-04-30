@@ -69,28 +69,26 @@ public class AnchorFilter {
         return false;
     }
 
-    private boolean filterIncludes(String anchor, Set<String> includes) {
-        if (includes == null)
-            return true;
-        for (String include : includes) {
+    private boolean containsString(Set<String> strings, String search) {
+        for (String include : strings) {
             Pattern pattern = Pattern.compile(include);
-            Matcher matcher = pattern.matcher(anchor);
+            Matcher matcher = pattern.matcher(search);
             if (matcher.matches())
                 return true;
         }
         return false;
     }
 
+    private boolean filterIncludes(String anchor, Set<String> includes) {
+        if (includes == null)
+            return true;
+        return containsString(includes, anchor);
+    }
+
     private boolean filterExcludes(String anchor, Set<String> excludes) {
         if (excludes == null)
             return false;
-        for (String exclude : excludes) {
-            Pattern pattern = Pattern.compile(exclude);
-            Matcher matcher = pattern.matcher(anchor);
-            if (matcher.matches())
-                return true;
-        }
-        return false;
+        return containsString(excludes, anchor);
     }
 
     private String makeAbsoluteURLRelative(String baseUrl, String url) throws URISyntaxException {

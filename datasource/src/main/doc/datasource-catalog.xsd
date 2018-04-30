@@ -25,7 +25,7 @@
                     <xsd:field xpath="@id"/>
                 </xsd:unique>
             </xsd:element>
-            <xsd:element name="datasource" type="datasourceType" minOccurs="1" maxOccurs="unbounded">
+            <xsd:element name="datasource" type="datasourceType" maxOccurs="unbounded">
                 <xsd:unique name="unique-datasource-id">
                     <xsd:selector xpath="datasource"/>
                     <xsd:field xpath="@id"/>
@@ -41,7 +41,7 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="datasource" type="datasourceType" minOccurs="1" maxOccurs="unbounded"/>
+            <xsd:element name="datasource" type="datasourceType" maxOccurs="unbounded"/>
         </xsd:sequence>
         <xsd:attribute name="id" type="xsd:string" use="required"/>
         <xsd:attribute name="name" type="xsd:string" use="required"/>
@@ -129,7 +129,7 @@
         <xsd:complexContent>
             <xsd:extension base="downloadableType">
                 <xsd:sequence>
-                    <xsd:element name="boundingBox" type="boundingBoxType" minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="boundingBox" type="boundingBoxType" minOccurs="0"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
@@ -144,7 +144,7 @@
         <xsd:complexContent>
             <xsd:extension base="downloadableType">
                 <xsd:sequence>
-                    <xsd:element name="boundingBox" type="boundingBoxType" minOccurs="0" maxOccurs="1"/>
+                    <xsd:element name="boundingBox" type="boundingBoxType" minOccurs="0"/>
                 </xsd:sequence>
             </xsd:extension>
         </xsd:complexContent>
@@ -191,8 +191,8 @@
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
-            <xsd:element name="northEast" type="positionType" minOccurs="1" maxOccurs="1"/>
-            <xsd:element name="southWest" type="positionType" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="northEast" type="positionType"/>
+            <xsd:element name="southWest" type="positionType"/>
         </xsd:sequence>
     </xsd:complexType>
 </xsd:schema>

@@ -148,7 +148,7 @@ public class PhotonService implements GeocodingService {
         if(country.length() > 0)
             result += ", " + country;
 
-        result = result.replaceAll("  ", " ");
+        result = result.replaceAll(" {2}", " ");
         if(result.endsWith(", "))
             result = result.substring(0, result.length() - 2);
         return result;

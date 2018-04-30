@@ -37,7 +37,7 @@
         </xsd:annotation>
 
         <xsd:sequence>
-            <xsd:element name="downloadable" type="downloadableType" minOccurs="1" maxOccurs="1"/>
+            <xsd:element name="downloadable" type="downloadableType"/>
         </xsd:sequence>
 
         <xsd:attribute name="description" type="xsd:string" use="required"/>
@@ -67,7 +67,7 @@
         </xsd:annotation>
 
         <xsd:sequence>
-            <xsd:element name="checksum" type="checksumType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="checksum" type="checksumType" minOccurs="0"/>
             <xsd:element name="fragment" type="fragmentType" minOccurs="0" maxOccurs="unbounded"/>
         </xsd:sequence>
 
@@ -82,7 +82,7 @@
         </xsd:annotation>
 
         <xsd:sequence>
-            <xsd:element name="checksum" type="checksumType" minOccurs="0" maxOccurs="1"/>
+            <xsd:element name="checksum" type="checksumType" minOccurs="0"/>
         </xsd:sequence>
 
         <xsd:attribute name="target" type="xsd:string" use="required"/>

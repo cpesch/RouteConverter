@@ -203,10 +203,7 @@ public class WindowsShortcut {
     private static String getNullDelimitedString(byte[] bytes, int off) {
         int len = 0;
         // count bytes until the null character (0)
-        while (true) {
-            if (bytes[off + len] == 0) {
-                break;
-            }
+        while (bytes[off + len] != 0) {
             len++;
         }
         return new String(bytes, off, len);
