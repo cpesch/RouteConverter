@@ -62,73 +62,69 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <!--
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jarsigner-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>sign</id>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <archive>target/RouteConverterMacOffline.jar</archive>
+                    <arguments>
+                        <argument>-certchain</argument>
+                        <argument>${bundlePath}</argument>
+                    </arguments>
+                    <keystore>NONE</keystore>
+                    <tsa>http://time.certum.pl</tsa>
+                    <storetype>PKCS11</storetype>
+                    <storepass>${keystorePassword}</storepass>
+                    <providerClass>sun.security.pkcs11.SunPKCS11</providerClass>
+                    <providerArg>${providerArg}</providerArg>
+                    <alias>${alias}</alias>
+                    <removeExistingSignatures>true</removeExistingSignatures>
+                </configuration>
+            </plugin>
+            -->
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptors>
+                        <descriptor>${basedir}/src/main/assembly/macosx.xml</descriptor>
+                    </descriptors>
+                    <finalName>RouteConverterMacOffline.app</finalName>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
-
-    <profiles><profile><id>routeconverter</id>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jarsigner-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>sign</id>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <archive>target/RouteConverterMacOffline.jar</archive>
-                        <arguments>
-                            <argument>-certchain</argument>
-                            <argument>${bundlePath}</argument>
-                        </arguments>
-                        <keystore>NONE</keystore>
-                        <tsa>http://time.certum.pl</tsa>
-                        <storetype>PKCS11</storetype>
-                        <storepass>${keystorePassword}</storepass>
-                        <providerClass>sun.security.pkcs11.SunPKCS11</providerClass>
-                        <providerArg>${providerArg}</providerArg>
-                        <alias>${alias}</alias>
-                        <removeExistingSignatures>true</removeExistingSignatures>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>parse-version</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>single</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <descriptors>
-                            <descriptor>${basedir}/src/main/assembly/macosx.xml</descriptor>
-                        </descriptors>
-                        <finalName>RouteConverterMacOffline.app</finalName>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-    </profile></profiles>
 
     <dependencies>
         <dependency>
