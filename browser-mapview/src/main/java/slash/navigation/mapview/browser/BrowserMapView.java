@@ -698,6 +698,7 @@ public abstract class BrowserMapView implements MapView {
             for (File file : files) {
                 try {
                     try (InputStream inputStream = new FileInputStream(file)) {
+                        log.info("Initializing tile server definitions from " + file);
                         result.load(inputStream);
                     }
                 } catch (IOException | JAXBException e) {
