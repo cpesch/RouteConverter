@@ -1230,8 +1230,7 @@ public class RouteConverter extends SingleFrameApplication {
         ActionManager actionManager = getContext().getActionManager();
         actionManager.setLocalName(POSITIONS);
         actionManager.register("exit", new ExitAction());
-        actionManager.register("print-map", new PrintMapAction(false));
-        actionManager.register("print-map-and-route", new PrintMapAction(true));
+        actionManager.register("print-map", new PrintMapAction());
         actionManager.register("print-profile", new PrintProfileAction());
         actionManager.register("find-place", new FindPlaceAction());
         actionManager.register("show-map-and-positionlist", new ShowMapAndPositionListAction());
@@ -1420,15 +1419,9 @@ public class RouteConverter extends SingleFrameApplication {
 
 
     private class PrintMapAction extends FrameAction {
-        private boolean withRoute;
-
-        private PrintMapAction(boolean withRoute) {
-            this.withRoute = withRoute;
-        }
-
         public void run() {
             String title = getConvertPanel().getUrlModel().getShortUrl() + " / " + getConvertPanel().getFormatAndRoutesModel().getSelectedRoute().getName();
-            getMapView().print(title, withRoute);
+            getMapView().print(title);
         }
     }
 

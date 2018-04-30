@@ -472,7 +472,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public boolean isContinousRange() {
-        return currentEvent != null && currentEvent instanceof ContinousRangeTableModelEvent;
+        return currentEvent instanceof ContinousRangeTableModelEvent;
     }
 
     public void fireTableRowsDeletedInContinousRange(int firstRow, int lastRow) {

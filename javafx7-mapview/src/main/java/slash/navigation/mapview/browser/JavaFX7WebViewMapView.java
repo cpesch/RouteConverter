@@ -254,11 +254,7 @@ public class JavaFX7WebViewMapView extends BrowserMapView {
         return false;
     }
 
-    public boolean isSupportsPrintingWithDirections() {
-        return false;
-    }
-
-    public void print(final String title, boolean withDirections) {
+    public void print(final String title) {
         throw new UnsupportedOperationException("Printing not supported");
     }
 

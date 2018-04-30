@@ -46,14 +46,7 @@ public class JavaFX8WebViewMapView extends JavaFX7WebViewMapView {
         return true;
     }
 
-    public boolean isSupportsPrintingWithDirections() {
-        return false;
-    }
-
-    public void print(final String title, boolean withDirections) {
-        if(withDirections)
-            throw new UnsupportedOperationException("Printing with directions not supported");
-
+    public void print(final String title) {
         runLater(new Runnable() {
             public void run() {
                 PrinterJob job = PrinterJob.createPrinterJob();

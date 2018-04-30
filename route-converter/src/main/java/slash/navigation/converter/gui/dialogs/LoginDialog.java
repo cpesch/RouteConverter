@@ -218,7 +218,7 @@ public class LoginDialog extends SimpleDialog {
             return;
         }
         String repeat = trim(new String(passwordRepeat.getPassword()));
-        if (repeat == null || !password.equals(repeat)) {
+        if (!password.equals(repeat)) {
             labelRegisterResult.setText(RouteConverter.getBundle().getString("register-password-do-not-match-error"));
             pack();
             return;

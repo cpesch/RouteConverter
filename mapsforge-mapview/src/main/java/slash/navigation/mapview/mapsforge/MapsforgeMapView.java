@@ -1025,15 +1025,11 @@ public class MapsforgeMapView implements MapView {
         zoomToBounds(asBoundingBox(boundingBox));
     }
 
-    public boolean isSupportsPrinting() {
-        return false;
-    }
-
     public boolean isSupportsPrintingWithDirections() {
         return false;
     }
 
-    public void print(String title, boolean withDirections) {
+    public void print(String title) {
         throw new UnsupportedOperationException("Printing not supported");
     }
 

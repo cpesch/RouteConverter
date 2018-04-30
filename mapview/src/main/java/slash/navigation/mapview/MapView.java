@@ -58,7 +58,6 @@ public interface MapView extends PositionsSelectionModel {
     boolean isInitialized();
     boolean isDownload();
     boolean isSupportsPrinting();
-    boolean isSupportsPrintingWithDirections();
     String getMapsPath();
     void setMapsPath(String path) throws IOException;
     String getThemesPath();
@@ -76,7 +75,7 @@ public interface MapView extends PositionsSelectionModel {
     NavigationPosition getCenter();
 
     void setSelectedPositions(List<NavigationPosition> selectedPositions);
-    void print(String title, boolean withDirections);
+    void print(String title);
 
     void addMapViewListener(MapViewListener listener);
     void removeMapViewListener(MapViewListener listener);

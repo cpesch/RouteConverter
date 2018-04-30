@@ -978,7 +978,6 @@ public class ConvertPanel implements PanelInTab {
         tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
         actionManager.enable("complete-flight-plan", existsAPosition && format instanceof GarminFlightPlanFormat);
         actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition && r.getMapView().isSupportsPrinting());
-        actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route) && r.getMapView().isSupportsPrintingWithDirections());
         actionManager.enable("print-profile", existsAPosition);
     }
 
@@ -1028,7 +1027,6 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("revert-positions", existsMoreThanOnePosition);
         tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
         actionManager.enable("print-map", r.isMapViewAvailable() && existsAPosition && r.getMapView().isSupportsPrinting());
-        actionManager.enable("print-map-and-route", r.isMapViewAvailable() && existsAPosition && characteristics.equals(Route) && r.getMapView().isSupportsPrintingWithDirections());
         actionManager.enable("print-profile", existsAPosition);
 
         if (r.isConvertPanelSelected())
