@@ -252,7 +252,7 @@ public class RouteConverter extends SingleFrameApplication {
             System.exit(7);
         }
 
-        if (currentVersion.equals("1.8.0_161") || currentVersion.equals("1.8.0_162")) {
+        if (currentVersion.equals("1.8.0_161") || currentVersion.equals("1.8.0_162") || currentVersion.equals("1.8.0_171")  || currentVersion.equals("1.8.0_172")) {
             showMessageDialog(null, "Java " + currentVersion + " contains a fatal bug in JavaFX. Please update to an earlier or later version.", "RouteConverter", ERROR_MESSAGE);
             System.exit(8);
         }
