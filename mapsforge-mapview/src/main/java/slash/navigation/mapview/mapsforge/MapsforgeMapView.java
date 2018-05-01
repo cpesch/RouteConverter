@@ -1025,7 +1025,7 @@ public class MapsforgeMapView implements MapView {
         zoomToBounds(asBoundingBox(boundingBox));
     }
 
-    public boolean isSupportsPrintingWithDirections() {
+    public boolean isSupportsPrinting() {
         return false;
     }
 
