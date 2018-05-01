@@ -181,7 +181,6 @@ public abstract class BrowserMapView implements MapView {
         this.positionsSelectionModel = positionsSelectionModel;
         this.characteristicsModel = characteristicsModel;
         this.mapViewCallback = mapViewCallback;
-        this.mapViewCallback = mapViewCallback;
         this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
