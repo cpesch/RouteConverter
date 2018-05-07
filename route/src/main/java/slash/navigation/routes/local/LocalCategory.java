@@ -33,6 +33,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.io.File.separator;
 import static java.lang.String.format;
@@ -155,20 +156,16 @@ public class LocalCategory implements Category {
         return new LocalRoute(destination);
     }
 
-
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         LocalCategory that = (LocalCategory) o;
-
-        return catalog.equals(that.catalog) && directory.equals(that.directory);
+        return Objects.equals(catalog, that.catalog) &&
+                Objects.equals(directory, that.directory);
     }
 
     public int hashCode() {
-        int result = catalog.hashCode();
-        result = 31 * result + directory.hashCode();
-        return result;
+        return Objects.hash(catalog, directory);
     }
 
     public String toString() {

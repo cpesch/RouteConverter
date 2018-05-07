@@ -22,6 +22,7 @@ package slash.navigation.routes.impl;
 
 import slash.navigation.routes.Route;
 
+import java.util.Objects;
 import java.util.logging.Logger;
 
 /**
@@ -78,16 +79,12 @@ public class RouteModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         RouteModel that = (RouteModel) o;
-
-        return category != null ? category.equals(that.category) : that.category == null &&
-                (route != null ? route.equals(that.route) : that.route == null);
+        return Objects.equals(getCategory(), that.getCategory()) &&
+                Objects.equals(getRoute(), that.getRoute());
     }
 
     public int hashCode() {
-        int result = category != null ? category.hashCode() : 0;
-        result = 31 * result + (route != null ? route.hashCode() : 0);
-        return result;
+        return Objects.hash(getCategory(), getRoute());
     }
 }

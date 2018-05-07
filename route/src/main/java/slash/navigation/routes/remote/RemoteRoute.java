@@ -26,6 +26,7 @@ import slash.navigation.routes.remote.binding.CatalogType;
 import slash.navigation.routes.remote.binding.RouteType;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * Represents a route on the server which is transferred via {@link RemoteCatalog}
@@ -120,17 +121,13 @@ public class RemoteRoute implements Route {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        RemoteRoute route = (RemoteRoute) o;
-
-        return category.equals(route.category) && getHref().equals(route.getHref());
+        RemoteRoute that = (RemoteRoute) o;
+        return Objects.equals(getCategory(), that.getCategory()) &&
+                Objects.equals(getHref(), that.getHref());
     }
 
     public int hashCode() {
-        int result;
-        result = category.hashCode();
-        result = 31 * result + getHref().hashCode();
-        return result;
+        return Objects.hash(getCategory(), getHref());
     }
 
     public String toString() {

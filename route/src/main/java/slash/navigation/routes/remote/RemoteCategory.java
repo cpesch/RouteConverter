@@ -30,6 +30,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Represents a category on the server which is transferred via {@link RemoteCatalog}
@@ -152,17 +153,13 @@ public class RemoteCategory implements Category {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        RemoteCategory category = (RemoteCategory) o;
-
-        return getCatalog().equals(category.getCatalog()) && getHref().equals(category.getHref());
+        RemoteCategory that = (RemoteCategory) o;
+        return Objects.equals(getCatalog(), that.getCatalog()) &&
+                Objects.equals(getHref(), that.getHref());
     }
 
     public int hashCode() {
-        int result;
-        result = getCatalog().hashCode();
-        result = 31 * result + getHref().hashCode();
-        return result;
+        return Objects.hash(getCatalog(), getHref());
     }
 
     public String toString() {

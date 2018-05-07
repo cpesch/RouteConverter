@@ -32,6 +32,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.FileOwnerAttributeView;
 import java.nio.file.attribute.UserPrincipal;
+import java.util.Objects;
 
 import static java.lang.String.format;
 import static slash.common.io.Files.toFile;
@@ -98,14 +99,12 @@ public class LocalRoute implements Route {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         LocalRoute that = (LocalRoute) o;
-
-        return file.equals(that.file);
+        return Objects.equals(file, that.file);
     }
 
     public int hashCode() {
-        return file.hashCode();
+        return Objects.hash(file);
     }
 
     public String toString() {
