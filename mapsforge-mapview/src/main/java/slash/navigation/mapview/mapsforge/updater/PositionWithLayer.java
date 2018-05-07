@@ -22,6 +22,8 @@ package slash.navigation.mapview.mapsforge.updater;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
 
+import java.util.Objects;
+
 /**
  * A {@link NavigationPosition} with it's {@link Layer} component.
  *
@@ -55,17 +57,13 @@ public class PositionWithLayer implements ObjectWithLayer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         PositionWithLayer that = (PositionWithLayer) o;
-
-        return position.equals(that.position) &&
-                !(layer != null ? !layer.equals(that.layer) : that.layer != null);
+        return Objects.equals(getPosition(), that.getPosition()) &&
+                Objects.equals(getLayer(), that.getLayer());
     }
 
     public int hashCode() {
-        int result = position.hashCode();
-        result = 31 * result + (layer != null ? layer.hashCode() : 0);
-        return result;
+        return Objects.hash(getPosition(), getLayer());
     }
 
     public String toString() {

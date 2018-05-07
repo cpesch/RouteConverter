@@ -23,6 +23,8 @@ import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.DistanceAndTime;
 
+import java.util.Objects;
+
 /**
  * A pair of {@link NavigationPosition}s with a {@link Layer}, a distance and a time.
  *
@@ -71,18 +73,13 @@ public class PairWithLayer implements ObjectWithLayer {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         PairWithLayer that = (PairWithLayer) o;
-
-        return first.equals(that.first) && second.equals(that.second) &&
-                (layer != null ? layer.equals(that.layer) : that.layer == null);
+        return Objects.equals(getFirst(), that.getFirst()) &&
+                Objects.equals(getSecond(), that.getSecond());
     }
 
     public int hashCode() {
-        int result = first.hashCode();
-        result = 31 * result + second.hashCode();
-        result = 31 * result + (layer != null ? layer.hashCode() : 0);
-        return result;
+        return Objects.hash(getFirst(), getSecond());
     }
 
     public String toString() {
