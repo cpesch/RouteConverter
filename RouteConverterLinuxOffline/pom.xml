@@ -65,40 +65,6 @@
         </plugins>
     </build>
 
-    <profiles><profile><id>routeconverter</id>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jarsigner-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <id>sign</id>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                    <configuration>
-                        <archive>target/RouteConverterLinuxOffline.jar</archive>
-                        <arguments>
-                            <argument>-certchain</argument>
-                            <argument>${bundlePath}</argument>
-                        </arguments>
-                        <keystore>NONE</keystore>
-                        <tsa>http://time.certum.pl</tsa>
-                        <storetype>PKCS11</storetype>
-                        <storepass>${keystorePassword}</storepass>
-                        <providerClass>sun.security.pkcs11.SunPKCS11</providerClass>
-                        <providerArg>${providerArg}</providerArg>
-                        <alias>${alias}</alias>
-                        <removeExistingSignatures>true</removeExistingSignatures>
-                    </configuration>
-                </plugin>
-            </plugins>
-        </build>
-    </profile></profiles>
-
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
