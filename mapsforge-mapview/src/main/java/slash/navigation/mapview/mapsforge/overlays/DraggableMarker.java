@@ -23,20 +23,50 @@ package slash.navigation.mapview.mapsforge.overlays;
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.overlay.Marker;
+import slash.navigation.converter.gui.models.PositionColumnValues;
+import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.mapview.mapsforge.updater.PositionWithLayer;
+
+import java.util.Arrays;
+import java.util.logging.Logger;
+
+import static java.util.Arrays.asList;
+import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 
 /**
  * A {@code Marker} that supports dragging.
  *
  * @author Christian Pesch
  */
-public abstract class DraggableMarker extends Marker {
-    public DraggableMarker(LatLong latLong, Bitmap bitmap, int horizontalOffset, int verticalOffset) {
+public class DraggableMarker extends Marker {
+    private static final Logger log = Logger.getLogger(DraggableMarker.class.getName());
+    private final PositionsModel positionsModel;
+    private final PositionWithLayer positionWithLayer;
+
+    public DraggableMarker(PositionsModel positionsModel, PositionWithLayer positionWithLayer, LatLong latLong, Bitmap bitmap, int horizontalOffset, int verticalOffset) {
         super(latLong, bitmap, horizontalOffset, verticalOffset);
+        this.positionsModel = positionsModel;
+        this.positionWithLayer = positionWithLayer;
     }
 
     public boolean onTap(LatLong tapLatLong, org.mapsforge.core.model.Point viewPosition, org.mapsforge.core.model.Point tapPoint) {
         return contains(viewPosition, tapPoint);
     }
 
-    public abstract void onDrop(LatLong latLong);
+    public void onDrop(final LatLong latLong1) {
+        final int index = positionsModel.getIndex(positionWithLayer.getPosition());
+        if(index == -1) {
+            log.warning("Marker without position " + this);
+            return;
+        }
+
+        invokeLater(new Runnable() {
+            public void run() {
+                positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
+                        Arrays.<Object>asList(latLong1.longitude, latLong1.latitude)), true, true);
+            }
+        });
+    }
 }
