@@ -62,69 +62,63 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <headerType>gui</headerType>
+                            <outfile>target/RouteConverterWindowsOffline.exe</outfile>
+                            <jar>target/RouteConverterWindowsOffline.jar</jar>
+                            <errTitle>RouteConverter</errTitle>
+                            <icon>src/main/app-resources/RouteConverter.ico</icon>
+                            <splash>
+                                <file>src/main/app-resources/RouteConverter.bmp</file>
+                                <timeout>10</timeout>
+                            </splash>
+                            <classPath>
+                                <mainClass>slash.navigation.converter.gui.RouteConverterOffline</mainClass>
+                            </classPath>
+                            <jre>
+                                <minVersion>1.7.0</minVersion>
+                                <maxHeapSize>1024</maxHeapSize>
+                            </jre>
+                            <versionInfo>
+                                <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>
+                                <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtFileVersion>
+                                <fileDescription>RouteConverter displays, modifies and converts GPS data between over 75 formats</fileDescription>
+                                <copyright>Christian Pesch</copyright>
+                                <productName>RouteConverter</productName>
+                                <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>
+                                <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtProductVersion>
+                                <internalName>RouteConverter for Windows Offline Vector Map Ed.</internalName>
+                                <originalFilename>RouteConverterWindowsOffline.exe</originalFilename>
+                            </versionInfo>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-
-    <profiles><profile><id>routeconverter</id>
-        <build>
-            <plugins>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>build-helper-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>parse-version</goal>
-                            </goals>
-                        </execution>
-                    </executions>
-                </plugin>
-
-                <plugin>
-                    <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                    <artifactId>launch4j-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>launch4j</goal>
-                            </goals>
-                            <configuration>
-                                <headerType>gui</headerType>
-                                <outfile>target/RouteConverterWindowsOffline.exe</outfile>
-                                <jar>target/RouteConverterWindowsOffline.jar</jar>
-                                <errTitle>RouteConverter</errTitle>
-                                <icon>src/main/app-resources/RouteConverter.ico</icon>
-                                <splash>
-                                    <file>src/main/app-resources/RouteConverter.bmp</file>
-                                    <timeout>10</timeout>
-                                </splash>
-                                <classPath>
-                                    <mainClass>slash.navigation.converter.gui.RouteConverterOffline</mainClass>
-                                </classPath>
-                                <jre>
-                                    <minVersion>1.7.0</minVersion>
-                                    <maxHeapSize>1024</maxHeapSize>
-                                </jre>
-                                <versionInfo>
-                                    <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>
-                                    <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtFileVersion>
-                                    <fileDescription>RouteConverter displays, modifies and converts GPS data between over 75 formats</fileDescription>
-                                    <copyright>Christian Pesch</copyright>
-                                    <productName>RouteConverter</productName>
-                                    <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>
-                                    <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtProductVersion>
-                                    <internalName>RouteConverter for Windows Offline Vector Map Ed.</internalName>
-                                    <originalFilename>RouteConverterWindowsOffline.exe</originalFilename>
-                                </versionInfo>
-                            </configuration>
-                        </execution>
-                    </executions>
-                </plugin>
-            </plugins>
-        </build>
-    </profile></profiles>
 
     <dependencies>
         <dependency>

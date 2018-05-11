@@ -54,7 +54,6 @@
                                         <exclude>*.html</exclude>
                                         <exclude>external.xpt</exclude>
                                         <exclude>version.txt</exclude>
-
                                         <exclude>**/cp.png</exclude>
                                         <exclude>**/RouteConverter.png</exclude>
                                     </excludes>
@@ -64,12 +63,7 @@
                     </execution>
                 </executions>
             </plugin>
-        </plugins>
-    </build>
 
-    <profiles><profile><id>routeconverter</id>
-    <build>
-        <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -127,7 +121,6 @@
             </plugin>
         </plugins>
     </build>
-    </profile></profiles>
 
     <dependencies>
         <dependency>
