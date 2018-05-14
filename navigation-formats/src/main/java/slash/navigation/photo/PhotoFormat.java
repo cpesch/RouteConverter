@@ -68,16 +68,7 @@ import static java.util.Calendar.MONTH;
 import static java.util.Calendar.SECOND;
 import static java.util.Calendar.YEAR;
 import static java.util.Collections.singletonList;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_DATE_TIME_DIGITIZED;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_DATE_TIME_ORIGINAL;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_EXIF_IMAGE_LENGTH;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_EXIF_IMAGE_WIDTH;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_EXPOSURE_TIME;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_FLASH;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_FNUMBER;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_FOCAL_LENGTH;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_ISO;
-import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.EXIF_TAG_USER_COMMENT;
+import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.*;
 import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_ALTITUDE;
 import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_ALTITUDE_REF;
 import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_DATE_STAMP;
@@ -101,9 +92,7 @@ import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.
 import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.DIRECTORY_TYPE_EXIF;
 import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.DIRECTORY_TYPE_GPS;
 import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.DIRECTORY_TYPE_ROOT;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.TIFF_TAG_DATE_TIME;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.TIFF_TAG_MAKE;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.TIFF_TAG_MODEL;
+import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.*;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.InputOutput.copyAndClose;
@@ -251,35 +240,30 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         return (RationalNumber) exifDirectory.getFieldValue(tag);
     }
 
-    private String parseUserComment(TiffImageMetadata metadata) throws ImageReadException {
-        TiffDirectory exifDirectory = metadata.findDirectory(DIRECTORY_TYPE_EXIF);
-        if (exifDirectory != null) {
-            String userComment = parseExif(metadata, EXIF_TAG_USER_COMMENT);
-            if (userComment != null)
-                return userComment;
-        }
+    private String parseDescription(TiffImageMetadata metadata) throws ImageReadException {
+        String imageDescription = parseRoot(metadata, TIFF_TAG_IMAGE_DESCRIPTION);
+        if (imageDescription != null)
+            return imageDescription;
 
-        TiffDirectory rootDirectory = metadata.findDirectory(DIRECTORY_TYPE_ROOT);
-        if (rootDirectory != null) {
-            String make = parseMake(metadata);
-            String model = parseModel(metadata);
-            CompactCalendar dateTime = parseDateTime(metadata);
-            return trim((make != null ? make : "") + " " + (model != null ? model : "") + " Photo" + (dateTime != null ? " from " + formatDate(dateTime) : ""));
-        }
+        String userComment = parseExif(metadata, EXIF_TAG_USER_COMMENT);
+        if (userComment != null)
+            return userComment;
+
+        String make = parseMake(metadata);
+        String model = parseModel(metadata);
+        CompactCalendar dateTime = parseDateTime(metadata);
+        if (make != null && model != null)
+            return trim(make + " " + model + " Photo" + (dateTime != null ? " from " + formatDate(dateTime) : ""));
+
         return "GPS";
     }
 
     private CompactCalendar parseExifTime(TiffImageMetadata metadata, CompactCalendar startDate) throws ImageReadException {
-        String dateString = null;
-        TiffDirectory exifDirectory = metadata.findDirectory(DIRECTORY_TYPE_EXIF);
-        if (exifDirectory != null) {
-            dateString = parseExif(metadata, EXIF_TAG_DATE_TIME_ORIGINAL);
-            if (dateString == null)
-                dateString = parseExif(metadata, EXIF_TAG_DATE_TIME_DIGITIZED);
-        }
-        TiffDirectory rootDirectory = metadata.findDirectory(DIRECTORY_TYPE_ROOT);
-        if (rootDirectory != null && dateString == null)
-            dateString = (String) rootDirectory.getFieldValue(TIFF_TAG_DATE_TIME);
+        String dateString = parseExif(metadata, EXIF_TAG_DATE_TIME_ORIGINAL);
+        if (dateString == null)
+            dateString = parseExif(metadata, EXIF_TAG_DATE_TIME_DIGITIZED);
+        if (dateString == null)
+            dateString = parseRoot(metadata, TIFF_TAG_DATE_TIME);
         return dateString != null ? parseDate(dateString, DATE_TIME_FORMAT) : startDate;
     }
 
@@ -377,7 +361,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         }
         position.setTime(time);
 
-        position.setDescription(parseUserComment(metadata));
+        position.setDescription(parseDescription(metadata));
         position.setMake(parseMake(metadata));
         position.setModel(parseModel(metadata));
         position.setWidth(parseExifInteger(metadata, EXIF_TAG_EXIF_IMAGE_WIDTH));
