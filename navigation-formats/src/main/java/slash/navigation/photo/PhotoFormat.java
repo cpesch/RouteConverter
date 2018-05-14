@@ -51,6 +51,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -246,7 +249,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
             return imageDescription;
 
         String userComment = parseExif(metadata, EXIF_TAG_USER_COMMENT);
-        if (userComment != null)
+        if (userComment != null && !userComment.startsWith("ASCII"))
             return userComment;
 
         String make = parseMake(metadata);
