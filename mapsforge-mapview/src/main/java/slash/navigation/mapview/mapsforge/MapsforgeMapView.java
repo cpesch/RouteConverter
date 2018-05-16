@@ -268,10 +268,14 @@ public class MapsforgeMapView implements MapView {
                 internalAdd(pairWithLayers);
             }
 
-            public void update(List<PairWithLayer> pairWithLayers) {
-                internalRemove(pairWithLayers);
-                internalAdd(pairWithLayers);
-                updateSelectionAfterUpdate(pairWithLayers);
+            public void update(final List<PairWithLayer> pairWithLayers) {
+                invokeInAwtEventQueue(new Runnable() {
+                    public void run() {
+                        internalRemove(pairWithLayers);
+                        internalAdd(pairWithLayers);
+                        updateSelectionAfterUpdate(pairWithLayers);
+                    }
+                });
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
