@@ -420,4 +420,16 @@ public class Transfer {
         gregorianCalendar.set(MILLISECOND, calendar.get(MILLISECOND));
         return gregorianCalendar;
     }
+
+    public static String stripNonValidXMLCharacters(String string) {
+        StringBuilder buffer = new StringBuilder();
+        for (int i = 0; i < string.length(); i++) {
+            char current = string.charAt(i);
+            if (current == 0x9 || current == 0xA || current == 0xD ||
+                    current >= 0x20 && current <= 0xD7FF ||
+                    current >= 0xE000 && current <= 0xFFFD)
+                buffer.append(current);
+        }
+        return buffer.toString();
+    }
 }

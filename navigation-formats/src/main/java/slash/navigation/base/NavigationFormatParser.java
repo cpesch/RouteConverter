@@ -30,6 +30,7 @@ import slash.navigation.gpx.GpxFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.Kml22Format;
 import slash.navigation.nmn.NmnFormat;
+import slash.navigation.photo.PhotoFormat;
 import slash.navigation.rest.Get;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
@@ -137,7 +138,7 @@ public class NavigationFormatParser {
             buffer.close();
         }
 
-        if(context.getRoutes().size() == 0 && context.getFormats().size() == 0 && firstSuccessfulFormat != null)
+        if (context.getRoutes().size() == 0 && context.getFormats().size() == 0 && firstSuccessfulFormat != null)
             context.addFormat(firstSuccessfulFormat);
     }
 
@@ -194,7 +195,7 @@ public class NavigationFormatParser {
             List<BaseRoute> destination = convertRoute(source, format);
             log.info("Detected '" + format.getName() + "' with " + destination.size() + " route(s) and " +
                     getPositionCounts(destination) + " positions");
-            if(destination.size() == 0)
+            if (destination.size() == 0)
                 destination.add(format.createRoute(RouteCharacteristics.Route, null, new ArrayList<>()));
             commentRoutes(destination);
             return new ParserResult(new FormatAndRoutes(format, destination));
@@ -321,7 +322,7 @@ public class NavigationFormatParser {
     private InputStream openStream(URL url) throws IOException {
         String urlString = url.toExternalForm();
         // make sure HTTPS requests use HTTP Client with it's SSL tweaks
-        if(urlString.contains("https://")) {
+        if (urlString.contains("https://")) {
             Get get = new Get(urlString);
             return get.executeAsStream();
         }
@@ -384,8 +385,12 @@ public class NavigationFormatParser {
                       ParserCallback parserCallback,
                       File... targets) throws IOException {
         OutputStream[] targetStreams = new OutputStream[targets.length];
-        for (int i = 0; i < targetStreams.length; i++)
-            targetStreams[i] = new FileOutputStream(targets[i]);
+        for (int i = 0; i < targets.length; i++) {
+            // PhotoFormat modifies target in place since it needs the image date,
+            // so we don't create a FileOutputStream to avoid zeroing the file
+            if (!(format instanceof PhotoFormat))
+                targetStreams[i] = new FileOutputStream(targets[i]);
+        }
         write(route, format, duplicateFirstPosition, ignoreMaximumPositionCount, parserCallback, targetStreams);
         for (File target : targets)
             log.info("Wrote '" + target.getAbsolutePath() + "'");

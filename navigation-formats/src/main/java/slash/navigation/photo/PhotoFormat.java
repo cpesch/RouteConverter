@@ -35,25 +35,11 @@ import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
 import java.awt.*;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,44 +49,17 @@ import java.util.logging.Logger;
 import static java.io.File.createTempFile;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.abs;
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.HOUR;
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.SECOND;
-import static java.util.Calendar.YEAR;
+import static java.lang.String.format;
+import static java.util.Calendar.*;
 import static java.util.Collections.singletonList;
 import static org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants.*;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_ALTITUDE;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_ALTITUDE_REF;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_DATE_STAMP;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_DOP;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_IMG_DIRECTION;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_LATITUDE;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_LATITUDE_REF;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_LONGITUDE;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_LONGITUDE_REF;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_MEASURE_MODE;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_MEASURE_MODE_VALUE_2_DIMENSIONAL_MEASUREMENT;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_MEASURE_MODE_VALUE_3_DIMENSIONAL_MEASUREMENT;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SATELLITES;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SPEED;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SPEED_REF;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SPEED_REF_VALUE_KMPH;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SPEED_REF_VALUE_KNOTS;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_SPEED_REF_VALUE_MPH;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_TIME_STAMP;
-import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.GPS_TAG_GPS_VERSION_ID;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.DIRECTORY_TYPE_EXIF;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.DIRECTORY_TYPE_GPS;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.DIRECTORY_TYPE_ROOT;
+import static org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants.*;
+import static org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants.*;
 import static org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants.*;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.InputOutput.copyAndClose;
-import static slash.common.io.Transfer.parseInteger;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.common.type.ISO8601.formatDate;
@@ -249,8 +208,8 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
             return imageDescription;
 
         String userComment = parseExif(metadata, EXIF_TAG_USER_COMMENT);
-        if (userComment != null && !userComment.startsWith("ASCII"))
-            return userComment;
+        if (userComment != null)
+            return stripNonValidXMLCharacters(userComment);
 
         String make = parseMake(metadata);
         String model = parseModel(metadata);
@@ -381,8 +340,15 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         for (int i = startIndex; i < endIndex; i++) {
             PhotoPosition position = (PhotoPosition) positions.get(i);
             File source = position.getOrigin(File.class);
-            if (source != null)
-                write(position, source, target);
+            if (source != null) {
+                // since ExifRewriter requires a source and needs a target we create this here
+                File backup = new File(source.getAbsolutePath() + ".bak");
+                if(!source.renameTo(backup))
+                    throw new IOException(format("Cannot rename %s to %s", source, backup));
+                // NavigationFormatParser#write didn't create a FileOutputStream,
+                // we're doing this here after the backup
+                write(position, backup, new FileOutputStream(source));
+            }
         }
     }
 
