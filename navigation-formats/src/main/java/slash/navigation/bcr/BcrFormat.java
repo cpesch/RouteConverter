@@ -35,6 +35,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.String.format;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
 
@@ -108,7 +109,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
             if (isNameValue(line)) {
                 if (current == null) {
                     // name value without section means this isn't the file format we expect
-                    return;
+                    throw new IllegalArgumentException(format("Found garbage for format %s: %s", getName(), line));
                 } else
                     current.put(parseName(line), parseValue(line));
             }
@@ -116,9 +117,13 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
 
         if (hasValidSections(sections)) {
             extractPositions(sections, positions);
-            if (positions.size() >= 2)
+            if (positions.size() >= 2) {
                 context.appendRoute(new BcrRoute(this, sections, positions));
+                return;
+            }
         }
+
+        throw new IllegalArgumentException(format("Format %s cannot find valid sections with positions; exiting", getName()));
     }
 
     boolean isSectionTitle(String line) {

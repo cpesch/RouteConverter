@@ -40,6 +40,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.String.format;
 import static java.util.Locale.US;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.trim;
@@ -128,14 +129,16 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
                     if (haveDifferentLongitudeAndLatitude(previous, position) || haveDifferentTime(previous, position) && !validStartDate) {
                         positions.add(position);
                         previous = position;
-                    } else {
+                    } else if (previous != null) {
                         mergePositions(previous, position, originalStartDate);
                     }
                 }
             } else {
+                log.info(format("Found garbage for format %s: %s", getName(), line));
+
                 // exception for Mobile Navigator 6: accept that the first line may be garbled
                 if (lineCount++ > getGarbleCount())
-                    return;
+                    throw new IllegalArgumentException(format("Format %s contains more than %d lines of garble; exiting", getName(), getGarbleCount()));
             }
         }
 

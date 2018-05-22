@@ -36,6 +36,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.String.format;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -120,18 +121,20 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
                     position.setStartDate(startDate);
 
                 if (isIsoLatin1ButReadWithUtf8(position.getDescription()))
-                    return;
+                    throw new IllegalArgumentException(format("Found ISO Latin1 garble for format %s: %s", getName(), line));
 
                 positions.add(position);
             } else if (isName(line)) {
                 routeName = parseName(line);
             } else {
-                return;
+                throw new IllegalArgumentException(format("Found garbage for format %s: %s", getName(), line));
             }
         }
 
         if (positions.size() > 0)
             context.appendRoute(new TomTomRoute(this, isTrack(positions) ? Track : Route, routeName, positions));
+
+        throw new IllegalArgumentException(format("Format %s cannot find positions; exiting", getName()));
     }
 
     boolean isPosition(String line) {
