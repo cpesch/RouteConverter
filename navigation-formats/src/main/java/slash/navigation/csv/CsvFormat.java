@@ -113,7 +113,13 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
                     log.warning(format("Found garbage in '%s'", rowAsMap));
                     return false;
                 }
-                positions.add(new CsvPosition(rowAsMap));
+                CsvPosition position = new CsvPosition(rowAsMap);
+
+                // skip positions without any reasonable data to make format less greedy
+                if(position.getLongitude() == null && position.getLatitude() == null && position.getDescription() == null)
+                    continue;
+
+                positions.add(position);
             }
         }
         finally {
