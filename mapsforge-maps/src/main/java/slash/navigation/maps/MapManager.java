@@ -179,7 +179,7 @@ public class MapManager {
 
         File mapsDirectory = getMapsDirectory();
         List<File> mapFiles = collectFiles(mapsDirectory, ".map");
-        File[] mapFilesArray = mapFiles.toArray(new File[mapFiles.size()]);
+        File[] mapFilesArray = mapFiles.toArray(new File[0]);
         for (File file : mapFilesArray) {
             // avoid directory with world.map
             if(file.getParent().endsWith("routeconverter"))
@@ -201,7 +201,7 @@ public class MapManager {
 
         File themesDirectory = getThemesDirectory();
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
-        File[] themeFilesArray = themeFiles.toArray(new File[themeFiles.size()]);
+        File[] themeFilesArray = themeFiles.toArray(new File[0]);
         for (File file : themeFilesArray) {
             checkFile(file);
             availableThemesModel.addOrUpdateTheme(new VectorTheme(removePrefix(themesDirectory, file), file.toURI().toString(), new ExternalRenderTheme(file)));
@@ -217,7 +217,7 @@ public class MapManager {
         mapFilesService.initialize();
 
         List<RemoteMap> maps = mapFilesService.getMaps();
-        RemoteMap[] remoteMaps = maps.toArray(new RemoteMap[maps.size()]);
+        RemoteMap[] remoteMaps = maps.toArray(new RemoteMap[0]);
         sort(remoteMaps, new Comparator<RemoteResource>() {
             public int compare(RemoteResource r1, RemoteResource r2) {
                 return (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl());
@@ -227,7 +227,7 @@ public class MapManager {
             downloadableMapsModel.addOrUpdateMap(remoteMap);
 
         List<RemoteTheme> themes = mapFilesService.getThemes();
-        RemoteTheme[] remoteThemes = themes.toArray(new RemoteTheme[themes.size()]);
+        RemoteTheme[] remoteThemes = themes.toArray(new RemoteTheme[0]);
         sort(remoteThemes, new Comparator<RemoteResource>() {
             public int compare(RemoteResource r1, RemoteResource r2) {
                 return (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl());

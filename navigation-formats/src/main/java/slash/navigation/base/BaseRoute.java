@@ -559,7 +559,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     public void sort(Comparator<P> comparator) {
         List<P> positions = getPositions();
         @SuppressWarnings({"SuspiciousToArrayCall", "unchecked"})
-        P[] sorted = (P[]) positions.toArray(new BaseNavigationPosition[positions.size()]);
+        P[] sorted = (P[]) positions.toArray(new BaseNavigationPosition[0]);
         Arrays.sort(sorted, comparator);
         //noinspection unchecked
         order(asList(sorted));

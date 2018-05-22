@@ -47,7 +47,7 @@ public class PanelDropHandler extends TransferHandler {
         RouteConverter r = RouteConverter.getInstance();
         if (r.isConvertPanelSelected()) {
             List<File> onlyFiles = Files.collectFiles(files);
-            r.openPositionList(toUrls(onlyFiles.toArray(new File[onlyFiles.size()])), true);
+            r.openPositionList(toUrls(onlyFiles.toArray(new File[0])), true);
         } else if (r.isBrowsePanelSelected()) {
             r.getBrowsePanel().addFilesToCatalog(files);
         } else if (r.isPhotosPanelSelected()) {

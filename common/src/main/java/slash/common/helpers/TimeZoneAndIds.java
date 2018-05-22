@@ -90,7 +90,7 @@ public class TimeZoneAndIds {
             foundId.add(timeZoneAndId.getId());
             result.add(timeZoneAndId);
         }
-        return result.toArray(new TimeZoneAndId[result.size()]);
+        return result.toArray(new TimeZoneAndId[0]);
     }
 
     public TimeZoneAndId[] getTimeZones() {

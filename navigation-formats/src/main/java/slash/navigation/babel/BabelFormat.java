@@ -142,7 +142,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         args = considerShellScriptForBabel(babel, args);
 
         try {
-            return Runtime.getRuntime().exec(args.toArray(new String[args.size()]));
+            return Runtime.getRuntime().exec(args.toArray(new String[0]));
         } catch (IOException e) {
             throw new BabelException("Cannot execute '" + args + "'", babel, e);
         }
@@ -247,7 +247,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     private int execute(String babelPath, List<String> args, int timeout) throws IOException {
         Process process;
         try {
-            process = Runtime.getRuntime().exec(args.toArray(new String[args.size()]));
+            process = Runtime.getRuntime().exec(args.toArray(new String[0]));
         } catch (IOException e) {
             throw new BabelException("Cannot execute '" + args + "'", babelPath, e);
         }

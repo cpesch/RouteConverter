@@ -121,7 +121,7 @@ public class GoogleService implements ElevationService, GeocodingService {
 
     private String extractClosestLocation(List<GeocodeResponse.Result> results,
                                           final double longitude, final double latitude) {
-        GeocodeResponse.Result[] resultsArray = results.toArray(new GeocodeResponse.Result[results.size()]);
+        GeocodeResponse.Result[] resultsArray = results.toArray(new GeocodeResponse.Result[0]);
         sort(resultsArray, new Comparator<GeocodeResponse.Result>() {
             public int compare(GeocodeResponse.Result p1, GeocodeResponse.Result p2) {
                 GeocodeResponse.Result.Geometry.Location l1 = p1.getGeometry().getLocation();

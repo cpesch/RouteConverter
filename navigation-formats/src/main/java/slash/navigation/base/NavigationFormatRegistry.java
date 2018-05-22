@@ -305,7 +305,7 @@ public class NavigationFormatRegistry {
     }
 
     private List<NavigationFormat> sortByName(List<NavigationFormat> formats) {
-        NavigationFormat[] formatsArray = formats.toArray(new NavigationFormat[formats.size()]);
+        NavigationFormat[] formatsArray = formats.toArray(new NavigationFormat[0]);
         sort(formatsArray, new Comparator<NavigationFormat>() {
             public int compare(NavigationFormat f1, NavigationFormat f2) {
                 return f1.getName().toLowerCase().compareTo(f2.getName().toLowerCase());

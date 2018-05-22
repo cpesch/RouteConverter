@@ -96,7 +96,7 @@ public class AutomaticElevationService implements ElevationService {
         List<ElevationService> toSort = new ArrayList<>(elevationServices);
         toSort.remove(this);
 
-        ElevationService[] result = toSort.toArray(new ElevationService[toSort.size()]);
+        ElevationService[] result = toSort.toArray(new ElevationService[0]);
         sort(result, new ElevationServicePriorityComparator());
         return result;
     }

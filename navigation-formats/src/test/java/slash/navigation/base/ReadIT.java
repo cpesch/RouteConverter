@@ -96,7 +96,7 @@ public class ReadIT {
     @AfterClass
     public static void tearDown() throws IOException {
         PrintStream printStream = new PrintStream(new FileOutputStream(createTempFile("comments", ".csv")));
-        String[] strings = comments.toArray(new String[comments.size()]);
+        String[] strings = comments.toArray(new String[0]);
         sort(strings);
         for (String string : strings) {
             printStream.println(string);

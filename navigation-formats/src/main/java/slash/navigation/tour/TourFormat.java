@@ -140,7 +140,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
     }
 
     private List<TourPosition> sortPositions(List<TourPosition> positions) {
-        TourPosition[] positionArray = positions.toArray(new TourPosition[positions.size()]);
+        TourPosition[] positionArray = positions.toArray(new TourPosition[0]);
         sort(positionArray, new PositionInListComparator());
         return new ArrayList<>(asList(positionArray));
     }

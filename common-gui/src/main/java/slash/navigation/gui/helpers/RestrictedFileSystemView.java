@@ -182,7 +182,7 @@ class RestrictedFileSystemView extends FileSystemView {
             }
         }
 
-        return files.toArray(new File[files.size()]);
+        return files.toArray(new File[0]);
     }
 
     public File getParentDirectory(File dir) {

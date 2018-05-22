@@ -120,7 +120,7 @@ public class ScanWebsite extends BaseDownloadTool {
         Set<String> uris = new HashSet<>();
         recursiveCollect("", uris, new HashSet<String>());
 
-        String[] sortedUris = uris.toArray(new String[uris.size()]);
+        String[] sortedUris = uris.toArray(new String[0]);
         sort(sortedUris);
         return asList(sortedUris);
     }

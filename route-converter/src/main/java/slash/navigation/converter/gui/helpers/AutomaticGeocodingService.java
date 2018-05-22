@@ -114,7 +114,7 @@ public class AutomaticGeocodingService implements GeocodingService {
         List<GeocodingService> toSort = new ArrayList<>(geocodingServices);
         toSort.remove(this);
 
-        GeocodingService[] result = toSort.toArray(new GeocodingService[toSort.size()]);
+        GeocodingService[] result = toSort.toArray(new GeocodingService[0]);
         sort(result, new GeocodingServicePriorityComparator());
         return result;
     }

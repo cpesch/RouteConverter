@@ -66,7 +66,7 @@ public class CatalogModelImpl implements CatalogModel {
         List<Route> routes = category.getRoutes();
         List<RouteModel> routeModels = new ArrayList<>();
         if (routes != null) {
-            Route[] routesArray = routes.toArray(new Route[routes.size()]);
+            Route[] routesArray = routes.toArray(new Route[0]);
             sort(routesArray, routeComparator);
             for (Route route : routesArray)
                 routeModels.add(new RouteModel(category, route));
