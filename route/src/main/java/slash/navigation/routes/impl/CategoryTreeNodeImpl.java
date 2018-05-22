@@ -69,6 +69,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
         return super.getIndex(aNode);
     }
 
+    @SuppressWarnings("unchecked")
     public Enumeration<TreeNode> children() {
         ensureInited();
         return super.children();
@@ -82,7 +83,7 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
         if (children == null) {
             try {
                 List<Category> categories = getCategory().getCategories();
-                Category[] categoriesArray = categories.toArray(new Category[categories.size()]);
+                Category[] categoriesArray = categories.toArray(new Category[0]);
                 sort(categoriesArray, categoryComparator);
 
                 // make sure there are always children even if insert() is never called
