@@ -172,6 +172,9 @@ public class TrackUpdaterTest {
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3, p3p4));
         verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
 
+        // simulate the removal of p2
+        when(positionsModel.getPosition(1)).thenReturn(p3);
+
         trackUpdater.handleRemove(1, 1);
 
         assertEquals(asList(p1p3, p3p4), trackUpdater.getPairWithLayers());
@@ -195,6 +198,9 @@ public class TrackUpdaterTest {
         assertEquals(asList(p1p2, p2p3, p3p4), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3, p3p4));
         verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+
+        // simulate the removal of p2, p3
+        when(positionsModel.getPosition(2)).thenReturn(p4);
 
         trackUpdater.handleRemove(1, 2);
 
