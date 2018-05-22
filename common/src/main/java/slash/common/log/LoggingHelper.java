@@ -46,7 +46,7 @@ import static java.util.logging.Level.SEVERE;
 
 public class LoggingHelper {
     private static PrintStream stdout = System.out, stderr = System.err;
-    private static final int LOG_SIZE = 5* 1024 * 1024;
+    private static final int LOG_SIZE = 5 * 1024 * 1024;
     private static LoggingHelper instance;
 
     private LoggingHelper() {
