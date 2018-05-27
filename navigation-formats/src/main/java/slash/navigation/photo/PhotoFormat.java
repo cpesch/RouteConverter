@@ -208,7 +208,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
             return imageDescription;
 
         String userComment = parseExif(metadata, EXIF_TAG_USER_COMMENT);
-        if (userComment != null)
+        if (userComment != null && !userComment.startsWith("ASCII"))
             return stripNonValidXMLCharacters(userComment);
 
         String make = parseMake(metadata);
