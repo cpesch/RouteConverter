@@ -190,7 +190,9 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         sheet.shiftRows(rowForIndex, lastRowNum, -1);
 
         // remove last row
-        sheet.removeRow(sheet.getRow(lastRowNum));
+        Row row = sheet.getRow(lastRowNum);
+        if (row != null)
+            sheet.removeRow(row);
 
         return super.remove(index);
     }
