@@ -46,8 +46,8 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     private static final Preferences preferences = Preferences.userNodeForPackage(NmnRouteFormat.class);
     private static final Logger log = Logger.getLogger(NmnRouteFormat.class.getName());
-    public static final int START_BYTES = 0xFFFF;
-    public static final long UNKNOWN_START_BYTES = 1L;
+    private static final int START_BYTES = 0xFFFF;
+    private static final long UNKNOWN_START_BYTES = 1L;
 
     public String getExtension() {
         return ".route";
@@ -223,8 +223,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         }
     }
 
-    @SuppressWarnings({"UnusedDeclaration"})
-    protected Wgs84Position readPosition(ByteBuffer fileContent) throws EOFException {
+    private Wgs84Position readPosition(ByteBuffer fileContent) {
         // 4 Byte length
         int positionLength = fileContent.getInt();
         int positionEndPosition = positionLength + fileContent.position();
@@ -232,7 +231,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             // 8 Byte 0. unknown
             fileContent.position(fileContent.position() + 8);
             // 4 Byte: length + text
-            String text = getText(fileContent);
+            getText(fileContent);
             // 4 Byte: unknown
             fileContent.getInt();
             // 4 Byte: number of following data points (1, 2, 4)
@@ -274,7 +273,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         }
     }
 
-    protected Wgs84Position readBlocktype_00(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
+    private Wgs84Position readBlocktype_00(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
         /*
          4 byte in 00 00 00 00
          8 byte int Länge. diese 8 bytes nicht mitzählen
@@ -316,7 +315,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return resultPoint;
     }
 
-    protected Wgs84Position readBlocktype_01(ByteBuffer byteBuffer, Wgs84Position positionPoint) throws EOFException {
+    private Wgs84Position readBlocktype_01(ByteBuffer byteBuffer, Wgs84Position positionPoint) throws EOFException {
         /*
          4 byte int 01 00 00 00
          8 byte int Länge. diese 8 bytes nicht mitzählen
@@ -345,7 +344,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return positionPoint;
     }
 
-    protected Wgs84Position readBlocktype_02(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
+    private Wgs84Position readBlocktype_02(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
         /*
         4 byte int 01 00 00 00
         8 byte int Länge. diese 8 bytes nicht mitzählen
@@ -388,7 +387,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         return resultPoint;
     }
 
-    protected Wgs84Position readBlocktype_04(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
+    private Wgs84Position readBlocktype_04(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
         /*
         4 byte int 04 00 00 00
         8 byte int als Länge diese nicht mitzählen
@@ -532,7 +531,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.putInt(2); // count following "02 00 00 00" Block.
 
         int timeStamp = (int) (System.currentTimeMillis() / 1000L);
-        byte unknownBytes[] = { //copied from itconv export
+        byte unknownBytes[] = new byte[]{ //copied from itconv export
                 (byte) 0x28, (byte) 0x00, (byte) 0x00, (byte) 0x00
         };
         //unix timestamp

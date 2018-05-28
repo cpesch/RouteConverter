@@ -49,7 +49,7 @@ class PositionReducer {
     private static final Preferences preferences = Preferences.userNodeForPackage(PositionReducer.class);
     private static final Logger log = Logger.getLogger(MapView.class.getName());
 
-    private static final double[] THRESHOLD_PER_ZOOM = {
+    private static final double[] THRESHOLD_PER_ZOOM = new double[]{
             120000,
             70000,
             40000,

@@ -673,7 +673,7 @@ public class RouteConverter extends SingleFrameApplication {
     public void handleOpenError(final Throwable throwable, final List<URL> urls) {
         invokeLater(new Runnable() {
             public void run() {
-                String dialogUrls = printArrayToDialogString(urls.toArray(new URL[urls.size()]));
+                String dialogUrls = printArrayToDialogString(urls.toArray(new URL[0]));
                 log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + printStackTrace(throwable));
                 JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable)));
                 labelOpenError.addMouseListener(new MouseAdapter() {

@@ -220,7 +220,7 @@ public class OptionsDialog extends SimpleDialog {
 
         List<MapViewImplementation> mapViews = r.getAvailableMapViews();
         ComboBoxModel<MapViewImplementation> mapViewModel =
-                new DefaultComboBoxModel<>(mapViews.toArray(new MapViewImplementation[mapViews.size()]));
+                new DefaultComboBoxModel<>(mapViews.toArray(new MapViewImplementation[0]));
         mapViewModel.setSelectedItem(r.getMapViewPreference());
         comboBoxMapService.setModel(mapViewModel);
         comboBoxMapService.setRenderer(new MapViewListCellRenderer());

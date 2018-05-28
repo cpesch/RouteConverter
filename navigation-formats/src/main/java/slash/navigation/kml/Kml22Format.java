@@ -421,7 +421,7 @@ public class Kml22Format extends KmlFormat {
         return false;
     }
 
-    private static final String[] SPEED_COLORS = {
+    private static final String[] SPEED_COLORS = new String[]{
             "FF00ffff",
             "FF008080",
             "FF00ff00",
