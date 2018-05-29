@@ -133,8 +133,8 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
 
         if (positions.size() > 0)
             context.appendRoute(new TomTomRoute(this, isTrack(positions) ? Track : Route, routeName, positions));
-
-        throw new IllegalArgumentException(format("Format %s cannot find positions; exiting", getName()));
+        else
+            throw new IllegalArgumentException(format("Format %s cannot find positions; exiting", getName()));
     }
 
     boolean isPosition(String line) {

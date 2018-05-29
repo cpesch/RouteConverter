@@ -25,6 +25,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRoute;
 import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmea.NmeaRoute;
@@ -113,7 +114,7 @@ public class StartDateIT {
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
         ParserContext<TomTomRoute> context = new ParserContextImpl<>(source, fromCalendar(startDate));
-        new TomTom5RouteFormat().read(new FileInputStream(source), context);
+        new TomTom8RouteFormat().read(new FileInputStream(source), context);
         List<TomTomRoute> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }

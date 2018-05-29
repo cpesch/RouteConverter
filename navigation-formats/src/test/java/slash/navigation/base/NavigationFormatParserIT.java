@@ -115,14 +115,14 @@ public class NavigationFormatParserIT {
         ParserResult result1 = parser.read(new File(TEST_PATH + "from.itn"), formats);
         assertFalse(result1.isSuccessful());
 
-        formats.add(new TomTom8RouteFormat());
+        formats.add(new TomTom5RouteFormat());
         ParserResult result2 = parser.read(new File(TEST_PATH + "from.itn"), formats);
         assertTrue(result2.isSuccessful());
-        assertEquals(0, result2.getTheRoute().getPositions().size());
+        assertEquals(46, result2.getTheRoute().getPositions().size());
         assertEquals(1, result2.getAllRoutes().size());
-        assertEquals(result2.getFormat().getClass(), TomTom8RouteFormat.class);
+        assertEquals(result2.getFormat().getClass(), TomTom5RouteFormat.class);
 
-        formats.add(new TomTom5RouteFormat());
+        formats.add(new TomTom8RouteFormat());
         ParserResult result3 = parser.read(new File(TEST_PATH + "from.itn"), formats);
         assertTrue(result3.isSuccessful());
         assertEquals(46, result3.getTheRoute().getPositions().size());

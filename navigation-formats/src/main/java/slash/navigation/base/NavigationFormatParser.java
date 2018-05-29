@@ -144,7 +144,9 @@ public class NavigationFormatParser {
 
     public ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
-        return read(new FileInputStream(source), (int) source.length(), extractStartDate(source), source, formats);
+        try (InputStream inputStream = new FileInputStream(source)) {
+            return read(inputStream, (int) source.length(), extractStartDate(source), source, formats);
+        }
     }
 
     public ParserResult read(File source) throws IOException {
