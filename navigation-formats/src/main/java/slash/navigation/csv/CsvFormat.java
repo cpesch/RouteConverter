@@ -24,13 +24,17 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.SequenceWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
-import slash.common.io.NotClosingUnderlyingInputStream;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -38,7 +42,9 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
+import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.common.io.Transfer.isIsoLatin1ButReadWithUtf8;
 
 /**
  * The base of all CSV formats.
@@ -73,11 +79,13 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
     protected abstract char getColumnSeparator();
 
     public void read(InputStream source, ParserContext<CsvRoute> context) throws Exception {
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(source);
-        buffer.mark(source.available());
-        if(!read(buffer, UTF8_ENCODING, context)) {
-            buffer.reset();
-            read(buffer, ISO_LATIN1_ENCODING, context);
+        // +1 since CsvDecoder is reading until the buffer is completely processed plus one to allow for #reset()
+        source.mark(source.available() + 1);
+        if(!read(source, UTF8_ENCODING, context)) {
+            source.reset();
+
+            if(!read(source, ISO_LATIN1_ENCODING, context))
+                throw new IllegalArgumentException(format("Format %s cannot find positions; exiting", getName()));
         }
     }
 
@@ -126,9 +134,11 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
             reader.close();
         }
 
-        if (positions.size() > 0)
+        if (positions.size() > 0) {
             context.appendRoute(new CsvRoute(this, null, positions));
-        return true;
+            return true;
+        } else
+            return false;
     }
 
     public void write(CsvRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
