@@ -348,6 +348,9 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
                 // NavigationFormatParser#write didn't create a FileOutputStream,
                 // we're doing this here after the backup
                 write(position, backup, new FileOutputStream(source));
+
+                if(!source.setLastModified(backup.lastModified()))
+                    throw new IOException(format("Cannot set last modified for %s", source));
             }
         }
     }

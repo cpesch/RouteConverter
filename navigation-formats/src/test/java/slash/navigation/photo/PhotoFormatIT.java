@@ -29,6 +29,8 @@ import slash.navigation.base.ParserResult;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
@@ -39,6 +41,7 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertCalendarEquals;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
+import static slash.common.io.InputOutput.copyAndClose;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class PhotoFormatIT {
@@ -147,8 +150,13 @@ public class PhotoFormatIT {
     }
 
     private void modifyImage(String path) throws IOException {
-        File source = new File(path);
-        ParserResult result = parser.read(source);
+        File target = createTempFile("target", ".jpg");
+        target.deleteOnExit();
+        File bak = new File(target.getAbsolutePath() + ".bak");
+
+        copyAndClose(new FileInputStream(path), new FileOutputStream(target));
+
+        ParserResult result = parser.read(target);
         assertNotNull(result);
         BaseRoute theRoute = result.getTheRoute();
         PhotoFormat format = (PhotoFormat) result.getFormat();
@@ -175,8 +183,6 @@ public class PhotoFormatIT {
         position.setFocal(new RationalNumber(35, 1));
         position.setPhotographicSensitivity(800);
 
-        File target = createTempFile("target", ".jpg");
-        target.deleteOnExit();
         try {
             parser.write(route, format, false, false, null, target);
             assertTrue(target.exists());
@@ -210,10 +216,13 @@ public class PhotoFormatIT {
             assertEquals(Integer.valueOf(800), position.getPhotographicSensitivity());
 
             assertTrue(target.delete());
+            assertTrue(bak.delete());
         } finally {
             // avoid to clutter the temp directory
             if (target.exists())
                 assertTrue(target.delete());
+            if (bak.exists())
+                assertTrue(bak.delete());
         }
     }
 
