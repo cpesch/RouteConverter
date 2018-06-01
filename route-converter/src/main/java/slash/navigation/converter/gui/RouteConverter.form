@@ -28,7 +28,7 @@
             </constraints>
             <properties>
               <continuousLayout value="true"/>
-              <dividerLocation value="341"/>
+              <dividerLocation value="0"/>
               <dividerSize value="10"/>
               <minimumSize width="-1" height="-1"/>
               <oneTouchExpandable value="true"/>
@@ -45,7 +45,7 @@
                 <properties>
                   <minimumSize width="-1" height="-1"/>
                   <preferredSize width="300" height="560"/>
-                  <visible value="false"/>
+                  <visible value="true"/>
                 </properties>
                 <border type="none"/>
                 <children/>
@@ -105,7 +105,7 @@
             <properties>
               <minimumSize width="0" height="0"/>
               <preferredSize width="0" height="0"/>
-              <visible value="false"/>
+              <visible value="true"/>
             </properties>
             <border type="none"/>
             <children/>

@@ -252,7 +252,7 @@ public class RouteConverter extends SingleFrameApplication {
             System.exit(7);
         }
 
-        if (currentVersion.equals("1.8.0_161") || currentVersion.equals("1.8.0_162") || currentVersion.equals("1.8.0_171")  || currentVersion.equals("1.8.0_172")) {
+        if (currentVersion.equals("1.8.0_161") || currentVersion.equals("1.8.0_162") || currentVersion.equals("1.8.0_171") || currentVersion.equals("1.8.0_172")) {
             showMessageDialog(null, "Java " + currentVersion + " contains a fatal bug in JavaFX. Please update to an earlier or later version.", "RouteConverter", ERROR_MESSAGE);
             System.exit(8);
         }
@@ -342,9 +342,9 @@ public class RouteConverter extends SingleFrameApplication {
         initializeServices();
         initializeActions();
         initializeDatasources();
+        initializeDividers();
 
-        openMapView();
-        openProfileView();
+        openMapAndProfileView();
 
         initializeHelp();
         getContext().getActionManager().logUsage();
@@ -377,7 +377,7 @@ public class RouteConverter extends SingleFrameApplication {
         }, "FrameOpener").start();
     }
 
-    private void openMapView() {
+    private void openMapAndProfileView() {
         try {
             File file = new File(getApplicationDirectory("tileservers"), "default.xml");
             getDownloadManager().executeDownload("RouteConverter Tile Servers", getApiUrl() + V1 + "tileservers/" + FORMAT_XML, Copy, file, new Runnable() {
@@ -385,6 +385,18 @@ public class RouteConverter extends SingleFrameApplication {
                     invokeLater(new Runnable() {
                         public void run() {
                             setMapView(getMapViewPreference());
+
+                            invokeLater(new Runnable() {
+                                public void run() {
+                                    openProfileView();
+
+                                    invokeLater(new Runnable() {
+                                        public void run() {
+                                            initializeDividerListeners();
+                                        }
+                                    });
+                                }
+                            });
                         }
                     });
                 }
@@ -431,15 +443,7 @@ public class RouteConverter extends SingleFrameApplication {
         } else {
             mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
         }
-        mapPanel.setVisible(true);
-
-        int location = preferences.getInt(MAP_DIVIDER_LOCATION_PREFERENCE, -1);
-        if (location < 1) {
-            location = 300;
-        }
-        mapSplitPane.setDividerLocation(location);
-        log.info("Initialized map divider to " + location);
-        mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener());
+        mapPanel.revalidate();
     }
 
     public MapView getMapView() {
@@ -447,26 +451,35 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     private void openProfileView() {
-        invokeLater(new Runnable() {
-            public void run() {
-                profileView = new ProfileView();
-                profileView.initialize(getConvertPanel().getPositionsModel(),
-                        getConvertPanel().getPositionsSelectionModel(),
-                        getUnitSystemModel(),
-                        getProfileModeModel());
-                profilePanel.add(profileView.getComponent(), PROFILE_PANEL_CONSTRAINTS);
-                profilePanel.setTransferHandler(new PanelDropHandler());
-                profilePanel.setVisible(true);
+        profileView = new ProfileView();
+        profileView.initialize(getConvertPanel().getPositionsModel(),
+                getConvertPanel().getPositionsSelectionModel(),
+                getUnitSystemModel(),
+                getProfileModeModel());
+        profilePanel.add(profileView.getComponent(), PROFILE_PANEL_CONSTRAINTS);
+        profilePanel.setTransferHandler(new PanelDropHandler());
+        profilePanel.revalidate();
+    }
 
-                int location = preferences.getInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, -1);
-                if (location < 2) {
-                    location = 888;
-                }
-                profileSplitPane.setDividerLocation(location);
-                log.info("Initialized profile divider to " + location);
-                profileSplitPane.addPropertyChangeListener(new ProfileSplitPaneListener(location));
-            }
-        });
+    private void initializeDividers() {
+        int mapDividerLocation = preferences.getInt(MAP_DIVIDER_LOCATION_PREFERENCE, -1);
+        if (mapDividerLocation < 1) {
+            mapDividerLocation = 300;
+        }
+        mapSplitPane.setDividerLocation(mapDividerLocation);
+        log.info("Initialized map divider to " + mapDividerLocation);
+
+        int profileDividerLocation = preferences.getInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, -1);
+        if (profileDividerLocation < 2) {
+            profileDividerLocation = 888;
+        }
+        profileSplitPane.setDividerLocation(profileDividerLocation);
+        log.info("Initialized profile divider to " + profileDividerLocation);
+    }
+
+    private void initializeDividerListeners() {
+        mapSplitPane.addPropertyChangeListener(new MapSplitPaneListener());
+        profileSplitPane.addPropertyChangeListener(new ProfileSplitPaneListener(profileSplitPane.getDividerLocation()));
     }
 
     protected void shutdown() {
@@ -998,7 +1011,7 @@ public class RouteConverter extends SingleFrameApplication {
         contentPane.add(profileSplitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         mapSplitPane = new JSplitPane();
         mapSplitPane.setContinuousLayout(true);
-        mapSplitPane.setDividerLocation(341);
+        mapSplitPane.setDividerLocation(0);
         mapSplitPane.setDividerSize(10);
         mapSplitPane.setMinimumSize(new Dimension(-1, -1));
         mapSplitPane.setOneTouchExpandable(true);
@@ -1009,7 +1022,7 @@ public class RouteConverter extends SingleFrameApplication {
         mapPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         mapPanel.setMinimumSize(new Dimension(-1, -1));
         mapPanel.setPreferredSize(new Dimension(300, 560));
-        mapPanel.setVisible(false);
+        mapPanel.setVisible(true);
         mapSplitPane.setLeftComponent(mapPanel);
         tabbedPane = new JTabbedPane();
         tabbedPane.setTabPlacement(1);
@@ -1030,7 +1043,7 @@ public class RouteConverter extends SingleFrameApplication {
         profilePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         profilePanel.setMinimumSize(new Dimension(0, 0));
         profilePanel.setPreferredSize(new Dimension(0, 0));
-        profilePanel.setVisible(false);
+        profilePanel.setVisible(true);
         profileSplitPane.setRightComponent(profilePanel);
     }
 
