@@ -42,6 +42,7 @@ import slash.navigation.excel.MicrosoftExcel2008Format;
 import slash.navigation.excel.MicrosoftExcel97Format;
 import slash.navigation.excel.ExcelFormat;
 import slash.navigation.excel.ExcelRoute;
+import slash.navigation.fit.FitFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
@@ -682,6 +683,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof CsvSemicolonFormat)
             return (CsvRoute) this;
         return asCsvFormat(new CsvSemicolonFormat());
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
+    public SimpleRoute asFitFormat() {
+        if (getFormat() instanceof FitFormat)
+            return (SimpleRoute) this;
+        return asSimpleFormat(new FitFormat());
     }
 
     @SuppressWarnings("UnusedDeclaration")

@@ -36,11 +36,15 @@ import java.util.Set;
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static slash.common.TestCase.assertEquals;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.getExtension;
-import static slash.navigation.base.NavigationTestCase.*;
+import static slash.navigation.base.NavigationTestCase.ROUTE_PATH;
+import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.NavigationTestCase.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.assertTrue;
 
 public class ReadIT {
     private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
@@ -128,7 +132,7 @@ public class ReadIT {
     }
 
     @Test
-    public void testGarminFitFilesAreValid() throws IOException {
+    public void testFitFilesAreValid() throws IOException {
         readFiles(".fit");
     }
 
@@ -401,7 +405,7 @@ public class ReadIT {
                 try {
                     ParserResult result = parser.read(file);
                     assertNotNull(result);
-                    assertFalse("Can read route from " + file, result.getAllRoutes().size() == 0);
+                    assertNotEquals("Can read route from " + file, 0, result.getAllRoutes().size());
                 } catch (NumberFormatException e) {
                     // intentionally left empty
                 }

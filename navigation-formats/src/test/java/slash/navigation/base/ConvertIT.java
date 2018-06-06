@@ -344,13 +344,13 @@ public class ConvertIT {
     }
 
     @Test
-    public void testConvertGarminFitToGpx() throws IOException {
+    public void testConvertFitToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Gpx10Format());
         convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Gpx11Format());
     }
 
     @Test
-    public void testConvertGarminFitToKml() throws IOException {
+    public void testConvertFitToKml() throws IOException {
         convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Kml20Format());
         convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Kml21Format());
         convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Kml22BetaFormat());

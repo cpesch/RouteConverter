@@ -20,21 +20,12 @@
 
 package slash.navigation.fit;
 
-import com.garmin.fit.CoursePointMesg;
 import com.garmin.fit.CoursePointMesgListener;
 import com.garmin.fit.Decode;
-import com.garmin.fit.Field;
 import com.garmin.fit.FitRuntimeException;
-import com.garmin.fit.GpsMetadataMesg;
 import com.garmin.fit.GpsMetadataMesgListener;
-import com.garmin.fit.LengthMesg;
-import com.garmin.fit.LengthMesgListener;
-import com.garmin.fit.Mesg;
 import com.garmin.fit.MesgBroadcaster;
-import com.garmin.fit.MesgListener;
-import com.garmin.fit.RecordMesg;
 import com.garmin.fit.RecordMesgListener;
-import com.garmin.fit.SegmentPointMesg;
 import com.garmin.fit.SegmentPointMesgListener;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
@@ -49,6 +40,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
@@ -60,6 +52,8 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
  */
 
 public class FitFormat extends SimpleFormat<Wgs84Route> {
+    static final Logger log = Logger.getLogger(FitFormat.class.getName());
+
     public String getName() {
         return "Garmin FIT (*" + getExtension() + ")";
     }
@@ -97,9 +91,12 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
     public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
         Decode decode = new Decode();
         MesgBroadcaster broadcaster = new MesgBroadcaster(decode);
-        Listener listener = new Listener();
-        // TODO all listeners
-        broadcaster.addListener((GpsMetadataMesgListener) listener);
+        broadcaster.addListener(new MesgLogger());
+        MesgParser parser = new MesgParser();
+        broadcaster.addListener((CoursePointMesgListener) parser);
+        broadcaster.addListener((GpsMetadataMesgListener) parser);
+        broadcaster.addListener((RecordMesgListener) parser);
+        broadcaster.addListener((SegmentPointMesgListener) parser);
 
         source.mark(source.available() + 1);
         if (!decode.checkFileIntegrity(source))
@@ -119,30 +116,9 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
             }
         }
 
-        // TODO process
-    }
-
-    private static class Listener implements /*MesgListener*/ CoursePointMesgListener, GpsMetadataMesgListener, RecordMesgListener, SegmentPointMesgListener {
-        public void onMesg(Mesg mesg) {
-            for (Field field : mesg.getFields())
-                System.out.println("Field " + field.getName());
-        }
-
-        public void onMesg(CoursePointMesg mesg) {
-            // position_lat
-        }
-
-        public void onMesg(GpsMetadataMesg mesg) {
-            // timestamp
-        }
-
-        public void onMesg(RecordMesg mesg) {
-            // speed
-        }
-
-        public void onMesg(SegmentPointMesg mesg) {
-            System.out.println("Long " + mesg.getPositionLong() + " Lat " + mesg.getPositionLat() + "altitude " + mesg.getAltitude() + " index " + mesg.getMessageIndex());
-        }
+        List<Wgs84Position> positions = parser.getPositions();
+        if (positions.size() > 0)
+            context.appendRoute(new Wgs84Route(this, parser.getCharacteristics(), positions));
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {

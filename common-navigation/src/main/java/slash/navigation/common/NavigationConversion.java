@@ -289,6 +289,12 @@ public class NavigationConversion {
         return new double[]{right, height};
     }
 
+    public static Double semiCircleToDegree(Integer integer) {
+        if(integer == null)
+            return null;
+        return integer * (180.0 / pow(2, 31));
+    }
+
     public static double bcrAltitudeToElevationMeters(long altitude) {
         double feet = (altitude - ALTITUDE_6m) *
                 (meterToFeets(ELEVATION_146m - ELEVATION_6m) / (ALTITUDE_146m - ALTITUDE_6m));
