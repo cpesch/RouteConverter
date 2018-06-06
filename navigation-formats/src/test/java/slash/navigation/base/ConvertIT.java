@@ -27,7 +27,6 @@ import slash.navigation.babel.CompeGPSDataRouteFormat;
 import slash.navigation.babel.CompeGPSDataTrackFormat;
 import slash.navigation.babel.CompeGPSDataWaypointFormat;
 import slash.navigation.babel.FlightRecorderDataFormat;
-import slash.navigation.babel.GarminFitFormat;
 import slash.navigation.babel.GarminMapSource5Format;
 import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.GarminPcx5Format;
@@ -54,6 +53,7 @@ import slash.navigation.csv.CsvCommaFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
 import slash.navigation.excel.MicrosoftExcel2008Format;
 import slash.navigation.excel.MicrosoftExcel97Format;
+import slash.navigation.fit.FitFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPal7RouteFormat;
@@ -345,16 +345,16 @@ public class ConvertIT {
 
     @Test
     public void testConvertGarminFitToGpx() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.fit", new GarminFitFormat(), new Gpx10Format());
-        convertRoundtrip(TEST_PATH + "from.fit", new GarminFitFormat(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Gpx11Format());
     }
 
     @Test
     public void testConvertGarminFitToKml() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.fit", new GarminFitFormat(), new Kml20Format());
-        convertRoundtrip(TEST_PATH + "from.fit", new GarminFitFormat(), new Kml21Format());
-        convertRoundtrip(TEST_PATH + "from.fit", new GarminFitFormat(), new Kml22BetaFormat());
-        convertRoundtrip(TEST_PATH + "from.fit", new GarminFitFormat(), new Kml22Format());
+        convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Kml20Format());
+        convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Kml21Format());
+        convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Kml22BetaFormat());
+        convertRoundtrip(TEST_PATH + "from.fit", new FitFormat(), new Kml22Format());
     }
 
     @Test

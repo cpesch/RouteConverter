@@ -27,7 +27,6 @@ import slash.navigation.babel.AlanTrackLogFormat;
 import slash.navigation.babel.AlanWaypointsAndRoutesFormat;
 import slash.navigation.babel.CompeGPSDataFormat;
 import slash.navigation.babel.FlightRecorderDataFormat;
-import slash.navigation.babel.GarminFitFormat;
 import slash.navigation.babel.GarminMapSource5Format;
 import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.babel.GarminPcx5Format;
@@ -46,6 +45,7 @@ import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.excel.ExcelFormat;
+import slash.navigation.fit.FitFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
@@ -796,7 +796,7 @@ public abstract class NavigationTestCase extends TestCase {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
             } else if (sourceFormat instanceof Iblue747Format) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
-            } else if (sourceFormat instanceof GarminFitFormat && targetFormat instanceof GpxFormat) {
+            } else if (sourceFormat instanceof FitFormat && targetFormat instanceof GpxFormat) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else if (sourceFormat instanceof ColumbusGpsBinaryFormat && targetFormat instanceof GpxFormat) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1) + 1.0, roundFraction(targetPosition.getSpeed(), 1) + 1.0, 5.0);
@@ -846,7 +846,7 @@ public abstract class NavigationTestCase extends TestCase {
             assertNotNull(targetPosition.getTime());
         } else if (sourceFormat instanceof GpsTunerFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof FlightRecorderDataFormat && targetFormat instanceof KmlFormat ||
-                sourceFormat instanceof GarminFitFormat && targetFormat instanceof KmlFormat ||
+                sourceFormat instanceof FitFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof CompeGPSDataFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof ExcelFormat && targetFormat instanceof KmlFormat ||
                 sourceFormat instanceof HaicomLoggerFormat && targetFormat instanceof KmlFormat ||
