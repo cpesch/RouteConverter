@@ -264,7 +264,7 @@ class PositionReducer {
         int lastIndex = includeFirstAndLastPosition ? positions.size() - 1 : positions.size();
 
         NavigationPosition previousPosition = positions.get(firstIndex);
-        boolean previousPositionVisible = boundingBox.contains(previousPosition);
+        boolean previousPositionVisible = previousPosition.hasCoordinates() && boundingBox.contains(previousPosition);
 
         for (int i = firstIndex; i < lastIndex; i += 1) {
             NavigationPosition position = positions.get(i);
@@ -275,7 +275,7 @@ class PositionReducer {
             if (visible) {
                 // if the previous position was not visible but the current position is visible:
                 // add the previous position to render transition from non-visible to visible area
-                if (!previousPositionVisible)
+                if (!previousPositionVisible && previousPosition.hasCoordinates())
                     result.add(previousPosition);
                 result.add(position);
             } else {
