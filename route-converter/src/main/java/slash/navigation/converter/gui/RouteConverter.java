@@ -1163,13 +1163,17 @@ public class RouteConverter extends SingleFrameApplication {
 
             if (e.getPropertyName().equals(DIVIDER_LOCATION_PROPERTY)) {
                 if (mapSplitPane.getDividerLocation() != location) {
-                    location = mapSplitPane.getDividerLocation();
-                    getMapView().resize();
-                    preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, mapSplitPane.getDividerLocation());
-                    log.info("Changed map divider to " + mapSplitPane.getDividerLocation());
-                    enableActions();
+                    dividerChanged(mapSplitPane.getDividerLocation());
                 }
             }
+        }
+
+        private void dividerChanged(int newValue) {
+            this.location = newValue;
+            getMapView().resize();
+            preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, newValue);
+            log.fine("Changed map divider to " + newValue);
+            enableActions();
         }
 
         private void enableActions() {
@@ -1191,21 +1195,25 @@ public class RouteConverter extends SingleFrameApplication {
         public void propertyChange(PropertyChangeEvent e) {
             if (e.getPropertyName().equals(DIVIDER_LOCATION_PROPERTY)) {
                 if (profileSplitPane.getDividerLocation() != location) {
-                    location = profileSplitPane.getDividerLocation();
-                    if (isMapViewAvailable()) {
-                        // make sure the one touch expandable to minimize the map works fine
-                        if (location == 1) {
-                            getMapView().getComponent().setVisible(false);
-                        } else if ((Integer) e.getOldValue() == 1) {
-                            getMapView().getComponent().setVisible(true);
-                        }
-                        getMapView().resize();
-                    }
-                    preferences.putInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, profileSplitPane.getDividerLocation());
-                    log.info("Changed profile divider to " + profileSplitPane.getDividerLocation());
-                    enableActions();
+                    dividerChanged((Integer) e.getOldValue(), profileSplitPane.getDividerLocation());
                 }
             }
+        }
+
+        private void dividerChanged(int oldValue, int newValue) {
+            this.location = newValue;
+            if (isMapViewAvailable()) {
+                // make sure the one touch expandable to minimize the map works fine
+                if (location == 1) {
+                    getMapView().getComponent().setVisible(false);
+                } else if (oldValue == 1) {
+                    getMapView().getComponent().setVisible(true);
+                }
+                getMapView().resize();
+            }
+            preferences.putInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, newValue);
+            log.fine("Changed profile divider to " + newValue);
+            enableActions();
         }
 
         private void enableActions() {
