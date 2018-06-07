@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.WaypointType;
@@ -79,7 +80,10 @@ public class PositionHelper {
             return "";
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
         double elevationInUnit = unitSystem.valueToUnit(elevation);
-        return format("%d %s", round(elevationInUnit), unitSystem.getElevationName());
+        if (abs(elevationInUnit) < 10.0)
+            return format("%s %s", roundFraction(elevationInUnit, 1), unitSystem.getElevationName());
+        else
+            return format("%d %s", round(elevationInUnit), unitSystem.getElevationName());
     }
 
     public static String extractElevation(NavigationPosition position) {
