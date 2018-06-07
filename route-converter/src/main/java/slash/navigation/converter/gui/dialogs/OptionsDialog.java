@@ -348,7 +348,7 @@ public class OptionsDialog extends SimpleDialog {
         textFieldGoogleApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("google"));
         textFieldGoogleApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                APIKeyRegistry.getInstance().setAPIKeyPreference("google", trim(textFieldGoogleApiKey.getText()));
+                APIKeyRegistry.getInstance().setAPIKeyPreference("google", trimApiKey(textFieldGoogleApiKey.getText()));
                 restartMapView();
             }
 
@@ -370,7 +370,7 @@ public class OptionsDialog extends SimpleDialog {
         textFieldThunderforestApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("thunderforest"));
         textFieldThunderforestApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                APIKeyRegistry.getInstance().setAPIKeyPreference("thunderforest", trim(textFieldThunderforestApiKey.getText()));
+                APIKeyRegistry.getInstance().setAPIKeyPreference("thunderforest", trimApiKey(textFieldThunderforestApiKey.getText()));
                 restartMapView();
             }
 
@@ -390,7 +390,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         textFieldGeonamesUserName.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                APIKeyRegistry.getInstance().setAPIKeyPreference("geonames", trim(textFieldGeonamesUserName.getText()));
+                APIKeyRegistry.getInstance().setAPIKeyPreference("geonames", trimApiKey(textFieldGeonamesUserName.getText()));
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -683,6 +683,11 @@ public class OptionsDialog extends SimpleDialog {
                 close();
             }
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
+
+    private String trimApiKey(String string) {
+        string = trim(string);
+        return string != null ? string.replaceAll("\\s+", "") : null;
     }
 
     private void restartMapView() {

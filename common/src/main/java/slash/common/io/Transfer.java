@@ -44,6 +44,7 @@ import static java.lang.Math.*;
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
 import static java.util.Calendar.*;
+import static java.util.Locale.US;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromMillis;
 
@@ -97,7 +98,6 @@ public class Transfer {
         if (string == null)
             return null;
         string = string.trim();
-        string = string.replaceAll("\\s+", "");
         if (string.length() == 0)
             return null;
         else
@@ -171,7 +171,7 @@ public class Transfer {
         return aBigInteger != null ? aBigInteger.intValue() : null;
     }
 
-    private static final NumberFormat DECIMAL_NUMBER_FORMAT = DecimalFormat.getNumberInstance(Locale.US);
+    private static final NumberFormat DECIMAL_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
 
     static {
         DECIMAL_NUMBER_FORMAT.setGroupingUsed(false);
