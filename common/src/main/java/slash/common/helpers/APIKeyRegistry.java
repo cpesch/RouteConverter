@@ -97,7 +97,7 @@ public class APIKeyRegistry {
     }
 
     public void setAPIKeyPreference(String serviceName, String apiKey) {
-        preferences.put(serviceName + API_KEY_PREFERENCE, apiKey);
+        preferences.put(serviceName + API_KEY_PREFERENCE, apiKey != null ? apiKey : "");
     }
 
     public String getAPIKey(String serviceName, String apiType) {

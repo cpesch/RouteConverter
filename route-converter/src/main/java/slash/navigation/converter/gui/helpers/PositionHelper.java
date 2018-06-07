@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.WaypointType;

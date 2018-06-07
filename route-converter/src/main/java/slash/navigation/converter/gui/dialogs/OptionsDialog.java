@@ -112,6 +112,7 @@ import static slash.common.helpers.LocaleHelper.SERBIA;
 import static slash.common.helpers.LocaleHelper.SLOVAKIA;
 import static slash.common.helpers.LocaleHelper.SPAIN;
 import static slash.common.helpers.LocaleHelper.UKRAINE;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.common.DegreeFormat.Degrees;
 import static slash.navigation.common.DegreeFormat.Degrees_Minutes;
 import static slash.navigation.common.DegreeFormat.Degrees_Minutes_Seconds;
@@ -347,7 +348,7 @@ public class OptionsDialog extends SimpleDialog {
         textFieldGoogleApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("google"));
         textFieldGoogleApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                APIKeyRegistry.getInstance().setAPIKeyPreference("google", textFieldGoogleApiKey.getText());
+                APIKeyRegistry.getInstance().setAPIKeyPreference("google", trim(textFieldGoogleApiKey.getText()));
                 restartMapView();
             }
 
@@ -369,7 +370,7 @@ public class OptionsDialog extends SimpleDialog {
         textFieldThunderforestApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("thunderforest"));
         textFieldThunderforestApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                APIKeyRegistry.getInstance().setAPIKeyPreference("thunderforest", textFieldThunderforestApiKey.getText());
+                APIKeyRegistry.getInstance().setAPIKeyPreference("thunderforest", trim(textFieldThunderforestApiKey.getText()));
                 restartMapView();
             }
 
@@ -389,7 +390,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         textFieldGeonamesUserName.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
-                APIKeyRegistry.getInstance().setAPIKeyPreference("geonames", textFieldGeonamesUserName.getText());
+                APIKeyRegistry.getInstance().setAPIKeyPreference("geonames", trim(textFieldGeonamesUserName.getText()));
             }
 
             public void removeUpdate(DocumentEvent e) {

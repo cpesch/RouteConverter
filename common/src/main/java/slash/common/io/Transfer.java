@@ -97,6 +97,7 @@ public class Transfer {
         if (string == null)
             return null;
         string = string.trim();
+        string = string.replaceAll("\\s+", "");
         if (string.length() == 0)
             return null;
         else
