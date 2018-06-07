@@ -50,6 +50,7 @@ import static slash.navigation.common.NavigationConversion.semiCircleToDegree;
  */
 class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, RecordMesgListener, SegmentPointMesgListener {
     private List<Wgs84Position> positions = new ArrayList<>();
+    private int index = 1;
     private RouteCharacteristics characteristics = Waypoints;
 
     public List<Wgs84Position> getPositions() {
@@ -60,33 +61,52 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
         return characteristics;
     }
 
+    private Double asDouble(Byte aByte) {
+        return aByte != null ? aByte.doubleValue() : null;
+    }
+
     private Double asDouble(Float aFloat) {
         return aFloat != null ? aFloat.doubleValue() : null;
+    }
+
+    private Double asDouble(Short aShort) {
+        return aShort != null ? aShort.doubleValue() : null;
     }
 
     private CompactCalendar asCalendar(DateTime dateTime) {
         return fromDate(dateTime.getDate());
     }
 
+    private String asDescription(Mesg mesg) {
+        return String.format("%s %d", mesg.getName(), index++);
+    }
+
     public void onMesg(CoursePointMesg mesg) {
         positions.add(new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
-                null, null, asCalendar(mesg.getTimestamp()), mesg.getName()));
+                null, null, asCalendar(mesg.getTimestamp()), asDescription(mesg)));
         characteristics = Route;
     }
 
     public void onMesg(GpsMetadataMesg mesg) {
-        positions.add(new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
-                null, null, asCalendar(mesg.getTimestamp()), mesg.getName()));
+        Float velocity = mesg.getNumVelocity() > 0 ? mesg.getVelocity(0) : null;
+        Wgs84Position position = new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
+                null, asDouble(velocity), asCalendar(mesg.getTimestamp()), asDescription(mesg));
+        position.setHeading(asDouble(mesg.getHeading()));
+        positions.add(position);
     }
 
     public void onMesg(RecordMesg mesg) {
-        positions.add(new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
-                asDouble(mesg.getAltitude()), asDouble(mesg.getSpeed()), asCalendar(mesg.getTimestamp()), mesg.getName()));
+        Wgs84Position position = new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
+                asDouble(mesg.getAltitude()), asDouble(mesg.getSpeed()), asCalendar(mesg.getTimestamp()), asDescription(mesg));
+        position.setTemperature(asDouble(mesg.getTemperature()));
+        position.setPdop(asDouble(mesg.getGpsAccuracy()));
+        position.setOrigin(mesg);
+        positions.add(position);
         characteristics = Track;
     }
 
     public void onMesg(SegmentPointMesg mesg) {
         positions.add(new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
-                asDouble(mesg.getAltitude()), null, null, mesg.getName()));
+                asDouble(mesg.getAltitude()), null, null, asDescription(mesg)));
     }
 }
