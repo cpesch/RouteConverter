@@ -423,6 +423,7 @@
         <module>RouteConverterLinuxOffline</module>
         <module>RouteConverterMacOffline</module>
         <module>RouteConverterWindowsOffline</module>
+        <module>tileserver-maps</module>
         <module>time-album-pro</module>
         <module>TimeAlbumProLinux</module>
         <module>TimeAlbumProMac</module>

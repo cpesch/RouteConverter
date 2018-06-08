@@ -20,8 +20,8 @@
 package slash.navigation.mapview.mapsforge.renderer;
 
 import slash.navigation.gui.Application;
-import slash.navigation.maps.LocalTheme;
-import slash.navigation.maps.impl.VectorTheme;
+import slash.navigation.maps.mapsforge.LocalTheme;
+import slash.navigation.maps.mapsforge.impl.VectorTheme;
 
 import javax.swing.*;
 import java.awt.*;

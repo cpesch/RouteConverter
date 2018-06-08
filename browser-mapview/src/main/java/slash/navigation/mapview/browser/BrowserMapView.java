@@ -29,13 +29,13 @@ import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.common.*;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
+import slash.navigation.maps.tileserver.TileServerService;
+import slash.navigation.maps.tileserver.binding.CopyrightType;
+import slash.navigation.maps.tileserver.binding.TileServerType;
 import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.MapViewListener;
-import slash.navigation.mapview.tileserver.TileServerService;
-import slash.navigation.mapview.tileserver.binding.CopyrightType;
-import slash.navigation.mapview.tileserver.binding.TileServerType;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.event.*;
@@ -93,8 +93,8 @@ import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
-import static slash.navigation.mapview.browser.TransformUtil.delta;
-import static slash.navigation.mapview.browser.TransformUtil.isPositionInChina;
+import static slash.navigation.mapview.browser.helper.TransformUtil.delta;
+import static slash.navigation.mapview.browser.helper.TransformUtil.isPositionInChina;
 
 /**
  * Base implementation for a browser-based map view.

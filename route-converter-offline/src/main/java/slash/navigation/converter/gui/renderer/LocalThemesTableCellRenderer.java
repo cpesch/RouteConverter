@@ -20,12 +20,12 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.LocalTheme;
+import slash.navigation.maps.mapsforge.LocalTheme;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.maps.impl.LocalThemesTableModel.DESCRIPTION_COLUMN;
+import static slash.navigation.maps.mapsforge.impl.LocalThemesTableModel.DESCRIPTION_COLUMN;
 
 /**
  * Renders the table cells of the available themes table.

@@ -24,24 +24,24 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.notifications.NotificationManager;
-import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.MapManager;
+import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 
 import javax.swing.*;
 
 import static java.text.MessageFormat.format;
 
 /**
- * {@link Action} that displays a {@link LocalMap} from the {@link MapManager}.
+ * {@link Action} that displays a {@link LocalMap} from the {@link MapsforgeMapManager}.
  *
  * @author Christian Pesch
  */
 
 public class DisplayMapAction extends FrameAction {
     private final JTable table;
-    private final MapManager mapManager;
+    private final MapsforgeMapManager mapManager;
 
-    public DisplayMapAction(JTable table, MapManager mapManager) {
+    public DisplayMapAction(JTable table, MapsforgeMapManager mapManager) {
         this.table = table;
         this.mapManager = mapManager;
     }

@@ -21,12 +21,12 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.gui.Application;
-import slash.navigation.maps.LocalMap;
+import slash.navigation.maps.mapsforge.LocalMap;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.maps.impl.LocalMapsTableModel.DESCRIPTION_COLUMN;
+import static slash.navigation.maps.mapsforge.impl.LocalMapsTableModel.DESCRIPTION_COLUMN;
 
 /**
  * Renders the table cells of the available maps table.

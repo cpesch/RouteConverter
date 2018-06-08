@@ -22,7 +22,7 @@ package slash.navigation.converter.gui;
 import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
-import slash.navigation.maps.MapManager;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
 
@@ -37,7 +37,7 @@ import static slash.navigation.gui.helpers.WindowHelper.getFrame;
 import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 
 /**
- * Implements the callbacks from the {@link MapView} to the other RouteConverter services including the {@link MapManager}
+ * Implements the callbacks from the {@link MapView} to the other RouteConverter services including the {@link MapsforgeMapManager}
  * for the RouteConverter Offline Edition.
  *
  * @author Christian Pesch
@@ -46,7 +46,7 @@ import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 public class MapViewCallbackOfflineImpl extends MapViewCallbackImpl implements MapViewCallbackOffline {
     private static final Logger log = Logger.getLogger(MapViewCallbackOfflineImpl.class.getName());
 
-    public MapManager getMapManager() {
+    public MapsforgeMapManager getMapManager() {
         return ((RouteConverterOffline) Application.getInstance()).getMapManager();
     }
 

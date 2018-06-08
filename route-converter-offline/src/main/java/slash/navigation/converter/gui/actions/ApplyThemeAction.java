@@ -24,24 +24,24 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.notifications.NotificationManager;
-import slash.navigation.maps.LocalTheme;
-import slash.navigation.maps.MapManager;
+import slash.navigation.maps.mapsforge.LocalTheme;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 
 import javax.swing.*;
 
 import static java.text.MessageFormat.format;
 
 /**
- * {@link Action} that applies a {@link LocalTheme} from the {@link MapManager}.
+ * {@link Action} that applies a {@link LocalTheme} from the {@link MapsforgeMapManager}.
  *
  * @author Christian Pesch
  */
 
 public class ApplyThemeAction extends FrameAction {
     private final JTable table;
-    private final MapManager mapManager;
+    private final MapsforgeMapManager mapManager;
 
-    public ApplyThemeAction(JTable table, MapManager mapManager) {
+    public ApplyThemeAction(JTable table, MapsforgeMapManager mapManager) {
         this.table = table;
         this.mapManager = mapManager;
     }

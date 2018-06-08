@@ -43,7 +43,7 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.download.tools.base.BaseDownloadTool;
 import slash.navigation.graphhopper.PbfUtil;
-import slash.navigation.maps.helpers.MapUtil;
+import slash.navigation.maps.mapsforge.helpers.MapUtil;
 import slash.navigation.rest.Post;
 
 import javax.xml.bind.JAXBException;

@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.maps.impl.LocalMapsTableModel;
+import slash.navigation.maps.mapsforge.impl.LocalMapsTableModel;
 
 import javax.swing.*;
 

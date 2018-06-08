@@ -29,8 +29,8 @@ import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
-import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.MapManager;
+import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
@@ -59,7 +59,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
  */
 
 public class RouteConverterOffline extends RouteConverter {
-    private MapManager mapManager;
+    private MapsforgeMapManager mapManager;
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
@@ -80,7 +80,7 @@ public class RouteConverterOffline extends RouteConverter {
 
     protected void initializeServices() {
         super.initializeServices();
-        mapManager = new MapManager(getDataSourceManager());
+        mapManager = new MapsforgeMapManager(getDataSourceManager());
         mapAfterStart = getMapManager().getDisplayedMapModel().getItem();
     }
 
@@ -96,7 +96,7 @@ public class RouteConverterOffline extends RouteConverter {
         }
     }
 
-    public MapManager getMapManager() {
+    public MapsforgeMapManager getMapManager() {
         return mapManager;
     }
 

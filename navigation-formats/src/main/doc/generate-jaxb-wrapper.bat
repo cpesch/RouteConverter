@@ -27,6 +27,6 @@ bin\xjc -verbose -d generated -p slash.navigation.googlemaps.geocode c:\Developm
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\datasource\src\main\java -p slash.navigation.datasources.binding c:\Development\RouteConverter\datasource\src\main\doc\datasource-catalog.xsd
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\download\src\main\java -p slash.navigation.download.queue.binding  c:\Development\RouteConverter\download\src\main\doc\queue.xsd
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\route\src\main\java -p slash.navigation.routes.remote.binding c:\Development\RouteConverter\route\src\main\doc\route-catalog.xsd
-bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\browser-mapview\src\main\java -p slash.navigation.mapview.tileserver.binding c:\Development\RouteConverter\browser-mapview\src\main\doc\tileserver-catalog.xsd
+bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\browser-mapview\src\main\java -p main.java.slash.navigation.maps.tileserver.binding c:\Development\RouteConverter\browser-mapview\src\main\doc\slash.navigation.maps.tileserver-catalog.xsd
 
 xjc -verbose -d kml/src/main/java -p slash.navigation.kml.binding21 kml/src/main/doc/kml21.xsd

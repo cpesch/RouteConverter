@@ -35,10 +35,10 @@ import slash.navigation.download.Checksum;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.DialogAction;
-import slash.navigation.maps.LocalTheme;
-import slash.navigation.maps.MapManager;
-import slash.navigation.maps.RemoteTheme;
-import slash.navigation.maps.impl.LocalThemesTableModel;
+import slash.navigation.maps.mapsforge.LocalTheme;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
+import slash.navigation.maps.mapsforge.RemoteTheme;
+import slash.navigation.maps.mapsforge.impl.LocalThemesTableModel;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -54,7 +54,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
-import static slash.navigation.maps.impl.RemoteThemesTableModel.*;
+import static slash.navigation.maps.mapsforge.impl.RemoteThemesTableModel.*;
 
 /**
  * Dialog to show available and downloadable themes of the program.
@@ -175,7 +175,7 @@ public class ThemesDialog extends SimpleDialog {
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private MapManager getMapManager() {
+    private MapsforgeMapManager getMapManager() {
         return ((RouteConverterOffline) RouteConverter.getInstance()).getMapManager();
     }
 

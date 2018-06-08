@@ -20,8 +20,8 @@
 package slash.navigation.mapview.mapsforge.renderer;
 
 import slash.navigation.gui.Application;
-import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.impl.OnlineMap;
+import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.mapsforge.impl.OnlineMap;
 
 import javax.swing.*;
 import java.awt.*;

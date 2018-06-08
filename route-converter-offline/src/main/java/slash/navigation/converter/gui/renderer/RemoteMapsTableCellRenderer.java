@@ -20,14 +20,14 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.RemoteMap;
-import slash.navigation.maps.RemoteResource;
+import slash.navigation.maps.mapsforge.RemoteMap;
+import slash.navigation.maps.mapsforge.RemoteResource;
 
 import javax.swing.*;
 import java.awt.*;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
-import static slash.navigation.maps.impl.RemoteMapsTableModel.*;
+import static slash.navigation.maps.mapsforge.impl.RemoteMapsTableModel.*;
 
 /**
  * Renders the table cells of the downloadable maps table.

@@ -20,7 +20,7 @@
 
 package slash.navigation.mapview.mapsforge;
 
-import slash.navigation.maps.MapManager;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 
@@ -31,7 +31,7 @@ import slash.navigation.mapview.MapViewCallback;
  */
 
 public interface MapViewCallbackOffline extends MapViewCallback {
-    MapManager getMapManager();
+    MapsforgeMapManager getMapManager();
 
     void showDownloadNotification();
     void showProcessNotification();

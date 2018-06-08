@@ -19,7 +19,7 @@
 */
 package slash.navigation.mapview.mapsforge.models;
 
-import slash.navigation.maps.impl.ItemModel;
+import slash.navigation.maps.mapsforge.impl.ItemModel;
 
 import javax.swing.*;
 import javax.swing.event.*;

@@ -25,8 +25,8 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.notifications.NotificationManager;
-import slash.navigation.maps.MapManager;
-import slash.navigation.maps.RemoteMap;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
+import slash.navigation.maps.mapsforge.RemoteMap;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Files.printArrayToDialogString;
 
 /**
- * {@link Action} that downloads {@link RemoteMap}s from the {@link MapManager}.
+ * {@link Action} that downloads {@link RemoteMap}s from the {@link MapsforgeMapManager}.
  *
  * @author Christian Pesch
  */
@@ -50,11 +50,11 @@ public class DownloadMapsAction extends FrameAction {
     private static ExecutorService executor = newCachedThreadPool();
 
     private final JTable table;
-    private final MapManager mapManager;
+    private final MapsforgeMapManager mapManager;
     private final JCheckBox checkBoxDownloadRoutingData;
     private final JCheckBox checkBoxDownloadElevationData;
 
-    public DownloadMapsAction(JTable table, MapManager mapManager,
+    public DownloadMapsAction(JTable table, MapsforgeMapManager mapManager,
                               JCheckBox checkBoxDownloadRoutingData, JCheckBox checkBoxDownloadElevationData) {
         this.table = table;
         this.mapManager = mapManager;

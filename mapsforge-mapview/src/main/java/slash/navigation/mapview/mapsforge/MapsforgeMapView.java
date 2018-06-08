@@ -62,8 +62,8 @@ import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
-import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.MapManager;
+import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.MapViewListener;
@@ -143,10 +143,10 @@ import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COL
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
-import static slash.navigation.maps.helpers.MapTransfer.asBoundingBox;
-import static slash.navigation.maps.helpers.MapTransfer.asLatLong;
-import static slash.navigation.maps.helpers.MapTransfer.asNavigationPosition;
-import static slash.navigation.maps.helpers.MapTransfer.toBoundingBox;
+import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asBoundingBox;
+import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asLatLong;
+import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asNavigationPosition;
+import static slash.navigation.maps.mapsforge.helpers.MapTransfer.toBoundingBox;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
@@ -483,7 +483,7 @@ public class MapsforgeMapView implements MapView {
         initializedActions = true;
     }
 
-    private MapManager getMapManager() {
+    private MapsforgeMapManager getMapManager() {
         return mapViewCallback.getMapManager();
     }
 

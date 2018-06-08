@@ -22,10 +22,10 @@ package slash.navigation.mapview.mapsforge;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.navigation.gui.Application;
-import slash.navigation.maps.LocalMap;
-import slash.navigation.maps.LocalTheme;
-import slash.navigation.maps.MapManager;
-import slash.navigation.maps.impl.OnlineMap;
+import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.mapsforge.LocalTheme;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
+import slash.navigation.maps.mapsforge.impl.OnlineMap;
 import slash.navigation.mapview.mapsforge.models.JoinedListComboBoxModel;
 import slash.navigation.mapview.mapsforge.models.TableModelToComboBoxModelAdapter;
 import slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer;
@@ -65,7 +65,7 @@ public class MapSelector {
     private JComboBox<LocalTheme> comboBoxTheme;
     private JPanel mapViewPanel;
 
-    public MapSelector(final MapManager mapManager, AwtGraphicMapView mapView) {
+    public MapSelector(final MapsforgeMapManager mapManager, AwtGraphicMapView mapView) {
         $$$setupUI$$$();
         mapViewPanel.add(mapView, MAP_SELECTOR_CONSTRAINTS);
 

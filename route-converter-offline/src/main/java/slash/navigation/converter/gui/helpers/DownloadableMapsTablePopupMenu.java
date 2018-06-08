@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.maps.impl.RemoteMapsTableModel;
+import slash.navigation.maps.mapsforge.impl.RemoteMapsTableModel;
 
 import javax.swing.*;
 

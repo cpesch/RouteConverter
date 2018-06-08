@@ -20,14 +20,14 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.RemoteTheme;
+import slash.navigation.maps.mapsforge.RemoteTheme;
 
 import javax.swing.*;
 import java.awt.*;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
 import static slash.navigation.converter.gui.renderer.RemoteMapsTableCellRenderer.getContentLength;
-import static slash.navigation.maps.impl.RemoteMapsTableModel.*;
+import static slash.navigation.maps.mapsforge.impl.RemoteMapsTableModel.*;
 
 /**
  * Renders the table cells of the downloadable themes table.

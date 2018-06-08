@@ -13,17 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>slash.navigation</groupId>
-            <artifactId>common-gui</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>slash.navigation</groupId>
             <artifactId>common-navigation</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>slash.navigation</groupId>
-            <artifactId>googlemaps</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -33,7 +23,12 @@
         </dependency>
         <dependency>
             <groupId>slash.navigation</groupId>
-            <artifactId>navigation-formats</artifactId>
+            <artifactId>tileserver-maps</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>slash.navigation</groupId>
+            <artifactId>common-gui</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
