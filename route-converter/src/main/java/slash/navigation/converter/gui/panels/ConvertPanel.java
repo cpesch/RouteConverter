@@ -1475,7 +1475,7 @@ public class ConvertPanel implements PanelInTab {
 
         protected Transferable createTransferable(JComponent c) {
             int[] selectedRows = tablePositions.getSelectedRows();
-            return new PositionSelection(positionsModel.getPositions(selectedRows), positionsModel.getRoute().getFormat());
+            return new PositionSelection(positionsModel.getPositions(selectedRows));
         }
     }
 }
