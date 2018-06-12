@@ -21,13 +21,13 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import javax.swing.event.ChangeListener;
-import java.io.File;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
@@ -76,8 +76,8 @@ public class MapViewCallbackImpl implements MapViewCallback {
         return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidTolls();
     }
 
-    public File getTileServersDirectory() {
-        return RouteConverter.getInstance().getTileServersDirectory();
+    public TileServerMapManager getTileServerMapManager() {
+        return RouteConverter.getInstance().getTileServerMapManager();
     }
 
     public void addRoutingServiceChangeListener(ChangeListener l) {

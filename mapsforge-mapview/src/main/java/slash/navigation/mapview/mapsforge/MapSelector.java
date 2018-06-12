@@ -25,7 +25,7 @@ import slash.navigation.gui.Application;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
-import slash.navigation.maps.mapsforge.impl.OnlineMap;
+import slash.navigation.maps.mapsforge.impl.VectorMap;
 import slash.navigation.mapview.mapsforge.models.JoinedListComboBoxModel;
 import slash.navigation.mapview.mapsforge.models.TableModelToComboBoxModelAdapter;
 import slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer;
@@ -37,10 +37,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ResourceBundle;
 
-import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
-import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
+import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
@@ -73,7 +70,7 @@ public class MapSelector {
                 new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableMapsModel(), mapManager.getDisplayedMapModel()),
                 asList(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP))
         );
-        comboBoxMap.setPrototypeDisplayValue(new OnlineMap("Map", "http://mal.url", null));
+        comboBoxMap.setPrototypeDisplayValue(new VectorMap("Map", "http://mal.url", null, null));
         comboBoxMap.setRenderer(new MapListCellRenderer());
         comboBoxMap.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
@@ -89,7 +86,7 @@ public class MapSelector {
                 new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableThemesModel(), mapManager.getAppliedThemeModel()),
                 asList(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME))
         );
-        comboBoxTheme.setPrototypeDisplayValue(mapManager.getAvailableThemesModel().getTheme(0));
+        comboBoxTheme.setPrototypeDisplayValue(mapManager.getAvailableThemesModel().getItem(0));
         comboBoxTheme.setRenderer(new ThemeListCellRenderer());
         LocalMap selectedItem = (LocalMap) comboBoxMap.getSelectedItem();
         comboBoxTheme.setEnabled(selectedItem != null && selectedItem.isVector());

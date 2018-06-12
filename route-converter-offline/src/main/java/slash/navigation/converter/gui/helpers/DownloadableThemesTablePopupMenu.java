@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.maps.mapsforge.impl.RemoteThemesTableModel;
+import slash.navigation.maps.mapsforge.RemoteTheme;
 
 import javax.swing.*;
 
@@ -27,7 +27,7 @@ import static slash.navigation.converter.gui.models.LocalActionConstants.DOWNLOA
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
- * Creates a {@link JPopupMenu} for a {@link RemoteThemesTableModel}.
+ * Creates a {@link JPopupMenu} for a {@link RemoteTheme}s table.
  *
  * @author Christian Pesch
  */

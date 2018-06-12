@@ -20,11 +20,11 @@
 
 package slash.navigation.mapview;
 
+import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import javax.swing.event.ChangeListener;
-import java.io.File;
 
 /**
  * Interface for callbacks from the {@link MapView} to the other RouteConverter services.
@@ -43,7 +43,7 @@ public interface MapViewCallback {
     boolean isAvoidFerries();
     boolean isAvoidHighways();
     boolean isAvoidTolls();
-    File getTileServersDirectory();
+    TileServerMapManager getTileServerMapManager();
 
     void addRoutingServiceChangeListener(ChangeListener l);
     void removeRoutingServiceChangeListener(ChangeListener l);

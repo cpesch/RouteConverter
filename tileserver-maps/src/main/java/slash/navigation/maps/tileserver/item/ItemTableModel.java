@@ -17,10 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.mapsforge.impl;
-
-import slash.navigation.maps.mapsforge.LocalMap;
-import slash.navigation.maps.mapsforge.MapsforgeMapManager;
+package slash.navigation.maps.tileserver.item;
 
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
@@ -30,55 +27,66 @@ import java.util.List;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 
 /**
- * Acts as a {@link TableModel} for the {@link LocalMap}s of the {@link MapsforgeMapManager}.
+ * Acts as a {@link TableModel} for {@link Item}s.
  *
  * @author Christian Pesch
  */
 
-public class LocalMapsTableModel extends AbstractTableModel {
-    public static final int DESCRIPTION_COLUMN = 0;
+public class ItemTableModel<T extends Item> extends AbstractTableModel {
+    private final int columnCount;
+    private final List<T> items = new ArrayList<>();
 
-    private List<LocalMap> maps = new ArrayList<>();
+    public ItemTableModel(int columnCount) {
+        this.columnCount = columnCount;
+    }
 
-    public List<LocalMap> getMaps() {
-        return maps;
+    public List<T> getItems() {
+        return items;
     }
 
     public int getRowCount() {
-        return maps.size();
+        return items.size();
     }
 
     public int getColumnCount() {
-        return 1;
+        return columnCount;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
-        return getMap(rowIndex);
+        return getItem(rowIndex);
     }
 
-    public LocalMap getMap(int rowIndex) {
-        return maps.get(rowIndex);
+    public T getItem(int rowIndex) {
+        return items.get(rowIndex);
     }
 
-    public LocalMap getMap(String url) {
-        for (LocalMap map : new ArrayList<>(maps)) {
-            if (map.getUrl().equals(url))
-                return map;
+    public T getItemByUrl(String url) {
+        for (T item : new ArrayList<>(items)) {
+            if (item.getUrl().equals(url))
+                return item;
         }
         return null;
     }
 
-    public int getIndex(LocalMap map) {
-        return maps.indexOf(map);
+    public T getItemByDescription(String description) {
+        for (T item : new ArrayList<>(items)) {
+            if (item.getDescription().equals(description))
+                return item;
+        }
+        return null;
     }
 
-    private void addMap(LocalMap map) {
-        if (!maps.add(map))
-            throw new IllegalArgumentException("Map " + map + " not added to " + maps);
+    public int getIndex(T item) {
+        return items.indexOf(item);
+    }
 
-        final int index = getIndex(map);
+    private void addItem(T item) {
+        if (!items.add(item))
+            throw new IllegalArgumentException("Item " + item + " not added to " + items);
+
+        final int index = getIndex(item);
         if (index == -1)
-            throw new IllegalArgumentException("Map " + map + " not found in " + maps);
+            throw new IllegalArgumentException("Item " + item + " not found in " + items);
 
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
@@ -87,10 +95,10 @@ public class LocalMapsTableModel extends AbstractTableModel {
         });
     }
 
-    void updateMap(LocalMap map) {
-        final int index = getIndex(map);
+    private void updateItem(T item) {
+        final int index = getIndex(item);
         if (index == -1)
-            throw new IllegalArgumentException("Map " + map + " not found in " + maps);
+            throw new IllegalArgumentException("Item " + item + " not found in " + items);
 
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
@@ -99,16 +107,16 @@ public class LocalMapsTableModel extends AbstractTableModel {
         });
     }
 
-    public void addOrUpdateMap(LocalMap map) {
-        int index = getIndex(map);
+    public void addOrUpdateItem(T item) {
+        int index = getIndex(item);
         if (index == -1)
-            addMap(map);
+            addItem(item);
         else
-            updateMap(map);
+            updateItem(item);
     }
 
     public void clear() {
-        this.maps = new ArrayList<>();
+        items.clear();
 
         invokeInAwtEventQueue(new Runnable() {
             public void run() {

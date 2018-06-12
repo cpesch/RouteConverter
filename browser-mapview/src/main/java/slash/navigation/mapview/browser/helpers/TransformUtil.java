@@ -20,7 +20,7 @@
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-package slash.navigation.mapview.browser.helper;
+package slash.navigation.mapview.browser.helpers;
 
 /**
  * Transforms WGS-84 to GCJ-02 and back.

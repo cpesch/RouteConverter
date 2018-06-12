@@ -47,7 +47,7 @@ public class MapViewCallbackOfflineImpl extends MapViewCallbackImpl implements M
     private static final Logger log = Logger.getLogger(MapViewCallbackOfflineImpl.class.getName());
 
     public MapsforgeMapManager getMapManager() {
-        return ((RouteConverterOffline) Application.getInstance()).getMapManager();
+        return ((RouteConverterOffline) Application.getInstance()).getMapsforgeMapManager();
     }
 
     private NotificationManager getNotificationManager() {

@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.maps.mapsforge.impl.LocalMapsTableModel;
+import slash.navigation.maps.mapsforge.LocalMap;
 
 import javax.swing.*;
 
@@ -27,7 +27,7 @@ import static slash.navigation.converter.gui.models.LocalActionConstants.MAPS;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
- * Creates a {@link JPopupMenu} for a {@link LocalMapsTableModel}.
+ * Creates a {@link JPopupMenu} for the {@link LocalMap}s table.
  *
  * @author Christian Pesch
  */

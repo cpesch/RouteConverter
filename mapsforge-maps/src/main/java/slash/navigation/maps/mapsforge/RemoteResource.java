@@ -21,6 +21,7 @@ package slash.navigation.maps.mapsforge;
 
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
+import slash.navigation.maps.tileserver.item.Item;
 
 /**
  * Represents a remote resource.
@@ -28,8 +29,7 @@ import slash.navigation.datasources.Downloadable;
  * @author Christian Pesch
  */
 
-public interface RemoteResource {
+public interface RemoteResource extends Item {
     DataSource getDataSource();
     Downloadable getDownloadable();
-    String getUrl();
 }

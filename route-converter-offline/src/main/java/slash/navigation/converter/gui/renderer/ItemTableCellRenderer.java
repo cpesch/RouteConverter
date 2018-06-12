@@ -20,31 +20,27 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.gui.Application;
-import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.tileserver.item.Item;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the table cells of the available maps table.
+ * Renders table cells of an {@link Item}s table.
  *
  * @author Christian Pesch
  */
 
-public class LocalMapsTableCellRenderer extends AlternatingColorTableCellRenderer {
+public class ItemTableCellRenderer extends AlternatingColorTableCellRenderer {
     public static final int DESCRIPTION_COLUMN = 0;
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        LocalMap map = (LocalMap) value;
+        Item map = (Item) value;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN:
                 JLabel label = (JLabel) component;
-                String text = map.getDescription();
-                if(!map.isVector())
-                    text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
-                label.setText(text);
+                label.setText(map.getDescription());
                 label.setToolTipText(map.getUrl());
                 break;
             default:

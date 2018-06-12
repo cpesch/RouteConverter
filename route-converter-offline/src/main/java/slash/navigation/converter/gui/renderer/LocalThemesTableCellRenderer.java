@@ -25,8 +25,6 @@ import slash.navigation.maps.mapsforge.LocalTheme;
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.maps.mapsforge.impl.LocalThemesTableModel.DESCRIPTION_COLUMN;
-
 /**
  * Renders the table cells of the available themes table.
  *
@@ -34,6 +32,8 @@ import static slash.navigation.maps.mapsforge.impl.LocalThemesTableModel.DESCRIP
  */
 
 public class LocalThemesTableCellRenderer extends AlternatingColorTableCellRenderer {
+    public static final int DESCRIPTION_COLUMN = 0;
+
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         LocalTheme theme = (LocalTheme) value;

@@ -38,7 +38,6 @@ import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.RemoteTheme;
-import slash.navigation.maps.mapsforge.impl.LocalThemesTableModel;
 
 import javax.swing.*;
 import javax.swing.table.*;
@@ -54,7 +53,6 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
-import static slash.navigation.maps.mapsforge.impl.RemoteThemesTableModel.*;
 
 /**
  * Dialog to show available and downloadable themes of the program.
@@ -78,7 +76,7 @@ public class ThemesDialog extends SimpleDialog {
 
         final RouteConverter r = RouteConverter.getInstance();
 
-        tableAvailableThemes.setModel(getMapManager().getAvailableThemesModel());
+        tableAvailableThemes.setModel(getMapsforgeMapManager().getAvailableThemesModel());
         tableAvailableThemes.setDefaultRenderer(Object.class, new LocalThemesTableCellRenderer());
         TableCellRenderer availableThemesHeaderRenderer = new SimpleHeaderRenderer("description");
         TableColumnModel themesColumns = tableAvailableThemes.getColumnModel();
@@ -88,15 +86,15 @@ public class ThemesDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableThemes = new TableRowSorter<>(tableAvailableThemes.getModel());
         sorterAvailableThemes.setSortsOnUpdates(true);
-        sorterAvailableThemes.setComparator(LocalThemesTableModel.DESCRIPTION_COLUMN, new Comparator<LocalTheme>() {
+        sorterAvailableThemes.setComparator(LocalThemesTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<LocalTheme>() {
             public int compare(LocalTheme t1, LocalTheme t2) {
                 return t1.getDescription().compareToIgnoreCase(t2.getDescription());
             }
         });
         tableAvailableThemes.setRowSorter(sorterAvailableThemes);
-        LocalTheme selectedTheme = getMapManager().getAppliedThemeModel().getItem();
+        LocalTheme selectedTheme = getMapsforgeMapManager().getAppliedThemeModel().getItem();
         if (selectedTheme != null) {
-            int selectedThemeIndex = getMapManager().getAvailableThemesModel().getIndex(selectedTheme);
+            int selectedThemeIndex = getMapsforgeMapManager().getAvailableThemesModel().getIndex(selectedTheme);
             if (selectedThemeIndex != -1) {
                 int selectedRow = tableAvailableThemes.convertRowIndexToView(selectedThemeIndex);
                 tableAvailableThemes.getSelectionModel().addSelectionInterval(selectedRow, selectedRow);
@@ -104,7 +102,7 @@ public class ThemesDialog extends SimpleDialog {
             }
         }
 
-        tableDownloadableThemes.setModel(getMapManager().getDownloadableThemesModel());
+        tableDownloadableThemes.setModel(getMapsforgeMapManager().getDownloadableThemesModel());
         tableDownloadableThemes.setDefaultRenderer(Object.class, new RemoteThemeTableCellRenderer());
         TableCellRenderer downloadableThemesHeaderRenderer = new SimpleHeaderRenderer("datasource", "description", "size");
         TableColumnModel downloadableThemesColumns = tableDownloadableThemes.getColumnModel();
@@ -124,17 +122,17 @@ public class ThemesDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterResources = new TableRowSorter<>(tableDownloadableThemes.getModel());
         sorterResources.setSortsOnUpdates(true);
-        sorterResources.setComparator(DATASOURCE_COLUMN, new Comparator<RemoteTheme>() {
+        sorterResources.setComparator(RemoteThemeTableCellRenderer.DATASOURCE_COLUMN, new Comparator<RemoteTheme>() {
             public int compare(RemoteTheme t1, RemoteTheme t2) {
                 return t1.getDataSource().getName().compareToIgnoreCase(t2.getDataSource().getName());
             }
         });
-        sorterResources.setComparator(DESCRIPTION_COLUMN, new Comparator<RemoteTheme>() {
+        sorterResources.setComparator(RemoteThemeTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<RemoteTheme>() {
             public int compare(RemoteTheme t1, RemoteTheme t2) {
-                return t1.getDownloadable().getUri().compareToIgnoreCase(t2.getDownloadable().getUri());
+                return t1.getDescription().compareToIgnoreCase(t2.getDescription());
             }
         });
-        sorterResources.setComparator(SIZE_COLUMN, new Comparator<RemoteTheme>() {
+        sorterResources.setComparator(RemoteThemeTableCellRenderer.SIZE_COLUMN, new Comparator<RemoteTheme>() {
             private long getSize(RemoteTheme theme) {
                 Checksum checksum = theme.getDownloadable().getLatestChecksum();
                 return checksum != null && checksum.getContentLength() != null ? checksum.getContentLength() : 0L;
@@ -147,8 +145,8 @@ public class ThemesDialog extends SimpleDialog {
         tableDownloadableThemes.setRowSorter(sorterResources);
 
         final ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.register("apply-theme", new ApplyThemeAction(tableAvailableThemes, getMapManager()));
-        actionManager.register("download-themes", new DownloadThemesAction(tableDownloadableThemes, getMapManager()));
+        actionManager.register("apply-theme", new ApplyThemeAction(tableAvailableThemes, getMapsforgeMapManager()));
+        actionManager.register("download-themes", new DownloadThemesAction(tableDownloadableThemes, getMapsforgeMapManager()));
 
         new AvailableThemesTablePopupMenu(tableAvailableThemes).createPopupMenu();
         new DownloadableThemesTablePopupMenu(tableDownloadableThemes).createPopupMenu();
@@ -175,8 +173,8 @@ public class ThemesDialog extends SimpleDialog {
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private MapsforgeMapManager getMapManager() {
-        return ((RouteConverterOffline) RouteConverter.getInstance()).getMapManager();
+    private MapsforgeMapManager getMapsforgeMapManager() {
+        return ((RouteConverterOffline) RouteConverter.getInstance()).getMapsforgeMapManager();
     }
 
     private void close() {

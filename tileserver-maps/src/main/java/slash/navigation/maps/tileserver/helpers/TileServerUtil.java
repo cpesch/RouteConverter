@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.tileserver;
+package slash.navigation.maps.tileserver.helpers;
 
 import slash.common.helpers.JAXBHelper;
 import slash.navigation.maps.tileserver.binding.CatalogType;
@@ -28,9 +28,11 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import java.io.InputStream;
 
+import static slash.common.helpers.JAXBHelper.newContext;
+
 public class TileServerUtil {
     private static Unmarshaller newUnmarshaller() {
-        return JAXBHelper.newUnmarshaller(JAXBHelper.newContext(ObjectFactory.class));
+        return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }
 
     public static CatalogType unmarshal(InputStream in) throws JAXBException {

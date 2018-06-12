@@ -58,7 +58,7 @@ public class ApplyThemeAction extends FrameAction {
         int selectedRow = table.convertRowIndexToModel(table.getSelectedRow());
         if (selectedRow == -1)
             return;
-        LocalTheme theme = mapManager.getAvailableThemesModel().getTheme(selectedRow);
+        LocalTheme theme = mapManager.getAvailableThemesModel().getItem(selectedRow);
         mapManager.getAppliedThemeModel().setItem(theme);
         getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("theme-applied"), theme.getDescription()), getAction());
 

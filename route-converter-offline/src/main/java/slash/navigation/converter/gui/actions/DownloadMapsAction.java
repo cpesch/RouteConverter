@@ -80,7 +80,7 @@ public class DownloadMapsAction extends FrameAction {
         List<String> selectedMapsNames = new ArrayList<>();
         final List<BoundingBox> selectedBoundingBoxes = new ArrayList<>();
         for (int selectedRow : selectedRows) {
-            RemoteMap map = mapManager.getDownloadableMapsModel().getMap(table.convertRowIndexToModel(selectedRow));
+            RemoteMap map = mapManager.getDownloadableMapsModel().getItem(table.convertRowIndexToModel(selectedRow));
             selectedMaps.add(map);
             selectedMapsNames.add(map.getUrl());
             BoundingBox boundingBox = map.getBoundingBox();

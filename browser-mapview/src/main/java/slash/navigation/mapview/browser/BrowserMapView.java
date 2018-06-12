@@ -29,9 +29,7 @@ import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.common.*;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
-import slash.navigation.maps.tileserver.TileServerService;
-import slash.navigation.maps.tileserver.binding.CopyrightType;
-import slash.navigation.maps.tileserver.binding.TileServerType;
+import slash.navigation.maps.tileserver.OnlineMap;
 import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
@@ -39,7 +37,6 @@ import slash.navigation.mapview.MapViewListener;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.event.*;
-import javax.xml.bind.JAXBException;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -93,8 +90,8 @@ import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
-import static slash.navigation.mapview.browser.helper.TransformUtil.delta;
-import static slash.navigation.mapview.browser.helper.TransformUtil.isPositionInChina;
+import static slash.navigation.mapview.browser.helpers.TransformUtil.delta;
+import static slash.navigation.mapview.browser.helpers.TransformUtil.isPositionInChina;
 
 /**
  * Base implementation for a browser-based map view.
@@ -233,7 +230,7 @@ public abstract class BrowserMapView implements MapView {
     protected String prepareWebPage() throws IOException {
         final String language = Locale.getDefault().getLanguage().toLowerCase();
         final String country = Locale.getDefault().getCountry().toLowerCase();
-        final TileServerService tileServerService = loadAllTileServers(mapViewCallback.getTileServersDirectory());
+        final List<OnlineMap> onlineMaps = mapViewCallback.getTileServerMapManager().getTileServers();
         File html = extractFile(RESOURCES_PACKAGE + "routeconverter.html", country, new TokenResolver() {
             public String resolveToken(String tokenName) {
                 if (tokenName.equals("language"))
@@ -249,9 +246,9 @@ public abstract class BrowserMapView implements MapView {
                 if (tokenName.equals("googleapikey"))
                     return APIKeyRegistry.getInstance().getAPIKey("google", "map");
                 if (tokenName.equals("tileservers1"))
-                    return registerTileServers(tileServerService, true);
+                    return registerOnlineMaps(onlineMaps, true);
                 if (tokenName.equals("tileservers2"))
-                    return registerTileServers(tileServerService, false);
+                    return registerOnlineMaps(onlineMaps, false);
                 if (tokenName.equals("menuItems"))
                     return registerMenuItems();
                 return tokenName;
@@ -683,32 +680,7 @@ public abstract class BrowserMapView implements MapView {
         return mapType != null && GOOGLE_MAP_TYPES.contains(mapType.toUpperCase());
     }
 
-    private static final String DOT_XML = ".xml";
-
-    private TileServerService loadAllTileServers(java.io.File directory) {
-        TileServerService result = new TileServerService();
-        java.io.File[] files = directory.listFiles(new FilenameFilter() {
-            public boolean accept(java.io.File dir, String name) {
-                return name.endsWith(DOT_XML);
-            }
-        });
-
-        if (files != null) {
-            for (File file : files) {
-                try {
-                    try (InputStream inputStream = new FileInputStream(file)) {
-                        log.info("Initializing tile server definitions from " + file);
-                        result.load(inputStream);
-                    }
-                } catch (IOException | JAXBException e) {
-                    log.severe("Could not parse tile server definitions from " + file + ": " + getLocalizedMessage(e));
-                }
-            }
-        }
-        return result;
-    }
-
-    private String registerTileServers(TileServerService tileServerService, boolean register) {
+    private String registerOnlineMaps(List<OnlineMap> onlineMaps, boolean register) {
         StringBuilder buffer = new StringBuilder();
 
         if (register) {
@@ -718,29 +690,28 @@ public abstract class BrowserMapView implements MapView {
         }
 
         String apiKey = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
-        for (TileServerType tileServer : tileServerService.getTileServers()) {
-            if (tileServer.getActive() != null && !tileServer.getActive())
+        for (OnlineMap onlineMap : onlineMaps) {
+            if (!onlineMap.isActive())
                 continue;
 
             if (register) {
-                CopyrightType copyrightType = tileServer.getCopyright();
-                buffer.append("mapTypeIds.push(\"").append(tileServer.getId()).append("\"); ").
-                        append("mapCopyrights[\"").append(tileServer.getId()).append("\"] = \"").
-                        append(copyrightType != null ? copyrightType.value() : "unknown").append("\";\n");
+                buffer.append("mapTypeIds.push(\"").append(onlineMap.getId()).append("\"); ").
+                        append("mapCopyrights[\"").append(onlineMap.getId()).append("\"] = \"").
+                        append(onlineMap.getCopyright()).append("\";\n");
             }
             else {
-                buffer.append("map.mapTypes.set(\"").append(tileServer.getId()).append("\", new google.maps.ImageMapType({\n").
+                buffer.append("map.mapTypes.set(\"").append(onlineMap.getId()).append("\", new google.maps.ImageMapType({\n").
                         append("  getTileUrl: function(coordinates, zoom) {\n").
-                        append("    return ").append(trim(trimLineFeeds(tileServer.getValue())));
+                        append("    return ").append(trim(trimLineFeeds(onlineMap.getUrl())));
                 if (apiKey != null)
                     buffer.append(" + \"?apikey=").append(apiKey).append("\"");
                 buffer.append(";\n").
                         append("  },\n").
                         append("  tileSize: DEFAULT_TILE_SIZE,\n").
-                        append("  minZoom: ").append(tileServer.getMinZoom()).append(",\n").
-                        append("  maxZoom: ").append(tileServer.getMaxZoom()).append(",\n").
-                        append("  alt: \"").append(tileServer.getName()).append("\",\n").
-                        append("  name: \"").append(tileServer.getId()).append("\"\n").
+                        append("  minZoom: ").append(onlineMap.getMinZoom()).append(",\n").
+                        append("  maxZoom: ").append(onlineMap.getMaxZoom()).append(",\n").
+                        append("  alt: \"").append(onlineMap.getDescription()).append("\",\n").
+                        append("  name: \"").append(onlineMap.getId()).append("\"\n").
                         append("}));\n");
             }
         }

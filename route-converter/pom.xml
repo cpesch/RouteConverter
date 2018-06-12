@@ -140,6 +140,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>tileserver-maps</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>slash.feature</groupId>
             <artifactId>client</artifactId>
             <version>1.0</version>

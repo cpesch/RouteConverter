@@ -58,7 +58,7 @@ public class DisplayMapAction extends FrameAction {
         int selectedRow = table.convertRowIndexToView(table.getSelectedRow());
         if (selectedRow == -1)
             return;
-        LocalMap map = mapManager.getAvailableMapsModel().getMap(selectedRow);
+        LocalMap map = mapManager.getAvailableMapsModel().getItem(selectedRow);
         mapManager.getDisplayedMapModel().setItem(map);
         getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("map-displayed"), map.getDescription()), getAction());
     }

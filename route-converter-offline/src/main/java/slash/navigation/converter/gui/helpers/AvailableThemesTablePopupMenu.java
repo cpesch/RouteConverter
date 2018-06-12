@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.maps.mapsforge.impl.LocalThemesTableModel;
+import slash.navigation.maps.mapsforge.LocalTheme;
 
 import javax.swing.*;
 
@@ -27,7 +27,7 @@ import static slash.navigation.converter.gui.models.LocalActionConstants.THEMES;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
- * Creates a {@link JPopupMenu} for a {@link LocalThemesTableModel}.
+ * Creates a {@link JPopupMenu} for a {@link LocalTheme}s table.
  *
  * @author Christian Pesch
  */

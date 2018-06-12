@@ -50,6 +50,7 @@ import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.*;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
+import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
@@ -218,6 +219,7 @@ public class RouteConverter extends SingleFrameApplication {
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
+    private TileServerMapManager tileServerMapManager;
 
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, profileSplitPane;
@@ -384,6 +386,7 @@ public class RouteConverter extends SingleFrameApplication {
                 public void run() {
                     invokeLater(new Runnable() {
                         public void run() {
+                            getTileServerMapManager().scanTileServers();
                             setMapView(getMapViewPreference());
 
                             invokeLater(new Runnable() {
@@ -654,6 +657,10 @@ public class RouteConverter extends SingleFrameApplication {
 
     private ProfileModeModel getProfileModeModel() {
         return profileModeModel;
+    }
+
+    public TileServerMapManager getTileServerMapManager() {
+        return tileServerMapManager;
     }
 
     // dialogs for external components
@@ -1245,6 +1252,7 @@ public class RouteConverter extends SingleFrameApplication {
                 ColumbusV1000Device.setTimeZone(timeZoneModel.getTimeZoneId());
             }
         });
+        tileServerMapManager = new TileServerMapManager(getTileServersDirectory());
     }
 
     protected void initializeActions() {
@@ -1308,7 +1316,7 @@ public class RouteConverter extends SingleFrameApplication {
         return System.getProperty("api", "https://api.routeconverter.com/");
     }
 
-    public File getTileServersDirectory() {
+    private File getTileServersDirectory() {
         return getApplicationDirectory("tileservers");
     }
 

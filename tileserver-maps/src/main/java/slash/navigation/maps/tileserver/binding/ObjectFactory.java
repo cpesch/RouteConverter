@@ -31,7 +31,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _Catalog_QNAME = new QName("http://api.routeconverter.com/v1/schemas/slash.navigation.maps.tileserver-catalog", "catalog");
+    private final static QName _Catalog_QNAME = new QName("http://api.routeconverter.com/v1/schemas/tileserver-catalog", "catalog");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: main.java.slash.navigation.maps.tileserver.binding
@@ -60,7 +60,7 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link CatalogType }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "http://api.routeconverter.com/v1/schemas/slash.navigation.maps.tileserver-catalog", name = "catalog")
+    @XmlElementDecl(namespace = "http://api.routeconverter.com/v1/schemas/tileserver-catalog", name = "catalog")
     public JAXBElement<CatalogType> createCatalog(CatalogType value) {
         return new JAXBElement<>(_Catalog_QNAME, CatalogType.class, null, value);
     }

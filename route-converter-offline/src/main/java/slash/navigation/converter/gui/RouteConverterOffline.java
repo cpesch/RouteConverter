@@ -59,7 +59,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
  */
 
 public class RouteConverterOffline extends RouteConverter {
-    private MapsforgeMapManager mapManager;
+    private MapsforgeMapManager mapsforgeMapManager;
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
@@ -80,8 +80,8 @@ public class RouteConverterOffline extends RouteConverter {
 
     protected void initializeServices() {
         super.initializeServices();
-        mapManager = new MapsforgeMapManager(getDataSourceManager());
-        mapAfterStart = getMapManager().getDisplayedMapModel().getItem();
+        mapsforgeMapManager = new MapsforgeMapManager(getDataSourceManager());
+        mapAfterStart = getMapsforgeMapManager().getDisplayedMapModel().getItem();
     }
 
     protected void initializeActions() {
@@ -96,8 +96,8 @@ public class RouteConverterOffline extends RouteConverter {
         }
     }
 
-    public MapsforgeMapManager getMapManager() {
-        return mapManager;
+    public MapsforgeMapManager getMapsforgeMapManager() {
+        return mapsforgeMapManager;
     }
 
     protected MapViewCallbackOffline getMapViewCallback() {
@@ -159,8 +159,8 @@ public class RouteConverterOffline extends RouteConverter {
         new Thread(new Runnable() {
             public void run() {
                 try {
-                    getMapManager().scanMaps();
-                    getMapManager().scanThemes();
+                    getMapsforgeMapManager().scanMaps();
+                    getMapsforgeMapManager().scanThemes();
 
                     getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"),
                             Application.getInstance().getContext().getActionManager().get("show-maps"));
@@ -172,7 +172,7 @@ public class RouteConverterOffline extends RouteConverter {
                     });
                 }
 
-                LocalMap mapAfterScan = getMapManager().getDisplayedMapModel().getItem();
+                LocalMap mapAfterScan = getMapsforgeMapManager().getDisplayedMapModel().getItem();
                 if (mapAfterStart != mapAfterScan) {
                     MapView mapView = getMapView();
                     if (mapView instanceof MapsforgeMapView)
@@ -183,7 +183,7 @@ public class RouteConverterOffline extends RouteConverter {
     }
 
     protected void scanRemoteMapsAndThemes() {
-        getMapManager().scanDatasources();
+        getMapsforgeMapManager().scanDatasources();
 
         final File file = new File(getApplicationDirectory("maps/routeconverter"), "world.map");
         getDownloadManager().executeDownload("RouteConverter Background Map", "http://static.routeconverter.com/maps/world.map", Copy, file, new Runnable() {

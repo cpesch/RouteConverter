@@ -74,7 +74,7 @@ public class DownloadThemesAction extends FrameAction {
         final List<RemoteTheme> selectedThemes = new ArrayList<>();
         List<String> selectedThemesNames = new ArrayList<>();
         for (int selectedRow : selectedRows) {
-            RemoteTheme theme = mapManager.getDownloadableThemesModel().getTheme(table.convertRowIndexToModel(selectedRow));
+            RemoteTheme theme = mapManager.getDownloadableThemesModel().getItem(table.convertRowIndexToModel(selectedRow));
             selectedThemes.add(theme);
             selectedThemesNames.add(theme.getUrl());
         }

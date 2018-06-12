@@ -17,15 +17,14 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.mapsforge;
-
-import slash.navigation.maps.tileserver.item.Item;
+package slash.navigation.maps.tileserver.item;
 
 /**
- * Represents a local resource.
+ * An item in an {@link ItemModel} or an {@link ItemTableModel}.
  *
  * @author Christian Pesch
  */
-
-public interface LocalResource extends Item {
+public interface Item {
+    String getDescription();
+    String getUrl();
 }

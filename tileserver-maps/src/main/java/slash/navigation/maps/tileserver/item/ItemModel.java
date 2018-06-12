@@ -17,11 +17,13 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.mapsforge.impl;
+package slash.navigation.maps.tileserver.item;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.util.prefs.Preferences;
+
+import static java.lang.String.format;
 
 /**
  * A model for a single {@link Object}.
@@ -29,7 +31,7 @@ import java.util.prefs.Preferences;
  * @author Christian Pesch
  */
 
-public abstract class ItemModel<T> {
+public abstract class ItemModel<T extends Item> {
     private static final Preferences preferences = Preferences.userNodeForPackage(ItemModel.class);
     private final String preferenceName;
     private final String defaultValue;
@@ -49,7 +51,10 @@ public abstract class ItemModel<T> {
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }
-        return stringToItem(defaultValue);
+        T item = stringToItem(defaultValue);
+        if(item != null)
+            return item;
+        throw new IllegalArgumentException(format("Cannot find item for preference %s and default value %s", preferenceName, defaultValue));
     }
 
     protected abstract T stringToItem(String value);

@@ -17,17 +17,21 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.tileserver;
+package slash.navigation.maps.tileserver.helpers;
 
 import slash.navigation.maps.tileserver.binding.CatalogType;
 import slash.navigation.maps.tileserver.binding.TileServerType;
 
 import javax.xml.bind.JAXBException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
+
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.navigation.maps.tileserver.helpers.TileServerUtil.unmarshal;
 
 /**
  * Encapsulates access to a TileServer XML.
@@ -36,10 +40,39 @@ import java.util.Map;
  */
 
 public class TileServerService {
+    private static final Logger log = Logger.getLogger(TileServerService.class.getName());
+    private static final String DOT_XML = ".xml";
+
+    private final File directory;
     private final Map<String, TileServerType> tileServers = new LinkedHashMap<>();
 
-    public synchronized void load(InputStream inputStream) throws JAXBException {
-        CatalogType catalogType = TileServerUtil.unmarshal(inputStream);
+    public TileServerService(File directory) {
+        this.directory = directory;
+    }
+
+    public void initialize() {
+        java.io.File[] files = directory.listFiles(new FilenameFilter() {
+            public boolean accept(java.io.File dir, String name) {
+                return name.endsWith(DOT_XML);
+            }
+        });
+
+        if (files != null) {
+            for (File file : files) {
+                try {
+                    try (InputStream inputStream = new FileInputStream(file)) {
+                        log.info("Initializing tile server definitions from " + file);
+                        load(inputStream);
+                    }
+                } catch (IOException | JAXBException e) {
+                    log.severe("Could not parse tile server definitions from " + file + ": " + getLocalizedMessage(e));
+                }
+            }
+        }
+    }
+
+    private void load(InputStream inputStream) throws JAXBException {
+        CatalogType catalogType = unmarshal(inputStream);
         for (TileServerType tileServerType : catalogType.getTileServer())
             tileServers.put(tileServerType.getId(), tileServerType);
     }

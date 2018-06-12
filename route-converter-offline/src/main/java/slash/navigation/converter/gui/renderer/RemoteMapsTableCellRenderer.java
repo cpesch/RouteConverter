@@ -27,7 +27,6 @@ import javax.swing.*;
 import java.awt.*;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
-import static slash.navigation.maps.mapsforge.impl.RemoteMapsTableModel.*;
 
 /**
  * Renders the table cells of the downloadable maps table.
@@ -36,6 +35,10 @@ import static slash.navigation.maps.mapsforge.impl.RemoteMapsTableModel.*;
  */
 
 public class RemoteMapsTableCellRenderer extends AlternatingColorTableCellRenderer {
+    public static final int DATASOURCE_COLUMN = 0;
+    public static final int DESCRIPTION_COLUMN = 1;
+    public static final int SIZE_COLUMN = 2;
+
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         RemoteMap map = (RemoteMap) value;
@@ -46,7 +49,7 @@ public class RemoteMapsTableCellRenderer extends AlternatingColorTableCellRender
                 label.setHorizontalAlignment(LEFT);
                 break;
             case DESCRIPTION_COLUMN:
-                label.setText(map.getDownloadable().getUri());
+                label.setText(map.getDescription());
                 label.setToolTipText(map.getUrl());
                 label.setHorizontalAlignment(LEFT);
                 break;

@@ -19,7 +19,9 @@
 */
 package slash.navigation.mapview.mapsforge.models;
 
-import slash.navigation.maps.mapsforge.impl.ItemModel;
+import slash.navigation.maps.tileserver.item.Item;
+import slash.navigation.maps.tileserver.item.ItemModel;
+import slash.navigation.maps.tileserver.item.ItemTableModel;
 
 import javax.swing.*;
 import javax.swing.event.*;
@@ -36,12 +38,12 @@ import static javax.swing.event.TableModelEvent.*;
  * @author Christian Pesch
  */
 
-public class TableModelToComboBoxModelAdapter<E> implements ComboBoxModel<E> {
-    private final TableModel modelDelegate;
+public class TableModelToComboBoxModelAdapter<E extends Item> implements ComboBoxModel<E> {
+    private final ItemTableModel<E> modelDelegate;
     private final ItemModel<E> selectedDelegate;
     private final Map<ListDataListener, TableModelListener> listToTableListener = new HashMap<>();
 
-    public TableModelToComboBoxModelAdapter(TableModel modelDelegate, ItemModel<E> selectedDelegate) {
+    public TableModelToComboBoxModelAdapter(ItemTableModel<E> modelDelegate, ItemModel<E> selectedDelegate) {
         this.modelDelegate = modelDelegate;
         this.selectedDelegate = selectedDelegate;
 

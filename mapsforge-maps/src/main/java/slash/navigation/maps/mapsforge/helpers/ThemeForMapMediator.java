@@ -22,8 +22,8 @@ package slash.navigation.maps.mapsforge.helpers;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
-import slash.navigation.maps.mapsforge.impl.ItemModel;
-import slash.navigation.maps.mapsforge.impl.LocalThemesTableModel;
+import slash.navigation.maps.tileserver.item.ItemModel;
+import slash.navigation.maps.tileserver.item.ItemTableModel;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -60,7 +60,7 @@ public class ThemeForMapMediator {
                     return;
 
                 String themeId = preferences.get(getMapKey(map), getMapTheme(map));
-                LocalTheme theme = getAvailableThemesModel().getThemeByDescription(themeId);
+                LocalTheme theme = getAvailableThemesModel().getItemByDescription(themeId);
                 if (theme != null)
                     getAppliedThemeModel().setItem(theme);
             }
@@ -99,7 +99,7 @@ public class ThemeForMapMediator {
         return mapManager.getDisplayedMapModel();
     }
 
-    private LocalThemesTableModel getAvailableThemesModel() {
+    private ItemTableModel<LocalTheme> getAvailableThemesModel() {
         return mapManager.getAvailableThemesModel();
     }
 
