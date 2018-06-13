@@ -115,6 +115,22 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
             updateItem(item);
     }
 
+    public void add(int index, T item) {
+        items.add(index, item);
+        fireTableRowsInserted(index, index);
+    }
+
+    public void update(int index, T item) {
+        items.set(index, item);
+        fireTableRowsUpdated(index, index);
+    }
+
+    public void remove(int firstIndex, int lastIndex) {
+        for (int i = lastIndex; i > firstIndex; i--)
+            items.remove(i);
+        fireTableRowsDeleted(firstIndex, lastIndex);
+    }
+
     public void clear() {
         items.clear();
 

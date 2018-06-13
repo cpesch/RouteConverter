@@ -22,8 +22,6 @@ package slash.navigation.mapview.mapsforge.renderer;
 import slash.navigation.gui.Application;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.VectorMap;
-import slash.navigation.maps.tileserver.OnlineMap;
-import slash.navigation.maps.tileserver.item.Item;
 
 import javax.swing.*;
 import java.awt.*;

@@ -46,6 +46,8 @@ public enum CopyrightType {
     OUTDOOR_ACTIVE("OutdoorActive"),
     @XmlEnumValue("Thunderforest")
     THUNDERFOREST("Thunderforest"),
+    @XmlEnumValue("Unknown")
+    UNKNOWN("Unknown"),
     @XmlEnumValue("Wanderreitkarte")
     WANDERREITKARTE("Wanderreitkarte");
     private final String value;

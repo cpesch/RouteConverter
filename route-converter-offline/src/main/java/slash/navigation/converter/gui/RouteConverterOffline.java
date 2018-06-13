@@ -80,7 +80,7 @@ public class RouteConverterOffline extends RouteConverter {
 
     protected void initializeServices() {
         super.initializeServices();
-        mapsforgeMapManager = new MapsforgeMapManager(getDataSourceManager());
+        mapsforgeMapManager = new MapsforgeMapManager(getDataSourceManager(), getTileServerMapManager());
         mapAfterStart = getMapsforgeMapManager().getDisplayedMapModel().getItem();
     }
 
@@ -197,5 +197,10 @@ public class RouteConverterOffline extends RouteConverter {
                 });
             }
         });
+    }
+
+    protected void shutdown() {
+        super.shutdown();
+        getMapsforgeMapManager().dispose();
     }
 }

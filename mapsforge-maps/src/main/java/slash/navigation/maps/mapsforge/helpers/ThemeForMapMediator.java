@@ -49,14 +49,15 @@ public class ThemeForMapMediator {
     private static final String DOT_XML = ".xml";
 
     private final MapsforgeMapManager mapManager;
+    private ChangeListener mapListener, themeListener;
 
     public ThemeForMapMediator(MapsforgeMapManager mapManager) {
         this.mapManager = mapManager;
 
-        getDisplayedMapModel().addChangeListener(new ChangeListener() {
+        mapListener = new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 LocalMap map = getDisplayedMapModel().getItem();
-                if(!map.isVector())
+                if (!map.isVector())
                     return;
 
                 String themeId = preferences.get(getMapKey(map), getMapTheme(map));
@@ -64,19 +65,27 @@ public class ThemeForMapMediator {
                 if (theme != null)
                     getAppliedThemeModel().setItem(theme);
             }
-        });
+        };
+        getDisplayedMapModel().addChangeListener(mapListener);
 
-        getAppliedThemeModel().addChangeListener(new ChangeListener() {
+        themeListener = new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 LocalMap map = getDisplayedMapModel().getItem();
-                if(!map.isVector())
+                if (!map.isVector())
                     return;
 
                 String themeId = getAppliedThemeModel().getItem().getDescription();
                 preferences.put(getMapKey(map), themeId);
                 preferences.put(getMapProviderKey(map), themeId);
             }
-        });
+        };
+        getAppliedThemeModel().addChangeListener(themeListener);
+    }
+
+    public void dispose() {
+        getDisplayedMapModel().removeChangeListener(mapListener);
+        mapListener = null;
+        getAppliedThemeModel().removeChangeListener(themeListener);
     }
 
     private String getMapTheme(LocalMap map) {

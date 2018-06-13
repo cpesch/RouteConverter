@@ -42,7 +42,6 @@ import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.RemoteMap;
-import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
@@ -92,7 +91,7 @@ public class MapsDialog extends SimpleDialog {
 
         final RouteConverter r = RouteConverter.getInstance();
 
-        tableAvailableOnlineMaps.setModel(getTileServerMapManager().getAvailableMapsModel());
+        tableAvailableOnlineMaps.setModel(getMapsforgeMapManager().getAvailableOnlineMapsModel());
         tableAvailableOnlineMaps.setDefaultRenderer(Object.class, new ItemTableCellRenderer());
         TableCellRenderer availableMapsHeaderRenderer = new SimpleHeaderRenderer("description");
         TableColumnModel onlineMapsColumns = tableAvailableOnlineMaps.getColumnModel();
@@ -116,12 +115,12 @@ public class MapsDialog extends SimpleDialog {
                 if (selectedRow == -1)
                     return;
                 int row = tableAvailableOnlineMaps.convertRowIndexToView(selectedRow);
-                LocalMap map = getMapsforgeMapManager().getAvailableMapsModel().getItem(row); // TODO only 1 map displayed
+                LocalMap map = getMapsforgeMapManager().getAvailableOnlineMapsModel().getItem(row); // TODO only 1 map displayed
                 r.showMapBorder(map.isVector() ? map.getBoundingBox() : null);
             }
         });
 
-        tableAvailableOfflineMaps.setModel(getMapsforgeMapManager().getAvailableMapsModel());
+        tableAvailableOfflineMaps.setModel(getMapsforgeMapManager().getAvailableOfflineMapsModel());
         tableAvailableOfflineMaps.setDefaultRenderer(Object.class, new LocalMapsTableCellRenderer());
         TableColumnModel offlineMapsColumns = tableAvailableOfflineMaps.getColumnModel();
         for (int i = 0; i < offlineMapsColumns.getColumnCount(); i++) {
@@ -138,7 +137,7 @@ public class MapsDialog extends SimpleDialog {
         tableAvailableOfflineMaps.setRowSorter(sorterAvailableOfflineMaps);
         final LocalMap selectedMap = getMapsforgeMapManager().getDisplayedMapModel().getItem();
         if (selectedMap != null) {
-            int selectedMapIndex = getMapsforgeMapManager().getAvailableMapsModel().getIndex(selectedMap);
+            int selectedMapIndex = getMapsforgeMapManager().getAvailableOfflineMapsModel().getIndex(selectedMap);
             if (selectedMapIndex != -1) {
                 int selectedRow = tableAvailableOfflineMaps.convertRowIndexToView(selectedMapIndex);
                 tableAvailableOfflineMaps.getSelectionModel().addSelectionInterval(selectedRow, selectedRow);
@@ -153,7 +152,7 @@ public class MapsDialog extends SimpleDialog {
                 if (selectedRow == -1)
                     return;
                 int row = tableAvailableOfflineMaps.convertRowIndexToView(selectedRow);
-                LocalMap map = getMapsforgeMapManager().getAvailableMapsModel().getItem(row);
+                LocalMap map = getMapsforgeMapManager().getAvailableOfflineMapsModel().getItem(row);
                 r.showMapBorder(map.isVector() ? map.getBoundingBox() : null);
             }
         });
@@ -216,9 +215,10 @@ public class MapsDialog extends SimpleDialog {
         updateLabel();
 
         final ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.register("display-map", new DisplayMapAction(tableAvailableOfflineMaps, getMapsforgeMapManager()));
+        actionManager.register("display-map", new DisplayMapAction(tableAvailableOnlineMaps, getMapsforgeMapManager()));
         actionManager.register("download-maps", new DownloadMapsAction(tableDownloadableMaps, getMapsforgeMapManager(),
                 checkBoxDownloadRoutingData, checkBoxDownloadElevationData));
+        actionManager.register("display-map", new DisplayMapAction(tableAvailableOfflineMaps, getMapsforgeMapManager())); // TODO same name for different action
 
         new AvailableMapsTablePopupMenu(tableAvailableOfflineMaps).createPopupMenu();
         new DownloadableMapsTablePopupMenu(tableDownloadableMaps).createPopupMenu();
@@ -280,10 +280,6 @@ public class MapsDialog extends SimpleDialog {
                 elevationService.getName();
         checkBoxDownloadElevationData.setText(format(RouteConverter.getBundle().getString("download-elevation-data"),
                 formatSize(elevationServiceDownloadSize), elevationServiceName));
-    }
-
-    private TileServerMapManager getTileServerMapManager() {
-        return RouteConverter.getInstance().getTileServerMapManager();
     }
 
     private MapsforgeMapManager getMapsforgeMapManager() {

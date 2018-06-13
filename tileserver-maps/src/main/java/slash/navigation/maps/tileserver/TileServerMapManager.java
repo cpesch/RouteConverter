@@ -29,21 +29,21 @@ import java.util.List;
 import static slash.common.io.Transfer.formatInt;
 
 /**
- * Manages {@link OnlineMap}s
+ * Manages {@link TileServer}s
  *
  * @author Christian Pesch
  */
 
 public class TileServerMapManager {
     private final TileServerService tileServerService;
-    private ItemTableModel<OnlineMap> availableMapsModel = new ItemTableModel<>(1);
+    private ItemTableModel<TileServer> availableMapsModel = new ItemTableModel<>(1);
 
     public TileServerMapManager(File tileServerDirectory) {
         this.tileServerService = new TileServerService(tileServerDirectory);
         initializeOnlineMaps();
     }
 
-    public ItemTableModel getAvailableMapsModel() {
+    public ItemTableModel<TileServer> getAvailableMapsModel() {
         return availableMapsModel;
     }
 
@@ -55,12 +55,12 @@ public class TileServerMapManager {
         tileServerService.initialize();
 
         for(TileServerType type : tileServerService.getTileServers())
-          availableMapsModel.addOrUpdateItem(new OnlineMap(type.getId(), type.getName(), type.getValue(),
+          availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(), type.getValue(),
                   type.getActive() == null || type.getActive(), formatInt(type.getMinZoom()),
-                  formatInt(type.getMaxZoom()), type.getCopyright() != null ? type.getCopyright().value() : "unknown"));
+                  formatInt(type.getMaxZoom()), type.getCopyright() != null ? type.getCopyright().value() : "Unknown"));
     }
 
-    public List<OnlineMap> getTileServers() {
+    public List<TileServer> getTileServers() {
         return availableMapsModel.getItems();
     }
 }

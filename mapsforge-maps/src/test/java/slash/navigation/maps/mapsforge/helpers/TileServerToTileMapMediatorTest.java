@@ -1,0 +1,91 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+package slash.navigation.maps.mapsforge.helpers;
+
+import org.junit.Test;
+import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.tileserver.TileServer;
+import slash.navigation.maps.tileserver.item.ItemTableModel;
+
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.TableModel;
+
+import static org.junit.Assert.assertEquals;
+
+public class TileServerToTileMapMediatorTest {
+
+    private void waitForEvent(TableModel tableModel) throws InterruptedException {
+        final boolean[] found = new boolean[1];
+        found[0] = false;
+
+        TableModelListener l = new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                synchronized (found) {
+                    found[0] = true;
+                }
+            }
+        };
+        tableModel.addTableModelListener(l);
+
+        synchronized (found) {
+            while(!found[0]) {
+                found.wait(100);
+            }
+        }
+
+        tableModel.removeTableModelListener(l);
+    }
+
+    @Test
+    public void testEvents() throws InterruptedException {
+        ItemTableModel<TileServer> sourceModel = new ItemTableModel<>(1);
+        ItemTableModel<LocalMap> destinationModel = new ItemTableModel<>(2);
+        TileServerToTileMapMediator mediator = new TileServerToTileMapMediator(sourceModel, destinationModel);
+
+        assertEquals(0, destinationModel.getRowCount());
+
+        final boolean[] found = new boolean[1];
+        found[0] = false;
+
+        TableModelListener l = new TableModelListener() {
+            public void tableChanged(TableModelEvent e) {
+                synchronized (found) {
+                    found[0] = true;
+                }
+            }
+        };
+        sourceModel.addTableModelListener(l);
+
+        sourceModel.addOrUpdateItem(new TileServer("a", null, "url", false, 0, 0, null));
+
+        synchronized (found) {
+            while(!found[0]) {
+                found.wait(100);
+            }
+        }
+        sourceModel.removeTableModelListener(l);
+
+        assertEquals(1, destinationModel.getRowCount());
+
+        mediator.dispose();
+    }
+
+}

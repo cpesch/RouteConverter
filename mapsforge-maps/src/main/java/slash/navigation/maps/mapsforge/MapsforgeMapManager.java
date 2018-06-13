@@ -19,16 +19,18 @@
 */
 package slash.navigation.maps.mapsforge;
 
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
-import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
-import slash.navigation.common.BoundingBox;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Download;
+import slash.navigation.maps.mapsforge.helpers.TileServerToTileMapMediator;
+import slash.navigation.maps.mapsforge.helpers.OpenStreetMap;
 import slash.navigation.maps.mapsforge.helpers.ThemeForMapMediator;
-import slash.navigation.maps.mapsforge.impl.*;
+import slash.navigation.maps.mapsforge.impl.MapFilesService;
+import slash.navigation.maps.mapsforge.impl.VectorMap;
+import slash.navigation.maps.mapsforge.impl.VectorTheme;
+import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.maps.tileserver.item.ItemModel;
 import slash.navigation.maps.tileserver.item.ItemTableModel;
 
@@ -51,6 +53,7 @@ import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractBoundingBox;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.removePrefix;
+import static slash.navigation.maps.mapsforge.helpers.OpenStreetMap.OPENSTREETMAP_URL;
 
 /**
  * Manages {@link LocalMap}s and {@link LocalTheme}s
@@ -65,19 +68,20 @@ public class MapsforgeMapManager {
     private static final String THEME_DIRECTORY_PREFERENCE = "themeDirectory";
     private static final String DISPLAYED_MAP_PREFERENCE = "displayedMap";
     private static final String APPLIED_THEME_PREFERENCE = "appliedTheme";
-    private static final String OPENSTREETMAP_URL = "http://www.openstreetmap.org/";
     private static final String OSMARENDER_URL = "http://wiki.openstreetmap.org/wiki/Osmarender";
     private static final String DOT_MAP = ".map";
 
     private final DataSourceManager dataSourceManager;
     private ItemTableModel<LocalMap> availableMapsModel = new ItemTableModel<>(1);
+    private ItemTableModel<LocalMap> availableOnlineMapsModel = new ItemTableModel<>(1);
+    private ItemTableModel<LocalMap> availableOfflineMapsModel = new ItemTableModel<>(1);
     private ItemTableModel<LocalTheme> availableThemesModel = new ItemTableModel<>(1);
     private ItemTableModel<RemoteMap> downloadableMapsModel = new ItemTableModel<>(3);
     private ItemTableModel<RemoteTheme> downloadableThemesModel = new ItemTableModel<>(3);
 
     private ItemModel<LocalMap> displayedMapModel = new ItemModel<LocalMap>(DISPLAYED_MAP_PREFERENCE,  OPENSTREETMAP_URL) {
         protected LocalMap stringToItem(String url) {
-            return getAvailableMapsModel().getItemByUrl(url);
+            return availableMapsModel.getItemByUrl(url);
         }
 
         protected String itemToString(LocalMap map) {
@@ -95,16 +99,34 @@ public class MapsforgeMapManager {
         }
     };
 
-    public MapsforgeMapManager(DataSourceManager dataSourceManager) {
+    private ThemeForMapMediator themeForMapMediator;
+    private TileServerToTileMapMediator tileServerToTileMapMediator;
+
+    public MapsforgeMapManager(DataSourceManager dataSourceManager, TileServerMapManager tileServerMapManager) {
         this.dataSourceManager = dataSourceManager;
 
-        new ThemeForMapMediator(this);
-        availableMapsModel.addOrUpdateItem(new OpenStreetMap());
+        themeForMapMediator = new ThemeForMapMediator(this);
+        tileServerToTileMapMediator = new TileServerToTileMapMediator(tileServerMapManager.getAvailableMapsModel(), availableOnlineMapsModel);
+        // TODO add off and online to one availableMapsModel
+        availableOfflineMapsModel.addOrUpdateItem(new OpenStreetMap());
         initializeBuiltinThemes();
+    }
+
+    public void dispose() {
+        themeForMapMediator.dispose();
+        tileServerToTileMapMediator.dispose();
     }
 
     public ItemTableModel<LocalMap> getAvailableMapsModel() {
         return availableMapsModel;
+    }
+
+    public ItemTableModel<LocalMap> getAvailableOnlineMapsModel() {
+        return availableOnlineMapsModel;
+    }
+
+    public ItemTableModel<LocalMap> getAvailableOfflineMapsModel() {
+        return availableOfflineMapsModel;
     }
 
     public ItemTableModel<RemoteMap> getDownloadableMapsModel() {
@@ -184,7 +206,7 @@ public class MapsforgeMapManager {
                 continue;
 
             checkFile(file);
-            availableMapsModel.addOrUpdateItem(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
+            availableOfflineMapsModel.addOrUpdateItem(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
         }
 
         long end = currentTimeMillis();
@@ -246,29 +268,4 @@ public class MapsforgeMapManager {
         dataSourceManager.getDownloadManager().waitForCompletion(downloads);
     }
 
-    private static class OpenStreetMap implements LocalMap {
-        public boolean isVector() {
-            return false;
-        }
-
-        public File getFile() {
-            throw new UnsupportedOperationException();
-        }
-
-        public AbstractTileSource getTileSource() {
-            return OpenStreetMapMapnik.INSTANCE;
-        }
-
-        public BoundingBox getBoundingBox() {
-            throw new UnsupportedOperationException();
-        }
-
-        public String getDescription() {
-            return "OpenStreetMap";
-        }
-
-        public String getUrl() {
-            return OPENSTREETMAP_URL;
-        }
-    }
 }

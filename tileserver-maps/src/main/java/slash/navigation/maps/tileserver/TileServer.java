@@ -22,12 +22,12 @@ package slash.navigation.maps.tileserver;
 import slash.navigation.maps.tileserver.item.Item;
 
 /**
- * An online map that is available on tile servers.
+ * Description of a tile server that serves an online map.
  *
  * @author Christian Pesch
  */
 
-public class OnlineMap implements Item {
+public class TileServer implements Item {
     private final String id;
     private final String description;
     private final String url;
@@ -36,7 +36,7 @@ public class OnlineMap implements Item {
     private final int maxZoom;
     private final String copyright;
 
-    public OnlineMap(String id, String description, String url, boolean active, int minZoom, int maxZoom, String copyright) {
+    public TileServer(String id, String description, String url, boolean active, int minZoom, int maxZoom, String copyright) {
         this.id = id;
         this.description = description;
         this.url = url;
