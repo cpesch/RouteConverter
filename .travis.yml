@@ -6,9 +6,10 @@ cache:
    - $HOME/.m2
 jdk:
   - openjdk7
+  - openjdk11
   - oraclejdk8
   - oraclejdk9
-#  - oraclejdk10
+  - oraclejdk10
 git:
   depth: 3
 branches:
