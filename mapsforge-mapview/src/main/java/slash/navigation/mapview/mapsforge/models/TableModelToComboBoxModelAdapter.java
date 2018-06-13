@@ -21,16 +21,24 @@ package slash.navigation.mapview.mapsforge.models;
 
 import slash.navigation.maps.tileserver.item.Item;
 import slash.navigation.maps.tileserver.item.ItemModel;
-import slash.navigation.maps.tileserver.item.ItemTableModel;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.util.HashMap;
 import java.util.Map;
 
-import static javax.swing.event.ListDataEvent.*;
-import static javax.swing.event.TableModelEvent.*;
+import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
+import static javax.swing.event.ListDataEvent.INTERVAL_ADDED;
+import static javax.swing.event.ListDataEvent.INTERVAL_REMOVED;
+import static javax.swing.event.TableModelEvent.DELETE;
+import static javax.swing.event.TableModelEvent.INSERT;
+import static javax.swing.event.TableModelEvent.UPDATE;
 
 /**
  * Adapts a {@link TableModel} to a {@link ComboBoxModel}.
@@ -39,11 +47,11 @@ import static javax.swing.event.TableModelEvent.*;
  */
 
 public class TableModelToComboBoxModelAdapter<E extends Item> implements ComboBoxModel<E> {
-    private final ItemTableModel<E> modelDelegate;
+    private final TableModel modelDelegate;
     private final ItemModel<E> selectedDelegate;
     private final Map<ListDataListener, TableModelListener> listToTableListener = new HashMap<>();
 
-    public TableModelToComboBoxModelAdapter(ItemTableModel<E> modelDelegate, ItemModel<E> selectedDelegate) {
+    public TableModelToComboBoxModelAdapter(TableModel modelDelegate, ItemModel<E> selectedDelegate) {
         this.modelDelegate = modelDelegate;
         this.selectedDelegate = selectedDelegate;
 

@@ -55,9 +55,10 @@ public class TileServerMapManager {
         tileServerService.initialize();
 
         for(TileServerType type : tileServerService.getTileServers())
-          availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(), type.getValue(),
-                  type.getActive() == null || type.getActive(), formatInt(type.getMinZoom()),
-                  formatInt(type.getMaxZoom()), type.getCopyright() != null ? type.getCopyright().value() : "Unknown"));
+          availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(), type.getHostName(),
+                  type.getBaseUrl(), type.getExtension(), type.getActive() == null || type.getActive(),
+                  formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
+                  type.getCopyright() != null ? type.getCopyright().value() : "Unknown"));
     }
 
     public List<TileServer> getTileServers() {

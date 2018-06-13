@@ -46,15 +46,16 @@
                 a tile server contains an id, a name, a minimum and maximum zoom level, a copyright and a tile url pattern
             </xsd:documentation>
         </xsd:annotation>
-        <xsd:simpleContent>
-            <xsd:extension base="xsd:string">
-                <xsd:attribute name="id" type="xsd:string" use="required"/>
-                <xsd:attribute name="name" type="xsd:string" use="required"/>
-                <xsd:attribute name="minZoom" type="xsd:integer" use="required"/>
-                <xsd:attribute name="maxZoom" type="xsd:integer" use="required"/>
-                <xsd:attribute name="copyright" type="copyrightType" use="required"/>
-                <xsd:attribute name="active" type="xsd:boolean"/>
-            </xsd:extension>
-        </xsd:simpleContent>
+        <xsd:sequence>
+            <xsd:element name="hostName" type="xsd:string" minOccurs="1" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="baseUrl" type="xsd:string" use="required"/>
+        <xsd:attribute name="extension" type="xsd:string" use="required"/>
+        <xsd:attribute name="minZoom" type="xsd:integer" use="required"/>
+        <xsd:attribute name="maxZoom" type="xsd:integer" use="required"/>
+        <xsd:attribute name="copyright" type="copyrightType" use="required"/>
+        <xsd:attribute name="active" type="xsd:boolean"/>
     </xsd:complexType>
 </xsd:schema>

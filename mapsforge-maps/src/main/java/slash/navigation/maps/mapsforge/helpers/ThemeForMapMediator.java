@@ -86,6 +86,7 @@ public class ThemeForMapMediator {
         getDisplayedMapModel().removeChangeListener(mapListener);
         mapListener = null;
         getAppliedThemeModel().removeChangeListener(themeListener);
+        themeListener = null;
     }
 
     private String getMapTheme(LocalMap map) {

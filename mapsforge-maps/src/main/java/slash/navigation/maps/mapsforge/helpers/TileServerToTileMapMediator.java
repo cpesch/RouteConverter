@@ -70,8 +70,22 @@ public class TileServerToTileMapMediator {
         listener = null;
     }
 
+    private OnlineTileSource createOnlineTileSource(TileServer tileServer) {
+        String[] hostNames = tileServer.getHostNames().toArray(new String[0]);
+        if(hostNames.length == 0) 
+            hostNames = new String[]{"not.existing.tile.server"};
+        OnlineTileSource result = new OnlineTileSource(hostNames, 80);
+        result.setName(tileServer.getId());
+        result.setBaseUrl(tileServer.getBaseUrl());
+        result.setExtension(tileServer.getExtension());
+        result.setZoomLevelMin((byte) tileServer.getMinZoom());
+        result.setZoomLevelMax((byte) tileServer.getMaxZoom());
+        result.setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "2.24"));
+        return result;
+    }
+
     private TileMap convert(TileServer tileServer) {
-        return new TileMap(tileServer.getDescription(), tileServer.getUrl(), new OnlineTileSource(new String[]{tileServer.getUrl()}, 80));
+        return new TileMap(tileServer.getDescription(), tileServer.getUrl(), createOnlineTileSource(tileServer));
     }
 
     private void handleAdd(int firstRow, int lastRow) {

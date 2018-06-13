@@ -28,7 +28,8 @@ import slash.navigation.converter.gui.RouteConverterOffline;
 import slash.navigation.converter.gui.actions.DisplayMapAction;
 import slash.navigation.converter.gui.actions.DownloadMapsAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
-import slash.navigation.converter.gui.helpers.AvailableMapsTablePopupMenu;
+import slash.navigation.converter.gui.helpers.AvailableOfflineMapsTablePopupMenu;
+import slash.navigation.converter.gui.helpers.AvailableOnlineMapsTablePopupMenu;
 import slash.navigation.converter.gui.helpers.DownloadableMapsTablePopupMenu;
 import slash.navigation.converter.gui.renderer.ItemTableCellRenderer;
 import slash.navigation.converter.gui.renderer.LocalMapsTableCellRenderer;
@@ -215,12 +216,15 @@ public class MapsDialog extends SimpleDialog {
         updateLabel();
 
         final ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.register("display-map", new DisplayMapAction(tableAvailableOnlineMaps, getMapsforgeMapManager()));
+        actionManager.register("display-online-map", new DisplayMapAction(tableAvailableOnlineMaps, getMapsforgeMapManager()));
+        new AvailableOnlineMapsTablePopupMenu(tableAvailableOnlineMaps).createPopupMenu();
+        registerAction(buttonDisplayOnlineMap, "display-online-map");
+
+        // TODO offline-map
+        actionManager.register("display-map", new DisplayMapAction(tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("download-maps", new DownloadMapsAction(tableDownloadableMaps, getMapsforgeMapManager(),
                 checkBoxDownloadRoutingData, checkBoxDownloadElevationData));
-        actionManager.register("display-map", new DisplayMapAction(tableAvailableOfflineMaps, getMapsforgeMapManager())); // TODO same name for different action
-
-        new AvailableMapsTablePopupMenu(tableAvailableOfflineMaps).createPopupMenu();
+        new AvailableOfflineMapsTablePopupMenu(tableAvailableOfflineMaps).createPopupMenu();
         new DownloadableMapsTablePopupMenu(tableDownloadableMaps).createPopupMenu();
         registerAction(buttonDisplayOfflineMap, "display-map");
         registerAction(buttonDownload, "download-maps");

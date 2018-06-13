@@ -21,6 +21,8 @@ package slash.navigation.maps.tileserver;
 
 import slash.navigation.maps.tileserver.item.Item;
 
+import java.util.List;
+
 /**
  * Description of a tile server that serves an online map.
  *
@@ -30,16 +32,21 @@ import slash.navigation.maps.tileserver.item.Item;
 public class TileServer implements Item {
     private final String id;
     private final String description;
-    private final String url;
+    private final List<String> hostNames;
+    private final String baseUrl;
+    private final String extension;
     private boolean active;
     private final int minZoom;
     private final int maxZoom;
     private final String copyright;
 
-    public TileServer(String id, String description, String url, boolean active, int minZoom, int maxZoom, String copyright) {
+    public TileServer(String id, String description, List<String> hostNames, String baseUrl, String extension,
+                      boolean active, int minZoom, int maxZoom, String copyright) {
         this.id = id;
         this.description = description;
-        this.url = url;
+        this.hostNames = hostNames;
+        this.baseUrl = baseUrl;
+        this.extension = extension;
         this.active = active;
         this.minZoom = minZoom;
         this.maxZoom = maxZoom;
@@ -55,7 +62,19 @@ public class TileServer implements Item {
     }
 
     public String getUrl() {
-        return url;
+        return getHostNames().size() > 0 ? getHostNames().get(0) : ""; // TODO or null?
+    }
+
+    public List<String> getHostNames() {
+        return hostNames;
+    }
+
+    public String getBaseUrl() {
+        return baseUrl;
+    }
+
+    public String getExtension() {
+        return extension;
     }
 
     public boolean isActive() {

@@ -24,6 +24,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Download;
+import slash.navigation.maps.mapsforge.helpers.JoinedTableModel;
 import slash.navigation.maps.mapsforge.helpers.TileServerToTileMapMediator;
 import slash.navigation.maps.mapsforge.helpers.OpenStreetMap;
 import slash.navigation.maps.mapsforge.helpers.ThemeForMapMediator;
@@ -72,16 +73,16 @@ public class MapsforgeMapManager {
     private static final String DOT_MAP = ".map";
 
     private final DataSourceManager dataSourceManager;
-    private ItemTableModel<LocalMap> availableMapsModel = new ItemTableModel<>(1);
     private ItemTableModel<LocalMap> availableOnlineMapsModel = new ItemTableModel<>(1);
     private ItemTableModel<LocalMap> availableOfflineMapsModel = new ItemTableModel<>(1);
+    private JoinedTableModel<LocalMap> availableMapsModel = new JoinedTableModel<>(availableOnlineMapsModel, availableOfflineMapsModel);
     private ItemTableModel<LocalTheme> availableThemesModel = new ItemTableModel<>(1);
     private ItemTableModel<RemoteMap> downloadableMapsModel = new ItemTableModel<>(3);
     private ItemTableModel<RemoteTheme> downloadableThemesModel = new ItemTableModel<>(3);
 
     private ItemModel<LocalMap> displayedMapModel = new ItemModel<LocalMap>(DISPLAYED_MAP_PREFERENCE,  OPENSTREETMAP_URL) {
         protected LocalMap stringToItem(String url) {
-            return availableMapsModel.getItemByUrl(url);
+            return getAvailableMapsModel().getItemByUrl(url);
         }
 
         protected String itemToString(LocalMap map) {
@@ -107,17 +108,18 @@ public class MapsforgeMapManager {
 
         themeForMapMediator = new ThemeForMapMediator(this);
         tileServerToTileMapMediator = new TileServerToTileMapMediator(tileServerMapManager.getAvailableMapsModel(), availableOnlineMapsModel);
-        // TODO add off and online to one availableMapsModel
         availableOfflineMapsModel.addOrUpdateItem(new OpenStreetMap());
         initializeBuiltinThemes();
     }
 
     public void dispose() {
         themeForMapMediator.dispose();
+        themeForMapMediator = null;
         tileServerToTileMapMediator.dispose();
+        tileServerToTileMapMediator = null;
     }
 
-    public ItemTableModel<LocalMap> getAvailableMapsModel() {
+    public JoinedTableModel<LocalMap> getAvailableMapsModel() {
         return availableMapsModel;
     }
 

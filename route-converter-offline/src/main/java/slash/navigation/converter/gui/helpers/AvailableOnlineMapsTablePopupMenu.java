@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.tileserver.TileServer;
 
 import javax.swing.*;
 
@@ -27,18 +27,18 @@ import static slash.navigation.converter.gui.models.LocalActionConstants.MAPS;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 
 /**
- * Creates a {@link JPopupMenu} for the {@link LocalMap}s table.
+ * Creates a {@link JPopupMenu} for the {@link TileServer}s table.
  *
  * @author Christian Pesch
  */
 
-public class AvailableMapsTablePopupMenu extends AbstractTablePopupMenu {
-    public AvailableMapsTablePopupMenu(JTable table) {
+public class AvailableOnlineMapsTablePopupMenu extends AbstractTablePopupMenu {
+    public AvailableOnlineMapsTablePopupMenu(JTable table) {
         super(table, MAPS);
     }
 
     protected JPopupMenu doCreatePopupMenu() {
         JPopupMenu menu = new JPopupMenu();
-        menu.add(createItem("display-map"));
+        menu.add(createItem("display-online-map"));
         return menu;
     }}
