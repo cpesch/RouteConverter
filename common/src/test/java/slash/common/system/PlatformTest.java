@@ -66,6 +66,7 @@ public class PlatformTest {
 
         assertTrue(isJavaLaterThan("10", 8));
         assertTrue(isJavaLaterThan("10", 9));
+        assertTrue(isJavaLaterThan("10.0.1", 9));
         assertTrue(isJavaLaterThan("10", 10));
     }
 }
