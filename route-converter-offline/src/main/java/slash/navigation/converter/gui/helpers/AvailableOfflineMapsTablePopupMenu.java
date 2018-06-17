@@ -39,6 +39,6 @@ public class AvailableOfflineMapsTablePopupMenu extends AbstractTablePopupMenu {
 
     protected JPopupMenu doCreatePopupMenu() {
         JPopupMenu menu = new JPopupMenu();
-        menu.add(createItem("display-map"));
+        menu.add(createItem("display-offline-map"));
         return menu;
     }}

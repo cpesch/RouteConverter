@@ -176,8 +176,8 @@
                               <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                             <properties>
-                              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-map-action"/>
-                              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-map-action-tooltip"/>
+                              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-offline-map-action"/>
+                              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-offline-map-action-tooltip"/>
                             </properties>
                           </component>
                           <hspacer id="988c7">
@@ -291,8 +291,8 @@
                       <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-map-action"/>
-                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-map-action-tooltip"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-online-map-action"/>
+                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-online-map-action-tooltip"/>
                     </properties>
                   </component>
                   <hspacer id="5cc1d">

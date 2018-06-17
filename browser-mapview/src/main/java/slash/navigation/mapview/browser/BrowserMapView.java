@@ -700,12 +700,24 @@ public abstract class BrowserMapView implements MapView {
                         append(tileServer.getCopyright()).append("\";\n");
             }
             else {
-                buffer.append("map.mapTypes.set(\"").append(tileServer.getId()).append("\", new google.maps.ImageMapType({\n").
+                buffer.
+                        append("map.mapTypes.set(\"").append(tileServer.getId()).append("\", new google.maps.ImageMapType({\n").
                         append("  getTileUrl: function(coordinates, zoom) {\n").
-                        append("    return ").append(trim(trimLineFeeds(tileServer.getUrl())));
-                if (apiKey != null)
-                    buffer.append(" + \"?apikey=").append(apiKey).append("\"");
-                buffer.append(";\n").
+                        append("    var tileServers = [");
+                for (int i = 0, c=tileServer.getHostNames().size(); i<c; i++) {
+                    buffer.append("\"").append(tileServer.getHostNames().get(i)).append("\"");
+                    if (i < c - 1)
+                        buffer.append(", ");
+                }
+                buffer.append("];\n").
+
+                        append("    var tileServer = tileServers[Math.floor(Math.random() * tileServers.length)];\n");
+                buffer.append("    var url = \"http://\" + tileServer + \"").append(tileServer.getBaseUrl()).
+                        append("\" + zoom + \"/\" + coordinates.x + \"/\" + coordinates.y + \".").append(tileServer.getExtension()).
+                        append("\";\n");
+                if (apiKey != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
+                    buffer.append("    url = url.concat(\"?apikey=").append(apiKey).append("\");\n");
+                buffer.append("    return url;\n").
                         append("  },\n").
                         append("  tileSize: DEFAULT_TILE_SIZE,\n").
                         append("  minZoom: ").append(tileServer.getMinZoom()).append(",\n").

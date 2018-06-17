@@ -26,33 +26,11 @@ import slash.navigation.maps.tileserver.item.ItemTableModel;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
 public class TileServerToTileMapMediatorTest {
-
-    private void waitForEvent(TableModel tableModel) throws InterruptedException {
-        final boolean[] found = new boolean[1];
-        found[0] = false;
-
-        TableModelListener l = new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                synchronized (found) {
-                    found[0] = true;
-                }
-            }
-        };
-        tableModel.addTableModelListener(l);
-
-        synchronized (found) {
-            while(!found[0]) {
-                found.wait(100);
-            }
-        }
-
-        tableModel.removeTableModelListener(l);
-    }
 
     @Test
     public void testEvents() throws InterruptedException {
@@ -74,7 +52,7 @@ public class TileServerToTileMapMediatorTest {
         };
         sourceModel.addTableModelListener(l);
 
-        sourceModel.addOrUpdateItem(new TileServer("a", null, "url", false, 0, 0, null));
+        sourceModel.addOrUpdateItem(new TileServer("a", null, singletonList("url"), "url", null, false, 0, 0, null));
 
         synchronized (found) {
             while(!found[0]) {

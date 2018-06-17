@@ -116,7 +116,7 @@ public class MapsDialog extends SimpleDialog {
                 if (selectedRow == -1)
                     return;
                 int row = tableAvailableOnlineMaps.convertRowIndexToView(selectedRow);
-                LocalMap map = getMapsforgeMapManager().getAvailableOnlineMapsModel().getItem(row); // TODO only 1 map displayed
+                LocalMap map = getMapsforgeMapManager().getAvailableOnlineMapsModel().getItem(row);
                 r.showMapBorder(map.isVector() ? map.getBoundingBox() : null);
             }
         });
@@ -220,13 +220,12 @@ public class MapsDialog extends SimpleDialog {
         new AvailableOnlineMapsTablePopupMenu(tableAvailableOnlineMaps).createPopupMenu();
         registerAction(buttonDisplayOnlineMap, "display-online-map");
 
-        // TODO offline-map
-        actionManager.register("display-map", new DisplayMapAction(tableAvailableOfflineMaps, getMapsforgeMapManager()));
+        actionManager.register("display-offline-map", new DisplayMapAction(tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("download-maps", new DownloadMapsAction(tableDownloadableMaps, getMapsforgeMapManager(),
                 checkBoxDownloadRoutingData, checkBoxDownloadElevationData));
         new AvailableOfflineMapsTablePopupMenu(tableAvailableOfflineMaps).createPopupMenu();
         new DownloadableMapsTablePopupMenu(tableDownloadableMaps).createPopupMenu();
-        registerAction(buttonDisplayOfflineMap, "display-map");
+        registerAction(buttonDisplayOfflineMap, "display-offline-map");
         registerAction(buttonDownload, "download-maps");
 
         buttonClose.addActionListener(new DialogAction(this) {
@@ -370,8 +369,8 @@ public class MapsDialog extends SimpleDialog {
         panel9.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel8.add(panel9, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonDisplayOfflineMap = new JButton();
-        this.$$$loadButtonText$$$(buttonDisplayOfflineMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-map-action"));
-        buttonDisplayOfflineMap.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-map-action-tooltip"));
+        this.$$$loadButtonText$$$(buttonDisplayOfflineMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-offline-map-action"));
+        buttonDisplayOfflineMap.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-offline-map-action-tooltip"));
         panel9.add(buttonDisplayOfflineMap, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
         panel9.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
@@ -412,8 +411,8 @@ public class MapsDialog extends SimpleDialog {
         panel13.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel12.add(panel13, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonDisplayOnlineMap = new JButton();
-        this.$$$loadButtonText$$$(buttonDisplayOnlineMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-map-action"));
-        buttonDisplayOnlineMap.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-map-action-tooltip"));
+        this.$$$loadButtonText$$$(buttonDisplayOnlineMap, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-online-map-action"));
+        buttonDisplayOnlineMap.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("display-online-map-action-tooltip"));
         panel13.add(buttonDisplayOnlineMap, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer4 = new Spacer();
         panel13.add(spacer4, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));

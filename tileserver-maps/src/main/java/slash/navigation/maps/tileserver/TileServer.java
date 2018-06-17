@@ -23,6 +23,8 @@ import slash.navigation.maps.tileserver.item.Item;
 
 import java.util.List;
 
+import static slash.common.io.Files.printArrayToDialogString;
+
 /**
  * Description of a tile server that serves an online map.
  *
@@ -62,7 +64,7 @@ public class TileServer implements Item {
     }
 
     public String getUrl() {
-        return getHostNames().size() > 0 ? getHostNames().get(0) : ""; // TODO or null?
+        return printArrayToDialogString(getHostNames().toArray());
     }
 
     public List<String> getHostNames() {

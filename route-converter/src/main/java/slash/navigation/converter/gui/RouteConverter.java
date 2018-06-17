@@ -381,8 +381,8 @@ public class RouteConverter extends SingleFrameApplication {
 
     private void openMapAndProfileView() {
         try {
-            File file = new File(getApplicationDirectory("tileservers"), "default.xml");
-            getDownloadManager().executeDownload("RouteConverter Tile Servers", getApiUrl() + V1 + "tileservers/" + FORMAT_XML, Copy, file, new Runnable() {
+            File file = new File(getApplicationDirectory("tileservers"), "default-offline.xml");
+            getDownloadManager().executeDownload("RouteConverter Offline Tile Servers", getApiUrl() + V1 + "tileservers-offline/" + FORMAT_XML, Copy, file, new Runnable() {
                 public void run() {
                     invokeLater(new Runnable() {
                         public void run() {

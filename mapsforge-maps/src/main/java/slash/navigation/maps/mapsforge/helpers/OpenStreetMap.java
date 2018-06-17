@@ -52,7 +52,7 @@ public class OpenStreetMap implements LocalMap {
     }
 
     public String getDescription() {
-        return "OpenStreetMap";
+        return "OpenStreetMap Default Map";
     }
 
     public String getUrl() {

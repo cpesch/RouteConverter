@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
-            xmlns="http://api.routeconverter.com/v1/schemas/tileserver-catalog"
-            targetNamespace="http://api.routeconverter.com/v1/schemas/tileserver-catalog"
+            xmlns="http://api.routeconverter.com/v1/schemas/tileserver-offline-catalog"
+            targetNamespace="http://api.routeconverter.com/v1/schemas/tileserver-offline-catalog"
             elementFormDefault="qualified">
 
     <xsd:element name="catalog" type="catalogType">

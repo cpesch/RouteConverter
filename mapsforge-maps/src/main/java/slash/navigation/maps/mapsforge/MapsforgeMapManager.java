@@ -108,7 +108,7 @@ public class MapsforgeMapManager {
 
         themeForMapMediator = new ThemeForMapMediator(this);
         tileServerToTileMapMediator = new TileServerToTileMapMediator(tileServerMapManager.getAvailableMapsModel(), availableOnlineMapsModel);
-        availableOfflineMapsModel.addOrUpdateItem(new OpenStreetMap());
+        initializeOpenStreetMap();
         initializeBuiltinThemes();
     }
 
@@ -180,6 +180,10 @@ public class MapsforgeMapManager {
 
     public File getThemesDirectory() {
         return getDirectory(getMapsPath(), "themes");
+    }
+
+    private void initializeOpenStreetMap() {
+        availableOfflineMapsModel.addOrUpdateItem(new OpenStreetMap());
     }
 
     private void initializeBuiltinThemes() {

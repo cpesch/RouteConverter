@@ -462,33 +462,6 @@
        return null;
    }
 
-   var openStreetMapServerIndex = 0;
-
-   function getOpenStreetMapServerIndex() {
-       openStreetMapServerIndex++;
-       if (openStreetMapServerIndex > 2)
-           openStreetMapServerIndex = 0;
-       return String.fromCharCode(openStreetMapServerIndex + 65);
-   }
-
-   var outdoorActiveServerIndex = 0;
-
-   function getOutdoorActiveServerIndex() {
-       outdoorActiveServerIndex++;
-       if (outdoorActiveServerIndex > 3)
-           outdoorActiveServerIndex = 0;
-       return outdoorActiveServerIndex;
-   }
-
-   var wanderReitServerIndex = 1;
-
-   function getWanderReitServerIndex() {
-       wanderReitServerIndex++;
-       if (wanderReitServerIndex > 7)
-           wanderReitServerIndex = 2;
-       return wanderReitServerIndex;
-   }
-
    var initialized, map, latLngControl, directionsService, xmlhttp;
 
    function isInitialized() {
@@ -552,7 +525,7 @@ ${tileservers2}
            });
            var hillshadingMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
-                   return "http://" + getOpenStreetMapServerIndex() + ".tiles.wmflabs.org/hillshading/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+                   return "http://a.tiles.wmflabs.org/hillshading/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
                },
                tileSize: DEFAULT_TILE_SIZE,
                isPng: true,
