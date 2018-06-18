@@ -99,6 +99,11 @@ public class GeoNamesService implements ElevationService, GeocodingService {
             log.warning("geonames API is over query limit, count: " + overQueryLimitCount + ", url: " + url);
             throw new ServiceUnavailableException(getClass().getSimpleName(), url, result);
         }
+
+        if(result.contains("user does not exist")) {
+            log.warning("geonames API reports user does not exist, url: " + url);
+            throw new ServiceUnavailableException(getClass().getSimpleName(), url, result);
+        }
     }
 
     Integer getAsterGDEMElevationFor(double longitude, double latitude) throws IOException {
