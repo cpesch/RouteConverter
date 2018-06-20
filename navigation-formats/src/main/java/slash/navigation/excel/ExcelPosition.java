@@ -80,8 +80,12 @@ public class ExcelPosition extends BaseNavigationPosition {
 
     private Cell getOrCreateCell(ColumnType type) {
         Integer index = mapping.getIndex(type);
-        if (index == null)
-            return null;
+        if (index == null) {
+            // create a new column for the not yet represented column type
+            index = (int)row.getLastCellNum();
+            row.getSheet().getRow(0).createCell(index).setCellValue(type.name());
+            mapping.add(index, type);
+        }
         Cell cell = row.getCell(index);
         if (cell == null) {
             cell = row.createCell(index, type.getCellType());
