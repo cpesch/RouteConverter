@@ -42,12 +42,7 @@ import slash.navigation.rest.ssl.SSLConnectionManagerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.net.URI;
+import java.net.*;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -77,7 +72,7 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
 
 public abstract class HttpRequest {
     public static final String APPLICATION_JSON = "application/json";
-    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/537.36";
+    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36";
 
     private final Logger log;
     private final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
@@ -176,6 +171,8 @@ public abstract class HttpRequest {
         clientBuilder.setDefaultRequestConfig(requestConfig);
         try {
             return clientBuilder.build().execute(method, context);
+        } catch (UnknownHostException e) {
+            throw new UnknownHostException(e.getMessage());
         } catch (SocketException e) {
             if (throwsSocketExceptionIfUnAuthorized())
                 return new BasicHttpResponse(HTTP_1_1, SC_UNAUTHORIZED, "socket exception since unauthorized");
