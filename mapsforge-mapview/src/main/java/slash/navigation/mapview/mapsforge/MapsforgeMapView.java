@@ -1075,9 +1075,10 @@ public class MapsforgeMapView implements MapView {
 
     private void selectPosition(LatLong latLong, Double threshold, boolean replaceSelection) {
         int row = positionsModel.getClosestPosition(latLong.longitude, latLong.latitude, threshold);
-        log.info("Selecting position at " + latLong + ", row is " + row);
-        if (row != -1 && !mapViewMoverAndZoomer.isMousePressedOnMarker())
+        if (row != -1 && !mapViewMoverAndZoomer.isMousePressedOnMarker()) {
+            log.info("Selecting position at " + latLong + ", row is " + row);
             positionsSelectionModel.setSelectedPositions(new int[]{row}, replaceSelection);
+        }
     }
 
     private class SelectPositionAction extends FrameAction {
