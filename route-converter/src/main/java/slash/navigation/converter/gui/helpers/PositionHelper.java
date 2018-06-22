@@ -32,6 +32,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import java.io.File;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.abs;
@@ -52,6 +53,7 @@ import static slash.navigation.base.WaypointType.Voice;
  */
 
 public class PositionHelper {
+    private static final Logger log = Logger.getLogger(PositionHelper.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(PositionHelper.class);
 
     private static final double maximumDistanceDisplayedInMeters = preferences.getDouble("maximumDistanceDisplayedInMeters", 10000.0);
@@ -86,6 +88,10 @@ public class PositionHelper {
     }
 
     public static String extractElevation(NavigationPosition position) {
+        if (position == null) {
+            log.severe("Should extract elevation from null position");
+            return "ERROR"; // TODO to trace down strange NullPointerExceptions
+        }
         return formatElevation(position.getElevation());
     }
 
