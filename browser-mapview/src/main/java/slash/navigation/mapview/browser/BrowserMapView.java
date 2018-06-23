@@ -691,7 +691,7 @@ public abstract class BrowserMapView implements MapView {
 
         String apiKey = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
         for (TileServer tileServer : tileServers) {
-            if (!tileServer.isActive())
+            if (!tileServer.isActive() || tileServer.getHostNames().size() == 0)
                 continue;
 
             if (register) {
