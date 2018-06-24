@@ -37,6 +37,7 @@ import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
+import org.mapsforge.map.model.MapViewDimension;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.reader.MapFile;
@@ -971,17 +972,21 @@ public class MapsforgeMapView implements MapView {
     }
 
     private void limitZoomLevel() {
-        // limit minimum zoom to prevent zooming out too much and losing the map
-        byte zoomLevelMin = 2;
         LocalMap map = mapsToLayers.keySet().iterator().next();
-        if (map.isVector() && mapView.getModel().mapViewDimension.getDimension() != null)
-            zoomLevelMin = (byte) max(0, zoomForBounds(mapView.getModel().mapViewDimension.getDimension(),
-                    asBoundingBox(map.getBoundingBox()), getTileSize()) - 3);
-        mapView.setZoomLevelMin(zoomLevelMin);
 
+        byte zoomLevelMin = map.isVector() ? 2 : map.getTileSource().getZoomLevelMin();
+        // limit minimum zoom to prevent zooming out too much and losing the map
+        MapViewDimension mapViewDimension = mapView.getModel().mapViewDimension;
+        if (map.isVector() && mapViewDimension.getDimension() != null)
+            zoomLevelMin = (byte) max(0, zoomForBounds(mapViewDimension.getDimension(),
+                    asBoundingBox(map.getBoundingBox()), getTileSize()) - 3);
+
+        MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        mapViewPosition.setZoomLevelMin(zoomLevelMin);
+
+        byte zoomLevelMax = map.isVector() ? 22 : map.getTileSource().getZoomLevelMax();
         // limit maximum to prevent zooming in to grey area
-        byte zoomLevelMax = (byte) (map.isVector() ? 22 : 18);
-        mapView.setZoomLevelMax(zoomLevelMax);
+        mapViewPosition.setZoomLevelMax(zoomLevelMax);
     }
 
     private boolean isVisible(LatLong latLong) {
