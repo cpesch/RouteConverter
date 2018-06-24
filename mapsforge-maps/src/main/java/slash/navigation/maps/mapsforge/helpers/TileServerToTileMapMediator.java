@@ -20,6 +20,7 @@
 package slash.navigation.maps.mapsforge.helpers;
 
 import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
+import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.TileMap;
 import slash.navigation.maps.tileserver.TileServer;
@@ -77,7 +78,11 @@ public class TileServerToTileMapMediator {
         OnlineTileSource result = new OnlineTileSource(hostNames, 80);
         result.setName(tileServer.getId());
         result.setBaseUrl(tileServer.getBaseUrl());
-        result.setExtension(tileServer.getExtension());
+        String extension = tileServer.getExtension();
+        String apiKey = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
+        if (apiKey != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
+            extension += "?apikey=" + apiKey;
+        result.setExtension(extension);
         result.setZoomLevelMin((byte) tileServer.getMinZoom());
         result.setZoomLevelMax((byte) tileServer.getMaxZoom());
         result.setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "2.24"));
