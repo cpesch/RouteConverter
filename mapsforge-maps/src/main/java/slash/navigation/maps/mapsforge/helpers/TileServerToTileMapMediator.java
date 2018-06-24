@@ -19,8 +19,6 @@
 */
 package slash.navigation.maps.mapsforge.helpers;
 
-import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
-import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.TileMap;
 import slash.navigation.maps.tileserver.TileServer;
@@ -29,7 +27,9 @@ import slash.navigation.maps.tileserver.item.ItemTableModel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import static javax.swing.event.TableModelEvent.*;
+import static javax.swing.event.TableModelEvent.DELETE;
+import static javax.swing.event.TableModelEvent.INSERT;
+import static javax.swing.event.TableModelEvent.UPDATE;
 
 /**
  * Converts {@link TileServer} to {@link LocalMap}
@@ -71,26 +71,8 @@ public class TileServerToTileMapMediator {
         listener = null;
     }
 
-    private OnlineTileSource createOnlineTileSource(TileServer tileServer) {
-        String[] hostNames = tileServer.getHostNames().toArray(new String[0]);
-        if(hostNames.length == 0) 
-            hostNames = new String[]{"not.existing.tile.server"};
-        OnlineTileSource result = new OnlineTileSource(hostNames, 80);
-        result.setName(tileServer.getId());
-        result.setBaseUrl(tileServer.getBaseUrl());
-        String extension = tileServer.getExtension();
-        String apiKey = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
-        if (apiKey != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
-            extension += "?apikey=" + apiKey;
-        result.setExtension(extension);
-        result.setZoomLevelMin((byte) tileServer.getMinZoom());
-        result.setZoomLevelMax((byte) tileServer.getMaxZoom());
-        result.setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "2.24"));
-        return result;
-    }
-
     private TileMap convert(TileServer tileServer) {
-        return new TileMap(tileServer.getDescription(), tileServer.getUrl(), createOnlineTileSource(tileServer));
+        return new TileMap(tileServer.getDescription(), tileServer.getId(), new TileServerMapSource(tileServer));
     }
 
     private void handleAdd(int firstRow, int lastRow) {

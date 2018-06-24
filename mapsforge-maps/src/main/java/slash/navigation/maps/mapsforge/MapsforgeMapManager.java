@@ -183,7 +183,7 @@ public class MapsforgeMapManager {
     }
 
     private void initializeOpenStreetMap() {
-        availableOfflineMapsModel.addOrUpdateItem(new OpenStreetMap());
+        availableOnlineMapsModel.addOrUpdateItem(new OpenStreetMap());
     }
 
     private void initializeBuiltinThemes() {
