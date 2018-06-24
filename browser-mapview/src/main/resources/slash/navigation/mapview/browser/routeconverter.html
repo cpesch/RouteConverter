@@ -507,22 +507,6 @@ ${tileservers1}
 
 ${tileservers2}
 
-           var stravaheatmapCyclingType = new google.maps.ImageMapType({
-               getTileUrl: function(coord, zoom) {
-                   return "https://heatmap-external-a.strava.com/tiles/bike/bluered/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
-               },
-               tileSize: DEFAULT_TILE_SIZE,
-               isPng: true,
-               name: "Cycling database of Strava Heatmap data"
-           });
-           var stravaheatmapRunningType = new google.maps.ImageMapType({
-               getTileUrl: function(coord, zoom) {
-                   return "https://heatmap-external-a.strava.com/tiles/run/bluered/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
-               },
-               tileSize: DEFAULT_TILE_SIZE,
-               isPng: true,
-               name: "Running database of Strava Heatmap data"
-           });
            var hillshadingMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
                    return "http://a.tiles.wmflabs.org/hillshading/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
@@ -590,11 +574,7 @@ ${tileservers2}
                    copyrightControl.innerHTML = 'Missing copyright';
                }
 
-               if (mapTypeId == "Strava Cycling"){
-                   map.overlayMapTypes.setAt(0, stravaheatmapCyclingType);
-               } else if (mapTypeId == "Strava Running"){
-                   map.overlayMapTypes.setAt(0, stravaheatmapRunningType);
-               } else if (mapTypeId == "HikeBikeMap"){
+               if (mapTypeId == "HikeBikeMap"){
                    map.overlayMapTypes.setAt(0, hillshadingMapType);
                } else if (mapTypeId == "Hike Symbols"){
             	   map.overlayMapTypes.setAt(0, hikingSymbolsMapType);
