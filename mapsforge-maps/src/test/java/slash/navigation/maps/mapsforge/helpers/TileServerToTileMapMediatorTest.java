@@ -47,19 +47,23 @@ public class TileServerToTileMapMediatorTest {
             public void tableChanged(TableModelEvent e) {
                 synchronized (found) {
                     found[0] = true;
+                    found.notifyAll();
                 }
             }
         };
-        sourceModel.addTableModelListener(l);
+        destinationModel.addTableModelListener(l);
 
-        sourceModel.addOrUpdateItem(new TileServer("a", null, singletonList("url"), "url", null, false, 0, 0, null));
+        sourceModel.addOrUpdateItem(new TileServer("a", "b", singletonList("c"), "url", null, false, 0, 0, null));
 
-        synchronized (found) {
-            while(!found[0]) {
+        while (true) {
+            synchronized (found) {
+                if (found[0])
+                    break;
                 found.wait(100);
             }
         }
-        sourceModel.removeTableModelListener(l);
+
+        destinationModel.removeTableModelListener(l);
 
         assertEquals(1, destinationModel.getRowCount());
 
