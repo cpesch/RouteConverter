@@ -270,13 +270,13 @@ public class MapsforgeMapView implements MapView {
             }
 
             public void update(final List<PairWithLayer> pairWithLayers) {
-                invokeInAwtEventQueue(new Runnable() {
-                    public void run() {
+                // TODO serialize invokeInAwtEventQueue(new Runnable() {
+                //    public void run() {
                         internalRemove(pairWithLayers);
                         internalAdd(pairWithLayers);
                         updateSelectionAfterUpdate(pairWithLayers);
-                    }
-                });
+                //     }
+                // });
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
@@ -332,13 +332,13 @@ public class MapsforgeMapView implements MapView {
             }
 
             public void update(final List<PairWithLayer> pairWithLayers) {
-                invokeInAwtEventQueue(new Runnable() {
-                    public void run() {
+                // TODO serialize invokeInAwtEventQueue(new Runnable() {
+                //    public void run() {
                         internalRemove(pairWithLayers);
                         internalAdd(pairWithLayers);
                         updateSelectionAfterUpdate(pairWithLayers);
-                    }
-                });
+                //    }
+                // });
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
@@ -388,8 +388,8 @@ public class MapsforgeMapView implements MapView {
             }
 
             public void update(final List<PositionWithLayer> positionWithLayers) {
-                invokeInAwtEventQueue(new Runnable() {
-                    public void run() {
+                // TODO serialize invokeInAwtEventQueue(new Runnable() {
+                //    public void run() {
                         removeLayers(positionWithLayers, false);
 
                         List<NavigationPosition> updated = new ArrayList<>();
@@ -406,8 +406,8 @@ public class MapsforgeMapView implements MapView {
                         addLayers(withLayers);
 
                         selectionUpdater.updatedPositions(new ArrayList<>(updated));
-                    }
-                });
+                //    }
+                // });
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
@@ -1223,9 +1223,9 @@ public class MapsforgeMapView implements MapView {
             }
         }
 
-        private void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
-            updateDecoupler.execute(new Runnable() {
-                public void run() {
+        private void handleUpdate(int eventType, int firstRow, int lastRow) {
+            // TODO why? updateDecoupler.execute(new Runnable() {
+            //    public void run() {
                     synchronized (eventMapUpdaterLock) {
                         switch(eventType) {
                             case INSERT:
@@ -1241,8 +1241,8 @@ public class MapsforgeMapView implements MapView {
                                 throw new IllegalArgumentException("Event type " + eventType + " is not supported");
                         }
                     }
-                }
-            });
+            //    }
+            // });
         }
     }
 

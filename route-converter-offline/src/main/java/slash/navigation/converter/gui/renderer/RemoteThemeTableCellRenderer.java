@@ -26,10 +26,10 @@ import javax.swing.*;
 import java.awt.*;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
-import static slash.navigation.converter.gui.renderer.RemoteMapsTableCellRenderer.getContentLength;
+import static slash.navigation.converter.gui.renderer.RemoteMapTableCellRenderer.getContentLength;
 
 /**
- * Renders the table cells of the downloadable themes table.
+ * Renders the table cells of the downloadable {@link RemoteTheme} table.
  *
  * @author Christian Pesch
  */

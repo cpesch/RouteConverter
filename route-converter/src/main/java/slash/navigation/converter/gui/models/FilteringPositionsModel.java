@@ -19,19 +19,22 @@
 */
 package slash.navigation.converter.gui.models;
 
+import slash.common.predicates.FilterPredicate;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.predicates.FilterPredicate;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static slash.common.io.Transfer.toArray;
 
@@ -41,12 +44,12 @@ import static slash.common.io.Transfer.toArray;
  * @author Christian Pesch
  */
 
-public class FilteringPositionsModel extends AbstractTableModel implements PositionsModel {
+public class FilteringPositionsModel<E extends NavigationPosition> extends AbstractTableModel implements PositionsModel {
     private final PositionsModel delegate;
-    private FilterPredicate predicate;
+    private FilterPredicate<E> predicate;
     private Map<Integer, Integer> mapping;
 
-    public FilteringPositionsModel(PositionsModel delegate, FilterPredicate predicate) {
+    public FilteringPositionsModel(PositionsModel delegate, FilterPredicate<E> predicate) {
         this.delegate = delegate;
         this.predicate = predicate;
         initializeMapping();
@@ -61,8 +64,9 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
     private void initializeMapping() {
         mapping = new HashMap<>();
         for (int i = 0, c = delegate.getRowCount(); i < c; i++) {
-            NavigationPosition position = delegate.getPosition(i);
-            if (predicate.shouldInclude(position)) {
+            @SuppressWarnings("unchecked")
+            E element = (E) delegate.getPosition(i);
+            if (predicate.shouldInclude(element)) {
                 int mappedRow = mapping.size();
                 mapping.put(mappedRow, i);
             }
@@ -92,7 +96,7 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
         delegate.setRoute(route);
     }
 
-    public void setFilterPredicate(FilterPredicate predicate) {
+    public void setFilterPredicate(FilterPredicate<E> predicate) {
         this.predicate = predicate;
         initializeMapping();
         fireTableDataChanged();
@@ -162,7 +166,7 @@ public class FilteringPositionsModel extends AbstractTableModel implements Posit
         throw new UnsupportedOperationException();
     }
 
-    public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
+    public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
         throw new UnsupportedOperationException();
     }
 

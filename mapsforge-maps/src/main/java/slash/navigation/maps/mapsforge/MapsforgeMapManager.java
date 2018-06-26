@@ -24,16 +24,20 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Download;
-import slash.navigation.maps.mapsforge.helpers.JoinedTableModel;
-import slash.navigation.maps.mapsforge.helpers.TileServerToTileMapMediator;
-import slash.navigation.maps.mapsforge.helpers.OpenStreetMap;
-import slash.navigation.maps.mapsforge.helpers.ThemeForMapMediator;
-import slash.navigation.maps.mapsforge.impl.MapFilesService;
-import slash.navigation.maps.mapsforge.impl.VectorMap;
-import slash.navigation.maps.mapsforge.impl.VectorTheme;
-import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.maps.item.ItemModel;
 import slash.navigation.maps.item.ItemTableModel;
+import slash.navigation.maps.mapsforge.helpers.ActiveTileMapPredicate;
+import slash.navigation.maps.mapsforge.helpers.ThemeForMapMediator;
+import slash.navigation.maps.mapsforge.helpers.TileServerToTileMapMediator;
+import slash.navigation.maps.mapsforge.impl.MapFilesService;
+import slash.navigation.maps.mapsforge.impl.TileMap;
+import slash.navigation.maps.mapsforge.impl.VectorMap;
+import slash.navigation.maps.mapsforge.impl.VectorTheme;
+import slash.navigation.maps.mapsforge.models.FilteringTileMapModel;
+import slash.navigation.maps.mapsforge.models.JoinedTableModel;
+import slash.navigation.maps.mapsforge.models.OpenStreetMap;
+import slash.navigation.maps.mapsforge.models.TileMapTableModel;
+import slash.navigation.maps.tileserver.TileServerMapManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -54,7 +58,7 @@ import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractBoundingBox;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.removePrefix;
-import static slash.navigation.maps.mapsforge.helpers.OpenStreetMap.OPENSTREETMAP_URL;
+import static slash.navigation.maps.mapsforge.models.OpenStreetMap.OPENSTREETMAP_URL;
 
 /**
  * Manages {@link LocalMap}s and {@link LocalTheme}s
@@ -73,9 +77,10 @@ public class MapsforgeMapManager {
     private static final String DOT_MAP = ".map";
 
     private final DataSourceManager dataSourceManager;
-    private ItemTableModel<LocalMap> availableOnlineMapsModel = new ItemTableModel<>(1);
+    private ItemTableModel<TileMap> availableOnlineMapsModel = new TileMapTableModel();
     private ItemTableModel<LocalMap> availableOfflineMapsModel = new ItemTableModel<>(1);
-    private JoinedTableModel<LocalMap> availableMapsModel = new JoinedTableModel<>(availableOnlineMapsModel, availableOfflineMapsModel);
+    private JoinedTableModel<LocalMap> availableMapsModel = new JoinedTableModel<>(availableOfflineMapsModel,
+            new FilteringTileMapModel<>(availableOnlineMapsModel, new ActiveTileMapPredicate()));
     private ItemTableModel<LocalTheme> availableThemesModel = new ItemTableModel<>(1);
     private ItemTableModel<RemoteMap> downloadableMapsModel = new ItemTableModel<>(3);
     private ItemTableModel<RemoteTheme> downloadableThemesModel = new ItemTableModel<>(3);
@@ -123,7 +128,7 @@ public class MapsforgeMapManager {
         return availableMapsModel;
     }
 
-    public ItemTableModel<LocalMap> getAvailableOnlineMapsModel() {
+    public ItemTableModel<TileMap> getAvailableOnlineMapsModel() {
         return availableOnlineMapsModel;
     }
 

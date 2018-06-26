@@ -20,9 +20,9 @@
 package slash.navigation.maps.mapsforge.helpers;
 
 import org.junit.Test;
-import slash.navigation.maps.mapsforge.LocalMap;
-import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.maps.item.ItemTableModel;
+import slash.navigation.maps.mapsforge.impl.TileMap;
+import slash.navigation.maps.tileserver.TileServer;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -35,7 +35,7 @@ public class TileServerToTileMapMediatorTest {
     @Test
     public void testEvents() throws InterruptedException {
         ItemTableModel<TileServer> sourceModel = new ItemTableModel<>(1);
-        ItemTableModel<LocalMap> destinationModel = new ItemTableModel<>(2);
+        ItemTableModel<TileMap> destinationModel = new ItemTableModel<>(2);
         TileServerToTileMapMediator mediator = new TileServerToTileMapMediator(sourceModel, destinationModel);
 
         assertEquals(0, destinationModel.getRowCount());

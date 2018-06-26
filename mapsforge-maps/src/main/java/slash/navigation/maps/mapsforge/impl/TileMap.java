@@ -33,10 +33,20 @@ import java.io.File;
 
 public class TileMap extends LocaleResourceImpl implements LocalMap {
     private final AbstractTileSource tileSource;
+    private boolean active;
 
-    public TileMap(String description, String url, AbstractTileSource tileSource) {
+    public TileMap(String description, String url, boolean active, AbstractTileSource tileSource) {
         super(description, url);
         this.tileSource = tileSource;
+        this.active = active;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     public BoundingBox getBoundingBox() {

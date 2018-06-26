@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.mapsforge.helpers;
+package slash.navigation.maps.mapsforge.models;
 
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;

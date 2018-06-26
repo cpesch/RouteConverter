@@ -31,9 +31,9 @@ import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.AvailableOfflineMapsTablePopupMenu;
 import slash.navigation.converter.gui.helpers.AvailableOnlineMapsTablePopupMenu;
 import slash.navigation.converter.gui.helpers.DownloadableMapsTablePopupMenu;
-import slash.navigation.converter.gui.renderer.ItemTableCellRenderer;
-import slash.navigation.converter.gui.renderer.LocalMapsTableCellRenderer;
-import slash.navigation.converter.gui.renderer.RemoteMapsTableCellRenderer;
+import slash.navigation.converter.gui.renderer.TileMapTableCellRenderer;
+import slash.navigation.converter.gui.renderer.LocalMapTableCellRenderer;
+import slash.navigation.converter.gui.renderer.RemoteMapTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.download.Checksum;
 import slash.navigation.elevation.ElevationService;
@@ -43,6 +43,8 @@ import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.RemoteMap;
+import slash.navigation.maps.mapsforge.models.TileMapTableModel;
+import slash.navigation.maps.mapsforge.impl.TileMap;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
@@ -93,18 +95,32 @@ public class MapsDialog extends SimpleDialog {
         final RouteConverter r = RouteConverter.getInstance();
 
         tableAvailableOnlineMaps.setModel(getMapsforgeMapManager().getAvailableOnlineMapsModel());
-        tableAvailableOnlineMaps.setDefaultRenderer(Object.class, new ItemTableCellRenderer());
-        TableCellRenderer availableMapsHeaderRenderer = new SimpleHeaderRenderer("description");
+        tableAvailableOnlineMaps.setDefaultRenderer(Object.class, new TileMapTableCellRenderer());
+        TableCellRenderer availableMapsHeaderRenderer = new SimpleHeaderRenderer("description", "active");
         TableColumnModel onlineMapsColumns = tableAvailableOnlineMaps.getColumnModel();
         for (int i = 0; i < onlineMapsColumns.getColumnCount(); i++) {
             TableColumn column = onlineMapsColumns.getColumn(i);
             column.setHeaderRenderer(availableMapsHeaderRenderer);
+            if (i == 1) {
+                int width = 30;
+                column.setPreferredWidth(width);
+                column.setMaxWidth(width);
+            }
         }
         TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<>(tableAvailableOnlineMaps.getModel());
         sorterAvailableMaps.setSortsOnUpdates(true);
-        sorterAvailableMaps.setComparator(ItemTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<LocalMap>() {
-            public int compare(LocalMap m1, LocalMap m2) {
+        sorterAvailableMaps.setComparator(TileMapTableModel.DESCRIPTION_COLUMN, new Comparator<TileMap>() {
+            public int compare(TileMap m1, TileMap m2) {
                 return m1.getDescription().compareToIgnoreCase(m2.getDescription());
+            }
+        });
+        sorterAvailableMaps.setComparator(TileMapTableModel.ACTIVE_COLUMN, new Comparator<TileMap>() {
+            private int getActive(TileMap tileMap) {
+                return tileMap.isActive() ? 1 : -1;
+            }
+            
+            public int compare(TileMap m1, TileMap m2) {
+                return getActive(m1) - getActive(m2);
             }
         });
         tableAvailableOnlineMaps.setRowSorter(sorterAvailableMaps);
@@ -122,7 +138,7 @@ public class MapsDialog extends SimpleDialog {
         });
 
         tableAvailableOfflineMaps.setModel(getMapsforgeMapManager().getAvailableOfflineMapsModel());
-        tableAvailableOfflineMaps.setDefaultRenderer(Object.class, new LocalMapsTableCellRenderer());
+        tableAvailableOfflineMaps.setDefaultRenderer(Object.class, new LocalMapTableCellRenderer());
         TableColumnModel offlineMapsColumns = tableAvailableOfflineMaps.getColumnModel();
         for (int i = 0; i < offlineMapsColumns.getColumnCount(); i++) {
             TableColumn column = offlineMapsColumns.getColumn(i);
@@ -130,7 +146,7 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableOfflineMaps = new TableRowSorter<>(tableAvailableOfflineMaps.getModel());
         sorterAvailableOfflineMaps.setSortsOnUpdates(true);
-        sorterAvailableOfflineMaps.setComparator(LocalMapsTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<LocalMap>() {
+        sorterAvailableOfflineMaps.setComparator(LocalMapTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<LocalMap>() {
             public int compare(LocalMap m1, LocalMap m2) {
                 return m1.getDescription().compareToIgnoreCase(m2.getDescription());
             }
@@ -159,7 +175,7 @@ public class MapsDialog extends SimpleDialog {
         });
 
         tableDownloadableMaps.setModel(getMapsforgeMapManager().getDownloadableMapsModel());
-        tableDownloadableMaps.setDefaultRenderer(Object.class, new RemoteMapsTableCellRenderer());
+        tableDownloadableMaps.setDefaultRenderer(Object.class, new RemoteMapTableCellRenderer());
         TableCellRenderer downloadableMapsHeaderRenderer = new SimpleHeaderRenderer("datasource", "description", "size");
         TableColumnModel downloadableMapsColumns = tableDownloadableMaps.getColumnModel();
         for (int i = 0; i < downloadableMapsColumns.getColumnCount(); i++) {
@@ -178,17 +194,17 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterDownloadableMaps = new TableRowSorter<>(tableDownloadableMaps.getModel());
         sorterDownloadableMaps.setSortsOnUpdates(true);
-        sorterDownloadableMaps.setComparator(RemoteMapsTableCellRenderer.DATASOURCE_COLUMN, new Comparator<RemoteMap>() {
+        sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.DATASOURCE_COLUMN, new Comparator<RemoteMap>() {
             public int compare(RemoteMap m1, RemoteMap m2) {
                 return m1.getDataSource().getName().compareToIgnoreCase(m2.getDataSource().getName());
             }
         });
-        sorterDownloadableMaps.setComparator(RemoteMapsTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<RemoteMap>() {
+        sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<RemoteMap>() {
             public int compare(RemoteMap m1, RemoteMap m2) {
                 return m1.getDescription().compareToIgnoreCase(m2.getDescription());
             }
         });
-        sorterDownloadableMaps.setComparator(RemoteMapsTableCellRenderer.SIZE_COLUMN, new Comparator<RemoteMap>() {
+        sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.SIZE_COLUMN, new Comparator<RemoteMap>() {
             private long getSize(RemoteMap map) {
                 Checksum checksum = map.getDownloadable().getLatestChecksum();
                 return checksum != null && checksum.getContentLength() != null ? checksum.getContentLength() : 0L;

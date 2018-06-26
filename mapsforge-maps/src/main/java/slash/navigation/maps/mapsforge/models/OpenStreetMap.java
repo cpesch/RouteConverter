@@ -17,14 +17,11 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.mapsforge.helpers;
+package slash.navigation.maps.mapsforge.models;
 
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
-import slash.navigation.common.BoundingBox;
 import slash.navigation.maps.mapsforge.LocalMap;
-
-import java.io.File;
+import slash.navigation.maps.mapsforge.impl.TileMap;
 
 /**
  * Default {@link LocalMap} to display a map in the Offline Edition without any downloads.
@@ -32,30 +29,10 @@ import java.io.File;
  * @author Christian Pesch
  */
 
-public class OpenStreetMap implements LocalMap {
+public class OpenStreetMap extends TileMap {
     public static final String OPENSTREETMAP_URL = "http://www.openstreetmap.org/";
 
-    public boolean isVector() {
-        return false;
-    }
-
-    public File getFile() {
-        throw new UnsupportedOperationException();
-    }
-
-    public AbstractTileSource getTileSource() {
-        return OpenStreetMapMapnik.INSTANCE;
-    }
-
-    public BoundingBox getBoundingBox() {
-        throw new UnsupportedOperationException();
-    }
-
-    public String getDescription() {
-        return "OpenStreetMap Default Map";
-    }
-
-    public String getUrl() {
-        return OPENSTREETMAP_URL;
+    public OpenStreetMap() {
+        super("OpenStreetMap Default Map", OPENSTREETMAP_URL, true, OpenStreetMapMapnik.INSTANCE);
     }
 }

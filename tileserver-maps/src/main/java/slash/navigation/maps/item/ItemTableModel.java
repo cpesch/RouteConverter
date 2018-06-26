@@ -88,11 +88,11 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
         if (index == -1)
             throw new IllegalArgumentException("Item " + item + " not found in " + items);
 
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
+        // TODO why? invokeInAwtEventQueue(new Runnable() {
+        //    public void run() {
                 fireTableRowsInserted(index, index);
-            }
-        });
+        //    }
+        // });
     }
 
     private void updateItem(T item) {
@@ -100,11 +100,11 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
         if (index == -1)
             throw new IllegalArgumentException("Item " + item + " not found in " + items);
 
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
+        // TODO why? invokeInAwtEventQueue(new Runnable() {
+        //    public void run() {
                 fireTableRowsUpdated(index, index);
-            }
-        });
+        //    }
+        // });
     }
 
     public void addOrUpdateItem(T item) {

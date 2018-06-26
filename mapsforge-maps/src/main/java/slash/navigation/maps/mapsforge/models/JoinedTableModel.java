@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.mapsforge.helpers;
+package slash.navigation.maps.mapsforge.models;
 
 import slash.navigation.maps.item.Item;
 
@@ -39,9 +39,6 @@ public class JoinedTableModel<T extends Item> extends AbstractTableModel {
     public JoinedTableModel(final TableModel first, TableModel second) {
         this.first = first;
         this.second = second;
-
-        if(first.getColumnCount() != second.getColumnCount())
-            throw new IllegalArgumentException("Column count of joined tables differs");
 
         first.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {

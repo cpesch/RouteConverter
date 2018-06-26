@@ -386,6 +386,7 @@ public class RouteConverter extends SingleFrameApplication {
                 public void run() {
                     invokeLater(new Runnable() {
                         public void run() {
+                            // TODO decouple scanning from initialization
                             getTileServerMapManager().scanTileServers();
                             setMapView(getMapViewPreference());
 

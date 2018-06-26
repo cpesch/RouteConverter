@@ -20,27 +20,31 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.mapsforge.LocalTheme;
+import slash.navigation.gui.Application;
+import slash.navigation.maps.mapsforge.LocalMap;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the table cells of the available themes table.
+ * Renders the table cells of the available offline {@link LocalMap} table.
  *
  * @author Christian Pesch
  */
 
-public class LocalThemesTableCellRenderer extends AlternatingColorTableCellRenderer {
+public class LocalMapTableCellRenderer extends AlternatingColorTableCellRenderer {
     public static final int DESCRIPTION_COLUMN = 0;
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        LocalTheme theme = (LocalTheme) value;
+        LocalMap map = (LocalMap) value;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN:
-                label.setText(theme.getDescription());
-                label.setToolTipText(theme.getUrl());
+                String text = map.getDescription();
+                if(!map.isVector())
+                    text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
+                label.setText(text);
+                label.setToolTipText(map.getUrl());
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");

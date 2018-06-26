@@ -21,6 +21,7 @@ package slash.navigation.maps.mapsforge.helpers;
 
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.TileMap;
+import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.maps.item.ItemTableModel;
 
@@ -39,10 +40,10 @@ import static javax.swing.event.TableModelEvent.UPDATE;
 
 public class TileServerToTileMapMediator {
     private final ItemTableModel<TileServer> sourceModel;
-    private final ItemTableModel<LocalMap> destinationModel;
+    private final ItemTableModel<TileMap> destinationModel;
     private TableModelListener listener;
 
-    public TileServerToTileMapMediator(ItemTableModel<TileServer> sourceModel, ItemTableModel<LocalMap> destinationModel) {
+    public TileServerToTileMapMediator(ItemTableModel<TileServer> sourceModel, ItemTableModel<TileMap> destinationModel) {
         this.sourceModel = sourceModel;
         this.destinationModel = destinationModel;
 
@@ -72,7 +73,7 @@ public class TileServerToTileMapMediator {
     }
 
     private TileMap convert(TileServer tileServer) {
-        return new TileMap(tileServer.getDescription(), tileServer.getId(), new TileServerMapSource(tileServer));
+        return new TileMap(tileServer.getDescription(), tileServer.getId(), tileServer.isActive(), new TileServerMapSource(tileServer));
     }
 
     private void handleAdd(int firstRow, int lastRow) {

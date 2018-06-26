@@ -20,32 +20,51 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.item.Item;
+import slash.navigation.maps.mapsforge.RemoteMap;
+import slash.navigation.maps.mapsforge.RemoteResource;
 
 import javax.swing.*;
 import java.awt.*;
 
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
+
 /**
- * Renders table cells of an {@link Item}s table.
+ * Renders the table cells of the downloadable {@link RemoteMap} table.
  *
  * @author Christian Pesch
  */
 
-public class ItemTableCellRenderer extends AlternatingColorTableCellRenderer {
-    public static final int DESCRIPTION_COLUMN = 0;
+public class RemoteMapTableCellRenderer extends AlternatingColorTableCellRenderer {
+    public static final int DATASOURCE_COLUMN = 0;
+    public static final int DESCRIPTION_COLUMN = 1;
+    public static final int SIZE_COLUMN = 2;
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
-        Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        Item map = (Item) value;
+        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
+        RemoteMap map = (RemoteMap) value;
         switch (columnIndex) {
+            case DATASOURCE_COLUMN:
+                label.setText(map.getDataSource().getName());
+                label.setToolTipText(map.getUrl());
+                label.setHorizontalAlignment(LEFT);
+                break;
             case DESCRIPTION_COLUMN:
-                JLabel label = (JLabel) component;
                 label.setText(map.getDescription());
                 label.setToolTipText(map.getUrl());
+                label.setHorizontalAlignment(LEFT);
+                break;
+            case SIZE_COLUMN:
+                label.setText(formatSize(getContentLength(map)));
+                label.setToolTipText(map.getUrl());
+                label.setHorizontalAlignment(RIGHT);
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
-        return component;
+        return label;
+    }
+
+    static Long getContentLength(RemoteResource resource) {
+        return resource.getDownloadable().getLatestChecksum() != null ? resource.getDownloadable().getLatestChecksum().getContentLength() : null;
     }
 }

@@ -20,51 +20,32 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.mapsforge.RemoteMap;
-import slash.navigation.maps.mapsforge.RemoteResource;
+import slash.navigation.maps.mapsforge.impl.TileMap;
 
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
+import static slash.navigation.maps.mapsforge.models.TileMapTableModel.DESCRIPTION_COLUMN;
 
 /**
- * Renders the table cells of the downloadable maps table.
+ * Renders the table cells of the available online {@link TileMap} table.
  *
  * @author Christian Pesch
  */
 
-public class RemoteMapsTableCellRenderer extends AlternatingColorTableCellRenderer {
-    public static final int DATASOURCE_COLUMN = 0;
-    public static final int DESCRIPTION_COLUMN = 1;
-    public static final int SIZE_COLUMN = 2;
-
+public class TileMapTableCellRenderer extends AlternatingColorTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
-        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        RemoteMap map = (RemoteMap) value;
+        Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         switch (columnIndex) {
-            case DATASOURCE_COLUMN:
-                label.setText(map.getDataSource().getName());
-                label.setToolTipText(map.getUrl());
-                label.setHorizontalAlignment(LEFT);
-                break;
             case DESCRIPTION_COLUMN:
+                TileMap map = (TileMap) value;
+                JLabel label = (JLabel) component;
                 label.setText(map.getDescription());
                 label.setToolTipText(map.getUrl());
-                label.setHorizontalAlignment(LEFT);
-                break;
-            case SIZE_COLUMN:
-                label.setText(formatSize(getContentLength(map)));
-                label.setToolTipText(map.getUrl());
-                label.setHorizontalAlignment(RIGHT);
                 break;
             default:
                 throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
-        return label;
-    }
-
-    static Long getContentLength(RemoteResource resource) {
-        return resource.getDownloadable().getLatestChecksum() != null ? resource.getDownloadable().getLatestChecksum().getContentLength() : null;
+        return component;
     }
 }

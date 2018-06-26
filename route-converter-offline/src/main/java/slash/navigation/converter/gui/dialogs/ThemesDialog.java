@@ -28,7 +28,7 @@ import slash.navigation.converter.gui.actions.ApplyThemeAction;
 import slash.navigation.converter.gui.actions.DownloadThemesAction;
 import slash.navigation.converter.gui.helpers.AvailableThemesTablePopupMenu;
 import slash.navigation.converter.gui.helpers.DownloadableThemesTablePopupMenu;
-import slash.navigation.converter.gui.renderer.LocalThemesTableCellRenderer;
+import slash.navigation.converter.gui.renderer.LocalThemeTableCellRenderer;
 import slash.navigation.converter.gui.renderer.RemoteThemeTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.download.Checksum;
@@ -77,7 +77,7 @@ public class ThemesDialog extends SimpleDialog {
         final RouteConverter r = RouteConverter.getInstance();
 
         tableAvailableThemes.setModel(getMapsforgeMapManager().getAvailableThemesModel());
-        tableAvailableThemes.setDefaultRenderer(Object.class, new LocalThemesTableCellRenderer());
+        tableAvailableThemes.setDefaultRenderer(Object.class, new LocalThemeTableCellRenderer());
         TableCellRenderer availableThemesHeaderRenderer = new SimpleHeaderRenderer("description");
         TableColumnModel themesColumns = tableAvailableThemes.getColumnModel();
         for (int i = 0; i < themesColumns.getColumnCount(); i++) {
@@ -86,7 +86,7 @@ public class ThemesDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableThemes = new TableRowSorter<>(tableAvailableThemes.getModel());
         sorterAvailableThemes.setSortsOnUpdates(true);
-        sorterAvailableThemes.setComparator(LocalThemesTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<LocalTheme>() {
+        sorterAvailableThemes.setComparator(LocalThemeTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<LocalTheme>() {
             public int compare(LocalTheme t1, LocalTheme t2) {
                 return t1.getDescription().compareToIgnoreCase(t2.getDescription());
             }
