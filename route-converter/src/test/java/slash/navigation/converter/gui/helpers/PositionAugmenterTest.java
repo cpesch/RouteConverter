@@ -35,9 +35,9 @@ import static slash.common.TestCase.calendar;
 public class PositionAugmenterTest {
     private PositionAugmenter augmenter = new PositionAugmenter(null, null, null, null, null);
     private GpxPosition a = new GpxPosition(null, null, null, null, null, null);
-    private GpxPosition b = new GpxPosition(null, null, null, null, calendar(2017, 8, 15, 12, 0, 0), null);
+    private GpxPosition b = new GpxPosition(null, null, null, null, null, null);
     private GpxPosition c = new GpxPosition(null, null, null, null, null, null);
-    private GpxPosition d = new GpxPosition(null, null, null, null, calendar(2017, 8, 15, 13, 0, 0), null);
+    private GpxPosition d = new GpxPosition(null, null, null, null, null, null);
     private GpxPosition e = new GpxPosition(null, null, null, null, null, null);
     private BaseRoute route = new GpxRoute(new Gpx11Format(), null, null, null, asList(a, b, c, d, e));
     private PositionsModelImpl model = new PositionsModelImpl();
@@ -48,22 +48,50 @@ public class PositionAugmenterTest {
     }
 
     @Test
-    public void testFindPredecessorWithTime() {
-        assertEquals(-1, augmenter.findPredecessorWithTime(model, 0));
-        assertEquals(-1, augmenter.findPredecessorWithTime(model, 1));
-        assertEquals(1, augmenter.findPredecessorWithTime(model, 2));
-        assertEquals(1, augmenter.findPredecessorWithTime(model, 3));
-        assertEquals(3, augmenter.findPredecessorWithTime(model, 4));
-        assertEquals(3, augmenter.findPredecessorWithTime(model, 5));
+    public void testFindPredecessorWithTimeSelectAll() {
+        a.setTime(calendar(2017, 8, 15, 12, 0, 0));
+        e.setTime(calendar(2017, 8, 15, 13, 0, 0));
+
+        assertEquals(0, augmenter.findPredecessorWithTime(model, 0));
+        assertEquals(0, augmenter.findPredecessorWithTime(model, 1));
+        assertEquals(0, augmenter.findPredecessorWithTime(model, 2));
+        assertEquals(0, augmenter.findPredecessorWithTime(model, 3));
+        assertEquals(4, augmenter.findPredecessorWithTime(model, 4));
     }
 
     @Test
-    public void testFindSuccessorWithTime() {
+    public void testFindSuccessorWithTimeSelectAll() {
+        a.setTime(calendar(2017, 8, 15, 12, 0, 0));
+        e.setTime(calendar(2017, 8, 15, 13, 0, 0));
+
+        assertEquals(0, augmenter.findSuccessorWithTime(model, 0));
+        assertEquals(4, augmenter.findSuccessorWithTime(model, 1));
+        assertEquals(4, augmenter.findSuccessorWithTime(model, 2));
+        assertEquals(4, augmenter.findSuccessorWithTime(model, 3));
+        assertEquals(4, augmenter.findSuccessorWithTime(model, 4));
+    }
+
+    @Test
+    public void testFindPredecessorWithTimeNotFirstAndLast() {
+        b.setTime(calendar(2017, 8, 15, 12, 0, 0));
+        d.setTime(calendar(2017, 8, 15, 13, 0, 0));
+
+        assertEquals(-1, augmenter.findPredecessorWithTime(model, 0));
+        assertEquals(1, augmenter.findPredecessorWithTime(model, 1));
+        assertEquals(1, augmenter.findPredecessorWithTime(model, 2));
+        assertEquals(3, augmenter.findPredecessorWithTime(model, 3));
+        assertEquals(3, augmenter.findPredecessorWithTime(model, 4));
+    }
+
+    @Test
+    public void testFindSuccessorWithTimeNotFirstAndLast() {
+        b.setTime(calendar(2017, 8, 15, 12, 0, 0));
+        d.setTime(calendar(2017, 8, 15, 13, 0, 0));
+
         assertEquals(1, augmenter.findSuccessorWithTime(model, 0));
-        assertEquals(3, augmenter.findSuccessorWithTime(model, 1));
+        assertEquals(1, augmenter.findSuccessorWithTime(model, 1));
         assertEquals(3, augmenter.findSuccessorWithTime(model, 2));
-        assertEquals(-1, augmenter.findSuccessorWithTime(model, 3));
+        assertEquals(3, augmenter.findSuccessorWithTime(model, 3));
         assertEquals(-1, augmenter.findSuccessorWithTime(model, 4));
-        assertEquals(-1, augmenter.findSuccessorWithTime(model, 5));
     }
 }
