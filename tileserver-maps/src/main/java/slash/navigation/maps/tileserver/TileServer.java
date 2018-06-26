@@ -37,7 +37,7 @@ public class TileServer implements Item {
     private final List<String> hostNames;
     private final String baseUrl;
     private final String extension;
-    private boolean active;
+    private final boolean active;
     private final int minZoom;
     private final int maxZoom;
     private final String copyright;
