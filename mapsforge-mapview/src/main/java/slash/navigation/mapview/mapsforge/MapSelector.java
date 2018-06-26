@@ -26,8 +26,8 @@ import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.impl.VectorMap;
-import slash.navigation.mapview.mapsforge.models.JoinedListComboBoxModel;
-import slash.navigation.mapview.mapsforge.models.TableModelToComboBoxModelAdapter;
+import slash.navigation.maps.item.JoinedListComboBoxModel;
+import slash.navigation.maps.item.TableModelToComboBoxModelAdapter;
 import slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer;
 import slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer;
 

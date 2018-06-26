@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge.models;
+package slash.navigation.maps.item;
 
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
