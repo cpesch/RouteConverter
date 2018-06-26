@@ -22,7 +22,7 @@ package slash.navigation.maps.mapsforge.helpers;
 import org.junit.Test;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.tileserver.TileServer;
-import slash.navigation.maps.tileserver.item.ItemTableModel;
+import slash.navigation.maps.item.ItemTableModel;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;

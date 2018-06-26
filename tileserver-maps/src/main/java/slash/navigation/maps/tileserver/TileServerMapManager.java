@@ -21,7 +21,7 @@ package slash.navigation.maps.tileserver;
 
 import slash.navigation.maps.tileserver.binding.TileServerType;
 import slash.navigation.maps.tileserver.helpers.TileServerService;
-import slash.navigation.maps.tileserver.item.ItemTableModel;
+import slash.navigation.maps.item.ItemTableModel;
 
 import java.io.File;
 import java.util.List;

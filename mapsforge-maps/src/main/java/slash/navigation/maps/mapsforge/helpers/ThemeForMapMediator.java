@@ -22,8 +22,8 @@ package slash.navigation.maps.mapsforge.helpers;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
-import slash.navigation.maps.tileserver.item.ItemModel;
-import slash.navigation.maps.tileserver.item.ItemTableModel;
+import slash.navigation.maps.item.ItemModel;
+import slash.navigation.maps.item.ItemTableModel;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;

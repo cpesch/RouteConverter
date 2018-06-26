@@ -21,7 +21,7 @@ package slash.navigation.maps.mapsforge;
 
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
-import slash.navigation.maps.tileserver.item.Item;
+import slash.navigation.maps.item.Item;
 
 /**
  * Represents a remote resource.

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.tileserver.item.Item;
+import slash.navigation.maps.item.Item;
 
 import javax.swing.*;
 import java.awt.*;

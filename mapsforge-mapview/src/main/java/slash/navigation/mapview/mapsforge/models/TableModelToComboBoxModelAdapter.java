@@ -19,8 +19,8 @@
 */
 package slash.navigation.mapview.mapsforge.models;
 
-import slash.navigation.maps.tileserver.item.Item;
-import slash.navigation.maps.tileserver.item.ItemModel;
+import slash.navigation.maps.item.Item;
+import slash.navigation.maps.item.ItemModel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;

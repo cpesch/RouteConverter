@@ -32,8 +32,8 @@ import slash.navigation.maps.mapsforge.impl.MapFilesService;
 import slash.navigation.maps.mapsforge.impl.VectorMap;
 import slash.navigation.maps.mapsforge.impl.VectorTheme;
 import slash.navigation.maps.tileserver.TileServerMapManager;
-import slash.navigation.maps.tileserver.item.ItemModel;
-import slash.navigation.maps.tileserver.item.ItemTableModel;
+import slash.navigation.maps.item.ItemModel;
+import slash.navigation.maps.item.ItemTableModel;
 
 import java.io.File;
 import java.io.FileNotFoundException;

@@ -19,7 +19,7 @@
 */
 package slash.navigation.maps.mapsforge.helpers;
 
-import slash.navigation.maps.tileserver.item.Item;
+import slash.navigation.maps.item.Item;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;

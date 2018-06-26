@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.tileserver.item;
+package slash.navigation.maps.item;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;

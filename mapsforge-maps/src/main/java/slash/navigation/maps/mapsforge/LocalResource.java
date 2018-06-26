@@ -19,7 +19,7 @@
 */
 package slash.navigation.maps.mapsforge;
 
-import slash.navigation.maps.tileserver.item.Item;
+import slash.navigation.maps.item.Item;
 
 /**
  * Represents a local resource.

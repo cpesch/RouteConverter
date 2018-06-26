@@ -19,7 +19,7 @@
 */
 package slash.navigation.maps.tileserver;
 
-import slash.navigation.maps.tileserver.item.Item;
+import slash.navigation.maps.item.Item;
 
 import java.util.List;
 
