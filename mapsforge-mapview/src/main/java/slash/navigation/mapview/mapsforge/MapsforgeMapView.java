@@ -540,16 +540,10 @@ public class MapsforgeMapView implements MapView {
             }
         }, getKeyStroke(VK_DOWN, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
 
-        final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
-        mapViewPosition.addObserver(new Observer() {
-            public void onChange() {
-                mapSelector.zoomChanged(mapViewPosition.getZoomLevel());
-            }
-        });
-
         double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
         byte zoom = (byte) preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
+        final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setMapPosition(new MapPosition(new LatLong(latitude, longitude), zoom));
 
         mapView.getModel().mapViewDimension.addObserver(new Observer() {

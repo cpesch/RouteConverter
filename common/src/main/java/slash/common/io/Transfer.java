@@ -306,6 +306,14 @@ public class Transfer {
         return result;
     }
 
+    public static Integer[] toArray(int[] ints) {
+        Integer[] result = new Integer[ints.length];
+        for (int i = 0; i < result.length; i++) {
+            result[i] = ints[i];
+        }
+        return result;
+    }
+
     public static String encodeUri(String uri) {
         try {
             return URLEncoder.encode(uri, UTF8_ENCODING);

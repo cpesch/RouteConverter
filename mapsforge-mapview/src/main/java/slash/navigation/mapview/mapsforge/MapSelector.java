@@ -21,6 +21,8 @@ package slash.navigation.mapview.mapsforge;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
+import org.mapsforge.map.model.MapViewPosition;
+import org.mapsforge.map.model.common.Observer;
 import slash.navigation.gui.Application;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
@@ -44,6 +46,8 @@ import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.toArray;
+import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer.DOWNLOAD_MAP;
 import static slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
 import static slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer.DOWNLOAD_THEME;
@@ -60,14 +64,32 @@ public class MapSelector {
             FILL_BOTH, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(MAX_VALUE, MAX_VALUE), 0, false);
     private JPanel contentPane;
-    private JLabel labelZoom;
+    private JComboBox<Integer> comboBoxZoom;
     private JComboBox<LocalMap> comboBoxMap;
     private JComboBox<LocalTheme> comboBoxTheme;
     private JPanel mapViewPanel;
 
-    public MapSelector(final MapsforgeMapManager mapManager, AwtGraphicMapView mapView) {
+    public MapSelector(MapsforgeMapManager mapManager, final AwtGraphicMapView mapView) {
         $$$setupUI$$$();
         mapViewPanel.add(mapView, MAP_SELECTOR_CONSTRAINTS);
+
+        comboBoxZoom.setModel(new DefaultComboBoxModel<Integer>());
+        comboBoxZoom.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() != SELECTED) {
+                    return;
+                }
+                Integer zoom = (Integer) e.getItem();
+                mapView.setZoomLevel(zoom.byteValue());
+            }
+        });
+
+        final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        mapViewPosition.addObserver(new Observer() {
+            public void onChange() {
+                zoomChanged(mapViewPosition.getZoomLevelMin(), mapViewPosition.getZoomLevelMax(), mapViewPosition.getZoomLevel());
+            }
+        });
 
         comboBoxMap.setModel(new JoinedListComboBoxModel<>(
                 new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableMapsModel(), mapManager.getDisplayedMapModel()),
@@ -95,8 +117,14 @@ public class MapSelector {
         comboBoxTheme.setEnabled(selectedItem != null && selectedItem.isVector());
     }
 
-    public void zoomChanged(int zoomLevel) {
-        labelZoom.setText(Integer.toString(zoomLevel));
+    private void zoomChanged(byte zoomLevelMin, byte zoomLevelMax, int zoomLevel) {
+        ComboBoxModel<Integer> model = comboBoxZoom.getModel();
+        if (model.getSize() == 0 ||
+                model.getElementAt(0) != zoomLevelMin ||
+                model.getElementAt(model.getSize() - 1) != zoomLevelMax)
+            comboBoxZoom.setModel(new DefaultComboBoxModel<>(toArray(asRange(zoomLevelMin, zoomLevelMax))));
+
+        comboBoxZoom.setSelectedItem(zoomLevel);
     }
 
     public Component getComponent() {
@@ -153,9 +181,8 @@ public class MapSelector {
         final JLabel label3 = new JLabel();
         this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("zoom-colon"));
         panel1.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelZoom = new JLabel();
-        labelZoom.setText("");
-        panel1.add(labelZoom, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxZoom = new JComboBox();
+        panel1.add(comboBoxZoom, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(40, -1), new Dimension(40, -1), 0, false));
         mapViewPanel = new JPanel();
         mapViewPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(mapViewPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
