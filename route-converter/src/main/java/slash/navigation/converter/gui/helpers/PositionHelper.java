@@ -88,10 +88,6 @@ public class PositionHelper {
     }
 
     public static String extractElevation(NavigationPosition position) {
-        if (position == null) {
-            log.severe("Should extract elevation from null position");
-            return "ERROR"; // TODO to trace down strange NullPointerExceptions
-        }
         return formatElevation(position.getElevation());
     }
 

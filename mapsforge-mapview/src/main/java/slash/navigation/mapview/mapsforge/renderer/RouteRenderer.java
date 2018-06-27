@@ -46,6 +46,7 @@ import java.util.prefs.Preferences;
 import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
+import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asLatLong;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
@@ -235,14 +236,15 @@ public class RouteRenderer {
             mapView.addLayers(withLayers);
         }
         finally {
-            // only continue with replaceing beeline with route after all beeline segments have been rendered
-            // TODO why? invokeInAwtEventQueue(new Runnable() {
-            //    public void run() {
+            // only continue with replacing beeline with route after all beeline segments have been rendered
+            // because otherwise #drawRoute would pairWithLayer.setLayer(null) and MapsforgeMapView#addLayers fails
+            invokeInAwtEventQueue(new Runnable() {
+                public void run() {
                     synchronized (notificationMutex) {
                         RouteRenderer.this.drawingBeeline = false;
                     }
-            //    }
-            // });
+                }
+            });
         }
     }
 

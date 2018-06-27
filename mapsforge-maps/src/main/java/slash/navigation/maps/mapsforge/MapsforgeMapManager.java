@@ -52,6 +52,7 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.sort;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
+import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
@@ -208,16 +209,20 @@ public class MapsforgeMapManager {
     public synchronized void scanMaps() throws IOException {
         long start = currentTimeMillis();
 
-        File mapsDirectory = getMapsDirectory();
+        final File mapsDirectory = getMapsDirectory();
         List<File> mapFiles = collectFiles(mapsDirectory, DOT_MAP);
         File[] mapFilesArray = mapFiles.toArray(new File[0]);
-        for (File file : mapFilesArray) {
+        for (final File file : mapFilesArray) {
             // avoid directory with world.map
             if(file.getParent().endsWith("routeconverter"))
                 continue;
 
             checkFile(file);
-            availableOfflineMapsModel.addOrUpdateItem(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
+            invokeInAwtEventQueue(new Runnable() {
+                public void run() {
+                    availableOfflineMapsModel.addOrUpdateItem(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
+                }
+            });
         }
 
         long end = currentTimeMillis();
@@ -226,16 +231,25 @@ public class MapsforgeMapManager {
     }
 
     public synchronized void scanThemes() throws IOException {
-        initializeBuiltinThemes();
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                initializeBuiltinThemes();
+            }
+        });
 
         long start = currentTimeMillis();
 
-        File themesDirectory = getThemesDirectory();
+        final File themesDirectory = getThemesDirectory();
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
         File[] themeFilesArray = themeFiles.toArray(new File[0]);
-        for (File file : themeFilesArray) {
+        for (final File file : themeFilesArray) {
             checkFile(file);
-            availableThemesModel.addOrUpdateItem(new VectorTheme(removePrefix(themesDirectory, file), file.toURI().toString(), new ExternalRenderTheme(file)));
+            final ExternalRenderTheme renderTheme = new ExternalRenderTheme(file);
+            invokeInAwtEventQueue(new Runnable() {
+                public void run() {
+                    availableThemesModel.addOrUpdateItem(new VectorTheme(removePrefix(themesDirectory, file), file.toURI().toString(), renderTheme));
+                }
+            });
         }
 
         long end = currentTimeMillis();

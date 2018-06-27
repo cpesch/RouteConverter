@@ -24,8 +24,6 @@ import javax.swing.table.TableModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
-
 /**
  * Acts as a {@link TableModel} for {@link Item}s.
  *
@@ -88,11 +86,7 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
         if (index == -1)
             throw new IllegalArgumentException("Item " + item + " not found in " + items);
 
-        // TODO why? invokeInAwtEventQueue(new Runnable() {
-        //    public void run() {
-                fireTableRowsInserted(index, index);
-        //    }
-        // });
+        fireTableRowsInserted(index, index);
     }
 
     private void updateItem(T item) {
@@ -100,11 +94,7 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
         if (index == -1)
             throw new IllegalArgumentException("Item " + item + " not found in " + items);
 
-        // TODO why? invokeInAwtEventQueue(new Runnable() {
-        //    public void run() {
-                fireTableRowsUpdated(index, index);
-        //    }
-        // });
+        fireTableRowsUpdated(index, index);
     }
 
     public void addOrUpdateItem(T item) {
@@ -133,11 +123,6 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
 
     public void clear() {
         items.clear();
-
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
-                fireTableDataChanged();
-            }
-        });
+        fireTableDataChanged();
     }
 }

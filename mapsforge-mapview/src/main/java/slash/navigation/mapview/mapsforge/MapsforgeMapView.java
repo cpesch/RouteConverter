@@ -860,8 +860,8 @@ public class MapsforgeMapView implements MapView {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
-                    ObjectWithLayer withLayer = withLayers.get(i);
-                    Layer layer = withLayer.getLayer();
+                    final ObjectWithLayer withLayer = withLayers.get(i);
+                    final Layer layer = withLayer.getLayer();
                     if (layer != null) {
                         // redraw only for last added layer
                         boolean redraw = i == c - 1;
