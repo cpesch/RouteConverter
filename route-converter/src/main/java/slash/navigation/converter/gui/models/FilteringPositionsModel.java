@@ -19,7 +19,8 @@
 */
 package slash.navigation.converter.gui.models;
 
-import slash.common.predicates.FilterPredicate;
+import slash.common.filtering.FilterPredicate;
+import slash.common.filtering.FilteringTableModel;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
@@ -27,16 +28,8 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static slash.common.io.Transfer.toArray;
 
 /**
  * Implements a {@link PositionsModel} that filters positions.
@@ -44,82 +37,30 @@ import static slash.common.io.Transfer.toArray;
  * @author Christian Pesch
  */
 
-public class FilteringPositionsModel<E extends NavigationPosition> extends AbstractTableModel implements PositionsModel {
-    private final PositionsModel delegate;
-    private FilterPredicate<E> predicate;
-    private Map<Integer, Integer> mapping;
+public class FilteringPositionsModel<E extends NavigationPosition> extends FilteringTableModel implements PositionsModel {
 
     public FilteringPositionsModel(PositionsModel delegate, FilterPredicate<E> predicate) {
-        this.delegate = delegate;
-        this.predicate = predicate;
-        initializeMapping();
-        delegate.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                initializeMapping();
-                fireTableDataChanged();
-            }
-        });
+        super(delegate, predicate);
     }
 
-    private void initializeMapping() {
-        mapping = new HashMap<>();
-        for (int i = 0, c = delegate.getRowCount(); i < c; i++) {
-            @SuppressWarnings("unchecked")
-            E element = (E) delegate.getPosition(i);
-            if (predicate.shouldInclude(element)) {
-                int mappedRow = mapping.size();
-                mapping.put(mappedRow, i);
-            }
-        }
-    }
-
-    private int mapRow(int rowIndex) {
-        Integer integer = mapping.get(rowIndex);
-        return integer != null ? integer : -1;
-    }
-
-    public int[] mapRows(int[] rowIndices) {
-        List<Integer> result = new ArrayList<>();
-        for(int rowIndex : rowIndices) {
-            int mappedRow = mapRow(rowIndex);
-            if(mappedRow != -1)
-                result.add(mappedRow);
-        }
-        return toArray(result);
+    protected PositionsModel getDelegate() {
+        return (PositionsModel) super.getDelegate();
     }
 
     public BaseRoute getRoute() {
-        return delegate.getRoute();
+        return getDelegate().getRoute();
     }
 
     public void setRoute(BaseRoute route) {
-        delegate.setRoute(route);
-    }
-
-    public void setFilterPredicate(FilterPredicate<E> predicate) {
-        this.predicate = predicate;
-        initializeMapping();
-        fireTableDataChanged();
-    }
-
-    public int getRowCount() {
-        return mapping.size();
-    }
-
-    public int getColumnCount() {
-        throw new IllegalArgumentException("This is determined by the PositionsTableColumnModel");
-    }
-
-   public Object getValueAt(int rowIndex, int columnIndex) {
-        return delegate.getValueAt(mapRow(rowIndex), columnIndex);
+        getDelegate().setRoute(route);
     }
 
     public NavigationPosition getPosition(int rowIndex) {
-        return delegate.getPosition(mapRow(rowIndex));
+        return getDelegate().getPosition(mapRow(rowIndex));
     }
 
     public int getIndex(NavigationPosition position) {
-        return mapRow(delegate.getIndex(position));
+        return mapRow(getDelegate().getIndex(position));
     }
 
     public List<NavigationPosition> getPositions(int[] rowIndices) {
@@ -150,16 +91,8 @@ public class FilteringPositionsModel<E extends NavigationPosition> extends Abstr
         throw new UnsupportedOperationException();
     }
 
-    public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return delegate.isCellEditable(mapRow(rowIndex), columnIndex);
-    }
-
-    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-        delegate.setValueAt(aValue, mapRow(rowIndex), columnIndex);
-    }
-
     public void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
-        delegate.edit(mapRow(rowIndex), columnToValues, fireEvent, trackUndo);
+        getDelegate().edit(mapRow(rowIndex), columnToValues, fireEvent, trackUndo);
     }
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
@@ -179,7 +112,7 @@ public class FilteringPositionsModel<E extends NavigationPosition> extends Abstr
     }
 
     public void remove(int[] rowIndices) {
-        delegate.remove(mapRows(rowIndices));
+        getDelegate().remove(mapRows(rowIndices));
     }
 
     public void sort(Comparator<NavigationPosition> comparator) {
@@ -207,10 +140,10 @@ public class FilteringPositionsModel<E extends NavigationPosition> extends Abstr
     }
 
     public boolean isContinousRange() {
-        return delegate.isContinousRange();
+        return getDelegate().isContinousRange();
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
-        delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
+        getDelegate().fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
 }

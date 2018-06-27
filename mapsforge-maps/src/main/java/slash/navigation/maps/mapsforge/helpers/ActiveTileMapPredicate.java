@@ -17,33 +17,23 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.predicates;
+package slash.navigation.maps.mapsforge.helpers;
 
 import slash.common.filtering.FilterPredicate;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.photo.PhotoPosition;
-import slash.navigation.photo.TagState;
+import slash.navigation.maps.mapsforge.impl.TileMap;
 
 /**
- * Includes {@link PhotoPosition}s which are tagged with {@link TagState}.
+ * Includes {@link TileMap}s which are active.
  *
  * @author Christian Pesch
  */
-public class TagStatePhotoPredicate implements FilterPredicate<NavigationPosition> {
-    private TagState tagState;
 
-    public TagStatePhotoPredicate(TagState tagState) {
-        this.tagState = tagState;
-    }
-
+public class ActiveTileMapPredicate implements FilterPredicate<TileMap> {
     public String getName() {
-        return tagState.name();
+        return "Active";
     }
 
-    public boolean shouldInclude(NavigationPosition position) {
-        if (!(position instanceof PhotoPosition))
-            return false;
-        PhotoPosition photoPosition = PhotoPosition.class.cast(position);
-        return photoPosition.getTagState().equals(tagState);
+    public boolean shouldInclude(TileMap tileMap) {
+        return tileMap.isActive();
     }
 }

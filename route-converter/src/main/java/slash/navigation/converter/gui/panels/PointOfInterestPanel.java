@@ -90,7 +90,7 @@ public class PointOfInterestPanel implements PanelInTab {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
-        positionsModel = new FilteringPositionsModel(r.getConvertPanel().getPositionsModel(), new PointOfInterestPositionPredicate());
+        positionsModel = new FilteringPositionsModel<>(r.getConvertPanel().getPositionsModel(), new PointOfInterestPositionPredicate());
         tablePointsOfInterest.setModel(getPositionsModel());
         PointsOfInterestTableColumnModel tableColumnModel = new PointsOfInterestTableColumnModel();
         tablePointsOfInterest.setColumnModel(tableColumnModel);

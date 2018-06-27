@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.helpers.TimeZoneAndId;
 import slash.common.helpers.TimeZoneAndIds;
+import slash.common.filtering.FilterPredicate;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 import slash.navigation.common.NavigationPosition;
@@ -43,7 +44,6 @@ import slash.navigation.converter.gui.models.PhotosTableColumnModel;
 import slash.navigation.converter.gui.models.PositionTableColumn;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsModelImpl;
-import slash.navigation.converter.gui.predicates.FilterPredicate;
 import slash.navigation.converter.gui.predicates.TagStatePhotoPredicate;
 import slash.navigation.converter.gui.predicates.TautologyPredicate;
 import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
@@ -120,7 +120,7 @@ public class PhotoPanel implements PanelInTab {
     });
 
     private PositionsModel photosModel = new OverlayPositionsModel(new PositionsModelImpl());
-    private FilteringPositionsModel filteredPhotosModel;
+    private FilteringPositionsModel<NavigationPosition> filteredPhotosModel;
 
     public PhotoPanel() {
         $$$setupUI$$$();
@@ -131,7 +131,7 @@ public class PhotoPanel implements PanelInTab {
         final RouteConverter r = RouteConverter.getInstance();
 
         photosModel.setRoute(new Wgs84Route(new PhotoFormat(), Waypoints, new ArrayList<Wgs84Position>()));
-        filteredPhotosModel = new FilteringPositionsModel(photosModel, getFilterPredicatePreference());
+        filteredPhotosModel = new FilteringPositionsModel<>(photosModel, getFilterPredicatePreference());
         tablePhotos.setModel(filteredPhotosModel);
         PhotosTableColumnModel tableColumnModel = new PhotosTableColumnModel();
         tablePhotos.setColumnModel(tableColumnModel);
@@ -195,7 +195,8 @@ public class PhotoPanel implements PanelInTab {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                FilterPredicate filterPredicate = FilterPredicate.class.cast(e.getItem());
+                @SuppressWarnings("unchecked")
+                FilterPredicate<NavigationPosition> filterPredicate = FilterPredicate.class.cast(e.getItem());
                 setFilterPredicatePreference(filterPredicate);
                 filteredPhotosModel.setFilterPredicate(filterPredicate);
             }
@@ -308,7 +309,7 @@ public class PhotoPanel implements PanelInTab {
             tablePhotos.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN : getDefaultRowHeight());
     }
 
-    private FilterPredicate getFilterPredicatePreference() {
+    private FilterPredicate<NavigationPosition> getFilterPredicatePreference() {
         FilterPredicate result = FILTER_PREDICATE_MODEL.getElementAt(0);
         String name = preferences.get(FILTER_PHOTO_PREDICATE_PREFERENCE, result.getName());
         for (int i = 0, c = FILTER_PREDICATE_MODEL.getSize(); i < c; i++) {

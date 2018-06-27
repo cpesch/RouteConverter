@@ -20,6 +20,7 @@
 package slash.navigation.maps.mapsforge;
 
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
+import slash.common.filtering.FilteringTableModel;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
@@ -33,7 +34,6 @@ import slash.navigation.maps.mapsforge.impl.MapFilesService;
 import slash.navigation.maps.mapsforge.impl.TileMap;
 import slash.navigation.maps.mapsforge.impl.VectorMap;
 import slash.navigation.maps.mapsforge.impl.VectorTheme;
-import slash.navigation.maps.mapsforge.models.FilteringTileMapModel;
 import slash.navigation.maps.mapsforge.models.JoinedTableModel;
 import slash.navigation.maps.mapsforge.models.OpenStreetMap;
 import slash.navigation.maps.mapsforge.models.TileMapTableModel;
@@ -80,7 +80,7 @@ public class MapsforgeMapManager {
     private ItemTableModel<TileMap> availableOnlineMapsModel = new TileMapTableModel();
     private ItemTableModel<LocalMap> availableOfflineMapsModel = new ItemTableModel<>(1);
     private JoinedTableModel<LocalMap> availableMapsModel = new JoinedTableModel<>(availableOfflineMapsModel,
-            new FilteringTileMapModel<>(availableOnlineMapsModel, new ActiveTileMapPredicate()));
+            new FilteringTableModel<>(availableOnlineMapsModel, new ActiveTileMapPredicate()));
     private ItemTableModel<LocalTheme> availableThemesModel = new ItemTableModel<>(1);
     private ItemTableModel<RemoteMap> downloadableMapsModel = new ItemTableModel<>(3);
     private ItemTableModel<RemoteTheme> downloadableThemesModel = new ItemTableModel<>(3);

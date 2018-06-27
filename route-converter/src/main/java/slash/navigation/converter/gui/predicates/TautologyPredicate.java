@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.predicates;
 
+import slash.common.filtering.FilterPredicate;
 import slash.navigation.common.NavigationPosition;
 
 /**
@@ -26,7 +27,7 @@ import slash.navigation.common.NavigationPosition;
  *
  * @author Christian Pesch
  */
-public class TautologyPredicate implements FilterPredicate {
+public class TautologyPredicate implements FilterPredicate<NavigationPosition> {
     private String name;
 
     public TautologyPredicate(String name) {

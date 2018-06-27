@@ -20,8 +20,8 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import slash.common.filtering.FilterPredicate;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.predicates.FilterPredicate;
 
 import javax.swing.*;
 import java.awt.*;

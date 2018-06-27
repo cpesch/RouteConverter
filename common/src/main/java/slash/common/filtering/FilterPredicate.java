@@ -17,18 +17,14 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.predicates;
-
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.models.FilteringPositionsModel;
+package slash.common.filtering;
 
 /**
- * A predicate on the given {@link NavigationPosition} that allows the
- * {@link FilteringPositionsModel} to filter a list of {@link NavigationPosition}s.
+ * A predicate on the given {@link E} that allows to filter a list of {@link E}s.
  *
  * @author Christian Pesch
  */
-public interface FilterPredicate {
+public interface FilterPredicate<E> {
     String getName();
-    boolean shouldInclude(NavigationPosition position);
+    boolean shouldInclude(E element);
 }

@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.predicates;
 
+import slash.common.filtering.FilterPredicate;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.NavigationPosition;
@@ -35,7 +36,7 @@ import static slash.navigation.base.WaypointType.Voice;
  *
  * @author Christian Pesch
  */
-public class PointOfInterestPositionPredicate implements FilterPredicate {
+public class PointOfInterestPositionPredicate implements FilterPredicate<NavigationPosition> {
     private final List<WaypointType> POINTS_OF_INTEREST_WAYPOINT_TYPES = asList(Photo, PointOfInterest, Voice);
 
     public String getName() {

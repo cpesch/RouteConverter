@@ -24,6 +24,7 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.maps.mapsforge.LocalMap;
 
 import java.io.File;
+import java.util.prefs.Preferences;
 
 /**
  * A {@link LocalMap} that is downloaded on request from an online service.
@@ -32,6 +33,8 @@ import java.io.File;
  */
 
 public class TileMap extends LocaleResourceImpl implements LocalMap {
+    private static final Preferences preferences = Preferences.userNodeForPackage(TileMap.class);
+    private static final String TILE_MAP_ACTIVE_PREFERENCE = "tileMapActive";
     private final AbstractTileSource tileSource;
     private boolean active;
 
@@ -42,11 +45,11 @@ public class TileMap extends LocaleResourceImpl implements LocalMap {
     }
 
     public boolean isActive() {
-        return active;
+        return preferences.getBoolean(TILE_MAP_ACTIVE_PREFERENCE + getUrl(), active);
     }
 
     public void setActive(boolean active) {
-        this.active = active;
+        preferences.putBoolean(TILE_MAP_ACTIVE_PREFERENCE + getUrl(), active);
     }
 
     public BoundingBox getBoundingBox() {

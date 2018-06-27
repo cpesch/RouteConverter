@@ -47,7 +47,9 @@ public class TileMapTableModel extends ItemTableModel<TileMap> {
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == ACTIVE_COLUMN || super.isCellEditable(rowIndex, columnIndex);
+        // the OpenStreetMap is always active
+        return (columnIndex == ACTIVE_COLUMN && !(getItem(rowIndex) instanceof OpenStreetMap)) ||
+                super.isCellEditable(rowIndex, columnIndex);
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {

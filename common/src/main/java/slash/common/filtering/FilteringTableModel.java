@@ -17,30 +17,31 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge.models;
-
-import slash.common.predicates.FilterPredicate;
-import slash.navigation.maps.mapsforge.impl.TileMap;
+package slash.common.filtering;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static slash.common.io.Transfer.toArray;
+
 /**
- * Implements a {@link TableModel} that filters its {@link TileMap}s.
+ * Acts as a {@link TableModel} that filters {@link E}s
  *
  * @author Christian Pesch
  */
 
-public class FilteringTileMapModel<E extends TileMap> extends AbstractTableModel {
+public class FilteringTableModel<E> extends AbstractTableModel {
     private final TableModel delegate;
     private FilterPredicate<E> predicate;
     private Map<Integer, Integer> mapping;
 
-    public FilteringTileMapModel(TableModel delegate, FilterPredicate<E> predicate) {
+    public FilteringTableModel(TableModel delegate, FilterPredicate<E> predicate) {
         this.delegate = delegate;
         this.predicate = predicate;
         initializeMapping();
@@ -64,9 +65,29 @@ public class FilteringTileMapModel<E extends TileMap> extends AbstractTableModel
         }
     }
 
-    private int mapRow(int rowIndex) {
+    protected int mapRow(int rowIndex) {
         Integer integer = mapping.get(rowIndex);
         return integer != null ? integer : -1;
+    }
+
+    public int[] mapRows(int[] rowIndices) {
+        List<Integer> result = new ArrayList<>();
+        for (int rowIndex : rowIndices) {
+            int mappedRow = mapRow(rowIndex);
+            if (mappedRow != -1)
+                result.add(mappedRow);
+        }
+        return toArray(result);
+    }
+
+    protected TableModel getDelegate() {
+        return delegate;
+    }
+
+    public void setFilterPredicate(FilterPredicate<E> predicate) {
+        this.predicate = predicate;
+        initializeMapping();
+        fireTableDataChanged();
     }
 
     public int getRowCount() {
@@ -79,5 +100,13 @@ public class FilteringTileMapModel<E extends TileMap> extends AbstractTableModel
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         return delegate.getValueAt(mapRow(rowIndex), columnIndex);
+    }
+
+    public boolean isCellEditable(int rowIndex, int columnIndex) {
+        return getDelegate().isCellEditable(mapRow(rowIndex), columnIndex);
+    }
+
+    public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        getDelegate().setValueAt(aValue, mapRow(rowIndex), columnIndex);
     }
 }
