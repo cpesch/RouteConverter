@@ -462,6 +462,19 @@
        return null;
    }
 
+   var mapTypeIds = [];
+   var mapCopyrights = {};
+
+   function registerMap(mapTypeId, copyright, mapType) {
+       mapTypeIds.push(mapTypeId);
+       mapCopyrights[mapTypeId] = copyright;
+   }
+
+   function registerCustomMap(mapTypeId, copyright, mapType) {
+       registerMap(mapTypeId, copyright);
+       map.mapTypes.set(mapTypeId, mapType);
+   }
+
    var initialized, map, latLngControl, directionsService, xmlhttp;
 
    function isInitialized() {
@@ -472,25 +485,8 @@
        initialized = false;
        document.body.className = "normal";
 
-       // add indexOf for IE
-       if(!Array.prototype.indexOf) {
-           Array.prototype.indexOf = function(needle) {
-               for(var i = 0; i < this.length; i++) {
-                   if(this[i] === needle) {
-                       return i;
-                   }
-               }
-               return -1;
-           };
-       }
-
-      addDebug("1. initialize()");
+       addDebug("1. initialize()");
        try {
-           var mapTypeIds = [];
-           var mapCopyrights = {};
-
-${tileservers1}
-
            var mapOptions = {
                mapTypeId: google.maps.MapTypeId.ROADMAP,
                mapTypeControlOptions: {
@@ -505,7 +501,7 @@ ${tileservers1}
            map = new google.maps.Map(document.getElementById("map"), mapOptions);
            var DEFAULT_TILE_SIZE = new google.maps.Size(256, 256);
 
-${tileservers2}
+${tileservers}
 
            var hillshadingMapType = new google.maps.ImageMapType({
                getTileUrl: function(coord, zoom) {
