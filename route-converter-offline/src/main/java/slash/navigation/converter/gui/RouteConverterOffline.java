@@ -23,8 +23,10 @@ import slash.navigation.brouter.BRouter;
 import slash.navigation.converter.gui.actions.ShowMapsAction;
 import slash.navigation.converter.gui.actions.ShowThemesAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
+import slash.navigation.converter.gui.helpers.AutomaticGeocodingService;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.datasources.DataSource;
+import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
@@ -34,6 +36,8 @@ import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
+import slash.navigation.nominatim.NominatimService;
+import slash.navigation.photon.PhotonService;
 import slash.navigation.routing.Beeline;
 
 import javax.swing.*;
@@ -104,6 +108,27 @@ public class RouteConverterOffline extends RouteConverter {
         return new MapViewCallbackOfflineImpl();
     }
 
+    protected void initializeElevationServices() {
+        AutomaticElevationService automaticElevationService = new AutomaticElevationService(getElevationServiceFacade());
+        getElevationServiceFacade().addElevationService(automaticElevationService);
+        getElevationServiceFacade().setPreferredElevationService(automaticElevationService);
+
+        getHgtFilesService().initialize();
+        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
+            getElevationServiceFacade().addElevationService(hgtFile);
+        }
+    }
+
+    protected void initializeGeocodingServices() {
+        AutomaticGeocodingService automaticGeocodingService = new AutomaticGeocodingService(getGeocodingServiceFacade());
+        getGeocodingServiceFacade().addGeocodingService(automaticGeocodingService);
+        getGeocodingServiceFacade().setPreferredGeocodingService(automaticGeocodingService);
+
+        getGeocodingServiceFacade().addGeocodingService(new GeoNamesService());
+        getGeocodingServiceFacade().addGeocodingService(new NominatimService());
+        getGeocodingServiceFacade().addGeocodingService(new PhotonService());
+    }
+
     protected void initializeRoutingServices() {
         Beeline beeline = new Beeline();
         getRoutingServiceFacade().addRoutingService(beeline);
@@ -137,17 +162,6 @@ public class RouteConverterOffline extends RouteConverter {
         if (graphhopper != null) {
             GraphHopper hopper = getRoutingServiceFacade().getRoutingService(GraphHopper.class);
             hopper.setDataSource(graphhopper);
-        }
-    }
-
-    protected void initializeElevationServices() {
-        AutomaticElevationService automaticElevationService = new AutomaticElevationService(getElevationServiceFacade());
-        getElevationServiceFacade().addElevationService(automaticElevationService);
-        getElevationServiceFacade().setPreferredElevationService(automaticElevationService);
-
-        getHgtFilesService().initialize();
-        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
-            getElevationServiceFacade().addElevationService(hgtFile);
         }
     }
 
