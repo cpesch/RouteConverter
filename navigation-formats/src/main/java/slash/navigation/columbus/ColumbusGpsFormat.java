@@ -46,7 +46,7 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
 
     protected static final char SEPARATOR = ',';
     protected static final String SPACE_OR_ZERO = "[\\s\u0000]*";
-    protected static final String VALID_TAG_VALUES = "CGTV";
+    protected static final String VALID_TAG_VALUES = "CDGTV";
     private static final String DATE_AND_TIME_FORMAT = "yyMMdd HHmmss";
     private static final String DATE_FORMAT = "yyMMdd";
     private static final String TIME_FORMAT = "HHmmss";

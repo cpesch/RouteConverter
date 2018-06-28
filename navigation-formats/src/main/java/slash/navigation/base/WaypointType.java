@@ -35,6 +35,7 @@ public enum WaypointType {
     VHFOmnidirectionalRadioRange("VOR"),
 
     // Columbus GPS (.csv)
+    Deleted("D"),
     End("END"),
     Overspeed("O"),
     Parking("G"),
