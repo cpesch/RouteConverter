@@ -213,7 +213,7 @@ public class UpdateCatalog extends BaseDownloadTool {
 
         // GET with range for .zip or .map header
         if (!download.getFile().getFile().exists())
-            download = downloadPartial(url, checksum.getContentLength());
+            download = downloadPartial(url, checksum.getContentLength() != null ? checksum.getContentLength() : 0);
 
         if (download.getState().equals(Failed)) {
             log.severe(format("Failed to download %s partially as a map", map.getUri()));
