@@ -24,17 +24,26 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gui.Application;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
 
+import static java.text.MessageFormat.format;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Transfer.toArray;
+import static slash.navigation.gui.helpers.WindowHelper.getFrame;
 
 /**
  * Helps to insert positions.
@@ -43,6 +52,8 @@ import static slash.common.io.Transfer.toArray;
  */
 
 public class InsertPositionFacade {
+    private static final Logger log = Logger.getLogger(InsertPositionFacade.class.getName());
+
     public void insertAllWaypoints() {
         RouteConverter r = RouteConverter.getInstance();
         int[] selectedRows = r.getConvertPanel().getPositionsView().getSelectedRows();
@@ -72,12 +83,17 @@ public class InsertPositionFacade {
     private void insertWithRoutingService(final RoutingService routingService, final int[] selectedRows) {
         executor.execute(new Runnable() {
             public void run() {
-                doInsertWithRoutingService(routingService, selectedRows);
+                try {
+                    doInsertWithRoutingService(routingService, selectedRows);
+                } catch (Exception e) {
+                    log.severe("Cannot insert positions: " + getLocalizedMessage(e));
+                    showMessageDialog(getFrame(), format(Application.getInstance().getContext().getBundle().getString("cannot-insert-positions"), e),
+                            getFrame().getTitle(), ERROR_MESSAGE);                }
             }
         });
     }
 
-    private void doInsertWithRoutingService(RoutingService routingService, int[] selectedRows) {
+    private void doInsertWithRoutingService(RoutingService routingService, int[] selectedRows) throws InvocationTargetException, InterruptedException {
         final RouteConverter r = RouteConverter.getInstance();
         final PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
 
@@ -108,7 +124,8 @@ public class InsertPositionFacade {
                 }
                 final int insertRow = positionsModel.getIndex(selectedPositions.get(i)) + 1;
 
-                invokeLater(new Runnable() {
+                // wait for adding to positions model to be completed before inserting the next positions
+                invokeAndWait(new Runnable() {
                     public void run() {
                         positionsModel.add(insertRow, positions);
                     }
