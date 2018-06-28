@@ -369,7 +369,7 @@ public class RouteConverter extends SingleFrameApplication {
         return results;
     }
 
-    private void checkForMissingTranslator() {
+    protected void checkForMissingTranslator() {
         List<String> activeLanguages = getLanguagesWithActiveTranslators();
         String language = Locale.getDefault().getLanguage();
         if (!activeLanguages.contains(language) && !preferences.getBoolean(SHOWED_MISSING_TRANSLATOR_PREFERENCE, false)) {
