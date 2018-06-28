@@ -42,7 +42,7 @@ import javax.naming.ServiceUnavailableException;
 public class GeocodingServiceFacade {
     private static final Logger log = Logger.getLogger(GeocodingServiceFacade.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(GeocodingServiceFacade.class);
-    private static final String GEOCODING_SERVICE = "geocodingService-2.20"; // versioned preference
+    private static final String GEOCODING_SERVICE = "geocodingService-2.24"; // versioned preference
 
     private final List<GeocodingService> geocodingServices = new ArrayList<>();
     private GeocodingService preferredGeocodingService;
