@@ -464,8 +464,10 @@
 
    var mapTypeIds = [];
    var mapCopyrights = {};
+   var map;
+   var DEFAULT_TILE_SIZE = new google.maps.Size(256, 256);
 
-   function registerMap(mapTypeId, copyright, mapType) {
+   function registerMap(mapTypeId, copyright) {
        mapTypeIds.push(mapTypeId);
        mapCopyrights[mapTypeId] = copyright;
    }
@@ -475,7 +477,7 @@
        map.mapTypes.set(mapTypeId, mapType);
    }
 
-   var initialized, map, latLngControl, directionsService, xmlhttp;
+   var initialized, latLngControl, directionsService, xmlhttp;
 
    function isInitialized() {
        return initialized;
@@ -499,7 +501,6 @@
                draggingCursor: 'pointer'
            };
            map = new google.maps.Map(document.getElementById("map"), mapOptions);
-           var DEFAULT_TILE_SIZE = new google.maps.Size(256, 256);
 
 ${tileservers}
 
@@ -554,25 +555,25 @@ ${tileservers}
                var mapTypeId = map.getMapTypeId();
                var mapCopyright = mapCopyrights[mapTypeId];
 
-               if (mapCopyright == 'Esri') {
+               if (mapCopyright === 'Esri') {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.esri.com/legal/software-license" target="_blank">Esri, DigitalGlobe, GeoEye, Earthstar Geographics, CNES/Airbus DS, USDA, USGS, AeroGRID, IGN, and the GIS User Community</a>';
-               } else if (mapCopyright == 'OpenStreetMap') {
+               } else if (mapCopyright === 'OpenStreetMap') {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a> and contributors <a href="http://creativecommons.org/licenses/by-sa/2.0/" target="_blank">CC-BY-SA</a>';
-               } else if (mapCopyright == 'OutdoorActive') {
+               } else if (mapCopyright === 'OutdoorActive') {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.outdooractive.com/" target="_blank">OutdoorActive</a>';
-               } else if (mapCopyright == 'Thunderforest') {
+               } else if (mapCopyright === 'Thunderforest') {
                    copyrightControl.innerHTML = 'Maps &copy; <a href="http://www.thunderforest.com/terms" target="_blank">Thunderforest</a>, Data &copy; <a href="http://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap contributors</a>';
-               } else if (mapCopyright == 'Wanderreitkarte') {
+               } else if (mapCopyright === 'Wanderreitkarte') {
                    copyrightControl.innerHTML = 'Map data &copy; <a href="http://www.wanderreitkarte.de/" target="_blank">Wanderreitkarte</a>';
-               } else if (mapCopyright == 'Google') {
+               } else if (mapCopyright === 'Google') {
                    copyrightControl.innerHTML = '';
                } else {
                    copyrightControl.innerHTML = 'Missing copyright';
                }
 
-               if (mapTypeId == "HikeBikeMap"){
+               if (mapTypeId === "HikeBikeMap"){
                    map.overlayMapTypes.setAt(0, hillshadingMapType);
-               } else if (mapTypeId == "Hike Symbols"){
+               } else if (mapTypeId === "Hike Symbols"){
             	   map.overlayMapTypes.setAt(0, hikingSymbolsMapType);
             	   map.overlayMapTypes.setAt(1, hillshadingMapType);
                } else {
@@ -583,7 +584,7 @@ ${tileservers}
                callJavaWithUri("map-type-changed/" + mapTypeId);
            });
            var mapType = '${maptype}';
-           if (mapTypeIds.indexOf(mapType) != -1) {
+           if (mapTypeIds.indexOf(mapType) !== -1) {
                map.setMapTypeId(mapType);
            }
            addDebug("2. starting with maptype: " + map.getMapTypeId());

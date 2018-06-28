@@ -19,13 +19,13 @@
 */
 package slash.navigation.maps.tileserver;
 
+import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.tileserver.binding.TileServerType;
 import slash.navigation.maps.tileserver.helpers.TileServerService;
-import slash.navigation.maps.item.ItemTableModel;
 
 import java.io.File;
-import java.util.List;
 
+import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Transfer.formatInt;
 
 /**
@@ -54,14 +54,14 @@ public class TileServerMapManager {
     public void scanTileServers() {
         tileServerService.initialize();
 
-        for(TileServerType type : tileServerService.getTileServers())
-          availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(), type.getHostName(),
-                  type.getBaseUrl(), type.getExtension(), type.getActive() == null || type.getActive(),
-                  formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
-                  type.getCopyright() != null ? type.getCopyright().value() : "Unknown"));
-    }
-
-    public List<TileServer> getTileServers() {
-        return availableMapsModel.getItems();
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                for (TileServerType type : tileServerService.getTileServers())
+                    availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(), type.getHostName(),
+                            type.getBaseUrl(), type.getExtension(), type.getActive() == null || type.getActive(),
+                            formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
+                            type.getCopyright() != null ? type.getCopyright().value() : "Unknown"));
+            }
+        });
     }
 }

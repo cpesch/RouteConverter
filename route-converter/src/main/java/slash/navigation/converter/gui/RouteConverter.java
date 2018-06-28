@@ -448,10 +448,10 @@ public class RouteConverter extends SingleFrameApplication {
             File file = new File(getApplicationDirectory("tileservers"), "default-offline.xml");
             getDownloadManager().executeDownload("RouteConverter Offline Tile Servers", getApiUrl() + V1 + "tileservers-offline/" + FORMAT_XML, Copy, file, new Runnable() {
                 public void run() {
+                    getTileServerMapManager().scanTileServers();
+
                     invokeLater(new Runnable() {
                         public void run() {
-                            // TODO decouple scanning from initialization
-                            getTileServerMapManager().scanTileServers();
                             setMapView(getMapViewPreference());
 
                             invokeLater(new Runnable() {

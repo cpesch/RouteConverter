@@ -23,11 +23,29 @@ package slash.navigation.mapview.browser;
 import slash.common.helpers.APIKeyRegistry;
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.WaypointType;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsFormat;
-import slash.navigation.common.*;
-import slash.navigation.converter.gui.models.*;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTime;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.PositionPair;
+import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.converter.gui.models.BooleanModel;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.converter.gui.models.FixMapMode;
+import slash.navigation.converter.gui.models.FixMapModeModel;
+import slash.navigation.converter.gui.models.GoogleMapsServerModel;
+import slash.navigation.converter.gui.models.PositionColumnValues;
+import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gui.Application;
 import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.AbstractMapViewListener;
@@ -36,17 +54,37 @@ import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.MapViewListener;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -70,22 +108,42 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
-import static javax.swing.event.TableModelEvent.*;
+import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static javax.swing.event.TableModelEvent.DELETE;
+import static javax.swing.event.TableModelEvent.INSERT;
+import static javax.swing.event.TableModelEvent.UPDATE;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Externalization.extractFile;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.common.io.Transfer.ceiling;
+import static slash.common.io.Transfer.decodeUri;
+import static slash.common.io.Transfer.isEmpty;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseInteger;
+import static slash.common.io.Transfer.parseLong;
+import static slash.common.io.Transfer.toDouble;
+import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.HexadecimalNumber.encodeByte;
-import static slash.navigation.base.RouteCharacteristics.*;
-import static slash.navigation.base.WaypointType.*;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.WaypointType.End;
+import static slash.navigation.base.WaypointType.Start;
+import static slash.navigation.base.WaypointType.Waypoint;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
 import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
-import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
@@ -230,7 +288,6 @@ public abstract class BrowserMapView implements MapView {
     protected String prepareWebPage() throws IOException {
         final String language = Locale.getDefault().getLanguage().toLowerCase();
         final String country = Locale.getDefault().getCountry().toLowerCase();
-        final List<TileServer> tileServers = mapViewCallback.getTileServerMapManager().getTileServers();
         File html = extractFile(RESOURCES_PACKAGE + "routeconverter.html", country, new TokenResolver() {
             public String resolveToken(String tokenName) {
                 if (tokenName.equals("language"))
@@ -246,7 +303,7 @@ public abstract class BrowserMapView implements MapView {
                 if (tokenName.equals("googleapikey"))
                     return APIKeyRegistry.getInstance().getAPIKey("google", "map");
                 if (tokenName.equals("tileservers"))
-                    return registerOnlineMaps(tileServers);
+                    return registerMaps(mapViewCallback.getTileServerMapManager().getAvailableMapsModel().getItems());
                 if (tokenName.equals("menuItems"))
                     return registerMenuItems();
                 return tokenName;
@@ -678,7 +735,7 @@ public abstract class BrowserMapView implements MapView {
         return mapType != null && GOOGLE_MAP_TYPES.contains(mapType.toUpperCase());
     }
 
-    private String registerOnlineMaps(List<TileServer> tileServers) {
+    private String registerMaps(List<TileServer> tileServers) {
         StringBuilder buffer = new StringBuilder();
 
         for (String tileServerId : GOOGLE_MAP_TYPES)
@@ -702,7 +759,7 @@ public abstract class BrowserMapView implements MapView {
             buffer.append("];\n").
                     append("    var tileServer = tileServers[Math.floor(Math.random() * tileServers.length)];\n").
                     append("    var url = \"http://\" + tileServer + \"").append(tileServer.getBaseUrl()).
-                    append("\" + zoom + \"/\" + coordinates.x + \"/\" + coordinates.y + \".").append(tileServer.getExtension()).
+                    append("\" + zoom + \"/\" + coordinates.x + \"/\" + coordinates.y + \"").append(tileServer.getExtension()).
                     append("\";\n");
             if (apiKey != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
                 buffer.append("    url = url.concat(\"?apikey=").append(apiKey).append("\");\n");
