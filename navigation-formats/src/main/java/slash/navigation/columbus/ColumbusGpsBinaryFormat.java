@@ -54,7 +54,7 @@ import static java.util.Calendar.YEAR;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.WaypointType.PointOfInterest;
+import static slash.navigation.base.WaypointType.PointOfInterestC;
 import static slash.navigation.base.WaypointType.Waypoint;
 import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
 import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
@@ -177,7 +177,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
         if (!hasBitSet(aByte, 0) && !hasBitSet(aByte, 1))
             return Waypoint;
         else if (hasBitSet(aByte, 0) && !hasBitSet(aByte, 1))
-            return PointOfInterest;
+            return PointOfInterestC;
         return Waypoint;
     }
 

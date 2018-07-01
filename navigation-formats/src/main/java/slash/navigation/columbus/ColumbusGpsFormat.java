@@ -150,7 +150,7 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
             if (description.startsWith("VOX"))
                 return Voice;
             if (description.startsWith("POI")) {
-                return PointOfInterest;
+                return PointOfInterestC;
             }
         }
         return Waypoint;

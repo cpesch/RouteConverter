@@ -28,7 +28,8 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static slash.navigation.base.WaypointType.Photo;
-import static slash.navigation.base.WaypointType.PointOfInterest;
+import static slash.navigation.base.WaypointType.PointOfInterestC;
+import static slash.navigation.base.WaypointType.PointOfInterestD;
 import static slash.navigation.base.WaypointType.Voice;
 
 /**
@@ -37,7 +38,7 @@ import static slash.navigation.base.WaypointType.Voice;
  * @author Christian Pesch
  */
 public class PointOfInterestPositionPredicate implements FilterPredicate<NavigationPosition> {
-    private final List<WaypointType> POINTS_OF_INTEREST_WAYPOINT_TYPES = asList(Photo, PointOfInterest, Voice);
+    private final List<WaypointType> POINTS_OF_INTEREST_WAYPOINT_TYPES = asList(Photo, PointOfInterestC, PointOfInterestD, Voice);
 
     public String getName() {
         return "PointOfInterest";
