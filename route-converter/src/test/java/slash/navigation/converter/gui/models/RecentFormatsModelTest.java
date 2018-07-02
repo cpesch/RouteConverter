@@ -48,14 +48,14 @@ public class RecentFormatsModelTest {
     }
 
     @Test
-    public void testAddFormat() throws IOException {
+    public void testAddFormat() {
         NavigationFormat format = new Gpx11Format();
         recentFormatsModel.addFormat(format);
         assertEquals(singletonList(format), recentFormatsModel.getFormats());
     }
 
     @Test
-    public void testAddExistingFormat() throws IOException {
+    public void testAddExistingFormat() {
         NavigationFormat format = new Gpx11Format();
         recentFormatsModel.addFormat(format);
         recentFormatsModel.addFormat(format);
@@ -64,7 +64,7 @@ public class RecentFormatsModelTest {
     }
 
     @Test
-    public void testReadExistingFormatBug() throws IOException {
+    public void testReadExistingFormatBug() {
         NavigationFormat first = new Gpx11Format();
         NavigationFormat second = new Kml22Format();
         NavigationFormat third = new Tcx2Format();
@@ -76,7 +76,7 @@ public class RecentFormatsModelTest {
     }
 
     @Test
-    public void testLatestFirst() throws IOException {
+    public void testLatestFirst() {
         List<NavigationFormat> expected = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             NavigationFormat format = registry.getWriteFormats().get(i);
@@ -87,7 +87,7 @@ public class RecentFormatsModelTest {
     }
 
     @Test
-    public void testLimit() throws IOException {
+    public void testLimit() {
         List<NavigationFormat> collected = new ArrayList<>();
         for (int i = 0; i < 2 * LIMIT; i++) {
             NavigationFormat format = registry.getWriteFormats().get(i);

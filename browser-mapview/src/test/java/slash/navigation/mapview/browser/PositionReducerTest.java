@@ -71,18 +71,18 @@ public class PositionReducerTest {
     }
 
     @Test
-    public void testFilterEveryNthPositionEvenIncrement() throws Exception {
+    public void testFilterEveryNthPositionEvenIncrement() {
         filterEveryNthPosition(7, 4);
         filterEveryNthPosition(10, 4);
     }
 
     @Test
-    public void testFilterEveryNthPosition() throws Exception {
+    public void testFilterEveryNthPosition() {
         filterEveryNthPosition(1001, 17);
     }
 
     @Test
-    public void testFilterVisiblePosition() throws Exception {
+    public void testFilterVisiblePosition() {
         List<NavigationPosition> positions = new ArrayList<>();
         NavigationPosition one = asPosition(0.0, 0.0);
         positions.add(one);
@@ -107,7 +107,7 @@ public class PositionReducerTest {
     }
 
     @Test
-    public void testFilterVisiblePositionIncludingFirstAndLast() throws Exception {
+    public void testFilterVisiblePositionIncludingFirstAndLast() {
         List<NavigationPosition> positions = new ArrayList<>();
         NavigationPosition one = asPosition(0.0, 0.0);
         positions.add(one);

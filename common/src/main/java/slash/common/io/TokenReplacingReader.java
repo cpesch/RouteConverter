@@ -45,7 +45,7 @@ class TokenReplacingReader extends Reader {
         this.tokenResolver = resolver;
     }
 
-    public int read(CharBuffer target) throws IOException {
+    public int read(CharBuffer target) {
         throw new UnsupportedOperationException();
     }
 
@@ -105,7 +105,7 @@ class TokenReplacingReader extends Reader {
         pushbackReader.close();
     }
 
-    public long skip(long n) throws IOException {
+    public long skip(long n) {
         throw new UnsupportedOperationException();
     }
 
@@ -117,11 +117,11 @@ class TokenReplacingReader extends Reader {
         return false;
     }
 
-    public void mark(int readAheadLimit) throws IOException {
+    public void mark(int readAheadLimit) {
         throw new UnsupportedOperationException();
     }
 
-    public void reset() throws IOException {
+    public void reset() {
         throw new UnsupportedOperationException();
     }
 }

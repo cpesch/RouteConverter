@@ -77,7 +77,7 @@ public class BaseUrlParsingFormatTest {
             throw new UnsupportedOperationException();
         }
 
-        public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
+        public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
             throw new UnsupportedOperationException();
         }
 

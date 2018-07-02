@@ -133,7 +133,7 @@ public class GeoNamesService implements ElevationService, GeocodingService {
         return elevation != null ? elevation.doubleValue() : null;
     }
 
-    public List<NavigationPosition> getPositionsFor(String address) throws IOException {
+    public List<NavigationPosition> getPositionsFor(String address) {
         return null; // not supported
     }
 

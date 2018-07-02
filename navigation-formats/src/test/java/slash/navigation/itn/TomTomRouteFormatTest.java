@@ -129,7 +129,7 @@ public class TomTomRouteFormatTest {
     }
 
     @Test
-    public void testSinglePositionFile() throws IOException {
+    public void testSinglePositionFile() {
         TomTomPosition position = format.parsePosition("883644|4939999|kommandantenhaus|2|");
         assertEquals(883644, position.getLongitudeAsInt().intValue());
         assertEquals(4939999, position.getLatitudeAsInt().intValue());

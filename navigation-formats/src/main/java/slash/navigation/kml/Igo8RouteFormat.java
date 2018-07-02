@@ -115,7 +115,7 @@ public class Igo8RouteFormat extends Kml22Format {
         return kmlType;
     }
 
-    public void write(List<KmlRoute> routes, OutputStream target) throws IOException {
+    public void write(List<KmlRoute> routes, OutputStream target) {
         throw new UnsupportedOperationException();
     }
 }

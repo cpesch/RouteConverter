@@ -63,7 +63,7 @@ public class Nmn5Format extends NmnFormat {
 
     private static String parseForNmn5(String string) {
         String result = trim(string);
-        if (result != null && "-".equals(result))
+        if ("-".equals(result))
             result = null;
         if (result != null && result.length() > 2)
             result = toMixedCase(result);

@@ -55,7 +55,8 @@
     </scm>
 
     <properties>
-        <targetJdk>1.7</targetJdk>
+        <java.version>1.7</java.version>
+        <maven.version>3.5</maven.version>
         <brouter.version>1.4.9</brouter.version>
         <graphhopper.version>0.10.1</graphhopper.version>
         <jackson.version>2.9.6</jackson.version>
@@ -103,8 +104,8 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.7.0</version>
                     <configuration>
-                        <source>${targetJdk}</source>
-                        <target>${targetJdk}</target>
+                        <source>${java.version}</source>
+                        <target>${java.version}</target>
                         <encoding>Cp1252</encoding>
                     </configuration>
                 </plugin>
@@ -125,8 +126,11 @@
                             </goals>
                             <configuration>
                                 <rules>
+                                    <requireJavaVersion>
+                                        <version>${java.version}</version>
+                                    </requireJavaVersion>
                                     <requireMavenVersion>
-                                        <version>3.5</version>
+                                        <version>${maven.version}</version>
                                     </requireMavenVersion>
                                 </rules>
                             </configuration>
@@ -398,7 +402,6 @@
         <module>graphhopper</module>
         <module>gpx</module>
         <module>hgt</module>
-        <module>javafx7-mapview</module>
         <module>javafx8-mapview</module>
         <module>kml</module>
         <module>mapsforge-maps</module>

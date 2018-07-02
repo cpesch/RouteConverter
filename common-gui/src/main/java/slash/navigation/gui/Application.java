@@ -180,9 +180,6 @@ public abstract class Application {
     protected void parseInitialArgs(String[] args) {
     }
 
-    protected void parseNewActivationArgs(String[] args) {
-    }
-
     public/*for ExitAction*/ void exit(EventObject event) {
         for (ExitListener listener : exitListeners) {
             if (!listener.canExit(event)) {
@@ -190,13 +187,6 @@ public abstract class Application {
             }
         }
         try {
-            for (ExitListener listener : exitListeners) {
-                try {
-                    listener.willExit(event);
-                } catch (Exception e) {
-                    log.log(WARNING, "ExitListener.willExit() failed", e);
-                }
-            }
             shutdown();
         } catch (Exception e) {
             log.log(WARNING, "Unexpected error in Application.shutdown()", e);
@@ -207,8 +197,6 @@ public abstract class Application {
 
     public interface ExitListener extends EventListener {
         boolean canExit(EventObject event);
-
-        void willExit(EventObject event);
     }
 
     public void addExitListener(ExitListener listener) {

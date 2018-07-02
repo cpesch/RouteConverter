@@ -37,7 +37,7 @@ public class Kml22FormatTest {
     private Kml22Format format = new Kml22Format();
 
     @Test
-    public void testAsPositions() throws IOException {
+    public void testAsPositions() {
         List<String> strings = asList("151.2393322528181,-33.59862693992532,0",
                 "151.2274390264927,-33.59631160091919,1.5");
         List<KmlPosition> positions = format.asKmlPositions(strings);

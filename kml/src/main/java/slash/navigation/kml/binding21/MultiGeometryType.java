@@ -77,7 +77,7 @@ public class MultiGeometryType
      */
     public List<JAXBElement<? extends GeometryType>> getGeometry() {
         if (geometry == null) {
-            geometry = new ArrayList<JAXBElement<? extends GeometryType>>();
+            geometry = new ArrayList<>();
         }
         return this.geometry;
     }

@@ -57,7 +57,6 @@ public interface MapView extends PositionsSelectionModel {
                     GoogleMapsServerModel googleMapsServerModel);
     boolean isInitialized();
     boolean isDownload();
-    boolean isSupportsPrinting();
     String getMapsPath();
     void setMapsPath(String path) throws IOException;
     String getThemesPath();

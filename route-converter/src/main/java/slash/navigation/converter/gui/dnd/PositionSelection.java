@@ -100,7 +100,7 @@ public class PositionSelection implements Transferable {
         return false;
     }
 
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
         if (POSITION_FLAVOR.equals(flavor))
             return this;
         if (STRING_FLAVOR.equals(flavor))

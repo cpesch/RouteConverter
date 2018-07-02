@@ -133,7 +133,7 @@ public class MotoPlanerUrlFormat extends BaseUrlParsingFormat {
         return buffer.toString();
     }
 
-    public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
+    public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
         List<Wgs84Position> positions = route.getPositions();
         writer.println("[InternetShortcut]");
         // idea from forum: add start point from previous route section since your not at the

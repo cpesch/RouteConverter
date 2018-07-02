@@ -83,7 +83,7 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
-    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) {
         // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
         throw new UnsupportedOperationException();
     }
@@ -126,7 +126,7 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
+    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) {
         throw new UnsupportedOperationException();
     }
 }

@@ -51,7 +51,7 @@ public class CategorySelection implements Transferable {
         return categoryFlavor.equals(flavor);
     }
 
-    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException, IOException {
+    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
         if (!isDataFlavorSupported(flavor))
             throw new UnsupportedFlavorException(categoryFlavor);
         return categories;

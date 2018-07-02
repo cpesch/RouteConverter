@@ -49,7 +49,7 @@ public class QueuePersisterIT {
     }
 
     @Test
-    public void testSaveAndLoadNow() throws IOException, JAXBException {
+    public void testSaveAndLoadNow() throws IOException {
         persister.save(queueFile, new ArrayList<Download>());
 
         List<Download> result = persister.load(queueFile);

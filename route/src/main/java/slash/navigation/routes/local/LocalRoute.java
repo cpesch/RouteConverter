@@ -58,11 +58,11 @@ public class LocalRoute implements Route {
         }
     }
 
-    public String getName() throws IOException {
+    public String getName() {
         return file.getName();
     }
 
-    public String getDescription() throws IOException {
+    public String getDescription() {
         if(!file.exists())
             return "broken link: " + file.getName();
         return file.getName();
@@ -77,7 +77,7 @@ public class LocalRoute implements Route {
         return owner.getName();
     }
 
-    public String getUrl() throws IOException {
+    public String getUrl() {
         return getHref();
     }
 

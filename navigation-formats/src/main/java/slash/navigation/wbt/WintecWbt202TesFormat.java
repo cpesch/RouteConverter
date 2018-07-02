@@ -55,7 +55,7 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
         return 3 * 16; 
     }
 
-    protected boolean checkFormatDescriptor(ByteBuffer buffer) throws IOException {
+    protected boolean checkFormatDescriptor(ByteBuffer buffer) {
         buffer.order(LITTLE_ENDIAN);
         buffer.position(0);
 

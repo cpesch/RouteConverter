@@ -42,7 +42,7 @@ class ClassPathURLConnection extends URLConnection {
         this.classLoader = classLoader;
     }
 
-    public void connect() throws IOException {
+    public void connect() {
     }
 
     public InputStream getInputStream() throws IOException {

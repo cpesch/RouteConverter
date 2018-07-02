@@ -41,7 +41,7 @@ class JarInJarURLStreamHandler extends URLStreamHandler {
         this.classLoader = classLoader;
     }
 
-    protected URLConnection openConnection(URL url) throws IOException {
+    protected URLConnection openConnection(URL url) {
         return new ClassPathURLConnection(url, classLoader);
     }
 

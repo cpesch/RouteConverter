@@ -374,7 +374,7 @@ public class GeoTagger {
                 return "UpdateClosestPositionForTagging";
             }
 
-            public boolean run(int index, NavigationPosition navigationPosition) throws Exception {
+            public boolean run(int index, NavigationPosition navigationPosition) {
                 if (!(navigationPosition instanceof PhotoPosition))
                     return false;
 

@@ -77,7 +77,7 @@ public class DocumentType
      */
     public List<JAXBElement<? extends FeatureType>> getFeature() {
         if (feature == null) {
-            feature = new ArrayList<JAXBElement<? extends FeatureType>>();
+            feature = new ArrayList<>();
         }
         return this.feature;
     }

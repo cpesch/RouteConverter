@@ -32,7 +32,7 @@ public abstract class RouteFeedbackServiceBase {
     protected RouteFeedback routeFeedback;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         routeFeedback = new RouteFeedback(FEEDBACK, API, new SimpleCredentials(USERNAME, PASSWORD));
     }
 }

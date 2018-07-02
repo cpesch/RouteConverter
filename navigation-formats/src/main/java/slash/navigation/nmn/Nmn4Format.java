@@ -72,7 +72,7 @@ public class Nmn4Format extends NmnFormat {
 
     private static String parseForNmn4(String string) {
         String result = trim(string);
-        if (result != null && "-".equals(result))
+        if ("-".equals(result))
             result = null;
         // this was currently only in NMN5, try it out for NMN4, too
         if (result != null && result.length() > 2)

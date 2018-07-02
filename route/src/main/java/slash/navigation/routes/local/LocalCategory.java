@@ -68,7 +68,7 @@ public class LocalCategory implements Category {
         }
     }
 
-    public String getName() throws IOException {
+    public String getName() {
         return directory.getName();
     }
 

@@ -194,16 +194,16 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         }, "BabelStreamPumper-" + streamName).start();
     }
 
-    private Process startBabel(InputStream source, String sourceFormat, String targetFormat, String[] commandLineFlags) throws IOException {
+    private Process startBabel(InputStream source, String sourceFormat, String[] commandLineFlags) throws IOException {
         String babel = findBabel();
-        Process process = execute(babel, sourceFormat, targetFormat, commandLineFlags);
+        Process process = execute(babel, sourceFormat, BABEL_INTERFACE_FORMAT_NAME, commandLineFlags);
         pumpStream(source, process.getOutputStream(), "input", true);
         pumpStream(process.getErrorStream(), System.err, "error", false);
         return process;
     }
 
     private void readStream(InputStream source, ParserContext<GpxRoute> context) throws Exception {
-        Process process = startBabel(source, getFormatName(), BABEL_INTERFACE_FORMAT_NAME, getGlobalOptions());
+        Process process = startBabel(source, getFormatName(), getGlobalOptions());
         Thread observer = observeProcess(process, getReadCommandExecutionTimeoutPreference());
         observer.start();
         InputStream target = process.getInputStream();

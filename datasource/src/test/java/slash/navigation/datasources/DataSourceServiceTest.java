@@ -83,7 +83,7 @@ public class DataSourceServiceTest {
     }
 
     @Test
-    public void testBaseUrl() throws IOException {
+    public void testBaseUrl() {
         List<DataSource> dataSources = service.getDataSources();
 
         String baseUrl1 = "http://local1/1/";

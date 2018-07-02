@@ -47,12 +47,12 @@ public class FilesTest {
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         assertTrue(file.delete());
     }
 
     @Test
-    public void testNumberToString() throws IOException {
+    public void testNumberToString() {
         assertEquals("5", numberToString(5, 9));
         assertEquals("05", numberToString(5, 10));
         assertEquals("005", numberToString(5, 100));
@@ -60,7 +60,7 @@ public class FilesTest {
     }
 
     @Test
-    public void testCalculateConvertFileName() throws IOException {
+    public void testCalculateConvertFileName() {
         int FILE_NAME_LENGTH = 18;
 
         assertEquals(new File(file.getParentFile(), "convert.itn").getAbsolutePath(),
@@ -105,7 +105,7 @@ public class FilesTest {
     }
 
     @Test
-    public void testCalculateConvertFileNameLimitedLength() throws IOException {
+    public void testCalculateConvertFileNameLimitedLength() {
         int FILE_NAME_LENGTH = 4;
 
         assertEquals(new File(file.getParentFile(), "conv.itn").getAbsolutePath(),
@@ -132,7 +132,7 @@ public class FilesTest {
     }
 
     @Test
-    public void testCalculateConvertFileNameThrowsException() throws IOException {
+    public void testCalculateConvertFileNameThrowsException() {
         try {
             calculateConvertFileName(file, 10000, 10000, "gpx", 64);
             assertTrue("IllegalArgumentException expected", false);
