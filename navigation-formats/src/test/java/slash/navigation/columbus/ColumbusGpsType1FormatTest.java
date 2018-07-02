@@ -124,8 +124,14 @@ public class ColumbusGpsType1FormatTest {
     }
 
     @Test
-    public void testParseTypeBPOIPosition() {
+    public void testParseTypeBPOICPosition() {
         Wgs84Position position = format.parsePosition("7     ,C,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", new ParserContextImpl());
-        assertEquals("PointOfInterest 7", position.getDescription());
+        assertEquals("PointOfInterestC 7", position.getDescription());
+    }
+
+    @Test
+    public void testParseTypeBPOIDPosition() {
+        Wgs84Position position = format.parsePosition("8     ,D,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", new ParserContextImpl());
+        assertEquals("PointOfInterestD 8", position.getDescription());
     }
 }
