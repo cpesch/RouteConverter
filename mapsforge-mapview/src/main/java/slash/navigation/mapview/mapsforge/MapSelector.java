@@ -48,6 +48,7 @@ import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.gui.events.Range.asRange;
+import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 import static slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer.DOWNLOAD_MAP;
 import static slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
 import static slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer.DOWNLOAD_THEME;
@@ -83,6 +84,9 @@ public class MapSelector {
                 mapView.setZoomLevel(zoom.byteValue());
             }
         });
+        int width = getMaxWidth("19", 0);
+        comboBoxZoom.setMaximumSize(new Dimension(width, comboBoxZoom.getMaximumSize().height));
+        comboBoxZoom.setPreferredSize(new Dimension(width, comboBoxZoom.getPreferredSize().height));
 
         final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.addObserver(new Observer() {
@@ -183,7 +187,7 @@ public class MapSelector {
         panel1.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         comboBoxZoom = new JComboBox();
         comboBoxZoom.setFocusable(false);
-        panel1.add(comboBoxZoom, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(40, -1), new Dimension(40, -1), 0, false));
+        panel1.add(comboBoxZoom, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         mapViewPanel = new JPanel();
         mapViewPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(mapViewPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
