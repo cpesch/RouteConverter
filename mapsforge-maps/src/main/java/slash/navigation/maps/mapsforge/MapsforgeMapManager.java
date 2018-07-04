@@ -51,6 +51,7 @@ import java.util.prefs.Preferences;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.sort;
+import static org.mapsforge.map.rendertheme.InternalRenderTheme.DEFAULT;
 import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Directories.ensureDirectory;
@@ -74,6 +75,7 @@ public class MapsforgeMapManager {
     private static final String THEME_DIRECTORY_PREFERENCE = "themeDirectory";
     private static final String DISPLAYED_MAP_PREFERENCE = "displayedMap";
     private static final String APPLIED_THEME_PREFERENCE = "appliedTheme";
+    private static final String DEFAULT_URL = "http://wiki.openstreetmap.org/wiki/Default";
     private static final String OSMARENDER_URL = "http://wiki.openstreetmap.org/wiki/Osmarender";
     private static final String DOT_MAP = ".map";
 
@@ -193,7 +195,7 @@ public class MapsforgeMapManager {
     }
 
     private void initializeBuiltinThemes() {
-        availableThemesModel.clear();
+        availableThemesModel.addOrUpdateItem(new VectorTheme("OpenStreetMap Default", DEFAULT_URL, DEFAULT));
         availableThemesModel.addOrUpdateItem(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
     }
 
@@ -233,6 +235,7 @@ public class MapsforgeMapManager {
     public synchronized void scanThemes() throws IOException {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
+                availableThemesModel.clear();
                 initializeBuiltinThemes();
             }
         });
