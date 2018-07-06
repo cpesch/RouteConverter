@@ -71,6 +71,13 @@ public class ExternalPrograms {
         startBrowser(window, "https://hosted.weblate.org/engage/routeconverter/");
     }
 
+    public static void startBrowserForGoogleAPIKey(Window window) {
+        String url = isGerman() ?
+                "https://forum.routeconverter.com/thread-2489.html" :
+                "https://forum.routeconverter.com/thread-2501.html";
+        startBrowser(window, url);
+    }
+
     public static void startBrowserForTimeAlbumProSupport(Window window) {
         startMail(window, "mailto:columbusservice@hotmail.com");
     }

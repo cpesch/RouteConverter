@@ -78,6 +78,10 @@ public class RouteConverterOffline extends RouteConverter {
         return "offline";
     }
 
+    protected void checkForGoogleMapsAPIKey() {
+        // intentionally left empty since the OpenSource Edition should not depend on Google
+    }
+
     public List<MapViewImplementation> getAvailableMapViews() {
         return singletonList(Mapsforge);
     }
@@ -109,9 +113,9 @@ public class RouteConverterOffline extends RouteConverter {
     }
 
     protected void initializeElevationServices() {
-        AutomaticElevationService automaticElevationService = new AutomaticElevationService(getElevationServiceFacade());
-        getElevationServiceFacade().addElevationService(automaticElevationService);
-        getElevationServiceFacade().setPreferredElevationService(automaticElevationService);
+        AutomaticElevationService service = new AutomaticElevationService(getElevationServiceFacade());
+        getElevationServiceFacade().addElevationService(service);
+        getElevationServiceFacade().setPreferredElevationService(service);
 
         getHgtFilesService().initialize();
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
@@ -120,9 +124,9 @@ public class RouteConverterOffline extends RouteConverter {
     }
 
     protected void initializeGeocodingServices() {
-        AutomaticGeocodingService automaticGeocodingService = new AutomaticGeocodingService(getGeocodingServiceFacade());
-        getGeocodingServiceFacade().addGeocodingService(automaticGeocodingService);
-        getGeocodingServiceFacade().setPreferredGeocodingService(automaticGeocodingService);
+        AutomaticGeocodingService service = new AutomaticGeocodingService(getGeocodingServiceFacade());
+        getGeocodingServiceFacade().addGeocodingService(service);
+        getGeocodingServiceFacade().setPreferredGeocodingService(service);
 
         getGeocodingServiceFacade().addGeocodingService(new GeoNamesService());
         getGeocodingServiceFacade().addGeocodingService(new NominatimService());

@@ -96,13 +96,13 @@ import static slash.common.helpers.LocaleHelper.DENMARK;
 import static slash.common.helpers.LocaleHelper.SERBIA;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.*;
+import static slash.common.io.Transfer.trim;
 import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.*;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX8;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
 import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIONS;
@@ -227,6 +227,7 @@ public class RouteConverter extends SingleFrameApplication {
     protected void startup() {
         initializeLogging();
         checkJavaPrequisites();
+        checkForGoogleMapsAPIKey();
         show();
         checkForMissingTranslator();
         updateChecker.implicitCheck(getFrame());
@@ -248,6 +249,22 @@ public class RouteConverter extends SingleFrameApplication {
             showMessageDialog(null, "Java " + currentVersion + " contains a fatal bug in JavaFX on Windows. Please update to Java 8 Update 152 or Java 9 or 10.", "RouteConverter", ERROR_MESSAGE);
             System.exit(9);
         }
+    }
+
+    protected void checkForGoogleMapsAPIKey() {
+        String apiKey = APIKeyRegistry.getInstance().getAPIKey("google", "map");
+        if (apiKey != null)
+            return;
+
+        JLabel labelGoogleAPIKeyMissing = new JLabel(MessageFormat.format(getBundle().getString("google-apikey-missing"), getEdition()));
+        labelGoogleAPIKeyMissing.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                startBrowserForGoogleAPIKey(getFrame());
+            }
+        });
+        String input = showInputDialog(getFrame(), labelGoogleAPIKeyMissing, getTitle(), QUESTION_MESSAGE);
+        if (trim(input) != null)
+            APIKeyRegistry.getInstance().setAPIKeyPreference("google", input);
     }
 
     protected void parseInitialArgs(String[] args) {
@@ -286,10 +303,10 @@ public class RouteConverter extends SingleFrameApplication {
             JLabel labelTranslatorMissing = new JLabel(MessageFormat.format(getBundle().getString("translator-missing"), language));
             labelTranslatorMissing.addMouseListener(new MouseAdapter() {
                 public void mouseClicked(MouseEvent me) {
-                    startBrowserForTranslation(frame);
+                    startBrowserForTranslation(getFrame());
                 }
             });
-            showMessageDialog(frame, labelTranslatorMissing, frame.getTitle(), QUESTION_MESSAGE);
+            showMessageDialog(getFrame(), labelTranslatorMissing, getTitle(), QUESTION_MESSAGE);
             preferences.putBoolean(SHOWED_MISSING_TRANSLATOR_PREFERENCE, true);
         }
     }
@@ -1336,9 +1353,9 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeElevationServices() {
-        AutomaticElevationService automaticElevationService = new AutomaticElevationService(getElevationServiceFacade());
-        getElevationServiceFacade().addElevationService(automaticElevationService);
-        getElevationServiceFacade().setPreferredElevationService(automaticElevationService);
+        AutomaticElevationService service = new AutomaticElevationService(getElevationServiceFacade());
+        getElevationServiceFacade().addElevationService(service);
+        getElevationServiceFacade().setPreferredElevationService(service);
 
         getElevationServiceFacade().addElevationService(new GoogleService());
 
@@ -1357,9 +1374,9 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     protected void initializeGeocodingServices() {
-        AutomaticGeocodingService automaticGeocodingService = new AutomaticGeocodingService(getGeocodingServiceFacade());
-        getGeocodingServiceFacade().addGeocodingService(automaticGeocodingService);
-        getGeocodingServiceFacade().setPreferredGeocodingService(automaticGeocodingService);
+        AutomaticGeocodingService service = new AutomaticGeocodingService(getGeocodingServiceFacade());
+        getGeocodingServiceFacade().addGeocodingService(service);
+        getGeocodingServiceFacade().setPreferredGeocodingService(service);
 
         getGeocodingServiceFacade().addGeocodingService(new GoogleService());
     }
