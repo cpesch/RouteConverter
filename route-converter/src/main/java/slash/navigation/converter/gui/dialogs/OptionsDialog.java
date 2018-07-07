@@ -235,6 +235,7 @@ public class OptionsDialog extends SimpleDialog {
                 handleMapServiceUpdate();
             }
         });
+        handleMapServiceUpdate();
         textFieldMapsPath.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent de) {
                 MapView service = r.getMapView();
@@ -285,7 +286,6 @@ public class OptionsDialog extends SimpleDialog {
                 chooseThemePath();
             }
         });
-        handleMapServiceUpdate();
 
         ComboBoxModel<GoogleMapsServer> googleMapsServerModel = new DefaultComboBoxModel<>(new GoogleMapsServer[]{
                 International, China, Ditu, Uzbekistan
