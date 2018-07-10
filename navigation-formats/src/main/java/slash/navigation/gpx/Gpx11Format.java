@@ -276,7 +276,6 @@ public class Gpx11Format extends GpxFormat {
 
     private List<RteType> createRoute(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        List<RteType> rteTypes = new ArrayList<>();
         RteType rteType = route.getOrigin(RteType.class);
         if (rteType != null)
             rteType.getRtept().clear();
@@ -286,6 +285,7 @@ public class Gpx11Format extends GpxFormat {
             rteType.setName(asRouteName(route.getName()));
             rteType.setDesc(asDescription(route.getDescription()));
         }
+        List<RteType> rteTypes = new ArrayList<>();
         rteTypes.add(rteType);
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {

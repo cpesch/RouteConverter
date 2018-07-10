@@ -224,7 +224,7 @@ public class Files {
         return number > 999 ? 4 : (number > 99 ? 3 : (number > 9 ? 2 : (number > 0 ? 1 : 0)));
     }
 
-    public static String numberToString(int number, int maximum) {
+    static String numberToString(int number, int maximum) {
         if (number > 9999)
             throw new IllegalArgumentException("Number " + number + " is too large.");
         if (maximum > 9999)
@@ -240,7 +240,7 @@ public class Files {
         return result.toString();
     }
 
-    public static String calculateConvertFileName(File file, int index, int maximum, String extension, int fileNameLength) {
+    static String calculateConvertFileName(File file, int index, int maximum, String extension, int fileNameLength) {
         String name = file.getName();
         name = removeExtension(name);
         name = name.substring(0, min(name.length(), fileNameLength));
@@ -377,8 +377,8 @@ public class Files {
      * with the given extension
      */
     public static List<File> collectFiles(File path, String extension) {
-        List<File> list = new ArrayList<>(1);
         extension = extension != null ? extension.toLowerCase() : null;
+        List<File> list = new ArrayList<>(1);
         recursiveCollect(path, false, true, extension, list);
         return list;
     }

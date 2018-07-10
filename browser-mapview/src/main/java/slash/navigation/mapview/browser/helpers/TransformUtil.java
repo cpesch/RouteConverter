@@ -34,7 +34,7 @@ public class TransformUtil {
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    public static boolean outOfChina(double lat, double lng) {
+    private static boolean outOfChina(double lat, double lng) {
         if ((lng < 72.004) || (lng > 137.8347)) {
             return true;
         }
@@ -63,7 +63,6 @@ public class TransformUtil {
     }
 
     public static double[] delta(double lat,double lng){
-        double[] delta = new double[2];
         double a = 6378245.0;
         double ee = 0.00669342162296594323;
         double dLat = transformLat(lng-105.0, lat-35.0);
@@ -72,6 +71,7 @@ public class TransformUtil {
         double magic = Math.sin(radLat);
         magic = 1 - ee*magic*magic;
         double sqrtMagic = Math.sqrt(magic);
+        double[] delta = new double[2];
         delta[0] = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * Math.PI);
         delta[1] = (dLng * 180.0) / (a / sqrtMagic * Math.cos(radLat) * Math.PI);
         return delta;

@@ -280,11 +280,11 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public int[] getPositionsWithinDistanceToPredecessor(double distance) {
-        List<Integer> result = new ArrayList<>();
         List<P> positions = getPositions();
         if (positions.size() <= 2)
             return new int[0];
         P previous = positions.get(0);
+        List<Integer> result = new ArrayList<>();
         for (int i = 1; i < positions.size() - 1; i++) {
             P next = positions.get(i);
             if (!next.hasCoordinates() || toDouble(next.calculateDistance(previous)) <= distance)

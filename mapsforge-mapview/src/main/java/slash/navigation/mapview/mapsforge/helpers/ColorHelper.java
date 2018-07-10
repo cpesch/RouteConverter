@@ -37,9 +37,9 @@ public class ColorHelper {
     }
 
     static int asRGBA(Color color) {
-        int rgba = color.getRGB();
         int alpha = MINIMUM_ALPHA + (int)(color.getAlpha() * (256.0 / MINIMUM_ALPHA) * 256.0);
         alpha = alpha << 24;
+        int rgba = color.getRGB();
         return alpha | rgba;
     }
 }

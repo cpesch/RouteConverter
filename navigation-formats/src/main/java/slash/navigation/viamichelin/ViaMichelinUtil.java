@@ -66,10 +66,9 @@ class ViaMichelinUtil {
 
     private static XMLReader createXMLReader() throws JAXBException {
         SAXParserFactory parserFactory = SAXParserFactory.newInstance();
-        SAXParser saxParser;
         XMLReader xmlReader;
         try {
-            saxParser = parserFactory.newSAXParser();
+            SAXParser saxParser = parserFactory.newSAXParser();
             xmlReader = saxParser.getXMLReader();
         } catch (ParserConfigurationException e) {
             throw new JAXBException("Parser configuration error: " + e, e);

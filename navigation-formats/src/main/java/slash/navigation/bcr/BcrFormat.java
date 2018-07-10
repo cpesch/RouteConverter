@@ -90,7 +90,6 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
 
     public void read(BufferedReader reader, String encoding, ParserContext<BcrRoute> context) throws IOException {
         List<BcrSection> sections = new ArrayList<>();
-        List<BcrPosition> positions = new ArrayList<>();
         BcrSection current = null;
 
         while (true) {
@@ -116,6 +115,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         }
 
         if (hasValidSections(sections)) {
+            List<BcrPosition> positions = new ArrayList<>();
             extractPositions(sections, positions);
             if (positions.size() >= 2) {
                 context.appendRoute(new BcrRoute(this, sections, positions));
@@ -131,7 +131,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
         return matcher.matches();
     }
 
-    String parseSectionTitle(String line) {
+    private String parseSectionTitle(String line) {
         Matcher matcher = SECTION_TITLE_PATTERN.matcher(line);
         if (!matcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

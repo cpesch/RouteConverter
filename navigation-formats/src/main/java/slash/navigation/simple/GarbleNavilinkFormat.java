@@ -113,11 +113,11 @@ public class GarbleNavilinkFormat extends NavilinkFormat implements GarbleNaviga
 
         List<Wgs84Route> result = new ArrayList<>();
         Wgs84Route activeRoute = null;
-        Wgs84Position position;
         Wgs84Position previousPosition = null;
         int readBytes = 0, pointCount = 0;
         while (source.read(record) == SBP_RECORD_LENGTH) {
             readBytes += SBP_RECORD_LENGTH;
+            Wgs84Position position;
             do {
                 sbpRecordByteBuffer.position(0);
                 position = decodePosition(sbpRecordByteBuffer);

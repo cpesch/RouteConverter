@@ -47,7 +47,7 @@ class OvlSection extends IniFileSection {
     static final String Y_POSITION = "YKoord";
     static final String TEXT = "Text";
 
-    public OvlSection(String title) {
+    OvlSection(String title) {
         super(title);
     }
 
@@ -73,7 +73,6 @@ class OvlSection extends IniFileSection {
     }
 
     Wgs84Position getPosition(int index) {
-        Double x, y;
         String indexKey = getPositionCount() > 1 ? Integer.toString(index) : "";
         String xValue = trim(get(X_POSITION + indexKey));
         String yValue = trim(get(Y_POSITION + indexKey));
@@ -86,8 +85,8 @@ class OvlSection extends IniFileSection {
                 yValue = trim(matcher.group(2));
             }
         }
-        x = parseDouble(xValue);
-        y = parseDouble(yValue);
+        Double x = parseDouble(xValue);
+        Double y = parseDouble(yValue);
         return asWgs84Position(x, y, description);
     }
 

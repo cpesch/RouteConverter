@@ -85,13 +85,13 @@ public class AddPositionAction extends FrameAction {
     }
 
     public void run() {
-        boolean hasInsertedRowInMapCenter = false;
         List<NavigationPosition> insertedPositions = new ArrayList<>();
         int[] rowIndices = revert(table.getSelectedRows());
         // append to table if there is nothing selected
         boolean areRowsSelected = rowIndices.length > 0;
         if (!areRowsSelected)
             rowIndices = new int[]{table.getRowCount()};
+        boolean hasInsertedRowInMapCenter = false;
         for (int row : rowIndices) {
             int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
 

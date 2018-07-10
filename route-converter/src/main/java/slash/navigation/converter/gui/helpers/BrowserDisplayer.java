@@ -131,11 +131,11 @@ public class BrowserDisplayer extends JButton implements ActionListener, ViewAwa
     public void setViewData(View v) {
         doc = (HTMLDocument) v.getDocument();
 
-        Font font = getFont();
         textAttribs = new SimpleAttributeSet();
         textAttribs.removeAttribute(FontSize);
         textAttribs.removeAttribute(Bold);
         textAttribs.removeAttribute(Italic);
+        Font font = getFont();
         textAttribs.addAttribute(FontFamily, font.getName());
         textAttribs.addAttribute(FontSize, font.getSize());
         textAttribs.addAttribute(Bold, font.isBold());

@@ -530,12 +530,13 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.putInt(1); // 4 Byte always 1
         byteBuffer.putInt(2); // count following "02 00 00 00" Block.
 
+        // unix timestamp
         int timeStamp = (int) (System.currentTimeMillis() / 1000L);
-        byte unknownBytes[] = new byte[]{ //copied from itconv export
+        byteBuffer.putInt(timeStamp);
+        //copied from itconv export
+        byte unknownBytes[] = new byte[]{
                 (byte) 0x28, (byte) 0x00, (byte) 0x00, (byte) 0x00
         };
-        //unix timestamp
-        byteBuffer.putInt(timeStamp);
         byteBuffer.put(unknownBytes);
 
         byteBuffer.putInt(4); // starttag

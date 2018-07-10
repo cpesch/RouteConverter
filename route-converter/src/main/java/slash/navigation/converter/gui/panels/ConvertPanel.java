@@ -537,7 +537,7 @@ public class ConvertPanel implements PanelInTab {
     private final ExecutorService openExecutor = createSingleThreadExecutor("OpenPositionList");
 
     @SuppressWarnings("unchecked")
-    public void openPositionList(final List<URL> urls, final List<NavigationFormat> formats) {
+    private void openPositionList(final List<URL> urls, final List<NavigationFormat> formats) {
         final RouteConverter r = RouteConverter.getInstance();
 
         final URL url = urls.get(0);
@@ -994,7 +994,6 @@ public class ConvertPanel implements PanelInTab {
         boolean existsAPosition = positionsModel.getRowCount() > 0;
         boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
-        RouteCharacteristics characteristics = characteristicsModel.getSelectedCharacteristics();
 
         buttonMovePositionToTop.setEnabled(firstRowNotSelected);
         buttonMovePositionUp.setEnabled(firstRowNotSelected);
@@ -1454,13 +1453,11 @@ public class ConvertPanel implements PanelInTab {
             try {
                 if (support.isDataFlavorSupported(POSITION_FLAVOR)) {
                     Object selection = transferable.getTransferData(POSITION_FLAVOR);
-                    if (selection != null) {
-                        PositionSelection positionsSelection = (PositionSelection) selection;
-                        int[] rows = toRows(positionsSelection.getPositions());
-                        if (rows.length > 0) {
-                            moveRows(rows, support);
-                            return true;
-                        }
+                    PositionSelection positionsSelection = (PositionSelection) selection;
+                    int[] rows = toRows(positionsSelection.getPositions());
+                    if (rows.length > 0) {
+                        moveRows(rows, support);
+                        return true;
                     }
                 }
             } catch (UnsupportedFlavorException | IOException e) {

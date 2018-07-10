@@ -158,13 +158,13 @@ import static slash.navigation.mapview.browser.helpers.TransformUtil.isPositionI
  */
 
 public abstract class BrowserMapView implements MapView {
-    protected static final Preferences preferences = Preferences.userNodeForPackage(BrowserMapView.class);
-    protected static final Logger log = Logger.getLogger(MapView.class.getName());
+    static final Preferences preferences = Preferences.userNodeForPackage(BrowserMapView.class);
+    private static final Logger log = Logger.getLogger(MapView.class.getName());
     private static final String RESOURCES_PACKAGE = "slash/navigation/mapview/browser/";
 
     private static final String MAP_TYPE_PREFERENCE = "mapType";
-    protected static final String DEBUG_PREFERENCE = "debug";
-    protected static final String BROWSER_SCALE_FACTOR_PREFERENCE = "browserScaleFactor";
+    static final String DEBUG_PREFERENCE = "debug";
+    private static final String BROWSER_SCALE_FACTOR_PREFERENCE = "browserScaleFactor";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
     private static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
@@ -185,8 +185,8 @@ public abstract class BrowserMapView implements MapView {
     private ServerSocket callbackListenerServerSocket;
     private Thread positionListUpdater, selectionUpdater, callbackListener, callbackPoller;
 
-    protected final Object notificationMutex = new Object();
-    protected boolean initialized;
+    private final Object notificationMutex = new Object();
+    private boolean initialized;
     private boolean running = true, haveToInitializeMapOnFirstStart = true, haveToRepaintSelectionImmediately,
             haveToRepaintRouteImmediately, haveToRecenterMap,
             haveToUpdateRoute, haveToReplaceRoute,
@@ -1397,8 +1397,8 @@ public abstract class BrowserMapView implements MapView {
 
     private void processStream(Socket socket) throws IOException {
         List<String> lines = new ArrayList<>();
-        boolean processingPost = false, processingBody = false;
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024)) {
+            boolean processingPost = false, processingBody = false;
             while (true) {
                 try {
                     String line = trim(reader.readLine());
