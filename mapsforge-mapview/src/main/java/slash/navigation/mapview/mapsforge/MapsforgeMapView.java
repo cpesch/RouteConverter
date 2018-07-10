@@ -172,6 +172,8 @@ public class MapsforgeMapView implements MapView {
     private static final int SCROLL_DIFF_IN_PIXEL = 100;
     private static final int MINIMUM_VISIBLE_BORDER_IN_PIXEL = 20;
     private static final int SELECTION_CIRCLE_IN_PIXEL = 15;
+    private static final byte MINIMUM_ZOOM_LEVEL = 2;
+    private static final byte MAXIMUM_ZOOM_LEVEL = 22;
 
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
@@ -540,10 +542,13 @@ public class MapsforgeMapView implements MapView {
             }
         }, getKeyStroke(VK_DOWN, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
 
+        final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        mapViewPosition.setZoomLevelMin(MINIMUM_ZOOM_LEVEL);
+        mapViewPosition.setZoomLevelMax(MAXIMUM_ZOOM_LEVEL);
+
         double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
-        byte zoom = (byte) preferences.getInt(CENTER_ZOOM_PREFERENCE, 2);
-        final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        byte zoom = (byte) preferences.getInt(CENTER_ZOOM_PREFERENCE, MINIMUM_ZOOM_LEVEL);
         mapViewPosition.setMapPosition(new MapPosition(new LatLong(latitude, longitude), zoom));
 
         mapView.getModel().mapViewDimension.addObserver(new Observer() {
@@ -968,7 +973,7 @@ public class MapsforgeMapView implements MapView {
     private void limitZoomLevel() {
         LocalMap map = mapsToLayers.keySet().iterator().next();
 
-        byte zoomLevelMin = map.isVector() ? 2 : map.getTileSource().getZoomLevelMin();
+        byte zoomLevelMin = map.isVector() ? MINIMUM_ZOOM_LEVEL : map.getTileSource().getZoomLevelMin();
         // limit minimum zoom to prevent zooming out too much and losing the map
         MapViewDimension mapViewDimension = mapView.getModel().mapViewDimension;
         if (map.isVector() && mapViewDimension.getDimension() != null)
@@ -978,7 +983,7 @@ public class MapsforgeMapView implements MapView {
         MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setZoomLevelMin(zoomLevelMin);
 
-        byte zoomLevelMax = map.isVector() ? 22 : map.getTileSource().getZoomLevelMax();
+        byte zoomLevelMax = map.isVector() ? MAXIMUM_ZOOM_LEVEL : map.getTileSource().getZoomLevelMax();
         // limit maximum to prevent zooming in to grey area
         mapViewPosition.setZoomLevelMax(zoomLevelMax);
     }
