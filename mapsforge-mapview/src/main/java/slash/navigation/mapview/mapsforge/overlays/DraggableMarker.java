@@ -55,7 +55,7 @@ public class DraggableMarker extends Marker {
         return contains(viewPosition, tapPoint);
     }
 
-    public void onDrop(final LatLong latLong1) {
+    public void onDrop(final LatLong latLong) {
         final int index = positionsModel.getIndex(positionWithLayer.getPosition());
         if(index == -1) {
             log.warning("Marker without position " + this);
@@ -65,7 +65,7 @@ public class DraggableMarker extends Marker {
         invokeLater(new Runnable() {
             public void run() {
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                        Arrays.<Object>asList(latLong1.longitude, latLong1.latitude)), true, true);
+                        Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
             }
         });
     }
