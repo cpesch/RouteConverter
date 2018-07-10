@@ -171,8 +171,6 @@ public abstract class HttpRequest {
         clientBuilder.setDefaultRequestConfig(requestConfig);
         try {
             return clientBuilder.build().execute(method, context);
-        } catch (UnknownHostException e) {
-            throw new UnknownHostException(e.getMessage());
         } catch (SocketException e) {
             if (throwsSocketExceptionIfUnAuthorized())
                 return new BasicHttpResponse(HTTP_1_1, SC_UNAUTHORIZED, "socket exception since unauthorized");

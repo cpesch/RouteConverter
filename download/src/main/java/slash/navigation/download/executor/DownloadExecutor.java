@@ -28,10 +28,12 @@ import slash.navigation.download.performer.GetPerformer;
 import slash.navigation.download.performer.GetRangePerformer;
 import slash.navigation.download.performer.HeadPerformer;
 
+import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.navigation.download.State.*;
 
@@ -88,7 +90,8 @@ public class DownloadExecutor implements Runnable {
             performer.setDownloadExecutor(this);
             performer.run();
         } catch (Exception e) {
-            log.severe(format("Could not download content from %s: %s, %s", download.getUrl(), e, printStackTrace(e)));
+            log.severe(format("Failed to download content from %s: %s %s", download.getUrl(), getLocalizedMessage(e),
+                    e instanceof UnknownHostException ? "" : printStackTrace(e)));
             downloadFailed();
         }
 
