@@ -23,6 +23,7 @@ import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
+import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.mapview.mapsforge.AwtGraphicMapView;
@@ -51,7 +52,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     private final MapViewProjection projection;
     private final LayerManager layerManager;
     private Point lastMousePressPoint;
-    private DraggableMarker mousePressMarker;
+    private Marker mousePressMarker;
 
     public MapViewMoverAndZoomer(AwtGraphicMapView mapView, LayerManager layerManager) {
         this.mapView = mapView;
@@ -89,7 +90,8 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     public void mouseReleased(MouseEvent e) {
         if (isMousePressedOnMarker()) {
             LatLong latLong = projection.fromPixels(e.getX(), e.getY());
-            mousePressMarker.onDrop(latLong);
+            if(mousePressMarker instanceof DraggableMarker)
+                ((DraggableMarker)mousePressMarker).onDrop(latLong);
             mousePressMarker = null;
             stopWaitCursor(mapView);
         }
@@ -100,18 +102,18 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         zoomToMousePosition((byte) -e.getWheelRotation());
     }
 
-    private DraggableMarker getMarkerFor(MouseEvent e) {
+    private Marker getMarkerFor(MouseEvent e) {
         LatLong tapLatLong = projection.fromPixels(e.getX(), e.getY());
         org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(e.getX(), e.getY());
 
         for (int i = layerManager.getLayers().size() - 1; i >= 0; --i) {
             Layer layer = layerManager.getLayers().get(i);
-            if (!(layer instanceof DraggableMarker))
+            if (!(layer instanceof Marker))
                 continue;
 
             org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
             if (layer.onTap(tapLatLong, layerXY, tapXY))
-                return DraggableMarker.class.cast(layer);
+                return Marker.class.cast(layer);
         }
         return null;
     }
