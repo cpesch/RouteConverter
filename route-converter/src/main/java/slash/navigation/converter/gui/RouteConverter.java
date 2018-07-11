@@ -47,6 +47,7 @@ import slash.navigation.googlemaps.GoogleService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.*;
+import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.maps.tileserver.TileServerMapManager;

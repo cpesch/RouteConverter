@@ -22,6 +22,8 @@ package slash.navigation.gui.helpers;
 
 import com.bulenkov.iconloader.IconLoader;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.actions.ToggleBooleanModelAction;
+import slash.navigation.gui.models.BooleanModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -98,6 +100,15 @@ public class JMenuHelper {
         return item;
     }
 
+    public static JCheckBoxMenuItem createCheckBoxItem(String name, BooleanModel booleanModel) {
+        Action action = new ToggleBooleanModelAction(booleanModel);
+        Application.getInstance().getContext().getActionManager().register(name, action);
+        JCheckBoxMenuItem item = new JCheckBoxMenuItem(action);
+        item.setState(booleanModel.getBoolean());
+        initializeItem(name, item);
+        return item;
+    }
+
     public static JRadioButtonMenuItem createRadioItem(String name) {
         Action action = Application.getInstance().getContext().getActionManager().get(name);
         JRadioButtonMenuItem item = new JRadioButtonMenuItem(action);
@@ -165,7 +176,7 @@ public class JMenuHelper {
         return null;
     }
 
-    public static <T extends Component> T findMenuComponent(JMenu menu, String menuComponentName, Class<T> componentClass) {
+    private static <T extends Component> T findMenuComponent(JMenu menu, String menuComponentName, Class<T> componentClass) {
         for (int i = 0; i < menu.getMenuComponentCount(); i++) {
             Component component = menu.getMenuComponent(i);
             if (menuComponentName.equals(component.getName()) && componentClass.isInstance(component))

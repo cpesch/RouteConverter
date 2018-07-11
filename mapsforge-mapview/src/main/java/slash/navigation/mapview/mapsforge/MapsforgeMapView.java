@@ -35,6 +35,9 @@ import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.download.tilesource.TileSource;
+import org.mapsforge.map.layer.hills.DiffuseLightShadingAlgorithm;
+import org.mapsforge.map.layer.hills.HillsRenderConfig;
+import org.mapsforge.map.layer.hills.MemoryCachingHgtReaderTileSource;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.MapViewDimension;
@@ -52,7 +55,7 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
-import slash.navigation.converter.gui.models.BooleanModel;
+import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.FixMapModeModel;
@@ -60,6 +63,7 @@ import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsSelectionModel;
 import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
@@ -194,6 +198,7 @@ public class MapsforgeMapView implements MapView {
     private UnitSystemListener unitSystemListener = new UnitSystemListener();
     private DisplayedMapListener displayedMapListener = new DisplayedMapListener();
     private AppliedThemeListener appliedThemeListener = new AppliedThemeListener();
+    private ShadedHillsListener shadedHillsListener = new ShadedHillsListener();
 
     private MapSelector mapSelector;
     private AwtGraphicMapView mapView;
@@ -202,6 +207,7 @@ public class MapsforgeMapView implements MapView {
     private static Bitmap markerIcon, waypointIcon;
     private File backgroundMap;
     private TileRendererLayer backgroundLayer;
+    private HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
     private RouteRenderer routeRenderer;
@@ -431,6 +437,8 @@ public class MapsforgeMapView implements MapView {
         trackColorModel.addChangeListener(repaintPositionListListener);
         unitSystemModel.addChangeListener(unitSystemListener);
 
+        this.mapViewCallback.getShowShadedHills().addChangeListener(shadedHillsListener);
+
         initializeActions();
         initializeMapView();
         routeRenderer = new RouteRenderer(this, this.mapViewCallback, routeColorModel, GRAPHIC_FACTORY);
@@ -497,6 +505,7 @@ public class MapsforgeMapView implements MapView {
     private void initializeMapView() {
         mapView = createMapView();
         handleUnitSystem();
+        handleShadedHills();
 
         try {
             markerIcon = GRAPHIC_FACTORY.createResourceBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"), -1);
@@ -621,7 +630,9 @@ public class MapsforgeMapView implements MapView {
     }
 
     private TileRendererLayer createTileRendererLayer(File mapFile, String cacheId) {
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(cacheId), new MapFile(mapFile), mapView.getModel().mapViewPosition, true, true, true, GRAPHIC_FACTORY);
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(cacheId), new MapFile(mapFile),
+                mapView.getModel().mapViewPosition, true, true, true,
+                GRAPHIC_FACTORY, hillsRenderConfig);
         tileRendererLayer.setXmlRenderTheme(getMapManager().getAppliedThemeModel().getItem().getXmlRenderTheme());
         return tileRendererLayer;
     }
@@ -713,6 +724,25 @@ public class MapsforgeMapView implements MapView {
         log.info("Using map " + mapsToLayers.keySet() + " and theme " + getMapManager().getAppliedThemeModel().getItem() + " with zoom " + getZoom());
     }
 
+    private void handleShadedHills() {
+        hillsRenderConfig.setTileSource(null);
+
+        if (mapViewCallback.getShowShadedHills().getBoolean()) {
+            ElevationService elevationService = mapViewCallback.getElevationService();
+            if (elevationService.isDownload()) {
+                File directory = elevationService.getDirectory();
+                if (directory.exists()) {
+                    MemoryCachingHgtReaderTileSource tileSource = new MemoryCachingHgtReaderTileSource(directory, new DiffuseLightShadingAlgorithm(), GRAPHIC_FACTORY);
+                    tileSource.setEnableInterpolationOverlap(true);
+                    hillsRenderConfig.setTileSource(tileSource);
+                    hillsRenderConfig.indexOnThread();
+                }
+            }
+        }
+
+        handleMapAndThemeUpdate(false, false);
+    }
+
     private void replaceRoute() {
         synchronized (notificationMutex) {
             haveToReplaceRoute = true;
@@ -769,6 +799,7 @@ public class MapsforgeMapView implements MapView {
         routeColorModel.removeChangeListener(repaintPositionListListener);
         trackColorModel.removeChangeListener(repaintPositionListListener);
         unitSystemModel.removeChangeListener(unitSystemListener);
+        mapViewCallback.getShowShadedHills().removeChangeListener(shadedHillsListener);
 
         long start = currentTimeMillis();
         synchronized (notificationMutex) {
@@ -1286,4 +1317,11 @@ public class MapsforgeMapView implements MapView {
             handleMapAndThemeUpdate(false, false);
         }
     }
+
+    private class ShadedHillsListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            handleShadedHills();
+        }
+    }
+
 }

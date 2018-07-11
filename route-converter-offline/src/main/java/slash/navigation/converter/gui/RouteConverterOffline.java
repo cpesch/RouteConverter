@@ -29,6 +29,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.maps.mapsforge.LocalMap;
@@ -53,8 +54,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.Mapsforge;
 import static slash.navigation.download.Action.Copy;
-import static slash.navigation.gui.helpers.JMenuHelper.createItem;
-import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
+import static slash.navigation.gui.helpers.JMenuHelper.*;
 
 /**
  * A small graphical user interface for the offline route conversion.
@@ -63,7 +63,10 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
  */
 
 public class RouteConverterOffline extends RouteConverter {
+    private static final String SHOW_SHADED_HILLS_PREFERENCE = "showShadedHills";
+
     private MapsforgeMapManager mapsforgeMapManager;
+    private BooleanModel showShadedHills = new BooleanModel(SHOW_SHADED_HILLS_PREFERENCE, false);
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
@@ -100,12 +103,17 @@ public class RouteConverterOffline extends RouteConverter {
         if (viewMenu != null) {
             viewMenu.add(createItem("show-maps"), 0);
             viewMenu.add(createItem("show-themes"), 1);
-            viewMenu.add(new JPopupMenu.Separator(), 2);
+            viewMenu.add(createCheckBoxItem("show-shaded-hills", getShowShadedHills()), 2);
+            viewMenu.add(new JPopupMenu.Separator(), 3);
         }
     }
 
     public MapsforgeMapManager getMapsforgeMapManager() {
         return mapsforgeMapManager;
+    }
+
+    BooleanModel getShowShadedHills() {
+        return showShadedHills;
     }
 
     protected MapViewCallbackOffline getMapViewCallback() {

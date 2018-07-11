@@ -103,8 +103,8 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
         delegate.setModified(modified);
     }
 
-    public void addModifiedListener(ChangeListener listener) {
-        delegate.addModifiedListener(listener);
+    public void addModifiedListener(ChangeListener l) {
+        delegate.addModifiedListener(l);
     }
 
     public BaseRoute getSelectedRoute() {

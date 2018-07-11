@@ -22,7 +22,7 @@ package slash.navigation.mapview;
 
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.models.BooleanModel;
+import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.FixMapModeModel;

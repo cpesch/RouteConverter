@@ -23,6 +23,7 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.elevation.ElevationService;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -65,6 +66,20 @@ public class AutomaticElevationService implements ElevationService {
 
     public void setPath(String path) {
         // do not throw UnsupportedOperationException since #isDownload is true to omit (online) suffix in rendering
+    }
+
+    public File getDirectory() {
+        for (ElevationService service : sortByBestEffort(elevationServiceFacade.getElevationServices())) {
+            if (!service.isDownload())
+                continue;
+
+            File directory = service.getDirectory();
+            File[] files = directory.listFiles();
+            // return first directory with files to help hills shading to show best possible coverage
+            if (files != null && files.length > 0)
+                return directory;
+        }
+        return null;
     }
 
     public Double getElevationFor(double longitude, double latitude) throws IOException {

@@ -43,8 +43,8 @@ public interface MapViewCallback {
     boolean isAvoidFerries();
     boolean isAvoidHighways();
     boolean isAvoidTolls();
-    TileServerMapManager getTileServerMapManager();
-
     void addRoutingServiceChangeListener(ChangeListener l);
     void removeRoutingServiceChangeListener(ChangeListener l);
+
+    TileServerMapManager getTileServerMapManager();
 }

@@ -17,33 +17,26 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+package slash.navigation.gui.actions;
 
-package slash.navigation.elevation;
+import slash.navigation.gui.models.BooleanModel;
 
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.LongitudeAndLatitude;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import javax.swing.*;
 
 /**
- * Interface for a service that looks up the elevation for a given position.
+ * {@link Action} that toggles a {@link BooleanModel}.
  *
  * @author Christian Pesch
  */
 
-public interface ElevationService {
-    String getName();
-    boolean isDownload();
-    boolean isOverQueryLimit();
-    String getPath();
-    void setPath(String path);
-    File getDirectory();
+public class ToggleBooleanModelAction extends FrameAction {
+    private final BooleanModel booleanModel;
 
-    Double getElevationFor(double longitude, double latitude) throws IOException;
+    public ToggleBooleanModelAction(BooleanModel booleanModel) {
+        this.booleanModel = booleanModel;
+    }
 
-    void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload);
-    long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes);
-    void downloadElevationData(List<BoundingBox> boundingBoxes);
+    public void run() {
+        booleanModel.setBoolean(!booleanModel.getBoolean());
+    }
 }

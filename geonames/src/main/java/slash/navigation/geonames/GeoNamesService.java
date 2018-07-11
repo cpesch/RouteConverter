@@ -31,6 +31,7 @@ import slash.navigation.rest.Get;
 import slash.navigation.rest.exception.ServiceUnavailableException;
 
 import javax.xml.bind.JAXBException;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -190,6 +191,10 @@ public class GeoNamesService implements ElevationService, GeocodingService {
     }
 
     public void setPath(String path) {
+        throw new UnsupportedOperationException();
+    }
+
+    public File getDirectory() {
         throw new UnsupportedOperationException();
     }
 

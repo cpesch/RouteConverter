@@ -179,8 +179,8 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         }
     }
 
-    public void addModifiedListener(ChangeListener listener) {
-        listenerList.add(ChangeListener.class, listener);
+    public void addModifiedListener(ChangeListener l) {
+        listenerList.add(ChangeListener.class, l);
     }
 
     public Object getSelectedItem() {

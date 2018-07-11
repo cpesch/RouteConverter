@@ -20,14 +20,14 @@
  * /
  */
 
-package slash.navigation.converter.gui.models;
+package slash.navigation.gui.models;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.util.prefs.Preferences;
 
 /**
- * A model for {@link Boolean}.
+ * A model for a {@link Boolean}.
  *
  * @author Christian Pesch
  */

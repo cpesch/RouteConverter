@@ -40,7 +40,7 @@ public interface FormatAndRoutesModel extends ComboBoxModel {
 
     boolean isModified();
     void setModified(boolean modified);
-    void addModifiedListener(ChangeListener listener);
+    void addModifiedListener(ChangeListener l);
 
     BaseRoute getSelectedRoute();
     void setSelectedRoute(BaseRoute route);

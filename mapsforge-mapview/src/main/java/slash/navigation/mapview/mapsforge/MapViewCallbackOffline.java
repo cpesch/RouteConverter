@@ -20,6 +20,8 @@
 
 package slash.navigation.mapview.mapsforge;
 
+import slash.navigation.gui.models.BooleanModel;
+import slash.navigation.elevation.ElevationService;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
@@ -32,6 +34,9 @@ import slash.navigation.mapview.MapViewCallback;
 
 public interface MapViewCallbackOffline extends MapViewCallback {
     MapsforgeMapManager getMapsforgeMapManager();
+
+    BooleanModel getShowShadedHills();
+    ElevationService getElevationService();
 
     void showDownloadNotification();
     void showProcessNotification();

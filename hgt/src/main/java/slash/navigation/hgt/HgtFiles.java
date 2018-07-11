@@ -85,7 +85,7 @@ public class HgtFiles implements ElevationService {
         preferences.put(DIRECTORY_PREFERENCE + getName(), path);
     }
 
-    private java.io.File getDirectory() {
+    public java.io.File getDirectory() {
         String directoryName = getPath();
         java.io.File f = new java.io.File(directoryName);
         if (!f.exists())

@@ -188,12 +188,12 @@ public class ActionManager {
                 delegate.setEnabled(enabled);
         }
 
-        public void addPropertyChangeListener(PropertyChangeListener listener) {
-            changeSupport.addPropertyChangeListener(listener);
+        public void addPropertyChangeListener(PropertyChangeListener l) {
+            changeSupport.addPropertyChangeListener(l);
         }
 
-        public void removePropertyChangeListener(PropertyChangeListener listener) {
-            changeSupport.removePropertyChangeListener(listener);
+        public void removePropertyChangeListener(PropertyChangeListener l) {
+            changeSupport.removePropertyChangeListener(l);
         }
 
         public void actionPerformed(ActionEvent e) {
