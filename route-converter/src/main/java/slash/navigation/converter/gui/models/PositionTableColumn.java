@@ -60,10 +60,10 @@ public class PositionTableColumn extends TableColumn {
     }
 
     public void setVisible(boolean newVisible) {
-        boolean oldVisibile = this.visible;
+        boolean oldVisible = this.visible;
         this.visible = newVisible;
 
-        PropertyChangeEvent changeEvent = new PropertyChangeEvent(this, VISIBLE_PROPERTY_NAME, oldVisibile, newVisible);
+        PropertyChangeEvent changeEvent = new PropertyChangeEvent(this, VISIBLE_PROPERTY_NAME, oldVisible, newVisible);
         for(PropertyChangeListener changeListener : getPropertyChangeListeners()) {
             changeListener.propertyChange(changeEvent);
         }
