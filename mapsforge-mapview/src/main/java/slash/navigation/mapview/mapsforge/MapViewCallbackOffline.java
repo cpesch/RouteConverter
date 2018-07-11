@@ -31,7 +31,7 @@ import slash.navigation.mapview.MapViewCallback;
  */
 
 public interface MapViewCallbackOffline extends MapViewCallback {
-    MapsforgeMapManager getMapManager();
+    MapsforgeMapManager getMapsforgeMapManager();
 
     void showDownloadNotification();
     void showProcessNotification();

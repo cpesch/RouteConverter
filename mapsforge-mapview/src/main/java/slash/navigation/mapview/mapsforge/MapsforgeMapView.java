@@ -487,7 +487,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private MapsforgeMapManager getMapManager() {
-        return mapViewCallback.getMapManager();
+        return mapViewCallback.getMapsforgeMapManager();
     }
 
     private LayerManager getLayerManager() {
@@ -854,8 +854,8 @@ public class MapsforgeMapView implements MapView {
     public void addLayer(final Layer layer) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
-                mapView.getLayerManager().getLayers().add(layer);
-                if (!mapView.getLayerManager().getLayers().contains(layer))
+                getLayerManager().getLayers().add(layer);
+                if (!getLayerManager().getLayers().contains(layer))
                     log.warning("Cannot add layer " + layer);
             }
         });
@@ -870,8 +870,8 @@ public class MapsforgeMapView implements MapView {
                     if (layer != null) {
                         // redraw only for last added layer
                         boolean redraw = i == c - 1;
-                        mapView.getLayerManager().getLayers().add(layer, redraw);
-                        if (!mapView.getLayerManager().getLayers().contains(layer))
+                        getLayerManager().getLayers().add(layer, redraw);
+                        if (!getLayerManager().getLayers().contains(layer))
                             log.warning("Cannot add layer " + layer);
                     } else
                         log.warning("Could not find layer for " + withLayer);
@@ -883,7 +883,7 @@ public class MapsforgeMapView implements MapView {
     public void removeLayer(final Layer layer) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
-                if (!mapView.getLayerManager().getLayers().remove(layer))
+                if (!getLayerManager().getLayers().remove(layer))
                     log.warning("Cannot remove layer " + layer);
             }
         });
@@ -898,7 +898,7 @@ public class MapsforgeMapView implements MapView {
                     if (layer != null) {
                         // redraw only for last removed layer
                         boolean redraw = i == c - 1;
-                        if(!mapView.getLayerManager().getLayers().remove(layer, redraw))
+                        if(!getLayerManager().getLayers().remove(layer, redraw))
                             log.warning("Cannot remove layer " + layer);
                     } else
                         log.warning("Could not find layer for " + withLayer);

@@ -46,7 +46,7 @@ import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 public class MapViewCallbackOfflineImpl extends MapViewCallbackImpl implements MapViewCallbackOffline {
     private static final Logger log = Logger.getLogger(MapViewCallbackOfflineImpl.class.getName());
 
-    public MapsforgeMapManager getMapManager() {
+    public MapsforgeMapManager getMapsforgeMapManager() {
         return ((RouteConverterOffline) Application.getInstance()).getMapsforgeMapManager();
     }
 
