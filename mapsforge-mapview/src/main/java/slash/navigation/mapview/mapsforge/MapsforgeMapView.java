@@ -505,7 +505,6 @@ public class MapsforgeMapView implements MapView {
     private void initializeMapView() {
         mapView = createMapView();
         handleUnitSystem();
-        handleShadedHills();
 
         try {
             markerIcon = GRAPHIC_FACTORY.createResourceBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"), -1);
@@ -565,6 +564,7 @@ public class MapsforgeMapView implements MapView {
 
             public void onChange() {
                 if (!initialized) {
+                    handleShadedHills();
                     handleMapAndThemeUpdate(true, true);
                     initialized = true;
                 }
@@ -739,8 +739,6 @@ public class MapsforgeMapView implements MapView {
                 }
             }
         }
-
-        handleMapAndThemeUpdate(false, false);
     }
 
     private void replaceRoute() {
@@ -1321,6 +1319,7 @@ public class MapsforgeMapView implements MapView {
     private class ShadedHillsListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             handleShadedHills();
+            handleMapAndThemeUpdate(false, false);
         }
     }
 
