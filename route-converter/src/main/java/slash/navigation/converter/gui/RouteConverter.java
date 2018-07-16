@@ -247,7 +247,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
 
         if (isWindows() && (currentVersion.equals("1.8.0_161") || currentVersion.equals("1.8.0_162") || currentVersion.equals("1.8.0_171") || currentVersion.equals("1.8.0_172"))) {
-            showMessageDialog(null, "Java " + currentVersion + " contains a fatal bug in JavaFX on Windows. Please update to Java 8 Update 152 or Java 9 or 10.", "RouteConverter", ERROR_MESSAGE);
+            showMessageDialog(null, "Java " + currentVersion + " contains a fatal bug in JavaFX on Windows. Please install Java 8 Update 152 or Java 10.", "RouteConverter", ERROR_MESSAGE);
             System.exit(9);
         }
     }
