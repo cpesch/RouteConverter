@@ -37,38 +37,23 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.MessageFormat;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
+import static java.util.Calendar.*;
 import static java.util.Collections.singletonList;
-import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static javax.swing.event.TableModelEvent.DELETE;
-import static javax.swing.event.TableModelEvent.UPDATE;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.event.TableModelEvent.*;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.NavigationFormatConverter.convertPositions;
-import static slash.navigation.common.UnitConversion.ddmm2latitude;
-import static slash.navigation.common.UnitConversion.ddmm2longitude;
-import static slash.navigation.common.UnitConversion.ddmmss2latitude;
-import static slash.navigation.common.UnitConversion.ddmmss2longitude;
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractDateTime;
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractElevation;
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractSpeed;
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatDate;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
-import static slash.navigation.converter.gui.models.PositionColumns.DATE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
+import static slash.navigation.common.UnitConversion.*;
+import static slash.navigation.converter.gui.helpers.PositionHelper.*;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Implements the {@link PositionsModel} for the positions of a {@link BaseRoute}.
@@ -103,6 +88,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 return position.getDescription();
             case DATE_TIME_COLUMN_INDEX:
                 return extractDateTime(position);
+            case DATE_COLUMN_INDEX:
+                return extractDate(position);
             case TIME_COLUMN_INDEX:
                 return extractTime(position);
             case LONGITUDE_COLUMN_INDEX:
@@ -168,6 +155,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX:
             case DATE_TIME_COLUMN_INDEX:
+            case DATE_COLUMN_INDEX:
             case TIME_COLUMN_INDEX:
             case LONGITUDE_COLUMN_INDEX:
             case LATITUDE_COLUMN_INDEX:
@@ -213,7 +201,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 position.setTime(parseDateTime(value, string));
                 break;
             case DATE_COLUMN_INDEX:
-                position.setTime(parseDate(value, string));
+                position.setTime(parseDate(value, string, position.getTime()));
                 break;
             case TIME_COLUMN_INDEX:
                 position.setTime(parseTime(value, string, position.getTime()));
@@ -289,6 +277,13 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return unitSystem.distanceToDefault(value);
     }
 
+    private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateFormat format) {
+        showMessageDialog(RouteConverter.getInstance().getFrame(),
+                MessageFormat.format(RouteConverter.getBundle().getString(messageBundleKey),
+                        stringValue, extractPattern(format)),
+                RouteConverter.getTitle(), ERROR_MESSAGE);
+    }
+
     private CompactCalendar parseDateTime(Object objectValue, String stringValue) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
@@ -296,20 +291,28 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             try {
                 return PositionHelper.parseDateTime(stringValue);
             } catch (ParseException e) {
-                // intentionally left empty
+                handleDateTimeParseException(stringValue, "date-time-format-error", getDateTimeFormat());
             }
         }
         return null;
     }
 
-    private CompactCalendar parseDate(Object objectValue, String stringValue) {
+    private CompactCalendar parseDate(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                return PositionHelper.parseDate(stringValue);
+                CompactCalendar result = PositionHelper.parseDate(stringValue);
+                if(positionTime != null) {
+                    Calendar calendar = positionTime.getCalendar();
+                    calendar.set(DAY_OF_MONTH, result.getCalendar().get(DAY_OF_MONTH));
+                    calendar.set(MONTH, result.getCalendar().get(MONTH));
+                    calendar.set(YEAR, result.getCalendar().get(YEAR));
+                    result = fromCalendar(calendar);
+                }
+                return result;
             } catch (ParseException e) {
-                // intentionally left empty
+                handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
             }
         }
         return null;
@@ -320,12 +323,18 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                if (positionTime != null)
-                    return PositionHelper.parseDateTime(formatDate(positionTime) + " " + stringValue);
-                else
-                    return PositionHelper.parseTime(stringValue);
+                CompactCalendar result = PositionHelper.parseTime(stringValue);
+                if (positionTime != null) {
+                    Calendar calendar = positionTime.getCalendar();
+                    calendar.set(HOUR_OF_DAY, result.getCalendar().get(HOUR_OF_DAY));
+                    calendar.set(MINUTE, result.getCalendar().get(MINUTE));
+                    calendar.set(SECOND, result.getCalendar().get(SECOND));
+                    result = fromCalendar(calendar);
+                }
+                return result;
             } catch (ParseException e) {
-                // intentionally left empty
+                handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
+
             }
         }
         return null;

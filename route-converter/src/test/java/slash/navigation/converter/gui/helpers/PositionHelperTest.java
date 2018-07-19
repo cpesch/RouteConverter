@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import org.junit.Test;
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 
 import java.text.DateFormat;
@@ -32,7 +33,7 @@ import static java.util.Locale.GERMAN;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.system.Platform.isJava9OrLater;
-import static slash.navigation.converter.gui.helpers.PositionHelper.parseDateTime;
+import static slash.common.type.CompactCalendar.fromDate;
 
 public class PositionHelperTest {
 
@@ -43,6 +44,11 @@ public class PositionHelperTest {
         Date date = germanFormat.parse(germanString);
         DateFormat defaultFormat = getDateTimeInstance(SHORT, MEDIUM);
         return defaultFormat.format(date);
+    }
+
+    private CompactCalendar parseDateTime(String stringValue, String timeZonePreference) throws ParseException {
+        Date parsed = Transfer.getDateTimeFormat(timeZonePreference).parse(stringValue);
+        return fromDate(parsed);
     }
 
     @Test
