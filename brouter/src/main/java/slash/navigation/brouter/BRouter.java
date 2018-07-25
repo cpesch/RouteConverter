@@ -172,13 +172,21 @@ public class BRouter implements RoutingService {
     }
 
     String createFileKey(double longitude, double latitude) {
-        int longitudeAsInteger = ((int) longitude / 5) * 5;
-        int latitudeAsInteger = ((int) latitude / 5) * 5;
+        // code borrowed from NodesCache in BRouter
+        int lonDegree = asLongitude(longitude) / 1000000;
+        int latDegree = asLatitude(latitude) / 1000000;
+
+        int lonMod5 = lonDegree % 5;
+        int latMod5 = latDegree % 5;
+
+        int lon = lonDegree - 180 - lonMod5;
+        int lat = latDegree - 90 - latMod5;
+
         return format("%s%d_%s%d.rd5",
-                longitude < 0 ? "W" : "E",
-                longitude < 0 ? -longitudeAsInteger : longitudeAsInteger,
-                latitude < 0 ? "S" : "N",
-                latitude < 0 ? -latitudeAsInteger : latitudeAsInteger);
+                lon < 0 ? "W" : "E",
+                lon < 0 ? -lon : lon,
+                lat < 0 ? "S" : "N",
+                lat < 0 ? -lat : lat);
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
