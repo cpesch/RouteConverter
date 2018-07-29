@@ -68,7 +68,7 @@ public class GraphHopper implements RoutingService {
     private static final String BASE_URL_PREFERENCE = "baseUrl";
     private static final TravelMode CAR = new TravelMode("Car");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), CAR, new TravelMode("Foot"));
-    // omitted: Bike2, Hike, MotorCycle, MTB, RacingBike
+    // omitted since it requires larger bytesForEdgeFlags: Bike2, Hike, MotorCycle, MTB, RacingBike
 
     private final DownloadManager downloadManager;
     private DataSource dataSource;
