@@ -117,9 +117,11 @@ public class UIHelper {
             log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 by using Metal UI");
             UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
             chooser = new JFileChooser();
+        } catch (Exception e) {
+            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857 by using restricted file system view");
+            chooser = new JFileChooser(new RestrictedFileSystemView());
         }
-        return chooser;
-    }
+        return chooser;    }
 
     public static void patchUIManager(ResourceBundle bundle, String... keys) {
         for (String key : keys) {
