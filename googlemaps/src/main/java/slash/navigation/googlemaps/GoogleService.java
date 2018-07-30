@@ -57,14 +57,14 @@ import static slash.navigation.rest.HttpRequest.USER_AGENT;
 
 public class GoogleService implements ElevationService, GeocodingService {
     private static final Logger log = Logger.getLogger(GoogleService.class.getName());
-    private int overQueryLimitCount;
+    private int overQueryLimitCount, deniedCount;
 
     public String getName() {
         return "Google";
     }
 
     public boolean isOverQueryLimit() {
-        return overQueryLimitCount > 0;
+        return overQueryLimitCount > 5 || deniedCount > 5;
     }
 
     private String getGoogleApiUrl(String apiType, String payload) {
@@ -96,7 +96,8 @@ public class GoogleService implements ElevationService, GeocodingService {
         }
 
         if (status.equals("REQUEST_DENIED")) {
-            log.warning("Google API access is denied, url: " + url);
+            deniedCount++;
+            log.warning("Google API access is denied, count: " + deniedCount + ", url: " + url);
             throw new ServiceUnavailableException(getClass().getSimpleName(), url, status);
         }
     }
