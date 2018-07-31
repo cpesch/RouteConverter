@@ -41,6 +41,8 @@ import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -52,6 +54,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Files.recursiveDelete;
 import static slash.navigation.graphhopper.PbfUtil.DOT_OSM;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
 
@@ -210,14 +213,32 @@ public class GraphHopper implements RoutingService {
                 hopper.close();
             }
 
-            hopper = new GraphHopperOSM().
-                    setOSMFile(file.getAbsolutePath()).
-                    forDesktop().
-                    setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
-                    setCHEnabled(false).
-                    setEnableInstructions(false).
-                    setGraphHopperLocation(createPath(file).getAbsolutePath()).
-                    importOrLoad();
+            File path = createPath(file);
+            try {
+                hopper = new GraphHopperOSM().
+                        setOSMFile(file.getAbsolutePath()).
+                        forDesktop().
+                        setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
+                        setCHEnabled(false).
+                        setEnableInstructions(false).
+                        setGraphHopperLocation(path.getAbsolutePath()).
+                        importOrLoad();
+            } catch (IllegalStateException e) {
+                log.warning("Could not initialize GraphHopper: " + e);
+
+                if (e.getMessage().contains("Version of nodes unsupported")) {
+                    log.info("Deleting old GraphHopper index " + path);
+                    try {
+                        recursiveDelete(path);
+                        log.info("Reinitializing GraphHopper");
+                        initializeHopper();
+                    } catch (IOException e2) {
+                        log.severe("Could not delete GraphHopper index " + path + ": " + e2);
+                    }
+                }
+
+                throw e;
+            }
 
             setOsmPbfFile(null);
         }
