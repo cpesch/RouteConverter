@@ -257,12 +257,13 @@ public class RouteRenderer {
             if (!pairWithLayer.hasCoordinates())
                 continue;
 
-            // remove beeline layer then add polyline layer from routing
+            // first calculate route, then remove beeline layer then add polyline layer from routing
             Layer layer = pairWithLayer.getLayer();
+            IntermediateRoute intermediateRoute = calculateRoute(routingService, pairWithLayer);
+
             mapView.removeLayer(layer);
             pairWithLayer.setLayer(null);
 
-            IntermediateRoute intermediateRoute = calculateRoute(routingService, pairWithLayer);
             Polyline polyline = new Polyline(intermediateRoute.getLatLongs(), intermediateRoute.isValid() ? paint : ROUTE_NOT_VALID_PAINT, mapView.getTileSize());
             pairWithLayer.setLayer(polyline);
             mapView.addLayer(polyline);

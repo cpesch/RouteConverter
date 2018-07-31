@@ -88,7 +88,7 @@ public class DownloadMapsAction extends FrameAction {
                 selectedBoundingBoxes.add(boundingBox);
 
         }
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedMapsNames.toArray())), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedMapsNames.toArray(), true)), getAction());
 
         executor.execute(new Runnable() {
             public void run() {

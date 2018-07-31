@@ -64,7 +64,7 @@ public class TileServer implements Item {
     }
 
     public String getUrl() {
-        return printArrayToDialogString(getHostNames().toArray());
+        return printArrayToDialogString(getHostNames().toArray(), false);
     }
 
     public List<String> getHostNames() {

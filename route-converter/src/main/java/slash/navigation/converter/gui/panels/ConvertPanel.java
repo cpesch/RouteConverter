@@ -794,7 +794,7 @@ public class ConvertPanel implements PanelInTab {
     private void saveFiles(File[] files, NavigationFormat format, BaseRoute route,
                            boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         final RouteConverter r = RouteConverter.getInstance();
-        String targetsAsString = printArrayToDialogString(files);
+        String targetsAsString = printArrayToDialogString(files, true);
         startWaitCursor(r.getFrame().getRootPane());
         try {
             if (!checkWriteFormat(format))

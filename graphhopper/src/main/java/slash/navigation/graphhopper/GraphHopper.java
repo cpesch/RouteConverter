@@ -49,11 +49,13 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Files.recursiveDelete;
 import static slash.navigation.graphhopper.PbfUtil.DOT_OSM;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
@@ -166,6 +168,11 @@ public class GraphHopper implements RoutingService {
             GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
             request.setVehicle(travelMode.getName().toUpperCase());
             GHResponse response = hopper.route(request);
+            if(response.hasErrors()) {
+                String errors = printArrayToDialogString(response.getErrors().toArray(), false);
+                log.severe(format("Error while routing between %s and %s: %s", from, to, errors));
+                throw new RuntimeException(errors);
+            }
             PathWrapper best = response.getBest();
             return new RoutingResult(asPositions(best.getPoints()), new DistanceAndTime(best.getDistance(), best.getTime() / 1000), true);
         } finally {

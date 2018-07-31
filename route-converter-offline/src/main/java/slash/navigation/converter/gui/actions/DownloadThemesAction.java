@@ -78,7 +78,7 @@ public class DownloadThemesAction extends FrameAction {
             selectedThemes.add(theme);
             selectedThemesNames.add(theme.getUrl());
         }
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedThemesNames.toArray())), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedThemesNames.toArray(), true)), getAction());
 
         executor.execute(new Runnable() {
             public void run() {

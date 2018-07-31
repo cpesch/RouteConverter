@@ -421,7 +421,7 @@ public class Files {
         delete(path);
     }
 
-    public static String printArrayToDialogString(Object[] array) {
+    public static String printArrayToDialogString(Object[] array, boolean shorten) {
         if (array == null)
             return "null";
 
@@ -432,7 +432,10 @@ public class Files {
                     buffer.append(" and\n");
                 else
                     buffer.append(",\n");
-            buffer.append("'").append(shortenPath(array[i].toString(), 60)).append("'");
+            String string = array[i].toString();
+            if(shorten)
+                string = shortenPath(string, 60);
+            buffer.append("'").append(string).append("'");
         }
         return buffer.toString();
     }
