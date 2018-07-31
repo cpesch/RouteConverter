@@ -270,7 +270,12 @@ public class GraphHopper implements RoutingService {
                 return file != null && !file.exists();
             }
             public boolean isRequiresProcessing() {
-                return file != null && !createPath(file).exists();
+                if(file == null)
+                    return false;
+
+                File path = createPath(file);
+                File edges = new File(path, "edges");
+                return !path.exists() || !edges.exists();
             }
             public void download() {
                 downloadAndWait(downloadable);
