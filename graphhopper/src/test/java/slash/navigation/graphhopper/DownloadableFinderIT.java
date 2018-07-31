@@ -110,4 +110,22 @@ public class DownloadableFinderIT {
         Downloadable downloadable = finder.getDownloadableFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
         assertEquals(LARGE_URI, downloadable.getUri());
     }
+
+    @Test
+    public void testSelectOnlyCenterFileIfItCoversTheRoute() throws IOException {
+        DataSource dataSource = mock(DataSource.class);
+        slash.navigation.datasources.File small = mock(slash.navigation.datasources.File.class);
+        when(small.getBoundingBox()).thenReturn(new BoundingBox(0.1, 0.1, -0.1, -0.1));
+        when(small.getUri()).thenReturn(SMALL_URI);
+        slash.navigation.datasources.File medium = mock(slash.navigation.datasources.File.class);
+        when(medium.getBoundingBox()).thenReturn(new BoundingBox(1.0, 1.0, -1.0, -1.0));
+        when(medium.getUri()).thenReturn(MEDIUM_URI);
+        when(dataSource.getFiles()).thenReturn(asList(medium, small));
+        assertTrue(new File(temporaryDirectory, SMALL_URI).createNewFile());
+        finder = new DownloadableFinder(dataSource, temporaryDirectory);
+        finder.setDataSource(dataSource);
+
+        Downloadable downloadable = finder.getDownloadableFor(new BoundingBox(0.2, 0.2, -0.2, -0.2));
+        assertEquals(MEDIUM_URI, downloadable.getUri());
+    }
 }

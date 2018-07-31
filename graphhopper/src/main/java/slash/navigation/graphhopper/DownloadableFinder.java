@@ -69,6 +69,8 @@ public class DownloadableFinder {
                 log.warning(format("File %s doesn't have a bounding box. Ignoring it.", file));
                 continue;
             }
+            if (!fileBoundingBox.contains(routeBoundingBox))
+                continue;
 
             Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
                     routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
@@ -79,12 +81,10 @@ public class DownloadableFinder {
                 closestDistanceOfCenters = distance;
             }
 
-            if (fileBoundingBox.contains(routeBoundingBox)) {
-                if (coveringFile == null ||
-                        !existsFile(coveringFile) && existsFile(file) ||
-                        coveringFile.getBoundingBox().contains(fileBoundingBox)) {
-                    coveringFile = file;
-                }
+            if (coveringFile == null ||
+                    !existsFile(coveringFile) && existsFile(file) ||
+                    coveringFile.getBoundingBox().contains(fileBoundingBox)) {
+                coveringFile = file;
             }
         }
 
