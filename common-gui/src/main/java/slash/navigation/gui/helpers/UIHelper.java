@@ -113,15 +113,13 @@ public class UIHelper {
         JFileChooser chooser;
         try {
             chooser = new JFileChooser();
-        } catch (NullPointerException npe) {
-            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 by using Metal UI");
+        } catch (Exception npe) {
+            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 and 6544857 by using Metal UI and restricted file system view");
             UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
-            chooser = new JFileChooser();
-        } catch (Exception e) {
-            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6544857 by using restricted file system view");
             chooser = new JFileChooser(new RestrictedFileSystemView());
         }
-        return chooser;    }
+        return chooser;
+    }
 
     public static void patchUIManager(ResourceBundle bundle, String... keys) {
         for (String key : keys) {
