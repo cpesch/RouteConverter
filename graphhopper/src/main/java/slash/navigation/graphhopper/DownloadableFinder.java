@@ -60,6 +60,7 @@ public class DownloadableFinder {
 
     public Downloadable getDownloadableFor(BoundingBox routeBoundingBox) {
         File coveringFile = null;
+        BoundingBox coveringBoundingBox = null;
         Double closestDistanceOfCenters = null;
         File centerFile = null;
 
@@ -72,6 +73,7 @@ public class DownloadableFinder {
             if (!fileBoundingBox.contains(routeBoundingBox))
                 continue;
 
+            // search for file which center has closest distance to the center of the route
             Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
                     routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
             if (closestDistanceOfCenters == null ||
@@ -79,16 +81,18 @@ public class DownloadableFinder {
                     abs(distance - closestDistanceOfCenters) < 5.0 && centerFile.getBoundingBox().contains(fileBoundingBox)) {
                 centerFile = file;
                 closestDistanceOfCenters = distance;
+                log.info(format("File %s has closest distance %f of centers", centerFile, closestDistanceOfCenters));
             }
 
-            if (coveringFile == null ||
-                    !existsFile(coveringFile) && existsFile(file) ||
-                    coveringFile.getBoundingBox().contains(fileBoundingBox)) {
+            // search for existing largest file that covers the route
+            if (existsFile(file) && (coveringBoundingBox == null || fileBoundingBox.contains(coveringBoundingBox))) {
                 coveringFile = file;
+                coveringBoundingBox = fileBoundingBox;
+                log.info(format("File %s covers route with larger bounding box %s", coveringFile, fileBoundingBox.contains(coveringBoundingBox)));
             }
         }
 
-        log.info(format("File %s (exists %b) covers route, file %s (exists %b) has closest distance of centers", coveringFile, existsFile(coveringFile), centerFile, existsFile(centerFile)));
+        log.info(format("File %s (exists %b) covers route, file %s (exists %b) has closest distance %f of centers", coveringFile, existsFile(coveringFile), centerFile, existsFile(centerFile), closestDistanceOfCenters));
         // choose the closest distance of centers but prefer covering existing files if closest distance means download
         return existsFile(centerFile) || !existsFile(coveringFile) ? centerFile : coveringFile;
     }
