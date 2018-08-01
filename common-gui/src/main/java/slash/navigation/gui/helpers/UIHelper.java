@@ -113,10 +113,10 @@ public class UIHelper {
         JFileChooser chooser;
         try {
             chooser = new JFileChooser();
-        } catch (NullPointerException npe) {
-            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 by using Metal UI");
+        } catch (Exception npe) {
+            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 and 6544857 by using Metal UI and restricted file system view");
             UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
-            chooser = new JFileChooser();
+            chooser = new JFileChooser(new RestrictedFileSystemView());
         }
         return chooser;
     }
