@@ -73,7 +73,7 @@ public class TileServerToTileMapMediator {
     }
 
     private TileMap convert(TileServer tileServer) {
-        return new TileMap(tileServer.getDescription(), tileServer.getId(), tileServer.isActive(), new TileServerMapSource(tileServer));
+        return new TileMap(tileServer.getId(), tileServer.getDescription(), tileServer.isActive(), new TileServerMapSource(tileServer));
     }
 
     private void handleAdd(int firstRow, int lastRow) {
