@@ -120,6 +120,11 @@ public class RouteRenderer {
                 } catch (Throwable t) {
                     mapViewCallback.handleRoutingException(t);
                 }
+                finally {
+                    synchronized (notificationMutex) {
+                        RouteRenderer.this.drawingRoute = false;
+                    }
+                }
             }
         });
     }
