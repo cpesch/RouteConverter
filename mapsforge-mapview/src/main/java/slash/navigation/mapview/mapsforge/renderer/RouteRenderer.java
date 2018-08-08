@@ -39,14 +39,9 @@ import slash.navigation.routing.RoutingService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
-import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
-import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asLatLong;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
@@ -59,7 +54,6 @@ import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
  */
 
 public class RouteRenderer {
-    private static final Logger log = Logger.getLogger(RouteRenderer.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
     private Paint ROUTE_NOT_VALID_PAINT, ROUTE_DOWNLOADING_PAINT;
 
@@ -91,42 +85,25 @@ public class RouteRenderer {
     }
 
     public void dispose() {
-        long start = currentTimeMillis();
-        boolean isInterrupted;
         synchronized (notificationMutex) {
-            isInterrupted = drawingRoute;
             this.drawingRoute = false;
         }
-
-        routeRenderer.shutdownNow();
-        long end = currentTimeMillis();
-
-        long interval = end - start;
-        if (isInterrupted)
-            log.info("RouteRenderer stopped after " + interval + " ms");
     }
 
-    private final ExecutorService routeRenderer = createSingleThreadExecutor("RouteRenderer");
-
     public void renderRoute(final List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
-        routeRenderer.execute(new Runnable() {
-            public void run() {
-                synchronized (notificationMutex) {
-                    RouteRenderer.this.drawingRoute = true;
-                }
+        synchronized (notificationMutex) {
+            this.drawingRoute = true;
+        }
 
-                try {
-                    internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
-                } catch (Throwable t) {
-                    mapViewCallback.handleRoutingException(t);
-                }
-                finally {
-                    synchronized (notificationMutex) {
-                        RouteRenderer.this.drawingRoute = false;
-                    }
-                }
+        try {
+            internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
+        } catch (Throwable t) {
+            mapViewCallback.handleRoutingException(t);
+        } finally {
+            synchronized (notificationMutex) {
+                this.drawingRoute = false;
             }
-        });
+        }
     }
 
     private void internalRenderRoute(List<PairWithLayer> pairWithLayers, Runnable invokeAfterRenderingRunnable) {
@@ -222,7 +199,7 @@ public class RouteRenderer {
 
     private void drawBeeline(List<PairWithLayer> pairsWithLayer) {
         synchronized (notificationMutex) {
-            this.drawingBeeline = true;
+            drawingBeeline = true;
         }
         try {
             List<PairWithLayer> withLayers = new ArrayList<>();
@@ -239,17 +216,10 @@ public class RouteRenderer {
                 pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, !isEmpty(time) ? time / 1000 : null));
             }
             mapView.addLayers(withLayers);
-        }
-        finally {
-            // only continue with replacing beeline with route after all beeline segments have been rendered
-            // because otherwise #drawRoute would pairWithLayer.setLayer(null) and MapsforgeMapView#addLayers fails
-            invokeInAwtEventQueue(new Runnable() {
-                public void run() {
-                    synchronized (notificationMutex) {
-                        RouteRenderer.this.drawingBeeline = false;
-                    }
-                }
-            });
+        } finally {
+            synchronized (notificationMutex) {
+                drawingBeeline = false;
+            }
         }
     }
 
