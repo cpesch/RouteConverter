@@ -161,7 +161,6 @@ public class MapsforgeMapView implements MapView {
     private MapViewMoverAndZoomer mapViewMoverAndZoomer;
     private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private static Bitmap markerIcon, waypointIcon;
-    private File backgroundMap;
     private TileRendererLayer backgroundLayer;
     private HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
     private SelectionUpdater selectionUpdater;
@@ -520,8 +519,8 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void setBackgroundMap(File backgroundMap) {
-        this.backgroundMap = backgroundMap;
-        updateMapAndThemesAfterDirectoryScanning();
+        backgroundLayer = createTileRendererLayer(backgroundMap, backgroundMap.getName());
+        handleBackground();
     }
 
     public void updateMapAndThemesAfterDirectoryScanning() {
@@ -640,20 +639,11 @@ public class MapsforgeMapView implements MapView {
         layers.add(0, layer);
         mapsToLayers.put(map, layer);
 
-        // initialize tile renderer layer for background map
-        if (backgroundMap != null) {
-            backgroundLayer = createTileRendererLayer(backgroundMap, backgroundMap.getName());
-            backgroundMap = null;
-        }
-        if (backgroundLayer != null) {
-            layers.remove(backgroundLayer);
-            if (map.isVector())
-                layers.add(0, backgroundLayer);
-        }
+        handleBackground();
 
         // then start download layer threads
         if (layer instanceof TileDownloadLayer)
-            ((TileDownloadLayer) layer).start();
+           ((TileDownloadLayer) layer).start();
 
         // center and zoom: if map is initialized, doesn't contain route or there is no route
         BoundingBox mapBoundingBox = getMapBoundingBox();
@@ -666,6 +656,18 @@ public class MapsforgeMapView implements MapView {
         }
         limitZoomLevel();
         log.info("Using map " + mapsToLayers.keySet() + " and theme " + getMapManager().getAppliedThemeModel().getItem() + " with zoom " + getZoom());
+    }
+
+    private void handleBackground() {
+        if (backgroundLayer == null)
+            return;
+
+        Layers layers = getLayerManager().getLayers();
+        layers.remove(backgroundLayer);
+
+        LocalMap map = getMapManager().getDisplayedMapModel().getItem();
+        if (map.isVector())
+            layers.add(0, backgroundLayer);
     }
 
     private void handleShadedHills() {
