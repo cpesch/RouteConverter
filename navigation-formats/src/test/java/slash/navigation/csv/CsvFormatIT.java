@@ -93,4 +93,13 @@ public class CsvFormatIT {
         assertEquals(CsvCommaFormat.class, result.getFormat().getClass());
         checkRoute(result.getTheRoute());
     }
+
+    @Test
+    public void testReadFlightmap24() throws IOException {
+        File source = new File(TEST_PATH + "from-flightmap24.csv");
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        assertEquals(CsvCommaFormat.class, result.getFormat().getClass());
+        checkRoute(result.getTheRoute());
+    }
 }

@@ -20,15 +20,19 @@
 package slash.navigation.csv;
 
 import slash.common.type.CompactCalendar;
+import slash.common.type.ISO8601;
 import slash.navigation.base.BaseNavigationPosition;
 
+import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.type.CompactCalendar.createDateFormat;
+import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.parseDate;
+import static slash.common.type.ISO8601.parseDate;
 import static slash.navigation.csv.ColumnType.Description;
 import static slash.navigation.csv.ColumnType.Elevation;
 import static slash.navigation.csv.ColumnType.Latitude;
@@ -85,8 +89,13 @@ public class CsvPosition extends BaseNavigationPosition {
     private CompactCalendar getValueAsTime(ColumnType type) {
         String value = getValueAsString(type);
         CompactCalendar calendar = parseDate(value, DATE_AND_TIME_FORMAT);
-        if(calendar == null)
+        if (calendar == null)
             calendar = parseDate(value, DATE_AND_TIME_WITHOUT_SECONDS_FORMAT);
+        if (calendar == null) {
+            Calendar date = parseDate(value);
+            if (date != null)
+                calendar = fromCalendar(date);
+        }
         return calendar;
     }
 
