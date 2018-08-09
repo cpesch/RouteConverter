@@ -330,9 +330,9 @@ public class ConvertPanel implements PanelInTab {
         tableHeaderMenu = new PositionsTableHeaderMenu(tablePositions.getTableHeader(), menuBar, positionsModel, tableColumnModel, actionManager);
         JPopupMenu menu = new PositionsTablePopupMenu(tablePositions).createPopupMenu();
         JMenu mergePopupMenu = (JMenu) findMenuComponent(menu, "merge-positionlist");
-        new MergePositionListMenu(this, mergePopupMenu);
+        new MergePositionListMenu(mergePopupMenu, this);
         JMenu mergeMenuBarMenu = findMenuComponent(menuBar, "positionlist", "merge-positionlist", JMenu.class);
-        new MergePositionListMenu(this, mergeMenuBarMenu);
+        new MergePositionListMenu(mergeMenuBarMenu, this);
 
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         clipboardInteractor.watchClipboard();

@@ -27,7 +27,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import static slash.navigation.gui.helpers.JMenuHelper.createRadioItem;
-import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
  * Creates a {@link JMenu} for {@link YAxisMode}.
@@ -36,18 +35,16 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
  */
 
 public class YAxisModeMenu {
+    private final JMenu menu;
     private final ProfileModeModel profileModeModel;
 
-    public YAxisModeMenu(JMenuBar menuBar, ProfileModeModel profileModeModel) {
-        this(findMenu(menuBar, "view", "show-profile-y-axis"), profileModeModel);
-    }
-
     public YAxisModeMenu(JMenu menu, ProfileModeModel profileModeModel) {
+        this.menu = menu;
         this.profileModeModel = profileModeModel;
-        initializeMenu(menu);
+        initializeMenu();
     }
 
-    private void initializeMenu(JMenu menu) {
+    private void initializeMenu() {
         ButtonGroup buttonGroup = new ButtonGroup();
         for (YAxisMode mode : YAxisMode.values()) {
             JRadioButtonMenuItem menuItem = createRadioItem("show-" + mode.name().toLowerCase());
@@ -61,7 +58,7 @@ public class YAxisModeMenu {
         private JRadioButtonMenuItem menuItem;
         private YAxisMode mode;
 
-        public YAxisModeListener(JRadioButtonMenuItem menuItem, YAxisMode mode) {
+        private YAxisModeListener(JRadioButtonMenuItem menuItem, YAxisMode mode) {
             this.menuItem = menuItem;
             this.mode = mode;
             updateSelected();

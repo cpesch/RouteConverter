@@ -38,16 +38,16 @@ import static slash.navigation.base.RouteComments.shortenRouteName;
  */
 
 public class MergePositionListMenu {
-    private final ConvertPanel convertPanel;
     private final JMenu menu;
+    private final ConvertPanel convertPanel;
 
-    public MergePositionListMenu(ConvertPanel convertPanel, JMenu menu) {
-        this.convertPanel = convertPanel;
+    public MergePositionListMenu(JMenu menu, ConvertPanel convertPanel) {
         this.menu = menu;
-        initialize();
+        this.convertPanel = convertPanel;
+        initializeMenu();
     }
 
-    private void initialize() {
+    private void initializeMenu() {
         convertPanel.getFormatAndRoutesModel().addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {

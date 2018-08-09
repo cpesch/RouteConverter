@@ -33,40 +33,41 @@ import java.util.prefs.Preferences;
 
 import static slash.common.io.Files.shortenPath;
 import static slash.common.io.Files.toFile;
-import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
- * Synchronizes the entries of a {@link JMenu}s with the {@link RecentUrlsModel}.
+ * Updates a {@link JMenu}s with the {@link RecentUrlsModel}.
  *
  * @author Christian Pesch
  */
 
-public class ReopenMenuSynchronizer {
+public class ReopenMenu {
     private static final String MAXIMUM_REOPEN_URL_MENU_TEXT_LENGTH_PREFERENCE = "maximumReopenUrlMenuTextLength";
-    private static final Preferences preferences = Preferences.userNodeForPackage(ReopenMenuSynchronizer.class);
+    private static final Preferences preferences = Preferences.userNodeForPackage(ReopenMenu.class);
 
+    private final JMenu menu;
     private final RecentUrlsModel recentUrlsModel;
 
-    public ReopenMenuSynchronizer(JMenuBar menuBar, RecentUrlsModel recentUrlsModel) {
+    public ReopenMenu(JMenu menu, RecentUrlsModel recentUrlsModel) {
+        this.menu = menu;
         this.recentUrlsModel = recentUrlsModel;
-        initializeMenu(findMenu(menuBar, "file", "reopen"));
+        initializeMenu();
     }
 
-    private void initializeMenu(final JMenu reopenMenu) {
-        fillMenu(reopenMenu);
+    private void initializeMenu() {
+        populateMenu(menu);
 
         recentUrlsModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                reopenMenu.removeAll();
+                menu.removeAll();
 
-                fillMenu(reopenMenu);
+                populateMenu(menu);
             }
         });
     }
 
-    private void fillMenu(JMenu reopenMenu) {
+    private void populateMenu(JMenu menu) {
         List<URL> urls = recentUrlsModel.getUrls();
-        reopenMenu.setEnabled(urls.size() > 0);
+        menu.setEnabled(urls.size() > 0);
 
         for (URL url : urls) {
             File file = toFile(url);
@@ -75,7 +76,7 @@ public class ReopenMenuSynchronizer {
             String text = file != null ? file.getAbsolutePath() : url.toExternalForm();
             menuItem.setText(shortenPath(text, preferences.getInt(MAXIMUM_REOPEN_URL_MENU_TEXT_LENGTH_PREFERENCE, 80)));
             menuItem.setToolTipText(text);
-            reopenMenu.add(menuItem);
+            menu.add(menuItem);
         }
     }
 }

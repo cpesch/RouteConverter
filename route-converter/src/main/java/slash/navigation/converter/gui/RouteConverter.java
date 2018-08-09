@@ -111,6 +111,8 @@ import static slash.navigation.datasources.DataSourceManager.FORMAT_XML;
 import static slash.navigation.datasources.DataSourceManager.V1;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Extract;
+import static slash.navigation.gui.helpers.JMenuHelper.findItem;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
@@ -1265,10 +1267,15 @@ public class RouteConverter extends SingleFrameApplication {
         actionManager.register("send-error-report", new SendErrorReportAction());
         actionManager.register("show-about", createAboutAction());
 
-        new XAxisModeMenu(getContext().getMenuBar(), getProfileModeModel());
-        new YAxisModeMenu(getContext().getMenuBar(), getProfileModeModel());
-        new UndoMenuSynchronizer(getContext().getMenuBar(), getContext().getUndoManager());
-        new ReopenMenuSynchronizer(getContext().getMenuBar(), getConvertPanel().getRecentUrlsModel());
+        JMenu xAxisModeMenu = findMenu(getContext().getMenuBar(), "view", "show-profile-x-axis");
+        new XAxisModeMenu(xAxisModeMenu, getProfileModeModel());
+        JMenu yAxisModeMenu = findMenu(getContext().getMenuBar(), "view", "show-profile-y-axis");
+        new YAxisModeMenu(yAxisModeMenu, getProfileModeModel());
+        JMenuItem undoMenuItem = findItem(getContext().getMenuBar(), "edit", "undo");
+        JMenuItem redoMenuItem = findItem(getContext().getMenuBar(), "edit", "redo");
+        new UndoMenu(undoMenuItem, redoMenuItem, getContext().getUndoManager());
+        JMenu reopenMenu = findMenu(getContext().getMenuBar(), "file", "reopen");
+        new ReopenMenu(reopenMenu, getConvertPanel().getRecentUrlsModel());
     }
 
     protected SingletonDialogAction createAboutAction() {

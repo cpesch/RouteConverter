@@ -27,7 +27,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import static slash.navigation.gui.helpers.JMenuHelper.createRadioItem;
-import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
  * Creates a {@link JMenu} for {@link XAxisMode}.
@@ -36,18 +35,16 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
  */
 
 public class XAxisModeMenu {
+    private final JMenu menu;
     private final ProfileModeModel profileModeModel;
 
-    public XAxisModeMenu(JMenuBar menuBar, ProfileModeModel profileModeModel) {
-        this(findMenu(menuBar, "view", "show-profile-x-axis"), profileModeModel);
-    }
-
     public XAxisModeMenu(JMenu menu, ProfileModeModel profileModeModel) {
+        this.menu = menu;
         this.profileModeModel = profileModeModel;
-        initializeMenu(menu);
+        initializeMenu();
     }
 
-    private void initializeMenu(JMenu menu) {
+    private void initializeMenu() {
         ButtonGroup buttonGroup = new ButtonGroup();
         for (XAxisMode mode : XAxisMode.values()) {
             JRadioButtonMenuItem menuItem = createRadioItem("show-" + mode.name().toLowerCase());
@@ -61,7 +58,7 @@ public class XAxisModeMenu {
         private JRadioButtonMenuItem menuItem;
         private XAxisMode mode;
 
-        public XAxisModeListener(JRadioButtonMenuItem menuItem, XAxisMode mode) {
+        private XAxisModeListener(JRadioButtonMenuItem menuItem, XAxisMode mode) {
             this.menuItem = menuItem;
             this.mode = mode;
             updateSelected();

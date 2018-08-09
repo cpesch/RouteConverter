@@ -27,21 +27,22 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import static slash.navigation.gui.helpers.JMenuHelper.findItem;
-
 /**
  * Synchronizes the texts of {@link JMenuItem}s with the {@link UndoManager}.
  *
  * @author Christian Pesch
  */
 
-public class UndoMenuSynchronizer {
+public class UndoMenu {
+    private final JMenuItem undoMenuItem;
+    private final JMenuItem redoMenuItem;
     private final UndoManager undoManager;
 
-    public UndoMenuSynchronizer(JMenuBar menuBar, UndoManager undoManager) {
+    public UndoMenu(JMenuItem undoMenuItem, JMenuItem redoMenuItem, UndoManager undoManager) {
+        this.undoMenuItem = undoMenuItem;
+        this.redoMenuItem = redoMenuItem;
         this.undoManager = undoManager;
-
-        initializeMenu(findItem(menuBar, "edit", "undo"), findItem(menuBar, "edit", "redo"));
+        initializeMenu();
     }
 
     private void setText(JMenuItem menuItem, String undoText) {
@@ -54,7 +55,7 @@ public class UndoMenuSynchronizer {
         menuItem.setText(text);
     }
 
-    private void initializeMenu(final JMenuItem undoMenuItem, final JMenuItem redoMenuItem) {
+    private void initializeMenu() {
         undoManager.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 setText(undoMenuItem, undoManager.canUndo() ?
