@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.actions.MergePositionListAction;
+import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsTableColumnModel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 
@@ -48,15 +49,16 @@ public class MergePositionListMenu {
     }
 
     private void initializeMenu() {
-        convertPanel.getFormatAndRoutesModel().addListDataListener(new ListDataListener() {
+        final FormatAndRoutesModel formatAndRoutesModel = convertPanel.getFormatAndRoutesModel();
+        formatAndRoutesModel.addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
-                    BaseRoute route = convertPanel.getFormatAndRoutesModel().getRoute(i);
+                    BaseRoute route = formatAndRoutesModel.getRoute(i);
                     JMenuItem menuItem = new JMenuItem(new MergePositionListAction(convertPanel, route));
                     menuItem.setText(shortenRouteName(route));
                     menu.add(menuItem, i);
                 }
-                menu.setEnabled(convertPanel.getFormatAndRoutesModel().getSize() > 1);
+                menu.setEnabled(formatAndRoutesModel.getSize() > 1);
             }
 
             public void intervalRemoved(ListDataEvent e) {
@@ -69,13 +71,13 @@ public class MergePositionListMenu {
                     }
                     menu.remove(i);
                 }
-                menu.setEnabled(convertPanel.getFormatAndRoutesModel().getSize() > 1);
+                menu.setEnabled(formatAndRoutesModel.getSize() > 1);
             }
 
             public void contentsChanged(ListDataEvent e) {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
                     if (i >= 0 && i < menu.getMenuComponentCount()) {
-                        BaseRoute route = convertPanel.getFormatAndRoutesModel().getRoute(i);
+                        BaseRoute route = formatAndRoutesModel.getRoute(i);
                         JMenuItem menuItem = (JMenuItem) menu.getMenuComponent(i);
                         menuItem.setText(shortenRouteName(route));
                     }
