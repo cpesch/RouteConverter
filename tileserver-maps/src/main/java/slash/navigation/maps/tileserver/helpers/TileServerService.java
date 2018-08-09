@@ -25,9 +25,7 @@ import slash.navigation.maps.tileserver.binding.TileServerType;
 import javax.xml.bind.JAXBException;
 import java.io.*;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
@@ -44,7 +42,8 @@ public class TileServerService {
     private static final String DOT_XML = ".xml";
 
     private final File directory;
-    private final Map<String, TileServerType> tileServers = new LinkedHashMap<>();
+    private final List<TileServerType> tileServers = new ArrayList<>();
+    private final List<TileServerType> overlays = new ArrayList<>();
 
     public TileServerService(File directory) {
         this.directory = directory;
@@ -73,11 +72,16 @@ public class TileServerService {
 
     private void load(InputStream inputStream) throws JAXBException {
         CatalogType catalogType = unmarshal(inputStream);
-        for (TileServerType tileServerType : catalogType.getTileServer())
-            tileServers.put(tileServerType.getId(), tileServerType);
+        tileServers.addAll(catalogType.getTileServer());
+        // TODO load real overlays once the XML is different
+        overlays.addAll(catalogType.getTileServer());
     }
 
     public List<TileServerType> getTileServers() {
-        return new ArrayList<>(tileServers.values());
+        return tileServers;
+    }
+
+    public List<TileServerType> getOverlays() {
+        return overlays;
     }
 }

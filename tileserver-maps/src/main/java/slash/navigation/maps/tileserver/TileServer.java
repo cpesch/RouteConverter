@@ -34,21 +34,19 @@ import static slash.common.io.Files.printArrayToDialogString;
 public class TileServer implements Item {
     private final String id;
     private final String description;
+    private final String urlPattern;
     private final List<String> hostNames;
-    private final String baseUrl;
-    private final String extension;
     private final boolean active;
     private final int minZoom;
     private final int maxZoom;
     private final String copyright;
 
-    public TileServer(String id, String description, List<String> hostNames, String baseUrl, String extension,
+    public TileServer(String id, String description, String urlPattern, List<String> hostNames,
                       boolean active, int minZoom, int maxZoom, String copyright) {
         this.id = id;
         this.description = description;
+        this.urlPattern = urlPattern;
         this.hostNames = hostNames;
-        this.baseUrl = baseUrl;
-        this.extension = extension;
         this.active = active;
         this.minZoom = minZoom;
         this.maxZoom = maxZoom;
@@ -67,16 +65,12 @@ public class TileServer implements Item {
         return printArrayToDialogString(getHostNames().toArray(), false);
     }
 
+    public String getUrlPattern() {
+        return urlPattern;
+    }
+
     public List<String> getHostNames() {
         return hostNames;
-    }
-
-    public String getBaseUrl() {
-        return baseUrl;
-    }
-
-    public String getExtension() {
-        return extension;
     }
 
     public boolean isActive() {

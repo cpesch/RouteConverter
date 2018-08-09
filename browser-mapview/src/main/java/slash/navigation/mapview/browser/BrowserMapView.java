@@ -74,6 +74,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -756,11 +757,10 @@ public abstract class BrowserMapView implements MapView {
                 if (i < c - 1)
                     buffer.append(", ");
             }
+            String url = MessageFormat.format(tileServer.getUrlPattern(), "\" + tileServer + \"", "\" + zoom + \"", "\" + coordinates.x + \"", "\" + coordinates.y + \"");
             buffer.append("];\n").
                     append("    var tileServer = tileServers[Math.floor(Math.random() * tileServers.length)];\n").
-                    append("    var url = \"http://\" + tileServer + \"").append(tileServer.getBaseUrl()).
-                    append("\" + zoom + \"/\" + coordinates.x + \"/\" + coordinates.y + \"").append(tileServer.getExtension()).
-                    append("\";\n");
+                    append("    var url = \"").append(url).append("\";\n");
             if (apiKey != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
                 buffer.append("    url = url.concat(\"?apikey=").append(apiKey).append("\");\n");
             buffer.append("    return url;\n").

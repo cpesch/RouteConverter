@@ -20,12 +20,16 @@
 package slash.navigation.maps.mapsforge.models;
 
 import org.mapsforge.core.model.Tile;
+import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
 import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.maps.tileserver.TileServer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.prefs.Preferences;
+
+import static java.text.MessageFormat.format;
 
 /**
  * A {@link OnlineTileSource} that is configured from a {@link TileServer}.
@@ -33,9 +37,11 @@ import java.net.URL;
  * @author Christian Pesch
  */
 
-public class TileServerMapSource extends OnlineTileSource {
-    private static String apiKey = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
-    private TileServer tileServer;
+public class TileServerMapSource extends AbstractTileSource {
+    private static final Preferences preferences = Preferences.userNodeForPackage(TileServerMapSource.class);
+    private static final String PARALLEL_REQUEST_LIMIT_PREFERENCE = "parallelRequestLimit";
+    private static final String THUNDER_FOREST_API_KEY = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
+    private final TileServer tileServer;
 
     private static String[] getHostNames(TileServer tileServer) {
         String[] hostNames = tileServer.getHostNames().toArray(new String[0]);
@@ -47,28 +53,30 @@ public class TileServerMapSource extends OnlineTileSource {
     public TileServerMapSource(TileServer tileServer) {
         super(getHostNames(tileServer), 80);
         this.tileServer = tileServer;
-        setName(tileServer.getId());
-        setBaseUrl(tileServer.getBaseUrl());
-        setExtension(tileServer.getExtension());
-        setZoomLevelMin((byte) tileServer.getMinZoom());
-        setZoomLevelMax((byte) tileServer.getMaxZoom());
         setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "2.24"));
     }
 
+    public int getParallelRequestsLimit() {
+        return preferences.getInt(PARALLEL_REQUEST_LIMIT_PREFERENCE, 8);
+    }
+
+    public byte getZoomLevelMin() {
+        return (byte)tileServer.getMinZoom();
+    }
+
+    public byte getZoomLevelMax() {
+        return (byte)tileServer.getMaxZoom();
+    }
+
+    public boolean hasAlpha() {
+        return false;
+    }
+
     public URL getTileUrl(Tile tile) throws MalformedURLException {
-        StringBuilder stringBuilder = new StringBuilder(32);
-
-        stringBuilder.append(getBaseUrl());
-        stringBuilder.append(tile.zoomLevel);
-        stringBuilder.append('/');
-        stringBuilder.append(tile.tileX);
-        stringBuilder.append('/');
-        stringBuilder.append(tile.tileY);
-        if (getExtension() != null)
-            stringBuilder.append(getExtension());
-        if (apiKey != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
-            stringBuilder.append("?apikey=").append(apiKey);
-
-        return new URL(getProtocol(), getHostName(), port, stringBuilder.toString());
+        // Integer.toString() avoids points that group digits
+        String url = format(tileServer.getUrlPattern(), getHostName(), tile.zoomLevel, Integer.toString(tile.tileX), Integer.toString(tile.tileY));
+        if (THUNDER_FOREST_API_KEY != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
+            url += ("?apikey=" + THUNDER_FOREST_API_KEY);
+        return new URL(url);
     }
 }
