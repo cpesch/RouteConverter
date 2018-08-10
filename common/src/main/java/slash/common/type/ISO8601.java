@@ -68,14 +68,11 @@ public final class ISO8601 {
      * Parses an ISO8601-compliant date/time string.
      *
      * @param text the date/time string to be parsed
-     * @return a <code>Calendar</code>, or <code>null</code> if the input could
-     *         not be parsed
-     * @throws IllegalArgumentException if a <code>null</code> argument is passed
+     * @return a <code>Calendar</code>, or <code>null</code> if the input could not be parsed
      */
     public static Calendar parseDate(String text) {
-        if (text == null) {
-            throw new IllegalArgumentException("argument can not be null");
-        }
+        if (text == null)
+            return null;
 
         // check optional leading sign
         char sign;
