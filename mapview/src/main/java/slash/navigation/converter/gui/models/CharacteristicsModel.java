@@ -28,6 +28,7 @@ import slash.navigation.base.RouteCharacteristics;
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 
+import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.MIN_VALUE;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 
@@ -38,8 +39,8 @@ import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
  */
 
 public class CharacteristicsModel extends AbstractListModel implements ComboBoxModel {
-    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
     private static final int IGNORE = MIN_VALUE;
+    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
         return route;
@@ -70,7 +71,7 @@ public class CharacteristicsModel extends AbstractListModel implements ComboBoxM
         if ((getSelectedItem() != null && !getSelectedItem().equals(anItem)) ||
                 getSelectedItem() == null && anItem != null) {
             route.setCharacteristics((RouteCharacteristics) anItem);
-            fireContentsChanged(this, -1, -1);
+            fireContentsChanged(this, 0, MAX_VALUE);
         }
     }
 
