@@ -54,21 +54,27 @@ public class ReopenMenu {
     }
 
     private void initializeMenu() {
+        populateMenu();
+
         recentUrlsModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                menu.removeAll();
-
-                List<URL> urls = recentUrlsModel.getUrls();
-                for (URL url : urls) {
-                    File file = toFile(url);
-                    JMenuItem menuItem = new JMenuItem(new ReopenAction(url));
-                    String text = file != null ? file.getAbsolutePath() : url.toExternalForm();
-                    menuItem.setText(shortenPath(text, preferences.getInt(MAXIMUM_REOPEN_URL_MENU_TEXT_LENGTH_PREFERENCE, 80)));
-                    menuItem.setToolTipText(text);
-                    menu.add(menuItem);
-                }
-                menu.setEnabled(urls.size() > 0);
+                populateMenu();
             }
         });
+    }
+
+    private void populateMenu() {
+        menu.removeAll();
+
+        List<URL> urls = recentUrlsModel.getUrls();
+        for (URL url : urls) {
+            File file = toFile(url);
+            JMenuItem menuItem = new JMenuItem(new ReopenAction(url));
+            String text = file != null ? file.getAbsolutePath() : url.toExternalForm();
+            menuItem.setText(shortenPath(text, preferences.getInt(MAXIMUM_REOPEN_URL_MENU_TEXT_LENGTH_PREFERENCE, 80)));
+            menuItem.setToolTipText(text);
+            menu.add(menuItem);
+        }
+        menu.setEnabled(urls.size() > 0);
     }
 }
