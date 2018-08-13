@@ -677,7 +677,7 @@ public class MapsforgeMapView implements MapView {
             ElevationService elevationService = mapViewCallback.getElevationService();
             if (elevationService.isDownload()) {
                 File directory = elevationService.getDirectory();
-                if (directory.exists()) {
+                if (directory != null && directory.exists()) {
                     MemoryCachingHgtReaderTileSource tileSource = new MemoryCachingHgtReaderTileSource(directory, new DiffuseLightShadingAlgorithm(), GRAPHIC_FACTORY);
                     tileSource.setEnableInterpolationOverlap(true);
                     hillsRenderConfig.setTileSource(tileSource);
