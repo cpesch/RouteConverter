@@ -22,9 +22,9 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.event.ListDataEvent;
@@ -37,14 +37,13 @@ import java.util.logging.Logger;
 
 import static java.lang.Math.max;
 import static java.lang.System.currentTimeMillis;
-import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
+import static slash.navigation.converter.gui.models.CharacteristicsModel.isIgnoreEvent;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
@@ -93,7 +92,7 @@ public class LengthCalculator {
         characteristicsModel.addListDataListener(new AbstractListDataListener() {
             public void process(ListDataEvent e) {
                 // ignore events following setRoute()
-                if (e.getType() == CONTENTS_CHANGED && e.getIndex0() == IGNORE && e.getIndex1() == IGNORE)
+                if (isIgnoreEvent(e))
                     return;
                 calculateDistance();
             }

@@ -28,7 +28,7 @@ import javax.swing.event.*;
 import java.util.List;
 
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
-import static slash.navigation.converter.gui.models.CharacteristicsModel.IGNORE;
+import static slash.navigation.converter.gui.models.CharacteristicsModel.isIgnoreEvent;
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
@@ -76,7 +76,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
 
             public void contentsChanged(ListDataEvent e) {
                 // ignore events following setRoute()
-                if (e.getType() == CONTENTS_CHANGED && e.getIndex0() == IGNORE && e.getIndex1() == IGNORE)
+                if (isIgnoreEvent(e))
                     return;
                 if (formatAndRoutes.getFormat().isWritingRouteCharacteristics())
                     setModified(true);

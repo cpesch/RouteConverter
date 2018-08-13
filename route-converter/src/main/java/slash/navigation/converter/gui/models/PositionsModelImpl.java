@@ -42,6 +42,7 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
 
+import static java.lang.Integer.MAX_VALUE;
 import static java.util.Calendar.*;
 import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -402,20 +403,20 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     public void sort(Comparator<NavigationPosition> comparator) {
         getRoute().sort(comparator);
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
-        fireTableRowsUpdated(-1, -1);
+        fireTableRowsUpdated(0, MAX_VALUE);
     }
 
     @SuppressWarnings("unchecked")
     public void order(List<NavigationPosition> positions) {
         getRoute().order(positions);
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
-        fireTableRowsUpdated(-1, -1);
+        fireTableRowsUpdated(0, MAX_VALUE);
     }
 
     public void revert() {
         getRoute().revert();
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
-        fireTableRowsUpdated(-1, -1);
+        fireTableRowsUpdated(0, MAX_VALUE);
     }
 
     public void top(int[] rowIndices) {
