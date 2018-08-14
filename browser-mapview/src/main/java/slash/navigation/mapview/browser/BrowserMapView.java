@@ -38,7 +38,6 @@ import slash.navigation.mapview.MapViewListener;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.event.*;
-import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.*;
@@ -48,7 +47,6 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -80,7 +78,6 @@ import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Externalization.extractFile;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.type.HexadecimalNumber.encodeByte;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.base.WaypointType.*;
 import static slash.navigation.converter.gui.models.CharacteristicsModel.isIgnoreEvent;
@@ -91,6 +88,8 @@ import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
+import static slash.navigation.mapview.browser.helpers.ColorHelper.asColor;
+import static slash.navigation.mapview.browser.helpers.ColorHelper.asOpacity;
 import static slash.navigation.mapview.browser.helpers.TransformUtil.delta;
 import static slash.navigation.mapview.browser.helpers.TransformUtil.isPositionInChina;
 
@@ -1033,16 +1032,6 @@ public abstract class BrowserMapView implements MapView {
 
     private void removeDirections() {
         executeScript("removeOverlays();\nremoveDirections();");
-    }
-
-    String asColor(Color color) {
-        return encodeByte((byte) color.getRed()) + encodeByte((byte) color.getGreen()) + encodeByte((byte) color.getBlue());
-    }
-
-    private static final float MINIMUM_OPACITY = 0.3f;
-
-    float asOpacity(Color color) {
-        return MINIMUM_OPACITY + color.getAlpha() / 256f * (1 - MINIMUM_OPACITY);
     }
 
     private void addDirectionsToMap(List<NavigationPosition> positions) {
