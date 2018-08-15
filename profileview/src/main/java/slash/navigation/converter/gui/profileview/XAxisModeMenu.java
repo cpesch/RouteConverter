@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.converter.gui.profileview;
 
 import slash.navigation.converter.gui.models.ProfileModeModel;

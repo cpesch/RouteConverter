@@ -19,6 +19,7 @@
 */
 package slash.navigation.maps.tileserver;
 
+import slash.navigation.maps.item.ItemSelectionModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.tileserver.binding.TileServerType;
 import slash.navigation.maps.tileserver.helpers.TileServerService;
@@ -35,8 +36,15 @@ import static slash.common.io.Transfer.formatInt;
  */
 
 public class TileServerMapManager {
+    private static final String APPLIED_OVERLAY_PREFERENCE = "appliedOverlay";
     private final TileServerService tileServerService;
     private ItemTableModel<TileServer> availableMapsModel = new ItemTableModel<>(1);
+    private ItemTableModel<TileServer> availableOverlaysModel = new ItemTableModel<>(1);
+    private ItemSelectionModel<TileServer> appliedOverlaysModel = new ItemSelectionModel<TileServer>(APPLIED_OVERLAY_PREFERENCE, false) {
+        protected String itemToString(TileServer tileServer) {
+            return tileServer.getUrl();
+        }
+    };
 
     public TileServerMapManager(File tileServerDirectory) {
         this.tileServerService = new TileServerService(tileServerDirectory);
@@ -47,8 +55,17 @@ public class TileServerMapManager {
         return availableMapsModel;
     }
 
+    public ItemTableModel<TileServer> getAvailableOverlaysModel() {
+        return availableOverlaysModel;
+    }
+
+    public ItemSelectionModel<TileServer> getAppliedOverlaysModel() {
+        return appliedOverlaysModel;
+    }
+
     private void initializeOnlineMaps() {
         availableMapsModel.clear();
+        availableOverlaysModel.clear();
     }
 
     public void scanTileServers() {
@@ -58,6 +75,15 @@ public class TileServerMapManager {
             public void run() {
                 for (TileServerType type : tileServerService.getTileServers())
                     availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
+                            // TODO fix me once the XML is different
+                            "http://{0}" + type.getBaseUrl() + "{1}/{2}/{3}" + type.getExtension(),
+                            type.getHostName(),
+                            type.getActive() == null || type.getActive(),
+                            formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
+                            type.getCopyright() != null ? type.getCopyright().value() : "Unknown"));
+
+                for (TileServerType type : tileServerService.getOverlays())
+                    availableOverlaysModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
                             // TODO fix me once the XML is different
                             "http://{0}" + type.getBaseUrl() + "{1}/{2}/{3}" + type.getExtension(),
                             type.getHostName(),

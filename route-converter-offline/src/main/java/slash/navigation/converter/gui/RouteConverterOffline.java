@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.actions.ShowThemesAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.AutomaticGeocodingService;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
+import slash.navigation.converter.gui.helpers.OverlaysMenu;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.graphhopper.GraphHopper;
@@ -103,8 +104,11 @@ public class RouteConverterOffline extends RouteConverter {
         if (viewMenu != null) {
             viewMenu.add(createItem("show-maps"), 0);
             viewMenu.add(createItem("show-themes"), 1);
-            viewMenu.add(createCheckBoxItem("show-shaded-hills", getShowShadedHills()), 2);
-            viewMenu.add(new JPopupMenu.Separator(), 3);
+            JMenu overlaysMenu = createMenu("show-overlays");
+            viewMenu.add(overlaysMenu, 2);
+            new OverlaysMenu(overlaysMenu, getTileServerMapManager().getAvailableOverlaysModel(), getTileServerMapManager().getAppliedOverlaysModel());
+            viewMenu.add(createCheckBoxItem("show-shaded-hills", getShowShadedHills()), 3);
+            viewMenu.add(new JPopupMenu.Separator(), 4);
         }
     }
 

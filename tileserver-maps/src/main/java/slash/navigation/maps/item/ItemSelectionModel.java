@@ -21,46 +21,41 @@ package slash.navigation.maps.item;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
+import static java.lang.Math.min;
 import static java.lang.String.format;
+import static java.util.prefs.Preferences.MAX_KEY_LENGTH;
 
 /**
- * A model for a single {@link Item}.
+ * A model for a list of {@link Item}s.
  *
  * @author Christian Pesch
  */
 
-public abstract class ItemModel<T extends Item> {
-    private static final Preferences preferences = Preferences.userNodeForPackage(ItemModel.class);
+public abstract class ItemSelectionModel<T extends Item> {
+    private static final Preferences preferences = Preferences.userNodeForPackage(ItemSelectionModel.class);
     private final String preferenceName;
-    private final String defaultValue;
+    private final boolean defaultValue;
 
     private EventListenerList listenerList = new EventListenerList();
 
-    public ItemModel(String preferenceName, String defaultValue) {
+    public ItemSelectionModel(String preferenceName, boolean defaultValue) {
         this.preferenceName = preferenceName;
         this.defaultValue = defaultValue;
     }
 
-    public T getItem() {
-        try {
-            T item = stringToItem(preferences.get(preferenceName, defaultValue));
-            if (item != null)
-                return item;
-        } catch (IllegalArgumentException e) {
-            // intentionally left empty
-        }
-        T item = stringToItem(defaultValue);
-        if(item != null)
-            return item;
-        throw new IllegalArgumentException(format("Cannot find item for preference %s and default value %s", preferenceName, defaultValue));
+    private String getKey(T item) {
+        return preferenceName + itemToString(item);
     }
 
-    protected abstract T stringToItem(String value);
+    public boolean isSelected(T item) {
+        return preferences.getBoolean(getKey(item), defaultValue);
+    }
 
-    public void setItem(T item) {
-        preferences.put(preferenceName, itemToString(item));
+    public void toggleSelected(T item) {
+        preferences.putBoolean(getKey(item), !isSelected(item));
         fireChanged();
     }
 
