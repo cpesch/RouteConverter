@@ -20,7 +20,6 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.actions.ToggleOverlayAction;
-import slash.navigation.maps.item.ItemSelectionModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.tileserver.TileServer;
 
@@ -37,20 +36,20 @@ import java.util.List;
 
 public class OverlaysMenu {
     private final JMenu menu;
-    private final ItemTableModel<TileServer> overlaysModel;
-    private final ItemSelectionModel<TileServer> selectionModel;
+    private final ItemTableModel<TileServer> availableOverlaysModel;
+    private final ItemTableModel<TileServer> appliedOverlaysModel;
 
-    public OverlaysMenu(JMenu menu, ItemTableModel<TileServer> overlaysModel, ItemSelectionModel<TileServer> selectionModel) {
+    public OverlaysMenu(JMenu menu, ItemTableModel<TileServer> availableOverlaysModel, ItemTableModel<TileServer> appliedOverlaysModel) {
         this.menu = menu;
-        this.overlaysModel = overlaysModel;
-        this.selectionModel = selectionModel;
+        this.availableOverlaysModel = availableOverlaysModel;
+        this.appliedOverlaysModel = appliedOverlaysModel;
         initializeMenu();
     }
 
     private void initializeMenu() {
         populateMenu();
 
-        overlaysModel.addTableModelListener(new TableModelListener() {
+        availableOverlaysModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 populateMenu();
             }
@@ -60,12 +59,13 @@ public class OverlaysMenu {
     private void populateMenu() {
         menu.removeAll();
 
-        List<TileServer> tileServers = overlaysModel.getItems();
+        List<TileServer> tileServers = availableOverlaysModel.getItems();
         for(TileServer tileServer : tileServers) {
-            JCheckBoxMenuItem item = new JCheckBoxMenuItem(tileServer.getId());
+            JCheckBoxMenuItem item = new JCheckBoxMenuItem();
+            item.setAction(new ToggleOverlayAction(appliedOverlaysModel, tileServer));
+            item.setState(appliedOverlaysModel.contains(tileServer));
+            item.setText(tileServer.getId());
             item.setToolTipText(tileServer.getDescription());
-            item.setAction(new ToggleOverlayAction(selectionModel, tileServer));
-            item.setState(selectionModel.isSelected(tileServer));
             menu.add(item);
         }
         menu.setEnabled(tileServers.size() > 0);

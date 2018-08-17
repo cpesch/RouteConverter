@@ -25,10 +25,7 @@ import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.Parameters;
-import org.mapsforge.map.layer.Layer;
-import org.mapsforge.map.layer.LayerManager;
-import org.mapsforge.map.layer.Layers;
-import org.mapsforge.map.layer.TileLayer;
+import org.mapsforge.map.layer.*;
 import org.mapsforge.map.layer.cache.FileSystemTileCache;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
@@ -63,6 +60,8 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
+import slash.navigation.maps.mapsforge.models.TileServerMapSource;
+import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.MapViewListener;
@@ -154,6 +153,7 @@ public class MapsforgeMapView implements MapView {
     private UnitSystemListener unitSystemListener = new UnitSystemListener();
     private DisplayedMapListener displayedMapListener = new DisplayedMapListener();
     private AppliedThemeListener appliedThemeListener = new AppliedThemeListener();
+    private AppliedOverlayListener appliedOverlayListener = new AppliedOverlayListener();
     private ShadedHillsListener shadedHillsListener = new ShadedHillsListener();
 
     private MapSelector mapSelector;
@@ -161,6 +161,7 @@ public class MapsforgeMapView implements MapView {
     private MapViewMoverAndZoomer mapViewMoverAndZoomer;
     private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private static Bitmap markerIcon, waypointIcon;
+    private GroupLayer overlaysLayer = new GroupLayer();
     private TileRendererLayer backgroundLayer;
     private HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
     private SelectionUpdater selectionUpdater;
@@ -516,6 +517,7 @@ public class MapsforgeMapView implements MapView {
 
         getMapManager().getDisplayedMapModel().addChangeListener(displayedMapListener);
         getMapManager().getAppliedThemeModel().addChangeListener(appliedThemeListener);
+        mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().addTableModelListener(appliedOverlayListener);
     }
 
     public void setBackgroundMap(File backgroundMap) {
@@ -640,6 +642,7 @@ public class MapsforgeMapView implements MapView {
         mapsToLayers.put(map, layer);
 
         handleBackground();
+        handleOverlays();
 
         // then start download layer threads
         if (layer instanceof TileDownloadLayer)
@@ -656,6 +659,35 @@ public class MapsforgeMapView implements MapView {
         }
         limitZoomLevel();
         log.info("Using map " + mapsToLayers.keySet() + " and theme " + getMapManager().getAppliedThemeModel().getItem() + " with zoom " + getZoom());
+    }
+
+    private void handleOverlays() {
+        Layers layers = getLayerManager().getLayers();
+        layers.remove(overlaysLayer);
+        layers.add(overlaysLayer);
+    }
+
+    private void handleOverlayInsertion(int firstRow, int lastRow) {
+        for (int i = firstRow; i < lastRow + 1; i++) {
+            TileServer tileServer = mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().getItem(i);
+            TileServerMapSource mapSource = new TileServerMapSource(tileServer);
+            mapSource.setAlpha(true);
+            TileDownloadLayer overlay = new TileDownloadLayer(createTileCache(tileServer.getId()), mapView.getModel().mapViewPosition, mapSource, GRAPHIC_FACTORY);
+            overlaysLayer.layers.add(overlay);
+            overlay.setDisplayModel(mapView.getModel().displayModel);
+            overlay.start();
+            getLayerManager().redrawLayers();
+        }
+    }
+
+    private void handleOverlayDeletion(int firstRow, int lastRow) {
+        for (int i = lastRow; i >= firstRow; i--) {
+            Layer layer = overlaysLayer.layers.get(i);
+            TileDownloadLayer overlay = (TileDownloadLayer) layer;
+            overlaysLayer.layers.remove(overlay);
+            overlaysLayer.requestRedraw();
+            overlay.onDestroy();
+        }
     }
 
     private void handleBackground() {
@@ -736,6 +768,7 @@ public class MapsforgeMapView implements MapView {
     public void dispose() {
         getMapManager().getDisplayedMapModel().removeChangeListener(displayedMapListener);
         getMapManager().getAppliedThemeModel().removeChangeListener(appliedThemeListener);
+        mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().removeTableModelListener(appliedOverlayListener);
 
         positionsModel.removeTableModelListener(positionsModelListener);
         characteristicsModel.removeListDataListener(characteristicsModelListener);
@@ -1252,6 +1285,23 @@ public class MapsforgeMapView implements MapView {
     private class AppliedThemeListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             handleMapAndThemeUpdate(false, false);
+        }
+    }
+
+    private class AppliedOverlayListener implements TableModelListener {
+        public void tableChanged(TableModelEvent e) {
+            switch (e.getType()) {
+                case INSERT:
+                    handleOverlayInsertion(e.getFirstRow(), e.getLastRow());
+                    break;
+                case DELETE:
+                    handleOverlayDeletion(e.getFirstRow(), e.getLastRow());
+                    break;
+                case UPDATE:
+                    break;
+                default:
+                    throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
+            }
         }
     }
 

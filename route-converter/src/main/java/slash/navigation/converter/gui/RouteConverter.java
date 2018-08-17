@@ -490,6 +490,7 @@ public class RouteConverter extends SingleFrameApplication {
             geoTagger.dispose();
         getDataSourceManager().dispose();
         getDownloadManager().saveQueue();
+        getTileServerMapManager().dispose();
         super.shutdown();
 
         log.info("Shutdown " + getTitle() + " for " + parseVersionFromManifest().getOperationSystem() + " with locale " + Locale.getDefault() +

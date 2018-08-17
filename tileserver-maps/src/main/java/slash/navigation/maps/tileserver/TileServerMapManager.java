@@ -19,9 +19,9 @@
 */
 package slash.navigation.maps.tileserver;
 
-import slash.navigation.maps.item.ItemSelectionModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.tileserver.binding.TileServerType;
+import slash.navigation.maps.tileserver.helpers.ItemPreferencesMediator;
 import slash.navigation.maps.tileserver.helpers.TileServerService;
 
 import java.io.File;
@@ -40,15 +40,22 @@ public class TileServerMapManager {
     private final TileServerService tileServerService;
     private ItemTableModel<TileServer> availableMapsModel = new ItemTableModel<>(1);
     private ItemTableModel<TileServer> availableOverlaysModel = new ItemTableModel<>(1);
-    private ItemSelectionModel<TileServer> appliedOverlaysModel = new ItemSelectionModel<TileServer>(APPLIED_OVERLAY_PREFERENCE, false) {
-        protected String itemToString(TileServer tileServer) {
-            return tileServer.getUrl();
-        }
-    };
+    private ItemTableModel<TileServer> appliedOverlaysModel = new ItemTableModel<TileServer>(1);
+    private ItemPreferencesMediator itemPreferencesMediator;
 
     public TileServerMapManager(File tileServerDirectory) {
         this.tileServerService = new TileServerService(tileServerDirectory);
         initializeOnlineMaps();
+        itemPreferencesMediator = new ItemPreferencesMediator<TileServer>(availableOverlaysModel, appliedOverlaysModel, APPLIED_OVERLAY_PREFERENCE) {
+            protected String itemToString(TileServer tileServer) {
+                return tileServer.getId();
+            }
+        };
+    }
+
+    public void dispose() {
+        itemPreferencesMediator.dispose();
+        itemPreferencesMediator = null;
     }
 
     public ItemTableModel<TileServer> getAvailableMapsModel() {
@@ -59,7 +66,7 @@ public class TileServerMapManager {
         return availableOverlaysModel;
     }
 
-    public ItemSelectionModel<TileServer> getAppliedOverlaysModel() {
+    public ItemTableModel<TileServer> getAppliedOverlaysModel() {
         return appliedOverlaysModel;
     }
 

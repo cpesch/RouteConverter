@@ -38,7 +38,7 @@ public abstract class ItemModel<T extends Item> {
 
     private EventListenerList listenerList = new EventListenerList();
 
-    public ItemModel(String preferenceName, String defaultValue) {
+    protected ItemModel(String preferenceName, String defaultValue) {
         this.preferenceName = preferenceName;
         this.defaultValue = defaultValue;
     }

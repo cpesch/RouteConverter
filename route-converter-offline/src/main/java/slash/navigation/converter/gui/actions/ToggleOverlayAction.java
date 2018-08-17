@@ -21,7 +21,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.models.BooleanModel;
-import slash.navigation.maps.item.ItemSelectionModel;
+import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.tileserver.TileServer;
 
 import javax.swing.*;
@@ -33,15 +33,18 @@ import javax.swing.*;
  */
 
 public class ToggleOverlayAction extends FrameAction {
-    private final ItemSelectionModel<TileServer> selectionModel;
+    private final ItemTableModel<TileServer> appliedOverlaysModel;
     private final TileServer tileServer;
 
-    public ToggleOverlayAction(ItemSelectionModel<TileServer> selectionModel, TileServer tileServer) {
+    public ToggleOverlayAction(ItemTableModel<TileServer> appliedOverlaysModel, TileServer tileServer) {
         this.tileServer = tileServer;
-        this.selectionModel = selectionModel;
+        this.appliedOverlaysModel = appliedOverlaysModel;
     }
 
     public void run() {
-        selectionModel.toggleSelected(tileServer);
+        if(appliedOverlaysModel.contains(tileServer))
+            appliedOverlaysModel.removeItem(tileServer);
+        else
+            appliedOverlaysModel.addOrUpdateItem(tileServer);
     }
 }

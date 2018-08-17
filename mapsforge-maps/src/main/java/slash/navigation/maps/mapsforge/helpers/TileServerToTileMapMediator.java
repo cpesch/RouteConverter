@@ -47,7 +47,7 @@ public class TileServerToTileMapMediator {
         this.sourceModel = sourceModel;
         this.destinationModel = destinationModel;
 
-         listener = new TableModelListener() {
+        listener = new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
                 switch (e.getType()) {
                     case INSERT:

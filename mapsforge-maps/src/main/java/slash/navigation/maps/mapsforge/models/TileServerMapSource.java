@@ -42,6 +42,7 @@ public class TileServerMapSource extends AbstractTileSource {
     private static final String PARALLEL_REQUEST_LIMIT_PREFERENCE = "parallelRequestLimit";
     private static final String THUNDER_FOREST_API_KEY = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
     private final TileServer tileServer;
+    private boolean alpha = false;
 
     private static String[] getHostNames(TileServer tileServer) {
         String[] hostNames = tileServer.getHostNames().toArray(new String[0]);
@@ -69,7 +70,11 @@ public class TileServerMapSource extends AbstractTileSource {
     }
 
     public boolean hasAlpha() {
-        return false;
+        return alpha;
+    }
+
+    public void setAlpha(boolean alpha) {
+        this.alpha = alpha;
     }
 
     public URL getTileUrl(Tile tile) throws MalformedURLException {

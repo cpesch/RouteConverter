@@ -78,6 +78,10 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
         return items.indexOf(item);
     }
 
+    public boolean contains(T item) {
+        return items.contains(item);
+    }
+
     private void addItem(T item) {
         if (!items.add(item))
             throw new IllegalArgumentException("Item " + item + " not added to " + items);
@@ -103,6 +107,14 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
             addItem(item);
         else
             updateItem(item);
+    }
+
+    public void removeItem(T item) {
+        final int index = getIndex(item);
+        if (index == -1)
+            throw new IllegalArgumentException("Item " + item + " not found in " + items);
+        items.remove(index);
+        fireTableRowsDeleted(index, index);
     }
 
     public void add(int index, T item) {
