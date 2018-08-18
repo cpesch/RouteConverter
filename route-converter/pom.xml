@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>route-converter</artifactId>
     <packaging>jar</packaging>
-    <name>Platform-independent Online Edition</name>
+    <name>Platform-independent Google Edition</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

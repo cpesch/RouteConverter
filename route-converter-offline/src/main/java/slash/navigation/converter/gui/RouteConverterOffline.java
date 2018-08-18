@@ -75,7 +75,7 @@ public class RouteConverterOffline extends RouteConverter {
     }
 
     public String getEdition() {
-        return "RouteConverter Offline Edition";
+        return "RouteConverter Opensource Edition";
     }
 
     public String getEditionId() {

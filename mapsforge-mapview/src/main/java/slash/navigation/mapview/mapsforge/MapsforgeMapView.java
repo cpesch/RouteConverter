@@ -1068,7 +1068,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void setSelectedPositions(List<NavigationPosition> selectedPositions) {
-        throw new UnsupportedOperationException("photo panel not available in Offline Edition");
+        throw new UnsupportedOperationException("photo panel not available in " + MapsforgeMapView.class.getSimpleName());
     }
 
     private LatLong getMousePosition() {

@@ -40,7 +40,7 @@ import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 
 /**
  * Implements the callbacks from the {@link MapView} to the other RouteConverter services including the {@link MapsforgeMapManager}
- * for the RouteConverter Offline Edition.
+ * for the RouteConverter Opensource Edition.
  *
  * @author Christian Pesch
  */

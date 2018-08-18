@@ -19,12 +19,13 @@
 */
 package slash.navigation.maps.mapsforge.models;
 
-import org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.TileMap;
 
+import static org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik.INSTANCE;
+
 /**
- * Default {@link LocalMap} to display a map in the Offline Edition without any downloads.
+ * Default {@link LocalMap} to display a map in the Opensource Edition without any downloads.
  *
  * @author Christian Pesch
  */
@@ -33,6 +34,6 @@ public class OpenStreetMap extends TileMap {
     public static final String OPENSTREETMAP_URL = "http://www.openstreetmap.org/";
 
     public OpenStreetMap() {
-        super("OpenStreetMap Default Map", OPENSTREETMAP_URL, true, OpenStreetMapMapnik.INSTANCE);
+        super("OpenStreetMap Default Map", OPENSTREETMAP_URL, true, INSTANCE);
     }
 }

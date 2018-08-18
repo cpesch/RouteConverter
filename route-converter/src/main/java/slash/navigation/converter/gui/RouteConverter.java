@@ -151,7 +151,7 @@ public class RouteConverter extends SingleFrameApplication {
     }
 
     public String getEdition() {
-        return "RouteConverter Online Edition";
+        return "RouteConverter Google Edition";
     }
 
     public String getEditionId() {
