@@ -31,11 +31,17 @@
             <artifactId>common-gui</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
             <classifier>stripped</classifier>
+        </dependency>
+        <dependency>
+            <groupId>net.andreinc.aleph</groupId>
+            <artifactId>aleph-formatter</artifactId>
+            <version>${alephformatter.version}</version>
         </dependency>
     </dependencies>
 </project>

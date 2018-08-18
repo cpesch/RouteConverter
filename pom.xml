@@ -26,6 +26,10 @@
             <id>routeconverter-thirdparty</id>
             <url>http://subversion.routeconverter.com/public/RouteThirdParty</url>
         </repository>
+        <repository>
+            <id>spring-plugins-repository</id>
+            <url>http://repo.spring.io/plugins-release/</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
@@ -57,6 +61,7 @@
     <properties>
         <java.version>1.7</java.version>
         <maven.version>3.5</maven.version>
+        <alephformatter.version>0.1.0</alephformatter.version>
         <brouter.version>1.4.9</brouter.version>
         <graphhopper.version>0.10.1</graphhopper.version>
         <jackson.version>2.9.6</jackson.version>

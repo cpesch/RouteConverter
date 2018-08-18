@@ -19,6 +19,7 @@
 */
 package slash.navigation.maps.mapsforge.models;
 
+import net.andreinc.aleph.AlephFormatter;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
@@ -28,8 +29,6 @@ import slash.navigation.maps.tileserver.TileServer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.prefs.Preferences;
-
-import static java.text.MessageFormat.format;
 
 /**
  * A {@link OnlineTileSource} that is configured from a {@link TileServer}.
@@ -79,7 +78,12 @@ public class TileServerMapSource extends AbstractTileSource {
 
     public URL getTileUrl(Tile tile) throws MalformedURLException {
         // Integer.toString() avoids points that group digits
-        String url = format(tileServer.getUrlPattern(), getHostName(), tile.zoomLevel, Integer.toString(tile.tileX), Integer.toString(tile.tileY));
+        String url = AlephFormatter.str(tileServer.getUrlPattern())
+                .arg("hostname", getHostName())
+                .arg("tilex", Integer.toString(tile.tileX))
+                .arg("tiley", Integer.toString(tile.tileY))
+                .arg("zoom", Integer.toString(tile.zoomLevel))
+                .fmt();
         if (THUNDER_FOREST_API_KEY != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
             url += ("?apikey=" + THUNDER_FOREST_API_KEY);
         return new URL(url);

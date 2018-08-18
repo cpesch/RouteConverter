@@ -40,7 +40,7 @@ public class TileServerMapManager {
     private final TileServerService tileServerService;
     private ItemTableModel<TileServer> availableMapsModel = new ItemTableModel<>(1);
     private ItemTableModel<TileServer> availableOverlaysModel = new ItemTableModel<>(1);
-    private ItemTableModel<TileServer> appliedOverlaysModel = new ItemTableModel<TileServer>(1);
+    private ItemTableModel<TileServer> appliedOverlaysModel = new ItemTableModel<>(1);
     private ItemPreferencesMediator itemPreferencesMediator;
 
     public TileServerMapManager(File tileServerDirectory) {
@@ -83,16 +83,17 @@ public class TileServerMapManager {
                 for (TileServerType type : tileServerService.getTileServers())
                     availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
                             // TODO fix me once the XML is different
-                            "http://{0}" + type.getBaseUrl() + "{1}/{2}/{3}" + type.getExtension(),
+                            "http://#{hostname}" + type.getBaseUrl() + "#{zoom}/#{tilex}/#{tiley}" + type.getExtension(),
                             type.getHostName(),
                             type.getActive() == null || type.getActive(),
                             formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
-                            type.getCopyright() != null ? type.getCopyright().value() : "Unknown"));
+                            type.getCopyright() != null ? type.getCopyright().value() : "Unknown"
+         ));
 
                 for (TileServerType type : tileServerService.getOverlays())
                     availableOverlaysModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
                             // TODO fix me once the XML is different
-                            "http://{0}" + type.getBaseUrl() + "{1}/{2}/{3}" + type.getExtension(),
+                            "http://#{hostname}" + type.getBaseUrl() + "#{zoom}/#{tilex}/#{tiley}" + type.getExtension(),
                             type.getHostName(),
                             type.getActive() == null || type.getActive(),
                             formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
