@@ -7,17 +7,17 @@
     </formats>
     <files>
         <file>
-            <source>src/main/app-resources/Java/RouteConverter.cfg</source>
+            <source>src/main/app-resources/Java/RouteConverterGoogle.cfg</source>
             <outputDirectory>/Contents/Java/</outputDirectory>
             <filtered>true</filtered>
             <lineEnding>lf</lineEnding>
         </file>
         <file>
-            <source>src/main/app-resources/Java/RouteConverterStart.jar</source>
+            <source>src/main/app-resources/Java/RouteConverterGoogleStart.jar</source>
             <outputDirectory>/Contents/Java/</outputDirectory>
         </file>
         <file>
-            <source>src/main/app-resources/MacOS/RouteConverter</source>
+            <source>src/main/app-resources/MacOS/RouteConverterGoogle</source>
             <outputDirectory>/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
         </file>

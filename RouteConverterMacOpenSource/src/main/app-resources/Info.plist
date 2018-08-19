@@ -9,19 +9,19 @@
         <key>CFBundleAllowMixedLocalizations</key>
         <true/>
         <key>CFBundleExecutable</key>
-        <string>RouteConverterGoogle</string>
+        <string>RouteConverterOpenSource</string>
         <key>CFBundleGetInfoString</key>
-        <string>RouteConverterGoogle for Mac OS X</string>
+        <string>RouteConverterOpenSource for Mac OS X</string>
         <key>CFBundleIconFile</key>
         <string>RouteConverter.icns</string>
         <key>CFBundleIdentifier</key>
-        <string>slash.navigation.converter.gui.RouteConverter</string>
+        <string>slash.navigation.converter.gui.RouteConverterOpenSource</string>
         <key>CFBundleName</key>
-        <string>RouteConverterGoogle</string>
+        <string>RouteConverterOpenSource</string>
         <key>CFBundlePackageType</key>
         <string>APPL</string>
         <key>CFBundleSignature</key>
-        <string>RTCG</string>
+        <string>RTCO</string>
         <key>CFBundleShortVersionString</key>
         <string>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}</string>
         <key>CFBundleVersion</key>
@@ -119,5 +119,5 @@
                 </dict>
             </dict>
         </array>
-    </dict>
+     </dict>
 </plist>

@@ -59,11 +59,11 @@ How to develop for RouteConverter
 6. Run RouteConverter
    > java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
    > java -jar RouteConverterLinuxGoogle/target/RouteConverterLinuxGoogle.jar
-   > java -jar RouteConverterLinuxOffline/target/RouteConverterLinuxOffline.jar
+   > java -jar RouteConverterLinuxOpenSource/target/RouteConverterLinuxOpenSource.jar
    > java -jar RouteConverterMacGoogle/target/RouteConverterMacGoogle.jar
-   > java -jar RouteConverterMacOffline/target/RouteConverterMacOffline.jar
+   > java -jar RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.jar
    > java -jar RouteConverterWindowsGoogle/target/RouteConverterWindowsGoogle.jar
-   > java -jar RouteConverterWindowsOffline/target/RouteConverterWindowsOffline.jar
+   > java -jar RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.jar
 
 Have fun!
 Christian

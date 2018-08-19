@@ -428,9 +428,9 @@
         <module>RouteConverterMacGoogle</module>
         <module>RouteConverterWindowsGoogle</module>
         <module>route-converter-offline</module>
-        <module>RouteConverterLinuxOffline</module>
-        <module>RouteConverterMacOffline</module>
-        <module>RouteConverterWindowsOffline</module>
+        <module>RouteConverterLinuxOpenSource</module>
+        <module>RouteConverterMacOpenSource</module>
+        <module>RouteConverterWindowsOpenSource</module>
         <module>tileserver-maps</module>
         <module>time-album-pro</module>
         <module>TimeAlbumProLinux</module>

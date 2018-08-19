@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>RouteConverterLinuxGoogle</artifactId>
     <packaging>jar</packaging>
-    <name>The RouteConverter UI tool for Linux</name>
+    <name>The RouteConverter Google UI tool for Linux</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>

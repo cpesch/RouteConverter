@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>RouteConverterWindowsOffline</artifactId>
+    <artifactId>RouteConverterWindowsOpenSource</artifactId>
     <packaging>jar</packaging>
-    <name>The RouteConverter UI tool for Windows (Offline)</name>
+    <name>The RouteConverter OpenSource UI tool for Windows</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -22,7 +22,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputFile>target/RouteConverterWindowsOffline.jar</outputFile>
+                            <outputFile>target/RouteConverterWindowsOpenSource.jar</outputFile>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
@@ -87,8 +87,8 @@
                         </goals>
                         <configuration>
                             <headerType>gui</headerType>
-                            <outfile>target/RouteConverterWindowsOffline.exe</outfile>
-                            <jar>target/RouteConverterWindowsOffline.jar</jar>
+                            <outfile>target/RouteConverterWindowsOpenSource.exe</outfile>
+                            <jar>target/RouteConverterWindowsOpenSource.jar</jar>
                             <errTitle>RouteConverter</errTitle>
                             <icon>src/main/app-resources/RouteConverter.ico</icon>
                             <splash>
@@ -111,7 +111,7 @@
                                 <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>
                                 <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtProductVersion>
                                 <internalName>RouteConverter for Windows Offline Vector Map Ed.</internalName>
-                                <originalFilename>RouteConverterWindowsOffline.exe</originalFilename>
+                                <originalFilename>RouteConverterWindowsOpenSource.exe</originalFilename>
                             </versionInfo>
                         </configuration>
                     </execution>
