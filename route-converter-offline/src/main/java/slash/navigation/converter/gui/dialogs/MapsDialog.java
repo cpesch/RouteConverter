@@ -24,7 +24,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.RouteConverterOffline;
+import slash.navigation.converter.gui.RouteConverterOpenSource;
 import slash.navigation.converter.gui.actions.DisplayMapAction;
 import slash.navigation.converter.gui.actions.DownloadMapsAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
@@ -298,7 +298,7 @@ public class MapsDialog extends SimpleDialog {
     }
 
     private MapsforgeMapManager getMapsforgeMapManager() {
-        return ((RouteConverterOffline) RouteConverter.getInstance()).getMapsforgeMapManager();
+        return ((RouteConverterOpenSource) RouteConverter.getInstance()).getMapsforgeMapManager();
     }
 
     private void close() {

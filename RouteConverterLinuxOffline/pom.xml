@@ -31,7 +31,7 @@
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
                                         <Implementation-Vendor>Linux</Implementation-Vendor>
-                                        <Main-Class>slash.navigation.converter.gui.RouteConverterOffline</Main-Class>
+                                        <Main-Class>slash.navigation.converter.gui.RouteConverterOpenSource</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
                                         <Codebase>www.routeconverter.com</Codebase>

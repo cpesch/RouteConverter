@@ -58,12 +58,12 @@ import static slash.navigation.download.Action.Copy;
 import static slash.navigation.gui.helpers.JMenuHelper.*;
 
 /**
- * A small graphical user interface for the offline route conversion.
+ * A small graphical user interface for the route conversion based on Opensource software and free services.
  *
  * @author Christian Pesch
  */
 
-public class RouteConverterOffline extends RouteConverter {
+public class RouteConverterOpenSource extends RouteConverter {
     private static final String SHOW_SHADED_HILLS_PREFERENCE = "showShadedHills";
 
     private MapsforgeMapManager mapsforgeMapManager;
@@ -71,7 +71,7 @@ public class RouteConverterOffline extends RouteConverter {
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
-        launch(RouteConverterOffline.class, new String[]{ RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
+        launch(RouteConverterOpenSource.class, new String[]{ RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
     }
 
     public String getEdition() {

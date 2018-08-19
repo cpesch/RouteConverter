@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>RouteConverterWindowsOffline</artifactId>
+    <artifactId>RouteConverterMacGoogle</artifactId>
     <packaging>jar</packaging>
-    <name>The RouteConverter UI tool for Windows (Offline)</name>
+    <name>The RouteConverter UI tool for Mac OS X</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -22,7 +22,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputFile>target/RouteConverterWindowsOffline.jar</outputFile>
+                            <finalName>RouteConverterMacGoogle</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
@@ -30,8 +30,8 @@
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
-                                        <Implementation-Vendor>Windows</Implementation-Vendor>
-                                        <Main-Class>slash.navigation.converter.gui.RouteConverterOpenSource</Main-Class>
+                                        <Implementation-Vendor>Mac</Implementation-Vendor>
+                                        <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
                                         <Codebase>www.routeconverter.com</Codebase>
@@ -45,13 +45,8 @@
                                     <excludes>
                                         <exclude>*.html</exclude>
                                         <exclude>*.txt</exclude>
-                                        <exclude>Doxyfile</exclude>
                                         <exclude>font_metrics.properties</exclude>
-                                        <exclude>jump-workbench-properties.xml</exclude>
-                                        <exclude>help/**</exclude>
-                                        <exclude>MANIFEST.MF</exclude>
                                         <exclude>META-INF/*</exclude>
-                                        <exclude>META-INF/jb/</exclude>
                                         <exclude>META-INF/MANIFEST.MF</exclude>
                                         <exclude>mozilla/**</exclude>
                                         <exclude>repackage/**</exclude>
@@ -77,45 +72,21 @@
             </plugin>
 
             <plugin>
-                <groupId>com.akathist.maven.plugins.launch4j</groupId>
-                <artifactId>launch4j-maven-plugin</artifactId>
+                <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>launch4j</goal>
+                            <goal>single</goal>
                         </goals>
-                        <configuration>
-                            <headerType>gui</headerType>
-                            <outfile>target/RouteConverterWindowsOffline.exe</outfile>
-                            <jar>target/RouteConverterWindowsOffline.jar</jar>
-                            <errTitle>RouteConverter</errTitle>
-                            <icon>src/main/app-resources/RouteConverter.ico</icon>
-                            <splash>
-                                <file>src/main/app-resources/RouteConverter.bmp</file>
-                                <timeout>10</timeout>
-                            </splash>
-                            <classPath>
-                                <mainClass>slash.navigation.converter.gui.RouteConverterOpenSource</mainClass>
-                            </classPath>
-                            <jre>
-                                <minVersion>1.7.0</minVersion>
-                                <maxHeapSize>1024</maxHeapSize>
-                            </jre>
-                            <versionInfo>
-                                <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>
-                                <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtFileVersion>
-                                <fileDescription>RouteConverter displays, modifies and converts GPS data between over 75 formats</fileDescription>
-                                <copyright>Christian Pesch</copyright>
-                                <productName>RouteConverter</productName>
-                                <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>
-                                <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtProductVersion>
-                                <internalName>RouteConverter for Windows Offline Vector Map Ed.</internalName>
-                                <originalFilename>RouteConverterWindowsOffline.exe</originalFilename>
-                            </versionInfo>
-                        </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <descriptors>
+                        <descriptor>${basedir}/src/main/assembly/macosx.xml</descriptor>
+                    </descriptors>
+                    <finalName>RouteConverterMacGoogle.app</finalName>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -123,7 +94,12 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter-offline</artifactId>
+            <artifactId>route-converter</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>javafx8-mapview</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

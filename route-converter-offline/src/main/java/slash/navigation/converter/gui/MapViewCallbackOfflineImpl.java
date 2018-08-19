@@ -49,11 +49,11 @@ public class MapViewCallbackOfflineImpl extends MapViewCallbackImpl implements M
     private static final Logger log = Logger.getLogger(MapViewCallbackOfflineImpl.class.getName());
 
     public MapsforgeMapManager getMapsforgeMapManager() {
-        return ((RouteConverterOffline) Application.getInstance()).getMapsforgeMapManager();
+        return ((RouteConverterOpenSource) Application.getInstance()).getMapsforgeMapManager();
     }
 
     public BooleanModel getShowShadedHills() {
-        return ((RouteConverterOffline) Application.getInstance()).getShowShadedHills();
+        return ((RouteConverterOpenSource) Application.getInstance()).getShowShadedHills();
     }
 
     public ElevationService getElevationService() {

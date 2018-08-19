@@ -116,7 +116,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
- * A small graphical user interface for the route conversion.
+ * A small graphical user interface for the route conversion based on Google Maps APIs.
  *
  * @author Christian Pesch
  */
