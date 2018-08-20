@@ -424,10 +424,11 @@
         <module>route-converter-cmdline</module>
         <module>RouteConverterCmdLine</module>
         <module>route-converter</module>
+        <module>route-converter-google</module>
         <module>RouteConverterLinuxGoogle</module>
         <module>RouteConverterMacGoogle</module>
         <module>RouteConverterWindowsGoogle</module>
-        <module>route-converter-offline</module>
+        <module>route-converter-opensource</module>
         <module>RouteConverterLinuxOpenSource</module>
         <module>RouteConverterMacOpenSource</module>
         <module>RouteConverterWindowsOpenSource</module>

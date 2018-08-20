@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>route-converter</artifactId>
     <packaging>jar</packaging>
-    <name>Platform-independent Google Edition</name>
+    <name>RouteConverter base package</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
@@ -82,11 +82,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>feedback</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>googlemaps</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

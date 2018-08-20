@@ -31,7 +31,7 @@
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
                                         <Implementation-Vendor>Windows</Implementation-Vendor>
-                                        <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
+                                        <Main-Class>slash.navigation.converter.gui.RouteConverterGoogle</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
                                         <Codebase>www.routeconverter.com</Codebase>
@@ -92,7 +92,7 @@
                                 <timeout>10</timeout>
                             </splash>
                             <classPath>
-                                <mainClass>slash.navigation.converter.gui.RouteConverter</mainClass>
+                                <mainClass>slash.navigation.converter.gui.RouteConverterGoogle</mainClass>
                             </classPath>
                             <jre>
                                 <minVersion>1.7.0</minVersion>
@@ -119,7 +119,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter</artifactId>
+            <artifactId>route-converter-google</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

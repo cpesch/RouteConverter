@@ -30,7 +30,7 @@ import slash.navigation.gui.actions.SingletonDialogAction;
  * @author Christian Pesch
  */
 
-public class TimeAlbumPro extends RouteConverter {
+public class TimeAlbumPro extends RouteConverterGoogle {
     private NavigationFormatRegistry navigationFormatRegistry = new ColumbusNavigationFormatRegistry();
 
     public static void main(String[] args) {

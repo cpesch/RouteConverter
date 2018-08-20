@@ -43,7 +43,6 @@ import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
-import slash.navigation.googlemaps.GoogleService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.*;
@@ -53,7 +52,6 @@ import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.rest.Credentials;
-import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -95,13 +93,13 @@ import static slash.common.helpers.LocaleHelper.DENMARK;
 import static slash.common.helpers.LocaleHelper.SERBIA;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.*;
-import static slash.common.io.Transfer.trim;
 import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.*;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX8;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
 import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIONS;
@@ -114,12 +112,12 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
- * A small graphical user interface for the route conversion based on Google Maps APIs.
+ * A small graphical user interface for the route conversion.
  *
  * @author Christian Pesch
  */
 
-public class RouteConverter extends SingleFrameApplication {
+public abstract class RouteConverter extends SingleFrameApplication {
     protected static final Logger log = Logger.getLogger(RouteConverter.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
 
@@ -148,13 +146,9 @@ public class RouteConverter extends SingleFrameApplication {
         return "RouteConverter";
     }
 
-    public String getEdition() {
-        return "RouteConverter Google Edition";
-    }
+    public abstract String getEdition();
 
-    public String getEditionId() {
-        return "online";
-    }
+    public abstract String getEditionId();
 
     private static final String MAP_VIEW_PREFERENCE = "mapView";
     private static final String SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE = "showAllPositionsAfterLoading";
@@ -251,21 +245,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    protected void checkForGoogleMapsAPIKey() {
-        String apiKey = APIKeyRegistry.getInstance().getAPIKey("google", "map");
-        if (apiKey != null)
-            return;
-
-        JLabel labelGoogleAPIKeyMissing = new JLabel(MessageFormat.format(getBundle().getString("google-apikey-missing"), getEdition()));
-        labelGoogleAPIKeyMissing.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                startBrowserForGoogleAPIKey(getFrame());
-            }
-        });
-        String input = showInputDialog(getFrame(), labelGoogleAPIKeyMissing, getTitle(), QUESTION_MESSAGE);
-        if (trim(input) != null)
-            APIKeyRegistry.getInstance().setAPIKeyPreference("google", input);
-    }
+    protected abstract void checkForGoogleMapsAPIKey();
 
     protected void parseInitialArgs(String[] args) {
         log.info("Processing initial arguments: " + Arrays.toString(args));
@@ -552,25 +532,25 @@ public class RouteConverter extends SingleFrameApplication {
         preferences.put(UPLOAD_ROUTE_PREFERENCE, path.getPath());
     }
 
-    public File getAddPhotoPreference() {
+    public File getAddPhotoPreference() { // for TimeAlbum
         File path = new File(preferences.get(ADD_PHOTO_PREFERENCE, ""));
         return findExistingPath(path);
     }
 
-    public void setAddPhotoPreference(File path) {
+    public void setAddPhotoPreference(File path) { // for TimeAlbum
         preferences.put(ADD_PHOTO_PREFERENCE, path.getPath());
     }
 
-    public File getAddAudioPreference() {
+    public File getAddAudioPreference() { // for TimeAlbum
         File path = new File(preferences.get(ADD_AUDIO_PREFERENCE, ""));
         return findExistingPath(path);
     }
 
-    public void setAddAudioPreference(File path) {
+    public void setAddAudioPreference(File path) { // for TimeAlbum
         preferences.put(ADD_AUDIO_PREFERENCE, path.getPath());
     }
 
-    public TagStrategy getTagStrategyPreference() {
+    public TagStrategy getTagStrategyPreference() { // for TimeAlbum
         try {
             return TagStrategy.valueOf(preferences.get(TAG_STRATEGY_PREFERENCE, Create_Backup_In_Subdirectory.toString()));
         } catch (IllegalArgumentException e) {
@@ -578,7 +558,7 @@ public class RouteConverter extends SingleFrameApplication {
         }
     }
 
-    public void setTagStrategyPreference(TagStrategy tagStrategy) {
+    public void setTagStrategyPreference(TagStrategy tagStrategy) { // for TimeAlbum
         preferences.put(TAG_STRATEGY_PREFERENCE, tagStrategy.toString());
     }
 
@@ -624,10 +604,6 @@ public class RouteConverter extends SingleFrameApplication {
         return routeServiceOperator;
     }
 
-    public FixMapModeModel getFixMapModeModel() {
-        return fixMapModeModel;
-    }
-
     public ColorModel getRouteColorModel() {
         return routeColorModel;
     }
@@ -640,7 +616,11 @@ public class RouteConverter extends SingleFrameApplication {
         return unitSystemModel;
     }
 
-    public GoogleMapsServerModel getGoogleMapsServerModel() {
+    public FixMapModeModel getFixMapModeModel() { // for RouteConverterGoogle
+        return fixMapModeModel;
+    }
+
+    public GoogleMapsServerModel getGoogleMapsServerModel() { // for RouteConverterGoogle
         return googleMapsServerModel;
     }
 
@@ -824,7 +804,7 @@ public class RouteConverter extends SingleFrameApplication {
         return positionAugmenter;
     }
 
-    private AudioPlayer audioPlayer;
+    private AudioPlayer audioPlayer; // for TimeAlbum
 
     public synchronized AudioPlayer getAudioPlayer() {
         if (audioPlayer == null) {
@@ -833,7 +813,7 @@ public class RouteConverter extends SingleFrameApplication {
         return audioPlayer;
     }
 
-    private GeoTagger geoTagger;
+    private GeoTagger geoTagger; // for TimeAlbum
 
     public GeoTagger getGeoTagger() {
         if (geoTagger == null) {
@@ -842,7 +822,7 @@ public class RouteConverter extends SingleFrameApplication {
         return geoTagger;
     }
 
-    public TimeZoneModel getPhotoTimeZone() {
+    public TimeZoneModel getPhotoTimeZone() { // for TimeAlbum
         return photoTimeZoneModel;
     }
 
@@ -1227,7 +1207,7 @@ public class RouteConverter extends SingleFrameApplication {
         dataSourceManager = new DataSourceManager(downloadManager);
         timeZoneModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                ColumbusV1000Device.setTimeZone(timeZoneModel.getTimeZoneId());
+                ColumbusV1000Device.setTimeZone(timeZoneModel.getTimeZoneId()); // for TimeAlbum
             }
         });
         tileServerMapManager = new TileServerMapManager(getTileServersDirectory());
@@ -1352,33 +1332,15 @@ public class RouteConverter extends SingleFrameApplication {
         }, "DataSourceUpdater").start();
     }
 
-    protected void initializeElevationServices() {
-        AutomaticElevationService service = new AutomaticElevationService(getElevationServiceFacade());
-        getElevationServiceFacade().addElevationService(service);
-        getElevationServiceFacade().setPreferredElevationService(service);
+    protected abstract void initializeElevationServices();
 
-        getElevationServiceFacade().addElevationService(new GoogleService());
-    }
+    protected abstract void updateElevationServices();
 
-    protected void updateElevationServices() {
-    }
+    protected abstract void initializeGeocodingServices();
 
-    protected void initializeGeocodingServices() {
-        AutomaticGeocodingService service = new AutomaticGeocodingService(getGeocodingServiceFacade());
-        getGeocodingServiceFacade().addGeocodingService(service);
-        getGeocodingServiceFacade().setPreferredGeocodingService(service);
+    protected abstract void initializeRoutingServices();
 
-        getGeocodingServiceFacade().addGeocodingService(new GoogleService());
-    }
-
-    protected void initializeRoutingServices() {
-        RoutingService service = new GoogleDirections();
-        getRoutingServiceFacade().addRoutingService(service);
-        getRoutingServiceFacade().setPreferredRoutingService(service);
-    }
-
-    protected void updateRoutingServices() {
-    }
+    protected abstract void updateRoutingServices();
 
     private void downloadThirdparty() {
         if (isMac() || isWindows())
@@ -1387,11 +1349,9 @@ public class RouteConverter extends SingleFrameApplication {
                     Extract, getApplicationDirectory("thirdparty/gpsbabel"), null);
     }
 
-    protected void scanLocalMapsAndThemes() {
-    }
+    protected abstract void scanLocalMapsAndThemes();
 
-    protected void scanRemoteMapsAndThemes() {
-    }
+    protected abstract void scanRemoteMapsAndThemes();
 
     private void scanForFilesMissingInQueue() {
         // scan for files that are not in the queue but in the file system and put them in the queue if they're in a datasource

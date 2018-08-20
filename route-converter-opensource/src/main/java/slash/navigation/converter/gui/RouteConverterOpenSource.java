@@ -85,7 +85,6 @@ public class RouteConverterOpenSource extends RouteConverter {
     }
 
     protected void checkForGoogleMapsAPIKey() {
-        // intentionally left empty since the OpenSource Edition should not depend on Google
     }
 
     public List<MapViewImplementation> getAvailableMapViews() {
