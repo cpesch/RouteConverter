@@ -33,6 +33,7 @@ import slash.navigation.gui.Application;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
+import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
@@ -66,6 +67,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.*;
 public class RouteConverterOpenSource extends RouteConverter {
     private static final String SHOW_SHADED_HILLS_PREFERENCE = "showShadedHills";
 
+    private HgtFilesService hgtFilesService;
     private MapsforgeMapManager mapsforgeMapManager;
     private BooleanModel showShadedHills = new BooleanModel(SHOW_SHADED_HILLS_PREFERENCE, false);
     private LocalMap mapAfterStart;
@@ -92,6 +94,7 @@ public class RouteConverterOpenSource extends RouteConverter {
 
     protected void initializeServices() {
         super.initializeServices();
+        hgtFilesService = new HgtFilesService(getDataSourceManager());
         mapsforgeMapManager = new MapsforgeMapManager(getDataSourceManager(), getTileServerMapManager());
         mapAfterStart = getMapsforgeMapManager().getDisplayedMapModel().getItem();
     }
@@ -112,6 +115,10 @@ public class RouteConverterOpenSource extends RouteConverter {
         }
     }
 
+    private HgtFilesService getHgtFilesService() {
+        return hgtFilesService;
+    }
+
     public MapsforgeMapManager getMapsforgeMapManager() {
         return mapsforgeMapManager;
     }
@@ -129,6 +136,14 @@ public class RouteConverterOpenSource extends RouteConverter {
         getElevationServiceFacade().addElevationService(service);
         getElevationServiceFacade().setPreferredElevationService(service);
 
+        getHgtFilesService().initialize();
+        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
+            getElevationServiceFacade().addElevationService(hgtFile);
+        }
+    }
+
+    protected void updateElevationServices() {
+        getHgtFilesService().dispose();
         getHgtFilesService().initialize();
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
@@ -231,6 +246,7 @@ public class RouteConverterOpenSource extends RouteConverter {
 
     protected void shutdown() {
         super.shutdown();
+        getHgtFilesService().dispose();
         getMapsforgeMapManager().dispose();
     }
 }

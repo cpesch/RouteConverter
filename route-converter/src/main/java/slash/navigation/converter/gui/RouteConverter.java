@@ -48,8 +48,6 @@ import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.*;
 import slash.navigation.gui.models.BooleanModel;
-import slash.navigation.hgt.HgtFiles;
-import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
@@ -190,7 +188,6 @@ public class RouteConverter extends SingleFrameApplication {
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DataSourceManager dataSourceManager;
-    private HgtFilesService hgtFilesService;
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade();
     private GeocodingServiceFacade geocodingServiceFacade = new GeocodingServiceFacade();
     private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
@@ -481,7 +478,6 @@ public class RouteConverter extends SingleFrameApplication {
         if (isMapViewAvailable())
             getMapView().dispose();
         getConvertPanel().dispose();
-        getHgtFilesService().dispose();
         if (positionAugmenter != null)
             positionAugmenter.dispose();
         if (audioPlayer != null)
@@ -808,10 +804,6 @@ public class RouteConverter extends SingleFrameApplication {
 
     public RoutingServiceFacade getRoutingServiceFacade() {
         return routingServiceFacade;
-    }
-
-    protected HgtFilesService getHgtFilesService() {
-        return hgtFilesService;
     }
 
     public DataSourceManager getDataSourceManager() {
@@ -1233,7 +1225,6 @@ public class RouteConverter extends SingleFrameApplication {
         downloadManager.addDownloadListener(new ChecksumSender());
         downloadManager.addDownloadListener(new DownloadNotifier());
         dataSourceManager = new DataSourceManager(downloadManager);
-        hgtFilesService = new HgtFilesService(dataSourceManager);
         timeZoneModel.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 ColumbusV1000Device.setTimeZone(timeZoneModel.getTimeZoneId());
@@ -1367,19 +1358,9 @@ public class RouteConverter extends SingleFrameApplication {
         getElevationServiceFacade().setPreferredElevationService(service);
 
         getElevationServiceFacade().addElevationService(new GoogleService());
-
-        getHgtFilesService().initialize();
-        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
-            getElevationServiceFacade().addElevationService(hgtFile);
-        }
     }
 
     protected void updateElevationServices() {
-        getHgtFilesService().dispose();
-        getHgtFilesService().initialize();
-        for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
-            getElevationServiceFacade().addElevationService(hgtFile);
-        }
     }
 
     protected void initializeGeocodingServices() {
