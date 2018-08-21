@@ -401,11 +401,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 getRecenterAfterZooming(),
                 getShowCoordinates(),
                 getShowWaypointDescription(),
-                getFixMapModeModel(),
                 getRouteColorModel(),
                 getTrackColorModel(),
-                getUnitSystemModel(),
-                getGoogleMapsServerModel());
+                getUnitSystemModel());
 
         @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
         Throwable cause = getMapView().getInitializationCause();
@@ -826,10 +824,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return photoTimeZoneModel;
     }
 
-    protected MapViewCallback getMapViewCallback() {
-        return new MapViewCallbackImpl();
-    }
-
     public int selectPositionsWithinDistanceToPredecessor(double distance) {
         return getConvertPanel().selectPositionsWithinDistanceToPredecessor(distance);
     }
@@ -907,6 +901,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void setMapViewPreference(MapViewImplementation mapView) {
         getPreferences().put(MAP_VIEW_PREFERENCE, mapView.name());
     }
+
+    protected abstract MapViewCallback getMapViewCallback();
 
     // tab related helpers
 

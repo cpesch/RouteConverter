@@ -33,12 +33,12 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitu
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
 
 /**
- * Implements the callbacks from the {@link MapView} to the other RouteConverter services.
+ * Implements the common callbacks from the {@link MapView} for the RouteConverter services.
  *
  * @author Christian Pesch
  */
 
-public class MapViewCallbackImpl implements MapViewCallback {
+public abstract class MapViewCallbackImpl implements MapViewCallback {
 
     public String createDescription(int index, String description) {
         return RouteConverter.getInstance().getPositionAugmenter().createDescription(index, description);

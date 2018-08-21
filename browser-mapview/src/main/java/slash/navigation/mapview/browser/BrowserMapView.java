@@ -196,11 +196,9 @@ public abstract class BrowserMapView implements MapView {
     private BooleanModel recenterAfterZooming;
     private BooleanModel showCoordinates;
     private BooleanModel showWaypointDescription;
-    private FixMapModeModel fixMapModeModel;
     private ColorModel routeColorModel;
     private ColorModel trackColorModel;
     private UnitSystemModel unitSystemModel;
-    private GoogleMapsServerModel googleMapsServerModel;
 
     private PositionsModelListener positionsModelListener = new PositionsModelListener();
     private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
@@ -212,7 +210,7 @@ public abstract class BrowserMapView implements MapView {
     private GoogleMapsServerListener googleMapsServerListener = new GoogleMapsServerListener();
 
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
-    protected MapViewCallback mapViewCallback;
+    protected MapViewCallbackGoogle mapViewCallback;
     private PositionReducer positionReducer;
     private final ExecutorService executor = newCachedThreadPool();
     private int overQueryLimitCount, zeroResultsCount;
@@ -227,24 +225,20 @@ public abstract class BrowserMapView implements MapView {
                            BooleanModel recenterAfterZooming,
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,
-                           FixMapModeModel fixMapModeModel,
                            ColorModel aRouteColorModel,
                            ColorModel aTrackColorModel,
-                           UnitSystemModel unitSystemModel,
-                           GoogleMapsServerModel googleMapsServerModel) {
+                           UnitSystemModel unitSystemModel) {
+        this.mapViewCallback = (MapViewCallbackGoogle) mapViewCallback;
         this.positionsModel = positionsModel;
         this.positionsSelectionModel = positionsSelectionModel;
         this.characteristicsModel = characteristicsModel;
-        this.mapViewCallback = mapViewCallback;
         this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
         this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
-        this.fixMapModeModel = fixMapModeModel;
         this.routeColorModel = aRouteColorModel;
         this.trackColorModel = aTrackColorModel;
         this.unitSystemModel = unitSystemModel;
-        this.googleMapsServerModel = googleMapsServerModel;
 
         initializeBrowser();
 
@@ -253,11 +247,11 @@ public abstract class BrowserMapView implements MapView {
         mapViewCallback.addRoutingServiceChangeListener(mapViewCallbackListener);
         showCoordinates.addChangeListener(showCoordinatesListener);
         showWaypointDescription.addChangeListener(showWaypointDescriptionListener);
-        fixMapModeModel.addChangeListener(repaintPositionListListener);
+        getFixMapModeModel().addChangeListener(repaintPositionListListener);
         routeColorModel.addChangeListener(repaintPositionListListener);
         trackColorModel.addChangeListener(repaintPositionListListener);
         unitSystemModel.addChangeListener(unitSystemListener);
-        googleMapsServerModel.addChangeListener(googleMapsServerListener);
+        getGoogleMapsServerModel().addChangeListener(googleMapsServerListener);
 
         positionReducer = new PositionReducer(new PositionReducer.Callback() {
             public int getZoom() {
@@ -281,8 +275,16 @@ public abstract class BrowserMapView implements MapView {
         return (double) preferences.getInt(BROWSER_SCALE_FACTOR_PREFERENCE, 100) / 100.0;
     }
 
+    protected FixMapModeModel getFixMapModeModel() {
+        return mapViewCallback.getFixMapModeModel();
+    }
+
+    protected GoogleMapsServerModel getGoogleMapsServerModel() {
+        return mapViewCallback.getGoogleMapsServerModel();
+    }
+
     protected String getGoogleMapsServerApiUrl() {
-        return googleMapsServerModel.getGoogleMapsServer().getApiUrl();
+        return getGoogleMapsServerModel().getGoogleMapsServer().getApiUrl();
     }
 
     protected String prepareWebPage() throws IOException {
@@ -297,7 +299,7 @@ public abstract class BrowserMapView implements MapView {
                 if (tokenName.equals("mapserverapiurl"))
                     return getGoogleMapsServerApiUrl();
                 if (tokenName.equals("mapserverfileurl"))
-                    return googleMapsServerModel.getGoogleMapsServer().getFileUrl();
+                    return getGoogleMapsServerModel().getGoogleMapsServer().getFileUrl();
                 if (tokenName.equals("maptype"))
                     return getMapType();
                 if (tokenName.equals("googleapikey"))
@@ -848,11 +850,11 @@ public abstract class BrowserMapView implements MapView {
             mapViewCallback.removeRoutingServiceChangeListener(mapViewCallbackListener);
             showCoordinates.removeChangeListener(showCoordinatesListener);
             showWaypointDescription.removeChangeListener(showWaypointDescriptionListener);
-            fixMapModeModel.removeChangeListener(repaintPositionListListener);
+            getFixMapModeModel().removeChangeListener(repaintPositionListListener);
             routeColorModel.removeChangeListener(repaintPositionListListener);
             trackColorModel.removeChangeListener(repaintPositionListListener);
             unitSystemModel.removeChangeListener(unitSystemListener);
-            googleMapsServerModel.removeChangeListener(googleMapsServerListener);
+            getGoogleMapsServerModel().removeChangeListener(googleMapsServerListener);
         }
 
         long start = currentTimeMillis();
@@ -1028,7 +1030,7 @@ public abstract class BrowserMapView implements MapView {
     // WGS/GCJ conversion
 
     private boolean isFixMap(Double longitude, Double latitude) {
-        FixMapMode fixMapMode = fixMapModeModel.getFixMapMode();
+        FixMapMode fixMapMode = getFixMapModeModel().getFixMapMode();
         return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleFixMap() && isPositionInChina(longitude, latitude);
     }
 
@@ -1681,7 +1683,7 @@ public abstract class BrowserMapView implements MapView {
 
     private void mapTypeChanged(String mapType) {
         preferences.put(MAP_TYPE_PREFERENCE, mapType);
-        if(fixMapModeModel.getFixMapMode().equals(Automatic)) {
+        if(getFixMapModeModel().getFixMapMode().equals(Automatic)) {
             invokeLater(new Runnable() {
                 public void run() {
                     update(false, false);

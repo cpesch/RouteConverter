@@ -23,7 +23,9 @@ import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.AutomaticGeocodingService;
 import slash.navigation.converter.gui.helpers.GoogleDirections;
+import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
 import slash.navigation.googlemaps.GoogleService;
+import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
@@ -69,6 +71,10 @@ public class RouteConverterGoogle extends RouteConverter {
         String input = showInputDialog(getFrame(), labelGoogleAPIKeyMissing, getTitle(), QUESTION_MESSAGE);
         if (trim(input) != null)
             APIKeyRegistry.getInstance().setAPIKeyPreference("google", input);
+    }
+
+    protected MapViewCallback getMapViewCallback() {
+        return new MapViewCallbackGoogleImpl();
     }
 
     protected void initializeElevationServices() {

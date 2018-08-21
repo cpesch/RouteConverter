@@ -37,7 +37,7 @@ import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
-import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
+import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.nominatim.NominatimService;
 import slash.navigation.photon.PhotonService;
@@ -126,8 +126,8 @@ public class RouteConverterOpenSource extends RouteConverter {
         return showShadedHills;
     }
 
-    protected MapViewCallbackOffline getMapViewCallback() {
-        return new MapViewCallbackOfflineImpl();
+    protected MapViewCallbackOpenSource getMapViewCallback() {
+        return new MapViewCallbackOpenSourceImpl();
     }
 
     protected void initializeElevationServices() {

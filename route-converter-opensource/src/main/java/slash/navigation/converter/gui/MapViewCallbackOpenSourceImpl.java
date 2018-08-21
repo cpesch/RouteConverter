@@ -20,13 +20,12 @@
 package slash.navigation.converter.gui;
 
 import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
-import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
-import slash.navigation.mapview.MapView;
-import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
+import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
 
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -39,14 +38,13 @@ import static slash.navigation.gui.helpers.WindowHelper.getFrame;
 import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 
 /**
- * Implements the callbacks from the {@link MapView} to the other RouteConverter services including the {@link MapsforgeMapManager}
- * for the RouteConverter Opensource Edition.
+ * Implements the callbacks from the MapsforgeMapView to the RouteConverterOpenSource services.
  *
  * @author Christian Pesch
  */
 
-public class MapViewCallbackOfflineImpl extends MapViewCallbackImpl implements MapViewCallbackOffline {
-    private static final Logger log = Logger.getLogger(MapViewCallbackOfflineImpl.class.getName());
+public class MapViewCallbackOpenSourceImpl extends MapViewCallbackImpl implements MapViewCallbackOpenSource {
+    private static final Logger log = Logger.getLogger(MapViewCallbackOpenSourceImpl.class.getName());
 
     public MapsforgeMapManager getMapsforgeMapManager() {
         return ((RouteConverterOpenSource) Application.getInstance()).getMapsforgeMapManager();

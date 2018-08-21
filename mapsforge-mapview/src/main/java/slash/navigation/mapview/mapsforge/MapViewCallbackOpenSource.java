@@ -20,19 +20,18 @@
 
 package slash.navigation.mapview.mapsforge;
 
-import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.elevation.ElevationService;
+import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
-import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 
 /**
- * Interface for callbacks from the {@link MapView} to the other RouteConverter services including offline.
+ * Interface for callbacks from the {@link MapsforgeMapView} to the RouteConverterOpenSource services.
  *
  * @author Christian Pesch
  */
 
-public interface MapViewCallbackOffline extends MapViewCallback {
+public interface MapViewCallbackOpenSource extends MapViewCallback {
     MapsforgeMapManager getMapsforgeMapManager();
 
     BooleanModel getShowShadedHills();

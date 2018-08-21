@@ -50,11 +50,9 @@ public interface MapView extends PositionsSelectionModel {
                     BooleanModel recenterAfterZooming,
                     BooleanModel showCoordinates,
                     BooleanModel showWaypointDescription,
-                    FixMapModeModel fixMapModeModel,
                     ColorModel routeColorModel,
                     ColorModel trackColorModel,
-                    UnitSystemModel unitSystemModel,
-                    GoogleMapsServerModel googleMapsServerModel);
+                    UnitSystemModel unitSystemModel);
     boolean isInitialized();
     boolean isDownload();
     String getMapsPath();

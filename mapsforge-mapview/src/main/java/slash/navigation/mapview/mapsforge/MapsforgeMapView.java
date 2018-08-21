@@ -143,7 +143,7 @@ public class MapsforgeMapView implements MapView {
     private ColorModel routeColorModel;
     private ColorModel trackColorModel;
     private UnitSystemModel unitSystemModel;
-    private MapViewCallbackOffline mapViewCallback;
+    private MapViewCallbackOpenSource mapViewCallback;
 
     private PositionsModelListener positionsModelListener = new PositionsModelListener();
     private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
@@ -182,12 +182,10 @@ public class MapsforgeMapView implements MapView {
                            BooleanModel recenterAfterZooming,
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,       /* ignored */
-                           FixMapModeModel fixMapModeModel,            /* ignored */
                            ColorModel aRouteColorModel,
                            final ColorModel aTrackColorModel,
-                           UnitSystemModel unitSystemModel,            /* ignored */
-                           GoogleMapsServerModel googleMapsServerModel /* ignored */) {
-        this.mapViewCallback = (MapViewCallbackOffline) mapViewCallback;
+                           UnitSystemModel unitSystemModel             /* ignored */) {
+        this.mapViewCallback = (MapViewCallbackOpenSource) mapViewCallback;
         this.positionsModel = positionsModel;
         this.positionsSelectionModel = positionsSelectionModel;
         this.characteristicsModel = characteristicsModel;

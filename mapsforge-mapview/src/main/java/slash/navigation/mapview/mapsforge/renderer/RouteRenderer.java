@@ -27,7 +27,7 @@ import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
-import slash.navigation.mapview.mapsforge.MapViewCallbackOffline;
+import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.mapview.mapsforge.lines.Line;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
@@ -61,11 +61,11 @@ public class RouteRenderer {
     private boolean drawingRoute, drawingBeeline;
 
     private MapsforgeMapView mapView;
-    private MapViewCallbackOffline mapViewCallback;
+    private MapViewCallbackOpenSource mapViewCallback;
     private ColorModel routeColorModel;
     private GraphicFactory graphicFactory;
 
-    public RouteRenderer(MapsforgeMapView mapView, MapViewCallbackOffline mapViewCallback, ColorModel routeColorModel,
+    public RouteRenderer(MapsforgeMapView mapView, MapViewCallbackOpenSource mapViewCallback, ColorModel routeColorModel,
                          GraphicFactory graphicFactory) {
         this.mapView = mapView;
         this.mapViewCallback = mapViewCallback;
