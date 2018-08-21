@@ -74,6 +74,7 @@ public class GraphHopper implements RoutingService {
     private static final TravelMode CAR = new TravelMode("Car");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), CAR, new TravelMode("Foot"));
     // omitted: Bike2, Hike, MotorCycle, MTB, RacingBike
+    private static final int BYTES_FOR_EDGE_FLAGS = 4;
 
     private final DownloadManager downloadManager;
     private DataSource dataSource;
@@ -225,7 +226,7 @@ public class GraphHopper implements RoutingService {
                 hopper = new GraphHopperOSM().
                         setOSMFile(file.getAbsolutePath()).
                         forDesktop().
-                        setEncodingManager(new EncodingManager(getAvailableTravelModeNames())).
+                        setEncodingManager(new EncodingManager(getAvailableTravelModeNames(), BYTES_FOR_EDGE_FLAGS)).
                         setCHEnabled(false).
                         setEnableInstructions(false).
                         setGraphHopperLocation(path.getAbsolutePath()).
