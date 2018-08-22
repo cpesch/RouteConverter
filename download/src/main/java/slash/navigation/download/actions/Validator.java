@@ -133,7 +133,7 @@ public class Validator {
             log.warning(format("%s has SHA-1 %s but expected %s", file.getFile(), actual.getSHA1(), expected.getSHA1()));
         boolean valid = lastModifiedEquals && contentLengthEquals && sha1Equals || localLaterThanRemote;
         if (valid)
-            log.info(format("%s has valid checksum", file.getFile()));
+            log.fine(format("%s has valid checksum", file.getFile()));
         return valid;
     }
 
