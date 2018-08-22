@@ -39,13 +39,9 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ResourceBundle;
 
-import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
-import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
+import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.gui.events.Range.asRange;
@@ -132,7 +128,7 @@ public class MapSelector {
         try {
             comboBoxZoom.setSelectedItem(zoomLevel);
         }
-        catch (ArrayIndexOutOfBoundsException e) {
+        catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
             // work around exceptions deep in Swings BasicListUI on Mac OS X
             comboBoxZoom.setSelectedIndex(zoomLevel - 1);
         }
