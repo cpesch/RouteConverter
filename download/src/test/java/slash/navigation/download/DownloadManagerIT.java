@@ -23,7 +23,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import slash.common.io.InputOutput;
 import slash.common.type.CompactCalendar;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.Head;
@@ -39,6 +38,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
+import static slash.common.io.InputOutput.readFileToString;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.DownloadManager.WAIT_TIMEOUT;
@@ -154,7 +154,7 @@ public class DownloadManagerIT {
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
-        String actual = InputOutput.readFileToString(target);
+        String actual = readFileToString(target);
         assertEquals(EXPECTED, actual);
     }
 
@@ -268,7 +268,7 @@ public class DownloadManagerIT {
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
-        String actual = InputOutput.readFileToString(target);
+        String actual = readFileToString(target);
         assertEquals(EXPECTED, actual);
     }
 
@@ -328,7 +328,7 @@ public class DownloadManagerIT {
         waitFor(download, Succeeded);
 
         assertEquals(Succeeded, download.getState());
-        String actual = InputOutput.readFileToString(target);
+        String actual = readFileToString(target);
         assertEquals(EXPECTED, actual);
     }
 
@@ -384,7 +384,7 @@ public class DownloadManagerIT {
             assertEquals(Succeeded, download.getState());
 
             assertTrue(extracted.getFile().exists());
-            String actual = InputOutput.readFileToString(extracted.getFile());
+            String actual = readFileToString(extracted.getFile());
             assertEquals(EXPECTED, actual);
         } finally {
             if (extracted.getFile().exists())
@@ -408,7 +408,7 @@ public class DownloadManagerIT {
             assertEquals(Succeeded, download.getState());
 
             assertTrue(extracted.getFile().exists());
-            String actual = InputOutput.readFileToString(extracted.getFile());
+            String actual = readFileToString(extracted.getFile());
             assertEquals(EXPECTED, actual);
         } finally {
             if (extracted.getFile().exists())
