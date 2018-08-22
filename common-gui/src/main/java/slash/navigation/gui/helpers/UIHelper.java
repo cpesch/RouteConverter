@@ -93,6 +93,10 @@ public class UIHelper {
         component.setCursor(DefaultMoveDrop);
     }
 
+    public static boolean isDragCursor(Component component) {
+        return component.getCursor().equals(DefaultMoveDrop);
+    }
+
     public static void stopWaitCursor(JComponent component) {
         RootPaneContainer root = (RootPaneContainer) component.getTopLevelAncestor();
         stopWaitCursor(root.getGlassPane());

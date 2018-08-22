@@ -36,6 +36,7 @@ import java.awt.event.MouseWheelEvent;
 
 import static java.lang.Thread.sleep;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
+import static slash.navigation.gui.helpers.UIHelper.isDragCursor;
 import static slash.navigation.gui.helpers.UIHelper.startDragCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
@@ -88,7 +89,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public void mouseReleased(MouseEvent e) {
-        if (isMousePressedOnMarker()) {
+        if (isMousePressedOnMarker() && isDragCursor(mapView)) {
             LatLong latLong = projection.fromPixels(e.getX(), e.getY());
             if(mousePressMarker instanceof DraggableMarker)
                 ((DraggableMarker)mousePressMarker).onDrop(latLong);
