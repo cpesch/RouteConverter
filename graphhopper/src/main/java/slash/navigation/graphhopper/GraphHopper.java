@@ -73,7 +73,7 @@ public class GraphHopper implements RoutingService {
     private static final String BASE_URL_PREFERENCE = "baseUrl";
     private static final TravelMode CAR = new TravelMode("Car");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), CAR, new TravelMode("Foot"));
-    // omitted: Bike2, Hike, MotorCycle, MTB, RacingBike
+    // omitted: Hike, MotorCycle, MTB, RacingBike, Scooter, Small_Truck, Truck
     private static final int BYTES_FOR_EDGE_FLAGS = 4;
 
     private final DownloadManager downloadManager;
@@ -234,8 +234,8 @@ public class GraphHopper implements RoutingService {
             } catch (IllegalStateException e) {
                 log.warning("Could not initialize GraphHopper: " + e);
 
-                if (e.getMessage().contains("Version of nodes unsupported")) {
-                    log.info("Deleting old GraphHopper index " + path);
+                if (e.getMessage().contains("Version of nodes unsupported") || e.getMessage().contains("Encoding does not match")) {
+                    log.info("Deleting GraphHopper index " + path);
                     try {
                         recursiveDelete(path);
                         log.info("Reinitializing GraphHopper");
