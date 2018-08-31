@@ -80,6 +80,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -96,6 +97,7 @@ import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
 import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
+import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Directories.getTemporaryDirectory;
@@ -1123,7 +1125,8 @@ public class MapsforgeMapView implements MapView {
             positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
             int[] rows = new int[]{row};
             positionsSelectionModel.setSelectedPositions(rows, true);
-            mapViewCallback.complementData(rows, true, true, true, true, false);
+            // this results in drawing errors
+            // mapViewCallback.complementData(rows, true, true, true, true, false);
         }
 
         public void run() {
@@ -1197,6 +1200,8 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
+    private final ExecutorService updateDecoupler = createSingleThreadExecutor("UpdateDecoupler");
+
     private class PositionsModelListener implements TableModelListener {
         public void tableChanged(TableModelEvent e) {
             switch (e.getType()) {
@@ -1224,23 +1229,26 @@ public class MapsforgeMapView implements MapView {
             }
         }
 
-        private void handleUpdate(int eventType, int firstRow, int lastRow) {
-            // this is running inside the AWT Event Queue, putting it into separate threads resulted in drawing errors
-            synchronized (eventMapUpdaterLock) {
-                switch (eventType) {
-                    case INSERT:
-                        eventMapUpdater.handleAdd(firstRow, lastRow);
-                        break;
-                    case UPDATE:
-                        eventMapUpdater.handleUpdate(firstRow, lastRow);
-                        break;
-                    case DELETE:
-                        eventMapUpdater.handleRemove(firstRow, lastRow);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Event type " + eventType + " is not supported");
+        private void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
+            updateDecoupler.execute(new Runnable() {
+                public void run() {
+                    synchronized (eventMapUpdaterLock) {
+                        switch (eventType) {
+                            case INSERT:
+                                eventMapUpdater.handleAdd(firstRow, lastRow);
+                                break;
+                            case UPDATE:
+                                eventMapUpdater.handleUpdate(firstRow, lastRow);
+                                break;
+                            case DELETE:
+                                eventMapUpdater.handleRemove(firstRow, lastRow);
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Event type " + eventType + " is not supported");
+                        }
+                    }
                 }
-            }
+            });
         }
     }
 
