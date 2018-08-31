@@ -20,6 +20,7 @@
 
 package slash.navigation.simple;
 
+import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.base.*;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
@@ -118,7 +119,12 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         String northEastBuffer = "new google.maps.LatLng(" + boundingBox.getNorthEast().getLatitude() + "," + boundingBox.getNorthEast().getLongitude() + ")";
         String centerBuffer = "new google.maps.LatLng(" + boundingBox.getCenter().getLatitude() + "," + boundingBox.getCenter().getLongitude() + ")";
 
-        String output = template.replaceAll("INSERT_ROUTENAME", route.getName()).
+        String mapServerApiUrl = "http://maps.google.com";
+        String apiKey = APIKeyRegistry.getInstance().getAPIKey("google", "map");
+        String output = template.
+                replaceAll("INSERT_MAP_SERVER_API_URL", mapServerApiUrl).
+                replaceAll("INSERT_API_KEY", apiKey).
+                replaceAll("INSERT_ROUTENAME", route.getName()).
                 replaceAll("INSERT_TRACK", routeBuffer.toString()).
                 replaceAll("INSERT_ROUTE", trackBuffer.toString()).
                 replaceAll("INSERT_WAYPOINTS", waypointsBuffer.toString()).

@@ -129,7 +129,7 @@ public abstract class SingleFrameApplication extends Application {
             width = (int)bounds.getWidth() - (insets.left + insets.right);
         if((state & MAXIMIZED_VERT) == MAXIMIZED_VERT)
             height = (int)bounds.getHeight() - (insets.top + insets.bottom);
-        if (width != -1 && height != -1)
+        if (width != -1 && height != -1 && width > 120 && height > 60)
             frame.setSize(width, height);
         log.info("Frame size is " + frame.getSize());
 

@@ -57,9 +57,11 @@ public class WaypointUpdater implements EventMapUpdater {
     }
 
     public void handleUpdate(int firstRow, int lastRow) {
+        // handle first to MAX_VALUE update events
+        int validLastRow = min(lastRow, positionWithLayers.size() - 1);
+
         List<PositionWithLayer> updated = new ArrayList<>();
-        int endIndex = min(lastRow, positionsModel.getRowCount() - 1);
-        for (int i = firstRow; i <= endIndex; i++) {
+        for (int i = firstRow; i < validLastRow; i++) {
             updated.add(positionWithLayers.get(i));
         }
 
@@ -68,8 +70,9 @@ public class WaypointUpdater implements EventMapUpdater {
     }
 
     public void handleRemove(int firstRow, int lastRow) {
-        List<PositionWithLayer> removed = new ArrayList<>();
         int validLastRow = min(lastRow, positionWithLayers.size() - 1);
+
+        List<PositionWithLayer> removed = new ArrayList<>();
         for (int i = validLastRow; i >= firstRow; i--) {
             removed.add(positionWithLayers.get(i));
             positionWithLayers.remove(i);

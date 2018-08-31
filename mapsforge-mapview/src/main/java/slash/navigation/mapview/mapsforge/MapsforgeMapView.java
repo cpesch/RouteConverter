@@ -1213,9 +1213,9 @@ public class MapsforgeMapView implements MapView {
                             e.getColumn() == ALL_COLUMNS))
                         return;
 
+                    handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
+                    // center and zoom if a file was just loaded
                     boolean allRowsChanged = isFirstToLastRow(e);
-                    if (!allRowsChanged)
-                        handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
                     if (allRowsChanged && showAllPositionsAfterLoading.getBoolean())
                         centerAndZoom(getMapBoundingBox(), getRouteBoundingBox(), true, true);
                     break;
