@@ -87,16 +87,18 @@ public class TrackUpdater implements EventMapUpdater {
         int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
         int validLastRow = min(lastRow, pairWithLayers.size() - 1);
 
+        List<PairWithLayer> added = new ArrayList<>();
+        if (beforeFirstRow < firstRow && validLastRow == lastRow) {
+            PairWithLayer pairWithLayer = new PairWithLayer(pairWithLayers.get(beforeFirstRow).getFirst(), pairWithLayers.get(validLastRow).getSecond());
+            added.add(pairWithLayer);
+        }
+
         List<PairWithLayer> removed = new ArrayList<>();
         for (int i = validLastRow; i >= beforeFirstRow; i--)
             removed.add(pairWithLayers.remove(i));
 
-        List<PairWithLayer> added = new ArrayList<>();
-        if (firstRow > 0 && lastRow < positionsModel.getRowCount() - 1) {
-            PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(beforeFirstRow), positionsModel.getPosition(validLastRow));
+        for (PairWithLayer pairWithLayer : added)
             pairWithLayers.add(beforeFirstRow, pairWithLayer);
-            added.add(pairWithLayer);
-        }
 
         if (!added.isEmpty())
             trackOperation.add(added);
