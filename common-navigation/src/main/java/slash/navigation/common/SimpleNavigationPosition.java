@@ -165,6 +165,6 @@ public class SimpleNavigationPosition implements NavigationPosition {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "[longitude=" + longitude + ", latitude=" + latitude + ", description=" + description + " ]";
+        return getClass().getSimpleName() + "[longitude=" + longitude + ", latitude=" + latitude + ", description=" + description + "]";
     }
 }
