@@ -47,7 +47,7 @@ public class PhotonServiceIT {
 
     @Test
     public void getAddressFor() throws IOException {
-        assertEquals("Isarenloch, 8733 Eschenbach (SG), Sankt Gallen, Switzerland", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
+        assertEquals("Chamm, 8733 Eschenbach (SG), Sankt Gallen, Switzerland", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
         assertEquals("97506 Grafenrheinfeld, Bavaria, Germany", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
         assertEquals("Abz. Schöngänge (oben), 82467 Garmisch-Partenkirchen, Bavaria, Germany", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
         assertEquals("Atlas Buoy 0.00E 0.00N", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));

@@ -57,7 +57,7 @@ public class GoogleServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = singletonList(
-                new SimpleNavigationPosition(10.2004535, 50.0010371, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany")
+                new SimpleNavigationPosition(10.2004268, 50.0010792, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany")
         );
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
