@@ -25,7 +25,6 @@ import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.util.List;
 
 import static java.util.Arrays.asList;

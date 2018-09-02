@@ -36,7 +36,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.parseInt;
+import static slash.common.io.Transfer.parseLong;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
 
 /**

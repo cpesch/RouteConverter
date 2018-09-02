@@ -27,7 +27,13 @@ import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.routes.Category;
 import slash.navigation.routes.Route;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;

@@ -23,7 +23,6 @@ import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.AutomaticGeocodingService;
 import slash.navigation.converter.gui.helpers.GoogleDirections;
-import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
 import slash.navigation.googlemaps.GoogleService;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.routing.RoutingService;

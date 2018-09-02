@@ -28,7 +28,6 @@ import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.kml.Kml22Format;
 import slash.navigation.tcx.Tcx2Format;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

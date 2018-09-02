@@ -23,7 +23,11 @@ import slash.navigation.maps.tileserver.binding.CatalogType;
 import slash.navigation.maps.tileserver.binding.TileServerType;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;

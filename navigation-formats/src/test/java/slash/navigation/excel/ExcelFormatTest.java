@@ -21,7 +21,6 @@ package slash.navigation.excel;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
-import slash.navigation.excel.ExcelPosition;
 
 import static junit.framework.TestCase.assertEquals;
 import static slash.common.TestCase.calendar;

@@ -20,8 +20,8 @@
 package slash.navigation.mapview.mapsforge.updater;
 
 import org.mapsforge.map.layer.Layer;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.DistanceAndTime;
+import slash.navigation.common.NavigationPosition;
 
 import java.util.Objects;
 

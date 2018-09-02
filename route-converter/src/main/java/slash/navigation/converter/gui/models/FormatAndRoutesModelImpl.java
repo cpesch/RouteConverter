@@ -20,16 +20,22 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationFormat;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.FormatAndRoutes;
+import slash.navigation.base.NavigationFormat;
 import slash.navigation.converter.gui.helpers.AbstractListDataListener;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import java.util.List;
 
-import static java.lang.Integer.MIN_VALUE;
 import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
-import static slash.navigation.converter.gui.models.CharacteristicsModel.isIgnoreEvent;
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 

@@ -25,7 +25,9 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class SnapshotCatalogIT {
     private static final String API = System.getProperty("api", "http://localhost:8000/");

@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.helpers;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.geocoding.GeocodingService;
 
+import javax.naming.ServiceUnavailableException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,8 +31,6 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
-
-import javax.naming.ServiceUnavailableException;
 
 /**
  * Helps to convert addresses into geographic coordinates.

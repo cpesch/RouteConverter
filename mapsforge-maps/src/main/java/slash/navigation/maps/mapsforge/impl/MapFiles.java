@@ -23,8 +23,6 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Theme;
 import slash.navigation.maps.mapsforge.RemoteMap;
 import slash.navigation.maps.mapsforge.RemoteTheme;
-import slash.navigation.maps.mapsforge.impl.RemoteMapImpl;
-import slash.navigation.maps.mapsforge.impl.RemoteThemeImpl;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -20,7 +20,11 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.ParserResult;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -62,7 +66,9 @@ import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Tagged_Photo_In_Subdirectory;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
-import static slash.navigation.photo.TagState.*;
+import static slash.navigation.photo.TagState.NotTaggable;
+import static slash.navigation.photo.TagState.Taggable;
+import static slash.navigation.photo.TagState.Tagged;
 
 /**
  * Helps to tag photos with GPS data.

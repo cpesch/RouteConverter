@@ -42,7 +42,12 @@ import slash.navigation.rest.ssl.SSLConnectionManagerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.*;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.ProxySelector;
+import java.net.SocketAddress;
+import java.net.SocketException;
+import java.net.URI;
 import java.util.List;
 import java.util.logging.Logger;
 

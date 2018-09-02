@@ -25,7 +25,11 @@ import slash.navigation.rest.Get;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.routes.Category;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;

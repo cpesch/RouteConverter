@@ -29,8 +29,17 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Future;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -39,8 +48,22 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
-import static slash.navigation.download.Action.*;
-import static slash.navigation.download.State.*;
+import static slash.navigation.download.Action.Extract;
+import static slash.navigation.download.Action.Flatten;
+import static slash.navigation.download.Action.GetRange;
+import static slash.navigation.download.Action.Head;
+import static slash.navigation.download.State.ChecksumError;
+import static slash.navigation.download.State.Downloading;
+import static slash.navigation.download.State.Failed;
+import static slash.navigation.download.State.NoFileError;
+import static slash.navigation.download.State.NotModified;
+import static slash.navigation.download.State.Outdated;
+import static slash.navigation.download.State.Processing;
+import static slash.navigation.download.State.Queued;
+import static slash.navigation.download.State.Resuming;
+import static slash.navigation.download.State.Running;
+import static slash.navigation.download.State.Stopped;
+import static slash.navigation.download.State.Succeeded;
 
 /**
  * Manages {@link Download}s

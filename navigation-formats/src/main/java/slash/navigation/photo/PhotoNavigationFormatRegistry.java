@@ -21,7 +21,6 @@ package slash.navigation.photo;
 
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
-import slash.navigation.photo.PhotoFormat;
 
 /**
  * A {@link NavigationFormatRegistry} that just uses the {@link PhotoFormat}.

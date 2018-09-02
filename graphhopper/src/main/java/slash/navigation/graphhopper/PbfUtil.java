@@ -24,7 +24,11 @@ import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.logging.Logger;
 import java.util.zip.InflaterInputStream;
 

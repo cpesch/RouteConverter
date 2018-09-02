@@ -4,6 +4,8 @@
 @javax.xml.bind.annotation.XmlSchema(namespace = GPX_10_NAMESPACE_URI, elementFormDefault = QUALIFIED, xmlns = {
         @XmlNs(prefix = "", namespaceURI = GPX_10_NAMESPACE_URI)})
 package slash.navigation.gpx.binding10;
+
 import javax.xml.bind.annotation.XmlNs;
+
 import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
-import static slash.navigation.gpx.GpxUtil.*;
+import static slash.navigation.gpx.GpxUtil.GPX_10_NAMESPACE_URI;

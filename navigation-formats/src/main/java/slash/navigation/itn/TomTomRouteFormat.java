@@ -37,7 +37,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.String.format;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.formatIntAsString;
+import static slash.common.io.Transfer.parseInteger;
+import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;

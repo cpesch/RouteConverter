@@ -22,7 +22,14 @@ package slash.navigation.gpx;
 
 import org.w3c.dom.Element;
 import slash.navigation.base.ParserContext;
-import slash.navigation.gpx.binding11.*;
+import slash.navigation.gpx.binding11.ExtensionsType;
+import slash.navigation.gpx.binding11.GpxType;
+import slash.navigation.gpx.binding11.MetadataType;
+import slash.navigation.gpx.binding11.ObjectFactory;
+import slash.navigation.gpx.binding11.RteType;
+import slash.navigation.gpx.binding11.TrkType;
+import slash.navigation.gpx.binding11.TrksegType;
+import slash.navigation.gpx.binding11.WptType;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;
 import slash.navigation.gpx.trip1.ViaPointExtensionT;
@@ -37,9 +44,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static slash.common.io.Transfer.*;
-import static slash.navigation.base.RouteCharacteristics.*;
-import static slash.navigation.common.NavigationConversion.*;
+import static slash.common.io.Transfer.formatInt;
+import static slash.common.io.Transfer.formatXMLTime;
+import static slash.common.io.Transfer.parseXMLTime;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.NavigationConversion.formatBigDecimal;
+import static slash.navigation.common.NavigationConversion.formatElevation;
+import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.gpx.GpxUtil.marshal11;
 import static slash.navigation.gpx.GpxUtil.unmarshal11;
 

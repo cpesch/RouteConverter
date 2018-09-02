@@ -7,7 +7,6 @@ import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.FileAndChecksum;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -22,7 +22,12 @@ package slash.navigation.converter.gui.dnd;
 import slash.navigation.gui.Application;
 
 import java.awt.*;
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.ClipboardOwner;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.FlavorEvent;
+import java.awt.datatransfer.FlavorListener;
+import java.awt.datatransfer.Transferable;
 import java.util.logging.Logger;
 
 import static javax.swing.SwingUtilities.invokeLater;

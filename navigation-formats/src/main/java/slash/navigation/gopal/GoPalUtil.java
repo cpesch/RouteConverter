@@ -20,14 +20,20 @@
 
 package slash.navigation.gopal;
 
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.PropertyException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
 import static javax.xml.bind.Marshaller.JAXB_ENCODING;
-import static slash.common.helpers.JAXBHelper.*;
+import static slash.common.helpers.JAXBHelper.newContext;
+import static slash.common.helpers.JAXBHelper.newMarshaller;
+import static slash.common.helpers.JAXBHelper.newUnmarshaller;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 class GoPalUtil {

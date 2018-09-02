@@ -24,7 +24,12 @@ import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 import slash.navigation.routes.Catalog;
 import slash.navigation.routes.Category;
 import slash.navigation.routes.Route;
-import slash.navigation.routes.impl.*;
+import slash.navigation.routes.impl.CategoryTreeModel;
+import slash.navigation.routes.impl.CategoryTreeNode;
+import slash.navigation.routes.impl.CategoryTreeNodeImpl;
+import slash.navigation.routes.impl.RouteComparator;
+import slash.navigation.routes.impl.RouteModel;
+import slash.navigation.routes.impl.RoutesTableModel;
 
 import javax.swing.tree.TreeModel;
 import java.io.File;

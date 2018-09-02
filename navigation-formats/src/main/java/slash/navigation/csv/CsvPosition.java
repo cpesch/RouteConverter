@@ -20,7 +20,6 @@
 package slash.navigation.csv;
 
 import slash.common.type.CompactCalendar;
-import slash.common.type.ISO8601;
 import slash.navigation.base.BaseNavigationPosition;
 
 import java.util.Calendar;

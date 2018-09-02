@@ -19,7 +19,11 @@
 */
 package slash.navigation.converter.tools;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.Enumeration;
 import java.util.ResourceBundle;
 import java.util.Set;

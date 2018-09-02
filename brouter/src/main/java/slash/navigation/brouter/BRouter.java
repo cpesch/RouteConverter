@@ -19,8 +19,17 @@
 */
 package slash.navigation.brouter;
 
-import btools.router.*;
-import slash.navigation.common.*;
+import btools.router.OsmNodeNamed;
+import btools.router.OsmPathElement;
+import btools.router.OsmTrack;
+import btools.router.RoutingContext;
+import btools.router.RoutingEngine;
+import slash.navigation.common.Bearing;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTime;
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Action;

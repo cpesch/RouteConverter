@@ -4,6 +4,8 @@
 @javax.xml.bind.annotation.XmlSchema(namespace = TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI, elementFormDefault = QUALIFIED, xmlns = {
         @XmlNs(prefix = "nmea", namespaceURI = TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI) })
 package slash.navigation.gpx.trekbuddy;
+
 import javax.xml.bind.annotation.XmlNs;
+
 import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
-import static slash.navigation.gpx.GpxUtil.*;
+import static slash.navigation.gpx.GpxUtil.TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI;

@@ -20,7 +20,12 @@
 package slash.navigation.columbus;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.*;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleLineBasedFormat;
+import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.WaypointType;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.PrintWriter;
@@ -33,7 +38,9 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.WaypointType.*;
+import static slash.navigation.base.WaypointType.PointOfInterestC;
+import static slash.navigation.base.WaypointType.Voice;
+import static slash.navigation.base.WaypointType.Waypoint;
 
 /**
  * The base of all Columbus GPS formats.

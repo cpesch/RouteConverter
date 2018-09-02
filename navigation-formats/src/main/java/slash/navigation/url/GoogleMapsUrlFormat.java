@@ -37,7 +37,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.max;
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.decodeUri;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
 

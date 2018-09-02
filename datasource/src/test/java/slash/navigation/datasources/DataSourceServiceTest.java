@@ -23,7 +23,6 @@ import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.datasources.helpers.DataSourceService;
 
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;

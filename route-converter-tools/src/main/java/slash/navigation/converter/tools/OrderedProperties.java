@@ -19,7 +19,12 @@
 */
 package slash.navigation.converter.tools;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 /**
  * {@link Properties} but ordered for {@link OrderedResourceBundle}.

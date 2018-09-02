@@ -19,7 +19,12 @@
 */
 package slash.navigation.datasources.impl;
 
-import slash.navigation.datasources.*;
+import slash.navigation.datasources.DataSource;
+import slash.navigation.datasources.Downloadable;
+import slash.navigation.datasources.File;
+import slash.navigation.datasources.Fragment;
+import slash.navigation.datasources.Map;
+import slash.navigation.datasources.Theme;
 import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.MapType;

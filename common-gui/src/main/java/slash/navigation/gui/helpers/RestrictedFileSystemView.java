@@ -28,7 +28,6 @@ import java.text.MessageFormat;
 import java.util.Vector;
 
 import static java.io.File.createTempFile;
-
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
 

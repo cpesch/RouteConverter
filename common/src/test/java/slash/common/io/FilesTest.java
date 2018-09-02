@@ -32,7 +32,13 @@ import static java.io.File.createTempFile;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.calendar;
-import static slash.common.io.Files.*;
+import static slash.common.io.Files.calculateConvertFileName;
+import static slash.common.io.Files.createGoPalFileName;
+import static slash.common.io.Files.getLastModified;
+import static slash.common.io.Files.lastPathFragment;
+import static slash.common.io.Files.numberToString;
+import static slash.common.io.Files.setLastModified;
+import static slash.common.io.Files.shortenPath;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 public class FilesTest {

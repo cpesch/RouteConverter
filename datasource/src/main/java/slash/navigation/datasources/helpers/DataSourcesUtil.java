@@ -27,7 +27,17 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Fragment;
-import slash.navigation.datasources.binding.*;
+import slash.navigation.datasources.binding.ActionType;
+import slash.navigation.datasources.binding.BoundingBoxType;
+import slash.navigation.datasources.binding.CatalogType;
+import slash.navigation.datasources.binding.ChecksumType;
+import slash.navigation.datasources.binding.DatasourceType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.FragmentType;
+import slash.navigation.datasources.binding.MapType;
+import slash.navigation.datasources.binding.ObjectFactory;
+import slash.navigation.datasources.binding.PositionType;
+import slash.navigation.datasources.binding.ThemeType;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.FileAndChecksum;
 

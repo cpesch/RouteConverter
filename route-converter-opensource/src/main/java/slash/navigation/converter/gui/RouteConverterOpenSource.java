@@ -56,7 +56,10 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.Mapsforge;
 import static slash.navigation.download.Action.Copy;
-import static slash.navigation.gui.helpers.JMenuHelper.*;
+import static slash.navigation.gui.helpers.JMenuHelper.createCheckBoxItem;
+import static slash.navigation.gui.helpers.JMenuHelper.createItem;
+import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
  * A small graphical user interface for the route conversion based on Opensource software and free services.

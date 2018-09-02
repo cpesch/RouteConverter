@@ -20,12 +20,24 @@
 
 package slash.navigation.ovl;
 
-import slash.navigation.base.*;
+import slash.navigation.base.IniFileFormat;
+import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

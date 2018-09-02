@@ -19,14 +19,13 @@
 */
 package slash.navigation.mapview.mapsforge.helpers;
 
-import static org.junit.Assert.assertEquals;
-
-import static slash.common.type.HexadecimalNumber.decodeInt;
-import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
+import org.junit.Test;
 
 import java.awt.*;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static slash.common.type.HexadecimalNumber.decodeInt;
+import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 
 public class ColorHelperTest {
     private static final Color ROUTE_COLOR = new Color(decodeInt("C86CB1F3"), true);

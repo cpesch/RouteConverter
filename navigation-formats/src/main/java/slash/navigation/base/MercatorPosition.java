@@ -22,7 +22,10 @@ package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
 
-import static slash.navigation.common.NavigationConversion.*;
+import static slash.navigation.common.NavigationConversion.mercatorXToWgs84Longitude;
+import static slash.navigation.common.NavigationConversion.mercatorYToWgs84Latitude;
+import static slash.navigation.common.NavigationConversion.wgs84LatitudeToMercatorY;
+import static slash.navigation.common.NavigationConversion.wgs84LongitudeToMercatorX;
 
 /**
  * Represents a Mercator position in a route.

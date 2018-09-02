@@ -29,7 +29,9 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static slash.navigation.routes.remote.RemoteCatalog.FILE_URI;
 
 public class RemoteFileIT extends BaseRemoteCatalogTest {

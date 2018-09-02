@@ -41,7 +41,6 @@ import slash.navigation.gopal.GoPalRouteFormat;
 import slash.navigation.gpx.GpxFormat;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
-import slash.navigation.photo.PhotoFormat;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
@@ -51,6 +50,7 @@ import slash.navigation.nmea.NmeaRoute;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.nmn.NmnPosition;
 import slash.navigation.nmn.NmnRoute;
+import slash.navigation.photo.PhotoFormat;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.tcx.TcxRoute;
 

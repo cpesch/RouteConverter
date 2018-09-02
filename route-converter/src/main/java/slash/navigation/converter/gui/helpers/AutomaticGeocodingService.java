@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.helpers;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.geocoding.GeocodingService;
 
+import javax.naming.ServiceUnavailableException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,8 +32,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import static java.util.Arrays.sort;
-
-import javax.naming.ServiceUnavailableException;
 
 /**
  * A geocoding service that tries to find the best available geocoding service.

@@ -35,7 +35,9 @@ import static java.io.File.createTempFile;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.io.Files.toFile;
 
 public class RecentUrlsModelTest {

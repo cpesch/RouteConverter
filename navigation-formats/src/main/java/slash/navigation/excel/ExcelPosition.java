@@ -20,13 +20,23 @@
 package slash.navigation.excel;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 
 import static slash.common.io.Transfer.toDouble;
 import static slash.common.type.CompactCalendar.fromDate;
-import static slash.navigation.excel.ColumnType.*;
+import static slash.navigation.excel.ColumnType.Description;
+import static slash.navigation.excel.ColumnType.Elevation;
+import static slash.navigation.excel.ColumnType.Latitude;
+import static slash.navigation.excel.ColumnType.Longitude;
+import static slash.navigation.excel.ColumnType.Speed;
+import static slash.navigation.excel.ColumnType.Time;
 import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
 
 /**

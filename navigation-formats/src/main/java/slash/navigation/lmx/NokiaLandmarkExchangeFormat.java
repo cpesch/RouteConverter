@@ -25,7 +25,11 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.lmx.binding.*;
+import slash.navigation.lmx.binding.CoordinatesType;
+import slash.navigation.lmx.binding.LandmarkCollectionType;
+import slash.navigation.lmx.binding.LandmarkType;
+import slash.navigation.lmx.binding.Lmx;
+import slash.navigation.lmx.binding.ObjectFactory;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -34,7 +38,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.formatFloat;
+import static slash.common.io.Transfer.formatXMLTime;
+import static slash.common.io.Transfer.parseXMLTime;
 import static slash.navigation.common.NavigationConversion.formatDouble;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.marshal;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;

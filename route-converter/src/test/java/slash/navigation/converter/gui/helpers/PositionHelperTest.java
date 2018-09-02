@@ -28,7 +28,9 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
 
-import static java.text.DateFormat.*;
+import static java.text.DateFormat.MEDIUM;
+import static java.text.DateFormat.SHORT;
+import static java.text.DateFormat.getDateTimeInstance;
 import static java.util.Locale.GERMAN;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.calendar;

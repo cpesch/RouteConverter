@@ -29,7 +29,9 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationTestCase.comparePositions;
 import static slash.navigation.base.NavigationTestCase.compareRouteMetaData;

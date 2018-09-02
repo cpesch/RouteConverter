@@ -21,7 +21,11 @@
 
 package slash.navigation.simple;
 
-import slash.navigation.base.*;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.GarbleNavigationFormat;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.IOException;
 import java.io.InputStream;

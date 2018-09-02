@@ -33,7 +33,9 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.navigation.download.Action.Copy;
-import static slash.navigation.download.State.*;
+import static slash.navigation.download.State.NotModified;
+import static slash.navigation.download.State.Queued;
+import static slash.navigation.download.State.Succeeded;
 
 /**
  * A file to download

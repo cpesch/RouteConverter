@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
-import static javax.swing.event.TableModelEvent.*;
+import static javax.swing.event.TableModelEvent.DELETE;
+import static javax.swing.event.TableModelEvent.INSERT;
+import static javax.swing.event.TableModelEvent.UPDATE;
 
 /**
  * Listens to an {@link ItemTableModel} and stores added {@link Item}s in the {@link Preferences}.

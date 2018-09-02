@@ -21,7 +21,11 @@
 package slash.navigation.simple;
 
 import slash.common.helpers.APIKeyRegistry;
-import slash.navigation.base.*;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.base.SimpleFormat;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 
@@ -33,7 +37,9 @@ import java.util.List;
 
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
-import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
  * Writes a Web Page (*.html).

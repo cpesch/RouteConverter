@@ -23,7 +23,10 @@
 package slash.navigation.common;
 
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
-import static slash.navigation.common.UnitConversion.*;
+import static slash.navigation.common.UnitConversion.latitude2ddmm;
+import static slash.navigation.common.UnitConversion.latitude2ddmmss;
+import static slash.navigation.common.UnitConversion.longitude2ddmm;
+import static slash.navigation.common.UnitConversion.longitude2ddmmss;
 
 /**
  * Enumeration of supported degree formats.

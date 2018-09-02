@@ -39,7 +39,12 @@ import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.setLastModified;
-import static slash.navigation.download.State.*;
+import static slash.navigation.download.State.ChecksumError;
+import static slash.navigation.download.State.Downloading;
+import static slash.navigation.download.State.NoFileError;
+import static slash.navigation.download.State.Processing;
+import static slash.navigation.download.State.Resuming;
+import static slash.navigation.download.State.Validating;
 
 /**
  * What the {@link DownloadExecutor} performs for {@link Action#Copy}, {@link Action#Extract}, {@link Action#Flatten}.

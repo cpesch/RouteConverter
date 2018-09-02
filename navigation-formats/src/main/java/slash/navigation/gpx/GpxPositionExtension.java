@@ -25,14 +25,25 @@ import slash.navigation.gpx.binding11.ObjectFactory;
 import slash.navigation.gpx.binding11.WptType;
 
 import javax.xml.bind.JAXBElement;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseDouble;
-import static slash.navigation.common.NavigationConversion.*;
-import static slash.navigation.gpx.GpxExtensionType.*;
+import static slash.navigation.common.NavigationConversion.formatHeading;
+import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsDouble;
+import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.formatTemperatureAsDouble;
+import static slash.navigation.common.NavigationConversion.formatTemperatureAsString;
+import static slash.navigation.gpx.GpxExtensionType.Garmin3;
+import static slash.navigation.gpx.GpxExtensionType.Text;
+import static slash.navigation.gpx.GpxExtensionType.TrackPoint1;
+import static slash.navigation.gpx.GpxExtensionType.TrackPoint2;
 import static slash.navigation.gpx.GpxFormat.asKmh;
 import static slash.navigation.gpx.GpxFormat.asMs;
 

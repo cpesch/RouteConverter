@@ -30,7 +30,9 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.InputOutput.readFileToString;

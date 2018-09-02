@@ -12,7 +12,10 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.escape;
+import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.toMixedCase;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Reads and writes Magellan Explorist (.log) files.

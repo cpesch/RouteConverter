@@ -19,11 +19,11 @@
 */
 package slash.navigation.maps.mapsforge.helpers;
 
+import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.TileMap;
 import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
-import slash.navigation.maps.item.ItemTableModel;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;

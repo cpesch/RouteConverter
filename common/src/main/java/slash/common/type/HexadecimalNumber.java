@@ -20,10 +20,10 @@
 
 package slash.common.type;
 
+import org.apache.commons.codec.DecoderException;
+
 import static org.apache.commons.codec.binary.Hex.decodeHex;
 import static org.apache.commons.codec.binary.Hex.encodeHex;
-
-import org.apache.commons.codec.DecoderException;
 
 /**
  * Helps to encode bytes to hexadecimal encoded numbers and back.

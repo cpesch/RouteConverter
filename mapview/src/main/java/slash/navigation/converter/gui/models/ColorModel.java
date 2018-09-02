@@ -22,13 +22,13 @@
 
 package slash.navigation.converter.gui.models;
 
-import static slash.common.type.HexadecimalNumber.decodeInt;
-import static slash.common.type.HexadecimalNumber.encodeInt;
-
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.awt.*;
 import java.util.prefs.Preferences;
+
+import static slash.common.type.HexadecimalNumber.decodeInt;
+import static slash.common.type.HexadecimalNumber.encodeInt;
 
 /**
  * A model for {@link Color}.

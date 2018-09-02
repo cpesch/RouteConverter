@@ -23,8 +23,6 @@ package slash.navigation.excel;
 import org.junit.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
-import slash.navigation.excel.ExcelPosition;
-import slash.navigation.excel.ExcelRoute;
 
 import java.io.IOException;
 

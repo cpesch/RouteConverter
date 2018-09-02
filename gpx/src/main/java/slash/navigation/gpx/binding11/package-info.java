@@ -8,5 +8,5 @@ package slash.navigation.gpx.binding11;
 import javax.xml.bind.annotation.XmlNs;
 
 import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
-import static slash.navigation.gpx.GpxUtil.*;
+import static slash.navigation.gpx.GpxUtil.GPX_11_NAMESPACE_URI;
 

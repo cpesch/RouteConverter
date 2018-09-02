@@ -22,7 +22,11 @@ package slash.navigation.gpx;
 import org.junit.Test;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
-import slash.navigation.gpx.binding11.*;
+import slash.navigation.gpx.binding11.ExtensionsType;
+import slash.navigation.gpx.binding11.GpxType;
+import slash.navigation.gpx.binding11.TrkType;
+import slash.navigation.gpx.binding11.TrksegType;
+import slash.navigation.gpx.binding11.WptType;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
@@ -33,11 +37,17 @@ import java.util.HashSet;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.common.NavigationConversion.formatPosition;
-import static slash.navigation.gpx.GpxExtensionType.*;
+import static slash.navigation.gpx.GpxExtensionType.Garmin3;
+import static slash.navigation.gpx.GpxExtensionType.Text;
+import static slash.navigation.gpx.GpxExtensionType.TrackPoint1;
+import static slash.navigation.gpx.GpxExtensionType.TrackPoint2;
 import static slash.navigation.gpx.GpxUtil.toXml;
 
 public class Gpx11ExtensionsTest {

@@ -22,7 +22,6 @@ package slash.navigation.base;
 
 import org.junit.Test;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;

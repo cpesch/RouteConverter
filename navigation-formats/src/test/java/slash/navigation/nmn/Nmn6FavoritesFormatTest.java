@@ -23,7 +23,9 @@ package slash.navigation.nmn;
 import org.junit.Test;
 import slash.navigation.base.Wgs84Position;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Nmn6FavoritesFormatTest {

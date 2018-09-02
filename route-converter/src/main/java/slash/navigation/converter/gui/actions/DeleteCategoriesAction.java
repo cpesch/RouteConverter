@@ -29,8 +29,14 @@ import javax.swing.*;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
-import static javax.swing.JOptionPane.*;
-import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.asParents;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNodes;
+import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategory;
 
 /**
  * {@link Action} that deletes {@link CategoryTreeNode}s of the {@link CatalogModel}.

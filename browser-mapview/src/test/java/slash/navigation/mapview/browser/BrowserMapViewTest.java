@@ -20,18 +20,16 @@
 
 package slash.navigation.mapview.browser;
 
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-import static java.util.Arrays.asList;
-
-import static org.junit.Assert.assertEquals;
-
-import static slash.common.io.Transfer.ceiling;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static slash.common.io.Transfer.ceiling;
 
 public class BrowserMapViewTest {
     private static final int MAXIMUM_DIRECTIONS_SEGMENT_LENGTH = 4;
