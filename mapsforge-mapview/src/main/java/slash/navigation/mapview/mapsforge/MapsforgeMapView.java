@@ -244,7 +244,7 @@ public class MapsforgeMapView implements MapView {
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             private Marker createMarker(PositionWithLayer positionWithLayer, LatLong latLong) {
-                return new DraggableMarker(positionsModel, positionWithLayer, latLong, markerIcon, 8, -16);
+                return new DraggableMarker(positionsModel, positionWithLayer, latLong, markerIcon, 0, -32);
             }
 
             public void add(List<PositionWithLayer> positionWithLayers) {
