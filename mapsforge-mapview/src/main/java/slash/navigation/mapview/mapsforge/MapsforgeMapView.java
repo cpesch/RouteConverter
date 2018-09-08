@@ -766,6 +766,7 @@ public class MapsforgeMapView implements MapView {
     private void replaceRoute() {
         synchronized (notificationMutex) {
             haveToReplaceRoute = true;
+            routeReplacer.interrupt();
             notificationMutex.notifyAll();
         }
     }
@@ -902,6 +903,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void addLayer(final Layer layer) {
+        System.out.println(Thread.currentThread() + " addLayer " + layer);
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 getLayerManager().getLayers().add(layer);
@@ -912,6 +914,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void addLayers(final List<? extends ObjectWithLayer> withLayers) {
+        System.out.println(Thread.currentThread() + " addLayers " + withLayers);
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
@@ -924,13 +927,14 @@ public class MapsforgeMapView implements MapView {
                         if (!getLayerManager().getLayers().contains(layer))
                             log.warning("Cannot add layer " + layer);
                     } else
-                        log.warning("Could not find layer for " + withLayer);
+                        log.warning("Could not find layer to add for " + withLayer);
                 }
             }
         });
     }
 
     public void removeLayer(final Layer layer) {
+        System.out.println(Thread.currentThread() + " removeLayer " + layer);
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 if (!getLayerManager().getLayers().remove(layer))
@@ -940,6 +944,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     private void removeLayers(final List<? extends ObjectWithLayer> withLayers, final boolean clearLayer) {
+        System.out.println(Thread.currentThread() + " removeLayers " + withLayers + " clear " + clearLayer);
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
@@ -951,7 +956,7 @@ public class MapsforgeMapView implements MapView {
                         if (!getLayerManager().getLayers().remove(layer, redraw))
                             log.warning("Cannot remove layer " + layer);
                     } else
-                        log.warning("Could not find layer for " + withLayer);
+                        log.warning("Could not find layer to remove for " + withLayer);
 
                     if (clearLayer)
                         withLayer.setLayer(null);
