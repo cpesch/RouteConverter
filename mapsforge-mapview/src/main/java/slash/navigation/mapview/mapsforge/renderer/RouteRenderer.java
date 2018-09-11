@@ -77,10 +77,10 @@ public class RouteRenderer {
     private void initialize() {
         ROUTE_NOT_VALID_PAINT = graphicFactory.createPaint();
         ROUTE_NOT_VALID_PAINT.setColor(0xFFFF0000);
-        ROUTE_NOT_VALID_PAINT.setStrokeWidth(5);
+        ROUTE_NOT_VALID_PAINT.setStrokeWidth(getRouteLineWidth());
         ROUTE_DOWNLOADING_PAINT = graphicFactory.createPaint();
         ROUTE_DOWNLOADING_PAINT.setColor(0x993379FF);
-        ROUTE_DOWNLOADING_PAINT.setStrokeWidth(5);
+        ROUTE_DOWNLOADING_PAINT.setStrokeWidth(getRouteLineWidth());
         ROUTE_DOWNLOADING_PAINT.setDashPathEffect(new float[]{3, 12});
     }
 
@@ -226,7 +226,7 @@ public class RouteRenderer {
     private void drawRoute(List<PairWithLayer> pairWithLayers) {
         Paint paint = graphicFactory.createPaint();
         paint.setColor(asRGBA(routeColorModel));
-        paint.setStrokeWidth(preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5));
+        paint.setStrokeWidth(getRouteLineWidth());
         RoutingService routingService = mapViewCallback.getRoutingService();
         for (PairWithLayer pairWithLayer : pairWithLayers) {
             if (!pairWithLayer.hasCoordinates())
@@ -243,6 +243,10 @@ public class RouteRenderer {
             pairWithLayer.setLayer(polyline);
             mapView.addLayer(polyline);
         }
+    }
+
+    private int getRouteLineWidth() {
+        return preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 4);
     }
 
     private IntermediateRoute calculateRoute(RoutingService routingService, PairWithLayer pairWithLayer) {

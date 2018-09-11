@@ -73,7 +73,6 @@ import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.MapViewListener;
-import slash.navigation.mapview.mapsforge.helpers.ColorHelper;
 import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
@@ -155,6 +154,7 @@ import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asNavigationPo
 import static slash.navigation.maps.mapsforge.helpers.MapTransfer.toBoundingBox;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
+import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
 
 /**
@@ -348,7 +348,7 @@ public class MapsforgeMapView implements MapView {
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
                 Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(ColorHelper.asRGBA(trackColorModel));
+                paint.setColor(asRGBA(trackColorModel));
                 paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
                 int tileSize = getTileSize();
 
