@@ -143,6 +143,7 @@ import static slash.common.io.Transfer.encodeUri;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.converter.gui.models.CharacteristicsModel.isIgnoreEvent;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
@@ -193,9 +194,9 @@ public class MapsforgeMapView implements MapView {
 
     private PositionsModelListener positionsModelListener = new PositionsModelListener();
     private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
-    private MapViewCallbackListener mapViewCallbackListener = new MapViewCallbackListener();
+    private RoutingServiceListener routingServiceListener = new RoutingServiceListener();
     private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
-    private RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
+    private ColorModelListener colorModelListener = new ColorModelListener();
     private UnitSystemListener unitSystemListener = new UnitSystemListener();
     private DisplayedMapListener displayedMapListener = new DisplayedMapListener();
     private AppliedThemeListener appliedThemeListener = new AppliedThemeListener();
@@ -359,6 +360,7 @@ public class MapsforgeMapView implements MapView {
 
                     Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), paint, tileSize);
                     pair.setLayer(line);
+                    System.out.println(Thread.currentThread() + " new line " + pair); // TODO remove me
                     withLayers.add(pair);
                 }
                 addLayers(withLayers);
@@ -419,10 +421,10 @@ public class MapsforgeMapView implements MapView {
 
         positionsModel.addTableModelListener(positionsModelListener);
         characteristicsModel.addListDataListener(characteristicsModelListener);
-        mapViewCallback.addRoutingServiceChangeListener(mapViewCallbackListener);
+        mapViewCallback.addRoutingServiceChangeListener(routingServiceListener);
         showCoordinates.addChangeListener(showCoordinatesListener);
-        routeColorModel.addChangeListener(repaintPositionListListener);
-        trackColorModel.addChangeListener(repaintPositionListListener);
+        routeColorModel.addChangeListener(colorModelListener);
+        trackColorModel.addChangeListener(colorModelListener);
         unitSystemModel.addChangeListener(unitSystemListener);
 
         this.mapViewCallback.getShowShadedHills().addChangeListener(shadedHillsListener);
@@ -778,7 +780,7 @@ public class MapsforgeMapView implements MapView {
         // avoid duplicate work
         RouteCharacteristics characteristics = MapsforgeMapView.this.characteristicsModel.getSelectedCharacteristics();
         BaseRoute route = positionsModel.getRoute();
-        if (lastCharacteristics.equals(characteristics) && lastRoute != null && lastRoute.equals(positionsModel.getRoute()))
+        if (lastCharacteristics.equals(characteristics) && lastRoute != null && lastRoute.equals(route))
             return;
         lastCharacteristics = characteristics;
         lastRoute = route;
@@ -817,9 +819,9 @@ public class MapsforgeMapView implements MapView {
 
         positionsModel.removeTableModelListener(positionsModelListener);
         characteristicsModel.removeListDataListener(characteristicsModelListener);
-        mapViewCallback.removeRoutingServiceChangeListener(mapViewCallbackListener);
-        routeColorModel.removeChangeListener(repaintPositionListListener);
-        trackColorModel.removeChangeListener(repaintPositionListListener);
+        mapViewCallback.removeRoutingServiceChangeListener(routingServiceListener);
+        routeColorModel.removeChangeListener(colorModelListener);
+        trackColorModel.removeChangeListener(colorModelListener);
         unitSystemModel.removeChangeListener(unitSystemListener);
         mapViewCallback.getShowShadedHills().removeChangeListener(shadedHillsListener);
 
@@ -903,7 +905,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void addLayer(final Layer layer) {
-        System.out.println(Thread.currentThread() + " addLayer " + layer);
+        System.out.println(Thread.currentThread() + " addLayer " + layer); // TODO remove me
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 getLayerManager().getLayers().add(layer);
@@ -914,7 +916,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void addLayers(final List<? extends ObjectWithLayer> withLayers) {
-        System.out.println(Thread.currentThread() + " addLayers " + withLayers);
+        System.out.println(Thread.currentThread() + " addLayers " + withLayers); // TODO remove me
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
@@ -934,7 +936,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void removeLayer(final Layer layer) {
-        System.out.println(Thread.currentThread() + " removeLayer " + layer);
+        System.out.println(Thread.currentThread() + " removeLayer " + layer); // TODO remove me
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 if (!getLayerManager().getLayers().remove(layer))
@@ -944,7 +946,8 @@ public class MapsforgeMapView implements MapView {
     }
 
     private void removeLayers(final List<? extends ObjectWithLayer> withLayers, final boolean clearLayer) {
-        System.out.println(Thread.currentThread() + " removeLayers " + withLayers + " clear " + clearLayer);
+        System.out.println(Thread.currentThread() + " removeLayers " + withLayers + " clear " + clearLayer); // TODO remove me
+        Thread.dumpStack();
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
@@ -1242,13 +1245,6 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
-    private class MapViewCallbackListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            if (positionsModel.getRoute().getCharacteristics().equals(Route))
-                replaceRoute();
-        }
-    }
-
     private final ExecutorService updateDecoupler = createSingleThreadExecutor("UpdateDecoupler");
 
     private class PositionsModelListener implements TableModelListener {
@@ -1301,6 +1297,13 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
+    private class RoutingServiceListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            if (positionsModel.getRoute().getCharacteristics().equals(Route))
+                replaceRoute();
+        }
+    }
+
     private class CharacteristicsModelListener implements ListDataListener {
         public void intervalAdded(ListDataEvent e) {
         }
@@ -1319,7 +1322,7 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
-    private class RepaintPositionListListener implements ChangeListener {
+    private class ColorModelListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             replaceRoute();
         }
