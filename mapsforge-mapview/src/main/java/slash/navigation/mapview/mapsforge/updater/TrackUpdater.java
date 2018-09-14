@@ -46,7 +46,8 @@ public class TrackUpdater implements EventMapUpdater {
 
     public void handleAdd(int firstRow, int lastRow) {
         int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
-        int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : lastRow;
+        int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
+        int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : validLastRow;
 
         List<PairWithLayer> removed = new ArrayList<>();
         if (beforeFirstRow < pairWithLayers.size())
@@ -67,7 +68,6 @@ public class TrackUpdater implements EventMapUpdater {
 
     public void handleUpdate(int firstRow, int lastRow) {
         int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
-        // handle first to MAX_VALUE update events
         int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
         int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : validLastRow;
 

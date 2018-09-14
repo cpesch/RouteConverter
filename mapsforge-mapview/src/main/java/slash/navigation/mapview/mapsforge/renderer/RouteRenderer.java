@@ -209,7 +209,6 @@ public class RouteRenderer {
 
                 Line line = new Line(asLatLong(pairWithLayer.getFirst()), asLatLong(pairWithLayer.getSecond()), ROUTE_DOWNLOADING_PAINT, mapView.getTileSize());
                 pairWithLayer.setLayer(line);
-                System.out.println(Thread.currentThread() + " new line " + pairWithLayer); // TODO remove me
                 withLayers.add(pairWithLayer);
 
                 Double distance = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());

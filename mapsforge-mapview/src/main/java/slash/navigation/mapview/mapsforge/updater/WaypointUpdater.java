@@ -59,7 +59,6 @@ public class WaypointUpdater implements EventMapUpdater {
     }
 
     public void handleUpdate(int firstRow, int lastRow) {
-        // handle first to MAX_VALUE update events
         int validLastRow = min(lastRow, positionWithLayers.size() - 1);
 
         List<PositionWithLayer> updated = new ArrayList<>();

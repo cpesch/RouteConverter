@@ -137,7 +137,6 @@ import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
-import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Transfer.encodeUri;
 import static slash.common.io.Transfer.isEmpty;
@@ -212,12 +211,9 @@ public class MapsforgeMapView implements MapView {
     private TileRendererLayer backgroundLayer;
     private HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
     private SelectionUpdater selectionUpdater;
-    private EventMapUpdater eventMapUpdater, routeUpdater, trackUpdater, waypointUpdater;
+    private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private RouteRenderer routeRenderer;
-    private Thread routeReplacer;
-    private final Object notificationMutex = new Object();
-    private final Object eventMapUpdaterLock = new Object();
-    private boolean running = true, haveToReplaceRoute;
+    private UpdateDecoupler updateDecoupler;
 
     // initialization
 
@@ -360,7 +356,6 @@ public class MapsforgeMapView implements MapView {
 
                     Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), paint, tileSize);
                     pair.setLayer(line);
-                    System.out.println(Thread.currentThread() + " new line " + pair); // TODO remove me
                     withLayers.add(pair);
                 }
                 addLayers(withLayers);
@@ -417,7 +412,7 @@ public class MapsforgeMapView implements MapView {
             }
         });
 
-        this.eventMapUpdater = getEventMapUpdaterFor(Waypoints);
+        this.updateDecoupler = new UpdateDecoupler();
 
         positionsModel.addTableModelListener(positionsModelListener);
         characteristicsModel.addListDataListener(characteristicsModelListener);
@@ -432,37 +427,6 @@ public class MapsforgeMapView implements MapView {
         initializeActions();
         initializeMapView();
         routeRenderer = new RouteRenderer(this, this.mapViewCallback, routeColorModel, GRAPHIC_FACTORY);
-
-        routeReplacer = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    synchronized (notificationMutex) {
-                        try {
-                            notificationMutex.wait(50);
-                        } catch (InterruptedException e) {
-                            // ignore this
-                        }
-
-                        if (!running)
-                            return;
-                        if (!haveToReplaceRoute)
-                            continue;
-
-                        haveToReplaceRoute = false;
-                    }
-
-                    synchronized (eventMapUpdaterLock) {
-                        // remove all from previous event map updater
-                        eventMapUpdater.handleRemove(0, MAX_VALUE);
-
-                        // select current event map updater and let him add all
-                        eventMapUpdater = getEventMapUpdaterFor(lastCharacteristics);
-                        eventMapUpdater.handleAdd(0, MapsforgeMapView.this.positionsModel.getRowCount() - 1);
-                    }
-                }
-            }
-        }, "RouteReplacer");
-        routeReplacer.start();
     }
 
     private boolean initializedActions = false;
@@ -765,28 +729,6 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
-    private void replaceRoute() {
-        synchronized (notificationMutex) {
-            haveToReplaceRoute = true;
-            routeReplacer.interrupt();
-            notificationMutex.notifyAll();
-        }
-    }
-
-    private BaseRoute lastRoute;
-    private RouteCharacteristics lastCharacteristics = Waypoints; // corresponds to default eventMapUpdater
-
-    private void updateRouteButDontRecenter() {
-        // avoid duplicate work
-        RouteCharacteristics characteristics = MapsforgeMapView.this.characteristicsModel.getSelectedCharacteristics();
-        BaseRoute route = positionsModel.getRoute();
-        if (lastCharacteristics.equals(characteristics) && lastRoute != null && lastRoute.equals(route))
-            return;
-        lastCharacteristics = characteristics;
-        lastRoute = route;
-        replaceRoute();
-    }
-
     private EventMapUpdater getEventMapUpdaterFor(RouteCharacteristics characteristics) {
         switch (characteristics) {
             case Route:
@@ -826,23 +768,13 @@ public class MapsforgeMapView implements MapView {
         mapViewCallback.getShowShadedHills().removeChangeListener(shadedHillsListener);
 
         long start = currentTimeMillis();
-        synchronized (notificationMutex) {
-            running = false;
-            notificationMutex.notifyAll();
-        }
-
-        if (routeReplacer != null) {
-            try {
-                safeJoin(routeReplacer);
-            } catch (InterruptedException e) {
-                // intentionally left empty
-            }
-            long end = currentTimeMillis();
-            log.info("RouteReplacer stopped after " + (end - start) + " ms");
-        }
-
         if (routeRenderer != null)
             routeRenderer.dispose();
+
+        updateDecoupler.dispose();
+
+        long end = currentTimeMillis();
+        log.info("RouteRenderer stopped after " + (end - start) + " ms");
 
         NavigationPosition center = getCenter();
         preferences.putDouble(CENTER_LONGITUDE_PREFERENCE, center.getLongitude());
@@ -905,7 +837,6 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void addLayer(final Layer layer) {
-        System.out.println(Thread.currentThread() + " addLayer " + layer); // TODO remove me
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 getLayerManager().getLayers().add(layer);
@@ -916,7 +847,6 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void addLayers(final List<? extends ObjectWithLayer> withLayers) {
-        System.out.println(Thread.currentThread() + " addLayers " + withLayers); // TODO remove me
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
@@ -936,7 +866,6 @@ public class MapsforgeMapView implements MapView {
     }
 
     public void removeLayer(final Layer layer) {
-        System.out.println(Thread.currentThread() + " removeLayer " + layer); // TODO remove me
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 if (!getLayerManager().getLayers().remove(layer))
@@ -946,8 +875,6 @@ public class MapsforgeMapView implements MapView {
     }
 
     private void removeLayers(final List<? extends ObjectWithLayer> withLayers, final boolean clearLayer) {
-        System.out.println(Thread.currentThread() + " removeLayers " + withLayers + " clear " + clearLayer); // TODO remove me
-        Thread.dumpStack();
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
@@ -1177,7 +1104,7 @@ public class MapsforgeMapView implements MapView {
             positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
             int[] rows = new int[]{row};
             positionsSelectionModel.setSelectedPositions(rows, true);
-            // this results in drawing errors
+            // TODO this results in drawing errors
             // mapViewCallback.complementData(rows, true, true, true, true, false);
         }
 
@@ -1227,6 +1154,48 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
+    private class UpdateDecoupler {
+        private final ExecutorService executor = createSingleThreadExecutor("UpdateDecoupler");
+        private EventMapUpdater eventMapUpdater = getEventMapUpdaterFor(Waypoints);
+
+        public void replaceRoute() {
+            executor.execute(new Runnable() {
+                public void run() {
+                    // remove all from previous event map updater
+                    eventMapUpdater.handleRemove(0, MAX_VALUE);
+
+                    // select current event map updater and let him add all
+                    eventMapUpdater = getEventMapUpdaterFor(positionsModel.getRoute().getCharacteristics());
+                    eventMapUpdater.handleAdd(0, MapsforgeMapView.this.positionsModel.getRowCount() - 1);
+                }
+            });
+        }
+
+        public void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
+            executor.execute(new Runnable() {
+                public void run() {
+                   switch (eventType) {
+                        case INSERT:
+                            eventMapUpdater.handleAdd(firstRow, lastRow);
+                            break;
+                        case UPDATE:
+                            eventMapUpdater.handleUpdate(firstRow, lastRow);
+                            break;
+                        case DELETE:
+                            eventMapUpdater.handleRemove(firstRow, lastRow);
+                            break;
+                        default:
+                            throw new IllegalArgumentException("Event type " + eventType + " is not supported");
+                    }
+                }
+            });
+        }
+
+        public void dispose() {
+            executor.shutdownNow();
+        }
+    }
+
     // listeners
 
     private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<>();
@@ -1245,14 +1214,12 @@ public class MapsforgeMapView implements MapView {
         }
     }
 
-    private final ExecutorService updateDecoupler = createSingleThreadExecutor("UpdateDecoupler");
-
     private class PositionsModelListener implements TableModelListener {
         public void tableChanged(TableModelEvent e) {
             switch (e.getType()) {
                 case INSERT:
                 case DELETE:
-                    handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
+                    updateDecoupler.handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
                     break;
                 case UPDATE:
                     if (positionsModel.isContinousRange())
@@ -1263,9 +1230,13 @@ public class MapsforgeMapView implements MapView {
                             e.getColumn() == ALL_COLUMNS))
                         return;
 
-                    handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
-                    // center and zoom if a file was just loaded
                     boolean allRowsChanged = isFirstToLastRow(e);
+                    if(allRowsChanged)
+                        updateDecoupler.replaceRoute();
+                    else
+                        updateDecoupler.handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
+
+                    // center and zoom if a file was just loaded
                     if (allRowsChanged && showAllPositionsAfterLoading.getBoolean())
                         centerAndZoom(getMapBoundingBox(), getRouteBoundingBox(), true, true);
                     break;
@@ -1273,34 +1244,12 @@ public class MapsforgeMapView implements MapView {
                     throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
             }
         }
-
-        private void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
-            updateDecoupler.execute(new Runnable() {
-                public void run() {
-                    synchronized (eventMapUpdaterLock) {
-                        switch (eventType) {
-                            case INSERT:
-                                eventMapUpdater.handleAdd(firstRow, lastRow);
-                                break;
-                            case UPDATE:
-                                eventMapUpdater.handleUpdate(firstRow, lastRow);
-                                break;
-                            case DELETE:
-                                eventMapUpdater.handleRemove(firstRow, lastRow);
-                                break;
-                            default:
-                                throw new IllegalArgumentException("Event type " + eventType + " is not supported");
-                        }
-                    }
-                }
-            });
-        }
     }
 
     private class RoutingServiceListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             if (positionsModel.getRoute().getCharacteristics().equals(Route))
-                replaceRoute();
+                updateDecoupler.replaceRoute();
         }
     }
 
@@ -1312,7 +1261,10 @@ public class MapsforgeMapView implements MapView {
         }
 
         public void contentsChanged(ListDataEvent e) {
-            updateRouteButDontRecenter();
+            // ignore events following setRoute()
+            if (isIgnoreEvent(e))
+                return;
+            updateDecoupler.replaceRoute();
         }
     }
 
@@ -1324,7 +1276,7 @@ public class MapsforgeMapView implements MapView {
 
     private class ColorModelListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
-            replaceRoute();
+            updateDecoupler.replaceRoute();
         }
     }
 
