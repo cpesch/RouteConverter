@@ -100,7 +100,8 @@ public class OverlayPositionsModel implements PositionsModel {
         indexToDistanceAndTime.clear();
         distancesFromStart = null;
         indexToImageAndFile.clear();
-        delegate.fireTableRowsUpdated(0, getRoute().getPositionCount() - 1, DISTANCE_COLUMN_INDEX);
+        if (getRowCount() > 0)
+            delegate.fireTableRowsUpdated(0, getRowCount() - 1, DISTANCE_COLUMN_INDEX);
     }
 
     // TableModel
