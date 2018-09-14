@@ -45,8 +45,10 @@ public class WaypointUpdater implements EventMapUpdater {
     }
 
     public void handleAdd(int firstRow, int lastRow) {
+        int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
+
         List<PositionWithLayer> added = new ArrayList<>();
-        for (int i = firstRow; i <= lastRow; i++) {
+        for (int i = firstRow; i <= validLastRow; i++) {
             PositionWithLayer positionWithLayer = new PositionWithLayer(positionsModel.getPosition(i));
             positionWithLayers.add(i, positionWithLayer);
             added.add(positionWithLayer);
