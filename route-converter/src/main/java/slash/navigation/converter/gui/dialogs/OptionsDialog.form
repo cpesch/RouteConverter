@@ -493,7 +493,7 @@
                     <properties>
                       <hideActionText value="true"/>
                       <icon value="slash/navigation/converter/gui/16/open-action.png"/>
-                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="choose-elevation-service-path"/>
+                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="choose-map-path"/>
                     </properties>
                   </component>
                   <component id="3cfff" class="javax.swing.JLabel">
@@ -556,7 +556,7 @@
                     <properties>
                       <hideActionText value="true"/>
                       <icon value="slash/navigation/converter/gui/16/open-action.png"/>
-                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="choose-elevation-service-path"/>
+                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="choose-theme-path"/>
                     </properties>
                   </component>
                 </children>
@@ -669,7 +669,7 @@
                     <properties>
                       <hideActionText value="true"/>
                       <icon value="slash/navigation/converter/gui/16/open-action.png"/>
-                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="choose-elevation-service-path"/>
+                      <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="choose-routing-service-path"/>
                     </properties>
                   </component>
                   <component id="d889" class="javax.swing.JLabel">

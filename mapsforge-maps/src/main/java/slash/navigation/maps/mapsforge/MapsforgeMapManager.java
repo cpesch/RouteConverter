@@ -187,7 +187,7 @@ public class MapsforgeMapManager {
     }
 
     public File getThemesDirectory() {
-        return getDirectory(getMapsPath(), "themes");
+        return getDirectory(getThemePath(), "themes");
     }
 
     private void initializeOpenStreetMap() {
@@ -209,6 +209,13 @@ public class MapsforgeMapManager {
     }
 
     public synchronized void scanMaps() throws IOException {
+        invokeInAwtEventQueue(new Runnable() {
+            public void run() {
+                availableOfflineMapsModel.clear();
+                initializeOpenStreetMap();
+            }
+        });
+
         long start = currentTimeMillis();
 
         final File mapsDirectory = getMapsDirectory();

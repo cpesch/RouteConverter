@@ -270,7 +270,7 @@ public class OptionsDialog extends SimpleDialog {
                     } catch (IOException e) {
                         r.getContext().getNotificationManager().showNotification(MessageFormat.format(
                                 getBundle().getString("scan-error"), getLocalizedMessage(e)), null);
-                }
+                    }
             }
 
             public void removeUpdate(DocumentEvent e) {
@@ -1051,7 +1051,7 @@ public class OptionsDialog extends SimpleDialog {
         buttonChooseMapsPath = new JButton();
         buttonChooseMapsPath.setHideActionText(true);
         buttonChooseMapsPath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/open-action.png")));
-        buttonChooseMapsPath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-elevation-service-path"));
+        buttonChooseMapsPath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-map-path"));
         panel15.add(buttonChooseMapsPath, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label21 = new JLabel();
         this.$$$loadLabelText$$$(label21, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("google-maps-server"));
@@ -1074,7 +1074,7 @@ public class OptionsDialog extends SimpleDialog {
         buttonChooseThemesPath = new JButton();
         buttonChooseThemesPath.setHideActionText(true);
         buttonChooseThemesPath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/open-action.png")));
-        buttonChooseThemesPath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-elevation-service-path"));
+        buttonChooseThemesPath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-theme-path"));
         panel15.add(buttonChooseThemesPath, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel17 = new JPanel();
         panel17.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
@@ -1113,7 +1113,7 @@ public class OptionsDialog extends SimpleDialog {
         buttonChooseRoutingServicePath = new JButton();
         buttonChooseRoutingServicePath.setHideActionText(true);
         buttonChooseRoutingServicePath.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/16/open-action.png")));
-        buttonChooseRoutingServicePath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-elevation-service-path"));
+        buttonChooseRoutingServicePath.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("choose-routing-service-path"));
         panel20.add(buttonChooseRoutingServicePath, new GridConstraints(3, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label28 = new JLabel();
         this.$$$loadLabelText$$$(label28, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("routing-engine"));

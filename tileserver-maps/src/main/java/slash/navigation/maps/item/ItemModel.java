@@ -23,8 +23,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.util.prefs.Preferences;
 
-import static java.lang.String.format;
-
 /**
  * A model for a single {@link Item}.
  *
@@ -54,7 +52,9 @@ public abstract class ItemModel<T extends Item> {
         T item = stringToItem(defaultValue);
         if(item != null)
             return item;
-        throw new IllegalArgumentException(format("Cannot find item for preference %s and default value %s", preferenceName, defaultValue));
+        // throwing an exception here means one cannot clear since the default value is not present
+        // throw new IllegalArgumentException(format("Cannot find item for preference %s and default value %s", preferenceName, defaultValue));
+        return null;
     }
 
     protected abstract T stringToItem(String value);
