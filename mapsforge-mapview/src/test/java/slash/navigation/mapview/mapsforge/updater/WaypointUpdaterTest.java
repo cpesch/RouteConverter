@@ -66,6 +66,7 @@ public class WaypointUpdaterTest {
     public void testAddOne() {
         PositionsModel positionsModel = mock(PositionsModel.class);
         when(positionsModel.getPosition(0)).thenReturn(p1);
+        when(positionsModel.getRowCount()).thenReturn(1);
         WaypointOperation waypointOperation = mock(WaypointOperation.class);
 
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
@@ -81,6 +82,7 @@ public class WaypointUpdaterTest {
         PositionsModel positionsModel = mock(PositionsModel.class);
         when(positionsModel.getPosition(0)).thenReturn(p1);
         when(positionsModel.getPosition(1)).thenReturn(p2);
+        when(positionsModel.getRowCount()).thenReturn(2);
         WaypointOperation waypointOperation = mock(WaypointOperation.class);
 
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
@@ -100,11 +102,13 @@ public class WaypointUpdaterTest {
         WaypointOperation waypointOperation = mock(WaypointOperation.class);
 
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
+        when(positionsModel.getRowCount()).thenReturn(2);
         waypointUpdater.handleAdd(0, 1);
 
         assertEquals(asList(w1, w2), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1, w2));
 
+        when(positionsModel.getRowCount()).thenReturn(3);
         waypointUpdater.handleAdd(2, 2);
 
         assertEquals(asList(w1, w2, w3), waypointUpdater.getPositionWithLayers());
@@ -122,12 +126,14 @@ public class WaypointUpdaterTest {
         WaypointOperation waypointOperation = mock(WaypointOperation.class);
 
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
+        when(positionsModel.getRowCount()).thenReturn(4);
         waypointUpdater.handleAdd(0, 3);
 
         assertEquals(asList(w1, w2, w3, w4), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1, w2, w3, w4));
         verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
 
+        when(positionsModel.getRowCount()).thenReturn(2);
         waypointUpdater.handleRemove(1, 2);
 
         assertEquals(asList(w1, w4), waypointUpdater.getPositionWithLayers());
@@ -144,12 +150,14 @@ public class WaypointUpdaterTest {
         WaypointOperation waypointOperation = mock(WaypointOperation.class);
 
         WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
+        when(positionsModel.getRowCount()).thenReturn(3);
         waypointUpdater.handleAdd(0, 2);
 
         assertEquals(asList(w1, w2, w3), waypointUpdater.getPositionWithLayers());
         verify(waypointOperation, times(1)).add(asList(w1, w2, w3));
         verify(waypointOperation, never()).remove(new ArrayList<PositionWithLayer>());
 
+        when(positionsModel.getRowCount()).thenReturn(0);
         waypointUpdater.handleRemove(0, MAX_VALUE);
 
         assertEquals(new ArrayList<PositionWithLayer>(), waypointUpdater.getPositionWithLayers());
