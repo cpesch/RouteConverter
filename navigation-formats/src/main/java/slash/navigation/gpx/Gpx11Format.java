@@ -32,6 +32,7 @@ import slash.navigation.gpx.binding11.TrksegType;
 import slash.navigation.gpx.binding11.WptType;
 import slash.navigation.gpx.garmin3.AutoroutePointT;
 import slash.navigation.gpx.garmin3.RoutePointExtensionT;
+import slash.navigation.gpx.trip1.ShapingPointExtensionT;
 import slash.navigation.gpx.trip1.ViaPointExtensionT;
 
 import javax.xml.bind.JAXBElement;
@@ -217,10 +218,8 @@ public class Gpx11Format extends GpxFormat {
 
     private void setShapingPoint(WptType wptType) {
         slash.navigation.gpx.trip1.ObjectFactory tripFactory = new slash.navigation.gpx.trip1.ObjectFactory();
-        ViaPointExtensionT viaPointExtensionT = tripFactory.createViaPointExtensionT();
-        viaPointExtensionT.setCalculationMode("ShorterDistance");
-        viaPointExtensionT.setElevationMode("Standard");
-        setExtension(wptType, "ViaPoint", "ShapingPoint", tripFactory.createShapingPoint(tripFactory.createShapingPointExtensionT()));
+        ShapingPointExtensionT shapingPointExtensionT = tripFactory.createShapingPointExtensionT();
+        setExtension(wptType, "ViaPoint", "ShapingPoint", tripFactory.createShapingPoint(shapingPointExtensionT));
     }
 
     private void clearDistance(TrkType trkType) {
