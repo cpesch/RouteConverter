@@ -2,6 +2,7 @@ Please not that, to enable reuse of RouteConverter code in non-GPL software proj
 underly the Apache License 2 (see LICENSE-APACHE.txt) in addition to GPL 2 (LICENSE-GPL.txt) and are thus dual-licensed:
 
 * common
+* common-navigation
 * googlemaps
 * gpx
 * kml
