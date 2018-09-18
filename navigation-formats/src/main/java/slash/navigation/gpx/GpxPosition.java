@@ -138,6 +138,10 @@ public class GpxPosition extends Wgs84Position {
         return positionExtension;
     }
 
+    void setPositionExtension(GpxPositionExtension positionExtension) {
+        this.positionExtension = positionExtension;
+    }
+
     public Double getHeading() {
         return getPositionExtension() != null ? getPositionExtension().getHeading() : super.getHeading();
     }

@@ -249,17 +249,25 @@ public class Gpx11Format extends GpxFormat {
         if (latitude == null || longitude == null)
             return null;
         WptType wptType = position.getOrigin(WptType.class);
-        if (wptType == null)
+        if (wptType == null) {
             wptType = new ObjectFactory().createWptType();
+
+            // when converted, there is no GpxPositionExtension thus it needs to be created and the values
+            // transferred to the position extension
+            Double heading = position.getHeading();
+            Double speed = position.getSpeed();
+            Double temperature = position.getTemperature();
+
+            position.setPositionExtension(new GpxPositionExtension(wptType));
+
+            position.setHeading(heading);
+            position.setSpeed(speed);
+            position.setTemperature(temperature);
+
+        }
         wptType.setLat(latitude);
         wptType.setLon(longitude);
         wptType.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
-        if(!isWriteHeading())
-            position.setHeading(null);
-        if(!isWriteSpeed())
-            position.setSpeed(null);
-        if (!isWriteTemperature())
-            position.setTemperature(null);
         wptType.setTime(isWriteTime() ? formatXMLTime(position.getTime()) : null);
         wptType.setName(isWriteName() ? asName(position.getDescription()) : null);
         wptType.setDesc(isWriteName() ? asDesc(position.getDescription(), wptType.getDesc()) : null);
@@ -267,6 +275,15 @@ public class Gpx11Format extends GpxFormat {
         wptType.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);
         wptType.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatBigDecimal(position.getVdop(), 6) : null);
         wptType.setSat(isWriteAccuracy() && position.getSatellites() != null ? formatInt(position.getSatellites()) : null);
+
+        // setting the values to null which lead to removeEmptyExtensions() remove them
+        if(!isWriteHeading())
+            position.setHeading(null);
+        if(!isWriteSpeed())
+            position.setSpeed(null);
+        if (!isWriteTemperature())
+            position.setTemperature(null);
+
         if (position.getPositionExtension() != null) {
             position.getPositionExtension().mergeExtensions();
             position.getPositionExtension().removeEmptyExtensions();
