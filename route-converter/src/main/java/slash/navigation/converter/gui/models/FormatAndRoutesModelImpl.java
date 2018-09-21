@@ -26,6 +26,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.FormatAndRoutes;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.converter.gui.helpers.AbstractListDataListener;
+import slash.navigation.gui.events.IgnoreEvent;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -35,7 +36,7 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.util.List;
 
-import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
+import static slash.navigation.gui.events.IgnoreEvent.IGNORE;
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
@@ -46,7 +47,6 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
  */
 
 public class FormatAndRoutesModelImpl extends AbstractListModel implements FormatAndRoutesModel {
-    private static final int IGNORE = -1;
     private final PositionsModel positionsModel;
     private final CharacteristicsModel characteristicsModel;
     private boolean modified;
@@ -70,7 +70,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         addListDataListener(new AbstractListDataListener() {
             public void process(ListDataEvent e) {
                 // ignore events following setSelectedRoute()
-                if (isIgnoreEvent(e))
+                if (IgnoreEvent.isIgnoreEvent(e))
                     return;
                 setModified(true);
             }
@@ -84,7 +84,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
 
             public void contentsChanged(ListDataEvent e) {
                 // ignore events following setRoute()
-                if (isIgnoreEvent(e))
+                if (IgnoreEvent.isIgnoreEvent(e))
                     return;
                 if (formatAndRoutes.getFormat().isWritingRouteCharacteristics())
                     setModified(true);
@@ -178,7 +178,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         }
     }
 
-    protected void fireModified() {
+    private void fireModified() {
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == ChangeListener.class) {
@@ -212,9 +212,5 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
             characteristicsModel.setRoute(route);
             fireContentsChanged(this, IGNORE, IGNORE);
         }
-    }
-
-    public static boolean isIgnoreEvent(ListDataEvent e) {
-        return e.getType() == CONTENTS_CHANGED && e.getIndex0() == IGNORE && e.getIndex1() == IGNORE;
     }
 }

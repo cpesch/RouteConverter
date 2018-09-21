@@ -134,7 +134,6 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.base.WaypointType.End;
 import static slash.navigation.base.WaypointType.Start;
 import static slash.navigation.base.WaypointType.Waypoint;
-import static slash.navigation.converter.gui.models.CharacteristicsModel.isIgnoreEvent;
 import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
 import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
@@ -142,6 +141,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_
 import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
