@@ -64,8 +64,8 @@
         <alephformatter.version>0.1.0</alephformatter.version>
         <brouter.version>1.4.9</brouter.version>
         <graphhopper.version>0.10.1</graphhopper.version>
-        <jackson.version>2.9.6</jackson.version>
-        <mapsforge.version>0.9.1</mapsforge.version>
+        <jackson.version>2.9.7</jackson.version>
+        <mapsforge.version>0.10.0</mapsforge.version>
     </properties>
 
     <build>
@@ -352,7 +352,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.19.1</version>
+            <version>2.22.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
