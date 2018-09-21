@@ -54,7 +54,7 @@ public class SelectionUpdater {
 
     public synchronized void updatedPositions(List<NavigationPosition> positions) {
         List<PositionWithLayer> updated = new ArrayList<>();
-        for (PositionWithLayer positionWithLayer : getPositionWithLayers()) {
+        for (PositionWithLayer positionWithLayer : positionWithLayers) {
             NavigationPosition position = positionWithLayer.getPosition();
             if (positions.contains(position))
                 updated.add(positionWithLayer);
@@ -64,7 +64,7 @@ public class SelectionUpdater {
 
     public synchronized void removedPositions(List<NavigationPosition> positions) {
         List<PositionWithLayer> removed = new ArrayList<>();
-        for (PositionWithLayer positionWithLayer : getPositionWithLayers()) {
+        for (PositionWithLayer positionWithLayer : positionWithLayers) {
             NavigationPosition position = positionWithLayer.getPosition();
             if (positions.contains(position) && positionsModel.getIndex(position) == -1)
                 removed.add(positionWithLayer);
@@ -73,7 +73,7 @@ public class SelectionUpdater {
     }
 
     private void replaceSelection(int[] selectedPositions) {
-        applyDelta(asPositionWithLayers(selectedPositions), getPositionWithLayers());
+        applyDelta(asPositionWithLayers(selectedPositions), positionWithLayers);
     }
 
     private void updateSelection(int[] selectedPositions) {
@@ -81,11 +81,11 @@ public class SelectionUpdater {
 
         List<PositionWithLayer> added = new ArrayList<>();
         for (PositionWithLayer positionWithLayer : selected) {
-            if (!getPositionWithLayers().contains(positionWithLayer))
+            if (!positionWithLayers.contains(positionWithLayer))
                 added.add(positionWithLayer);
         }
         List<PositionWithLayer> removed = new ArrayList<>();
-        for (PositionWithLayer positionWithLayer : getPositionWithLayers()) {
+        for (PositionWithLayer positionWithLayer : positionWithLayers) {
             if (!selected.contains(positionWithLayer))
                 removed.add(positionWithLayer);
         }
@@ -96,11 +96,11 @@ public class SelectionUpdater {
     private void applyDelta(List<PositionWithLayer> added, List<PositionWithLayer> removed) {
         if (!removed.isEmpty()) {
             selectionOperation.remove(removed);
-            getPositionWithLayers().removeAll(removed);
+            positionWithLayers.removeAll(removed);
         }
         if (!added.isEmpty()) {
             selectionOperation.add(added);
-            getPositionWithLayers().addAll(added);
+            positionWithLayers.addAll(added);
         }
     }
 
