@@ -174,6 +174,7 @@ public class MapsforgeMapView implements MapView {
     private static final String READ_BUFFER_SIZE_PREFERENCE = "readBufferSize";
     private static final String FIRST_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "firstLevelTileCacheSize";
     private static final String SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "secondLevelTileCacheSize";
+    private static final String MAP_SCALE_FACTOR = "mapScaleFactor";
     private static final int SCROLL_DIFF_IN_PIXEL = 100;
     private static final int MINIMUM_VISIBLE_BORDER_IN_PIXEL = 20;
     private static final int SELECTION_CIRCLE_IN_PIXEL = 15;
@@ -540,6 +541,10 @@ public class MapsforgeMapView implements MapView {
             handleMapAndThemeUpdate(false, false);
     }
 
+    protected float getMapScaleFactor() {
+        return preferences.getInt(MAP_SCALE_FACTOR, 100) / 100.0f;
+    }
+
     private AwtGraphicMapView createMapView() {
         // Multithreaded map rendering
         Parameters.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
@@ -552,6 +557,7 @@ public class MapsforgeMapView implements MapView {
         new MapViewResizer(mapView, mapView.getModel().mapViewDimension);
         mapView.getMapScaleBar().setVisible(true);
         ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(SINGLE);
+        mapView.getModel().displayModel.setUserScaleFactor(getMapScaleFactor());
         return mapView;
     }
 
