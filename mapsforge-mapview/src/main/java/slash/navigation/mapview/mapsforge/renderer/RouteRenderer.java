@@ -254,6 +254,7 @@ public class RouteRenderer {
         latLongs.add(asLatLong(pairWithLayer.getFirst()));
         RoutingResult result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
         if (result.isValid())
+            // TODO could extract elevation from RoutingResult and set it on first/second if there is no elevation
             latLongs.addAll(asLatLong(result.getPositions()));
         pairWithLayer.setDistanceAndTime(result.getDistanceAndTime());
         latLongs.add(asLatLong(pairWithLayer.getSecond()));
