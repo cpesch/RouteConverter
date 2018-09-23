@@ -103,7 +103,8 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
 
     public void destroyAll() {
         for (Layer layer : layerManager.getLayers()) {
-            layerManager.getLayers().remove(layer);
+            // this delays stopping RouteConverter for a very long time since all layers have to be removed one by one
+            // removeLayer(layer);
             layer.onDestroy();
             if (layer instanceof TileLayer) {
                 ((TileLayer) layer).getTileCache().destroy();
