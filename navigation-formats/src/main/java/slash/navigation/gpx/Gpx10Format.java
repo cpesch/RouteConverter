@@ -338,7 +338,7 @@ public class Gpx10Format extends GpxFormat {
         Gpx gpx = recycleGpx(route);
         if (gpx == null || !reuseReadObjectsForWriting)
             gpx = new ObjectFactory().createGpx();
-        gpx.setCreator(GENERATED_BY);
+        gpx.setCreator(getCreator());
         gpx.setVersion(VERSION);
 
         for (RouteCharacteristics characteristic : characteristics) {
@@ -370,7 +370,7 @@ public class Gpx10Format extends GpxFormat {
         }
         if (gpx == null || !reuseReadObjectsForWriting)
             gpx = objectFactory.createGpx();
-        gpx.setCreator(GENERATED_BY);
+        gpx.setCreator(getCreator());
         gpx.setVersion(VERSION);
 
         for (GpxRoute route : routes) {

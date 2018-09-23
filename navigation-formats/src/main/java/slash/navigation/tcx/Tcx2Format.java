@@ -145,13 +145,10 @@ public class Tcx2Format extends TcxFormat {
         if (coursePoints != null)
             result.add(coursePoints);
 
-        boolean writtenByRouteConverter = courseT.getNotes() != null &&
-                GENERATED_BY.equals(courseT.getNotes());
-        if (!writtenByRouteConverter) {
-            for (CourseLapT courseLapT : courseT.getLap()) {
-                result.add(processCourseLap(courseT.getName(), courseLapT));
-            }
+        for (CourseLapT courseLapT : courseT.getLap()) {
+            result.add(processCourseLap(courseT.getName(), courseLapT));
         }
+
         List<Wgs84Position> positions = new ArrayList<>();
         for (TrackT trackT : courseT.getTrack()) {
             positions.addAll(processTrack(trackT));
@@ -233,7 +230,8 @@ public class Tcx2Format extends TcxFormat {
         if (last == null)
             last = first;
 
-        courseLapT.setAverageHeartRateBpm(getHeartBeatRateT(first));
+        if (first != null)
+            courseLapT.setAverageHeartRateBpm(getHeartBeatRateT(first));
         courseLapT.setDistanceMeters(route.getDistance());
         courseLapT.setIntensity(IntensityT.fromValue("Active"));
         courseLapT.setTotalTimeSeconds(route.getTime() / 1000.0);
@@ -283,7 +281,6 @@ public class Tcx2Format extends TcxFormat {
     private CourseT createCourse(TcxRoute route, String routeName, int startIndex, int endIndex) {
         CourseT courseT = new ObjectFactory().createCourseT();
         courseT.setName(routeName);
-        courseT.setNotes(GENERATED_BY);
         courseT.getLap().add(createCourseLap(route, startIndex, endIndex));
         courseT.getTrack().add(createTrack(route, startIndex, endIndex));
         return courseT;

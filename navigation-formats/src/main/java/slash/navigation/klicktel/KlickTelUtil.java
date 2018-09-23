@@ -27,16 +27,13 @@ import slash.navigation.klicktel.binding.ObjectFactory;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static slash.common.helpers.JAXBHelper.JAXB_IMPL_HEADER;
 import static slash.common.helpers.JAXBHelper.newContext;
-import static slash.navigation.base.XmlNavigationFormat.HEADER_LINE;
 
 class KlickTelUtil {
     private static final String KLICKTEL_NAMESPACE_URI = "";
@@ -46,13 +43,7 @@ class KlickTelUtil {
     }
 
     private static Marshaller newMarshaller() {
-        Marshaller marshaller = JAXBHelper.newMarshaller(newContext(ObjectFactory.class));
-        try {
-            marshaller.setProperty(JAXB_IMPL_HEADER, HEADER_LINE);
-        } catch (PropertyException e) {
-            // intentionally left empty
-        }
-        return marshaller;
+        return JAXBHelper.newMarshaller(newContext(ObjectFactory.class));
     }
 
 

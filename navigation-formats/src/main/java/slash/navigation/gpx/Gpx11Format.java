@@ -390,7 +390,7 @@ public class Gpx11Format extends GpxFormat {
         GpxType gpxType = recycleGpxType(route);
         if (gpxType == null)
             gpxType = objectFactory.createGpxType();
-        gpxType.setCreator(GENERATED_BY);
+        gpxType.setCreator(getCreator());
         gpxType.setVersion(VERSION);
 
         if (route.getCharacteristics().equals(Waypoints))
@@ -413,7 +413,7 @@ public class Gpx11Format extends GpxFormat {
         }
         if (gpxType == null)
             gpxType = objectFactory.createGpxType();
-        gpxType.setCreator(GENERATED_BY);
+        gpxType.setCreator(getCreator());
         gpxType.setVersion(VERSION);
 
         for (GpxRoute route : routes) {

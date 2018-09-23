@@ -29,21 +29,20 @@ import java.util.List;
  */
 
 public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
-    public static final String HEADER_LINE = "<!-- " + GENERATED_BY + " -->\n";
 
     public int getMaximumPositionCount() {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
     }
 
     protected String asDescription(List<String> strings) {
+        if (strings == null)
+            return null;
         StringBuilder buffer = new StringBuilder();
-        if (strings != null) {
-            for (String string : strings) {
-                buffer.append(string).append(",\n");
-            }
+        for (int i = 0; i < strings.size(); i++) {
+            buffer.append(strings.get(i));
+            if (i != strings.size() - 1)
+                buffer.append(",\n");
         }
-        if (buffer.indexOf(GENERATED_BY) == -1)
-            buffer.append(GENERATED_BY);
         return buffer.toString();
     }
 }

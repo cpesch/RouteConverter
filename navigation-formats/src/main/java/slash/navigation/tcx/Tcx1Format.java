@@ -150,8 +150,7 @@ public class Tcx1Format extends TcxFormat {
     }
 
     private List<TcxRoute> process(String name, CourseFolderT courseFolderT) {
-        boolean writtenByRouteConverter = courseFolderT.getNotes() != null && courseFolderT.getNotes().equals(GENERATED_BY);
-        String prefix = name != null && !writtenByRouteConverter ? name + "/" : "";
+        String prefix = name != null ? name + "/" : "";
 
         List<TcxRoute> result = new ArrayList<>();
         for (CourseFolderT folderT : courseFolderT.getFolder())
@@ -162,8 +161,7 @@ public class Tcx1Format extends TcxFormat {
             TcxRoute coursePoints = processCoursePoints(positionListName, courseT);
             if (coursePoints != null)
                 result.add(coursePoints);
-            if (!writtenByRouteConverter)
-                result.addAll(processCourseLap(positionListName, courseT));
+            result.addAll(processCourseLap(positionListName, courseT));
             result.add(processTracks(positionListName, courseT.getTrack()));
         }
         return result;
@@ -323,7 +321,6 @@ public class Tcx1Format extends TcxFormat {
     private CourseFolderT createCourseFolder(CoursesT coursesT) {
         CourseFolderT courseFolderT = new ObjectFactory().createCourseFolderT();
         courseFolderT.setName("RouteConverter");
-        courseFolderT.setNotes(GENERATED_BY);
         coursesT.setCourseFolder(courseFolderT);
         return courseFolderT;
     }

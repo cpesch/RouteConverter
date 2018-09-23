@@ -64,18 +64,6 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return new GpxRoute(this, characteristics, name, null, (List<GpxPosition>) positions);
     }
 
-    protected String asDescription(List<String> strings) {
-        if (strings == null)
-            return null;
-        StringBuilder buffer = new StringBuilder();
-        for (int i = 0; i < strings.size(); i++) {
-            buffer.append(strings.get(i));
-            if (i != strings.size() - 1)
-                buffer.append(",\n");
-        }
-        return buffer.toString();
-    }
-
     protected String asWayPointDescription(String name, String description) {
         return asDescription(name, description);
     }
