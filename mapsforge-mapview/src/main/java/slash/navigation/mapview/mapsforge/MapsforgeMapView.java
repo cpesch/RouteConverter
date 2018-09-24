@@ -542,7 +542,7 @@ public class MapsforgeMapView implements MapView {
     }
 
     protected float getMapScaleFactor() {
-        return preferences.getInt(MAP_SCALE_FACTOR, 100) / 100.0f;
+        return preferences.getInt(MAP_SCALE_FACTOR, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0f;
     }
 
     private AwtGraphicMapView createMapView() {

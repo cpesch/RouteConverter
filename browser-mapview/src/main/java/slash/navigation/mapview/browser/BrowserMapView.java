@@ -61,6 +61,7 @@ import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.io.BufferedReader;
@@ -272,7 +273,7 @@ public abstract class BrowserMapView implements MapView {
     protected abstract void initializeWebPage();
 
     protected double getBrowserScaleFactor() {
-        return (double) preferences.getInt(BROWSER_SCALE_FACTOR_PREFERENCE, 100) / 100.0;
+        return (double) preferences.getInt(BROWSER_SCALE_FACTOR_PREFERENCE, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0;
     }
 
     protected FixMapModeModel getFixMapModeModel() {
