@@ -121,13 +121,12 @@ public class DownloadsDialog extends SimpleDialog {
                 return (int) (getSize(d1) - getSize(d2));
             }
         });
-        sorter.setComparator(DATE_COLUMN, new Comparator<Download>() {
-            private long getLastModified(Download download) {
-                return download.getLastModified() != null ? download.getLastModified().getTimeInMillis() : 0L;
-            }
-
-            public int compare(Download d1, Download d2) {
-                return (int) (getLastModified(d1) - getLastModified(d2));
+        sorter.setComparator(DATE_COLUMN, new Comparator<Download>() {public int compare(Download d1, Download d2) {
+                if(d1.getLastModified() == null)
+                    return -1;
+                if(d2.getLastModified() == null)
+                    return 1;
+                return d1.getLastModified().getCalendar().compareTo(d2.getLastModified().getCalendar());
             }
         });
         tableDownloads.setRowSorter(sorter);

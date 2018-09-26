@@ -22,6 +22,7 @@ package slash.navigation.download.executor;
 import slash.common.type.CompactCalendar;
 import slash.navigation.download.Checksum;
 
+import java.util.Calendar;
 import java.util.Comparator;
 
 /**
@@ -30,21 +31,27 @@ import java.util.Comparator;
  * @author Christian Pesch
  */
 public class DownloadExecutorComparator implements Comparator<Runnable> {
-    public int compare(Runnable r1, Runnable r2) {
-        if (!(r1 instanceof DownloadExecutor))
-            return -1;
-        if (!(r2 instanceof DownloadExecutor))
-            return 1;
-        return (int) (getTimeInMillis((DownloadExecutor) r1) - getTimeInMillis((DownloadExecutor) r2));
-    }
+    private Calendar getTime(Runnable runnable) {
+        if (!(runnable instanceof DownloadExecutor))
+            return null;
 
-    private long getTimeInMillis(DownloadExecutor executor) {
-        Checksum checksum = executor.getDownload().getFile().getExpectedChecksum();
+        Checksum checksum = ((DownloadExecutor) runnable).getDownload().getFile().getExpectedChecksum();
         if (checksum != null) {
             CompactCalendar lastModified = checksum.getLastModified();
             if (lastModified != null)
-                return lastModified.getTimeInMillis();
+                return lastModified.getCalendar();
         }
-        return 0;
+        return null;
+    }
+
+    public int compare(Runnable r1, Runnable r2) {
+        Calendar t1 = getTime(r1);
+        if (t1 == null)
+            return -1;
+        Calendar t2 = getTime(r2);
+        if (t2 == null)
+            return 1;
+
+        return t1.compareTo(t2);
     }
 }
