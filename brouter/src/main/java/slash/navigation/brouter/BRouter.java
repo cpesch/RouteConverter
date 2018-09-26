@@ -123,14 +123,16 @@ public class BRouter implements RoutingService {
 
     public List<TravelMode> getAvailableTravelModes() {
         List<TravelMode> result = new ArrayList<>();
-        File[] files = getProfilesDirectory().listFiles(new FilenameFilter() {
-            public boolean accept(File dir, String name) {
-                return getExtension(name).equals(".brf");
-            }
-        });
-        if (files != null) {
-            for (File file : files) {
-                result.add(new TravelMode(removeExtension(file.getName())));
+        if(getProfiles() != null) {
+            File[] files = getProfilesDirectory().listFiles(new FilenameFilter() {
+                public boolean accept(File dir, String name) {
+                    return getExtension(name).equals(".brf");
+                }
+            });
+            if (files != null) {
+                for (File file : files) {
+                    result.add(new TravelMode(removeExtension(file.getName())));
+                }
             }
         }
         return result;
