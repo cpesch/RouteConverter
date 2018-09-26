@@ -44,7 +44,7 @@ public class SelectionUpdater {
         this.selectionOperation = selectionOperation;
     }
 
-    public synchronized void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
+    public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
         if (replaceSelection) {
             replaceSelection(selectedPositions);
         } else {
@@ -52,7 +52,7 @@ public class SelectionUpdater {
         }
     }
 
-    public synchronized void updatedPositions(List<NavigationPosition> positions) {
+    public void updatedPositions(List<NavigationPosition> positions) {
         List<PositionWithLayer> updated = new ArrayList<>();
         for (PositionWithLayer positionWithLayer : positionWithLayers) {
             NavigationPosition position = positionWithLayer.getPosition();
@@ -62,7 +62,7 @@ public class SelectionUpdater {
         applyDelta(updated, updated);
     }
 
-    public synchronized void removedPositions(List<NavigationPosition> positions) {
+    public void removedPositions(List<NavigationPosition> positions) {
         List<PositionWithLayer> removed = new ArrayList<>();
         for (PositionWithLayer positionWithLayer : positionWithLayers) {
             NavigationPosition position = positionWithLayer.getPosition();
@@ -115,7 +115,7 @@ public class SelectionUpdater {
         return result;
     }
 
-    public synchronized List<PositionWithLayer> getPositionWithLayers() {
+    public List<PositionWithLayer> getPositionWithLayers() {
         return positionWithLayers;
     }
 }
