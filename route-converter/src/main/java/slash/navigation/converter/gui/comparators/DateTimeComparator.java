@@ -36,6 +36,6 @@ public class DateTimeComparator implements Comparator<NavigationPosition> {
             return -1;
         if(!p2.hasTime())
             return 1;
-        return (int) (p1.getTime().getTimeInMillis() - p2.getTime().getTimeInMillis());
+        return p1.getTime().getCalendar().compareTo(p2.getTime().getCalendar());
     }
 }
