@@ -191,6 +191,7 @@ import static slash.common.io.Files.reverse;
 import static slash.common.io.Files.toFile;
 import static slash.common.io.Files.toUrls;
 import static slash.feature.client.Feature.hasFeature;
+import static slash.navigation.base.NavigationFormatConverter.convertRoute;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -735,10 +736,16 @@ public class ConvertPanel implements PanelInTab {
                                 public void run() {
                                     // when called from openPositionList() and the format supports more than one position list:
                                     // append the position lists at the end
-                                    if (row == -1 && getFormatAndRoutesModel().getFormat().isSupportsMultipleRoutes()) {
-                                        for (BaseRoute route : result.getAllRoutes()) {
-                                            int appendIndex = getFormatAndRoutesModel().getSize();
-                                            getFormatAndRoutesModel().addPositionList(appendIndex, route);
+                                    NavigationFormat<BaseRoute> format = getFormatAndRoutesModel().getFormat();
+                                    if (row == -1 && format.isSupportsMultipleRoutes()) {
+                                        try {
+                                            List<BaseRoute> routes = convertRoute(result.getAllRoutes(), format);
+                                            for (BaseRoute route : routes) {
+                                                int appendIndex = getFormatAndRoutesModel().getSize();
+                                                getFormatAndRoutesModel().addPositionList(appendIndex, route);
+                                            }
+                                        } catch (IOException e) {
+                                            r.handleOpenError(e, finalPath);
                                         }
                                     } else {
                                         // insert all position lists, which are in reverse order, at the given row or at the end
@@ -944,12 +951,12 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private static boolean checkReadFormat(NavigationFormat format) {
-        return !((format instanceof HaicomLoggerFormat && preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("csv-haicom", "Read Haicom Logger")));
+        return !((format instanceof HaicomLoggerFormat && preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && checkForFeature("csv-haicom", "Read Haicom Logger")));
     }
 
     private static boolean checkWriteFormat(NavigationFormat format) {
-        return !((format instanceof GarminFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("fpl-g1000", "Write Garmin Flight Plan")) ||
-                (format instanceof GoRiderGpsFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("rt-gorider", "Write GoRider GPS")));
+        return !((format instanceof GarminFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && checkForFeature("fpl-g1000", "Write Garmin Flight Plan")) ||
+                (format instanceof GoRiderGpsFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && checkForFeature("rt-gorider", "Write GoRider GPS")));
     }
 
     private static boolean checkForFeature(String featureName, String featureDescription) {
@@ -962,9 +969,9 @@ public class ConvertPanel implements PanelInTab {
                 }
             });
             showMessageDialog(r.getFrame(), labelFeatureError, r.getFrame().getTitle(), ERROR_MESSAGE);
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     private void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
