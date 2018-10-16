@@ -62,7 +62,7 @@ public class NavigationFormatConverter {
         return formatName;
     }
 
-    /* package local for tests */static BaseNavigationPosition asFormat(NavigationPosition position, NavigationFormat format) throws IOException {
+    /*package local for tests*/static BaseNavigationPosition asFormat(NavigationPosition position, NavigationFormat format) throws IOException {
         BaseNavigationPosition result;
         String formatName = getFormatName(format);
         formatName = formatName.replace("Format", "Position");
