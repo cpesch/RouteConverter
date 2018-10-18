@@ -302,17 +302,17 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void checkJavaPrequisites() {
         String currentVersion = System.getProperty("java.version");
         if (!isCurrentAtLeastMinimumVersion(currentVersion, "1.7.0_40")) {
-            showMessageDialog(null, "Java " + currentVersion + " does not support JavaFX. Please update to a later version.", "RouteConverter", ERROR_MESSAGE);
+            showMessageDialog(null, "Java " + currentVersion + " does not support JavaFX. Please install Java 8 or 10.", "RouteConverter", ERROR_MESSAGE);
             System.exit(7);
         }
 
         if (!isCurrentAtLeastMinimumVersion(currentVersion, "1.8.0")) {
-            showMessageDialog(null, "Java " + currentVersion + " is too old for FIT and EclipseLink. Please update to a later version.", "RouteConverter", ERROR_MESSAGE);
+            showMessageDialog(null, "Java " + currentVersion + " is too old for FIT and EclipseLink. Please install Java 8 or 10.", "RouteConverter", ERROR_MESSAGE);
             System.exit(8);
         }
 
         if (isWindows() && (currentVersion.equals("1.8.0_161") || currentVersion.equals("1.8.0_162") || currentVersion.equals("1.8.0_171") || currentVersion.equals("1.8.0_172"))) {
-            showMessageDialog(null, "Java " + currentVersion + " contains a fatal bug in JavaFX on Windows. Please install Java 8 Update 152 or Java 10.", "RouteConverter", ERROR_MESSAGE);
+            showMessageDialog(null, "Java " + currentVersion + " contains a fatal bug in JavaFX on Windows. Please install Java 8 Update 181 or Java 10.", "RouteConverter", ERROR_MESSAGE);
             System.exit(9);
         }
     }
