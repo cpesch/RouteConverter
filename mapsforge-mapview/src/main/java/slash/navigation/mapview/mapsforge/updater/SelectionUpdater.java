@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.emptyList;
+
 /**
  * Stores the current selection state and minimizes {@link SelectionOperation}s.
  * Used to reduce the number of interactions between event listener and map UI.
@@ -53,13 +55,18 @@ public class SelectionUpdater {
     }
 
     public synchronized void updatedPositions(List<NavigationPosition> positions) {
-        List<PositionWithLayer> updated = new ArrayList<>();
+        List<PositionWithLayer> removed = new ArrayList<>();
+        List<PositionWithLayer> added = new ArrayList<>();
         for (PositionWithLayer positionWithLayer : positionWithLayers) {
             NavigationPosition position = positionWithLayer.getPosition();
-            if (positions.contains(position))
-                updated.add(positionWithLayer);
+            if (positions.contains(position)) {
+                PositionWithLayer toRemove = new PositionWithLayer(positionWithLayer.getPosition());
+                toRemove.setLayer(positionWithLayer.getLayer());
+                removed.add(toRemove);
+                added.add(positionWithLayer);
+            }
         }
-        applyDelta(updated, updated);
+        applyDelta(removed, added);
     }
 
     public synchronized void removedPositions(List<NavigationPosition> positions) {
@@ -69,11 +76,11 @@ public class SelectionUpdater {
             if (positions.contains(position) && positionsModel.getIndex(position) == -1)
                 removed.add(positionWithLayer);
         }
-        applyDelta(Collections.<PositionWithLayer>emptyList(), removed);
+        applyDelta(removed, emptyList());
     }
 
     private void replaceSelection(int[] selectedPositions) {
-        applyDelta(asPositionWithLayers(selectedPositions), positionWithLayers);
+        applyDelta(positionWithLayers, asPositionWithLayers(selectedPositions));
     }
 
     private void updateSelection(int[] selectedPositions) {
@@ -90,10 +97,10 @@ public class SelectionUpdater {
                 removed.add(positionWithLayer);
         }
 
-        applyDelta(added, removed);
+        applyDelta(removed, added);
     }
 
-    private void applyDelta(List<PositionWithLayer> added, List<PositionWithLayer> removed) {
+    private void applyDelta(List<PositionWithLayer> removed, List<PositionWithLayer> added) {
         if (!removed.isEmpty()) {
             selectionOperation.remove(removed);
             positionWithLayers.removeAll(removed);
