@@ -62,7 +62,6 @@ public class GarminMapSource6Format extends BabelFormat implements MultipleRoute
     private String makeUnique(String key, Set<String> keys) {
         String unique = key;
         int number = 2;
-        System.out.println("");
         while (keys.contains(unique)) {
             unique = key + "@" + number;
             number++;
