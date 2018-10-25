@@ -47,7 +47,8 @@ public class TrackUpdaterTest {
     private PairWithLayer p1p3 = new PairWithLayer(p1, p3);
     private PairWithLayer p1p4 = new PairWithLayer(p1, p4);
     private PairWithLayer p2p3 = new PairWithLayer(p2, p3);
-    private PairWithLayer p3p2 = new PairWithLayer(p3, p2);
+    private PairWithLayer p2p4 = new PairWithLayer(p2, p4);
+    private PairWithLayer p3p1 = new PairWithLayer(p3, p1);
     private PairWithLayer p3p4 = new PairWithLayer(p3, p4);
 
     @Test
@@ -58,8 +59,8 @@ public class TrackUpdaterTest {
         TrackUpdater trackUpdater = new TrackUpdater(positionsModel, trackOperation);
 
         assertTrue(trackUpdater.getPairWithLayers().isEmpty());
-        verify(trackOperation, never()).add(new ArrayList<PairWithLayer>());
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).add(new ArrayList<>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
     }
 
     @Test
@@ -73,8 +74,8 @@ public class TrackUpdaterTest {
         trackUpdater.handleAdd(0, 0);
 
         assertTrue(trackUpdater.getPairWithLayers().isEmpty());
-        verify(trackOperation, never()).add(new ArrayList<PairWithLayer>());
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).add(new ArrayList<>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
     }
 
     @Test
@@ -90,7 +91,7 @@ public class TrackUpdaterTest {
 
         assertEquals(singletonList(p1p2), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(singletonList(p1p2));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
     }
 
     @Test
@@ -107,7 +108,7 @@ public class TrackUpdaterTest {
 
         assertEquals(asList(p1p2, p2p3), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
     }
 
     @Test
@@ -131,7 +132,7 @@ public class TrackUpdaterTest {
 
         assertEquals(asList(p1p2, p2p3), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(singletonList(p2p3));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
     }
 
     @Test
@@ -148,15 +149,27 @@ public class TrackUpdaterTest {
         assertEquals(singletonList(p1p2), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(singletonList(p1p2));
 
-        when(positionsModel.getPosition(1)).thenReturn(p3);
+        // prepend
+        when(positionsModel.getPosition(0)).thenReturn(p3);
+        when(positionsModel.getPosition(1)).thenReturn(p1);
         when(positionsModel.getPosition(2)).thenReturn(p2);
         when(positionsModel.getRowCount()).thenReturn(3);
 
-        trackUpdater.handleAdd(1, 1);
+        trackUpdater.handleAdd(0, 0);
 
-        assertEquals(asList(p1p3, p3p2), trackUpdater.getPairWithLayers());
-        verify(trackOperation, times(1)).add(asList(p1p3, p3p2));
-        verify(trackOperation, times(1)).remove(singletonList(p1p2));
+        assertEquals(asList(p3p1, p1p2), trackUpdater.getPairWithLayers());
+        verify(trackOperation, times(1)).add(singletonList(p3p1));
+        verify(trackOperation, never()).remove(new ArrayList<>());
+
+        // append
+        when(positionsModel.getPosition(3)).thenReturn(p4);
+        when(positionsModel.getRowCount()).thenReturn(4);
+
+        trackUpdater.handleAdd(3, 3);
+
+        assertEquals(asList(p3p1, p1p2, p2p4), trackUpdater.getPairWithLayers());
+        verify(trackOperation, times(1)).add(singletonList(p2p4));
+        verify(trackOperation, never()).remove(new ArrayList<>());
     }
 
     @Test
@@ -174,7 +187,7 @@ public class TrackUpdaterTest {
 
         assertEquals(asList(p1p2, p2p3, p3p4), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3, p3p4));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
 
         // simulate the removal of p2
         when(positionsModel.getPosition(1)).thenReturn(p3);
@@ -201,7 +214,7 @@ public class TrackUpdaterTest {
 
         assertEquals(asList(p1p2, p2p3, p3p4), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3, p3p4));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
 
         // simulate the removal of p2, p3
         when(positionsModel.getPosition(2)).thenReturn(p4);
@@ -227,13 +240,13 @@ public class TrackUpdaterTest {
 
         assertEquals(asList(p1p2, p2p3), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
 
         trackUpdater.handleRemove(0, 0);
 
         assertEquals(singletonList(p2p3), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).remove(singletonList(p1p2));
-        verify(trackOperation, never()).add(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).add(new ArrayList<>());
     }
 
     @Test
@@ -250,13 +263,13 @@ public class TrackUpdaterTest {
 
         assertEquals(asList(p1p2, p2p3), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
 
         trackUpdater.handleRemove(2, 2);
 
         assertEquals(singletonList(p1p2), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).remove(singletonList(p2p3));
-        verify(trackOperation, never()).add(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).add(new ArrayList<>());
     }
 
     @Test
@@ -272,13 +285,13 @@ public class TrackUpdaterTest {
 
         assertEquals(singletonList(p1p2), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(singletonList(p1p2));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
 
         trackUpdater.handleRemove(1, 1);
 
-        assertEquals(new ArrayList<PairWithLayer>(), trackUpdater.getPairWithLayers());
+        assertEquals(new ArrayList<>(), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).remove(singletonList(p1p2));
-        verify(trackOperation, never()).add(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).add(new ArrayList<>());
     }
 
     @Test
@@ -295,12 +308,12 @@ public class TrackUpdaterTest {
 
         assertEquals(asList(p1p2, p2p3), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
 
         trackUpdater.handleRemove(0, MAX_VALUE);
 
-        assertEquals(new ArrayList<PairWithLayer>(), trackUpdater.getPairWithLayers());
-        verify(trackOperation, never()).add(new ArrayList<PairWithLayer>());
+        assertEquals(new ArrayList<>(), trackUpdater.getPairWithLayers());
+        verify(trackOperation, never()).add(new ArrayList<>());
         verify(trackOperation, times(1)).remove(asList(p2p3, p1p2));
     }
 
@@ -318,14 +331,14 @@ public class TrackUpdaterTest {
 
         assertEquals(asList(p1p2, p2p3), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
 
         trackUpdater.handleUpdate(1, 1);
 
         assertEquals(asList(p1p2, p2p3), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3));
         verify(trackOperation, times(1)).update(asList(p1p2, p2p3));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
     }
 
     @Test
@@ -342,13 +355,13 @@ public class TrackUpdaterTest {
 
         assertEquals(asList(p1p2, p2p3), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
 
         trackUpdater.handleUpdate(0, MAX_VALUE);
 
         assertEquals(asList(p1p2, p2p3), trackUpdater.getPairWithLayers());
         verify(trackOperation, times(1)).add(asList(p1p2, p2p3));
         verify(trackOperation, times(1)).update(asList(p1p2, p2p3));
-        verify(trackOperation, never()).remove(new ArrayList<PairWithLayer>());
+        verify(trackOperation, never()).remove(new ArrayList<>());
     }
 }
