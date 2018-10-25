@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.gui.OSXHelper;
 
 import java.io.File;
 import java.lang.reflect.InvocationHandler;
@@ -35,6 +36,7 @@ import java.util.logging.Logger;
 
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.system.Platform.isJava9OrLater;
+import static slash.navigation.gui.OSXHelper.OSXHandler.*;
 
 /**
  * Creates an application menu for Mac OS X for RouteConverter.
@@ -47,10 +49,10 @@ public class ApplicationMenu {
 
     public void addApplicationMenuItems() {
         try {
-            OSXHandler.setAboutHandler(this, getClass().getDeclaredMethod("about", EventObject.class));
-            OSXHandler.setOpenFilesHandler(this, getClass().getDeclaredMethod("openFiles", EventObject.class));
-            OSXHandler.setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", EventObject.class));
-            OSXHandler.setQuitHandler(this, getClass().getDeclaredMethod("quit", EventObject.class, Object.class));
+            setAboutHandler(this, getClass().getDeclaredMethod("about", EventObject.class));
+            setOpenFilesHandler(this, getClass().getDeclaredMethod("openFiles", EventObject.class));
+            setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", EventObject.class));
+            setQuitHandler(this, getClass().getDeclaredMethod("quit", EventObject.class, Object.class));
         } catch (NoSuchMethodException | SecurityException e) {
             log.warning("Error while adding application menu items: " + getLocalizedMessage(e));
         }
@@ -108,133 +110,5 @@ public class ApplicationMenu {
 
     private void run(String actionName) {
         slash.navigation.gui.Application.getInstance().getContext().getActionManager().run(actionName);
-    }
-
-    /**
-     * A OSXHandler has the name of the EAWT method it intends to listen for (handleAbout, for
-     * example), the Object that will ultimately perform the task, and the Method to be called on
-     * that Object.
-     *
-     * @author Christopher Tipper, Christian Pesch (Java 7, 8 compatibility)
-     * <p>
-     * Based on https://gist.github.com/Manouchehri/5b403eaf5ecd6a8d0cf606b29cfecca0
-     */
-    private static class OSXHandler implements InvocationHandler {
-        private static Object application;
-        Object targetObject;
-        Method targetMethod;
-        private String proxySignature;
-
-        private OSXHandler(String proxySignature, Object target, Method handler) {
-            this.proxySignature = proxySignature;
-            this.targetObject = target;
-            this.targetMethod = handler;
-        }
-
-        @SuppressWarnings("JavaReflectionMemberAccess")
-        private static void initializeApplicationObject() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-            if (application == null) {
-                Class<?> applicationClass = Class.forName("com.apple.eawt.Application");
-                application = applicationClass.getConstructor((Class[]) null).newInstance((Object[]) null);
-            }
-        }
-
-        private static void createProxy(OSXHandler adapter, String handlerClassName, String setMethodName) {
-            try {
-                initializeApplicationObject();
-                Class<?> handlerClass = Class.forName((isJava9OrLater() ? "java.awt.desktop." : "com.apple.eawt.") + handlerClassName);
-                Method setHandlerMethod = application.getClass().getDeclaredMethod(setMethodName, handlerClass);
-                Object osxAdapterProxy = Proxy.newProxyInstance(OSXHandler.class.getClassLoader(), new Class<?>[]{handlerClass}, adapter);
-                setHandlerMethod.invoke(application, osxAdapterProxy);
-            } catch (ClassNotFoundException e) {
-                log.severe("This version of Mac OS X does not support the Apple EAWT. ApplicationEvent handling has been disabled: " + getLocalizedMessage(e));
-            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                log.severe("Mac OS X Adapter could not talk to EAWT: " + getLocalizedMessage(e));
-            }
-        }
-
-        static void setAboutHandler(Object target, Method aboutHandler) {
-            OSXHandler adapter = new OSXHandler("handleAbout", target, aboutHandler) {
-                public void callTarget(Object appleEvent) {
-                    if (appleEvent != null) {
-                        try {
-                            this.targetMethod.invoke(this.targetObject, appleEvent);
-                        } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InvocationTargetException e) {
-                            log.severe("Mac OS X Adapter could not talk to EAWT: " + getLocalizedMessage(e));
-                        }
-                    }
-                }
-            };
-            createProxy(adapter, "AboutHandler", "setAboutHandler");
-        }
-
-        static void setOpenFilesHandler(Object target, Method openFilesHandler) {
-            OSXHandler adapter = new OSXHandler("openFiles", target, openFilesHandler) {
-                public void callTarget(Object appleEvent) {
-                    if (appleEvent != null) {
-                        try {
-                            this.targetMethod.invoke(this.targetObject, appleEvent);
-                        } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InvocationTargetException e) {
-                            log.severe("Mac OS X Adapter could not talk to EAWT: " + getLocalizedMessage(e));
-                        }
-                    }
-                }
-            };
-            createProxy(adapter, "OpenFilesHandler", "setOpenFileHandler");
-        }
-
-        static void setPreferencesHandler(Object target, Method preferencesHandler) {
-            OSXHandler adapter = new OSXHandler("handlePreferences", target, preferencesHandler) {
-                public void callTarget(Object appleEvent) {
-                    if (appleEvent != null) {
-                        try {
-                            this.targetMethod.invoke(this.targetObject, appleEvent);
-                        } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InvocationTargetException e) {
-                            log.severe("Mac OS X Adapter could not talk to EAWT: " + getLocalizedMessage(e));
-                        }
-                    }
-                }
-            };
-            createProxy(adapter, "PreferencesHandler", "setPreferencesHandler");
-        }
-
-        static void setQuitHandler(Object target, Method quitHandler) {
-            OSXHandler adapter = new OSXHandler("handleQuitRequestWith", target, quitHandler) {
-                public void callTarget(Object appleEvent, Object response) {
-                    if (appleEvent != null) {
-                        try {
-                            this.targetMethod.invoke(this.targetObject, appleEvent, response);
-                        } catch (IllegalAccessException | IllegalArgumentException | SecurityException | InvocationTargetException e) {
-                            log.severe("Mac OS X Adapter could not talk to EAWT: " + getLocalizedMessage(e));
-                        }
-                    }
-                }
-            };
-            createProxy(adapter, "QuitHandler", "setQuitHandler");
-        }
-
-
-        private boolean isCorrectMethod(Method method, Object[] args) {
-            return targetMethod != null && proxySignature.equals(method.getName()) && args.length > 0;
-        }
-
-        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            if (isCorrectMethod(method, args)) {
-                if (args.length == 1) {
-                    callTarget(args[0]);
-                } else {
-                    callTarget(args[0], args[1]);
-                }
-            }
-            return null;
-        }
-
-        public void callTarget(Object appleEvent) throws InvocationTargetException, IllegalAccessException {
-            targetMethod.invoke(targetObject, (Object[]) null);
-        }
-
-        public void callTarget(Object appleEvent, Object response) throws InvocationTargetException, IllegalAccessException {
-            targetMethod.invoke(targetObject, (Object[]) response);
-        }
     }
 }

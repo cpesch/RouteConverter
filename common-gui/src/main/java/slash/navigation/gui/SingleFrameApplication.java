@@ -22,20 +22,12 @@ package slash.navigation.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
+import java.awt.event.*;
 import java.net.URL;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.awt.Frame.MAXIMIZED_HORIZ;
-import static java.awt.Frame.MAXIMIZED_VERT;
-import static java.awt.Frame.NORMAL;
+import static java.awt.Frame.*;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.logging.Logger.getLogger;
@@ -43,6 +35,8 @@ import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE;
+import static slash.common.system.Platform.isMac;
+import static slash.navigation.gui.OSXHelper.setDockIconImage;
 
 /**
  * The base of all single frame graphical user interfaces.
@@ -82,7 +76,11 @@ public abstract class SingleFrameApplication extends Application {
         }
 
         frame = new JFrame(frameTitle, gc);
-        frame.setIconImage(loadImage(iconName));
+        Image image = loadImage(iconName);
+        if (isMac())
+            setDockIconImage(image);
+        else
+            frame.setIconImage(image);
         frame.setContentPane(contentPane);
         if (defaultButton != null)
             frame.getRootPane().setDefaultButton(defaultButton);
