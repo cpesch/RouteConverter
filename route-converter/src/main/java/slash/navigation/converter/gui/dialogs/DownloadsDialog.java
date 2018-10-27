@@ -121,10 +121,11 @@ public class DownloadsDialog extends SimpleDialog {
                 return (int) (getSize(d1) - getSize(d2));
             }
         });
-        sorter.setComparator(DATE_COLUMN, new Comparator<Download>() {public int compare(Download d1, Download d2) {
-                if(d1.getLastModified() == null)
+        sorter.setComparator(DATE_COLUMN, new Comparator<Download>() {
+            public int compare(Download d1, Download d2) {
+                if (d1.getLastModified() == null)
                     return -1;
-                if(d2.getLastModified() == null)
+                if (d2.getLastModified() == null)
                     return 1;
                 return d1.getLastModified().getCalendar().compareTo(d2.getLastModified().getCalendar());
             }

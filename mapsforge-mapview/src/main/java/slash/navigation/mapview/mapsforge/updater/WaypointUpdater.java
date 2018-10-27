@@ -44,7 +44,7 @@ public class WaypointUpdater implements EventMapUpdater {
         this.waypointOperation = waypointOperation;
     }
 
-    public void handleAdd(int firstRow, int lastRow) {
+    public synchronized void handleAdd(int firstRow, int lastRow) {
         int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
 
         List<PositionWithLayer> added = new ArrayList<>();
@@ -58,7 +58,7 @@ public class WaypointUpdater implements EventMapUpdater {
             waypointOperation.add(added);
     }
 
-    public void handleUpdate(int firstRow, int lastRow) {
+    public synchronized void handleUpdate(int firstRow, int lastRow) {
         int validLastRow = min(lastRow, positionWithLayers.size() - 1);
 
         List<PositionWithLayer> updated = new ArrayList<>();
@@ -70,7 +70,7 @@ public class WaypointUpdater implements EventMapUpdater {
             waypointOperation.update(updated);
     }
 
-    public void handleRemove(int firstRow, int lastRow) {
+    public synchronized void handleRemove(int firstRow, int lastRow) {
         int validLastRow = min(lastRow, positionWithLayers.size() - 1);
 
         List<PositionWithLayer> removed = new ArrayList<>();
@@ -83,7 +83,7 @@ public class WaypointUpdater implements EventMapUpdater {
             waypointOperation.remove(removed);
     }
 
-    List<PositionWithLayer> getPositionWithLayers() {
+    /*package local for tests*/synchronized List<PositionWithLayer> getPositionWithLayers() {
         return positionWithLayers;
     }
 }

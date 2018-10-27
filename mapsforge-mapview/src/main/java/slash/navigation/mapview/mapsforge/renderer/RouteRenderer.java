@@ -39,9 +39,11 @@ import slash.navigation.routing.RoutingService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.prefs.Preferences;
 
 import static java.lang.Thread.sleep;
+import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asLatLong;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
@@ -90,20 +92,26 @@ public class RouteRenderer {
         }
     }
 
-    public void renderRoute(final List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
-        synchronized (notificationMutex) {
-            this.drawingRoute = true;
-        }
+    private final ExecutorService executor = createSingleThreadExecutor("RouteRenderer");
 
-        try {
-            internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
-        } catch (Throwable t) {
-            mapViewCallback.handleRoutingException(t);
-        } finally {
-            synchronized (notificationMutex) {
-                this.drawingRoute = false;
+    public void renderRoute(final List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
+        executor.execute(new Runnable() {
+            public void run() {
+                synchronized (notificationMutex) {
+                    drawingRoute = true;
+                }
+
+                try {
+                    internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
+                } catch (Throwable t) {
+                    mapViewCallback.handleRoutingException(t);
+                } finally {
+                    synchronized (notificationMutex) {
+                        drawingRoute = false;
+                    }
+                }
             }
-        }
+        });
     }
 
     private void internalRenderRoute(List<PairWithLayer> pairWithLayers, Runnable invokeAfterRenderingRunnable) {
@@ -202,20 +210,18 @@ public class RouteRenderer {
             drawingBeeline = true;
         }
         try {
-            List<PairWithLayer> withLayers = new ArrayList<>();
             for (PairWithLayer pairWithLayer : pairsWithLayer) {
                 if (!pairWithLayer.hasCoordinates())
                     continue;
 
                 Line line = new Line(asLatLong(pairWithLayer.getFirst()), asLatLong(pairWithLayer.getSecond()), ROUTE_DOWNLOADING_PAINT, mapView.getTileSize());
                 pairWithLayer.setLayer(line);
-                withLayers.add(pairWithLayer);
+                mapView.addLayer(line);
 
                 Double distance = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());
                 Long time = pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond());
                 pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, !isEmpty(time) ? time / 1000 : null));
             }
-            mapView.addLayers(withLayers);
         } finally {
             synchronized (notificationMutex) {
                 drawingBeeline = false;

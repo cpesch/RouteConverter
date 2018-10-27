@@ -44,13 +44,14 @@ public class TrackUpdater implements EventMapUpdater {
         this.trackOperation = trackOperation;
     }
 
-    public void handleAdd(int firstRow, int lastRow) {
+    public synchronized void handleAdd(int firstRow, int lastRow) {
         int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
         int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
         int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : validLastRow;
 
         List<PairWithLayer> removed = new ArrayList<>();
-        if (beforeFirstRow < pairWithLayers.size())
+        // do not remove anything if a new position is prepended or appended to the track
+        if (firstRow > 0 && lastRow < pairWithLayers.size())
             removed.add(pairWithLayers.remove(beforeFirstRow));
 
         List<PairWithLayer> added = new ArrayList<>();
@@ -66,7 +67,7 @@ public class TrackUpdater implements EventMapUpdater {
             trackOperation.add(added);
     }
 
-    public void handleUpdate(int firstRow, int lastRow) {
+    public synchronized void handleUpdate(int firstRow, int lastRow) {
         int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
         int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
         int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : validLastRow;
@@ -83,7 +84,7 @@ public class TrackUpdater implements EventMapUpdater {
             trackOperation.update(updated);
     }
 
-    public void handleRemove(int firstRow, int lastRow) {
+    public synchronized void handleRemove(int firstRow, int lastRow) {
         int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
         int validLastRow = min(lastRow, pairWithLayers.size() - 1);
 
@@ -106,7 +107,7 @@ public class TrackUpdater implements EventMapUpdater {
             trackOperation.remove(removed);
     }
 
-    List<PairWithLayer> getPairWithLayers() {
+    /*for tests*/synchronized List<PairWithLayer> getPairWithLayers() {
         return pairWithLayers;
     }
 }

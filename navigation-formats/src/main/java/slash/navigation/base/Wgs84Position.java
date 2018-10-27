@@ -173,7 +173,7 @@ public class Wgs84Position extends BaseNavigationPosition {
         this.satellites = satellites;
     }
 
-    public/* for tests */ Object getOrigin() {
+    public/*for tests*/ Object getOrigin() {
         return origin;
     }
 

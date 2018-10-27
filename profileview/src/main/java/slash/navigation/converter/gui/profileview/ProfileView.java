@@ -188,7 +188,7 @@ public class ProfileView implements PositionsSelectionModel {
         });
     }
 
-    public void setSelectedPositions(int[] selectPositions, boolean replaceSelection) {
+    public synchronized void setSelectedPositions(int[] selectPositions, boolean replaceSelection) {
         if (replaceSelection)
             plot.clearDomainMarkers();
 

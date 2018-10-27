@@ -73,10 +73,7 @@ import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.MapViewListener;
-import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
-import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
-import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
-import slash.navigation.mapview.mapsforge.helpers.MapViewResizer;
+import slash.navigation.mapview.mapsforge.helpers.*;
 import slash.navigation.mapview.mapsforge.lines.Line;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
@@ -105,10 +102,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -124,6 +119,7 @@ import static java.awt.event.KeyEvent.VK_UP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
 import static java.lang.System.currentTimeMillis;
+import static java.util.Collections.singletonList;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
@@ -155,6 +151,9 @@ import static slash.navigation.maps.mapsforge.helpers.MapTransfer.toBoundingBox;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
+import static slash.navigation.mapview.mapsforge.helpers.WithLayerHelper.toLayers;
+import static slash.navigation.mapview.mapsforge.helpers.WithLayerHelper.toPositions;
+import static slash.navigation.mapview.mapsforge.helpers.WithLayerHelper.toPositions2;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
 
 /**
@@ -264,7 +263,7 @@ public class MapsforgeMapView implements MapView {
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                removeLayers(positionWithLayers, true);
+                removeObjectWithLayers(positionWithLayers);
             }
         });
 
@@ -275,16 +274,16 @@ public class MapsforgeMapView implements MapView {
                 internalAdd(pairWithLayers);
             }
 
-            public void update(final List<PairWithLayer> pairWithLayers) {
+            public void update(List<PairWithLayer> pairWithLayers) {
                 internalRemove(pairWithLayers);
                 internalAdd(pairWithLayers);
-                updateSelectionAfterUpdate(pairWithLayers);
+                selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
                 internalRemove(pairWithLayers);
                 fireDistanceAndTime();
-                updateSelectionAfterRemove(pairWithLayers);
+                selectionUpdater.removedPositions(toPositions2(pairWithLayers));
             }
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
@@ -304,7 +303,9 @@ public class MapsforgeMapView implements MapView {
                     pairs.removeAll(pairWithLayers);
                 for (PairWithLayer pairWithLayer : pairWithLayers)
                     pairWithLayer.setDistanceAndTime(null);
-                removeLayers(pairWithLayers, true);
+
+                List<Layer> remove = toLayers(pairWithLayers);
+                removeLayers(remove);
             }
 
             private void fireDistanceAndTime() {
@@ -333,15 +334,16 @@ public class MapsforgeMapView implements MapView {
                 internalAdd(pairWithLayers);
             }
 
-            public void update(final List<PairWithLayer> pairWithLayers) {
-                internalRemove(pairWithLayers);
+            public void update(List<PairWithLayer> pairWithLayers) {
+                List<Layer> remove = toLayers(pairWithLayers);
+                removeLayers(remove);
                 internalAdd(pairWithLayers);
-                updateSelectionAfterUpdate(pairWithLayers);
+                selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
-                internalRemove(pairWithLayers);
-                updateSelectionAfterRemove(pairWithLayers);
+                removeObjectWithLayers(pairWithLayers);
+                selectionUpdater.removedPositions(toPositions2(pairWithLayers));
             }
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
@@ -360,10 +362,6 @@ public class MapsforgeMapView implements MapView {
                     withLayers.add(pair);
                 }
                 addLayers(withLayers);
-            }
-
-            private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                removeLayers(pairWithLayers, true);
             }
         });
 
@@ -386,29 +384,15 @@ public class MapsforgeMapView implements MapView {
             }
 
             public void update(final List<PositionWithLayer> positionWithLayers) {
-                removeLayers(positionWithLayers, false);
-
-                List<NavigationPosition> updated = new ArrayList<>();
-                List<PositionWithLayer> withLayers = new ArrayList<>();
-                for (PositionWithLayer positionWithLayer : positionWithLayers) {
-                    if (!positionWithLayer.hasCoordinates())
-                        return;
-
-                    Marker marker = createMarker(positionWithLayer);
-                    positionWithLayer.setLayer(marker);
-                    withLayers.add(positionWithLayer);
-                    updated.add(positionWithLayer.getPosition());
-                }
-                addLayers(withLayers);
-
-                selectionUpdater.updatedPositions(new ArrayList<>(updated));
+                List<Layer> remove = toLayers(positionWithLayers);
+                removeLayers(remove);
+                add(positionWithLayers);
+                selectionUpdater.updatedPositions(toPositions(positionWithLayers));
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                List<NavigationPosition> removed = new ArrayList<>();
-                for (PositionWithLayer positionWithLayer : positionWithLayers)
-                    removed.add(positionWithLayer.getPosition());
-                removeLayers(positionWithLayers, true);
+                List<NavigationPosition> removed = toPositions(positionWithLayers);
+                removeObjectWithLayers(positionWithLayers);
                 selectionUpdater.removedPositions(removed);
             }
         });
@@ -607,24 +591,6 @@ public class MapsforgeMapView implements MapView {
         File cacheDirectory = new File(getTemporaryDirectory(), encodeUri(cacheId));
         TileCache secondLevelTileCache = new FileSystemTileCache(preferences.getInt(SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE, 2048), cacheDirectory, GRAPHIC_FACTORY);
         return new TwoLevelTileCache(firstLevelTileCache, secondLevelTileCache);
-    }
-
-    private void updateSelectionAfterUpdate(List<PairWithLayer> pairWithLayers) {
-        Set<NavigationPosition> updated = new HashSet<>();
-        for (PairWithLayer pair : pairWithLayers) {
-            updated.add(pair.getFirst());
-            updated.add(pair.getSecond());
-        }
-        selectionUpdater.updatedPositions(new ArrayList<>(updated));
-    }
-
-    private void updateSelectionAfterRemove(List<PairWithLayer> pairWithLayers) {
-        Set<NavigationPosition> removed = new HashSet<>();
-        for (PairWithLayer pair : pairWithLayers) {
-            removed.add(pair.getFirst());
-            removed.add(pair.getSecond());
-        }
-        selectionUpdater.removedPositions(new ArrayList<>(removed));
     }
 
     private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<>();
@@ -871,16 +837,25 @@ public class MapsforgeMapView implements MapView {
         });
     }
 
-    public void removeLayer(final Layer layer) {
+    public void removeLayer(Layer layer) {
+        removeLayers(singletonList(layer));
+    }
+
+    private void removeLayers(final List<Layer> layers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
-                if (!getLayerManager().getLayers().remove(layer))
-                    log.warning("Cannot remove layer " + layer);
+                for (int i = 0, c = layers.size(); i < c; i++) {
+                    Layer layer = layers.get(i);
+                    // redraw only for last removed layer
+                    boolean redraw = i == c - 1;
+                    if (!getLayerManager().getLayers().remove(layer, redraw))
+                        log.warning("Cannot remove layer " + layer);
+                }
             }
         });
     }
 
-    private void removeLayers(final List<? extends ObjectWithLayer> withLayers, final boolean clearLayer) {
+    private void removeObjectWithLayers(final List<? extends ObjectWithLayer> withLayers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 for (int i = 0, c = withLayers.size(); i < c; i++) {
@@ -894,8 +869,7 @@ public class MapsforgeMapView implements MapView {
                     } else
                         log.warning("Could not find layer to remove for " + withLayer);
 
-                    if (clearLayer)
-                        withLayer.setLayer(null);
+                    withLayer.setLayer(null);
                 }
             }
         });
@@ -1110,8 +1084,7 @@ public class MapsforgeMapView implements MapView {
             positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
             int[] rows = new int[]{row};
             positionsSelectionModel.setSelectedPositions(rows, true);
-            // TODO this results in drawing errors
-            // mapViewCallback.complementData(rows, true, true, true, true, false);
+            mapViewCallback.complementData(rows, true, true, true, true, false);
         }
 
         public void run() {
