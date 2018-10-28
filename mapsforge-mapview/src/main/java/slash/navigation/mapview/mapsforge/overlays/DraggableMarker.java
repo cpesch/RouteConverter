@@ -22,6 +22,7 @@ package slash.navigation.mapview.mapsforge.overlays;
 
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.Point;
 import org.mapsforge.map.layer.overlay.Marker;
 import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -51,7 +52,7 @@ public class DraggableMarker extends Marker {
         this.positionWithLayer = positionWithLayer;
     }
 
-    public boolean onTap(LatLong tapLatLong, org.mapsforge.core.model.Point viewPosition, org.mapsforge.core.model.Point tapPoint) {
+    public boolean onTap(LatLong tapLatLong, Point viewPosition, Point tapPoint) {
         return contains(viewPosition, tapPoint);
     }
 
@@ -64,8 +65,12 @@ public class DraggableMarker extends Marker {
 
         invokeLater(new Runnable() {
             public void run() {
+                // TODO add moving complete selection as in BrowserMapView#movePosition
+
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
                         Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
+
+                // TODO add complementData as in BrowserMapView#movePosition
             }
         });
     }

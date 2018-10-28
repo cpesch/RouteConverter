@@ -167,6 +167,7 @@ public abstract class BrowserMapView implements MapView {
     static final String DEBUG_PREFERENCE = "debug";
     private static final String BROWSER_SCALE_FACTOR_PREFERENCE = "browserScaleFactor";
     private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
+    private static final String COMPLEMENT_DATA_PREFERENCE = "complementData";
     private static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
     private static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
@@ -1349,7 +1350,10 @@ public abstract class BrowserMapView implements MapView {
                 synchronized (notificationMutex) {
                     row = positions.indexOf(before) + 1;
                 }
-                complementPositions(row, route);
+
+                int[] rows = asRange(row, row + route.getPositions().size() - 1);
+                if (preferences.getBoolean(COMPLEMENT_DATA_PREFERENCE, false))
+                    mapViewCallback.complementData(rows, true, true, true, false, false);
             }
         });
     }
@@ -1786,17 +1790,12 @@ public abstract class BrowserMapView implements MapView {
         }
     }
 
-    private void complementPositions(int row, BaseRoute route) {
-        int[] rows = asRange(row, row + route.getPositions().size() - 1);
-        // do not complement description since this is limited to 2500 calls/day
-        mapViewCallback.complementData(rows, false, true, true, false, false);
-    }
-
     private void insertPosition(int row, Double longitude, Double latitude) {
         positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
         int[] rows = new int[]{row};
         positionsSelectionModel.setSelectedPositions(rows, true);
-        mapViewCallback.complementData(rows, true, true, true, true, false);
+        if (preferences.getBoolean(COMPLEMENT_DATA_PREFERENCE, false))
+            mapViewCallback.complementData(rows, true, true, true, true, false);
     }
 
     private int getAddRow() {
@@ -1852,7 +1851,7 @@ public abstract class BrowserMapView implements MapView {
             if (cleanElevation)
                 positionsModel.edit(index, new PositionColumnValues(ELEVATION_COLUMN_INDEX, null), false, false);
 
-            if (complementTime || complementElevation)
+            if (preferences.getBoolean(COMPLEMENT_DATA_PREFERENCE, false) && (complementTime || complementElevation))
                 mapViewCallback.complementData(new int[]{index}, false, complementTime, complementElevation, true, false);
         }
 
