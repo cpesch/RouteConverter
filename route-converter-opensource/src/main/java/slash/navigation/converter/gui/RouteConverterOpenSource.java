@@ -203,28 +203,22 @@ public class RouteConverterOpenSource extends RouteConverter {
     }
 
     protected void scanLocalMapsAndThemes() {
-        new Thread(new Runnable() {
-            public void run() {
-                try {
-                    getMapsforgeMapManager().scanMaps();
-                    getMapsforgeMapManager().scanThemes();
+        new Thread(() -> {
+            try {
+                getMapsforgeMapManager().scanMaps();
+                getMapsforgeMapManager().scanThemes();
 
-                    getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"),
-                            Application.getInstance().getContext().getActionManager().get("show-maps"));
-                } catch (final IOException e) {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
-                        }
-                    });
-                }
+                getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"),
+                        Application.getInstance().getContext().getActionManager().get("show-maps"));
+            } catch (final IOException e) {
+                invokeLater(() -> showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE));
+            }
 
-                LocalMap mapAfterScan = getMapsforgeMapManager().getDisplayedMapModel().getItem();
-                if (mapAfterStart != mapAfterScan) {
-                    MapView mapView = getMapView();
-                    if (mapView instanceof MapsforgeMapView)
-                        ((MapsforgeMapView) mapView).updateMapAndThemesAfterDirectoryScanning();
-                }
+            LocalMap mapAfterScan = getMapsforgeMapManager().getDisplayedMapModel().getItem();
+            if (mapAfterStart != mapAfterScan) {
+                MapView mapView = getMapView();
+                if (mapView instanceof MapsforgeMapView)
+                    ((MapsforgeMapView) mapView).updateMapAndThemesAfterDirectoryScanning();
             }
         }, "DirectoryScanner").start();
     }
@@ -233,17 +227,12 @@ public class RouteConverterOpenSource extends RouteConverter {
         getMapsforgeMapManager().scanDatasources();
 
         final File file = new File(getApplicationDirectory("maps/routeconverter"), "world.map");
-        getDownloadManager().executeDownload("RouteConverter Background Map", "http://static.routeconverter.com/maps/world.map", Copy, file, new Runnable() {
-            public void run() {
-                invokeLater(new Runnable() {
-                    public void run() {
-                        MapView mapView = getMapView();
-                        if (mapView instanceof MapsforgeMapView)
-                            ((MapsforgeMapView) mapView).setBackgroundMap(file);
-                    }
-                });
-            }
-        });
+        getDownloadManager().executeDownload("RouteConverter Background Map", "https://static.routeconverter.com/maps/world.map", Copy, file,
+                () -> invokeLater(() -> {
+                    MapView mapView = getMapView();
+                    if (mapView instanceof MapsforgeMapView)
+                        ((MapsforgeMapView) mapView).setBackgroundMap(file);
+                }));
     }
 
     protected void shutdown() {
