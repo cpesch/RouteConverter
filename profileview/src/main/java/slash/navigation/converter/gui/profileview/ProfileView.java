@@ -126,6 +126,7 @@ public class ProfileView implements PositionsSelectionModel {
     }
 
     private JFreeChart createChart(XYDataset dataset) {
+        // JFreeChart chart = ChartFactory.createTimeSeriesChart(null, null, null, dataset, false, true, false);
         JFreeChart chart = ChartFactory.createXYAreaChart(null, null, null, dataset, VERTICAL, false, true, false);
         chart.setBackgroundPaint(new JPanel().getBackground());
         return chart;

@@ -95,6 +95,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
             } else {
                 long[] times = route.getTimesFromStart(firstRow, lastRow);
                 for (int i = firstRow; i < lastRow + 1; i++) {
+                    // XYSeries only works with doubles so it's hard to format the time as a date and time string
                     getSeries().add(formatTime(times[i - firstRow]), formatYValue(getPositions().getPosition(i)), false);
                 }
             }
