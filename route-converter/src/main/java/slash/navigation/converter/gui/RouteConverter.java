@@ -1266,7 +1266,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     protected void initializeServices() {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
-        RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "http://www.routeconverter.com/feedback/"), getApiUrl(), RouteConverter.getInstance().getCredentials());
+        RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "https://www.routeconverter.com/feedback/"), getApiUrl(), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
         updateChecker = new UpdateChecker(routeFeedback);
         DownloadManager downloadManager = new DownloadManager(new File(getApplicationDirectory(), getEditionId() + "-queue.xml"));
@@ -1323,7 +1323,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private void initializeHelp() {
-        getContext().setHelpBrokerUrl(System.getProperty("help", "http://www.routeconverter.com/javahelp.hs"));
+        getContext().setHelpBrokerUrl(System.getProperty("help", "https://www.routeconverter.com/javahelp.hs"));
 
         // delay JavaHelp initialization
         ActionListener actionListener = new ActionListener() {
@@ -1413,7 +1413,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void downloadThirdparty() {
         if (isMac() || isWindows())
             getDownloadManager().executeDownload("GPSBabel for " + getOperationSystem(),
-                    "http://static.routeconverter.com/thirdparty/" + "gpsbabel-" + getOperationSystem() + ".zip",
+                    "https://static.routeconverter.com/thirdparty/" + "gpsbabel-" + getOperationSystem() + ".zip",
                     Extract, getApplicationDirectory("thirdparty/gpsbabel"), null);
     }
 

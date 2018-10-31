@@ -6,7 +6,7 @@
     <version>2.25-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>RouteConverter</name>
-    <url>http://www.routeconverter.com</url>
+    <url>https://www.routeconverter.com</url>
 
     <organization>
         <name>RouteConverter Open Source Project</name>

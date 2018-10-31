@@ -125,7 +125,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
         String northEastBuffer = "new google.maps.LatLng(" + boundingBox.getNorthEast().getLatitude() + "," + boundingBox.getNorthEast().getLongitude() + ")";
         String centerBuffer = "new google.maps.LatLng(" + boundingBox.getCenter().getLatitude() + "," + boundingBox.getCenter().getLongitude() + ")";
 
-        String mapServerApiUrl = "http://maps.google.com";
+        String mapServerApiUrl = "https://maps.google.com";
         String apiKey = APIKeyRegistry.getInstance().getAPIKey("google", "map");
         String output = template.
                 replaceAll("INSERT_MAP_SERVER_API_URL", mapServerApiUrl).

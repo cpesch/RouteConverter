@@ -126,6 +126,7 @@ public class ProfileView implements PositionsSelectionModel {
     }
 
     private JFreeChart createChart(XYDataset dataset) {
+        // JFreeChart chart = ChartFactory.createTimeSeriesChart(null, null, null, dataset, false, true, false);
         JFreeChart chart = ChartFactory.createXYAreaChart(null, null, null, dataset, VERTICAL, false, true, false);
         chart.setBackgroundPaint(new JPanel().getBackground());
         return chart;
@@ -171,17 +172,17 @@ public class ProfileView implements PositionsSelectionModel {
         UnitSystem unitSystem = profileModel.getUnitSystem();
 
         YAxisMode yAxisMode = profileModel.getYAxisMode();
-        String xAxisUnit = yAxisMode.equals(Elevation) ? unitSystem.getElevationName() : unitSystem.getSpeedName();
-        String xAxisKey = yAxisMode.equals(Elevation) ? "elevation-axis" : "speed-axis";
-        plot.getRangeAxis().setLabel(format(getBundle().getString(xAxisKey), xAxisUnit));
+        String yAxisUnit = yAxisMode.equals(Elevation) ? unitSystem.getElevationName() : unitSystem.getSpeedName();
+        String yAxisKey = yAxisMode.equals(Elevation) ? "elevation-axis" : "speed-axis";
+        plot.getRangeAxis().setLabel(format(getBundle().getString(yAxisKey), yAxisUnit));
 
         XAxisMode xAxisMode = profileModel.getXAxisMode();
-        String yAxisUnit = xAxisMode.equals(Distance) ? unitSystem.getDistanceName() : "s";
-        String yAxisKey = xAxisMode.equals(Distance) ? "distance-axis" : "time-axis";
-        plot.getDomainAxis().setLabel(format(getBundle().getString(yAxisKey), yAxisUnit));
+        String xAxisUnit = xAxisMode.equals(Distance) ? unitSystem.getDistanceName() : "s";
+        String xAxisKey = xAxisMode.equals(Distance) ? "distance-axis" : "time-axis";
+        plot.getDomainAxis().setLabel(format(getBundle().getString(xAxisKey), xAxisUnit));
 
         chartPanel.setToolTipGenerator(new StandardXYToolTipGenerator(
-                "{2} " + xAxisUnit + " @ {1} " + yAxisUnit, getIntegerInstance(), getIntegerInstance()) {
+                "{2} " + yAxisUnit + " @ {1} " + xAxisUnit, getIntegerInstance(), getIntegerInstance()) {
             public String generateLabelString(XYDataset dataset, int series, int item) {
                 return super.generateLabelString(dataset, series, item).replaceAll("null", "?");
             }
