@@ -69,7 +69,8 @@ public class MergePositionListMenu {
                         action.dispose();
                         menuItem.setAction(null);
                     }
-                    menu.remove(i);
+                    if (menu.getItemCount() > i)
+                        menu.remove(i);
                 }
                 menu.setEnabled(formatAndRoutesModel.getSize() > 1);
             }
