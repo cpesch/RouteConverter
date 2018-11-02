@@ -51,7 +51,7 @@ public class TrackUpdater implements EventMapUpdater {
 
         List<PairWithLayer> removed = new ArrayList<>();
         // do not remove anything if a new position is prepended or appended to the track
-        if (firstRow > 0 && lastRow < pairWithLayers.size())
+        if (firstRow > 0 && lastRow < positionsModel.getRowCount() - 1)
             removed.add(pairWithLayers.remove(beforeFirstRow));
 
         List<PairWithLayer> added = new ArrayList<>();
