@@ -105,7 +105,7 @@ public abstract class RouteComments {
     }
 
     private static final String POSITION = "Position";
-    private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)" + POSITION + ".*(\\d+)(.*)");
+    private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)(" + POSITION + "|Waypoint).*(\\d+)(.*)");
 
     private static String getPositionDescription(int index) {
         return POSITION + " " + (index + 1);
@@ -128,7 +128,7 @@ public abstract class RouteComments {
             Matcher matcher = POSITION_PATTERN.matcher(position.getDescription());
             if (matcher.matches()) {
                 String prefix = trim(matcher.group(1));
-                String postfix = trim(matcher.group(3));
+                String postfix = trim(matcher.group(4));
                 return (prefix != null ? prefix : "") + getPositionDescription(index) + (postfix != null ? postfix : "");
             }
         }
