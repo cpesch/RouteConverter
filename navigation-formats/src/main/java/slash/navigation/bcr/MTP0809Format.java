@@ -25,9 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.bcr.BcrPosition.STREET_DEFINES_CENTER_NAME;
-import static slash.navigation.bcr.BcrPosition.STREET_DEFINES_CENTER_SYMBOL;
-import static slash.navigation.bcr.BcrPosition.ZIPCODE_DEFINES_NOTHING;
+import static slash.navigation.bcr.BcrPosition.*;
 import static slash.navigation.bcr.BcrSection.STATION_PREFIX;
 
 /**

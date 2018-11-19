@@ -35,7 +35,7 @@ public class ElevationDeltaColumnTableCellRenderer extends AlternatingColorTable
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(RIGHT);
-        Double elevation = Double.class.cast(value);
+        Double elevation = (Double) value;
         label.setText(formatElevation(elevation));
         return label;
     }

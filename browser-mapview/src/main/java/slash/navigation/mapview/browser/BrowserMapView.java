@@ -24,28 +24,11 @@ import net.andreinc.aleph.AlephFormatter;
 import slash.common.helpers.APIKeyRegistry;
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.WaypointType;
-import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.*;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsFormat;
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.DistanceAndTime;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.PositionPair;
-import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.converter.gui.models.ColorModel;
-import slash.navigation.converter.gui.models.FixMapMode;
-import slash.navigation.converter.gui.models.FixMapModeModel;
-import slash.navigation.converter.gui.models.GoogleMapsServerModel;
-import slash.navigation.converter.gui.models.PositionColumnValues;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.common.*;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.tileserver.TileServer;
@@ -55,37 +38,18 @@ import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.MapViewListener;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Random;
-import java.util.ResourceBundle;
-import java.util.StringTokenizer;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
@@ -108,40 +72,20 @@ import static java.util.concurrent.Executors.newCachedThreadPool;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
-import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static javax.swing.event.TableModelEvent.DELETE;
-import static javax.swing.event.TableModelEvent.INSERT;
-import static javax.swing.event.TableModelEvent.UPDATE;
+import static javax.swing.event.TableModelEvent.*;
 import static org.apache.commons.lang.StringEscapeUtils.escapeHtml;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Externalization.extractFile;
-import static slash.common.io.Transfer.UTF8_ENCODING;
-import static slash.common.io.Transfer.ceiling;
-import static slash.common.io.Transfer.decodeUri;
-import static slash.common.io.Transfer.isEmpty;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseInt;
-import static slash.common.io.Transfer.parseInteger;
-import static slash.common.io.Transfer.parseLong;
-import static slash.common.io.Transfer.toDouble;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.base.WaypointType.End;
-import static slash.navigation.base.WaypointType.Start;
-import static slash.navigation.base.WaypointType.Waypoint;
+import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.base.WaypointType.*;
 import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
-import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
@@ -1200,7 +1144,7 @@ public abstract class BrowserMapView implements MapView {
         StringBuilder icons = new StringBuilder();
         for (int i = 0, c = reducedPositions.size(); i < c; i++) {
             NavigationPosition position = reducedPositions.get(i);
-            Wgs84Position wgs84Position = Wgs84Position.class.cast(position);
+            Wgs84Position wgs84Position = (Wgs84Position) position;
             WaypointType waypointType = wgs84Position.getWaypointType();
             if (i == c - 1)
                 waypointType = End;
@@ -1707,11 +1651,7 @@ public abstract class BrowserMapView implements MapView {
     private String trimSpaces(String string) {
         if ("-".equals(string))
             return null;
-        try {
-            return trim(new String(string.getBytes(), UTF8_ENCODING));
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+        return trim(new String(string.getBytes(), StandardCharsets.UTF_8));
     }
 
     private List<String> parsePositionParameters(String parameters) {
@@ -1840,10 +1780,10 @@ public abstract class BrowserMapView implements MapView {
                     continue;
 
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                        Arrays.<Object>asList(position.getLongitude() + diffLongitude, position.getLatitude() + diffLatitude)), false, true);
+                        Arrays.asList(position.getLongitude() + diffLongitude, position.getLatitude() + diffLatitude)), false, true);
             } else {
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                        Arrays.<Object>asList(longitude, latitude)), false, true);
+                        Arrays.asList(longitude, latitude)), false, true);
             }
 
             if (cleanTime)

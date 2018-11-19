@@ -27,15 +27,8 @@ import java.awt.*;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatDate;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
-import static slash.navigation.download.DownloadTableModel.DATE_COLUMN;
-import static slash.navigation.download.DownloadTableModel.DESCRIPTION_COLUMN;
-import static slash.navigation.download.DownloadTableModel.SIZE_COLUMN;
-import static slash.navigation.download.DownloadTableModel.STATE_COLUMN;
-import static slash.navigation.download.State.ChecksumError;
-import static slash.navigation.download.State.Downloading;
-import static slash.navigation.download.State.Failed;
-import static slash.navigation.download.State.Processing;
-import static slash.navigation.download.State.Resuming;
+import static slash.navigation.download.DownloadTableModel.*;
+import static slash.navigation.download.State.*;
 
 /**
  * Renders the table cells of the downloads table.

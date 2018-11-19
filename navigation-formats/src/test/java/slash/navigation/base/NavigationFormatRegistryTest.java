@@ -28,11 +28,7 @@ import slash.navigation.columbus.GarbleColumbusGpsType1Format;
 import slash.navigation.csv.CsvCommaFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
 import slash.navigation.nmea.NmeaFormat;
-import slash.navigation.simple.GarbleHaicomLoggerFormat;
-import slash.navigation.simple.HaicomLoggerFormat;
-import slash.navigation.simple.Iblue747Format;
-import slash.navigation.simple.QstarzQ1000Format;
-import slash.navigation.simple.Route66Format;
+import slash.navigation.simple.*;
 
 import java.util.List;
 

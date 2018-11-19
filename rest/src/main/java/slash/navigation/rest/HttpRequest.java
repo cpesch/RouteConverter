@@ -42,12 +42,8 @@ import slash.navigation.rest.ssl.SSLConnectionManagerFactory;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.InetSocketAddress;
-import java.net.Proxy;
-import java.net.ProxySelector;
-import java.net.SocketAddress;
-import java.net.SocketException;
-import java.net.URI;
+import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -55,19 +51,10 @@ import static java.lang.String.format;
 import static java.net.Proxy.NO_PROXY;
 import static java.net.Proxy.Type.DIRECT;
 import static java.util.Arrays.asList;
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
-import static org.apache.http.HttpStatus.SC_FORBIDDEN;
-import static org.apache.http.HttpStatus.SC_MULTIPLE_CHOICES;
-import static org.apache.http.HttpStatus.SC_NOT_FOUND;
-import static org.apache.http.HttpStatus.SC_NOT_MODIFIED;
-import static org.apache.http.HttpStatus.SC_OK;
-import static org.apache.http.HttpStatus.SC_PARTIAL_CONTENT;
-import static org.apache.http.HttpStatus.SC_PRECONDITION_FAILED;
-import static org.apache.http.HttpStatus.SC_UNAUTHORIZED;
+import static org.apache.http.HttpStatus.*;
 import static org.apache.http.HttpVersion.HTTP_1_1;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.InputOutput.readBytes;
-import static slash.common.io.Transfer.UTF8_ENCODING;
 
 /**
  * Wrapper for a simple HTTP Request.
@@ -189,7 +176,7 @@ public abstract class HttpRequest {
             this.response = execute();
             HttpEntity entity = response.getEntity();
             // HEAD requests don't have a body
-            String body = entity != null ? new String(readBytes(entity.getContent()), UTF8_ENCODING) : null;
+            String body = entity != null ? new String(readBytes(entity.getContent()), StandardCharsets.UTF_8) : null;
             if (!isSuccessful() && body != null)
                 log.warning(format("Body of %s not null: %s", response, body));
             return body;

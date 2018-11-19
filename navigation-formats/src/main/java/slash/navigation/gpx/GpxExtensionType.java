@@ -26,5 +26,5 @@ package slash.navigation.gpx;
  */
 
 enum GpxExtensionType {
-    Garmin3, TrackPoint1, TrackPoint2, Text;
+    Garmin3, TrackPoint1, TrackPoint2, Text
 }

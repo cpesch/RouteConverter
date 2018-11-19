@@ -34,11 +34,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.abs;
 import static java.util.Arrays.asList;
-import static slash.common.io.Transfer.escape;
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteComments.isPositionDescription;
 import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 

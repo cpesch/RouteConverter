@@ -36,14 +36,14 @@ import java.io.File;
 public class PhotoColumnTableCellRenderer extends AlternatingColorTableCellRenderer {
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
-        JLabel label = JLabel.class.cast(super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex));
+        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalTextPosition(RIGHT);
         label.setVerticalTextPosition(CENTER);
         label.setText(RouteConverter.getBundle().getString("no-photo"));
         label.setToolTipText(null);
         label.setIcon(null);
 
-        ImageAndFile imageAndFile = ImageAndFile.class.cast(value);
+        ImageAndFile imageAndFile = (ImageAndFile) value;
         if (imageAndFile != null) {
             File file = imageAndFile.getFile();
             if (file != null) {

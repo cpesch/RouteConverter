@@ -37,7 +37,7 @@ import static slash.navigation.fpl.CountryCode.None;
 public class CountryCodeListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        CountryCode countryCode = CountryCode.class.cast(value);
+        CountryCode countryCode = (CountryCode) value;
         String text;
         if (countryCode != null) {
             if (None.equals(countryCode))

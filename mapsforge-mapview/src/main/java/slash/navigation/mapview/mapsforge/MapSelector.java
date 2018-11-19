@@ -39,10 +39,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.ResourceBundle;
 
-import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
-import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
-import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
+import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.lang.Integer.MAX_VALUE;
 import static java.util.Arrays.asList;

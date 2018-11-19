@@ -35,7 +35,7 @@ public class ThemeImpl extends DownloadableImpl implements Theme {
     }
 
     private ThemeType getThemeType() {
-        return ThemeType.class.cast(getDownloadableType());
+        return (ThemeType) getDownloadableType();
     }
 
     public String getImageUrl() {

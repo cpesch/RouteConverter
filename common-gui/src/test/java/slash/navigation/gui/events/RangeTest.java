@@ -26,10 +26,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertIntArrayEquals;
-import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
-import static slash.navigation.gui.events.Range.asContinuousMonotonicallyDecreasingRanges;
-import static slash.navigation.gui.events.Range.asContinuousMonotonicallyIncreasingRanges;
-import static slash.navigation.gui.events.Range.asRange;
+import static slash.navigation.gui.events.Range.*;
 
 public class RangeTest {
     @Test

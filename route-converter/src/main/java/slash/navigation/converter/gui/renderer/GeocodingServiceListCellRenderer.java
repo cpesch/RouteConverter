@@ -36,8 +36,8 @@ import java.awt.*;
 
 public class GeocodingServiceListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel label = JLabel.class.cast(super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus));
-        GeocodingService service = GeocodingService.class.cast(value);
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        GeocodingService service = (GeocodingService) value;
 
         String text = service.getName();
         if (!service.isDownload())

@@ -21,7 +21,6 @@ package slash.navigation.gpx;
 
 import org.junit.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
-import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormatParser;
 
 import java.io.File;
@@ -30,9 +29,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.InputOutput.readFileToString;
@@ -104,7 +101,7 @@ public class GpxExtensionsIT {
     private File writeRoute(GpxRoute route) throws IOException {
         File target = createTempFile("target", ".gpx");
         NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
-        parser.write(Collections.<BaseRoute>singletonList(route), new Gpx11Format(), target);
+        parser.write(Collections.singletonList(route), new Gpx11Format(), target);
         return target;
     }
 

@@ -29,12 +29,7 @@ import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -42,9 +37,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
-import static slash.common.io.Transfer.UTF8_ENCODING;
-import static slash.common.io.Transfer.isIsoLatin1ButReadWithUtf8;
+import static slash.common.io.Transfer.*;
 
 /**
  * The base of all CSV formats.

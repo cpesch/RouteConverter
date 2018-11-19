@@ -34,9 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.nmn.NavigonCruiserUtil.marshal;
 import static slash.navigation.nmn.NavigonCruiserUtil.unmarshal;
 

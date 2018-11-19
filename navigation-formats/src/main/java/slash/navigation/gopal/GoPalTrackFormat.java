@@ -21,12 +21,7 @@
 package slash.navigation.gopal;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleLineBasedFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.PrintWriter;
@@ -35,19 +30,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.SECOND;
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.parseInteger;
-import static slash.common.io.Transfer.trim;
+import static java.util.Calendar.*;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
-import static slash.navigation.common.NavigationConversion.formatHeadingAsString;
-import static slash.navigation.common.NavigationConversion.formatPositionAsString;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.*;
 
 /**
  * Reads and writes GoPal Track (.trk) files.

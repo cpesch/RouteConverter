@@ -40,9 +40,7 @@ import static java.text.MessageFormat.format;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.feature.client.Feature.getFeature;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForRouteConverter;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForRouteConverterForum;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.*;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**

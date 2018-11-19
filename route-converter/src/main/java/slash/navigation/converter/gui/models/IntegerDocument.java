@@ -78,8 +78,8 @@ public class IntegerDocument extends PlainDocument {
         // create a buffer with a simulated delete
         String content = getText(0, getLength());
         StringBuilder buffer = new StringBuilder();
-        buffer.append(content.substring(0, offs));
-        buffer.append(content.substring(offs + len, content.length()));
+        buffer.append(content, 0, offs);
+        buffer.append(content.substring(offs + len));
 
         // test if buffer would be valid
         if (isValidNumberString(buffer.toString())) {

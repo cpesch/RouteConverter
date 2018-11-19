@@ -29,15 +29,7 @@ import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -51,12 +43,8 @@ import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.io.InputOutput.copyAndClose;
-import static slash.common.system.Platform.isLinux;
-import static slash.common.system.Platform.isMac;
-import static slash.common.system.Platform.isWindows;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.common.system.Platform.*;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 /**
  * The base of all GPSBabel based formats.

@@ -34,7 +34,7 @@ public class RemoteThemeImpl extends RemoteResourceImpl implements RemoteTheme {
     }
 
     public String getImageUrl() {
-        Theme theme = Theme.class.cast(getDownloadable());
+        Theme theme = (Theme) getDownloadable();
         return theme.getImageUrl();
     }
 }

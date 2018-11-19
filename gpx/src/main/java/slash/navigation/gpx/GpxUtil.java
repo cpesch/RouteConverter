@@ -23,23 +23,11 @@ package slash.navigation.gpx;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.namespace.QName;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.io.*;
 
-import static slash.common.helpers.JAXBHelper.newContext;
-import static slash.common.helpers.JAXBHelper.newMarshaller;
-import static slash.common.helpers.JAXBHelper.newUnmarshaller;
+import static slash.common.helpers.JAXBHelper.*;
 
 public class GpxUtil {
     public static final String GPX_10_NAMESPACE_URI = "http://www.topografix.com/GPX/1/0";

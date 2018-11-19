@@ -45,7 +45,7 @@ public class WaypointTypeColumnTableCellEditor extends PositionsTableCellEditor 
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        NavigationPosition position = NavigationPosition.class.cast(value);
+        NavigationPosition position = (NavigationPosition) value;
 
         String key = null;
         if (rowIndex == table.getRowCount() - 1)

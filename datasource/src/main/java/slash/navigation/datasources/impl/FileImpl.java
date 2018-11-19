@@ -38,7 +38,7 @@ public class FileImpl extends DownloadableImpl implements File {
     }
 
     private FileType getFileType() {
-        return FileType.class.cast(getDownloadableType());
+        return (FileType) getDownloadableType();
     }
 
     public BoundingBox getBoundingBox() {

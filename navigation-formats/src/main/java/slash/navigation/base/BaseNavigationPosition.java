@@ -38,13 +38,8 @@ import slash.navigation.tour.TourPosition;
 import java.util.Calendar;
 
 import static java.lang.Double.isNaN;
-import static java.lang.Math.abs;
-import static java.lang.Math.asin;
-import static java.lang.Math.sin;
-import static java.lang.Math.toRadians;
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.YEAR;
+import static java.lang.Math.*;
+import static java.util.Calendar.*;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.common.Bearing.EARTH_RADIUS;

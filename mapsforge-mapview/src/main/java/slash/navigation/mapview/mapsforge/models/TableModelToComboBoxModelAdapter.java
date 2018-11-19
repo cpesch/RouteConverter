@@ -23,22 +23,13 @@ import slash.navigation.maps.item.Item;
 import slash.navigation.maps.item.ItemModel;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
+import javax.swing.event.*;
 import javax.swing.table.TableModel;
 import java.util.HashMap;
 import java.util.Map;
 
-import static javax.swing.event.ListDataEvent.CONTENTS_CHANGED;
-import static javax.swing.event.ListDataEvent.INTERVAL_ADDED;
-import static javax.swing.event.ListDataEvent.INTERVAL_REMOVED;
-import static javax.swing.event.TableModelEvent.DELETE;
-import static javax.swing.event.TableModelEvent.INSERT;
-import static javax.swing.event.TableModelEvent.UPDATE;
+import static javax.swing.event.ListDataEvent.*;
+import static javax.swing.event.TableModelEvent.*;
 
 /**
  * Adapts a {@link TableModel} to a {@link ComboBoxModel}.

@@ -40,11 +40,7 @@ import static org.junit.Assert.assertNotEquals;
 import static slash.common.TestCase.assertEquals;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.getExtension;
-import static slash.navigation.base.NavigationTestCase.ROUTE_PATH;
-import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
-import static slash.navigation.base.NavigationTestCase.TEST_PATH;
-import static slash.navigation.base.NavigationTestCase.assertNotNull;
-import static slash.navigation.base.NavigationTestCase.assertTrue;
+import static slash.navigation.base.NavigationTestCase.*;
 
 public class ReadIT {
     private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());

@@ -21,19 +21,10 @@
 package slash.navigation.columbus;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.WaypointType;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -44,13 +35,7 @@ import static java.lang.Long.parseLong;
 import static java.nio.ByteBuffer.allocate;
 import static java.nio.ByteBuffer.wrap;
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Calendar.DAY_OF_MONTH;
-import static java.util.Calendar.HOUR_OF_DAY;
-import static java.util.Calendar.MILLISECOND;
-import static java.util.Calendar.MINUTE;
-import static java.util.Calendar.MONTH;
-import static java.util.Calendar.SECOND;
-import static java.util.Calendar.YEAR;
+import static java.util.Calendar.*;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -130,8 +115,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
         if (inputStream.read(header) == HEADER_SIZE) {
             ByteBuffer buffer = wrap(header);
             buffer.order(LITTLE_ENDIAN);
-            if (buffer.getShort() == HEADER)
-                return true;
+            return buffer.getShort() == HEADER;
         }
         return false;
     }

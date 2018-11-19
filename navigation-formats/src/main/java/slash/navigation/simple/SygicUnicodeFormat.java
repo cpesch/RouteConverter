@@ -28,9 +28,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 
-import static slash.common.io.Transfer.UTF16LE_ENCODING;
-import static slash.common.io.Transfer.UTF16_ENCODING;
-import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.*;
 
 /**
  * Reads and writes Sygic POI Unicode (.txt) files.

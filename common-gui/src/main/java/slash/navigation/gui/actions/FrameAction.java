@@ -29,9 +29,7 @@ import java.util.ResourceBundle;
 
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
-import static slash.navigation.gui.helpers.WindowHelper.getFrame;
-import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
-import static slash.navigation.gui.helpers.WindowHelper.handleThrowable;
+import static slash.navigation.gui.helpers.WindowHelper.*;
 
 /**
  * An {@link Action} and {@link ActionListener} that starts and stops the wait cursor on the application frame.

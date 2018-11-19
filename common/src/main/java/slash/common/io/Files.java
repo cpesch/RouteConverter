@@ -22,13 +22,7 @@ package slash.common.io;
 
 import slash.common.type.CompactCalendar;
 
-import java.io.EOFException;
-import java.io.File;
-import java.io.FileFilter;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -71,7 +65,7 @@ public class Files {
         int index = name.lastIndexOf(".");
         if (index == -1)
             return "";
-        return name.substring(index, name.length()).toLowerCase();
+        return name.substring(index).toLowerCase();
     }
 
     public static String getExtension(List<URL> urls) {

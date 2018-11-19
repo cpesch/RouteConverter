@@ -21,12 +21,7 @@
 package slash.navigation.itn;
 
 import org.junit.Test;
-import slash.navigation.base.AllNavigationFormatRegistry;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.ParserResult;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.File;

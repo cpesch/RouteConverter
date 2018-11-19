@@ -37,7 +37,7 @@ public class TagStrategyListCellRenderer extends DefaultListCellRenderer {
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        TagStrategy tagStrategy = TagStrategy.class.cast(value);
+        TagStrategy tagStrategy = (TagStrategy) value;
         String text;
         try {
             text = RouteConverter.getBundle().getString("tag-strategy-" + tagStrategy.name().toLowerCase());

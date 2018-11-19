@@ -35,15 +35,8 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static slash.common.TestCase.calendar;
-import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
-import static slash.navigation.base.NavigationTestCase.assertDoubleEquals;
-import static slash.navigation.base.NavigationTestCase.readFile;
-import static slash.navigation.base.NavigationTestCase.readFiles;
-import static slash.navigation.base.NavigationTestCase.readGpxFile;
-import static slash.navigation.base.NavigationTestCase.readSampleTomTomRouteFile;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.NavigationTestCase.*;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 public class TripmasterIT {
     @Test

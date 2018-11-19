@@ -20,13 +20,7 @@
 package slash.navigation.download.tools;
 
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.File;
 import slash.navigation.datasources.Map;
@@ -46,6 +40,7 @@ import slash.navigation.rest.Post;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -56,11 +51,7 @@ import static java.lang.String.format;
 import static java.lang.System.exit;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
-import static slash.common.io.Transfer.UTF8_ENCODING;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.asDatasourceType;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.createFileType;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.createMapType;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.createThemeType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.tools.helpers.DownloadableType.File;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
@@ -217,7 +208,7 @@ public class ScanWebsite extends BaseDownloadTool {
         log.info(format("Adding URIs:%n%s", xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Post request = new Post(dataSourcesUrl, getCredentials());
-        request.addFile("file", xml.getBytes(UTF8_ENCODING));
+        request.addFile("file", xml.getBytes(StandardCharsets.UTF_8));
         request.setAccept(APPLICATION_JSON);
         request.setSocketTimeout(SOCKET_TIMEOUT);
 
@@ -238,7 +229,7 @@ public class ScanWebsite extends BaseDownloadTool {
         log.info(format("Removing URIs:%n%s", xml));
         String dataSourcesUrl = getDataSourcesUrl();
         Delete request = new Delete(dataSourcesUrl, getCredentials());
-        request.addFile("file", xml.getBytes(UTF8_ENCODING));
+        request.addFile("file", xml.getBytes(StandardCharsets.UTF_8));
         request.setAccept(APPLICATION_JSON);
 
         String result = null;

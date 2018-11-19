@@ -62,32 +62,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import static java.awt.Color.black;
-import static java.awt.Color.blue;
-import static java.awt.Color.cyan;
-import static java.awt.Color.darkGray;
-import static java.awt.Color.gray;
-import static java.awt.Color.green;
-import static java.awt.Color.lightGray;
-import static java.awt.Color.magenta;
-import static java.awt.Color.orange;
-import static java.awt.Color.pink;
-import static java.awt.Color.red;
-import static java.awt.Color.white;
-import static java.awt.Color.yellow;
-import static java.awt.Font.BOLD;
-import static java.awt.Font.ITALIC;
-import static java.awt.Font.PLAIN;
-import static javax.swing.text.StyleConstants.Bold;
-import static javax.swing.text.StyleConstants.FontFamily;
-import static javax.swing.text.StyleConstants.FontSize;
-import static javax.swing.text.StyleConstants.Foreground;
-import static javax.swing.text.StyleConstants.Italic;
-import static javax.swing.text.StyleConstants.getFontSize;
-import static javax.swing.text.StyleConstants.isBold;
-import static javax.swing.text.StyleConstants.isItalic;
-import static javax.swing.text.StyleConstants.isSubscript;
-import static javax.swing.text.StyleConstants.isSuperscript;
+import static java.awt.Color.*;
+import static java.awt.Font.*;
+import static javax.swing.text.StyleConstants.*;
 
 /**
  * This class is a lightweight component to be included in HTML content within

@@ -20,11 +20,7 @@
 package slash.navigation.excel;
 
 import org.junit.Test;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationFormatRegistry;
-import slash.navigation.base.ParserResult;
+import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;

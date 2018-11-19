@@ -20,13 +20,7 @@
 package slash.navigation.excel;
 
 import org.junit.Test;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormat;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationFormatRegistry;
-import slash.navigation.base.ParserResult;
+import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,7 +46,7 @@ public class ExcelRowOrderIT {
         File target = createTempFile("target", getExtension(SOURCE));
         parser.write(route, route.getFormat(), target);
 
-        List<NavigationFormat> formats = Arrays.<NavigationFormat>asList(new MicrosoftExcel97Format(), new MicrosoftExcel2008Format());
+        List<NavigationFormat> formats = Arrays.asList(new MicrosoftExcel97Format(), new MicrosoftExcel2008Format());
         ParserResult result = parser.read(target, formats);
         route = result.getTheRoute();
         return route;

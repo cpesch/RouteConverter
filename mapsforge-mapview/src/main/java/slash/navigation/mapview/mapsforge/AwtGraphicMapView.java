@@ -43,9 +43,7 @@ import org.mapsforge.map.view.FrameBuffer;
 
 import java.awt.*;
 
-import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
-import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.clearResourceFileCache;
-import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.clearResourceMemoryCache;
+import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.*;
 
 /**
  * Implementation of a {@link org.mapsforge.map.view.MapView} {@link Container}.

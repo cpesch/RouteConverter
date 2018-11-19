@@ -25,18 +25,13 @@ package slash.navigation.common;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.floor;
-import static java.lang.Math.rint;
+import static java.lang.Math.*;
 import static java.lang.String.format;
 import static java.util.Locale.ENGLISH;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.roundFraction;
 import static slash.navigation.common.NavigationConversion.formatDouble;
-import static slash.navigation.common.Orientation.East;
-import static slash.navigation.common.Orientation.North;
-import static slash.navigation.common.Orientation.South;
-import static slash.navigation.common.Orientation.West;
+import static slash.navigation.common.Orientation.*;
 
 /**
  * Provides unit conversion functionality.

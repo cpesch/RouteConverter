@@ -22,11 +22,7 @@ package slash.navigation.mapview;
 
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.models.CharacteristicsModel;
-import slash.navigation.converter.gui.models.ColorModel;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsSelectionModel;
-import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.models.BooleanModel;
 
 import java.awt.*;

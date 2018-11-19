@@ -32,11 +32,7 @@ import slash.navigation.routes.Route;
 import java.io.IOException;
 
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.navigation.routes.remote.RemoteCatalog.CATEGORY_URI;
 import static slash.navigation.routes.remote.RemoteCatalog.ROUTE_URI;
 

@@ -34,9 +34,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.isEmpty;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.parseDate;
 
 /**
@@ -458,7 +456,7 @@ public abstract class RouteComments {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
                 String city = trim(matcher.group(3));
                 if (city != null && city.startsWith(": "))
-                    city = trim(city.substring(2, city.length()));
+                    city = trim(city.substring(2));
                 String reason = trim(matcher.group(2));
                 if (reason == null)
                     reason = city;
@@ -477,7 +475,7 @@ public abstract class RouteComments {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
                 String city = trim(matcher.group(2));
                 if (city != null && city.startsWith(": "))
-                    city = trim(city.substring(2, city.length()));
+                    city = trim(city.substring(2));
                 tomTomPosition.setCity(city);
                 tomTomPosition.setReason(city);
             }
@@ -495,7 +493,7 @@ public abstract class RouteComments {
                 TomTomPosition tomTomPosition = (TomTomPosition) position;
                 String city = trim(matcher.group(5));
                 if (city != null && city.startsWith(": "))
-                    city = trim(city.substring(2, city.length()));
+                    city = trim(city.substring(2));
                 String reason = trim(matcher.group(2));
                 if (city == null)
                     city = reason;

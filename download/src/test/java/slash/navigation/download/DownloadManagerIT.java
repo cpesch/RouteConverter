@@ -29,36 +29,20 @@ import slash.navigation.rest.Head;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static java.io.File.createTempFile;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.InputOutput.readFileToString;
 import static slash.common.type.CompactCalendar.fromMillis;
-import static slash.navigation.download.Action.Copy;
-import static slash.navigation.download.Action.Extract;
-import static slash.navigation.download.Action.Flatten;
-import static slash.navigation.download.Action.Head;
+import static slash.navigation.download.Action.*;
 import static slash.navigation.download.DownloadManager.WAIT_TIMEOUT;
-import static slash.navigation.download.State.ChecksumError;
-import static slash.navigation.download.State.Downloading;
-import static slash.navigation.download.State.Failed;
-import static slash.navigation.download.State.NotModified;
-import static slash.navigation.download.State.Processing;
-import static slash.navigation.download.State.Succeeded;
+import static slash.navigation.download.State.*;
 
 public class DownloadManagerIT {
     private static final Logger log = Logger.getLogger(DownloadManagerIT.class.getName());

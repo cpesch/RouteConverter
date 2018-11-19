@@ -20,11 +20,7 @@
 
 package slash.navigation.fpl;
 
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.WaypointType;
-import slash.navigation.base.XmlNavigationFormat;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.fpl.binding.FlightPlan;
 import slash.navigation.fpl.binding.ObjectFactory;

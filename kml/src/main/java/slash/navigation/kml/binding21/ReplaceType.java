@@ -76,7 +76,7 @@ public class ReplaceType {
      *     
      */
     public void setFeature(JAXBElement<? extends FeatureType> value) {
-        this.feature = ((JAXBElement<? extends FeatureType> ) value);
+        this.feature = value;
     }
 
 }

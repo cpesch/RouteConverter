@@ -4,11 +4,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
-import static slash.common.type.HexadecimalNumber.decodeBytes;
-import static slash.common.type.HexadecimalNumber.decodeInt;
-import static slash.common.type.HexadecimalNumber.encodeByte;
-import static slash.common.type.HexadecimalNumber.encodeBytes;
-import static slash.common.type.HexadecimalNumber.encodeInt;
+import static slash.common.type.HexadecimalNumber.*;
 
 public class HexadecimalNumberTest {
     @Test

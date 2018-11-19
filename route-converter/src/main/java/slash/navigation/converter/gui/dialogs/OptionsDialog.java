@@ -37,19 +37,7 @@ import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
 import slash.navigation.converter.gui.models.FixMapMode;
-import slash.navigation.converter.gui.renderer.DegreeFormatListCellRenderer;
-import slash.navigation.converter.gui.renderer.ElevationServiceListCellRenderer;
-import slash.navigation.converter.gui.renderer.FixMapModeListCellRenderer;
-import slash.navigation.converter.gui.renderer.GeocodingServiceListCellRenderer;
-import slash.navigation.converter.gui.renderer.GoogleMapsServerListCellRenderer;
-import slash.navigation.converter.gui.renderer.LocaleListCellRenderer;
-import slash.navigation.converter.gui.renderer.MapViewListCellRenderer;
-import slash.navigation.converter.gui.renderer.NumberPatternListCellRenderer;
-import slash.navigation.converter.gui.renderer.NumberingStrategyListCellRenderer;
-import slash.navigation.converter.gui.renderer.RoutingServiceListCellRenderer;
-import slash.navigation.converter.gui.renderer.TimeZoneAndIdListCellRenderer;
-import slash.navigation.converter.gui.renderer.TravelModeListCellRenderer;
-import slash.navigation.converter.gui.renderer.UnitSystemListCellRenderer;
+import slash.navigation.converter.gui.renderer.*;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.googlemaps.GoogleMapsServer;
@@ -68,76 +56,32 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.util.Arrays.asList;
-import static java.util.Locale.CHINA;
-import static java.util.Locale.FRANCE;
-import static java.util.Locale.GERMANY;
-import static java.util.Locale.ITALY;
-import static java.util.Locale.JAPAN;
-import static java.util.Locale.ROOT;
-import static java.util.Locale.US;
+import static java.util.Locale.*;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JFileChooser.APPROVE_OPTION;
-import static javax.swing.JFileChooser.DIRECTORIES_ONLY;
-import static javax.swing.JFileChooser.FILES_ONLY;
+import static javax.swing.JFileChooser.*;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.helpers.LocaleHelper.ARABIA;
-import static slash.common.helpers.LocaleHelper.CROATIA;
-import static slash.common.helpers.LocaleHelper.CZECH;
-import static slash.common.helpers.LocaleHelper.DENMARK;
-import static slash.common.helpers.LocaleHelper.NEDERLANDS;
-import static slash.common.helpers.LocaleHelper.NORWAY_BOKMAL;
-import static slash.common.helpers.LocaleHelper.POLAND;
-import static slash.common.helpers.LocaleHelper.PORTUGAL;
-import static slash.common.helpers.LocaleHelper.RUSSIA;
-import static slash.common.helpers.LocaleHelper.SERBIA;
-import static slash.common.helpers.LocaleHelper.SLOVAKIA;
-import static slash.common.helpers.LocaleHelper.SPAIN;
-import static slash.common.helpers.LocaleHelper.UKRAINE;
+import static slash.common.helpers.LocaleHelper.*;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.common.DegreeFormat.Degrees;
-import static slash.navigation.common.DegreeFormat.Degrees_Minutes;
-import static slash.navigation.common.DegreeFormat.Degrees_Minutes_Seconds;
-import static slash.navigation.common.NumberPattern.Description_Only;
-import static slash.navigation.common.NumberPattern.Number_Directly_Followed_By_Description;
-import static slash.navigation.common.NumberPattern.Number_Only;
-import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
+import static slash.navigation.common.DegreeFormat.*;
+import static slash.navigation.common.NumberPattern.*;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.common.NumberingStrategy.Relative_Position_In_Current_Selection;
-import static slash.navigation.common.UnitSystem.Metric;
-import static slash.navigation.common.UnitSystem.Nautic;
-import static slash.navigation.common.UnitSystem.Statute;
-import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
-import static slash.navigation.converter.gui.RouteConverter.getBundle;
-import static slash.navigation.converter.gui.RouteConverter.getPreferences;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForGeonamesUserName;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForGoogleApiKey;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForThunderforestApiKey;
-import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
-import static slash.navigation.converter.gui.models.FixMapMode.No;
-import static slash.navigation.converter.gui.models.FixMapMode.Yes;
-import static slash.navigation.googlemaps.GoogleMapsServer.China;
-import static slash.navigation.googlemaps.GoogleMapsServer.Ditu;
-import static slash.navigation.googlemaps.GoogleMapsServer.International;
-import static slash.navigation.googlemaps.GoogleMapsServer.Uzbekistan;
+import static slash.navigation.common.UnitSystem.*;
+import static slash.navigation.converter.gui.RouteConverter.*;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.*;
+import static slash.navigation.converter.gui.models.FixMapMode.*;
+import static slash.navigation.googlemaps.GoogleMapsServer.*;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
@@ -230,7 +174,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                MapViewImplementation mapView = MapViewImplementation.class.cast(e.getItem());
+                MapViewImplementation mapView = (MapViewImplementation) e.getItem();
                 r.setMapView(mapView);
                 handleMapServiceUpdate();
             }
@@ -298,7 +242,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                GoogleMapsServer googleMapsServer = GoogleMapsServer.class.cast(e.getItem());
+                GoogleMapsServer googleMapsServer = (GoogleMapsServer) e.getItem();
                 r.getGoogleMapsServerModel().setGoogleMapsServer(googleMapsServer);
             }
         });
@@ -314,7 +258,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                FixMapMode fixMapMode = FixMapMode.class.cast(e.getItem());
+                FixMapMode fixMapMode = (FixMapMode) e.getItem();
                 r.getFixMapModeModel().setFixMapMode(fixMapMode);
             }
         });
@@ -446,7 +390,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                RoutingService service = RoutingService.class.cast(e.getItem());
+                RoutingService service = (RoutingService) e.getItem();
                 r.getRoutingServiceFacade().setRoutingService(service);
                 handleRoutingServiceUpdate();
             }
@@ -512,7 +456,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                NumberPattern numberPattern = NumberPattern.class.cast(e.getItem());
+                NumberPattern numberPattern = (NumberPattern) e.getItem();
                 r.setNumberPatternPreference(numberPattern);
             }
         });
@@ -528,7 +472,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                NumberingStrategy numberingStrategy = NumberingStrategy.class.cast(e.getItem());
+                NumberingStrategy numberingStrategy = (NumberingStrategy) e.getItem();
                 r.setNumberingStrategyPreference(numberingStrategy);
             }
         });
@@ -545,7 +489,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                ElevationService service = ElevationService.class.cast(e.getItem());
+                ElevationService service = (ElevationService) e.getItem();
                 r.getElevationServiceFacade().setElevationService(service);
                 handleElevationServiceUpdate();
             }
@@ -586,7 +530,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                GeocodingService service = GeocodingService.class.cast(e.getItem());
+                GeocodingService service = (GeocodingService) e.getItem();
                 r.getGeocodingServiceFacade().setGeocodingService(service);
             }
         });
@@ -602,7 +546,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                UnitSystem unitSystem = UnitSystem.class.cast(e.getItem());
+                UnitSystem unitSystem = (UnitSystem) e.getItem();
                 r.getUnitSystemModel().setUnitSystem(unitSystem);
             }
         });
@@ -618,7 +562,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                DegreeFormat degreeFormat = DegreeFormat.class.cast(e.getItem());
+                DegreeFormat degreeFormat = (DegreeFormat) e.getItem();
                 r.getUnitSystemModel().setDegreeFormat(degreeFormat);
             }
         });
@@ -633,7 +577,7 @@ public class OptionsDialog extends SimpleDialog {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                TimeZoneAndId timeZoneAndId = TimeZoneAndId.class.cast(e.getItem());
+                TimeZoneAndId timeZoneAndId = (TimeZoneAndId) e.getItem();
                 r.getTimeZone().setTimeZone(timeZoneAndId.getTimeZone());
             }
         });

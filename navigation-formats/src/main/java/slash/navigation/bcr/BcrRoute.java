@@ -21,11 +21,7 @@
 package slash.navigation.bcr;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.SimpleRoute;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 import slash.navigation.csv.CsvFormat;
 import slash.navigation.csv.CsvPosition;
 import slash.navigation.csv.CsvRoute;
@@ -60,13 +56,7 @@ import java.util.List;
 import java.util.Set;
 
 import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.bcr.BcrFormat.CLIENT_TITLE;
-import static slash.navigation.bcr.BcrFormat.COORDINATES_TITLE;
-import static slash.navigation.bcr.BcrFormat.DESCRIPTION;
-import static slash.navigation.bcr.BcrFormat.DESCRIPTION_LINE_COUNT;
-import static slash.navigation.bcr.BcrFormat.DESCRIPTION_TITLE;
-import static slash.navigation.bcr.BcrFormat.ROUTE_NAME;
-import static slash.navigation.bcr.BcrFormat.ROUTE_TITLE;
+import static slash.navigation.bcr.BcrFormat.*;
 
 /**
  * A Map &amp; Guide Tourenplaner Route (.bcr) route.

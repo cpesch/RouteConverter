@@ -28,10 +28,7 @@ import slash.navigation.download.FileAndChecksum;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -40,9 +37,7 @@ import static java.lang.String.format;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.navigation.download.Action.Copy;
-import static slash.navigation.download.Action.Extract;
-import static slash.navigation.download.Action.Flatten;
+import static slash.navigation.download.Action.*;
 
 /**
  * Encapsulates access to the download of the DataSource XMLs.

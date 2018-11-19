@@ -32,9 +32,7 @@ import static java.awt.Cursor.WAIT_CURSOR;
 import static java.awt.dnd.DragSource.DefaultMoveDrop;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
-import static slash.common.system.Platform.isLinux;
-import static slash.common.system.Platform.isMac;
-import static slash.common.system.Platform.isWindows;
+import static slash.common.system.Platform.*;
 
 /**
  * Helpers used throughout the UI

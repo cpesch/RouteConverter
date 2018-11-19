@@ -11,8 +11,5 @@ package slash.navigation.kml.binding22;
 import javax.xml.bind.annotation.XmlNs;
 
 import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
-import static slash.navigation.kml.KmlUtil.ATOM_2005_NAMESPACE_URI;
-import static slash.navigation.kml.KmlUtil.KML_22_EXT_NAMESPACE_URI;
-import static slash.navigation.kml.KmlUtil.KML_22_NAMESPACE_URI;
-import static slash.navigation.kml.KmlUtil.XAL_20_NAMESPACE_URI;
+import static slash.navigation.kml.KmlUtil.*;
 

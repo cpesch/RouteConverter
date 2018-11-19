@@ -27,9 +27,7 @@ import org.mapsforge.core.model.Point;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 
-import static org.mapsforge.core.util.MercatorProjection.getMapSize;
-import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
-import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
+import static org.mapsforge.core.util.MercatorProjection.*;
 
 /**
  * A line between two {@link LatLong}s on {@link MapsforgeMapView}

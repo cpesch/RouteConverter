@@ -19,24 +19,11 @@
 */
 package slash.navigation.download.queue;
 
-import slash.navigation.download.Action;
-import slash.navigation.download.Checksum;
-import slash.navigation.download.Download;
-import slash.navigation.download.FileAndChecksum;
-import slash.navigation.download.State;
-import slash.navigation.download.queue.binding.ChecksumType;
-import slash.navigation.download.queue.binding.DownloadType;
-import slash.navigation.download.queue.binding.DownloadableType;
-import slash.navigation.download.queue.binding.FragmentType;
-import slash.navigation.download.queue.binding.ObjectFactory;
-import slash.navigation.download.queue.binding.QueueType;
+import slash.navigation.download.*;
+import slash.navigation.download.queue.binding.*;
 
 import javax.xml.bind.JAXBException;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 

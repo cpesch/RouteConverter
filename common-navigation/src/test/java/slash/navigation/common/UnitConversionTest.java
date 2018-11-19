@@ -26,25 +26,8 @@ import org.junit.Test;
 
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.assertEquals;
-import static slash.navigation.common.Orientation.East;
-import static slash.navigation.common.Orientation.North;
-import static slash.navigation.common.Orientation.South;
-import static slash.navigation.common.Orientation.West;
-import static slash.navigation.common.UnitConversion.ddmm2latitude;
-import static slash.navigation.common.UnitConversion.ddmm2longitude;
-import static slash.navigation.common.UnitConversion.ddmmss2latitude;
-import static slash.navigation.common.UnitConversion.ddmmss2longitude;
-import static slash.navigation.common.UnitConversion.feetToMeters;
-import static slash.navigation.common.UnitConversion.kiloMeterToStatuteMiles;
-import static slash.navigation.common.UnitConversion.kmhToMs;
-import static slash.navigation.common.UnitConversion.latitude2ddmm;
-import static slash.navigation.common.UnitConversion.latitude2ddmmss;
-import static slash.navigation.common.UnitConversion.latitude2nmea;
-import static slash.navigation.common.UnitConversion.longitude2ddmm;
-import static slash.navigation.common.UnitConversion.longitude2ddmmss;
-import static slash.navigation.common.UnitConversion.longitude2nmea;
-import static slash.navigation.common.UnitConversion.msToKmh;
-import static slash.navigation.common.UnitConversion.nmea2degrees;
+import static slash.navigation.common.Orientation.*;
+import static slash.navigation.common.UnitConversion.*;
 
 public class UnitConversionTest {
     @Test

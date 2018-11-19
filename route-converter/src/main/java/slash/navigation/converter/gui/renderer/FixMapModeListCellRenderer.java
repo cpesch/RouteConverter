@@ -35,8 +35,8 @@ import java.util.MissingResourceException;
 
 public class FixMapModeListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel label = JLabel.class.cast(super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus));
-        FixMapMode fixMapMode = FixMapMode.class.cast(value);
+        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+        FixMapMode fixMapMode = (FixMapMode) value;
         String text;
         try {
             text = RouteConverter.getBundle().getString("fix-map-mode-" + fixMapMode.name().toLowerCase());

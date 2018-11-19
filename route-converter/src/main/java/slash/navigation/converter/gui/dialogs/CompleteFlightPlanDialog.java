@@ -37,12 +37,7 @@ import slash.navigation.gui.actions.DialogAction;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
@@ -53,16 +48,9 @@ import static java.text.MessageFormat.format;
 import static javax.swing.BorderFactory.createLineBorder;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static slash.navigation.base.WaypointType.Airport;
-import static slash.navigation.base.WaypointType.Intersection;
-import static slash.navigation.base.WaypointType.NonDirectionalBeacon;
-import static slash.navigation.base.WaypointType.UserWaypoint;
-import static slash.navigation.base.WaypointType.VHFOmnidirectionalRadioRange;
+import static slash.navigation.base.WaypointType.*;
 import static slash.navigation.fpl.CountryCode.None;
-import static slash.navigation.fpl.GarminFlightPlanFormat.createValidDescription;
-import static slash.navigation.fpl.GarminFlightPlanFormat.createValidIdentifier;
-import static slash.navigation.fpl.GarminFlightPlanFormat.hasValidDescription;
-import static slash.navigation.fpl.GarminFlightPlanFormat.hasValidIdentifier;
+import static slash.navigation.fpl.GarminFlightPlanFormat.*;
 
 /**
  * Dialog for completing information for a Garmin Flight Plan.

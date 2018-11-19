@@ -28,9 +28,7 @@ import slash.navigation.maps.tileserver.TileServer;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import static javax.swing.event.TableModelEvent.DELETE;
-import static javax.swing.event.TableModelEvent.INSERT;
-import static javax.swing.event.TableModelEvent.UPDATE;
+import static javax.swing.event.TableModelEvent.*;
 
 /**
  * Converts {@link TileServer} to {@link LocalMap}

@@ -8,17 +8,7 @@
 
 package slash.navigation.kml.binding22;
 
-import slash.navigation.kml.binding22gx.AbstractTourPrimitiveType;
-import slash.navigation.kml.binding22gx.AnimatedUpdateType;
-import slash.navigation.kml.binding22gx.FlyToType;
-import slash.navigation.kml.binding22gx.LatLonQuadType;
-import slash.navigation.kml.binding22gx.MultiTrackType;
-import slash.navigation.kml.binding22gx.PlaylistType;
-import slash.navigation.kml.binding22gx.SoundCueType;
-import slash.navigation.kml.binding22gx.TourControlType;
-import slash.navigation.kml.binding22gx.TourType;
-import slash.navigation.kml.binding22gx.TrackType;
-import slash.navigation.kml.binding22gx.WaitType;
+import slash.navigation.kml.binding22gx.*;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlAccessType;

@@ -27,16 +27,10 @@ import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
-import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
-import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
-import static slash.navigation.columbus.ColumbusV1000Device.setTimeZone;
-import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.*;
 
 public class ColumbusGpsType2FormatTest {
     private ColumbusGpsType2Format format = new ColumbusGpsType2Format();

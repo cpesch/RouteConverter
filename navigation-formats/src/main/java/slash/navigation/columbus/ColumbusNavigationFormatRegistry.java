@@ -22,12 +22,7 @@ package slash.navigation.columbus;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.gpx.GpxFormat;
-import slash.navigation.kml.Igo8RouteFormat;
-import slash.navigation.kml.Kml20Format;
-import slash.navigation.kml.Kml21Format;
-import slash.navigation.kml.Kml22BetaFormat;
-import slash.navigation.kml.Kml22Format;
-import slash.navigation.kml.KmzFormat;
+import slash.navigation.kml.*;
 import slash.navigation.nmea.NmeaFormat;
 
 /**

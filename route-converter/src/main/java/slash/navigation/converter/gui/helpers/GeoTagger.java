@@ -20,11 +20,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.ParserResult;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -66,9 +62,7 @@ import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Tagged_Photo_In_Subdirectory;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
-import static slash.navigation.photo.TagState.NotTaggable;
-import static slash.navigation.photo.TagState.Taggable;
-import static slash.navigation.photo.TagState.Tagged;
+import static slash.navigation.photo.TagState.*;
 
 /**
  * Helps to tag photos with GPS data.
@@ -352,7 +346,7 @@ public class GeoTagger {
             position.setTagState(Tagged);
 
             if (closestPositionForTagging instanceof Wgs84Position) {
-                Wgs84Position wgs84Position = Wgs84Position.class.cast(closestPositionForTagging);
+                Wgs84Position wgs84Position = (Wgs84Position) closestPositionForTagging;
                 wgs84Position.setDescription(source.getAbsolutePath());
                 wgs84Position.setWaypointType(Photo);
                 wgs84Position.setOrigin(source);
@@ -384,7 +378,7 @@ public class GeoTagger {
                 if (!(navigationPosition instanceof PhotoPosition))
                     return false;
 
-                PhotoPosition position = PhotoPosition.class.cast(navigationPosition);
+                PhotoPosition position = (PhotoPosition) navigationPosition;
                 if (position.getTagState().equals(Tagged))
                     return false;
 
@@ -412,7 +406,7 @@ public class GeoTagger {
                     if (!(navigationPosition instanceof PhotoPosition))
                         return false;
 
-                    PhotoPosition position = PhotoPosition.class.cast(navigationPosition);
+                    PhotoPosition position = (PhotoPosition) navigationPosition;
                     if (!position.getTagState().equals(Taggable))
                         return false;
 

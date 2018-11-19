@@ -24,12 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import static slash.navigation.excel.ColumnType.Description;
-import static slash.navigation.excel.ColumnType.Elevation;
-import static slash.navigation.excel.ColumnType.Latitude;
-import static slash.navigation.excel.ColumnType.Longitude;
-import static slash.navigation.excel.ColumnType.Speed;
-import static slash.navigation.excel.ColumnType.Time;
+import static slash.navigation.excel.ColumnType.*;
 
 /**
  * Maps column types to indexes.

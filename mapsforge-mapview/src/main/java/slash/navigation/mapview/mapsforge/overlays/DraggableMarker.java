@@ -68,7 +68,7 @@ public class DraggableMarker extends Marker {
                 // TODO add moving complete selection as in BrowserMapView#movePosition
 
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                        Arrays.<Object>asList(latLong.longitude, latLong.latitude)), true, true);
+                        Arrays.asList(latLong.longitude, latLong.latitude)), true, true);
 
                 // TODO add complementData as in BrowserMapView#movePosition
             }

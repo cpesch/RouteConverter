@@ -30,10 +30,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
 
 import static java.awt.event.KeyEvent.VK_CONTEXT_MENU;
-import static java.awt.event.MouseEvent.BUTTON1_MASK;
-import static java.awt.event.MouseEvent.MOUSE_CLICKED;
-import static java.awt.event.MouseEvent.MOUSE_PRESSED;
-import static java.awt.event.MouseEvent.MOUSE_RELEASED;
+import static java.awt.event.MouseEvent.*;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;

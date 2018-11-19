@@ -23,11 +23,7 @@ package slash.navigation.gui.actions;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.helpers.WindowHelper;
 
-import javax.help.CSH;
-import javax.help.DefaultHelpBroker;
-import javax.help.HelpBroker;
-import javax.help.HelpSet;
-import javax.help.HelpSetException;
+import javax.help.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;

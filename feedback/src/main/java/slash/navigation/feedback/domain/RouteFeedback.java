@@ -20,16 +20,8 @@
 
 package slash.navigation.feedback.domain;
 
-import slash.navigation.datasources.DataSource;
-import slash.navigation.datasources.Downloadable;
-import slash.navigation.datasources.File;
-import slash.navigation.datasources.Fragment;
-import slash.navigation.datasources.Theme;
-import slash.navigation.datasources.binding.DatasourceType;
-import slash.navigation.datasources.binding.FileType;
-import slash.navigation.datasources.binding.FragmentType;
-import slash.navigation.datasources.binding.MapType;
-import slash.navigation.datasources.binding.ThemeType;
+import slash.navigation.datasources.*;
+import slash.navigation.datasources.binding.*;
 import slash.navigation.datasources.helpers.DataSourcesUtil;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.rest.Credentials;
@@ -40,6 +32,7 @@ import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -49,16 +42,9 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
-import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;
 import static slash.navigation.datasources.DataSourceManager.V1;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.asChecksums;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.asDatasourceType;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.asMetaDataComparablePath;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.createFileType;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.createFragmentType;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.createMapType;
-import static slash.navigation.datasources.helpers.DataSourcesUtil.createThemeType;
+import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
 /**
@@ -236,7 +222,7 @@ public class RouteFeedback {
         String dataSourcesUrl = getDataSourcesUrl(dataSource.getId());
         Put request = new Put(dataSourcesUrl, credentials);
         request.setAccept(APPLICATION_JSON);
-        request.addFile("file", xml.getBytes(UTF8_ENCODING));
+        request.addFile("file", xml.getBytes(StandardCharsets.UTF_8));
 
         String result = request.executeAsString();
         if (request.isUnAuthorized())

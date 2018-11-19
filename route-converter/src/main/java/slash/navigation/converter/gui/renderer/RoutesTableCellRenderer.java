@@ -25,9 +25,7 @@ import slash.navigation.routes.impl.RouteModel;
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.converter.gui.helpers.RouteHelper.formatCreator;
-import static slash.navigation.converter.gui.helpers.RouteHelper.formatDescription;
-import static slash.navigation.converter.gui.helpers.RouteHelper.formatUrl;
+import static slash.navigation.converter.gui.helpers.RouteHelper.*;
 
 /**
  * Renders the table cells of the routes table.

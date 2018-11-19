@@ -37,13 +37,7 @@ import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.helpers.PhotosTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.PhotosTablePopupMenu;
 import slash.navigation.converter.gui.helpers.TagStrategy;
-import slash.navigation.converter.gui.models.FilteringPositionsModel;
-import slash.navigation.converter.gui.models.OverlayPositionsModel;
-import slash.navigation.converter.gui.models.PhotoTagStateToJLabelAdapter;
-import slash.navigation.converter.gui.models.PhotosTableColumnModel;
-import slash.navigation.converter.gui.models.PositionTableColumn;
-import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.models.PositionsModelImpl;
+import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.predicates.TagStatePhotoPredicate;
 import slash.navigation.converter.gui.predicates.TautologyPredicate;
 import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
@@ -81,14 +75,10 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Tagged_Photo_In_Subdirectory;
 import static slash.navigation.converter.gui.models.LocalActionConstants.PHOTOS;
-import static slash.navigation.converter.gui.models.PositionColumns.EXIF_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.GPS_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.calculateRowHeight;
-import static slash.navigation.photo.TagState.NotTaggable;
-import static slash.navigation.photo.TagState.Taggable;
-import static slash.navigation.photo.TagState.Tagged;
+import static slash.navigation.photo.TagState.*;
 
 /**
  * The Photos panel of the route converter user interface.
@@ -196,7 +186,7 @@ public class PhotoPanel implements PanelInTab {
                     return;
                 }
                 @SuppressWarnings("unchecked")
-                FilterPredicate<NavigationPosition> filterPredicate = FilterPredicate.class.cast(e.getItem());
+                FilterPredicate<NavigationPosition> filterPredicate = (FilterPredicate) e.getItem();
                 setFilterPredicatePreference(filterPredicate);
                 filteredPhotosModel.setFilterPredicate(filterPredicate);
             }
@@ -211,7 +201,7 @@ public class PhotoPanel implements PanelInTab {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
                     return;
-                TimeZoneAndId timeZoneAndId = TimeZoneAndId.class.cast(e.getItem());
+                TimeZoneAndId timeZoneAndId = (TimeZoneAndId) e.getItem();
                 r.getPhotoTimeZone().setTimeZone(timeZoneAndId.getTimeZone());
             }
         });
@@ -233,7 +223,7 @@ public class PhotoPanel implements PanelInTab {
                 if (e.getStateChange() != SELECTED) {
                     return;
                 }
-                TagStrategy tagStrategy = TagStrategy.class.cast(e.getItem());
+                TagStrategy tagStrategy = (TagStrategy) e.getItem();
                 r.setTagStrategyPreference(tagStrategy);
             }
         });

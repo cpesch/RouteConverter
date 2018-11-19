@@ -21,13 +21,9 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.OSXHelper;
 
 import java.io.File;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.EventObject;

@@ -32,11 +32,7 @@ import slash.navigation.routes.remote.binding.FileType;
 import java.io.IOException;
 
 import static java.lang.System.currentTimeMillis;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.navigation.routes.remote.RemoteCatalog.CATEGORY_URI;
 
 public class RemoteCategoryIT extends BaseRemoteCatalogTest {

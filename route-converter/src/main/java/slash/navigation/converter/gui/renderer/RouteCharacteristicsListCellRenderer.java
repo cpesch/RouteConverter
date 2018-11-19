@@ -37,7 +37,7 @@ public class RouteCharacteristicsListCellRenderer extends DefaultListCellRendere
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        RouteCharacteristics characteristics = RouteCharacteristics.class.cast(value);
+        RouteCharacteristics characteristics = (RouteCharacteristics) value;
         String text = "?";
         if(characteristics != null) {
             try {

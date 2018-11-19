@@ -21,13 +21,7 @@
 package slash.navigation.converter.cmdline;
 
 import slash.common.system.Version;
-import slash.navigation.base.BaseNavigationFormat;
-import slash.navigation.base.CmdLineNavigationFormatRegistry;
-import slash.navigation.base.MultipleRoutesFormat;
-import slash.navigation.base.NavigationFormat;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.NavigationFormatRegistry;
-import slash.navigation.base.ParserResult;
+import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,12 +31,8 @@ import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
 import static java.lang.System.exit;
-import static slash.common.io.Files.absolutize;
-import static slash.common.io.Files.createTargetFiles;
-import static slash.common.io.Files.removeExtension;
-import static slash.common.system.Platform.getJava;
-import static slash.common.system.Platform.getMaximumMemory;
-import static slash.common.system.Platform.getPlatform;
+import static slash.common.io.Files.*;
+import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 

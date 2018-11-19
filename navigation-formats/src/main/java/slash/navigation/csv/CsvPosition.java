@@ -32,12 +32,7 @@ import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.common.type.ISO8601.parseDate;
-import static slash.navigation.csv.ColumnType.Description;
-import static slash.navigation.csv.ColumnType.Elevation;
-import static slash.navigation.csv.ColumnType.Latitude;
-import static slash.navigation.csv.ColumnType.Longitude;
-import static slash.navigation.csv.ColumnType.Speed;
-import static slash.navigation.csv.ColumnType.Time;
+import static slash.navigation.csv.ColumnType.*;
 
 /**
  * A position from CSV (.csv) files.
@@ -54,7 +49,7 @@ public class CsvPosition extends BaseNavigationPosition {
     }
 
     public CsvPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
-        this(new LinkedHashMap<String, String>());
+        this(new LinkedHashMap<>());
         setLongitude(longitude);
         setLatitude(latitude);
         setElevation(elevation);

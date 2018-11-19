@@ -27,11 +27,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.EventListener;
-import java.util.EventObject;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -117,7 +113,7 @@ public abstract class Application {
     private static void setParentBundle(ResourceBundle bundle, ResourceBundle parentBundle) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
         Field field = ResourceBundle.class.getDeclaredField("parent");
         field.setAccessible(true);
-        ResourceBundle bundlesParentOrNull = ResourceBundle.class.cast(field.get(bundle));
+        ResourceBundle bundlesParentOrNull = (ResourceBundle) field.get(bundle);
 
         Method method = ResourceBundle.class.getDeclaredMethod("setParent", ResourceBundle.class);
         method.setAccessible(true);

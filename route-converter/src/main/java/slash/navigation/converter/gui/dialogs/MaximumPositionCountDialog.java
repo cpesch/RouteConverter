@@ -39,10 +39,7 @@ import static java.text.MessageFormat.format;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Files.shortenPath;
-import static slash.navigation.converter.gui.dialogs.MaximumPositionCountDialog.Result.Cancel;
-import static slash.navigation.converter.gui.dialogs.MaximumPositionCountDialog.Result.Ignore;
-import static slash.navigation.converter.gui.dialogs.MaximumPositionCountDialog.Result.Reduce;
-import static slash.navigation.converter.gui.dialogs.MaximumPositionCountDialog.Result.Split;
+import static slash.navigation.converter.gui.dialogs.MaximumPositionCountDialog.Result.*;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**

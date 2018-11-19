@@ -60,12 +60,7 @@ import static slash.navigation.base.RouteComments.getNumberedPosition;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatElevation;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatSpeed;
-import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.SPEED_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
 /**
@@ -252,7 +247,7 @@ public class PositionAugmenter {
                         if (coordinates != null)
                             positionsModel.edit(index,
                                     new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                                            Arrays.<Object>asList(coordinates.getLongitude(), coordinates.getLatitude())), false, true);
+                                            Arrays.asList(coordinates.getLongitude(), coordinates.getLatitude())), false, true);
                         return coordinates != null;
                     }
 

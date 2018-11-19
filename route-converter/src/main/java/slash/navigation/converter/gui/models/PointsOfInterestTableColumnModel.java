@@ -21,25 +21,12 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.comparators.DescriptionComparator;
-import slash.navigation.converter.gui.renderer.DateTimeColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.ElevationColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor;
-import slash.navigation.converter.gui.renderer.PhotoColumnTableCellRenderer;
-import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
-import slash.navigation.converter.gui.renderer.WaypointTypeColumnTableCellEditor;
+import slash.navigation.converter.gui.renderer.*;
 
 import javax.swing.table.TableColumnModel;
 
 import static slash.navigation.converter.gui.models.LocalActionConstants.POINTS_OF_INTEREST;
-import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.ELEVATION_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.WAYPOINT_TYPE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**

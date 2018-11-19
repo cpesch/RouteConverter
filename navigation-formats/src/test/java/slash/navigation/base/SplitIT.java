@@ -29,9 +29,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.navigation.base.BaseNavigationFormat.UNLIMITED_MAXIMUM_POSITION_COUNT;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;

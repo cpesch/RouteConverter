@@ -22,40 +22,14 @@ package slash.navigation.converter.gui;
 
 import org.junit.Test;
 
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static java.util.Locale.CHINA;
-import static java.util.Locale.FRANCE;
-import static java.util.Locale.GERMANY;
-import static java.util.Locale.ITALY;
-import static java.util.Locale.JAPAN;
-import static java.util.Locale.ROOT;
-import static java.util.Locale.US;
+import static java.util.Locale.*;
 import static org.junit.Assert.assertTrue;
-import static slash.common.helpers.LocaleHelper.ARABIA;
-import static slash.common.helpers.LocaleHelper.CROATIA;
-import static slash.common.helpers.LocaleHelper.CZECH;
-import static slash.common.helpers.LocaleHelper.DENMARK;
-import static slash.common.helpers.LocaleHelper.NEDERLANDS;
-import static slash.common.helpers.LocaleHelper.NORWAY_BOKMAL;
-import static slash.common.helpers.LocaleHelper.POLAND;
-import static slash.common.helpers.LocaleHelper.PORTUGAL;
-import static slash.common.helpers.LocaleHelper.RUSSIA;
-import static slash.common.helpers.LocaleHelper.SERBIA;
-import static slash.common.helpers.LocaleHelper.SLOVAKIA;
-import static slash.common.helpers.LocaleHelper.SPAIN;
-import static slash.common.helpers.LocaleHelper.UKRAINE;
+import static slash.common.helpers.LocaleHelper.*;
 
 public class ResourceBundleTest {
     private static final Logger log = Logger.getLogger(ResourceBundleTest.class.getName());

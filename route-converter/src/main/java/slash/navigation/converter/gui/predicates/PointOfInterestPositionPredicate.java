@@ -27,10 +27,7 @@ import slash.navigation.common.NavigationPosition;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static slash.navigation.base.WaypointType.Photo;
-import static slash.navigation.base.WaypointType.PointOfInterestC;
-import static slash.navigation.base.WaypointType.PointOfInterestD;
-import static slash.navigation.base.WaypointType.Voice;
+import static slash.navigation.base.WaypointType.*;
 
 /**
  * Includes {@link Wgs84Position}s which have a {@link WaypointType} from {@link #POINTS_OF_INTEREST_WAYPOINT_TYPES}.
@@ -47,7 +44,7 @@ public class PointOfInterestPositionPredicate implements FilterPredicate<Navigat
     public boolean shouldInclude(NavigationPosition position) {
         if (!(position instanceof Wgs84Position))
             return false;
-        Wgs84Position poiPosition = Wgs84Position.class.cast(position);
+        Wgs84Position poiPosition = (Wgs84Position) position;
         return POINTS_OF_INTEREST_WAYPOINT_TYPES.contains(poiPosition.getWaypointType());
     }
 }

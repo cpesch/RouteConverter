@@ -30,10 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
-import static slash.navigation.bcr.BcrFormat.CLIENT_TITLE;
-import static slash.navigation.bcr.BcrFormat.COORDINATES_TITLE;
-import static slash.navigation.bcr.BcrFormat.DESCRIPTION_TITLE;
-import static slash.navigation.bcr.BcrFormat.ROUTE_TITLE;
+import static slash.navigation.bcr.BcrFormat.*;
 
 public class BcrReadWriteRoundtripIT {
     private void checkUnprocessedValue(BcrRoute route, String section, String name, String value) {

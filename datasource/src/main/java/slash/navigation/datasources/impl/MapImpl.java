@@ -38,7 +38,7 @@ public class MapImpl extends DownloadableImpl implements Map {
     }
 
     private MapType getMapType() {
-        return MapType.class.cast(getDownloadableType());
+        return (MapType) getDownloadableType();
     }
 
     public BoundingBox getBoundingBox() {

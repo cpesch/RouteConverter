@@ -28,9 +28,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static slash.common.helpers.JAXBHelper.newContext;
-import static slash.common.helpers.JAXBHelper.newMarshaller;
-import static slash.common.helpers.JAXBHelper.newUnmarshaller;
+import static slash.common.helpers.JAXBHelper.*;
 
 public class TcxUtil {
     public static final String TCX_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v1";

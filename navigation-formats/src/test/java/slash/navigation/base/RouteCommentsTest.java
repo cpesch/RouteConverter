@@ -31,12 +31,8 @@ import java.util.List;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.assertEquals;
 import static slash.common.io.Transfer.formatIntAsString;
-import static slash.navigation.base.RouteComments.commentPositions;
-import static slash.navigation.base.RouteComments.getNumberedPosition;
-import static slash.navigation.base.RouteComments.getRouteName;
+import static slash.navigation.base.RouteComments.*;
 import static slash.navigation.common.NumberPattern.*;
-import static slash.navigation.common.NumberPattern.Number_Directly_Followed_By_Description;
-import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 
 public class RouteCommentsTest {
     private BcrRoute route = new BcrRoute(new MTP0607Format(), "r", null, new ArrayList<>());

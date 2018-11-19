@@ -50,11 +50,7 @@ import slash.navigation.routing.RoutingService;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
-import javax.swing.table.TableModel;
-import javax.swing.table.TableRowSorter;
+import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -295,7 +291,7 @@ public class MapsDialog extends SimpleDialog {
         checkBoxDownloadElevationData.setEnabled(elevationServiceDownloadSize > 0);
         checkBoxDownloadElevationData.setSelected(checkBoxDownloadElevationData.isEnabled());
         String elevationServiceName = elevationService instanceof AutomaticElevationService ?
-                AutomaticElevationService.class.cast(elevationService).getPreferredDownloadName() :
+                ((AutomaticElevationService) elevationService).getPreferredDownloadName() :
                 elevationService.getName();
         checkBoxDownloadElevationData.setText(format(RouteConverter.getBundle().getString("download-elevation-data"),
                 formatSize(elevationServiceDownloadSize), elevationServiceName));

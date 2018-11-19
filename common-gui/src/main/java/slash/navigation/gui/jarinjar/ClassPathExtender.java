@@ -36,7 +36,7 @@ import static slash.navigation.gui.jarinjar.JarInJarURLStreamHandler.JAR_IN_JAR_
  *         and http://stackoverflow.com/questions/1010919/adding-files-to-java-classpath-at-runtime
  */
 public class ClassPathExtender {
-    private final ClassLoader classLoader = ClassLoader.class.cast(ClassPathExtender.class.getClassLoader());
+    private final ClassLoader classLoader = ClassPathExtender.class.getClassLoader();
 
     public ClassPathExtender() {
         URL.setURLStreamHandlerFactory(new JarInJarURLStreamHandlerFactory(classLoader));

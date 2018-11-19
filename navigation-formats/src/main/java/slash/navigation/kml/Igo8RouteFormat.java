@@ -21,12 +21,7 @@
 package slash.navigation.kml;
 
 import slash.navigation.base.ParserContext;
-import slash.navigation.kml.binding22.DocumentType;
-import slash.navigation.kml.binding22.FolderType;
-import slash.navigation.kml.binding22.KmlType;
-import slash.navigation.kml.binding22.ObjectFactory;
-import slash.navigation.kml.binding22.PlacemarkType;
-import slash.navigation.kml.binding22.PointType;
+import slash.navigation.kml.binding22.*;
 
 import java.io.IOException;
 import java.io.OutputStream;

@@ -25,12 +25,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
 
-import static org.apache.http.HttpHeaders.ACCEPT_RANGES;
-import static org.apache.http.HttpHeaders.CONTENT_LENGTH;
-import static org.apache.http.HttpHeaders.ETAG;
-import static org.apache.http.HttpHeaders.IF_MODIFIED_SINCE;
-import static org.apache.http.HttpHeaders.IF_NONE_MATCH;
-import static org.apache.http.HttpHeaders.LAST_MODIFIED;
+import static org.apache.http.HttpHeaders.*;
 import static slash.common.io.Transfer.parseLong;
 import static slash.navigation.rest.RFC2616.formatDate;
 import static slash.navigation.rest.RFC2616.parseDate;

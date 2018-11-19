@@ -40,7 +40,7 @@ import java.util.MissingResourceException;
 public class MapViewListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        MapViewImplementation mapView = MapViewImplementation.class.cast(value);
+        MapViewImplementation mapView = (MapViewImplementation) value;
         String text;
         try {
             text = RouteConverter.getBundle().getString("map-view-" + mapView.name().toLowerCase());

@@ -23,24 +23,7 @@ package slash.navigation.tcx;
 import slash.common.io.Transfer;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.tcx.binding1.ActivityLapT;
-import slash.navigation.tcx.binding1.CourseFolderT;
-import slash.navigation.tcx.binding1.CourseLapT;
-import slash.navigation.tcx.binding1.CoursePointT;
-import slash.navigation.tcx.binding1.CourseT;
-import slash.navigation.tcx.binding1.CoursesT;
-import slash.navigation.tcx.binding1.HistoryFolderT;
-import slash.navigation.tcx.binding1.HistoryT;
-import slash.navigation.tcx.binding1.IntensityT;
-import slash.navigation.tcx.binding1.MultiSportFolderT;
-import slash.navigation.tcx.binding1.MultiSportSessionT;
-import slash.navigation.tcx.binding1.NextSportT;
-import slash.navigation.tcx.binding1.ObjectFactory;
-import slash.navigation.tcx.binding1.PositionT;
-import slash.navigation.tcx.binding1.RunT;
-import slash.navigation.tcx.binding1.TrackT;
-import slash.navigation.tcx.binding1.TrackpointT;
-import slash.navigation.tcx.binding1.TrainingCenterDatabaseT;
+import slash.navigation.tcx.binding1.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -53,9 +36,7 @@ import java.util.Set;
 
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseXMLTime;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.tcx.TcxUtil.marshal1;
 import static slash.navigation.tcx.TcxUtil.unmarshal1;
 

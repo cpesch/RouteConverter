@@ -34,9 +34,7 @@ import java.io.IOException;
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.createChecksumType;
 

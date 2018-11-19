@@ -20,18 +20,10 @@
 
 package slash.common.io;
 
-import java.io.ByteArrayOutputStream;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 
 import static org.apache.commons.io.IOUtils.copyLarge;
-import static slash.common.io.Transfer.UTF8_ENCODING;
 
 /**
  * As a pipe reads from input and writes to output.
@@ -78,6 +70,6 @@ public class InputOutput {
     }
 
     public static String readFileToString(File file) throws IOException {
-        return new String(readBytes(new FileInputStream(file)), UTF8_ENCODING);
+        return new String(readBytes(new FileInputStream(file)), StandardCharsets.UTF_8);
     }
 }

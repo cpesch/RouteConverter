@@ -27,9 +27,7 @@ import slash.navigation.converter.gui.renderer.PositionsTableHeaderRenderer;
 import javax.swing.table.TableColumnModel;
 
 import static slash.navigation.converter.gui.models.LocalActionConstants.PHOTOS;
-import static slash.navigation.converter.gui.models.PositionColumns.EXIF_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.GPS_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**

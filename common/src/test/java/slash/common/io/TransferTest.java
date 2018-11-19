@@ -25,16 +25,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.common.io.Transfer.ceiling;
-import static slash.common.io.Transfer.decodeUri;
-import static slash.common.io.Transfer.encodeFileName;
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.formatDuration;
-import static slash.common.io.Transfer.formatIntAsString;
-import static slash.common.io.Transfer.parseDouble;
-import static slash.common.io.Transfer.roundFraction;
-import static slash.common.io.Transfer.toLettersAndNumbers;
-import static slash.common.io.Transfer.widthInDigits;
+import static slash.common.io.Transfer.*;
 
 public class TransferTest {
     @Test

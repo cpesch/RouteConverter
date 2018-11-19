@@ -78,7 +78,7 @@ public class PlacemarkType
      *     
      */
     public void setGeometry(JAXBElement<? extends GeometryType> value) {
-        this.geometry = ((JAXBElement<? extends GeometryType> ) value);
+        this.geometry = value;
     }
 
 }

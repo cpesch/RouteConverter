@@ -76,7 +76,7 @@ public class MapViewCallbackOpenSourceImpl extends MapViewCallbackImpl implement
 
     public void handleRoutingException(Throwable t) {
         if (t instanceof OutOfMemoryError)
-            handleOutOfMemoryError(OutOfMemoryError.class.cast(t));
+            handleOutOfMemoryError((OutOfMemoryError) t);
         else {
             log.severe("Cannot route position list: " + getLocalizedMessage(t));
             showMessageDialog(getFrame(), format(getBundle().getString("cannot-route-position-list"), t),

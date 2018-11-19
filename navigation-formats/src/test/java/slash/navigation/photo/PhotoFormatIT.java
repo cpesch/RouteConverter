@@ -22,11 +22,7 @@ package slash.navigation.photo;
 
 import org.apache.commons.imaging.common.RationalNumber;
 import org.junit.Test;
-import slash.navigation.base.AllNavigationFormatRegistry;
-import slash.navigation.base.BaseRoute;
-import slash.navigation.base.NavigationFormatParser;
-import slash.navigation.base.ParserResult;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,9 +34,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static slash.common.TestCase.assertCalendarEquals;
-import static slash.common.TestCase.assertDoubleEquals;
-import static slash.common.TestCase.calendar;
+import static slash.common.TestCase.*;
 import static slash.common.io.InputOutput.copyAndClose;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 

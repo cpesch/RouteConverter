@@ -43,7 +43,7 @@ public class TagStatePhotoPredicate implements FilterPredicate<NavigationPositio
     public boolean shouldInclude(NavigationPosition position) {
         if (!(position instanceof PhotoPosition))
             return false;
-        PhotoPosition photoPosition = PhotoPosition.class.cast(position);
+        PhotoPosition photoPosition = (PhotoPosition) position;
         return photoPosition.getTagState().equals(tagState);
     }
 }

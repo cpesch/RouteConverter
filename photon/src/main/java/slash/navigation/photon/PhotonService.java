@@ -23,11 +23,7 @@ package slash.navigation.photon;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.geojson.Feature;
-import org.geojson.FeatureCollection;
-import org.geojson.GeoJsonObject;
-import org.geojson.LngLatAlt;
-import org.geojson.Point;
+import org.geojson.*;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.GeocodingService;
@@ -95,7 +91,7 @@ public class PhotonService implements GeocodingService {
             if (!(geometry instanceof Point))
                 continue;
 
-            Point point = Point.class.cast(geometry);
+            Point point = (Point) geometry;
             LngLatAlt lngLatAlt = point.getCoordinates();
             String type = feature.getProperty("osm_key");
             result.add(new SimpleNavigationPosition(lngLatAlt.getLongitude(), lngLatAlt.getLatitude(), null,

@@ -21,11 +21,7 @@
 package slash.navigation.simple;
 
 import slash.common.helpers.APIKeyRegistry;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 
@@ -33,13 +29,12 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 /**
  * Writes a Web Page (*.html).
@@ -83,7 +78,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
-        String template = new String(readBytes(getClass().getResourceAsStream("webpage.html")), UTF8_ENCODING);
+        String template = new String(readBytes(getClass().getResourceAsStream("webpage.html")), StandardCharsets.UTF_8);
         List<Wgs84Position> positions = route.getPositions();
 
         StringBuilder routeBuffer = new StringBuilder();

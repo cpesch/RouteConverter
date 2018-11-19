@@ -29,15 +29,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.MessageFormat;
 
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatDate;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatElevation;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatSpeed;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
-import static slash.navigation.photo.TagState.NotTaggable;
-import static slash.navigation.photo.TagState.Taggable;
-import static slash.navigation.photo.TagState.Tagged;
+import static slash.navigation.converter.gui.helpers.PositionHelper.*;
+import static slash.navigation.photo.TagState.*;
 
 /**
  * Renders the GPS column of the photos table.
@@ -47,8 +40,8 @@ import static slash.navigation.photo.TagState.Tagged;
 
 public class GpsColumnTableCellRenderer extends AlternatingColorTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
-        JLabel label = JLabel.class.cast(super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex));
-        PhotoPosition position = PhotoPosition.class.cast(value);
+        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
+        PhotoPosition position = (PhotoPosition) value;
         TagState tagState = position.getTagState();
 
         String text = "?";

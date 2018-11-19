@@ -20,18 +20,8 @@
 
 package slash.navigation.fit;
 
-import com.garmin.fit.CoursePointMesgListener;
-import com.garmin.fit.Decode;
-import com.garmin.fit.FitRuntimeException;
-import com.garmin.fit.GpsMetadataMesgListener;
-import com.garmin.fit.MesgBroadcaster;
-import com.garmin.fit.RecordMesgListener;
-import com.garmin.fit.SegmentPointMesgListener;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import com.garmin.fit.*;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.BufferedReader;

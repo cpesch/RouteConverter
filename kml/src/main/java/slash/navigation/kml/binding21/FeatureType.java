@@ -9,13 +9,7 @@
 package slash.navigation.kml.binding21;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -317,7 +311,7 @@ public abstract class FeatureType
      *     
      */
     public void setTimePrimitive(JAXBElement<? extends TimePrimitiveType> value) {
-        this.timePrimitive = ((JAXBElement<? extends TimePrimitiveType> ) value);
+        this.timePrimitive = value;
     }
 
     /**

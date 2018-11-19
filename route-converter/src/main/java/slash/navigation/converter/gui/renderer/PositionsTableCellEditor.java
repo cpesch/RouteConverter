@@ -44,7 +44,7 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(alignment);
-        NavigationPosition position = NavigationPosition.class.cast(value);
+        NavigationPosition position = (NavigationPosition) value;
         formatCell(label, position);
         return label;
     }
@@ -85,7 +85,7 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
     }
 
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        NavigationPosition position = NavigationPosition.class.cast(value);
+        NavigationPosition position = (NavigationPosition) value;
         Object editedValue = extractValue(position);
         return editor.getTableCellEditorComponent(table, editedValue, isSelected, row, column);
     }

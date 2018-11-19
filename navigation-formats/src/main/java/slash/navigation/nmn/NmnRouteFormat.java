@@ -20,22 +20,12 @@
 
 package slash.navigation.nmn;
 
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.base.SimpleFormat;
-import slash.navigation.base.Wgs84Position;
-import slash.navigation.base.Wgs84Route;
+import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +33,6 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.toMixedCase;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -177,11 +166,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             byte[] text = new byte[count];
             for (int i = 0; i < text.length; i++)
                 text[i] = byteBuffer.get();
-            try {
-                return toMixedCase(new String(text, UTF8_ENCODING));
-            } catch (UnsupportedEncodingException e) {
-                return "?";
-            }
+            return toMixedCase(new String(text, StandardCharsets.UTF_8));
         }
         return "";
     }
@@ -523,7 +508,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-    private byte[] encodePoint(Wgs84Position position, int positionNo, String mapName) throws UnsupportedEncodingException {
+    private byte[] encodePoint(Wgs84Position position, int positionNo, String mapName) {
         // Die Route besteht aus einem Punkt der mehrere weitere Unterpunktbeschreibungen hat.
         // Im Navigongerät werden dort weitere Informationen wie übergeorgnete Stadt, Land, usw-
         // gespeichert. Diese Informationen liegen nicht vor und werden daher auch nicht
@@ -553,7 +538,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         byteBuffer.putInt(4); // starttag
         int positionStarttag = byteBuffer.position(); // save position to fill the bytelength at the end
         byteBuffer.putLong(0); // length of following data. filled at the end
-        byte[] description = position.getDescription().getBytes(UTF8_ENCODING);
+        byte[] description = position.getDescription().getBytes(StandardCharsets.UTF_8);
         byteBuffer.putInt(description.length);
         byteBuffer.put(description);
         byteBuffer.putInt(0); //this 4 bytes only if startag = 4 
@@ -583,7 +568,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         //bytelength
         byteBuffer.putLong(0); //filled at the end
         byteBuffer.putInt(mapName.length()); //textlänge
-        byteBuffer.put(mapName.getBytes(UTF8_ENCODING)); //3 bytes text
+        byteBuffer.put(mapName.getBytes(StandardCharsets.UTF_8)); //3 bytes text
 
         byteBuffer.putInt(timeStamp);
         byteBuffer.put(rawData, 0, 4);
@@ -635,7 +620,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 
         SimpleDateFormat dateFormat = new SimpleDateFormat("'R'yyyyMMdd'-'HH:mm:ss");
         String date = dateFormat.format(System.currentTimeMillis());
-        byteArrayOutputStream.write(date.getBytes(UTF8_ENCODING));
+        byteArrayOutputStream.write(date.getBytes(StandardCharsets.UTF_8));
 
 
         // 4 Byte Pointcount, max. 255 Points with this style

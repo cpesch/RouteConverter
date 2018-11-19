@@ -36,9 +36,7 @@ import java.awt.event.MouseWheelEvent;
 
 import static java.lang.Thread.sleep;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
-import static slash.navigation.gui.helpers.UIHelper.isDragCursor;
-import static slash.navigation.gui.helpers.UIHelper.startDragCursor;
-import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
  * Move and zoom map upon mouse events of the {@link AwtGraphicMapView}.
@@ -114,7 +112,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
 
             org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
             if (layer.onTap(tapLatLong, layerXY, tapXY))
-                return Marker.class.cast(layer);
+                return (Marker) layer;
         }
         return null;
     }

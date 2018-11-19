@@ -22,14 +22,7 @@
 
 package slash.navigation.common;
 
-import static java.lang.Math.PI;
-import static java.lang.Math.abs;
-import static java.lang.Math.atan2;
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-import static java.lang.Math.sqrt;
-import static java.lang.Math.toDegrees;
-import static java.lang.Math.toRadians;
+import static java.lang.Math.*;
 import static slash.common.io.Transfer.roundMeterToMillimeterPrecision;
 
 /**

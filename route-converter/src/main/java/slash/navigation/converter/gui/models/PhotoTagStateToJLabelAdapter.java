@@ -28,9 +28,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import java.text.MessageFormat;
 
-import static slash.navigation.photo.TagState.NotTaggable;
-import static slash.navigation.photo.TagState.Taggable;
-import static slash.navigation.photo.TagState.Tagged;
+import static slash.navigation.photo.TagState.*;
 
 /**
  * A bidirectional adapter that counts the number of photos
@@ -55,7 +53,7 @@ public class PhotoTagStateToJLabelAdapter extends PositionsModelToDocumentAdapte
         int count = 0;
         for (int i = 0, c = getDelegate().getRowCount(); i < c; i++) {
 
-            PhotoPosition position = PhotoPosition.class.cast(getDelegate().getPosition(i));
+            PhotoPosition position = (PhotoPosition) getDelegate().getPosition(i);
             if (tagState.equals(position.getTagState()))
                 count++;
         }

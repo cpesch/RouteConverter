@@ -23,10 +23,7 @@ package slash.navigation.itn;
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 import static slash.navigation.base.RouteComments.parseDescription;

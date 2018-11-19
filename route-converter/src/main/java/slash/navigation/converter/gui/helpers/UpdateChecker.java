@@ -32,11 +32,7 @@ import java.util.logging.Logger;
 
 import static java.lang.System.currentTimeMillis;
 import static java.text.MessageFormat.format;
-import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.YES_NO_OPTION;
-import static javax.swing.JOptionPane.YES_OPTION;
-import static javax.swing.JOptionPane.showConfirmDialog;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static javax.swing.JOptionPane.*;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;

@@ -20,11 +20,7 @@
 
 package slash.common.helpers;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.PropertyException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

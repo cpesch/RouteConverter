@@ -35,12 +35,7 @@ import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
-import static slash.navigation.download.State.Failed;
-import static slash.navigation.download.State.NotModified;
-import static slash.navigation.download.State.Queued;
-import static slash.navigation.download.State.Running;
-import static slash.navigation.download.State.Stopped;
-import static slash.navigation.download.State.Succeeded;
+import static slash.navigation.download.State.*;
 
 /**
  * Performs the {@link Download} of an URL to local file.

@@ -35,7 +35,7 @@ public class DistanceColumnTableCellRenderer extends AlternatingColorTableCellRe
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(RIGHT);
-        Double distance = Double.class.cast(value);
+        Double distance = (Double) value;
         label.setText(formatDistance(distance));
         return label;
     }

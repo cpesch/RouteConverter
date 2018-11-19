@@ -82,8 +82,8 @@ public class ExifColumnTableCellRenderer extends AlternatingColorTableCellRender
     }
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
-        JLabel label = JLabel.class.cast(super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex));
-        PhotoPosition position = PhotoPosition.class.cast(value);
+        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
+        PhotoPosition position = (PhotoPosition) value;
         String exposure = position.getExposure() != null ? position.getExposure().numerator + "/" + position.getExposure().divisor : "?";
         String text = MessageFormat.format(RouteConverter.getBundle().getString("exif-data"),
                 formatDate(position.getTime(), UTC_TIMEZONE_ID),

@@ -29,9 +29,7 @@ import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 
 import java.util.List;
 
-import static org.mapsforge.core.util.MercatorProjection.getMapSize;
-import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
-import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
+import static org.mapsforge.core.util.MercatorProjection.*;
 
 /**
  * A line spanning across several {@link LatLong}s on {@link MapsforgeMapView}

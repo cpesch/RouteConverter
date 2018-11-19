@@ -10,7 +10,5 @@ package slash.navigation.kml.binding22beta;
 import javax.xml.bind.annotation.XmlNs;
 
 import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
-import static slash.navigation.kml.KmlUtil.ATOM_2005_NAMESPACE_URI;
-import static slash.navigation.kml.KmlUtil.KML_22_BETA_NAMESPACE_URI;
-import static slash.navigation.kml.KmlUtil.XAL_20_NAMESPACE_URI;
+import static slash.navigation.kml.KmlUtil.*;
 

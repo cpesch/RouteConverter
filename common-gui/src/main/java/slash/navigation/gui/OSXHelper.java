@@ -41,7 +41,7 @@ public class OSXHelper {
     private static Class<?> applicationClass;
 
     @SuppressWarnings("JavaReflectionMemberAccess")
-    private static void initializeApplicationObject() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+    private static void initializeApplicationObject() throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         if (application == null) {
             applicationClass = Class.forName("com.apple.eawt.Application");
             Method getApplicationMethod = applicationClass.getMethod("getApplication");
@@ -54,7 +54,7 @@ public class OSXHelper {
             initializeApplicationObject();
             Method setDockIconImageMethod = applicationClass.getMethod("setDockIconImage", Image.class);
             setDockIconImageMethod.invoke(application, image);
-        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             log.warning("Error while setting dock icon: " + getLocalizedMessage(e));
         }
     }
@@ -88,7 +88,7 @@ public class OSXHelper {
                 setHandlerMethod.invoke(application, osxAdapterProxy);
             } catch (ClassNotFoundException e) {
                 log.severe("This version of Mac OS X does not support the Apple EAWT. ApplicationEvent handling has been disabled: " + getLocalizedMessage(e));
-            } catch (NoSuchMethodException | SecurityException | InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+            } catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                 log.severe("Mac OS X Adapter could not talk to EAWT: " + getLocalizedMessage(e));
             }
         }
