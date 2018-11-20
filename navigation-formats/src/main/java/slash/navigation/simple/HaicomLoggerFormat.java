@@ -55,7 +55,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(HaicomLoggerFormat.class);
 
     private static final String SEPARATOR = ",";
-    private static final String HEADER_LINE = "INDEX,RCR,DATE,TIME,LATITUDE,N/S,LONGITUDE,E/W,ALTITUDE,COURSE,SPEED,";
+    private static final String HEADER_LINE = "INDEX,RCR,DATE,TIME,LATITUDE,N/S,LONGITUDE,E/W,ALTITUDE,COURSE,SPEED";
 
     private static final String DATE_AND_TIME_FORMAT = "yy/MM/dd HH:mm:ss";
     private static final String DATE_FORMAT = "yy/MM/dd";
@@ -81,13 +81,13 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
                     "\\w+" + SEPARATOR +
                     "(\\d+/\\d+/\\d+)?" + SEPARATOR +
                     "(\\d+:\\d+:\\d+)?" + SEPARATOR +
-                    "([\\d\\.]+)" + SEPARATOR +
+                    "([\\d.]+)" + SEPARATOR +
                     "([NS])" + SEPARATOR +
-                    "([\\d\\.]+)" + SEPARATOR +
+                    "([\\d.]+)" + SEPARATOR +
                     "([WE])" + SEPARATOR +
-                    "(-?[\\d\\.]+)m" + SEPARATOR +
-                    "([\\d\\.]*)" + SEPARATOR +
-                    "([\\d\\.]+)km/h" +
+                    "(-?[\\d.]+)m" + SEPARATOR +
+                    "([\\d.]*)" + SEPARATOR +
+                    "([\\d.]+)km/h" +
                     "$");
 
     public String getExtension() {
@@ -108,7 +108,11 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     protected boolean isValidLine(String line) {
-        return isPosition(line) || line.startsWith(HEADER_LINE);
+        return isPosition(line) || isHeader(line);
+    }
+
+    boolean isHeader(String line) {
+        return line.startsWith(HEADER_LINE);
     }
 
     protected boolean isPosition(String line) {
@@ -116,7 +120,7 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    CompactCalendar parseDateAndTime(String date, String time) {
+    private CompactCalendar parseDateAndTime(String date, String time) {
         date = trim(date);
         time = trim(time);
         if(date == null || time == null)
@@ -146,25 +150,25 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         throw new IllegalArgumentException("'" + line + "' does not match");
     }
 
-    String formatLongitude(Double aDouble) {
+    private String formatLongitude(Double aDouble) {
         if (aDouble == null)
             return "";
         return LONGITUDE_NUMBER_FORMAT.format(aDouble);
     }
 
-    String formatLatitude(Double aDouble) {
+    private String formatLatitude(Double aDouble) {
         if (aDouble == null)
             return "";
         return LATITUDE_NUMBER_FORMAT.format(aDouble);
     }
 
-    String formatTime(CompactCalendar time) {
+    private String formatTime(CompactCalendar time) {
         if (time == null)
             return "";
         return createDateFormat(TIME_FORMAT).format(time.getTime());
     }
 
-    String formatDate(CompactCalendar date) {
+    private String formatDate(CompactCalendar date) {
         if (date == null)
             return "";
         return createDateFormat(DATE_FORMAT).format(date.getTime());

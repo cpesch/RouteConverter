@@ -41,6 +41,13 @@ public class HaicomLoggerFormatTest {
         assertTrue(format.isValidLine("1,T,,,36.87722,N,111.51194,W,1289.0m,0.0,0.0km/h"));
         assertTrue(format.isValidLine("1,T,,,36.87722,N,111.51194,W,0m,0,0km/h"));
         assertTrue(format.isValidLine("INDEX,RCR,DATE,TIME,LATITUDE,N/S,LONGITUDE,E/W,ALTITUDE,COURSE,SPEED,"));
+        assertTrue(format.isValidLine("INDEX,RCR,DATE,TIME,LATITUDE,N/S,LONGITUDE,E/W,ALTITUDE,COURSE,SPEED"));
+    }
+
+    @Test
+    public void testIsHeader() {
+        assertTrue(format.isHeader("INDEX,RCR,DATE,TIME,LATITUDE,N/S,LONGITUDE,E/W,ALTITUDE,COURSE,SPEED,"));
+        assertTrue(format.isHeader("INDEX,RCR,DATE,TIME,LATITUDE,N/S,LONGITUDE,E/W,ALTITUDE,COURSE,SPEED"));
     }
 
     @Test
