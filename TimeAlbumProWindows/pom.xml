@@ -99,7 +99,7 @@
                            </classPath>
                            <jre>
                                <minVersion>1.8.0</minVersion>
-                               <maxHeapSize>512</maxHeapSize>
+                               <maxHeapSize>1024</maxHeapSize>
                            </jre>
                            <versionInfo>
                                <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>
