@@ -24,19 +24,75 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.babel.BabelException;
-import slash.navigation.base.*;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.base.FormatAndRoutes;
+import slash.navigation.base.MultipleRoutesFormat;
+import slash.navigation.base.NavigationFormat;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.NavigationFormatParserListener;
+import slash.navigation.base.NavigationFormatRegistry;
+import slash.navigation.base.ParserCallback;
+import slash.navigation.base.ParserResult;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.actions.*;
+import slash.navigation.converter.gui.actions.AddAddressToPositionsAction;
+import slash.navigation.converter.gui.actions.AddCoordinatesToPositionsAction;
+import slash.navigation.converter.gui.actions.AddElevationToPositionsAction;
+import slash.navigation.converter.gui.actions.AddNumberToPositionsAction;
+import slash.navigation.converter.gui.actions.AddPositionAction;
+import slash.navigation.converter.gui.actions.AddPositionListAction;
+import slash.navigation.converter.gui.actions.AddSpeedToPositionsAction;
+import slash.navigation.converter.gui.actions.AddTimeToPositionsAction;
+import slash.navigation.converter.gui.actions.BottomAction;
+import slash.navigation.converter.gui.actions.ClearSelectionAction;
+import slash.navigation.converter.gui.actions.CopyAction;
+import slash.navigation.converter.gui.actions.CutAction;
+import slash.navigation.converter.gui.actions.DeletePositionAction;
+import slash.navigation.converter.gui.actions.DeletePositionListAction;
+import slash.navigation.converter.gui.actions.DownAction;
+import slash.navigation.converter.gui.actions.ExportPositionListAction;
+import slash.navigation.converter.gui.actions.ImportPositionListAction;
+import slash.navigation.converter.gui.actions.NewFileAction;
+import slash.navigation.converter.gui.actions.OpenAction;
+import slash.navigation.converter.gui.actions.PasteAction;
+import slash.navigation.converter.gui.actions.RenamePositionListAction;
+import slash.navigation.converter.gui.actions.SaveAction;
+import slash.navigation.converter.gui.actions.SaveAsAction;
+import slash.navigation.converter.gui.actions.SelectAllAction;
+import slash.navigation.converter.gui.actions.SplitPositionListAction;
+import slash.navigation.converter.gui.actions.TopAction;
+import slash.navigation.converter.gui.actions.UpAction;
 import slash.navigation.converter.gui.dialogs.CompleteFlightPlanDialog;
 import slash.navigation.converter.gui.dialogs.MaximumPositionCountDialog;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
-import slash.navigation.converter.gui.helpers.*;
-import slash.navigation.converter.gui.models.*;
+import slash.navigation.converter.gui.helpers.AbstractDocumentListener;
+import slash.navigation.converter.gui.helpers.AbstractListDataListener;
+import slash.navigation.converter.gui.helpers.LengthCalculator;
+import slash.navigation.converter.gui.helpers.MergePositionListMenu;
+import slash.navigation.converter.gui.helpers.NavigationFormatFileFilter;
+import slash.navigation.converter.gui.helpers.PositionsTableHeaderMenu;
+import slash.navigation.converter.gui.helpers.PositionsTablePopupMenu;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
+import slash.navigation.converter.gui.models.ElevationToJLabelAdapter;
+import slash.navigation.converter.gui.models.FormatAndRoutesModel;
+import slash.navigation.converter.gui.models.FormatAndRoutesModelImpl;
+import slash.navigation.converter.gui.models.FormatToJLabelAdapter;
+import slash.navigation.converter.gui.models.LengthToJLabelAdapter;
+import slash.navigation.converter.gui.models.OverlayPositionsModel;
+import slash.navigation.converter.gui.models.PositionListsToJLabelAdapter;
+import slash.navigation.converter.gui.models.PositionTableColumn;
+import slash.navigation.converter.gui.models.PositionsCountToJLabelAdapter;
+import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.models.PositionsSelectionModel;
+import slash.navigation.converter.gui.models.PositionsTableColumnModel;
+import slash.navigation.converter.gui.models.RecentFormatsModel;
+import slash.navigation.converter.gui.models.RecentUrlsModel;
+import slash.navigation.converter.gui.models.UrlDocument;
 import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRenderer;
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
@@ -63,13 +119,12 @@ import slash.navigation.simple.GoRiderGpsFormat;
 import slash.navigation.simple.HaicomLoggerFormat;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.ListDataEvent;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -77,14 +132,23 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.awt.event.ItemEvent.SELECTED;
-import static java.awt.event.KeyEvent.*;
+import static java.awt.event.KeyEvent.CTRL_DOWN_MASK;
+import static java.awt.event.KeyEvent.SHIFT_DOWN_MASK;
+import static java.awt.event.KeyEvent.VK_DELETE;
+import static java.awt.event.KeyEvent.VK_DOWN;
+import static java.awt.event.KeyEvent.VK_END;
+import static java.awt.event.KeyEvent.VK_HOME;
+import static java.awt.event.KeyEvent.VK_UP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.format;
 import static java.util.Collections.singletonList;
@@ -92,7 +156,14 @@ import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
-import static javax.swing.JOptionPane.*;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.NO_OPTION;
+import static javax.swing.JOptionPane.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.JOptionPane.YES_NO_CANCEL_OPTION;
+import static javax.swing.JOptionPane.YES_NO_OPTION;
+import static javax.swing.JOptionPane.YES_OPTION;
+import static javax.swing.JOptionPane.showConfirmDialog;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -101,7 +172,16 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.PreferencesHelper.count;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
-import static slash.common.io.Files.*;
+import static slash.common.io.Files.calculateConvertFileName;
+import static slash.common.io.Files.createGoPalFileName;
+import static slash.common.io.Files.createReadablePath;
+import static slash.common.io.Files.createTargetFiles;
+import static slash.common.io.Files.findExistingPath;
+import static slash.common.io.Files.getExtension;
+import static slash.common.io.Files.printArrayToDialogString;
+import static slash.common.io.Files.reverse;
+import static slash.common.io.Files.toFile;
+import static slash.common.io.Files.toUrls;
 import static slash.feature.client.Feature.hasFeature;
 import static slash.navigation.base.NavigationFormatConverter.convertRoute;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
@@ -113,9 +193,17 @@ import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIO
 import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.gui.events.Range.allButEveryNthAndFirstAndLast;
 import static slash.navigation.gui.events.Range.revert;
-import static slash.navigation.gui.helpers.JMenuHelper.*;
-import static slash.navigation.gui.helpers.JTableHelper.*;
-import static slash.navigation.gui.helpers.UIHelper.*;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenuComponent;
+import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
+import static slash.navigation.gui.helpers.JMenuHelper.registerKeyStroke;
+import static slash.navigation.gui.helpers.JTableHelper.calculateRowHeight;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
+import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
+import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
+import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
+import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 
 /**
@@ -181,38 +269,32 @@ public class ConvertPanel implements PanelInTab {
         recentFormatsModel = new RecentFormatsModel(getNavigationFormatRegistry());
 
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
-        undoManager.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                handleUndoUpdate();
-            }
-        });
+        undoManager.addChangeListener(e -> handleUndoUpdate());
 
         characteristicsModel = new CharacteristicsModel();
         positionsModel = new OverlayPositionsModel(new UndoPositionsModel(undoManager), characteristicsModel);
         formatAndRoutesModel = new UndoFormatAndRoutesModel(undoManager, new FormatAndRoutesModelImpl(positionsModel, characteristicsModel));
-        positionsSelectionModel = new PositionsSelectionModel() {
-            public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
-                if (replaceSelection) {
-                    ListSelectionModel selectionModel = tablePositions.getSelectionModel();
-                    selectionModel.clearSelection();
+        positionsSelectionModel = (selectedPositions, replaceSelection) -> {
+            if (replaceSelection) {
+                ListSelectionModel selectionModel = tablePositions.getSelectionModel();
+                selectionModel.clearSelection();
+            }
+
+            int maximumRangeLength = selectedPositions.length > 19 ? selectedPositions.length / 100 : selectedPositions.length;
+            new ContinousRange(selectedPositions, new RangeOperation() {
+                public void performOnIndex(int index) {
                 }
 
-                int maximumRangeLength = selectedPositions.length > 19 ? selectedPositions.length / 100 : selectedPositions.length;
-                new ContinousRange(selectedPositions, new RangeOperation() {
-                    public void performOnIndex(int index) {
-                    }
+                public void performOnRange(int firstIndex, int lastIndex) {
+                    ListSelectionModel selectionModel = tablePositions.getSelectionModel();
+                    selectionModel.addSelectionInterval(firstIndex, lastIndex);
+                    scrollToPosition(tablePositions, firstIndex);
+                }
 
-                    public void performOnRange(int firstIndex, int lastIndex) {
-                        ListSelectionModel selectionModel = tablePositions.getSelectionModel();
-                        selectionModel.addSelectionInterval(firstIndex, lastIndex);
-                        scrollToPosition(tablePositions, firstIndex);
-                    }
-
-                    public boolean isInterrupted() {
-                        return false;
-                    }
-                }).performMonotonicallyIncreasing(maximumRangeLength);
-            }
+                public boolean isInterrupted() {
+                    return false;
+                }
+            }).performMonotonicallyIncreasing(maximumRangeLength);
         };
 
         lengthCalculator = new LengthCalculator();
@@ -236,45 +318,29 @@ public class ConvertPanel implements PanelInTab {
                 RouteConverter.getInstance().getFrame().setTitle(title);
             }
         });
-        r.getUnitSystemModel().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                positionsModel.fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
-            }
-        });
-        r.getTimeZone().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                positionsModel.fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS);
-            }
-        });
+        r.getUnitSystemModel().addChangeListener(e -> positionsModel.fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS));
+        r.getTimeZone().addChangeListener(e -> positionsModel.fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS));
 
-        tablePositions.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting())
-                    return;
-                if (positionsModel.isContinousRange())
-                    return;
-                handlePositionsUpdate();
-            }
+        tablePositions.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting())
+                return;
+            if (positionsModel.isContinousRange())
+                return;
+            handlePositionsUpdate();
         });
-        positionsModel.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                if (!isFirstToLastRow(e))
-                    return;
-                if (positionsModel.isContinousRange())
-                    return;
-                handlePositionsUpdate();
-            }
+        positionsModel.addTableModelListener(e -> {
+            if (!isFirstToLastRow(e))
+                return;
+            if (positionsModel.isContinousRange())
+                return;
+            handlePositionsUpdate();
         });
 
         tablePositions.setModel(positionsModel);
         PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
         tablePositions.setColumnModel(tableColumnModel);
 
-        tableColumnModel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                handleColumnVisibilityUpdate((PositionTableColumn) e.getSource());
-            }
-        });
+        tableColumnModel.addChangeListener(e -> handleColumnVisibilityUpdate((PositionTableColumn) e.getSource()));
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
                 r.getContext().getActionManager().run("delete");
@@ -395,13 +461,9 @@ public class ConvertPanel implements PanelInTab {
 
         setHelpIDString(tablePositions, "position-list");
 
-        formatAndRoutesModel.addModifiedListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                actionManager.enable("save", formatAndRoutesModel.isModified() &&
-                        formatAndRoutesModel.getFormat() != null &&
-                        formatAndRoutesModel.getFormat().isSupportsWriting());
-            }
-        });
+        formatAndRoutesModel.addModifiedListener(e -> actionManager.enable("save", formatAndRoutesModel.isModified() &&
+                formatAndRoutesModel.getFormat() != null &&
+                formatAndRoutesModel.getFormat().isSupportsWriting()));
 
         handleUndoUpdate();
         handleRoutesUpdate();
@@ -412,12 +474,10 @@ public class ConvertPanel implements PanelInTab {
         //noinspection unchecked
         comboBoxChoosePositionList.setModel(formatAndRoutesModel);
         comboBoxChoosePositionList.setRenderer(new RouteListCellRenderer());
-        comboBoxChoosePositionList.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == SELECTED) {
-                    r.getPositionAugmenter().interrupt();
-                    formatAndRoutesModel.setSelectedItem(e.getItem());
-                }
+        comboBoxChoosePositionList.addItemListener(e -> {
+            if (e.getStateChange() == SELECTED) {
+                r.getPositionAugmenter().interrupt();
+                formatAndRoutesModel.setSelectedItem(e.getItem());
             }
         });
         //noinspection unchecked
@@ -427,11 +487,7 @@ public class ConvertPanel implements PanelInTab {
         convertPanel.setTransferHandler(dropHandler);
 
         // make sure that Insert works directly after the program start on an empty position list
-        invokeLater(new Runnable() {
-            public void run() {
-                convertPanel.requestFocus();
-            }
-        });
+        invokeLater(() -> convertPanel.requestFocus());
     }
 
     private int getDefaultRowHeight() {
@@ -546,140 +602,116 @@ public class ConvertPanel implements PanelInTab {
         preferences.put(READ_PATH_PREFERENCE, path);
 
         startWaitCursor(r.getFrame().getRootPane());
-        openExecutor.execute(new Runnable() {
-            public void run() {
-                NavigationFormatParser parser = new NavigationFormatParser(getNavigationFormatRegistry());
-                NavigationFormatParserListener listener = new NavigationFormatParserListener() {
-                    public void reading(final NavigationFormat<BaseRoute> format) {
-                        invokeLater(new Runnable() {
-                            public void run() {
-                                formatAndRoutesModel.setFormat(format);
-                            }
-                        });
-                    }
-                };
-                parser.addNavigationFileParserListener(listener);
+        openExecutor.execute(() -> {
+            NavigationFormatParser parser = new NavigationFormatParser(getNavigationFormatRegistry());
+            NavigationFormatParserListener listener = format -> invokeLater(() -> formatAndRoutesModel.setFormat(format));
+            parser.addNavigationFileParserListener(listener);
 
-                try {
-                    invokeAndWait(new Runnable() {
-                        public void run() {
-                            Gpx11Format gpxFormat = new Gpx11Format();
-                            formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
-                            urlModel.clear();
+            try {
+                invokeAndWait(() -> {
+                    Gpx11Format gpxFormat = new Gpx11Format();
+                    formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
+                    urlModel.clear();
+                });
+
+                final ParserResult result = parser.read(url, formats);
+                if (result.isSuccessful()) {
+                    log.info("Opened: " + path);
+                    final NavigationFormat format = result.getFormat();
+                    countRead(format);
+                    if (!checkReadFormat(format))
+                        return;
+                    invokeLater(() -> {
+                        formatAndRoutesModel.setRoutes(new FormatAndRoutes(format, result.getAllRoutes()));
+                        urlModel.setString(path);
+                        recentUrlsModel.addUrl(url);
+
+                        if (urls.size() > 1) {
+                            List<URL> append = new ArrayList<>(urls);
+                            append.remove(0);
+                            // this way the route is always marked as modified :-(
+                            appendPositionList(-1, append);
                         }
                     });
 
-                    final ParserResult result = parser.read(url, formats);
-                    if (result.isSuccessful()) {
-                        log.info("Opened: " + path);
-                        final NavigationFormat format = result.getFormat();
-                        countRead(format);
-                        if (!checkReadFormat(format))
-                            return;
-                        invokeLater(new Runnable() {
-                            public void run() {
-                                formatAndRoutesModel.setRoutes(new FormatAndRoutes(format, result.getAllRoutes()));
-                                urlModel.setString(path);
-                                recentUrlsModel.addUrl(url);
-
-                                if (urls.size() > 1) {
-                                    List<URL> append = new ArrayList<>(urls);
-                                    append.remove(0);
-                                    // this way the route is always marked as modified :-(
-                                    appendPositionList(-1, append);
-                                }
-                            }
-                        });
-
-                    } else {
-                        invokeLater(new Runnable() {
-                            public void run() {
-                                Gpx11Format gpxFormat = new Gpx11Format();
-                                formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
-                            }
-                        });
-                        r.handleUnsupportedFormat(path);
-                    }
-                } catch (BabelException e) {
-                    r.handleBabelError(e);
-                } catch (OutOfMemoryError e) {
-                    handleOutOfMemoryError(e);
-                } catch (FileNotFoundException e) {
-                    r.handleFileNotFound(path);
-                } catch (Throwable t) {
-                    r.handleOpenError(t, path);
-                } finally {
-                    parser.removeNavigationFileParserListener(listener);
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            stopWaitCursor(r.getFrame().getRootPane());
-                        }
+                } else {
+                    invokeLater(() -> {
+                        Gpx11Format gpxFormat = new Gpx11Format();
+                        formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
                     });
+                    r.handleUnsupportedFormat(path);
                 }
+            } catch (BabelException e) {
+                r.handleBabelError(e);
+            } catch (OutOfMemoryError e) {
+                handleOutOfMemoryError(e);
+            } catch (FileNotFoundException e) {
+                r.handleFileNotFound(path);
+            } catch (Throwable t) {
+                r.handleOpenError(t, path);
+            } finally {
+                parser.removeNavigationFileParserListener(listener);
+                invokeLater(() -> stopWaitCursor(r.getFrame().getRootPane()));
             }
         });
     }
 
     private void appendPositionList(final int row, final List<URL> urls) {
         final RouteConverter r = RouteConverter.getInstance();
-        openExecutor.execute(new Runnable() {
-            public void run() {
-                try {
-                    for (URL url : urls) {
-                        String path = createReadablePath(url);
+        openExecutor.execute(() -> {
+            try {
+                for (URL url : urls) {
+                    String path = createReadablePath(url);
 
-                        NavigationFormatParser parser = new NavigationFormatParser(getNavigationFormatRegistry());
-                        final ParserResult result = parser.read(url);
-                        if (result.isSuccessful()) {
-                            log.info("Appended: " + path);
-                            countRead(result.getFormat());
+                    NavigationFormatParser parser = new NavigationFormatParser(getNavigationFormatRegistry());
+                    final ParserResult result = parser.read(url);
+                    if (result.isSuccessful()) {
+                        log.info("Appended: " + path);
+                        countRead(result.getFormat());
 
-                            final String finalPath = path;
-                            // avoid parallelism to ensure the URLs are processed in order
-                            invokeAndWait(new Runnable() {
-                                public void run() {
-                                    // when called from openPositionList() and the format supports more than one position list:
-                                    // append the position lists at the end
-                                    NavigationFormat<BaseRoute> format = getFormatAndRoutesModel().getFormat();
-                                    if (row == -1 && format.isSupportsMultipleRoutes()) {
-                                        try {
-                                            List<BaseRoute> routes = convertRoute(result.getAllRoutes(), format);
-                                            for (BaseRoute route : routes) {
-                                                int appendIndex = getFormatAndRoutesModel().getSize();
-                                                getFormatAndRoutesModel().addPositionList(appendIndex, route);
-                                            }
-                                        } catch (IOException e) {
-                                            r.handleOpenError(e, finalPath);
-                                        }
-                                    } else {
-                                        // insert all position lists, which are in reverse order, at the given row or at the end
-                                        try {
-                                            int insertRow = row > 0 ? row : positionsModel.getRowCount();
-                                            for (BaseRoute route : result.getAllRoutes()) {
-                                                //noinspection unchecked
-                                                positionsModel.add(insertRow, route);
-                                            }
-                                        } catch (FileNotFoundException e) {
-                                            r.handleFileNotFound(finalPath);
-                                        } catch (IOException e) {
-                                            r.handleOpenError(e, finalPath);
-                                        }
+                        final String finalPath = path;
+                        // avoid parallelism to ensure the URLs are processed in order
+                        invokeAndWait(() -> {
+                            // when called from openPositionList() and the format supports more than one position list:
+                            // append the position lists at the end
+                            NavigationFormat<BaseRoute> format = getFormatAndRoutesModel().getFormat();
+                            if (row == -1 && format.isSupportsMultipleRoutes()) {
+                                try {
+                                    List<BaseRoute> routes = convertRoute(result.getAllRoutes(), format);
+                                    for (BaseRoute route : routes) {
+                                        int appendIndex = getFormatAndRoutesModel().getSize();
+                                        getFormatAndRoutesModel().addPositionList(appendIndex, route);
                                     }
+                                } catch (IOException e) {
+                                    r.handleOpenError(e, finalPath);
                                 }
-                            });
+                            } else {
+                                // insert all position lists, which are in reverse order, at the given row or at the end
+                                try {
+                                    int insertRow = row > 0 ? row : positionsModel.getRowCount();
+                                    for (BaseRoute route : result.getAllRoutes()) {
+                                        //noinspection unchecked
+                                        positionsModel.add(insertRow, route);
+                                    }
+                                } catch (FileNotFoundException e) {
+                                    r.handleFileNotFound(finalPath);
+                                } catch (IOException e) {
+                                    r.handleOpenError(e, finalPath);
+                                }
+                            }
+                        });
 
-                        } else {
-                            r.handleUnsupportedFormat(path);
-                        }
+                    } else {
+                        r.handleUnsupportedFormat(path);
                     }
-                } catch (BabelException e) {
-                    r.handleBabelError(e);
-                } catch (OutOfMemoryError e) {
-                    handleOutOfMemoryError(e);
-                } catch (Throwable t) {
-                    log.severe("Append error: " + t);
-                    r.handleOpenError(t, urls);
                 }
+            } catch (BabelException e) {
+                r.handleBabelError(e);
+            } catch (OutOfMemoryError e) {
+                handleOutOfMemoryError(e);
+            } catch (Throwable t) {
+                log.severe("Append error: " + t);
+                r.handleOpenError(t, urls);
             }
         });
     }
@@ -811,12 +843,10 @@ public class ConvertPanel implements PanelInTab {
                 new NavigationFormatParser(getNavigationFormatRegistry()).write(routes, (MultipleRoutesFormat) format, files[0]);
             } else {
                 boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);
-                ParserCallback parserCallback = new ParserCallback() {
-                    public void process(BaseRoute route, NavigationFormat format) {
-                        if (format instanceof GarminFlightPlanFormat) {
-                            GarminFlightPlanRoute garminFlightPlanRoute = (GarminFlightPlanRoute) route;
-                            completeGarminFlightPlan(garminFlightPlanRoute);
-                        }
+                ParserCallback parserCallback = (aRoute, aFormat) -> {
+                    if (aFormat instanceof GarminFlightPlanFormat) {
+                        GarminFlightPlanRoute garminFlightPlanRoute = (GarminFlightPlanRoute) aRoute;
+                        completeGarminFlightPlan(garminFlightPlanRoute);
                     }
                 };
                 new NavigationFormatParser(getNavigationFormatRegistry()).write(route, format, duplicateFirstPosition, true, parserCallback, files);
@@ -855,12 +885,12 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private static boolean checkReadFormat(NavigationFormat format) {
-        return !((format instanceof HaicomLoggerFormat && preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && checkForFeature("csv-haicom", "Read Haicom Logger")));
+        return !((format instanceof HaicomLoggerFormat && preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("csv-haicom", "Read Haicom Logger")));
     }
 
     private static boolean checkWriteFormat(NavigationFormat format) {
-        return !((format instanceof GarminFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && checkForFeature("fpl-g1000", "Write Garmin Flight Plan")) ||
-                (format instanceof GoRiderGpsFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && checkForFeature("rt-gorider", "Write GoRider GPS")));
+        return !((format instanceof GarminFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("fpl-g1000", "Write Garmin Flight Plan")) ||
+                (format instanceof GoRiderGpsFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("rt-gorider", "Write GoRider GPS")));
     }
 
     private static boolean checkForFeature(String featureName, String featureDescription) {
@@ -873,9 +903,9 @@ public class ConvertPanel implements PanelInTab {
                 }
             });
             showMessageDialog(r.getFrame(), labelFeatureError, r.getFrame().getTitle(), ERROR_MESSAGE);
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     private void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
