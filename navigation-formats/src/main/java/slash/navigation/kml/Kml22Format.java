@@ -315,8 +315,9 @@ public class Kml22Format extends KmlFormat {
     private PlacemarkType createRoute(KmlRoute route) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        placemarkType.setName(ROUTE);
-        placemarkType.setDescription(asDescription(route.getDescription()));
+        // deactivated to preserve route name in folder name
+        // placemarkType.setName(ROUTE);
+        // placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + ROUTE_LINE_STYLE);
         MultiGeometryType multiGeometryType = objectFactory.createMultiGeometryType();
         placemarkType.setAbstractGeometryGroup(objectFactory.createMultiGeometry(multiGeometryType));
@@ -332,8 +333,9 @@ public class Kml22Format extends KmlFormat {
     private PlacemarkType createTrack(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        placemarkType.setName(TRACK);
-        placemarkType.setDescription(asDescription(route.getDescription()));
+        // deactivated to preserve route name in folder name
+        // placemarkType.setName(TRACK);
+        // placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);
         // create gx:Track if there are at least two positions with a time stamp
         if (containTime(route)) {
@@ -652,13 +654,6 @@ public class Kml22Format extends KmlFormat {
         KmlType kmlType = objectFactory.createKmlType();
         DocumentType documentType = objectFactory.createDocumentType();
         kmlType.setAbstractFeatureGroup(objectFactory.createDocument(documentType));
-        /* might make sense for Waypoint lists with one position lists in the file
-        if(routes.size() == 1) {
-            KmlRoute route = routes.get(0);
-            documentType.setName(createDocumentName(route));
-            documentType.setDescription(asDescription(route.getDescription()));
-        }
-        */
         documentType.setOpen(TRUE);
 
         if (hasCharacteristics(routes, Route))
