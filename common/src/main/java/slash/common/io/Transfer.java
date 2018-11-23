@@ -62,7 +62,7 @@ public class Transfer {
     private static final String REDUCE_TIME_TO_SECOND_PRECISION_PREFERENCE = "reduceTimeToSecondPrecision";
 
     public static final String ISO_LATIN1_ENCODING = "ISO-8859-1";
-    public static final String UTF8_ENCODING = "UTF-8";
+    public static final String UTF8_ENCODING = "UTF-8"; // StandardCharsets.UTF_8
     public static final String UTF16_ENCODING = "UTF-16";
     public static final String UTF16LE_ENCODING = "UTF-16LE";
 
