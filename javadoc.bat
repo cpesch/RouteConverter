@@ -1,0 +1,1 @@
+pscp -r "target\site\apidocs\*" notroot@routeconverter.de:/var/www/routeconverter.com/static/javadoc/
