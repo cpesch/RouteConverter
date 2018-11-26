@@ -141,4 +141,16 @@ public class UpdateCheckerTest {
         assertFalse(result.existsLaterJavaVersion());
         assertEquals("10", result.getLatestJavaVersion());
     }
+
+    @Test
+    public void existsLaterJavaVersion11() {
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "11");
+        result.setParameters("java11.version=11");
+        assertFalse(result.existsLaterJavaVersion());
+        assertEquals("11", result.getLatestJavaVersion());
+
+        result.setParameters("java11.version=11.0.1");
+        assertTrue(result.existsLaterJavaVersion());
+        assertEquals("11.0.1", result.getLatestJavaVersion());
+    }
 }
