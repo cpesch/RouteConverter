@@ -99,13 +99,15 @@ public abstract class HttpRequest {
         return method;
     }
 
-    private void setAuthentication(String userName, String password, AuthScope authScope) {
+    private void setAuthentication(String userName, String password, URI uri) {
+        int port = uri.getScheme().equals("https") ? 443 : 80;
+        HttpHost httpHost = new HttpHost(uri.getHost(), port, uri.getScheme());
+        AuthScope authScope = new AuthScope(httpHost, "api", null);
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(authScope, new UsernamePasswordCredentials(userName, password));
         AuthCache authCache = new BasicAuthCache();
         BasicScheme basicAuth = new BasicScheme();
-        HttpHost targetHost = new HttpHost(authScope.getHost(), authScope.getPort(), authScope.getScheme());
-        authCache.put(targetHost, basicAuth);
+        authCache.put(httpHost, basicAuth);
         context = HttpClientContext.create();
         context.setAuthCache(authCache);
         context.setCredentialsProvider(credentialsProvider);
@@ -113,7 +115,7 @@ public abstract class HttpRequest {
 
     private void setAuthentication(Credentials credentials) {
         URI uri = method.getURI();
-        setAuthentication(credentials.getUserName(), credentials.getPassword(), new AuthScope(uri.getHost(), uri.getPort(), "api"));
+        setAuthentication(credentials.getUserName(), credentials.getPassword(), uri);
     }
 
     public void setUserAgent(String userAgent) {
