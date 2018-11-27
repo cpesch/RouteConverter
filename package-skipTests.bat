@@ -1,1 +1,0 @@
-mvn -T 4.0C clean package -Prouteconverter -DskipTests

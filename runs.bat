@@ -1,1 +1,0 @@
-java -jar RouteConverterWindowsOpenSource\target\RouteConverterWindowsOpenSource.jar

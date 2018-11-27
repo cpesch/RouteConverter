@@ -1,1 +1,0 @@
-java -jar RouteConverterWindowsGoogle\target\RouteConverterWindowsGoogle.jar
