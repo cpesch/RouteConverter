@@ -77,7 +77,7 @@ public class RouteConverterOpenSource extends RouteConverter {
     }
 
     public String getEdition() {
-        return "RouteConverter Opensource Edition";
+        return "RouteConverter OpenSource Edition";
     }
 
     public String getEditionId() {
