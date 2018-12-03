@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns="http://api.routeconverter.com/v1/schemas/mapserver-catalog"
+            targetNamespace="http://api.routeconverter.com/v1/schemas/mapserver-catalog"
+            elementFormDefault="qualified">
+
+    <xsd:element name="catalog" type="catalogType">
+        <xsd:annotation>
+            <xsd:documentation>
+                catalog is the root element in the XML file.
+            </xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:complexType name="catalogType">
+        <xsd:annotation>
+            <xsd:documentation>
+                catalog contains map server definitions.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="mapServer" type="mapServerType" minOccurs="0" maxOccurs="unbounded">
+                <xsd:unique name="unique-map-server-id">
+                    <xsd:selector xpath="mapServer"/>
+                    <xsd:field xpath="@id"/>
+                </xsd:unique>
+            </xsd:element>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <xsd:complexType name="mapServerType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a map server contains an id, a name, a minimum and maximum zoom level, a set of host names, a tile url pattern and a copyright.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="host" type="xsd:string" maxOccurs="unbounded"/>
+            <xsd:element name="urlPattern" type="xsd:string"/>
+            <xsd:element name="copyright" type="xsd:string"/>
+        </xsd:sequence>
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="minZoom" type="xsd:integer" use="required"/>
+        <xsd:attribute name="maxZoom" type="xsd:integer" use="required"/>
+        <xsd:attribute name="active" type="xsd:boolean"/>
+    </xsd:complexType>
+</xsd:schema>

@@ -353,4 +353,10 @@ public class DownloadManager {
         if (invokeAfterSuccessfulDownloadRunnable != null)
             invokeAfterSuccessfulDownloadRunnable.run();
     }
+
+    public void removeDownload(String url) {
+        Download download = model.getDownload(url);
+        if(download != null)
+            model.removeDownload(download);
+    }
 }

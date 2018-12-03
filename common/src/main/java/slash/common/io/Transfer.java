@@ -171,6 +171,10 @@ public class Transfer {
         return aBigInteger != null ? aBigInteger.intValue() : null;
     }
 
+    public static boolean formatBoolean(Boolean aBoolean) {
+        return aBoolean == null || aBoolean;
+    }
+
     private static final NumberFormat DECIMAL_NUMBER_FORMAT = DecimalFormat.getNumberInstance(US);
 
     static {

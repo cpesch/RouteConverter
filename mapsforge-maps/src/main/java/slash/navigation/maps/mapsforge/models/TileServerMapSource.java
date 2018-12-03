@@ -44,7 +44,7 @@ public class TileServerMapSource extends AbstractTileSource {
     private boolean alpha = false;
 
     private static String[] getHostNames(TileServer tileServer) {
-        String[] hostNames = tileServer.getHostNames().toArray(new String[0]);
+        String[] hostNames = tileServer.getHosts().toArray(new String[0]);
         if (hostNames.length == 0)
             hostNames = new String[]{"not.existing.tile.server"};
         return hostNames;

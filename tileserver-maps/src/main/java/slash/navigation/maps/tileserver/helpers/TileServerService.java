@@ -19,17 +19,20 @@
 */
 package slash.navigation.maps.tileserver.helpers;
 
-import slash.navigation.maps.tileserver.binding.CatalogType;
-import slash.navigation.maps.tileserver.binding.TileServerType;
+import slash.navigation.maps.tileserver.bindingmap.MapServerType;
+import slash.navigation.maps.tileserver.bindingoverlay.OverlayServerType;
 
 import javax.xml.bind.JAXBException;
-import java.io.*;
+import javax.xml.bind.UnmarshalException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.navigation.maps.tileserver.helpers.TileServerUtil.unmarshal;
 
 /**
  * Encapsulates access to a TileServer XML.
@@ -42,46 +45,66 @@ public class TileServerService {
     private static final String DOT_XML = ".xml";
 
     private final File directory;
-    private final List<TileServerType> tileServers = new ArrayList<>();
-    private final List<TileServerType> overlays = new ArrayList<>();
+    private final List<MapServerType> maps = new ArrayList<>();
+    private final List<OverlayServerType> overlays = new ArrayList<>();
 
     public TileServerService(File directory) {
         this.directory = directory;
     }
 
     public void initialize() {
-        java.io.File[] files = directory.listFiles(new FilenameFilter() {
-            public boolean accept(java.io.File dir, String name) {
-                return name.endsWith(DOT_XML);
-            }
-        });
+        deleteOldDefaultFiles();
 
+        java.io.File[] files = directory.listFiles((dir, name) -> name.endsWith(DOT_XML));
         if (files != null) {
             for (File file : files) {
                 try {
                     try (InputStream inputStream = new FileInputStream(file)) {
-                        log.info("Initializing tile server definitions from " + file);
-                        load(inputStream);
+                        loadMap(inputStream);
+                        log.info("Initialized map server definitions from " + file);
                     }
+                } catch (UnmarshalException e) {
+                    log.fine("Could not unmarshall map server definitions from " + file + ": " + getLocalizedMessage(e));
                 } catch (IOException | JAXBException e) {
-                    log.severe("Could not parse tile server definitions from " + file + ": " + getLocalizedMessage(e));
+                    log.severe("Could not parse map server definitions from " + file + ": " + getLocalizedMessage(e));
+                }
+
+                try {
+                    try (InputStream inputStream = new FileInputStream(file)) {
+                        loadOverlay(inputStream);
+                        log.info("Initialized overlay server definitions from " + file);
+                    }
+                } catch (UnmarshalException e) {
+                    log.fine("Could not unmarshall overlay server definitions from " + file + ": " + getLocalizedMessage(e));
+                } catch (IOException | JAXBException e) {
+                    log.severe("Could not parse overlay server definitions from " + file + ": " + getLocalizedMessage(e));
                 }
             }
         }
     }
 
-    private void load(InputStream inputStream) throws JAXBException {
-        CatalogType catalogType = unmarshal(inputStream);
-        tileServers.addAll(catalogType.getTileServer());
-        // TODO load real overlays once the XML is different
-        overlays.addAll(catalogType.getTileServer());
+    private void deleteOldDefaultFiles() {
+        java.io.File[] files = directory.listFiles((dir, name) -> name.equals("default.xml") || name.equals("default-offline.xml"));
+        if (files != null)
+            for (File file : files) 
+                file.delete();
     }
 
-    public List<TileServerType> getTileServers() {
-        return tileServers;
+    private void loadMap(InputStream inputStream) throws JAXBException {
+        slash.navigation.maps.tileserver.bindingmap.CatalogType catalogType = MapServerUtil.unmarshal(inputStream);
+        maps.addAll(catalogType.getMapServer());
     }
 
-    public List<TileServerType> getOverlays() {
+    private void loadOverlay(InputStream inputStream) throws JAXBException {
+        slash.navigation.maps.tileserver.bindingoverlay.CatalogType catalogType = OverlayServerUtil.unmarshal(inputStream);
+        overlays.addAll(catalogType.getOverlayServer());
+    }
+
+    public List<MapServerType> getMaps() {
+        return maps;
+    }
+
+    public List<OverlayServerType> getOverlays() {
         return overlays;
     }
 }

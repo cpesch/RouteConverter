@@ -692,15 +692,15 @@ public abstract class BrowserMapView implements MapView {
 
         String apiKey = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
         for (TileServer tileServer : tileServers) {
-            if (!tileServer.isActive() || tileServer.getHostNames().size() == 0)
+            if (!tileServer.isActive() || tileServer.getHosts().size() == 0)
                 continue;
 
             buffer.append("registerCustomMap(\"").append(tileServer.getId()).append("\", \"").
                     append(tileServer.getCopyright()).append("\", new google.maps.ImageMapType({\n").
                     append("  getTileUrl: function(coordinates, zoom) {\n").
                     append("    var tileServers = [");
-            for (int i = 0, c = tileServer.getHostNames().size(); i < c; i++) {
-                buffer.append("\"").append(tileServer.getHostNames().get(i)).append("\"");
+            for (int i = 0, c = tileServer.getHosts().size(); i < c; i++) {
+                buffer.append("\"").append(tileServer.getHosts().get(i)).append("\"");
                 if (i < c - 1)
                     buffer.append(", ");
             }

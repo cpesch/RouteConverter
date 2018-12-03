@@ -20,13 +20,15 @@
 package slash.navigation.maps.tileserver;
 
 import slash.navigation.maps.item.ItemTableModel;
-import slash.navigation.maps.tileserver.binding.TileServerType;
+import slash.navigation.maps.tileserver.bindingmap.MapServerType;
+import slash.navigation.maps.tileserver.bindingoverlay.OverlayServerType;
 import slash.navigation.maps.tileserver.helpers.ItemPreferencesMediator;
 import slash.navigation.maps.tileserver.helpers.TileServerService;
 
 import java.io.File;
 
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
+import static slash.common.io.Transfer.formatBoolean;
 import static slash.common.io.Transfer.formatInt;
 
 /**
@@ -78,27 +80,18 @@ public class TileServerMapManager {
     public void scanTileServers() {
         tileServerService.initialize();
 
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
-                for (TileServerType type : tileServerService.getTileServers())
-                    availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
-                            // TODO fix me once the XML is different
-                            "http://#{hostname}" + type.getBaseUrl() + "#{zoom}/#{tilex}/#{tiley}" + type.getExtension(),
-                            type.getHostName(),
-                            type.getActive() == null || type.getActive(),
-                            formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
-                            type.getCopyright() != null ? type.getCopyright().value() : "Unknown"
-         ));
+        invokeInAwtEventQueue(() -> {
+            for (MapServerType type : tileServerService.getMaps())
+                availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
+                        type.getUrlPattern(), type.getHost(), formatBoolean(type.getActive()),
+                        formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
+                        type.getCopyright()));
 
-                for (TileServerType type : tileServerService.getOverlays())
-                    availableOverlaysModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
-                            // TODO fix me once the XML is different
-                            "http://#{hostname}" + type.getBaseUrl() + "#{zoom}/#{tilex}/#{tiley}" + type.getExtension(),
-                            type.getHostName(),
-                            type.getActive() == null || type.getActive(),
-                            formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
-                            type.getCopyright() != null ? type.getCopyright().value() : "Unknown"));
-            }
+            for (OverlayServerType type : tileServerService.getOverlays())
+                availableOverlaysModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
+                        type.getUrlPattern(), type.getHost(), formatBoolean(type.getActive()),
+                        formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
+                        type.getCopyright()));
         });
     }
 }

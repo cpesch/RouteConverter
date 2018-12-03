@@ -28,12 +28,55 @@ import slash.navigation.babel.BabelException;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.columbus.ColumbusV1000Device;
-import slash.navigation.common.*;
-import slash.navigation.converter.gui.actions.*;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTime;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.NumberPattern;
+import slash.navigation.common.NumberingStrategy;
+import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.converter.gui.actions.CheckForUpdateAction;
+import slash.navigation.converter.gui.actions.CompleteFlightPlanAction;
+import slash.navigation.converter.gui.actions.ConvertRouteToTrackAction;
+import slash.navigation.converter.gui.actions.ConvertTrackToRouteAction;
+import slash.navigation.converter.gui.actions.DeletePositionsAction;
+import slash.navigation.converter.gui.actions.FindPlaceAction;
+import slash.navigation.converter.gui.actions.InsertPositionsAction;
+import slash.navigation.converter.gui.actions.MoveSplitPaneDividersAction;
+import slash.navigation.converter.gui.actions.RevertPositionListAction;
+import slash.navigation.converter.gui.actions.SendErrorReportAction;
+import slash.navigation.converter.gui.actions.ShowAboutRouteConverterAction;
+import slash.navigation.converter.gui.actions.ShowDownloadsAction;
+import slash.navigation.converter.gui.actions.ShowOptionsAction;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
-import slash.navigation.converter.gui.helpers.*;
-import slash.navigation.converter.gui.models.*;
-import slash.navigation.converter.gui.panels.*;
+import slash.navigation.converter.gui.helpers.ApplicationMenu;
+import slash.navigation.converter.gui.helpers.AudioPlayer;
+import slash.navigation.converter.gui.helpers.ChecksumSender;
+import slash.navigation.converter.gui.helpers.DownloadNotifier;
+import slash.navigation.converter.gui.helpers.ElevationServiceFacade;
+import slash.navigation.converter.gui.helpers.FrameMenu;
+import slash.navigation.converter.gui.helpers.GeoTagger;
+import slash.navigation.converter.gui.helpers.GeocodingServiceFacade;
+import slash.navigation.converter.gui.helpers.InsertPositionFacade;
+import slash.navigation.converter.gui.helpers.MapViewImplementation;
+import slash.navigation.converter.gui.helpers.PositionAugmenter;
+import slash.navigation.converter.gui.helpers.ReopenMenu;
+import slash.navigation.converter.gui.helpers.RouteServiceOperator;
+import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
+import slash.navigation.converter.gui.helpers.TagStrategy;
+import slash.navigation.converter.gui.helpers.UndoMenu;
+import slash.navigation.converter.gui.helpers.UpdateChecker;
+import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.converter.gui.models.FixMapModeModel;
+import slash.navigation.converter.gui.models.GoogleMapsServerModel;
+import slash.navigation.converter.gui.models.ProfileModeModel;
+import slash.navigation.converter.gui.models.TimeZoneModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
+import slash.navigation.converter.gui.models.UrlDocument;
+import slash.navigation.converter.gui.panels.BrowsePanel;
+import slash.navigation.converter.gui.panels.ConvertPanel;
+import slash.navigation.converter.gui.panels.PanelInTab;
+import slash.navigation.converter.gui.panels.PhotoPanel;
+import slash.navigation.converter.gui.panels.PointOfInterestPanel;
 import slash.navigation.converter.gui.profileview.ProfileView;
 import slash.navigation.converter.gui.profileview.XAxisModeMenu;
 import slash.navigation.converter.gui.profileview.YAxisModeMenu;
@@ -45,7 +88,11 @@ import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
-import slash.navigation.gui.actions.*;
+import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.actions.ExitAction;
+import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.actions.HelpTopicsAction;
+import slash.navigation.gui.actions.SingletonDialogAction;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.mapview.AbstractMapViewListener;
@@ -57,7 +104,6 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -68,12 +114,21 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static com.intellij.uiDesigner.core.GridConstraints.*;
+import static com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER;
+import static com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH;
+import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW;
+import static com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK;
 import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
@@ -83,7 +138,11 @@ import static java.util.Collections.singletonList;
 import static java.util.Locale.GERMANY;
 import static java.util.Locale.US;
 import static javax.help.CSH.setHelpIDString;
-import static javax.swing.JOptionPane.*;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
+import static javax.swing.JOptionPane.QUESTION_MESSAGE;
+import static javax.swing.JOptionPane.WARNING_MESSAGE;
+import static javax.swing.JOptionPane.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -92,8 +151,17 @@ import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.LocaleHelper.DENMARK;
 import static slash.common.helpers.LocaleHelper.SERBIA;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Files.*;
-import static slash.common.system.Platform.*;
+import static slash.common.io.Files.findExistingPath;
+import static slash.common.io.Files.printArrayToDialogString;
+import static slash.common.io.Files.shortenPath;
+import static slash.common.io.Files.toUrls;
+import static slash.common.system.Platform.getJava;
+import static slash.common.system.Platform.getMaximumMemory;
+import static slash.common.system.Platform.getOperationSystem;
+import static slash.common.system.Platform.getPlatform;
+import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
+import static slash.common.system.Platform.isMac;
+import static slash.common.system.Platform.isWindows;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
@@ -109,7 +177,9 @@ import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Extract;
 import static slash.navigation.gui.helpers.JMenuHelper.findItem;
 import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
-import static slash.navigation.gui.helpers.UIHelper.*;
+import static slash.navigation.gui.helpers.UIHelper.patchUIManager;
+import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
+import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 /**
  * A small graphical user interface for the route conversion.
@@ -298,11 +368,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 "FileChooser.acceptAllFileFilterText");
         initializePreferences(preferences);
 
-        addExitListener(new ExitListener() {
-            public boolean canExit(EventObject event) {
-                return getConvertPanel().confirmDiscard();
-            }
-        });
+        addExitListener(event -> getConvertPanel().confirmDiscard());
 
         tabInitializer = new LazyTabInitializer();
         tabbedPane.addChangeListener(tabInitializer);
@@ -336,42 +402,32 @@ public abstract class RouteConverter extends SingleFrameApplication {
         if (isMac())
             new ApplicationMenu().addApplicationMenuItems();
 
-        new Thread(new Runnable() {
-            public void run() {
-                invokeLater(new Runnable() {
-                    public void run() {
-                        openFrame(contentPane);
-                    }
-                });
-            }
-        }, "FrameOpener").start();
+        new Thread(() -> invokeLater(() -> openFrame(contentPane)), "FrameOpener").start();
     }
 
     private void openMapAndProfileView() {
         try {
-            File file = new File(getApplicationDirectory("tileservers"), "default-offline.xml");
-            getDownloadManager().executeDownload("RouteConverter Offline Tile Servers", getApiUrl() + V1 + "tileservers-offline/" + FORMAT_XML, Copy, file, new Runnable() {
-                public void run() {
+            getDownloadManager().removeDownload(getApiUrl() + V1 + "tileservers/" + FORMAT_XML);
+            getDownloadManager().removeDownload(getApiUrl() + V1 + "tileservers-offline/" + FORMAT_XML);
+
+            File mapServers = new File(getApplicationDirectory("tileservers"), "mapservers.xml");
+            getDownloadManager().executeDownload("RouteConverter Map Servers", getApiUrl() + V1 + "mapservers/" + FORMAT_XML, Copy, mapServers, () -> {
+
+                File overlayServers = new File(getApplicationDirectory("tileservers"), "overlayservers.xml");
+                getDownloadManager().executeDownload("RouteConverter Overlay Servers", getApiUrl() + V1 + "overlayservers/" + FORMAT_XML, Copy, overlayServers, () -> {
+
                     getTileServerMapManager().scanTileServers();
 
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            setMapView(getMapViewPreference());
+                    invokeLater(() -> {
+                        setMapView(getMapViewPreference());
 
-                            invokeLater(new Runnable() {
-                                public void run() {
-                                    openProfileView();
+                        invokeLater(() -> {
+                            openProfileView();
 
-                                    invokeLater(new Runnable() {
-                                        public void run() {
-                                            initializeDividerListeners();
-                                        }
-                                    });
-                                }
-                            });
-                        }
+                            invokeLater(this::initializeDividerListeners);
+                        });
                     });
-                }
+                });
             });
         } catch (Exception e) {
             log.warning("Could not download tile servers: " + e);
@@ -633,65 +689,53 @@ public abstract class RouteConverter extends SingleFrameApplication {
     // dialogs for external components
 
     public void handleBabelError(final BabelException e) {
-        invokeLater(new Runnable() {
-            public void run() {
-                showMessageDialog(frame,
-                        MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle(),
-                        ERROR_MESSAGE);
-            }
-        });
+        invokeLater(() -> showMessageDialog(frame,
+                MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle(),
+                ERROR_MESSAGE));
     }
 
     public void handleOpenError(final Throwable throwable, final String path) {
-        invokeLater(new Runnable() {
-            public void run() {
-                log.severe("Open error from " + path + ": " + throwable + "\n" + printStackTrace(throwable));
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable)));
-                labelOpenError.addMouseListener(new MouseAdapter() {
-                    public void mouseClicked(MouseEvent me) {
-                        startMail(frame);
-                    }
-                });
-                showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
-            }
+        invokeLater(() -> {
+            log.severe("Open error from " + path + ": " + throwable + "\n" + printStackTrace(throwable));
+            JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable)));
+            labelOpenError.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    startMail(frame);
+                }
+            });
+            showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
         });
     }
 
     public void handleOpenError(final Throwable throwable, final List<URL> urls) {
-        invokeLater(new Runnable() {
-            public void run() {
-                String dialogUrls = printArrayToDialogString(urls.toArray(), true);
-                log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + printStackTrace(throwable));
-                JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable)));
-                labelOpenError.addMouseListener(new MouseAdapter() {
-                    public void mouseClicked(MouseEvent me) {
-                        startMail(frame);
-                    }
-                });
-                showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
-            }
+        invokeLater(() -> {
+            String dialogUrls = printArrayToDialogString(urls.toArray(), true);
+            log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + printStackTrace(throwable));
+            JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable)));
+            labelOpenError.addMouseListener(new MouseAdapter() {
+                public void mouseClicked(MouseEvent me) {
+                    startMail(frame);
+                }
+            });
+            showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
         });
     }
 
     public void handleUnsupportedFormat(final String path) {
-        invokeLater(new Runnable() {
-            public void run() {
-                log.severe("Unsupported format: " + path);
-                showMessageDialog(frame,
-                        MessageFormat.format(getBundle().getString("unsupported-format"), shortenPath(path, 60)),
-                        frame.getTitle(), WARNING_MESSAGE);
-            }
+        invokeLater(() -> {
+            log.severe("Unsupported format: " + path);
+            showMessageDialog(frame,
+                    MessageFormat.format(getBundle().getString("unsupported-format"), shortenPath(path, 60)),
+                    frame.getTitle(), WARNING_MESSAGE);
         });
     }
 
     public void handleFileNotFound(final String path) {
-        invokeLater(new Runnable() {
-            public void run() {
-                log.severe("File not found: " + path);
-                showMessageDialog(frame,
-                        MessageFormat.format(getBundle().getString("file-not-found"), shortenPath(path, 60)),
-                        frame.getTitle(), WARNING_MESSAGE);
-            }
+        invokeLater(() -> {
+            log.severe("File not found: " + path);
+            showMessageDialog(frame,
+                    MessageFormat.format(getBundle().getString("file-not-found"), shortenPath(path, 60)),
+                    frame.getTitle(), WARNING_MESSAGE);
         });
     }
 
@@ -1021,37 +1065,31 @@ public abstract class RouteConverter extends SingleFrameApplication {
         private Map<Component, PanelInTab> initialized = new HashMap<>();
 
         LazyTabInitializer() {
-            lazyInitializers.put(convertPanel, new Runnable() {
-                public void run() {
-                    PanelInTab panel = new ConvertPanel();
-                    convertPanel.add(panel.getRootComponent());
-                    initialized.put(convertPanel, panel);
-                }
+            lazyInitializers.put(convertPanel, () -> {
+                PanelInTab panel = new ConvertPanel();
+                convertPanel.add(panel.getRootComponent());
+                initialized.put(convertPanel, panel);
             });
             addTab(pointOfInterestPanel, PointOfInterestPanel.class, isPointsOfInterestEnabled());
             addTab(photoPanel, PhotoPanel.class, isPhotosEnabled());
-            lazyInitializers.put(browsePanel, new Runnable() {
-                public void run() {
-                    PanelInTab panel = new BrowsePanel();
-                    browsePanel.add(panel.getRootComponent());
-                    initialized.put(browsePanel, panel);
-                }
+            lazyInitializers.put(browsePanel, () -> {
+                PanelInTab panel = new BrowsePanel();
+                browsePanel.add(panel.getRootComponent());
+                initialized.put(browsePanel, panel);
             });
         }
 
         private void addTab(final JPanel panel, final Class<? extends PanelInTab> panelInTabClass, boolean includePanel) {
             if (includePanel)
-                lazyInitializers.put(panel, new Runnable() {
-                    public void run() {
-                        PanelInTab panelInTab;
-                        try {
-                            panelInTab = panelInTabClass.getDeclaredConstructor().newInstance();
-                        } catch (InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
-                            throw new RuntimeException(e);
-                        }
-                        panel.add(panelInTab.getRootComponent());
-                        initialized.put(panel, panelInTab);
+                lazyInitializers.put(panel, () -> {
+                    PanelInTab panelInTab;
+                    try {
+                        panelInTab = panelInTabClass.getDeclaredConstructor().newInstance();
+                    } catch (InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+                        throw new RuntimeException(e);
                     }
+                    panel.add(panelInTab.getRootComponent());
+                    initialized.put(panel, panelInTab);
                 });
             else {
                 for (int i = 0; i < tabbedPane.getTabCount(); i++) {
@@ -1106,11 +1144,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
             actionManager.setLocalName(panel.getLocalName());
             frame.getRootPane().setDefaultButton(panel.getDefaultButton());
             panel.initializeSelection();
-            invokeLater(new Runnable() {
-                public void run() {
-                    panel.getFocusComponent().grabFocus();
-                    panel.getFocusComponent().requestFocus();
-                }
+            invokeLater(() -> {
+                panel.getFocusComponent().grabFocus();
+                panel.getFocusComponent().requestFocus();
             });
         }
     }
@@ -1201,10 +1237,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         downloadManager.addDownloadListener(new ChecksumSender());
         downloadManager.addDownloadListener(new DownloadNotifier());
         dataSourceManager = new DataSourceManager(downloadManager);
-        timeZoneModel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                ColumbusV1000Device.setTimeZone(timeZoneModel.getTimeZoneId()); // for TimeAlbum
-            }
+        timeZoneModel.addChangeListener(e -> {
+            ColumbusV1000Device.setTimeZone(timeZoneModel.getTimeZoneId()); // for TimeAlbum
         });
         tileServerMapManager = new TileServerMapManager(getTileServersDirectory());
     }
@@ -1254,11 +1288,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         getContext().setHelpBrokerUrl(System.getProperty("help", "https://www.routeconverter.com/javahelp.hs"));
 
         // delay JavaHelp initialization
-        ActionListener actionListener = new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                getContext().getActionManager().run("help-topics", event);
-            }
-        };
+        ActionListener actionListener = event -> getContext().getActionManager().run("help-topics", event);
         frame.getRootPane().registerKeyboardAction(actionListener,
                 getKeyStroke(VK_HELP, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         frame.getRootPane().registerKeyboardAction(actionListener,
@@ -1305,26 +1335,24 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
         }
 
-        new Thread(new Runnable() {
-            public void run() {
-                scanLocalMapsAndThemes();
+        new Thread(() -> {
+            scanLocalMapsAndThemes();
 
-                try {
-                    getDataSourceManager().update(getEditionId(), getApiUrl(), getDataSourcesDirectory());
-                } catch (Exception e) {
-                    log.warning(format("Could not update datasource manager: %s, %s", e, printStackTrace(e)));
-                    getContext().getNotificationManager().showNotification(MessageFormat.format(
-                            getBundle().getString("datasource-update-error"), getLocalizedMessage(e)), null);
-                }
-
-                updateElevationServices();
-                updateRoutingServices();
-                downloadThirdparty();
-
-                scanRemoteMapsAndThemes();
-                scanForFilesMissingInQueue();
-                scanForOutdatedFilesInQueue();
+            try {
+                getDataSourceManager().update(getEditionId(), getApiUrl(), getDataSourcesDirectory());
+            } catch (Exception e) {
+                log.warning(format("Could not update datasource manager: %s, %s", e, printStackTrace(e)));
+                getContext().getNotificationManager().showNotification(MessageFormat.format(
+                        getBundle().getString("datasource-update-error"), getLocalizedMessage(e)), null);
             }
+
+            updateElevationServices();
+            updateRoutingServices();
+            downloadThirdparty();
+
+            scanRemoteMapsAndThemes();
+            scanForFilesMissingInQueue();
+            scanForOutdatedFilesInQueue();
         }, "DataSourceUpdater").start();
     }
 

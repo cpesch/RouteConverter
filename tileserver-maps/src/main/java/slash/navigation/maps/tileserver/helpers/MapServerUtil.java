@@ -20,8 +20,8 @@
 package slash.navigation.maps.tileserver.helpers;
 
 import slash.common.helpers.JAXBHelper;
-import slash.navigation.maps.tileserver.binding.CatalogType;
-import slash.navigation.maps.tileserver.binding.ObjectFactory;
+import slash.navigation.maps.tileserver.bindingmap.CatalogType;
+import slash.navigation.maps.tileserver.bindingmap.ObjectFactory;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
@@ -30,7 +30,7 @@ import java.io.InputStream;
 
 import static slash.common.helpers.JAXBHelper.newContext;
 
-public class TileServerUtil {
+public class MapServerUtil {
     private static Unmarshaller newUnmarshaller() {
         return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));
     }

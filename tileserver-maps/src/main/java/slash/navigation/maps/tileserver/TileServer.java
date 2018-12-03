@@ -35,18 +35,18 @@ public class TileServer implements Item {
     private final String id;
     private final String description;
     private final String urlPattern;
-    private final List<String> hostNames;
+    private final List<String> hosts;
     private final boolean active;
     private final int minZoom;
     private final int maxZoom;
     private final String copyright;
 
-    public TileServer(String id, String description, String urlPattern, List<String> hostNames,
+    public TileServer(String id, String description, String urlPattern, List<String> hosts,
                       boolean active, int minZoom, int maxZoom, String copyright) {
         this.id = id;
         this.description = description;
         this.urlPattern = urlPattern;
-        this.hostNames = hostNames;
+        this.hosts = hosts;
         this.active = active;
         this.minZoom = minZoom;
         this.maxZoom = maxZoom;
@@ -62,15 +62,15 @@ public class TileServer implements Item {
     }
 
     public String getUrl() {
-        return printArrayToDialogString(getHostNames().toArray(), false);
+        return printArrayToDialogString(getHosts().toArray(), false);
     }
 
     public String getUrlPattern() {
         return urlPattern;
     }
 
-    public List<String> getHostNames() {
-        return hostNames;
+    public List<String> getHosts() {
+        return hosts;
     }
 
     public boolean isActive() {
