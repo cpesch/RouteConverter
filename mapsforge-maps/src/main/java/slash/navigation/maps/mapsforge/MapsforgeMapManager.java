@@ -212,7 +212,6 @@ public class MapsforgeMapManager {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 availableOfflineMapsModel.clear();
-                initializeOpenStreetMap();
             }
         });
 
