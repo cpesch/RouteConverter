@@ -705,7 +705,7 @@ public abstract class BrowserMapView implements MapView {
                     buffer.append(", ");
             }
             String url = AlephFormatter.str(tileServer.getUrlPattern())
-                    .arg("hostname", "\" + tileServer + \"")
+                    .arg("host", "\" + tileServer + \"")
                     .arg("tilex", "\" + coordinates.x + \"")
                     .arg("tiley", "\" + coordinates.y + \"")
                     .arg("zoom", "\" + zoom + \"")

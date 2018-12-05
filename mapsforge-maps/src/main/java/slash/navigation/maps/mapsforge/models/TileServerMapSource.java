@@ -79,7 +79,7 @@ public class TileServerMapSource extends AbstractTileSource {
     public URL getTileUrl(Tile tile) throws MalformedURLException {
         // Integer.toString() avoids points that group digits
         String url = AlephFormatter.str(tileServer.getUrlPattern())
-                .arg("hostname", getHostName())
+                .arg("host", getHostName())
                 .arg("tilex", Integer.toString(tile.tileX))
                 .arg("tiley", Integer.toString(tile.tileY))
                 .arg("zoom", Integer.toString(tile.zoomLevel))
