@@ -200,6 +200,7 @@ public class RouteRenderer {
             }
             if (future.isRequiresProcessing()) {
                 mapViewCallback.showProcessNotification();
+                // TODO need notifications during processing of GraphHopper .pbf files
                 future.process();
             }
         }
