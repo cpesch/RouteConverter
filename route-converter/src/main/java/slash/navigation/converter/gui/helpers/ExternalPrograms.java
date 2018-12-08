@@ -125,10 +125,6 @@ public class ExternalPrograms {
         }
     }
 
-    public static void startMail(Window window) {
-        startMail(window, isGerman() ? "mailto:support@routeconverter.de" : "mailto:support@routeconverter.com");
-    }
-
     private static void startMail(Window window, String uri) {
         try {
             if (!isDesktopSupported())

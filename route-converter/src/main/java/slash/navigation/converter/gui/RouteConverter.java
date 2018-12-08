@@ -167,7 +167,6 @@ import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startMail;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX8;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
 import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIONS;
@@ -697,13 +696,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     public void handleOpenError(final Throwable throwable, final String path) {
         invokeLater(() -> {
             log.severe("Open error from " + path + ": " + throwable + "\n" + printStackTrace(throwable));
-            JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable)));
-            labelOpenError.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent me) {
-                    startMail(frame);
-                }
-            });
-            showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
+            showMessageDialog(frame, new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable))),
+                    frame.getTitle(), ERROR_MESSAGE);
         });
     }
 
@@ -711,13 +705,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         invokeLater(() -> {
             String dialogUrls = printArrayToDialogString(urls.toArray(), true);
             log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + printStackTrace(throwable));
-            JLabel labelOpenError = new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable)));
-            labelOpenError.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent me) {
-                    startMail(frame);
-                }
-            });
-            showMessageDialog(frame, labelOpenError, frame.getTitle(), ERROR_MESSAGE);
+            showMessageDialog(frame, new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable))),
+                    frame.getTitle(), ERROR_MESSAGE);
         });
     }
 
