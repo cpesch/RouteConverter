@@ -444,29 +444,32 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
 
         mapView = createMapView(mapViewImplementation.getClassName());
-        if (mapView != null) {
-            mapView.addMapViewListener(calculatedDistanceNotifier);
-        }
-
-        getMapView().initialize(getConvertPanel().getPositionsModel(),
-                getConvertPanel().getPositionsSelectionModel(),
-                getConvertPanel().getCharacteristicsModel(),
-                getMapViewCallback(),
-                getShowAllPositionsAfterLoading(),
-                getRecenterAfterZooming(),
-                getShowCoordinates(),
-                getShowWaypointDescription(),
-                getRouteColorModel(),
-                getTrackColorModel(),
-                getUnitSystemModel());
-
-        @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-        Throwable cause = getMapView().getInitializationCause();
-        if (getMapView().getComponent() == null || cause != null) {
+        if (mapView == null) {
             mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
-                    printStackTrace(cause).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+                    printStackTrace(new UnsupportedOperationException()).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+
         } else {
-            mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
+            getMapView().addMapViewListener(calculatedDistanceNotifier);
+            getMapView().initialize(getConvertPanel().getPositionsModel(),
+                    getConvertPanel().getPositionsSelectionModel(),
+                    getConvertPanel().getCharacteristicsModel(),
+                    getMapViewCallback(),
+                    getShowAllPositionsAfterLoading(),
+                    getRecenterAfterZooming(),
+                    getShowCoordinates(),
+                    getShowWaypointDescription(),
+                    getRouteColorModel(),
+                    getTrackColorModel(),
+                    getUnitSystemModel());
+
+            @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+            Throwable cause = getMapView().getInitializationCause();
+            if (getMapView().getComponent() == null || cause != null) {
+                mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
+                        printStackTrace(cause).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+            } else {
+                mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
+            }
         }
         mapPanel.revalidate();
     }
