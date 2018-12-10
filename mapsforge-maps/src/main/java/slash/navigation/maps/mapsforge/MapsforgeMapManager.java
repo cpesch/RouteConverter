@@ -209,11 +209,7 @@ public class MapsforgeMapManager {
     }
 
     public synchronized void scanMaps() throws IOException {
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
-                availableOfflineMapsModel.clear();
-            }
-        });
+        invokeInAwtEventQueue(() -> availableOfflineMapsModel.clear());
 
         long start = currentTimeMillis();
 
@@ -226,11 +222,9 @@ public class MapsforgeMapManager {
                 continue;
 
             checkFile(file);
-            invokeInAwtEventQueue(new Runnable() {
-                public void run() {
-                    availableOfflineMapsModel.addOrUpdateItem(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file));
-                }
-            });
+            invokeInAwtEventQueue(() ->
+                availableOfflineMapsModel.addOrUpdateItem(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file))
+            );
         }
 
         long end = currentTimeMillis();
@@ -239,11 +233,9 @@ public class MapsforgeMapManager {
     }
 
     public synchronized void scanThemes() throws IOException {
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
-                availableThemesModel.clear();
-                initializeBuiltinThemes();
-            }
+        invokeInAwtEventQueue(() -> {
+            availableThemesModel.clear();
+            initializeBuiltinThemes();
         });
 
         long start = currentTimeMillis();
@@ -254,11 +246,9 @@ public class MapsforgeMapManager {
         for (final File file : themeFilesArray) {
             checkFile(file);
             final ExternalRenderTheme renderTheme = new ExternalRenderTheme(file);
-            invokeInAwtEventQueue(new Runnable() {
-                public void run() {
-                    availableThemesModel.addOrUpdateItem(new VectorTheme(removePrefix(themesDirectory, file), file.toURI().toString(), renderTheme));
-                }
-            });
+            invokeInAwtEventQueue(() ->
+                availableThemesModel.addOrUpdateItem(new VectorTheme(removePrefix(themesDirectory, file), file.toURI().toString(), renderTheme))
+            );
         }
 
         long end = currentTimeMillis();
@@ -272,21 +262,15 @@ public class MapsforgeMapManager {
 
         List<RemoteMap> maps = mapFilesService.getMaps();
         RemoteMap[] remoteMaps = maps.toArray(new RemoteMap[0]);
-        sort(remoteMaps, new Comparator<RemoteResource>() {
-            public int compare(RemoteResource r1, RemoteResource r2) {
-                return (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl());
-            }
-        });
+        sort(remoteMaps, (Comparator<RemoteResource>) (r1, r2) ->
+                (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl()));
         for (RemoteMap remoteMap : remoteMaps)
             downloadableMapsModel.addOrUpdateItem(remoteMap);
 
         List<RemoteTheme> themes = mapFilesService.getThemes();
         RemoteTheme[] remoteThemes = themes.toArray(new RemoteTheme[0]);
-        sort(remoteThemes, new Comparator<RemoteResource>() {
-            public int compare(RemoteResource r1, RemoteResource r2) {
-                return (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl());
-            }
-        });
+        sort(remoteThemes, (Comparator<RemoteResource>) (r1, r2) ->
+                (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl()));
         for (RemoteTheme remoteTheme : remoteThemes)
             downloadableThemesModel.addOrUpdateItem(remoteTheme);
     }
