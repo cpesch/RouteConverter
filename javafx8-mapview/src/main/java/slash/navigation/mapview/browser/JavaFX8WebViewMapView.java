@@ -87,16 +87,9 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
         try {
             final WebView webView = new WebView();
             double browserScaleFactor = getBrowserScaleFactor();
-            if (browserScaleFactor != 1.0) {
-                // allow to compile code with Java 7; with Java 8 this would simply be
-                // webView.setZoom(browserScaleFactor);
-                try {
-                    Method method = WebView.class.getDeclaredMethod("setZoom", double.class);
-                    method.invoke(webView, browserScaleFactor);
-                } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                    // intentionally do nothing
-                }
-            }
+            if (browserScaleFactor != 1.0)
+                webView.setZoom(browserScaleFactor);
+
             Group group = new Group();
             group.getChildren().add(webView);
             panel.setScene(new Scene(group));
@@ -182,25 +175,21 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
     protected void initializeBrowser() {
         panel = new JFXPanel();
 
-        runLater(new Runnable() {
-            public void run() {
-                webView = createWebView();
-                if (webView == null)
-                    return;
+        runLater(() -> {
+            webView = createWebView();
+            if (webView == null)
+                return;
 
-                log.info("Using JavaFX WebView to create map view: " + JavaFX8WebViewMapView.this.getClass().getName());
-                initializeWebPage();
-            }
+            log.info("Using JavaFX WebView to create map view: " + JavaFX8WebViewMapView.this.getClass().getName());
+            initializeWebPage();
         });
     }
 
     protected void initializeWebPage() {
         log.info("Loading Google Maps API from " + getGoogleMapsServerApiUrl());
-        runLater(new Runnable() {
-            public void run() {
-                if (!loadWebPage())
-                    dispose();
-            }
+        runLater(() -> {
+            if (!loadWebPage())
+                dispose();
         });
     }
 
