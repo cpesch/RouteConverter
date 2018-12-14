@@ -67,7 +67,7 @@ public class PositionHelper {
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
         double distanceInMeters = unitSystem.valueToUnit(distance);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInMeters)
-            return format("%d %s", round(distanceInMeters), unitSystem.getElevationName());
+            return format("%d %s", round(distanceInMeters), unitSystem.getDistanceName());
         double distanceInKiloMeters = unitSystem.distanceToUnit(distance / 1000.0);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInHundredMeters)
             return format("%s %s", roundFraction(distanceInKiloMeters, 1), unitSystem.getDistanceName());
