@@ -20,6 +20,7 @@
 
 package slash.navigation.base;
 
+import org.hamcrest.MatcherAssert;
 import org.junit.Test;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
@@ -69,7 +70,7 @@ public class TimeZoneTest {
         dateFormat.setTimeZone(java.getTimeZone());
         assertEquals(TimeZone.getTimeZone("GMT+00:00"), dateFormat.getTimeZone());
         String javaTime = dateFormat.format(java.getTime().getTime());
-        assertThat(javaTime, matchesPattern("6/7/07,? 2:04 PM"));
+        MatcherAssert.assertThat(javaTime, matchesPattern("6/7/07,? 2:04 PM"));
         Calendar parsed = parseXMLTime(xml).getCalendar();
         assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
         assertCalendarEquals(parsed, java);
@@ -84,7 +85,7 @@ public class TimeZoneTest {
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
         dateFormat.setTimeZone(java.getTimeZone());
         String javaTime = dateFormat.format(java.getTime().getTime());
-        assertThat(javaTime, matchesPattern("6/7/07,? 2:04 PM"));
+        MatcherAssert.assertThat(javaTime, matchesPattern("6/7/07,? 2:04 PM"));
         Calendar parsed = parseXMLTime(xml).getCalendar();
         assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
         java.roll(Calendar.HOUR, 2);
