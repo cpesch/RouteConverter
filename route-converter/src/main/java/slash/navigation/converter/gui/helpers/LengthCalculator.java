@@ -28,8 +28,6 @@ import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import javax.swing.event.ListDataEvent;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -73,20 +71,18 @@ public class LengthCalculator {
     public void initialize(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
         this.positionsModel = positionsModel;
 
-        positionsModel.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                // ignored updates on columns not relevant for length calculation
-                if (e.getType() == UPDATE &&
-                        !isFirstToLastRow(e) &&
-                        !(e.getColumn() == LONGITUDE_COLUMN_INDEX ||
-                                e.getColumn() == LATITUDE_COLUMN_INDEX ||
-                                e.getColumn() == ALL_COLUMNS))
-                    return;
-                if (getPositionsModel().isContinousRange())
-                    return;
+        positionsModel.addTableModelListener(e -> {
+            // ignored updates on columns not relevant for length calculation
+            if (e.getType() == UPDATE &&
+                    !isFirstToLastRow(e) &&
+                    !(e.getColumn() == LONGITUDE_COLUMN_INDEX ||
+                            e.getColumn() == LATITUDE_COLUMN_INDEX ||
+                            e.getColumn() == ALL_COLUMNS))
+                return;
+            if (getPositionsModel().isContinousRange())
+                return;
 
-                calculateDistance();
-            }
+            calculateDistance();
         });
 
         characteristicsModel.addListDataListener(new AbstractListDataListener() {
@@ -186,24 +182,22 @@ public class LengthCalculator {
     }
 
     private void initialize() {
-        lengthCalculator = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    synchronized (notificationMutex) {
-                        try {
-                            notificationMutex.wait(1000);
-                        } catch (InterruptedException e) {
-                            // ignore this
-                        }
-
-                        if (!running)
-                            return;
-                        if (!recalculate)
-                            continue;
-                        recalculate = false;
+        lengthCalculator = new Thread(() -> {
+            while (true) {
+                synchronized (notificationMutex) {
+                    try {
+                        notificationMutex.wait(1000);
+                    } catch (InterruptedException e) {
+                        // ignore this
                     }
-                    recalculateDistance();
+
+                    if (!running)
+                        return;
+                    if (!recalculate)
+                        continue;
+                    recalculate = false;
                 }
+                recalculateDistance();
             }
         }, "LengthCalculator");
         lengthCalculator.start();
