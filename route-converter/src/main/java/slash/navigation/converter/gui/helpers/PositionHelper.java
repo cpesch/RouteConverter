@@ -44,6 +44,7 @@ import static slash.common.io.Transfer.roundFraction;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.base.WaypointType.Voice;
+import static slash.navigation.common.UnitSystem.Metric;
 
 /**
  * A helper for rendering aspects of {@link BaseNavigationPosition}.
@@ -66,8 +67,8 @@ public class PositionHelper {
             return "";
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
         double distanceInMeters = unitSystem.valueToUnit(distance);
-        if (abs(distanceInMeters) < maximumDistanceDisplayedInMeters)
-            return format("%d %s", round(distanceInMeters), unitSystem.getDistanceName());
+        if (abs(distanceInMeters) < maximumDistanceDisplayedInMeters && unitSystem.equals(Metric))
+            return format("%d %s", round(distanceInMeters), "m");
         double distanceInKiloMeters = unitSystem.distanceToUnit(distance / 1000.0);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInHundredMeters)
             return format("%s %s", roundFraction(distanceInKiloMeters, 1), unitSystem.getDistanceName());
