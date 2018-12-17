@@ -468,6 +468,7 @@ public class MapsforgeMapView implements MapView {
                 if (!initialized) {
                     handleShadedHills();
                     handleMapAndThemeUpdate(true, true);
+                    handleOverlayInsertion(0, mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().getRowCount() - 1);
                     initialized = true;
                 }
             }
@@ -627,6 +628,9 @@ public class MapsforgeMapView implements MapView {
 
     private void handleOverlayDeletion(int firstRow, int lastRow) {
         for (int i = lastRow; i >= firstRow; i--) {
+            if (i >= overlaysLayer.layers.size())
+                continue;
+
             Layer layer = overlaysLayer.layers.get(i);
             TileDownloadLayer overlay = (TileDownloadLayer) layer;
             overlaysLayer.layers.remove(overlay);
