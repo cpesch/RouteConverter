@@ -38,6 +38,7 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
+import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
 
 /**
  * The base of all Map &amp; Guide Tourenplaner Route formats.
@@ -232,7 +233,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
                 writer.println(ROUTE_NAME + NAME_VALUE_SEPARATOR + asRouteName(route.getName()));
                 double length = route.getDistance();
                 if(length > 0)
-                    length = length / 1000.0;
+                    length = length / METERS_OF_A_KILOMETER;
                 writer.println(EXPECTED_DISTANCE + NAME_VALUE_SEPARATOR + (int)length);
 
                 int index = 1;

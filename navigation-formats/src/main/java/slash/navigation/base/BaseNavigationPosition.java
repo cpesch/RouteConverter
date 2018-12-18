@@ -44,6 +44,7 @@ import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.common.Bearing.EARTH_RADIUS;
 import static slash.navigation.common.Bearing.calculateBearing;
+import static slash.navigation.common.UnitConversion.MILLISECONDS_OF_A_SECOND;
 
 /**
  * The base of all navigation positions.
@@ -115,7 +116,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     public Double calculateOrthogonalDistance(NavigationPosition pointA, NavigationPosition pointB) {
         if (hasCoordinates() && pointA.hasCoordinates() && pointB.hasCoordinates()) {
             Bearing bearingAD = calculateBearing(pointA.getLongitude(), pointA.getLatitude(), getLongitude(), getLatitude());
-            Double distanceAtoD = bearingAD.getDistance();
+            double distanceAtoD = bearingAD.getDistance();
             double courseAtoD = toRadians(bearingAD.getAngle());
             double courseAtoB = toRadians(pointA.calculateAngle(pointB));
             return asin(sin(distanceAtoD / EARTH_RADIUS) *
@@ -126,7 +127,7 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
 
     public Double calculateSpeed(NavigationPosition other) {
         if (hasTime() && other.hasTime()) {
-            double interval = abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / 1000.0;
+            double interval = abs(getTime().getTimeInMillis() - other.getTime().getTimeInMillis()) / MILLISECONDS_OF_A_SECOND;
             Double distance = calculateDistance(other);
             if (!isEmpty(distance) && interval > 0.0)
                 return distance / interval * 3.6;

@@ -37,6 +37,7 @@ import java.util.Set;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.io.Transfer.parseXMLTime;
 import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.common.UnitConversion.MILLISECONDS_OF_A_SECOND;
 import static slash.navigation.tcx.TcxUtil.marshal1;
 import static slash.navigation.tcx.TcxUtil.unmarshal1;
 
@@ -247,7 +248,7 @@ public class Tcx1Format extends TcxFormat {
         courseLapT.setAverageHeartRateBpm(getHeartBeatRate(first));
         courseLapT.setDistanceMeters(route.getDistance());
         courseLapT.setIntensity(IntensityT.fromValue("Active"));
-        courseLapT.setTotalTimeSeconds(route.getTime() / 1000.0);
+        courseLapT.setTotalTimeSeconds(route.getTime() / MILLISECONDS_OF_A_SECOND);
 
         if (first != null) {
             courseLapT.setBeginPosition(createPosition(first));
