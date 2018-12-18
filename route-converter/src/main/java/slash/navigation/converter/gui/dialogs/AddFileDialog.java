@@ -44,6 +44,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Files.createReadablePath;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
 /**
@@ -81,7 +82,7 @@ public class AddFileDialog extends SimpleDialog {
         labelLabel.setText(format(RouteConverter.getBundle().getString("add-file-label"), categoryTreeNode.getName()));
         textFieldFile.setText(createReadablePath(file));
         if (length != null)
-            textFieldLength.setText(formatDoubleAsString(length / 1000.0, 1));
+            textFieldLength.setText(formatDoubleAsString(length / METERS_OF_A_KILOMETER, 1));
         textFieldDescription.setText(description);
 
         buttonAdd.addActionListener(new DialogAction(this) {

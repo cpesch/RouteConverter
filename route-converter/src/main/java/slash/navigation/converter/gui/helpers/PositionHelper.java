@@ -44,6 +44,7 @@ import static slash.common.io.Transfer.roundFraction;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.base.WaypointType.Voice;
+import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
 import static slash.navigation.common.UnitSystem.Metric;
 
 /**
@@ -69,7 +70,7 @@ public class PositionHelper {
         double distanceInMeters = unitSystem.valueToUnit(distance);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInMeters && unitSystem.equals(Metric))
             return format("%d %s", round(distanceInMeters), "m");
-        double distanceInKiloMeters = unitSystem.distanceToUnit(distance / 1000.0);
+        double distanceInKiloMeters = unitSystem.distanceToUnit(distance / METERS_OF_A_KILOMETER);
         if (abs(distanceInMeters) < maximumDistanceDisplayedInHundredMeters)
             return format("%s %s", roundFraction(distanceInKiloMeters, 1), unitSystem.getDistanceName());
         return format("%d %s", round(distanceInKiloMeters), unitSystem.getDistanceName());

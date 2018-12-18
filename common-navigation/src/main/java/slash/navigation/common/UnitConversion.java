@@ -48,7 +48,8 @@ public class UnitConversion {
     private static final double KILOMETER_OF_A_STATUTE_MILE = 1.609344;
     public static final double METERS_OF_A_KILOMETER = 1000.0;
     private static final int SECONDS_OF_A_MINUTE = 60;
-    public static final int SECONDS_OF_AN_HOUR = 60 * SECONDS_OF_A_MINUTE;
+    private static final int SECONDS_OF_AN_HOUR = 60 * SECONDS_OF_A_MINUTE;
+    public static final double MILLISECONDS_OF_A_SECOND = 1000.0;
 
     public static Double nmea2degrees(ValueAndOrientation nmea) {
         if(nmea == null)
