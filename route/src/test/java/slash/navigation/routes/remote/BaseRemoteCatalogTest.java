@@ -56,7 +56,8 @@ public abstract class BaseRemoteCatalogTest {
 
     @AfterClass
     public static void tearDown() throws Exception {
-        catalog.deleteCategory(test.getHref());
+        if (catalog != null)
+            catalog.deleteCategory(test.getHref());
         catalog = null;
     }
 
