@@ -25,7 +25,7 @@
     </repositories>
 
     <properties>
-        <poi.version>3.17</poi.version>
+        <poi.version>4.0.1</poi.version>
     </properties>
 
     <dependencies>
@@ -81,7 +81,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
-            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -93,7 +92,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
-            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>com.github.virtuald</groupId>
@@ -123,8 +121,7 @@
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
-            <version>2.6.0</version>
-            <classifier>stripped</classifier>
+            <version>3.0.2</version>
         </dependency>
     </dependencies>
 </project>

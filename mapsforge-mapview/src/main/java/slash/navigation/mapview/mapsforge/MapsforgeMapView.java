@@ -37,8 +37,8 @@ import org.mapsforge.map.layer.hills.HillsRenderConfig;
 import org.mapsforge.map.layer.hills.MemoryCachingHgtReaderTileSource;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
+import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.model.MapViewDimension;
-import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
@@ -452,7 +452,7 @@ public class MapsforgeMapView implements MapView {
             }
         }, getKeyStroke(VK_DOWN, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
 
-        final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        final IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setZoomLevelMin(MINIMUM_ZOOM_LEVEL);
         mapViewPosition.setZoomLevelMax(MAXIMUM_ZOOM_LEVEL);
 
@@ -912,7 +912,7 @@ public class MapsforgeMapView implements MapView {
             zoomLevelMin = (byte) max(0, zoomForBounds(mapViewDimension.getDimension(),
                     asBoundingBox(map.getBoundingBox()), getTileSize()) - 3);
 
-        MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setZoomLevelMin(zoomLevelMin);
 
         byte zoomLevelMax = map.isVector() ? MAXIMUM_ZOOM_LEVEL : map.getTileSource().getZoomLevelMax();

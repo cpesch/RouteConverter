@@ -24,6 +24,7 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.overlay.Marker;
+import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.mapview.mapsforge.AwtGraphicMapView;
@@ -150,7 +151,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
 
     private void zoomToMousePosition(byte zoomLevelDiff, int mouseX, int mouseY) {
         LatLong mouse = projection.fromPixels(mouseX, mouseY);
-        MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setPivot(mouse);
 
         if (mapViewPosition.getZoomLevel() + zoomLevelDiff <= mapViewPosition.getZoomLevelMax() &&
