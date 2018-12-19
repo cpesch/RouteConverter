@@ -29,6 +29,7 @@ package slash.navigation.common;
  */
 public interface UnitTransfer {
     Double distanceToUnit(Double distance);
+    Double shortDistanceToUnit(Double distance);
     Double distanceToDefault(Double distance);
     Double valueToUnit(Double value);
     Double valueToDefault(Double value);

@@ -45,7 +45,6 @@ import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.base.WaypointType.Voice;
 import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
-import static slash.navigation.common.UnitSystem.Metric;
 
 /**
  * A helper for rendering aspects of {@link BaseNavigationPosition}.
@@ -56,8 +55,8 @@ import static slash.navigation.common.UnitSystem.Metric;
 public class PositionHelper {
     private static final Preferences preferences = Preferences.userNodeForPackage(PositionHelper.class);
 
-    private static final double maximumDistanceDisplayedInMeters = preferences.getDouble("maximumDistanceDisplayedInMeters", 10000.0);
-    private static final double maximumDistanceDisplayedInHundredMeters = preferences.getDouble("maximumDistanceDisplayedInHundredMeters", 200000.0);
+    private static final double maximumDistanceDisplayedInSmallUnit = preferences.getDouble("maximumDistanceDisplayedInSmallUnit", 10000.0);
+    private static final double maximumDistanceDisplayedWithFraction = preferences.getDouble("maximumDistanceDisplayedWithFraction", 200.0);
 
     private static final int KILO_BYTE = 1024;
     private static final int MEGA_BYTE = KILO_BYTE * KILO_BYTE;
@@ -67,13 +66,15 @@ public class PositionHelper {
         if (distance == null || distance <= 0.0)
             return "";
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        double distanceInMeters = unitSystem.valueToUnit(distance);
-        if (abs(distanceInMeters) < maximumDistanceDisplayedInMeters && unitSystem.equals(Metric))
-            return format("%d %s", round(distanceInMeters), "m");
-        double distanceInKiloMeters = unitSystem.distanceToUnit(distance / METERS_OF_A_KILOMETER);
-        if (abs(distanceInMeters) < maximumDistanceDisplayedInHundredMeters)
-            return format("%s %s", roundFraction(distanceInKiloMeters, 1), unitSystem.getDistanceName());
-        return format("%d %s", round(distanceInKiloMeters), unitSystem.getDistanceName());
+
+        double shortDistanceInUnit = unitSystem.shortDistanceToUnit(distance);
+        if (abs(shortDistanceInUnit) < maximumDistanceDisplayedInSmallUnit)
+            return format("%d %s", round(shortDistanceInUnit), unitSystem.getShortDistanceName());
+
+        double distanceInUnit = unitSystem.distanceToUnit(distance);
+        if (abs(distanceInUnit) < maximumDistanceDisplayedWithFraction)
+            return format("%s %s", roundFraction(distanceInUnit, 1), unitSystem.getDistanceName());
+        return format("%d %s", round(distanceInUnit), unitSystem.getDistanceName());
     }
 
     public static String formatElevation(Double elevation) {
@@ -109,7 +110,7 @@ public class PositionHelper {
         if (speed == null)
             return "";
         UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        Double speedInUnit = unitSystem.distanceToUnit(speed);
+        double speedInUnit = unitSystem.distanceToUnit(speed) * METERS_OF_A_KILOMETER;
         if (abs(speedInUnit) < 10.0)
              return format("%s %s", roundFraction(speedInUnit, 1), unitSystem.getSpeedName());
         else

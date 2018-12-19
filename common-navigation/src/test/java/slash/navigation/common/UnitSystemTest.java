@@ -31,7 +31,8 @@ public class UnitSystemTest {
     @Test
     public void testMetric() {
         assertDoubleEquals(1.0, Metric.distanceToDefault(1.0));
-        assertDoubleEquals(1.0, Metric.distanceToUnit(1.0));
+        assertDoubleEquals(1.0, Metric.distanceToUnit(1000.0));
+        assertDoubleEquals(1000.0, Metric.shortDistanceToUnit(1000.0));
 
         assertDoubleEquals(1.2345, Metric.valueToDefault(1.2345));
         assertDoubleEquals(1.2345, Metric.valueToUnit(1.2345));
@@ -40,7 +41,8 @@ public class UnitSystemTest {
     @Test
     public void testNautic() {
         assertDoubleEquals(1.8520043, Nautic.distanceToDefault(1.0));
-        assertDoubleEquals(1.0, Nautic.distanceToUnit(1.8520043));
+        assertDoubleEquals(1.0000000000000002, Nautic.distanceToUnit(1852.0043));
+        assertDoubleEquals(3.280839895013123, Nautic.shortDistanceToUnit(1.0));
 
         assertDoubleEquals(1.2345, Metric.valueToDefault(1.2345));
         assertDoubleEquals(1.2345, Nautic.valueToUnit(1.2345));
@@ -48,9 +50,20 @@ public class UnitSystemTest {
 
 
     @Test
+    public void testAviation() {
+        assertDoubleEquals(1.8520043, Aviation.distanceToDefault(1.0));
+        assertDoubleEquals(1.0000000000000002, Nautic.distanceToUnit(1852.0043));
+        assertDoubleEquals(1000.0, Metric.shortDistanceToUnit(1000.0));
+
+        assertDoubleEquals(0.3048, Statute.valueToDefault(1.0));
+        assertDoubleEquals(1.0, Statute.valueToUnit(0.3048));
+    }
+
+    @Test
     public void testStatute() {
         assertDoubleEquals(1.609344, Statute.distanceToDefault(1.0));
-        assertDoubleEquals(1.0, Statute.distanceToUnit(1.609344));
+        assertDoubleEquals(1.0, Statute.distanceToUnit(1609.344));
+        assertDoubleEquals(3.280839895013123, Nautic.shortDistanceToUnit(1.0));
 
         assertDoubleEquals(0.3048, Statute.valueToDefault(1.0));
         assertDoubleEquals(1.0, Statute.valueToUnit(0.3048));

@@ -117,7 +117,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
     }
 
     public double formatDistance(double distance) {
-        return unitSystem.distanceToUnit(distance / METERS_OF_A_KILOMETER);
+        return unitSystem.distanceToUnit(distance);
     }
 
     public long formatTime(long time) {
@@ -129,7 +129,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
     }
 
     private Double formatSpeed(Double speed) {
-        return unitSystem.distanceToUnit(speed);
+        return speed != null ? unitSystem.distanceToUnit(speed * METERS_OF_A_KILOMETER) : null;
     }
 
     public UnitSystem getUnitSystem() {

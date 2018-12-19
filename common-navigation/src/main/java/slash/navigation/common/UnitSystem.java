@@ -31,8 +31,11 @@ import static slash.navigation.common.UnitConversion.*;
  */
 
 public enum UnitSystem {
-    Metric("km", "m", "km/h", new UnitTransfer() {
+    Metric("km", "m","m", "km/h", new UnitTransfer() {
         public Double distanceToUnit(Double distance) {
+            return distance / METERS_OF_A_KILOMETER;
+        }
+        public Double shortDistanceToUnit(Double distance) {
             return distance;
         }
         public Double distanceToDefault(Double distance) {
@@ -46,9 +49,12 @@ public enum UnitSystem {
         }
     }),
 
-    Statute("mi", "ft", "mi/h", new UnitTransfer() {
+    Statute("mi", "ft", "ft", "mi/h", new UnitTransfer() {
         public Double distanceToUnit(Double distance) {
-            return distance != null ? kiloMeterToStatuteMiles(distance) : null;
+            return distance != null ? kiloMeterToStatuteMiles(distance / METERS_OF_A_KILOMETER) : null;
+        }
+        public Double shortDistanceToUnit(Double distance) {
+            return distance != null ? meterToFeets(distance) : null;
         }
         public Double distanceToDefault(Double distance) {
             return distance != null ? statuteMilesToKiloMeter(distance) : null;
@@ -61,9 +67,12 @@ public enum UnitSystem {
         }
     }),
 
-    Nautic("nm", "m", "knots", new UnitTransfer() {
+    Nautic("nm", "ft", "m", "knots", new UnitTransfer() {
         public Double distanceToUnit(Double distance) {
-            return distance != null ? kiloMeterToNauticMiles(distance) : null;
+            return distance != null ? kiloMeterToNauticMiles(distance / METERS_OF_A_KILOMETER) : null;
+        }
+        public Double shortDistanceToUnit(Double distance) {
+            return distance != null ? meterToFeets(distance) : null;
         }
         public Double distanceToDefault(Double distance) {
             return distance != null ? nauticMilesToKiloMeter(distance) : null;
@@ -74,13 +83,32 @@ public enum UnitSystem {
         public Double valueToDefault(Double value) {
             return value;
         }
+    }),
+
+    Aviation("nm", "ft", "ft", "knots", new UnitTransfer() {
+        public Double distanceToUnit(Double distance) {
+            return distance != null ? kiloMeterToNauticMiles(distance / METERS_OF_A_KILOMETER) : null;
+        }
+        public Double shortDistanceToUnit(Double distance) {
+            return distance != null ? meterToFeets(distance) : null;
+        }
+        public Double distanceToDefault(Double distance) {
+            return distance != null ? nauticMilesToKiloMeter(distance) : null;
+        }
+        public Double valueToUnit(Double value) {
+            return value != null ? meterToFeets(value) : null;
+        }
+        public Double valueToDefault(Double value) {
+            return value != null ? feetToMeters(value) : null;
+        }
     });
 
-    private String distanceName, elevationName, speedName;
+    private String distanceName, shortDistanceName, elevationName, speedName;
     private UnitTransfer unitTransfer;
 
-    UnitSystem(String distanceName, String elevationName, String speedName, UnitTransfer unitTransfer) {
+    UnitSystem(String distanceName, String shortDistanceName, String elevationName, String speedName, UnitTransfer unitTransfer) {
         this.distanceName = distanceName;
+        this.shortDistanceName = shortDistanceName;
         this.elevationName = elevationName;
         this.speedName = speedName;
         this.unitTransfer = unitTransfer;
@@ -88,6 +116,10 @@ public enum UnitSystem {
 
     public String getDistanceName() {
         return distanceName;
+    }
+
+    public String getShortDistanceName() {
+        return shortDistanceName;
     }
 
     public String getElevationName() {
@@ -100,6 +132,10 @@ public enum UnitSystem {
 
     public Double distanceToUnit(Double distance) {
         return unitTransfer.distanceToUnit(distance);
+    }
+
+    public Double shortDistanceToUnit(Double distance) {
+        return unitTransfer.shortDistanceToUnit(distance);
     }
 
     @SuppressWarnings("UnusedDeclaration")

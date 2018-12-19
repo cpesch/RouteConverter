@@ -521,6 +521,9 @@ public class MapsforgeMapView implements MapView {
             case Nautic:
                 mapView.getMapScaleBar().setDistanceUnitAdapter(NauticalUnitAdapter.INSTANCE);
                 break;
+            case Aviation:
+                mapView.getMapScaleBar().setDistanceUnitAdapter(NauticalUnitAdapter.INSTANCE);
+                break;
             default:
                 throw new IllegalArgumentException("Unknown UnitSystem " + unitSystem);
         }
