@@ -67,25 +67,7 @@ public enum UnitSystem {
         }
     }),
 
-    Nautic("nm", "ft", "m", "knots", new UnitTransfer() {
-        public Double distanceToUnit(Double distance) {
-            return distance != null ? kiloMeterToNauticMiles(distance / METERS_OF_A_KILOMETER) : null;
-        }
-        public Double shortDistanceToUnit(Double distance) {
-            return distance != null ? meterToFeets(distance) : null;
-        }
-        public Double distanceToDefault(Double distance) {
-            return distance != null ? nauticMilesToKiloMeter(distance) : null;
-        }
-        public Double valueToUnit(Double value) {
-            return value;
-        }
-        public Double valueToDefault(Double value) {
-            return value;
-        }
-    }),
-
-    Aviation("nm", "ft", "ft", "knots", new UnitTransfer() {
+    Nautic("nm", "ft", "ft", "knots", new UnitTransfer() {
         public Double distanceToUnit(Double distance) {
             return distance != null ? kiloMeterToNauticMiles(distance / METERS_OF_A_KILOMETER) : null;
         }
@@ -101,6 +83,7 @@ public enum UnitSystem {
         public Double valueToDefault(Double value) {
             return value != null ? feetToMeters(value) : null;
         }
+
     });
 
     private String distanceName, shortDistanceName, elevationName, speedName;

@@ -536,7 +536,7 @@ public class OptionsDialog extends SimpleDialog {
         });
 
         ComboBoxModel<UnitSystem> unitSystemModel = new DefaultComboBoxModel<>(new UnitSystem[]{
-                Metric, Nautic, Aviation, Statute
+                Metric, Nautic, Statute
         });
         unitSystemModel.setSelectedItem(r.getUnitSystemModel().getUnitSystem());
         comboBoxUnitSystem.setModel(unitSystemModel);
