@@ -66,6 +66,7 @@ public interface MapView extends PositionsSelectionModel {
     NavigationPosition getCenter();
 
     void setSelectedPositions(List<NavigationPosition> selectedPositions);
+    boolean isSupportsPrinting();
     void print(String title);
 
     void addMapViewListener(MapViewListener listener);

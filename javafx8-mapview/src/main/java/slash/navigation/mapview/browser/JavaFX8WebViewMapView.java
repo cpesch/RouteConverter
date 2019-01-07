@@ -241,6 +241,10 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
 
     // print
 
+    public boolean isSupportsPrinting() {
+        return true;
+    }
+
     public void print(final String title) {
         runLater(new Runnable() {
             public void run() {
