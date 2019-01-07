@@ -379,7 +379,6 @@ public class ConvertPanel implements PanelInTab {
         for (PositionTableColumn column : tableColumnModel.getPreparedColumns())
             handleColumnVisibilityUpdate(column);
 
-        //noinspection unchecked
         comboBoxChoosePositionList.setModel(formatAndRoutesModel);
         comboBoxChoosePositionList.setRenderer(new RouteListCellRenderer());
         comboBoxChoosePositionList.addItemListener(e -> {
@@ -1003,7 +1002,6 @@ public class ConvertPanel implements PanelInTab {
             path = new File("");
 
         String fileName = path.getName();
-        //noinspection ConstantConditions
         if (format instanceof GoPal3RouteFormat)
             fileName = createGoPalFileName(fileName);
         return new File(calculateConvertFileName(new File(path.getParentFile(), fileName), "", format.getMaximumFileNameLength()));
@@ -1387,7 +1385,6 @@ public class ConvertPanel implements PanelInTab {
             }
         }
 
-        @SuppressWarnings("unchecked")
         public boolean importData(TransferSupport support) {
             Transferable transferable = support.getTransferable();
             try {

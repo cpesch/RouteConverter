@@ -22,8 +22,6 @@ package slash.navigation.mapview.mapsforge;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.mapsforge.map.model.IMapViewPosition;
-import org.mapsforge.map.model.MapViewPosition;
-import org.mapsforge.map.model.common.Observer;
 import slash.navigation.gui.Application;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
@@ -36,8 +34,6 @@ import slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.util.ResourceBundle;
 
 import static com.intellij.uiDesigner.core.GridConstraints.*;
@@ -72,26 +68,20 @@ public class MapSelector {
         $$$setupUI$$$();
         mapViewPanel.add(mapView, MAP_SELECTOR_CONSTRAINTS);
 
-        comboBoxZoom.setModel(new DefaultComboBoxModel<Integer>());
-        comboBoxZoom.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED) {
-                    return;
-                }
-                Integer zoom = (Integer) e.getItem();
-                mapView.setZoomLevel(zoom.byteValue());
+        comboBoxZoom.setModel(new DefaultComboBoxModel<>());
+        comboBoxZoom.addItemListener(e -> {
+            if (e.getStateChange() != SELECTED) {
+                return;
             }
+            Integer zoom = (Integer) e.getItem();
+            mapView.setZoomLevel(zoom.byteValue());
         });
         int width = getMaxWidth("19", 0);
         comboBoxZoom.setMaximumSize(new Dimension(width, comboBoxZoom.getMaximumSize().height));
         comboBoxZoom.setPreferredSize(new Dimension(width, comboBoxZoom.getPreferredSize().height));
 
         final IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
-        mapViewPosition.addObserver(new Observer() {
-            public void onChange() {
-                zoomChanged(mapViewPosition.getZoomLevelMin(), mapViewPosition.getZoomLevelMax(), mapViewPosition.getZoomLevel());
-            }
-        });
+        mapViewPosition.addObserver(() -> zoomChanged(mapViewPosition.getZoomLevelMin(), mapViewPosition.getZoomLevelMax(), mapViewPosition.getZoomLevel()));
 
         comboBoxMap.setModel(new JoinedListComboBoxModel<>(
                 new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableMapsModel(), mapManager.getDisplayedMapModel()),
@@ -99,14 +89,12 @@ public class MapSelector {
         );
         comboBoxMap.setPrototypeDisplayValue(new VectorMap("Map", "http://mal.url", null, null));
         comboBoxMap.setRenderer(new MapListCellRenderer());
-        comboBoxMap.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED) {
-                    return;
-                }
-                LocalMap map = (LocalMap) e.getItem();
-                comboBoxTheme.setEnabled(map.isVector());
+        comboBoxMap.addItemListener(e -> {
+            if (e.getStateChange() != SELECTED) {
+                return;
             }
+            LocalMap map = (LocalMap) e.getItem();
+            comboBoxTheme.setEnabled(map.isVector());
         });
 
         comboBoxTheme.setModel(new JoinedListComboBoxModel<>(
@@ -128,8 +116,7 @@ public class MapSelector {
 
         try {
             comboBoxZoom.setSelectedItem(zoomLevel);
-        }
-        catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
+        } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
             // work around exceptions deep in Swings BasicListUI on Mac OS X
             comboBoxZoom.setSelectedIndex(zoomLevel - 1);
         }
@@ -230,4 +217,5 @@ public class MapSelector {
     public JComponent $$$getRootComponent$$$() {
         return contentPane;
     }
+
 }

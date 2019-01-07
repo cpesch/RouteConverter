@@ -74,11 +74,7 @@ public abstract class AbstractTablePopupMenu {
         if (table.getCellEditor() != null)
             table.getCellEditor().cancelCellEditing();
 
-        invokeLater(new Runnable() {
-            public void run() {
-                popupMenu.show(e.getComponent(), e.getX(), e.getY());
-            }
-        });
+        invokeLater(() -> popupMenu.show(e.getComponent(), e.getX(), e.getY()));
     }
 
     private void ensureSelection(MouseEvent e, int selectedRowCountMinimum) {
