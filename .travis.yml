@@ -8,7 +8,7 @@ jdk:
   - openjdk10
   - openjdk11
   - oraclejdk8
-  - oraclejdk9
+  - oraclejdk11
 git:
   depth: 3
 branches:
