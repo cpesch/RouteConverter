@@ -122,6 +122,8 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
 
         String mapServerApiUrl = "https://maps.google.com";
         String apiKey = APIKeyRegistry.getInstance().getAPIKey("google", "map");
+        if(apiKey == null)
+            apiKey = "INSERT_API_KEY_HERE";
         String output = template.
                 replaceAll("INSERT_MAP_SERVER_API_URL", mapServerApiUrl).
                 replaceAll("INSERT_API_KEY", apiKey).
