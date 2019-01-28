@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Boolean.parseBoolean;
 import static java.lang.Math.min;
+import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static javafx.application.Platform.*;
 import static javafx.concurrent.Worker.State;
@@ -89,6 +90,7 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
             double browserScaleFactor = getBrowserScaleFactor();
             if (browserScaleFactor != 1.0)
                 webView.setZoom(browserScaleFactor);
+            log.info(format("Browser is scaled with factor %f, screen resolution is %d dpi", browserScaleFactor, Toolkit.getDefaultToolkit().getScreenResolution()));
 
             Group group = new Group();
             group.getChildren().add(webView);

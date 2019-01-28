@@ -37,6 +37,7 @@ import org.mapsforge.map.layer.hills.HillsRenderConfig;
 import org.mapsforge.map.layer.hills.MemoryCachingHgtReaderTileSource;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
+import org.mapsforge.map.model.DisplayModel;
 import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.model.MapViewDimension;
 import org.mapsforge.map.model.common.Observer;
@@ -91,6 +92,7 @@ import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
+import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singletonList;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
@@ -136,7 +138,7 @@ public class MapsforgeMapView implements MapView {
     private static final String READ_BUFFER_SIZE_PREFERENCE = "readBufferSize";
     private static final String FIRST_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "firstLevelTileCacheSize";
     private static final String SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "secondLevelTileCacheSize";
-    private static final String MAP_SCALE_FACTOR = "mapScaleFactor";
+    private static final String DEVICE_SCALE_FACTOR = "mapScaleFactor";
     private static final int SCROLL_DIFF_IN_PIXEL = 100;
     private static final int MINIMUM_VISIBLE_BORDER_IN_PIXEL = 20;
     private static final int SELECTION_CIRCLE_IN_PIXEL = 15;
@@ -489,8 +491,8 @@ public class MapsforgeMapView implements MapView {
             handleMapAndThemeUpdate(false, false);
     }
 
-    protected float getMapScaleFactor() {
-        return preferences.getInt(MAP_SCALE_FACTOR, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0f;
+    protected float getDeviceScaleFactor() {
+        return preferences.getInt(DEVICE_SCALE_FACTOR, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0f;
     }
 
     private AwtGraphicMapView createMapView() {
@@ -505,7 +507,9 @@ public class MapsforgeMapView implements MapView {
         new MapViewResizer(mapView, mapView.getModel().mapViewDimension);
         mapView.getMapScaleBar().setVisible(true);
         ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(SINGLE);
-        mapView.getModel().displayModel.setUserScaleFactor(getMapScaleFactor());
+        float deviceScaleFactor = getDeviceScaleFactor();
+        DisplayModel.setDeviceScaleFactor(deviceScaleFactor);
+        log.info(format("Map is scaled with factor %f, screen resolution is %d dpi", deviceScaleFactor, Toolkit.getDefaultToolkit().getScreenResolution()));
         return mapView;
     }
 
