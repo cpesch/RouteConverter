@@ -284,6 +284,12 @@ public class NavigationConversion {
         return integer * (180.0 / pow(2, 31));
     }
 
+    public static Integer degreeToSemiCircle(Double aDouble) {
+        if(aDouble == null)
+            return null;
+        return Double.valueOf(aDouble * (pow(2, 31) / 180.0)).intValue();
+    }
+
     public static double bcrAltitudeToElevationMeters(long altitude) {
         double feet = (altitude - ALTITUDE_6m) *
                 (meterToFeets(ELEVATION_146m - ELEVATION_6m) / (ALTITUDE_146m - ALTITUDE_6m));

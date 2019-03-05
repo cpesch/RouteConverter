@@ -65,6 +65,11 @@ public class ReadWriteRoundtripIT {
     }
 
     @Test
+    public void testGarminFitReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "from.fit");
+    }
+
+    @Test
     public void testGarminFlightPlanReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from.fpl");
     }

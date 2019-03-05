@@ -90,6 +90,18 @@ public class NavigationConversionTest {
     }
 
     @Test
+    public void testSemiCircleToDegree() {
+        assertDoubleEquals(11.346305720508099, semiCircleToDegree(135366700));
+        assertDoubleEquals(-11.346305720508099, semiCircleToDegree(-135366700));
+    }
+
+    @Test
+    public void testDegreeToSemiCircle() {
+        assertDoubleEquals(135366700, degreeToSemiCircle(11.346305720508099));
+        assertDoubleEquals(-135366700, degreeToSemiCircle(-11.346305720508099));
+    }
+
+    @Test
     public void testBcrToElevation() {
         assertDoubleEquals(-0.09, bcrAltitudeToElevationMeters(210945415705L));
         assertDoubleEquals(6.0, bcrAltitudeToElevationMeters(210945415755L));

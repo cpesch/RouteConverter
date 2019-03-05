@@ -33,7 +33,7 @@ import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.NavigationConversion.semiCircleToDegree;
 
 /**
- * Parses some {@link Mesg} messages and transforms theim to {@link Wgs84Position}s.
+ * Parses some {@link Mesg} messages and transforms them to {@link Wgs84Position}s.
  *
  * @author Christian Pesch
  */
@@ -63,7 +63,7 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
     }
 
     private CompactCalendar asCalendar(DateTime dateTime) {
-        return fromDate(dateTime.getDate());
+        return dateTime != null ? fromDate(dateTime.getDate()) : null;
     }
 
     private String asDescription(Mesg mesg) {
@@ -71,8 +71,11 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
     }
 
     public void onMesg(CoursePointMesg mesg) {
-        positions.add(new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
-                null, null, asCalendar(mesg.getTimestamp()), asDescription(mesg)));
+        Wgs84Position position = new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
+                null, null, asCalendar(mesg.getTimestamp()), asDescription(mesg));
+        position.setOrigin(mesg);
+        positions.add(position);
+
         characteristics = Route;
     }
 
@@ -81,6 +84,7 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
         Wgs84Position position = new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
                 null, asDouble(velocity), asCalendar(mesg.getTimestamp()), asDescription(mesg));
         position.setHeading(asDouble(mesg.getHeading()));
+        position.setOrigin(mesg);
         positions.add(position);
     }
 
@@ -91,6 +95,7 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
         position.setPdop(asDouble(mesg.getGpsAccuracy()));
         position.setOrigin(mesg);
         positions.add(position);
+
         characteristics = Track;
     }
 

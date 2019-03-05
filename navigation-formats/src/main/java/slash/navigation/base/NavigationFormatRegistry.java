@@ -178,13 +178,13 @@ public class NavigationFormatRegistry {
         addFormat(CompeGPSDataRouteFormat.class);
         addFormat(CompeGPSDataTrackFormat.class);
         addFormat(CompeGPSDataWaypointFormat.class);
+        addFormat(FitFormat.class);
         addFormat(GarminPcx5Format.class);
         addFormat(GeoCachingFormat.class);
         addFormat(GoPalTrackFormat.class);
         addFormat(TomTomPoiFormat.class);
         addFormat(HoluxM241BinaryFormat.class);
         addFormat(FlightRecorderDataFormat.class);
-        addFormat(FitFormat.class);
         addFormat(WintecWbt202TesFormat.class);
 
         addFormat(NmnUrlFormat.class);

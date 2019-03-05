@@ -24,18 +24,17 @@ import com.garmin.fit.*;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static com.garmin.fit.Fit.ProtocolVersion.V2_0;
 import static java.lang.String.format;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.type.CompactCalendar.now;
 
 /**
- * Reads and writes Garmin FIT (.fi) files.
+ * Reads and writes Garmin FIT (.fit) files.
  *
  * @author Christian Pesch
  */
@@ -60,11 +59,11 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public boolean isSupportsWriting() {
-        return false;
+        return true;
     }
 
     public boolean isSupportsMultipleRoutes() {
-        return true;
+        return false;
     }
 
     @SuppressWarnings({"unchecked"})
@@ -115,8 +114,21 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) {
-        throw new UnsupportedOperationException();
+
+    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
+        BufferEncoder encoder = new BufferEncoder(V2_0);
+        encoder.write(createFileIdMesg());
+        List<Mesg> mesgs = new MesgCreator().createMesgs(route, startIndex, endIndex);
+        encoder.write(mesgs);
+        byte[] bytes = encoder.close();
+        target.write(bytes);
+    }
+
+    private FileIdMesg createFileIdMesg() {
+        FileIdMesg mesg = new FileIdMesg();
+        mesg.setProductName(getCreator());
+        mesg.setTimeCreated(new DateTime(now().getTime()));
+        return mesg;
     }
 }
 
