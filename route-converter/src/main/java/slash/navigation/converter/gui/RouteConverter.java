@@ -148,8 +148,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
-import static slash.common.helpers.LocaleHelper.DENMARK;
-import static slash.common.helpers.LocaleHelper.SERBIA;
+import static slash.common.helpers.LocaleHelper.*;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.findExistingPath;
 import static slash.common.io.Files.printArrayToDialogString;
@@ -337,7 +336,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private List<String> getLanguagesWithActiveTranslators() {
-        List<Locale> localesOfActiveTranslators = asList(DENMARK, GERMANY, SERBIA, US);
+        List<Locale> localesOfActiveTranslators = asList(CATALAN, DENMARK, GERMANY, SERBIA, US);
         List<String> results = new ArrayList<>();
         for (Locale locale : localesOfActiveTranslators) {
             results.add(locale.getLanguage());
