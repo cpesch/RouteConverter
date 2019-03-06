@@ -34,7 +34,7 @@
     </build>
 
     <properties>
-        <eclipselink.version>2.7.3</eclipselink.version>
+        <eclipselink.version>2.7.4</eclipselink.version>
     </properties>
 
     <dependencies>

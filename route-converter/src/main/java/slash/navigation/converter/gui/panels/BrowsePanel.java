@@ -580,6 +580,9 @@ public class BrowsePanel implements PanelInTab {
         }
     }
 
+    /**
+     * @noinspection ALL
+     */
     public JComponent $$$getRootComponent$$$() {
         return browsePanel;
     }
