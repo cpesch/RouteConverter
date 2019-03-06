@@ -78,5 +78,9 @@ public class TreePathStringConversion {
         }
         return new TreePath(result.toArray());
     }
+
+    public static boolean isRemote(String path) {
+        return path.startsWith(REMOTE);
+    }
 }
 

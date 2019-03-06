@@ -165,11 +165,9 @@ public class BrowsePanel implements PanelInTab {
         });
 
         treeCategories.setModel(catalogModel.getCategoryTreeModel());
-        treeCategories.addTreeSelectionListener(new TreeSelectionListener() {
-            public void valueChanged(TreeSelectionEvent e) {
-                handleCategoryTreeUpdate();
-                selectTreePath(e.getPath(), false);
-            }
+        treeCategories.addTreeSelectionListener(e -> {
+            handleCategoryTreeUpdate();
+            selectTreePath(e.getPath(), false);
         });
         treeCategories.getModel().addTreeModelListener(new TreeModelListener() {
             public void treeNodesChanged(TreeModelEvent e) {
@@ -220,13 +218,11 @@ public class BrowsePanel implements PanelInTab {
         }, getKeyStroke(VK_END, SHIFT_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         tableRoutes.setDragEnabled(true);
         tableRoutes.setTransferHandler(new TableDragHandler());
-        tableRoutes.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting())
-                    return;
-                handleRouteListUpdate();
-                openRoute();
-            }
+        tableRoutes.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting())
+                return;
+            handleRouteListUpdate();
+            openRoute();
         });
         TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "creator");
         TableCellRenderer cellRenderer = new RoutesTableCellRenderer();
@@ -249,26 +245,24 @@ public class BrowsePanel implements PanelInTab {
         handleRouteListUpdate();
         handleCategoryTreeUpdate();
 
-        new Thread(new Runnable() {
-            public void run() {
+        new Thread(() -> {
+            String selected = r.getCategoryPreference();
+            if (TreePathStringConversion.isRemote(selected)) {
                 // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
                 // would do it in the AWT EventQueue
                 catalogModel.getCategoryTreeModel().getChildCount(remoteRoot);
-
-                invokeLater(new Runnable() {
-                    public void run() {
-                        startWaitCursor(r.getFrame().getRootPane());
-                        try {
-                            String selected = r.getCategoryPreference();
-                            selectTreePath(TreePathStringConversion.fromString(root, selected), true);
-                            // make sure the subcategories of the remote catalog are visible, too
-                            treeCategories.expandPath(new TreePath(new Object[]{root, remoteRoot}));
-                        } finally {
-                            stopWaitCursor(r.getFrame().getRootPane());
-                        }
-                    }
-                });
             }
+
+            invokeLater(() -> {
+                startWaitCursor(r.getFrame().getRootPane());
+                try {
+                    selectTreePath(TreePathStringConversion.fromString(root, selected), true);
+                    // make sure the subcategories of the remote catalog are visible, too
+                    treeCategories.expandPath(new TreePath(new Object[]{root, remoteRoot}));
+                } finally {
+                    stopWaitCursor(r.getFrame().getRootPane());
+                }
+            });
         }, "CategoryTreeInitializer").start();
     }
 
@@ -586,9 +580,6 @@ public class BrowsePanel implements PanelInTab {
         }
     }
 
-    /**
-     * @noinspection ALL
-     */
     public JComponent $$$getRootComponent$$$() {
         return browsePanel;
     }
@@ -635,26 +626,20 @@ public class BrowsePanel implements PanelInTab {
         }
 
         private void moveCategories(final List<CategoryTreeNode> categories, final CategoryTreeNode target) {
-            catalogModel.moveCategories(categories, target, new Runnable() {
-                public void run() {
-                    for (CategoryTreeNode category : categories)
-                        selectCategory(treeCategories, category);
-                }
+            catalogModel.moveCategories(categories, target, () -> {
+                for (CategoryTreeNode category : categories)
+                    selectCategory(treeCategories, category);
             });
         }
 
 
         private void moveRoutes(final List<RouteModel> routes, final CategoryTreeNode target) {
-            catalogModel.moveRoutes(routes, target, new Runnable() {
-                public void run() {
-                    selectCategory(treeCategories, target);
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            for (RouteModel route : routes)
-                                selectRoute(tableRoutes, route);
-                        }
-                    });
-                }
+            catalogModel.moveRoutes(routes, target, () -> {
+                selectCategory(treeCategories, target);
+                invokeLater(() -> {
+                    for (RouteModel route : routes)
+                        selectRoute(tableRoutes, route);
+                });
             });
         }
 
@@ -667,38 +652,30 @@ public class BrowsePanel implements PanelInTab {
                 Transferable t = support.getTransferable();
                 if (support.isDataFlavorSupported(categoryFlavor)) {
                     Object data = t.getTransferData(categoryFlavor);
-                    if (data != null) {
-                        List<CategoryTreeNode> categories = (List<CategoryTreeNode>) data;
-                        moveCategories(categories, target);
-                        return true;
-                    }
+                    List<CategoryTreeNode> categories = (List<CategoryTreeNode>) data;
+                    moveCategories(categories, target);
+                    return true;
                 }
 
                 if (support.isDataFlavorSupported(routeFlavor)) {
                     Object data = t.getTransferData(routeFlavor);
-                    if (data != null) {
-                        List<RouteModel> routes = (List<RouteModel>) data;
-                        moveRoutes(routes, target);
-                        return true;
-                    }
+                    List<RouteModel> routes = (List<RouteModel>) data;
+                    moveRoutes(routes, target);
+                    return true;
                 }
 
                 if (support.isDataFlavorSupported(javaFileListFlavor)) {
                     Object data = t.getTransferData(javaFileListFlavor);
-                    if (data != null) {
-                        List<File> files = (List<File>) data;
-                        addFilesToCatalog(target, files);
-                        return true;
-                    }
+                    List<File> files = (List<File>) data;
+                    addFilesToCatalog(target, files);
+                    return true;
                 }
 
                 if (support.isDataFlavorSupported(stringFlavor)) {
                     Object data = t.getTransferData(stringFlavor);
-                    if (data != null) {
-                        String url = (String) data;
-                        addUrlToCatalog(target, url);
-                        return true;
-                    }
+                    String url = (String) data;
+                    addUrlToCatalog(target, url);
+                    return true;
                 }
             } catch (UnsupportedFlavorException | IOException e) {
                 // intentionally left empty
