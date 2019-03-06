@@ -22,8 +22,6 @@ package slash.common.type;
 
 import org.apache.commons.codec.DecoderException;
 
-import static java.lang.Integer.parseUnsignedInt;
-import static java.lang.Integer.toUnsignedString;
 import static org.apache.commons.codec.binary.Hex.decodeHex;
 import static org.apache.commons.codec.binary.Hex.encodeHex;
 
@@ -51,10 +49,10 @@ public class HexadecimalNumber {
     }
 
     public static String encodeInt(int integer) {
-        return toUnsignedString(integer);
+        return Integer.toHexString(integer);
     }
 
     public static int decodeInt(String string) {
-        return parseUnsignedInt(string, 16);
+        return (int) Long.parseLong(string, 16);
     }
 }
