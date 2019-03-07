@@ -30,13 +30,13 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.Collector;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static slash.common.io.Transfer.*;
 
 /**
@@ -134,13 +134,21 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
             return false;
     }
 
+    private Set<String> collectKeys(List<CsvPosition> positions) {
+        Set<String> result = new HashSet<>();
+        for (CsvPosition position : positions) {
+            Set<String> keys = position.getRowAsMap().keySet();
+            result.addAll(keys);
+        }
+        return result;
+    }
+
     public void write(CsvRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         List<CsvPosition> positions = route.getPositions();
 
         CsvSchema.Builder builder = new CsvSchema.Builder();
-        if (positions.size() > 0)
-            for (String key : positions.get(0).getRowAsMap().keySet())
-                builder = builder.addColumn(key);
+        for (String key : collectKeys(positions))
+            builder = builder.addColumn(key);
 
         CsvSchema schema = builder.build().withHeader().withColumnSeparator(getColumnSeparator());
         try(SequenceWriter writer = new CsvMapper().writer(schema).writeValues(target)) {

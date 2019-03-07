@@ -39,8 +39,11 @@ class ColumnTypeToRowIndexMapping {
         DEFAULT.add(1, Latitude);
         DEFAULT.add(2, Elevation);
         DEFAULT.add(3, Speed);
-        DEFAULT.add(4, Time);
-        DEFAULT.add(5, Description);
+        DEFAULT.add(4, Heading);
+        DEFAULT.add(5, Temperature);
+        DEFAULT.add(6, Pressure);
+        DEFAULT.add(7, Time);
+        DEFAULT.add(8, Description);
     }
 
     private Map<Integer, ColumnType> mapping = new LinkedHashMap<>();

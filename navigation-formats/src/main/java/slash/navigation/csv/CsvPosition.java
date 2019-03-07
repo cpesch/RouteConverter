@@ -21,6 +21,9 @@ package slash.navigation.csv;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ExtendedSensorNavigationPosition;
+import slash.navigation.excel.ExcelPosition;
+import slash.navigation.gpx.GpxPosition;
 
 import java.util.Calendar;
 import java.util.LinkedHashMap;
@@ -32,13 +35,14 @@ import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.common.type.ISO8601.parseDate;
+import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
 import static slash.navigation.csv.ColumnType.*;
 
 /**
  * A position from CSV (.csv) files.
  */
 
-public class CsvPosition extends BaseNavigationPosition {
+public class CsvPosition extends BaseNavigationPosition implements ExtendedSensorNavigationPosition {
     private static final String DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm:ss";
     private static final String DATE_AND_TIME_WITHOUT_SECONDS_FORMAT = "dd.MM.yy HH:mm";
 
@@ -146,11 +150,44 @@ public class CsvPosition extends BaseNavigationPosition {
         setValueAsDouble(Speed, speed);
     }
 
+    public Double getTemperature() {
+        return getValueAsDouble(Temperature);
+    }
+
+    public void setTemperature(Double temperature) {
+        setValueAsDouble(Temperature, temperature);
+    }
+
+    public Double getPressure() {
+        return getValueAsDouble(Pressure);
+    }
+
+    public void setPressure(Double pressure) {
+        setValueAsDouble(Pressure, pressure);
+    }
+
+    public Double getHeading() {
+        return getValueAsDouble(Heading);
+    }
+
+    public void setHeading(Double heading) {
+        setValueAsDouble(Heading, heading);
+    }
+
     public String getDescription() {
         return getValueAsString(Description);
     }
 
     public void setDescription(String description) {
         setValueAsString(Description, description);
+    }
+
+    // handled in CsvRoute#asExcelFormat
+    // public ExcelPosition asMicrosoftExcelPosition() {..}
+
+    public GpxPosition asGpxPosition() {
+        GpxPosition position = super.asGpxPosition();
+        transferExtendedSensorData(this, position);
+        return position;
     }
 }

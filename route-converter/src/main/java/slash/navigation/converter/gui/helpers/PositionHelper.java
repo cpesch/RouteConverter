@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.helpers;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ExtendedSensorNavigationPosition;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.DegreeFormat;
@@ -122,18 +123,18 @@ public class PositionHelper {
     }
 
     public static String extractTemperature(NavigationPosition position) {
-        if (!(position instanceof Wgs84Position))
-            return "";
-        Double temperature = ((Wgs84Position) position).getTemperature();
+        Double temperature = null;
+        if (position instanceof ExtendedSensorNavigationPosition)
+            temperature = ((ExtendedSensorNavigationPosition) position).getTemperature();
         if (temperature == null)
             return "";
         return format("%d\u00B0C", round(temperature));
     }
 
     public static String extractPressure(NavigationPosition position) {
-        if (!(position instanceof Wgs84Position))
-            return "";
-        Double pressure = ((Wgs84Position) position).getPressure();
+        Double pressure = null;
+        if (position instanceof ExtendedSensorNavigationPosition)
+            pressure = ((ExtendedSensorNavigationPosition) position).getPressure();
         if(pressure == null)
             return "";
         return format("%d hPa", round(pressure));

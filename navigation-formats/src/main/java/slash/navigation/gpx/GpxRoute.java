@@ -57,6 +57,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.common.type.CompactCalendar.now;
 import static slash.common.type.ISO8601.formatDate;
+import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -87,7 +88,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
     }
 
     public GpxRoute(GpxFormat format) {
-        this(format, Waypoints, "?", singletonList("Created at " + formatDate(now())), new ArrayList<GpxPosition>());
+        this(format, Waypoints, "?", singletonList("Created at " + formatDate(now())), new ArrayList<>());
     }
 
 
@@ -158,7 +159,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         ExcelRoute route = new ExcelRoute(format, getName(), excelPositions);
         for (GpxPosition position : getPositions()) {
             ExcelPosition excelPosition = route.createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), position.getSpeed(), position.getTime(), position.getDescription());
-            excelPositions.add(excelPosition);
+            transferExtendedSensorData(position, excelPosition);
         }
         return route;
     }

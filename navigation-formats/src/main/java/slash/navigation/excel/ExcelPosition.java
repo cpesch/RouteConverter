@@ -23,9 +23,13 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.ExtendedSensorNavigationPosition;
+import slash.navigation.csv.CsvPosition;
+import slash.navigation.gpx.GpxPosition;
 
 import static slash.common.io.Transfer.toDouble;
 import static slash.common.type.CompactCalendar.fromDate;
+import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
 import static slash.navigation.excel.ColumnType.*;
 import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
 
@@ -33,7 +37,7 @@ import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
  * A position from Excel 97-2008 (.xls) and Excel 2008 (.xlsx) files.
  */
 
-public class ExcelPosition extends BaseNavigationPosition {
+public class ExcelPosition extends BaseNavigationPosition implements ExtendedSensorNavigationPosition {
     private ColumnTypeToRowIndexMapping mapping = DEFAULT;
     private Row row;
 
@@ -163,11 +167,48 @@ public class ExcelPosition extends BaseNavigationPosition {
         setCellAsDouble(Speed, speed);
     }
 
+    public Double getTemperature() {
+        return getCellAsDouble(Temperature);
+    }
+
+    public void setTemperature(Double temperature) {
+        setCellAsDouble(Temperature, temperature);
+    }
+
+    public Double getPressure() {
+        return getCellAsDouble(Pressure);
+    }
+
+    public void setPressure(Double pressure) {
+        setCellAsDouble(Pressure, pressure);
+    }
+
+    public Double getHeading() {
+        return getCellAsDouble(Heading);
+    }
+
+    public void setHeading(Double heading) {
+        setCellAsDouble(Heading, heading);
+    }
+
     public String getDescription() {
         return getCellAsString(Description);
     }
 
     public void setDescription(String description) {
         setCellAsString(Description, description);
+    }
+
+
+    public CsvPosition asCsvPosition() {
+        CsvPosition position = super.asCsvPosition();
+        transferExtendedSensorData(this, position);
+        return position;
+    }
+
+    public GpxPosition asGpxPosition() {
+        GpxPosition position = super.asGpxPosition();
+        transferExtendedSensorData(this, position);
+        return position;
     }
 }

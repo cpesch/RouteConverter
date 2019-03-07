@@ -52,6 +52,7 @@ import slash.navigation.tcx.TcxRoute;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteComments.createRouteName;
 
@@ -114,10 +115,13 @@ public class CsvRoute extends BaseRoute<CsvPosition, CsvFormat> {
 
     protected ExcelRoute asExcelFormat(ExcelFormat format) {
         List<ExcelPosition> excelPositions = new ArrayList<>();
+        ExcelRoute route = new ExcelRoute(format, getName(), excelPositions);
         for (CsvPosition position : getPositions()) {
-            excelPositions.add(position.asMicrosoftExcelPosition());
+            ExcelPosition excelPosition = route.createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), position.getSpeed(), position.getTime(), position.getDescription());
+            transferExtendedSensorData(position, excelPosition);
+            excelPositions.add(excelPosition);
         }
-        return new ExcelRoute(format, getName(), excelPositions);
+        return route;
     }
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {

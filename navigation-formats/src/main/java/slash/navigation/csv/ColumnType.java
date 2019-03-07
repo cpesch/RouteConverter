@@ -34,6 +34,9 @@ enum ColumnType {
     Longitude("L\u00e4nge", "L\u00e4ngengrad"),
     Elevation("H\u00f6he", "Altitude"),
     Speed("Geschwindigkeit"),
+    Heading("Richtung", "Kurs", "Heading", "Course"),
+    Temperature("Temperatur", "Temperature"),
+    Pressure("Druck", "Pressure"),
     Time("Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
     Description("Beschreibung", "Comment", "Kommentar"),
     Unsupported();
