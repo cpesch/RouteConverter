@@ -429,6 +429,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             });
         } catch (Exception e) {
             log.warning("Could not download tile servers: " + e);
+            e.printStackTrace();
         }
     }
 
