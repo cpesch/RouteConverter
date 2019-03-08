@@ -123,7 +123,7 @@ public class AutomaticElevationService implements ElevationService {
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload) {
         ElevationService service = elevationServiceFacade.findElevationService(getPreferredDownloadName());
         if (service != null)
-            service.downloadElevationDataFor(longitudeAndLatitudes, false);
+            service.downloadElevationDataFor(longitudeAndLatitudes, waitForDownload);
     }
 
     public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
