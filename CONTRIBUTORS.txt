@@ -8,10 +8,13 @@ all the programmers sending me code
 
 My special thanks to:
 
+Allan Nordhøy for the Norwegian translation
 Andrey Denisov for the Russian translation
+Володимир Бриняк for the Ukrainian translation
 Björn Gaworski for Mac OS X fixes
 Branko Velickovic for the Croatian and Serbian translation
 Denny Baier for OpenSUSE packaging
+Eduard Correal Mòdol for the Catalan translation
 Fredrik Teschke for dual licensing of navigation-formats module
 Hans Helmcke for testing and improvement suggestions
 Harry van der Wolf for Linux and Mac OS X fixes and the Dutch translation
@@ -29,7 +32,7 @@ Rainer Ippen for usuability improvements
 Ricardo Barbosa for the Portuguese translation
 Robert Dziczek for the Polish translation
 Vincent Di Sanzo for the French translation
-Xiaoming Huang and LXLXJ for the Chinese translation
+Xiaoming Huang, Mandy Wang, LXLXJ for the Chinese translation
 
 Of course a lot more people helped. If your name is missing drop me an email or a patch!
 
