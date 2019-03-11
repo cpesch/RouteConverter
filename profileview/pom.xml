@@ -27,10 +27,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>jfreechart</groupId>
+            <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
-            <version>1.0.14</version>
-            <classifier>stripped</classifier>
+            <version>1.0.19</version>
         </dependency>
     </dependencies>
 </project>
