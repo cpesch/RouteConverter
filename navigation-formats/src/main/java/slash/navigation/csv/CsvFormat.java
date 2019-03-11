@@ -35,6 +35,8 @@ import java.util.logging.Logger;
 import java.util.stream.Collector;
 
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
+import static java.util.Arrays.sort;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static slash.common.io.Transfer.*;
@@ -140,7 +142,9 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
             Set<String> keys = position.getRowAsMap().keySet();
             result.addAll(keys);
         }
-        return result;
+        String[] array = result.toArray(new String[0]);
+        sort(array);
+        return new LinkedHashSet<>(asList(array));
     }
 
     public void write(CsvRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
