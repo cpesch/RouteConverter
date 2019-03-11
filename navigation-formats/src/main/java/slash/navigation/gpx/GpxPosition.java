@@ -25,7 +25,6 @@ import slash.navigation.base.ExtendedSensorNavigationPosition;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.csv.CsvPosition;
-import slash.navigation.excel.ExcelPosition;
 import slash.navigation.fpl.CountryCode;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gpx.binding11.WptType;
