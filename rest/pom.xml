@@ -39,7 +39,6 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
