@@ -39,8 +39,6 @@ import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
@@ -49,7 +47,7 @@ import static java.text.MessageFormat.format;
 import static java.text.NumberFormat.getIntegerInstance;
 import static org.jfree.chart.axis.NumberAxis.createIntegerTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
-import static org.jfree.ui.Layer.FOREGROUND;
+import static org.jfree.chart.ui.Layer.FOREGROUND;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
 import static slash.navigation.converter.gui.profileview.YAxisMode.Elevation;
 
@@ -77,16 +75,8 @@ public class ProfileView implements PositionsSelectionModel {
                 profileModeModel.getXAxisMode(), profileModeModel.getYAxisMode());
         XYSeriesCollection dataset = new XYSeriesCollection(series);
 
-        unitSystemModel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                setUnitSystem(unitSystemModel.getUnitSystem());
-            }
-        });
-        profileModeModel.addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                setProfileMode(profileModeModel.getXAxisMode(), profileModeModel.getYAxisMode());
-            }
-        });
+        unitSystemModel.addChangeListener(e -> setUnitSystem(unitSystemModel.getUnitSystem()));
+        profileModeModel.addChangeListener(e -> setProfileMode(profileModeModel.getXAxisMode(), profileModeModel.getYAxisMode()));
 
         JFreeChart chart = createChart(dataset);
         plot = createPlot(chart);
@@ -145,7 +135,7 @@ public class ProfileView implements PositionsSelectionModel {
         domainAxis.setUpperMargin(0.0);
         domainAxis.setLabelFont(font);
 
-        plot.getRenderer().setBaseToolTipGenerator(null);
+        plot.getRenderer().setDefaultToolTipGenerator(null);
         return plot;
     }
 
@@ -212,7 +202,7 @@ public class ProfileView implements PositionsSelectionModel {
         private final ProfileModeModel profileModeModel;
         private final XAxisMode xAxisMode;
 
-        public ToggleXAxisProfileModeAction(ProfileModeModel profileModeModel, XAxisMode xAxisMode) {
+        private ToggleXAxisProfileModeAction(ProfileModeModel profileModeModel, XAxisMode xAxisMode) {
             this.profileModeModel = profileModeModel;
             this.xAxisMode = xAxisMode;
         }
@@ -226,7 +216,7 @@ public class ProfileView implements PositionsSelectionModel {
         private final ProfileModeModel profileModeModel;
         private final YAxisMode yAxisMode;
 
-        public ToggleYAxisProfileModeAction(ProfileModeModel profileModeModel, YAxisMode yAxisMode) {
+        private ToggleYAxisProfileModeAction(ProfileModeModel profileModeModel, YAxisMode yAxisMode) {
             this.profileModeModel = profileModeModel;
             this.yAxisMode = yAxisMode;
         }

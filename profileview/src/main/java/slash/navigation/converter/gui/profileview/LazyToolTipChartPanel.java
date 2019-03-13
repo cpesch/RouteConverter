@@ -34,7 +34,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 
-import static org.jfree.ui.RectangleEdge.BOTTOM;
+import static org.jfree.chart.ui.RectangleEdge.BOTTOM;
 import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
 
 /**
@@ -89,7 +89,7 @@ public class LazyToolTipChartPanel extends ChartPanel {
         return getTooltipAtPoint(e.getPoint());
     }
 
-    protected String getTooltipAtPoint(Point point) {
+    private String getTooltipAtPoint(Point point) {
         XYPlot plot = (XYPlot) getChart().getPlot();
         PlotRenderingInfo info = getChartRenderingInfo().getPlotInfo();
         double x0 = point.getX();
