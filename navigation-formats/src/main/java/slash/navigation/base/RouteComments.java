@@ -127,7 +127,7 @@ public abstract class RouteComments {
             if (matcher.matches()) {
                 String prefix = trim(matcher.group(1));
                 String postfix = trim(matcher.group(4));
-                return (prefix != null ? prefix : "") + getPositionDescription(index) + (postfix != null ? postfix : "");
+                return (prefix != null ? prefix : "") + getPositionDescription(index) + (postfix != null ? " " + postfix : "");
             }
         }
         return position.getDescription();

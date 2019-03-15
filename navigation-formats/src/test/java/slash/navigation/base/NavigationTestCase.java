@@ -664,7 +664,7 @@ public abstract class NavigationTestCase extends TestCase {
             } else if (targetFormat instanceof ColumbusGpsFormat) {
                 String sourceName = getColumbusGpsDescription(sourcePosition);
                 String targetName = getColumbusGpsDescription(targetPosition);
-                assertEquals("Description " + index + " does not match", sourceName, targetName);
+                assertTrue("Description " + index + " does not match", sourceName.startsWith(targetName));
             } else if (targetFormat instanceof MagellanExploristFormat || targetFormat instanceof MagellanRouteFormat || targetFormat instanceof NmeaFormat)
                 assertEquals("Description " + index + " does not match", sourcePosition.getDescription().replaceAll(",", ";"), description);
             else if (targetFormat instanceof Nmn4Format || targetFormat instanceof Nmn5Format)
