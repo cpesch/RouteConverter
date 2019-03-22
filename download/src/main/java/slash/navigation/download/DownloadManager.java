@@ -25,12 +25,16 @@ import slash.navigation.download.executor.DownloadExecutor;
 import slash.navigation.download.executor.DownloadExecutorComparator;
 import slash.navigation.download.queue.QueuePersister;
 
+import javax.swing.event.EventListenerList;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -55,7 +59,7 @@ public class DownloadManager {
 
     private final File queueFile;
 
-    private final List<DownloadListener> downloadListeners = new CopyOnWriteArrayList<>();
+    private final EventListenerList listenerList = new EventListenerList();
     private final DownloadTableModel model = new DownloadTableModel();
     private final Map<Download,Future> downloadToFutures = new HashMap<>();
     private final Map<Download,DownloadExecutor> downloadToExecutors = new HashMap<>();
@@ -158,35 +162,47 @@ public class DownloadManager {
         return model;
     }
 
-    public void addDownloadListener(DownloadListener listener) {
-        downloadListeners.add(listener);
-    }
-
     public void updateDownload(Download download) {
         model.updateDownload(download);
     }
 
-    public void fireDownloadInitialized(Download download) {
-        for (DownloadListener listener : downloadListeners) {
-            listener.initialized(download);
+    public void addDownloadListener(DownloadListener l) {
+        listenerList.add(DownloadListener.class, l);
+    }
+
+    private void fireDownloadInitialized(Download download) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == DownloadListener.class) {
+                ((DownloadListener) listeners[i + 1]).initialized(download);
+            }
         }
     }
 
     public void fireDownloadProgressed(Download download) {
-        for (DownloadListener listener : downloadListeners) {
-            listener.progressed(download);
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == DownloadListener.class) {
+                ((DownloadListener) listeners[i + 1]).progressed(download);
+            }
         }
     }
 
     public void fireDownloadFailed(Download download) {
-        for (DownloadListener listener : downloadListeners) {
-            listener.failed(download);
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == DownloadListener.class) {
+                ((DownloadListener) listeners[i + 1]).failed(download);
+            }
         }
     }
 
     public void fireDownloadSucceeded(Download download) {
-        for (DownloadListener listener : downloadListeners) {
-            listener.succeeded(download);
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == DownloadListener.class) {
+                ((DownloadListener) listeners[i + 1]).succeeded(download);
+            }
         }
     }
 
@@ -300,7 +316,6 @@ public class DownloadManager {
 
     public void waitForCompletion(final Collection<Download> downloads) {
         final boolean[] found = new boolean[1];
-        found[0] = false;
         final long[] lastEvent = new long[1];
         lastEvent[0] = currentTimeMillis();
 

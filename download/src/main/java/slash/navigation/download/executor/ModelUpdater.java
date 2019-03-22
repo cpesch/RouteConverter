@@ -27,7 +27,7 @@ import static slash.navigation.download.State.Downloading;
 import static slash.navigation.download.State.Resuming;
 
 /**
- * Propagates {@link CopierListener} of a {@link Download} the {@link DownloadManager}.
+ * Propagates {@link CopierListener} of a {@link Download} to the {@link DownloadManager}.
  *
  * @author Christian Pesch
  */

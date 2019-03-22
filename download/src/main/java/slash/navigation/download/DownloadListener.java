@@ -20,13 +20,15 @@
 
 package slash.navigation.download;
 
+import java.util.EventListener;
+
 /**
  * Interface for events from a {@link DownloadManager}
  *
  * @author Christian Pesch
  */
 
-public interface DownloadListener {
+public interface DownloadListener extends EventListener {
     void initialized(Download download);
     void progressed(Download download);
     void failed(Download download);
