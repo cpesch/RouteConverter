@@ -24,10 +24,7 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.mapview.MapView;
-import slash.navigation.routing.DownloadFuture;
-import slash.navigation.routing.RoutingResult;
-import slash.navigation.routing.RoutingService;
-import slash.navigation.routing.TravelMode;
+import slash.navigation.routing.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,7 +40,7 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
  * @author Christian Pesch
  */
 
-public class GoogleDirections implements RoutingService {
+public class GoogleDirections extends BaseRoutingService {
     private static final Logger log = Logger.getLogger(GoogleDirections.class.getName());
     private static final TravelMode DRIVING = new TravelMode("Driving");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bicycling"), DRIVING, new TravelMode("Walking"));

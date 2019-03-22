@@ -170,7 +170,7 @@ public class DownloadManager {
         listenerList.add(DownloadListener.class, l);
     }
 
-    private void fireDownloadInitialized(Download download) {
+    private void fireInitialized(Download download) {
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == DownloadListener.class) {
@@ -179,7 +179,7 @@ public class DownloadManager {
         }
     }
 
-    public void fireDownloadProgressed(Download download) {
+    public void fireProgressed(Download download) {
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == DownloadListener.class) {
@@ -188,7 +188,7 @@ public class DownloadManager {
         }
     }
 
-    public void fireDownloadFailed(Download download) {
+    public void fireFailed(Download download) {
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == DownloadListener.class) {
@@ -197,7 +197,7 @@ public class DownloadManager {
         }
     }
 
-    public void fireDownloadSucceeded(Download download) {
+    public void fireSucceeded(Download download) {
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
             if (listeners[i] == DownloadListener.class) {
@@ -212,7 +212,7 @@ public class DownloadManager {
         Future<?> future = pool.submit(executor);
         downloadToFutures.put(download, future);
         downloadToExecutors.put(download, executor);
-        fireDownloadInitialized(download);
+        fireInitialized(download);
     }
 
 

@@ -50,4 +50,6 @@ public interface RoutingService {
     DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
     long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes);
     void downloadRoutingData(List<BoundingBox> boundingBoxes);
+
+    void addRoutingServiceListener(RoutingServiceListener routingServiceListener);
 }

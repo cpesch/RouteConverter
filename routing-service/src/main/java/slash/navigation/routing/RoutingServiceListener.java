@@ -18,29 +18,18 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.mapview;
+package slash.navigation.routing;
 
-import slash.navigation.maps.tileserver.TileServerMapManager;
-import slash.navigation.routing.RoutingService;
-import slash.navigation.routing.TravelMode;
+import java.util.EventListener;
 
 /**
- * Interface for callbacks from the {@link MapView} to the other RouteConverter services.
+ * Interface for events from a {@link RoutingService}
  *
  * @author Christian Pesch
  */
 
-public interface MapViewCallback {
-    String createDescription(int index, String description);
-    String createCoordinates(Double longitude, Double latitude);
-    void complementData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo);
-    void startBrowser(String url);
-
-    RoutingService getRoutingService();
-    TravelMode getTravelMode();
-    boolean isAvoidFerries();
-    boolean isAvoidHighways();
-    boolean isAvoidTolls();
-
-    TileServerMapManager getTileServerMapManager();
+public interface RoutingServiceListener extends EventListener {
+    void downloading();
+    void processing(int second);
+    void routing(int second);
 }

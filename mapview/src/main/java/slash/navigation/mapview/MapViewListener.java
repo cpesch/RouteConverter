@@ -22,6 +22,7 @@ package slash.navigation.mapview;
 
 import slash.navigation.common.DistanceAndTime;
 
+import java.util.EventListener;
 import java.util.Map;
 
 /**
@@ -30,7 +31,7 @@ import java.util.Map;
  * @author Christian Pesch
  */
 
-public interface MapViewListener {
+public interface MapViewListener extends EventListener {
     void calculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime);
     void receivedCallback(int port);
 }

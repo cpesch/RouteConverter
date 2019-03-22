@@ -37,7 +37,7 @@ import static slash.navigation.common.Bearing.calculateBearing;
  * @author Christian Pesch
  */
 
-public class Beeline implements RoutingService {
+public class Beeline extends BaseRoutingService {
     private static final TravelMode BEELINE = new TravelMode("Beeline");
 
     public String getName() {

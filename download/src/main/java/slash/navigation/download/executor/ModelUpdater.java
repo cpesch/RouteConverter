@@ -48,6 +48,6 @@ public class ModelUpdater implements CopierListener {
         download.setProcessedBytes(byteCount);
         downloadManager.updateDownload(download);
         if (download.getState().equals(Downloading) || download.getState().equals(Resuming))
-            downloadManager.fireDownloadProgressed(download);
+            downloadManager.fireProgressed(download);
     }
 }

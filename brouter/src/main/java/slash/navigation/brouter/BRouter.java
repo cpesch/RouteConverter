@@ -27,10 +27,7 @@ import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
-import slash.navigation.routing.DownloadFuture;
-import slash.navigation.routing.RoutingResult;
-import slash.navigation.routing.RoutingService;
-import slash.navigation.routing.TravelMode;
+import slash.navigation.routing.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -56,7 +53,7 @@ import static slash.navigation.common.Bearing.calculateBearing;
  * @author Christian Pesch
  */
 
-public class BRouter implements RoutingService {
+public class BRouter extends BaseRoutingService {
     private static final Preferences preferences = Preferences.userNodeForPackage(BRouter.class);
     private static final Logger log = Logger.getLogger(BRouter.class.getName());
     private static final String DIRECTORY_PREFERENCE = "directory";
@@ -192,6 +189,13 @@ public class BRouter implements RoutingService {
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
+        SecondCounter secondCounter = new SecondCounter() {
+            protected void second(int second) {
+                fireRouting(second);
+            }
+        };
+        secondCounter.start();
+
         long start = currentTimeMillis();
         try {
             File profile = new File(getProfilesDirectory(), travelMode.getName() + ".brf");
@@ -213,7 +217,7 @@ public class BRouter implements RoutingService {
 
             double bearing = Bearing.calculateBearing(from.getLongitude(), from.getLatitude(),
                     to.getLongitude(), to.getLatitude()).getDistance();
-            long routingTimeout = (long) (1000L + bearing / 20.0);
+            long routingTimeout = (long) (3000L + bearing / 20.0);
             log.info(format("Distance %f results to default routing timeout %d milliseconds", bearing, routingTimeout));
 
             RoutingContext routingContext = new RoutingContext();
@@ -230,6 +234,8 @@ public class BRouter implements RoutingService {
             double distance = routingEngine.getDistance();
             return new RoutingResult(asPositions(track), new DistanceAndTime(distance, null), routingEngine.getErrorMessage() == null);
         } finally {
+            secondCounter.stop();
+
             long end = currentTimeMillis();
             log.info("BRouter: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
         }
@@ -304,12 +310,13 @@ public class BRouter implements RoutingService {
                 return !notExistingProfiles.isEmpty() || !notExistingSegments.isEmpty();
             }
 
-            public boolean isRequiresProcessing() {
-                return false;
+            public void download() {
+                fireDownloading();
+                downloadAndWait(notExistingProfiles, notExistingSegments);
             }
 
-            public void download() {
-                downloadAndWait(notExistingProfiles, notExistingSegments);
+            public boolean isRequiresProcessing() {
+                return false;
             }
 
             public void process() {

@@ -27,8 +27,6 @@ import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
-import javax.swing.event.ChangeListener;
-
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
 
@@ -78,13 +76,5 @@ public abstract class MapViewCallbackImpl implements MapViewCallback {
 
     public TileServerMapManager getTileServerMapManager() {
         return RouteConverter.getInstance().getTileServerMapManager();
-    }
-
-    public void addRoutingServiceChangeListener(ChangeListener l) {
-        RouteConverter.getInstance().getRoutingServiceFacade().addChangeListener(l);
-    }
-
-    public void removeRoutingServiceChangeListener(ChangeListener l) {
-        RouteConverter.getInstance().getRoutingServiceFacade().removeChangeListener(l);
     }
 }

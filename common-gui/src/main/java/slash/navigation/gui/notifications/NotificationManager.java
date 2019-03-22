@@ -30,6 +30,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static java.lang.System.currentTimeMillis;
+import static java.lang.Thread.sleep;
 import static javax.swing.BorderFactory.createEtchedBorder;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.helpers.ThreadHelper.safeJoin;
@@ -49,7 +50,6 @@ public class NotificationManager {
 
     private static final Object notificationMutex = new Object();
     private boolean running = true;
-    private long lastEvent;
     private String nextMessage;
     private Action nextAction;
     private Thread notificationUpdater;
@@ -74,39 +74,32 @@ public class NotificationManager {
     }
 
     private void initializeNotificationUpdater() {
-        notificationUpdater = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    synchronized (notificationMutex) {
-                        if (!running)
-                            break;
+        notificationUpdater = new Thread(() -> {
+            long hideAt = 0;
 
-                        if (nextMessage != null) {
-                            final String showMessage = nextMessage;
-                            nextMessage = null;
-                            lastEvent = currentTimeMillis();
+            while (true) {
+                synchronized (notificationMutex) {
+                    if (!running)
+                        break;
 
-                            if (!label.getText().equals(showMessage)) {
-                                invokeInAwtEventQueue(new Runnable() {
-                                    public void run() {
-                                        show(showMessage);
-                                    }
-                                });
-                            }
-                        } else if (currentTimeMillis() - lastEvent > DISPLAY_TIMEOUT) {
-                            invokeInAwtEventQueue(new Runnable() {
-                                public void run() {
-                                    hide();
-                                }
-                            });
+                    if (nextMessage != null) {
+                        final String showMessage = nextMessage;
+                        nextMessage = null;
+                        hideAt = currentTimeMillis() + DISPLAY_TIMEOUT;
+
+                        if (!label.getText().equals(showMessage)) {
+                            invokeInAwtEventQueue(() -> show(showMessage));
                         }
+                    } else if (currentTimeMillis() > hideAt) {
+                        invokeInAwtEventQueue(this::hide);
+                        hideAt = Long.MAX_VALUE;
                     }
+                }
 
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        // intentionally left empty
-                    }
+                try {
+                    sleep(1000);
+                } catch (InterruptedException e) {
+                    // intentionally left empty
                 }
             }
         }, "NotificationUpdater");

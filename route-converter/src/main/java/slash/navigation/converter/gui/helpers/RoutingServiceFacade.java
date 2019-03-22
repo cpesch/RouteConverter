@@ -21,9 +21,9 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.RoutingServiceListener;
 import slash.navigation.routing.TravelMode;
 
-import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +54,7 @@ public class RoutingServiceFacade {
 
     public void addRoutingService(RoutingService routingService) {
         routingServices.add(routingService);
+        routingService.addRoutingServiceListener(new RoutingServiceEventForwarder());
         log.info(format("Added routing service '%s'", routingService.getName()));
     }
 
@@ -91,7 +92,7 @@ public class RoutingServiceFacade {
 
     public void setRoutingService(RoutingService service) {
         preferences.put(ROUTING_SERVICE_PREFERENCE, service.getName());
-        fireChanged();
+        firePreferencesChanged();
     }
 
     public TravelMode getTravelMode() {
@@ -113,7 +114,7 @@ public class RoutingServiceFacade {
 
     public void setTravelMode(TravelMode travelMode) {
         preferences.put(TRAVEL_MODE_PREFERENCE + getRoutingService().getName(), travelMode.getName());
-        fireChanged();
+        firePreferencesChanged();
     }
 
     public boolean isAvoidFerries() {
@@ -122,7 +123,7 @@ public class RoutingServiceFacade {
 
     public void setAvoidFerries(boolean avoidFerries) {
         preferences.putBoolean(AVOID_FERRIES_PREFERENCE + getRoutingService().getName(), avoidFerries);
-        fireChanged();
+        firePreferencesChanged();
     }
 
     public boolean isAvoidHighways() {
@@ -131,7 +132,7 @@ public class RoutingServiceFacade {
 
     public void setAvoidHighways(boolean avoidHighways) {
         preferences.putBoolean(AVOID_HIGHWAYS_PREFERENCE + getRoutingService().getName(), avoidHighways);
-        fireChanged();
+        firePreferencesChanged();
     }
 
     public boolean isAvoidTolls() {
@@ -140,23 +141,60 @@ public class RoutingServiceFacade {
 
     public void setAvoidTolls(boolean avoidTolls) {
         preferences.putBoolean(AVOID_TOLLS_PREFERENCE + getRoutingService().getName(), avoidTolls);
-        fireChanged();
+        firePreferencesChanged();
     }
 
-    protected void fireChanged() {
+    private void fireDownloading() {
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == ChangeListener.class) {
-                ((ChangeListener) listeners[i + 1]).stateChanged(null);
+            if (listeners[i] == RoutingServiceFacadeListener.class) {
+                ((RoutingServiceFacadeListener) listeners[i + 1]).downloading();
             }
         }
     }
 
-    public void addChangeListener(ChangeListener l) {
-        listenerList.add(ChangeListener.class, l);
+    private void fireInitializing(int second) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == RoutingServiceFacadeListener.class) {
+                ((RoutingServiceFacadeListener) listeners[i + 1]).processing(second);
+            }
+        }
     }
 
-    public void removeChangeListener(ChangeListener l) {
-        listenerList.remove(ChangeListener.class, l);
+    private void fireRouting(int second) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == RoutingServiceFacadeListener.class) {
+                ((RoutingServiceFacadeListener) listeners[i + 1]).routing(second);
+            }
+        }
+    }
+
+    private void firePreferencesChanged() {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == RoutingServiceFacadeListener.class) {
+                ((RoutingServiceFacadeListener) listeners[i + 1]).preferencesChanged();
+            }
+        }
+    }
+
+    public void addRoutingServiceFacadeListener(RoutingServiceFacadeListener l) {
+        listenerList.add(RoutingServiceFacadeListener.class, l);
+    }
+
+    private class RoutingServiceEventForwarder implements RoutingServiceListener {
+        public void downloading() {
+            fireDownloading();
+        }
+
+        public void processing(int second) {
+            fireInitializing(second);
+        }
+
+        public void routing(int second) {
+            fireRouting(second);
+        }
     }
 }

@@ -53,6 +53,7 @@ public interface MapView extends PositionsSelectionModel {
     void setMapsPath(String path) throws IOException;
     String getThemesPath();
     void setThemesPath(String path) throws IOException;
+    void routingPreferencesChanged();
 
     Throwable getInitializationCause();
     void dispose();

@@ -48,23 +48,7 @@ import slash.navigation.converter.gui.actions.ShowAboutRouteConverterAction;
 import slash.navigation.converter.gui.actions.ShowDownloadsAction;
 import slash.navigation.converter.gui.actions.ShowOptionsAction;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
-import slash.navigation.converter.gui.helpers.ApplicationMenu;
-import slash.navigation.converter.gui.helpers.AudioPlayer;
-import slash.navigation.converter.gui.helpers.ChecksumSender;
-import slash.navigation.converter.gui.helpers.DownloadNotifier;
-import slash.navigation.converter.gui.helpers.ElevationServiceFacade;
-import slash.navigation.converter.gui.helpers.FrameMenu;
-import slash.navigation.converter.gui.helpers.GeoTagger;
-import slash.navigation.converter.gui.helpers.GeocodingServiceFacade;
-import slash.navigation.converter.gui.helpers.InsertPositionFacade;
-import slash.navigation.converter.gui.helpers.MapViewImplementation;
-import slash.navigation.converter.gui.helpers.PositionAugmenter;
-import slash.navigation.converter.gui.helpers.ReopenMenu;
-import slash.navigation.converter.gui.helpers.RouteServiceOperator;
-import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
-import slash.navigation.converter.gui.helpers.TagStrategy;
-import slash.navigation.converter.gui.helpers.UndoMenu;
-import slash.navigation.converter.gui.helpers.UpdateChecker;
+import slash.navigation.converter.gui.helpers.*;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.converter.gui.models.GoogleMapsServerModel;
@@ -1233,6 +1217,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             ColumbusV1000Device.setTimeZone(timeZoneModel.getTimeZoneId()); // for TimeAlbum
         });
         tileServerMapManager = new TileServerMapManager(getTileServersDirectory());
+        routingServiceFacade.addRoutingServiceFacadeListener(new RoutingServiceFacadeNotifier());
     }
 
     protected void initializeActions() {

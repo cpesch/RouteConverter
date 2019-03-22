@@ -37,9 +37,6 @@ public interface MapViewCallbackOpenSource extends MapViewCallback {
     BooleanModel getShowShadedHills();
     ElevationService getElevationService();
 
-    void showDownloadNotification();
-    void showProcessNotification();
-
     void handleRoutingException(Throwable t);
     void showMapException(String mapName, Exception e);
 }

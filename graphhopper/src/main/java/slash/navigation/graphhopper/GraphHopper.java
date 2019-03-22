@@ -32,10 +32,7 @@ import slash.navigation.download.Action;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
-import slash.navigation.routing.DownloadFuture;
-import slash.navigation.routing.RoutingResult;
-import slash.navigation.routing.RoutingService;
-import slash.navigation.routing.TravelMode;
+import slash.navigation.routing.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +59,7 @@ import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
  * @author Christian Pesch
  */
 
-public class GraphHopper implements RoutingService {
+public class GraphHopper extends BaseRoutingService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GraphHopper.class);
     private static final Logger log = Logger.getLogger(GraphHopper.class.getName());
     private static final String DIRECTORY_PREFERENCE = "directory";
@@ -91,7 +88,7 @@ public class GraphHopper implements RoutingService {
         return getDataSource() != null;
     }
 
-    public synchronized DataSource getDataSource() {
+    private synchronized DataSource getDataSource() {
         return dataSource;
     }
 
@@ -160,6 +157,13 @@ public class GraphHopper implements RoutingService {
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
         initializeHopper();
 
+        SecondCounter secondCounter = new SecondCounter() {
+            protected void second(int second) {
+                fireRouting(second);
+            }
+        };
+        secondCounter.start();
+
         long start = currentTimeMillis();
         try {
             GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
@@ -173,6 +177,8 @@ public class GraphHopper implements RoutingService {
             PathWrapper best = response.getBest();
             return new RoutingResult(asPositions(best.getPoints()), new DistanceAndTime(best.getDistance(), best.getTime() / 1000), true);
         } finally {
+            secondCounter.stop();
+
             long end = currentTimeMillis();
             log.info("GraphHopper: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
         }
@@ -217,6 +223,14 @@ public class GraphHopper implements RoutingService {
                 hopper.close();
             }
 
+            SecondCounter secondCounter = new SecondCounter() {
+                protected void second(int second) {
+                    fireInitializing(second);
+                }
+            };
+            secondCounter.start();
+
+            long start = currentTimeMillis();
             File path = createPath(file);
             try {
                 hopper = new GraphHopperOSM().
@@ -242,6 +256,11 @@ public class GraphHopper implements RoutingService {
                 }
 
                 throw e;
+            } finally {
+                secondCounter.stop();
+
+                long end = currentTimeMillis();
+                log.info("GraphHopper: initializing took " + (end - start) + " milliseconds");
             }
 
             setOsmPbfFile(null);
@@ -266,6 +285,12 @@ public class GraphHopper implements RoutingService {
             public boolean isRequiresDownload() {
                 return file != null && !file.exists();
             }
+
+            public void download() {
+                fireDownloading();
+                downloadAndWait(downloadable);
+            }
+
             public boolean isRequiresProcessing() {
                 if(file == null)
                     return false;
@@ -274,9 +299,7 @@ public class GraphHopper implements RoutingService {
                 File edges = new File(path, "edges");
                 return !path.exists() || !edges.exists();
             }
-            public void download() {
-                downloadAndWait(downloadable);
-            }
+
             public void process() {
                 initializeHopper();
             }

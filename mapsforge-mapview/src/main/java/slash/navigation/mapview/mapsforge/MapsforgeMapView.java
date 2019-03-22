@@ -63,9 +63,8 @@ import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
-import slash.navigation.mapview.MapView;
+import slash.navigation.mapview.BaseMapView;
 import slash.navigation.mapview.MapViewCallback;
-import slash.navigation.mapview.MapViewListener;
 import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
@@ -81,9 +80,8 @@ import javax.swing.event.*;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -128,13 +126,10 @@ import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
  * @author Christian Pesch
  */
 
-public class MapsforgeMapView implements MapView {
+public class MapsforgeMapView extends BaseMapView {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
     private static final Logger log = Logger.getLogger(MapsforgeMapView.class.getName());
 
-    private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
-    private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
-    private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
     private static final String READ_BUFFER_SIZE_PREFERENCE = "readBufferSize";
     private static final String FIRST_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "firstLevelTileCacheSize";
     private static final String SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "secondLevelTileCacheSize";
@@ -158,7 +153,6 @@ public class MapsforgeMapView implements MapView {
 
     private PositionsModelListener positionsModelListener = new PositionsModelListener();
     private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
-    private RoutingServiceListener routingServiceListener = new RoutingServiceListener();
     private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
     private ColorModelListener colorModelListener = new ColorModelListener();
     private UnitSystemListener unitSystemListener = new UnitSystemListener();
@@ -366,7 +360,6 @@ public class MapsforgeMapView implements MapView {
 
         positionsModel.addTableModelListener(positionsModelListener);
         characteristicsModel.addListDataListener(characteristicsModelListener);
-        mapViewCallback.addRoutingServiceChangeListener(routingServiceListener);
         showCoordinates.addChangeListener(showCoordinatesListener);
         routeColorModel.addChangeListener(colorModelListener);
         trackColorModel.addChangeListener(colorModelListener);
@@ -704,7 +697,6 @@ public class MapsforgeMapView implements MapView {
 
         positionsModel.removeTableModelListener(positionsModelListener);
         characteristicsModel.removeListDataListener(characteristicsModelListener);
-        mapViewCallback.removeRoutingServiceChangeListener(routingServiceListener);
         routeColorModel.removeChangeListener(colorModelListener);
         trackColorModel.removeChangeListener(colorModelListener);
         unitSystemModel.removeChangeListener(unitSystemListener);
@@ -991,6 +983,11 @@ public class MapsforgeMapView implements MapView {
         getMapManager().scanThemes();
     }
 
+    public void routingPreferencesChanged() {
+        if (positionsModel.getRoute().getCharacteristics().equals(Route))
+            updateDecoupler.replaceRoute();
+    }
+
     public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
         if (selectionUpdater == null)
             return;
@@ -1148,22 +1145,6 @@ public class MapsforgeMapView implements MapView {
 
     // listeners
 
-    private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<>();
-
-    public void addMapViewListener(MapViewListener listener) {
-        mapViewListeners.add(listener);
-    }
-
-    public void removeMapViewListener(MapViewListener listener) {
-        mapViewListeners.remove(listener);
-    }
-
-    private void fireCalculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        for (MapViewListener listener : mapViewListeners) {
-            listener.calculatedDistances(indexToDistanceAndTime);
-        }
-    }
-
     private class PositionsModelListener implements TableModelListener {
         public void tableChanged(TableModelEvent e) {
             switch (e.getType()) {
@@ -1193,13 +1174,6 @@ public class MapsforgeMapView implements MapView {
                 default:
                     throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
             }
-        }
-    }
-
-    private class RoutingServiceListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            if (positionsModel.getRoute().getCharacteristics().equals(Route))
-                updateDecoupler.replaceRoute();
         }
     }
 

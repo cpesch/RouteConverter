@@ -26,12 +26,12 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helpers.RoutingServiceFacadeListener;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -107,26 +107,31 @@ public class InsertPositionsDialog extends SimpleDialog {
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_IN_FOCUSED_WINDOW);
 
         final PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
-        r.getConvertPanel().getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting())
-                    return;
-                if (positionsModel.isContinousRange())
-                    return;
+        r.getConvertPanel().getPositionsView().getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting())
+                return;
+            if (positionsModel.isContinousRange())
+                return;
+            handlePositionsUpdate();
+        });
+        r.getRoutingServiceFacade().addRoutingServiceFacadeListener(new RoutingServiceFacadeListener() {
+            public void preferencesChanged() {
                 handlePositionsUpdate();
+            }
+
+            public void downloading() {
+            }
+
+            public void processing(int second) {
+            }
+
+            public void routing(int second) {
             }
         });
-        r.getRoutingServiceFacade().addChangeListener(new ChangeListener() {
-            public void stateChanged(ChangeEvent e) {
-                handlePositionsUpdate();
-            }
-        });
-        positionsModel.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                if (positionsModel.isContinousRange())
-                    return;
-                handlePositionsUpdate();
-            }
+        positionsModel.addTableModelListener(e -> {
+            if (positionsModel.isContinousRange())
+                return;
+            handlePositionsUpdate();
         });
 
         handlePositionsUpdate();
@@ -289,4 +294,5 @@ public class InsertPositionsDialog extends SimpleDialog {
     public JComponent $$$getRootComponent$$$() {
         return contentPane;
     }
+
 }

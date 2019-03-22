@@ -95,20 +95,18 @@ public class RouteRenderer {
     private final ExecutorService executor = createSingleThreadExecutor("RouteRenderer");
 
     public void renderRoute(final List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
-        executor.execute(new Runnable() {
-            public void run() {
-                synchronized (notificationMutex) {
-                    drawingRoute = true;
-                }
+        executor.execute(() -> {
+            synchronized (notificationMutex) {
+                drawingRoute = true;
+            }
 
-                try {
-                    internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
-                } catch (Throwable t) {
-                    mapViewCallback.handleRoutingException(t);
-                } finally {
-                    synchronized (notificationMutex) {
-                        drawingRoute = false;
-                    }
+            try {
+                internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
+            } catch (Throwable t) {
+                mapViewCallback.handleRoutingException(t);
+            } finally {
+                synchronized (notificationMutex) {
+                    drawingRoute = false;
                 }
             }
         });
@@ -194,15 +192,12 @@ public class RouteRenderer {
     private void waitForDownload(RoutingService service, List<PairWithLayer> pairWithLayers) {
         if (service.isDownload()) {
             DownloadFuture future = service.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
-            if (future.isRequiresDownload()) {
-                mapViewCallback.showDownloadNotification();
+            if (future.isRequiresDownload())
                 future.download();
-            }
-            if (future.isRequiresProcessing()) {
-                mapViewCallback.showProcessNotification();
-                // TODO need notifications during processing of GraphHopper .pbf files
+
+            if (future.isRequiresProcessing())
                 future.process();
-            }
+
         }
     }
 

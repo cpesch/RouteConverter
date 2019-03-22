@@ -32,10 +32,7 @@ import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.tileserver.TileServer;
-import slash.navigation.mapview.AbstractMapViewListener;
-import slash.navigation.mapview.MapView;
-import slash.navigation.mapview.MapViewCallback;
-import slash.navigation.mapview.MapViewListener;
+import slash.navigation.mapview.*;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.event.*;
@@ -102,7 +99,7 @@ import static slash.navigation.mapview.browser.helpers.TransformUtil.isPositionI
  * @author Christian Pesch
  */
 
-public abstract class BrowserMapView implements MapView {
+public abstract class BrowserMapView extends BaseMapView {
     static final Preferences preferences = Preferences.userNodeForPackage(BrowserMapView.class);
     private static final Logger log = Logger.getLogger(MapView.class.getName());
     private static final String RESOURCES_PACKAGE = "slash/navigation/mapview/browser/";
@@ -116,9 +113,6 @@ public abstract class BrowserMapView implements MapView {
     private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
     private static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
     private static final String MOVE_COMPLETE_SELECTION_PREFERENCE = "moveCompleteSelection";
-    private static final String CENTER_LATITUDE_PREFERENCE = "centerLatitude";
-    private static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
-    private static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
 
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
@@ -148,7 +142,6 @@ public abstract class BrowserMapView implements MapView {
 
     private PositionsModelListener positionsModelListener = new PositionsModelListener();
     private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
-    private MapViewCallbackListener mapViewCallbackListener = new MapViewCallbackListener();
     private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
     private ShowWaypointDescriptionListener showWaypointDescriptionListener = new ShowWaypointDescriptionListener();
     private RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
@@ -156,7 +149,7 @@ public abstract class BrowserMapView implements MapView {
     private GoogleMapsServerListener googleMapsServerListener = new GoogleMapsServerListener();
 
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
-    protected MapViewCallbackGoogle mapViewCallback;
+    MapViewCallbackGoogle mapViewCallback;
     private PositionReducer positionReducer;
     private final ExecutorService executor = newCachedThreadPool();
     private int overQueryLimitCount, zeroResultsCount;
@@ -190,7 +183,6 @@ public abstract class BrowserMapView implements MapView {
 
         positionsModel.addTableModelListener(positionsModelListener);
         characteristicsModel.addListDataListener(characteristicsModelListener);
-        mapViewCallback.addRoutingServiceChangeListener(mapViewCallbackListener);
         showCoordinates.addChangeListener(showCoordinatesListener);
         showWaypointDescription.addChangeListener(showWaypointDescriptionListener);
         getFixMapModeModel().addChangeListener(repaintPositionListListener);
@@ -352,6 +344,11 @@ public abstract class BrowserMapView implements MapView {
 
     public void setThemesPath(String path) {
         throw new UnsupportedOperationException();
+    }
+
+    public void routingPreferencesChanged() {
+        if (positionsModel.getRoute().getCharacteristics().equals(Route))
+            update(false, false);
     }
 
     protected void initializeBrowserInteraction() {
@@ -526,34 +523,32 @@ public abstract class BrowserMapView implements MapView {
         if (callbackListenerServerSocket == null)
             return;
 
-        callbackListener = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    synchronized (notificationMutex) {
-                        if (!running) {
-                            return;
-                        }
+        callbackListener = new Thread(() -> {
+            while (true) {
+                synchronized (notificationMutex) {
+                    if (!running) {
+                        return;
                     }
+                }
 
-                    try {
-                        final Socket socket = callbackListenerServerSocket.accept();
-                        executor.execute(new Runnable() {
-                            public void run() {
-                                try {
-                                    processStream(socket);
-                                } catch (IOException e) {
-                                    log.severe(format("Cannot process stream from callback listener socket: %s, %s ", e, printStackTrace(e)));
-                                }
+                try {
+                    final Socket socket = callbackListenerServerSocket.accept();
+                    executor.execute(new Runnable() {
+                        public void run() {
+                            try {
+                                processStream(socket);
+                            } catch (IOException e) {
+                                log.severe(format("Cannot process stream from callback listener socket: %s, %s ", e, printStackTrace(e)));
                             }
-                        });
-                    } catch (SocketTimeoutException e) {
-                        // intentionally left empty
-                    } catch (IOException e) {
-                        synchronized (notificationMutex) {
-                            //noinspection ConstantConditions
-                            if (running) {
-                                log.severe("Cannot accept callback listener socket: " + e);
-                            }
+                        }
+                    });
+                } catch (SocketTimeoutException e) {
+                    // intentionally left empty
+                } catch (IOException e) {
+                    synchronized (notificationMutex) {
+                        //noinspection ConstantConditions
+                        if (running) {
+                            log.severe("Cannot accept callback listener socket: " + e);
                         }
                     }
                 }
@@ -793,7 +788,6 @@ public abstract class BrowserMapView implements MapView {
         if(positionsModel != null) {
             positionsModel.removeTableModelListener(positionsModelListener);
             characteristicsModel.removeListDataListener(characteristicsModelListener);
-            mapViewCallback.removeRoutingServiceChangeListener(mapViewCallbackListener);
             showCoordinates.removeChangeListener(showCoordinatesListener);
             showWaypointDescription.removeChangeListener(showWaypointDescriptionListener);
             getFixMapModeModel().removeChangeListener(repaintPositionListListener);
@@ -1882,28 +1876,6 @@ public abstract class BrowserMapView implements MapView {
 
     // listeners
 
-    private final List<MapViewListener> mapViewListeners = new CopyOnWriteArrayList<>();
-
-    public void addMapViewListener(MapViewListener listener) {
-        mapViewListeners.add(listener);
-    }
-
-    public void removeMapViewListener(MapViewListener listener) {
-        mapViewListeners.remove(listener);
-    }
-
-    private void fireCalculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        for (MapViewListener listener : mapViewListeners) {
-            listener.calculatedDistances(indexToDistanceAndTime);
-        }
-    }
-
-    private void fireReceivedCallback(int port) {
-        for (MapViewListener listener : mapViewListeners) {
-            listener.receivedCallback(port);
-        }
-    }
-
     private class PositionsModelListener implements TableModelListener {
         public void tableChanged(TableModelEvent e) {
             boolean insertOrDelete = e.getType() == INSERT || e.getType() == DELETE;
@@ -1955,13 +1927,6 @@ public abstract class BrowserMapView implements MapView {
             if (isIgnoreEvent(e))
                 return;
             updateRouteButDontRecenter();
-        }
-    }
-
-    private class MapViewCallbackListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            if (positionsModel.getRoute().getCharacteristics().equals(Route))
-                update(false, false);
         }
     }
 

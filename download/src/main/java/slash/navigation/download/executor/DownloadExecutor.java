@@ -111,11 +111,11 @@ public class DownloadExecutor implements Runnable {
 
     public void downloadFailed() {
         updateState(Failed);
-        downloadManager.fireDownloadFailed(download);
+        downloadManager.fireFailed(download);
     }
 
     public void postProcessFailed() {
-        downloadManager.fireDownloadFailed(download);
+        downloadManager.fireFailed(download);
     }
 
     public void notModified() {
@@ -124,6 +124,6 @@ public class DownloadExecutor implements Runnable {
 
     public void succeeded() {
         updateState(Succeeded);
-        downloadManager.fireDownloadSucceeded(download);
+        downloadManager.fireSucceeded(download);
     }
 }
