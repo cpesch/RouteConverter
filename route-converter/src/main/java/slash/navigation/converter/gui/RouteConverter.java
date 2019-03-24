@@ -347,7 +347,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         patchUIManager(getBundle(),
                 "OptionPane.yesButtonText", "OptionPane.noButtonText", "OptionPane.cancelButtonText",
                 "FileChooser.openButtonText", "FileChooser.saveButtonText", "FileChooser.cancelButtonText",
-                "FileChooser.acceptAllFileFilterText");
+                "FileChooser.acceptAllFileFilterText", "ColorChooser.rgbRedText", "ColorChooser.rgbGreenText",
+                "ColorChooser.rgbBlueText", "ColorChooser.rgbAlphaText");
         initializePreferences(preferences);
 
         addExitListener(event -> getConvertPanel().confirmDiscard());
