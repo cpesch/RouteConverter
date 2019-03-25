@@ -30,6 +30,10 @@
             <outputDirectory>/Contents/Resources/</outputDirectory>
         </file>
         <file>
+            <source>src/main/app-resources/Resources/InfoPlist.strings</source>
+            <outputDirectory>/Contents/Resources/German.lproj/</outputDirectory>
+        </file>
+        <file>
             <source>src/main/app-resources/Info.plist</source>
             <outputDirectory>/Contents/</outputDirectory>
             <filtered>true</filtered>
