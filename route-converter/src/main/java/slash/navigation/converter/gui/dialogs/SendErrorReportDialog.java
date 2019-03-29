@@ -26,10 +26,12 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.Files;
 import slash.common.log.LoggingHelper;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helpers.AbstractDocumentListener;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,6 +72,13 @@ public class SendErrorReportDialog extends SimpleDialog {
 
         textAreaLog.setText(LoggingHelper.getInstance().getLogFileAsString());
 
+        textAreaDescription.getDocument().addDocumentListener(new AbstractDocumentListener() {
+            public void process(DocumentEvent e) {
+                handleDescriptionUpdate();
+            }
+        });
+        handleDescriptionUpdate();
+
         buttonChooseFilePath.addActionListener(new DialogAction(this) {
             public void run() {
                 chooseFilePath();
@@ -96,11 +105,11 @@ public class SendErrorReportDialog extends SimpleDialog {
             }
         });
 
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cancel();
-            }
-        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> cancel(), getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+    }
+
+    private void handleDescriptionUpdate() {
+        buttonSend.setEnabled(textAreaDescription.getDocument().getLength() > 0);
     }
 
     private void chooseFilePath() {
