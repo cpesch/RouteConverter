@@ -124,13 +124,10 @@ public class LoggingHelper {
         return logAsString;
     }
 
-    private static final Filter FILTER = new Filter() {
-        public boolean isLoggable(LogRecord record) {
-            return record.getLoggerName().startsWith("slash") ||
-                    record.getLoggerName().startsWith("com.graphhopper") ||
-                    record.getLoggerName().startsWith("org.mapsforge");
-        }
-    };
+    private static final Filter FILTER = record ->
+            record.getLoggerName().startsWith("slash") ||
+            record.getLoggerName().startsWith("com.graphhopper") ||
+            (record.getLoggerName().startsWith("org.mapsforge") && !record.getLoggerName().contains("TileDownloadThread"));
 
     private File getLogFile() {
         return new File(System.getProperty("java.io.tmpdir"), "RouteConverter.log");
