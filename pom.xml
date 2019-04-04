@@ -437,6 +437,7 @@
         <module>TimeAlbumProMac</module>
         <module>TimeAlbumProWindows</module>
         <module>download-tools</module>
+        <module>proxy-tools</module>
         <module>route-converter-tools</module>
     </modules>
 </project>

@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>route-converter-tools</artifactId>
+    <artifactId>proxy-tools</artifactId>
     <packaging>jar</packaging>
-    <name>Tools to filter resource bundles</name>
+    <name>Tools to investigate Proxy problems</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
@@ -17,21 +17,21 @@
                 <artifactId>maven-shade-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>FilterResourceBundles</id>
+                        <id>CheckProxy</id>
                         <phase>package</phase>
                         <goals>
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>FilterResourceBundles</finalName>
+                            <finalName>CheckProxy</finalName>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
-                                        <Specification-Title>FilterResourceBundles for ${project.name}</Specification-Title>
+                                        <Specification-Title>CheckProxy for ${project.name}</Specification-Title>
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
-                                        <Main-Class>slash.navigation.converter.tools.FilterResourceBundles</Main-Class>
+                                        <Main-Class>slash.navigation.rest.tools.CheckProxy</Main-Class>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
@@ -40,12 +40,16 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>META-INF/*.inf</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/*.SF</exclude>
                                         <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/DEPENDENCIES*</exclude>
                                         <exclude>META-INF/LICENSE*</exclude>
                                         <exclude>META-INF/NOTICE*</exclude>
                                         <exclude>META-INF/jb/</exclude>
                                         <exclude>META-INF/maven/</exclude>
                                         <exclude>META-INF/services/</exclude>
+                                        <exclude>META-INF/versions/</exclude>
                                         <exclude>mozilla/*</exclude>
                                         <exclude>*.html</exclude>
                                         <exclude>external.xpt</exclude>
@@ -62,8 +66,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>commons-cli</groupId>
-            <artifactId>commons-cli</artifactId>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.7</version>
         </dependency>
     </dependencies>
 </project>
