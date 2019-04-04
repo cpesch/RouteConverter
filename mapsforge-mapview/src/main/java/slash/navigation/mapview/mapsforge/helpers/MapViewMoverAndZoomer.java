@@ -25,7 +25,6 @@ import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.model.IMapViewPosition;
-import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.mapview.mapsforge.AwtGraphicMapView;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;

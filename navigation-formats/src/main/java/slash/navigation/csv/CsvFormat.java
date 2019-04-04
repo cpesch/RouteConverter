@@ -32,13 +32,10 @@ import slash.navigation.common.NavigationPosition;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
-import java.util.stream.Collector;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
 import static slash.common.io.Transfer.*;
 
 /**

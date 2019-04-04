@@ -60,8 +60,8 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;

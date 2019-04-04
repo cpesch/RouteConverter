@@ -49,7 +49,8 @@ import slash.navigation.routes.local.LocalCatalog;
 import slash.navigation.routes.remote.RemoteCatalog;
 
 import javax.swing.*;
-import javax.swing.event.*;
+import javax.swing.event.TreeModelEvent;
+import javax.swing.event.TreeModelListener;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;

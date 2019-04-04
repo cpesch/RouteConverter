@@ -34,8 +34,8 @@ import java.beans.PropertyChangeListener;
 import java.util.*;
 import java.util.prefs.Preferences;
 
-import static java.text.DateFormat.*;
 import static java.text.DateFormat.SHORT;
+import static java.text.DateFormat.*;
 import static java.util.Calendar.*;
 import static java.util.Locale.US;
 import static slash.navigation.converter.gui.models.PositionTableColumn.VISIBLE_PROPERTY_NAME;

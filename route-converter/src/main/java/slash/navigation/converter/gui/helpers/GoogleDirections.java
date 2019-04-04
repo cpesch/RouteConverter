@@ -24,7 +24,10 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.mapview.MapView;
-import slash.navigation.routing.*;
+import slash.navigation.routing.BaseRoutingService;
+import slash.navigation.routing.DownloadFuture;
+import slash.navigation.routing.RoutingResult;
+import slash.navigation.routing.TravelMode;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

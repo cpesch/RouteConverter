@@ -37,7 +37,6 @@ import java.util.TimeZone;
 
 import static com.jcabi.matchers.RegexMatchers.matchesPattern;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static slash.common.TestCase.*;
 import static slash.common.io.Transfer.parseXMLTime;
 import static slash.common.type.CompactCalendar.fromCalendar;

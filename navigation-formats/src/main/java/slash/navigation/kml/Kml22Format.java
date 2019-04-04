@@ -24,8 +24,8 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.kml.binding22.*;
 import slash.navigation.kml.binding22.ObjectFactory;
+import slash.navigation.kml.binding22.*;
 import slash.navigation.kml.binding22gx.*;
 import slash.navigation.kml.bindingatom.Link;
 

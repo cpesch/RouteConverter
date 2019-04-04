@@ -22,7 +22,6 @@ package slash.navigation.csv;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ExtendedSensorNavigationPosition;
-import slash.navigation.excel.ExcelPosition;
 import slash.navigation.gpx.GpxPosition;
 
 import java.util.Calendar;
