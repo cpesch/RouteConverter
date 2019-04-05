@@ -19,6 +19,7 @@
 */
 package slash.navigation.rest.tools;
 
+import com.github.markusbernhardt.proxy.ProxySearch;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
@@ -46,6 +47,12 @@ public class CheckProxy {
     private static final Logger log = Logger.getLogger(CheckProxy.class.getName());
 
     private void run() throws Exception {
+        System.setProperty("java.net.useSystemProxies","true");
+
+        ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
+        ProxySelector proxySelector = proxySearch.getProxySelector();
+        ProxySelector.setDefault(proxySelector);
+
         ProxySelector selector = ProxySelector.getDefault();
         log.info(format("ProxySelector %s", selector));
 
