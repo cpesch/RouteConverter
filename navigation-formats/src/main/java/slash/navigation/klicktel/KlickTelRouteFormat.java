@@ -111,12 +111,15 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
             // <City>Sonsbeck</City>
             // <CountryShortcut>D</CountryShortcut>
 
-            // TODO as in GopalRouteFormat? station.setCountryShortcut();
-            // TODO as in GopalRouteFormat? station.setDistrict();
-            // TODO as in GopalRouteFormat? station.setHouseNumber();
-            // TODO as in GopalRouteFormat? station.setPostalCode();
-            // TODO as in GopalRouteFormat? station.setStreet();
-            // TODO start point? station.setLocationType(4096);
+            // TODO as in GopalRouteFormat?
+            // station.setCountryShortcut();
+            // station.setDistrict();
+            // station.setHouseNumber();
+            // station.setPostalCode();
+            // station.setStreet();
+
+            // TODO start point?
+            // station.setLocationType(4096);
             station.setPoint(point);
             stations.getStation().add(station);
         }
