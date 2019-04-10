@@ -24,6 +24,7 @@ import com.graphhopper.GHResponse;
 import com.graphhopper.PathWrapper;
 import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.routing.util.FlagEncoderFactory;
 import com.graphhopper.util.PointList;
 import slash.navigation.common.*;
 import slash.navigation.datasources.DataSource;
@@ -233,12 +234,16 @@ public class GraphHopper extends BaseRoutingService {
             long start = currentTimeMillis();
             File path = createPath(file);
             try {
+                EncodingManager encodingManager = new EncodingManager.
+                        Builder(BYTES_FOR_EDGE_FLAGS).
+                        setEnableInstructions(false).
+                        addAll(FlagEncoderFactory.DEFAULT, getAvailableTravelModeNames()).
+                        build();
                 hopper = new GraphHopperOSM().
                         setOSMFile(file.getAbsolutePath()).
                         forDesktop().
-                        setEncodingManager(new EncodingManager(getAvailableTravelModeNames(), BYTES_FOR_EDGE_FLAGS)).
+                        setEncodingManager(encodingManager).
                         setCHEnabled(false).
-                        setEnableInstructions(false).
                         setGraphHopperLocation(path.getAbsolutePath()).
                         importOrLoad();
             } catch (IllegalStateException e) {

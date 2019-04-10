@@ -404,8 +404,8 @@ public class MapsforgeMapView extends BaseMapView {
         handleUnitSystem();
 
         try {
-            markerIcon = GRAPHIC_FACTORY.createResourceBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"), -1);
-            waypointIcon = GRAPHIC_FACTORY.createResourceBitmap(MapsforgeMapView.class.getResourceAsStream("waypoint.png"), -1);
+            markerIcon = GRAPHIC_FACTORY.createTileBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"), -1, false);
+            waypointIcon = GRAPHIC_FACTORY.createTileBitmap(MapsforgeMapView.class.getResourceAsStream("waypoint.png"), -1, false);
         } catch (IOException e) {
             log.severe("Cannot create marker and waypoint icon: " + e);
         }
