@@ -39,8 +39,8 @@ import static java.util.logging.Level.WARNING;
 import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.helpers.ProxyHelper.setUseSystemProxies;
 import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
-import static slash.navigation.gui.helpers.UIHelper.setUseSystemProxies;
 
 /**
  * The base of all graphical user interfaces.

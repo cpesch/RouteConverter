@@ -17,7 +17,6 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.gui.helpers;
 
 import javax.swing.*;
@@ -71,10 +70,6 @@ public class UIHelper {
         // https://docs.oracle.com/javase/7/docs/technotes/guides/2d/flags.html#xrender
         if (isLinux())
             System.setProperty("sun.java2d.xrender", "true");
-    }
-
-    public static void setUseSystemProxies() {
-        System.setProperty("java.net.useSystemProxies", "true");
     }
 
     public static void startWaitCursor(JComponent component) {

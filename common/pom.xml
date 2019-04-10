@@ -48,6 +48,11 @@
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
+            <groupId>com.github.markusbernhardt</groupId>
+            <artifactId>proxy-vole</artifactId>
+            <version>1.0.5</version>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.asm</artifactId>
             <version>${eclipselink.version}</version>

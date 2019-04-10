@@ -19,6 +19,7 @@
 */
 package slash.navigation.rest;
 
+import com.github.markusbernhardt.proxy.ProxySearch;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -49,7 +50,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.net.Proxy.NO_PROXY;
-import static java.net.Proxy.Type.DIRECT;
+import static java.net.Proxy.Type.HTTP;
 import static java.util.Arrays.asList;
 import static org.apache.http.HttpStatus.*;
 import static org.apache.http.HttpVersion.HTTP_1_1;
@@ -138,12 +139,20 @@ public abstract class HttpRequest {
         return false;
     }
 
-    private Proxy findProxy(URI uri) {
+    static {
+        ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
+        ProxySelector proxySelector = proxySearch.getProxySelector();
+        ProxySelector.setDefault(proxySelector);
+    }
+
+    private Proxy findHTTPProxy(URI uri) {
         try {
             ProxySelector selector = ProxySelector.getDefault();
             List<Proxy> proxyList = selector.select(uri);
-            if (proxyList.size() > 0)
-                return proxyList.get(0);
+            for (Proxy proxy : proxyList) {
+                if (proxy.type().equals(HTTP))
+                    return proxy;
+            }
         } catch (IllegalArgumentException e) {
             log.severe("Exception while finding proxy for " + uri + ": " + getLocalizedMessage(e));
         }
@@ -151,8 +160,8 @@ public abstract class HttpRequest {
     }
 
     protected HttpResponse execute() throws IOException {
-        Proxy proxy = findProxy(method.getURI());
-        if(proxy != NO_PROXY && !proxy.type().equals(DIRECT)) {
+        Proxy proxy = findHTTPProxy(method.getURI());
+        if(proxy != NO_PROXY) {
             SocketAddress address = proxy.address();
             if(address instanceof InetSocketAddress) {
                 InetSocketAddress inetSocketAddress = (InetSocketAddress) address;
