@@ -122,35 +122,29 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
 
         comboBoxCountryCode.setRenderer(new CountryCodeListCellRenderer());
         comboBoxCountryCode.setModel(new DefaultComboBoxModel<>(CountryCode.values()));
-        comboBoxCountryCode.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
-                    return;
-                CountryCode countryCode = (CountryCode) e.getItem();
-                getPosition().setCountryCode(countryCode);
-                validateModel();
-            }
+        comboBoxCountryCode.addItemListener(e -> {
+            if (e.getStateChange() != SELECTED)
+                return;
+            CountryCode countryCode = (CountryCode) e.getItem();
+            getPosition().setCountryCode(countryCode);
+            validateModel();
         });
         comboBoxWaypointType.setRenderer(new WaypointTypeListCellRenderer());
         comboBoxWaypointType.setModel(new DefaultComboBoxModel<>(new WaypointType[]{
                 Airport, Intersection, NonDirectionalBeacon, UserWaypoint, VHFOmnidirectionalRadioRange
         }));
-        comboBoxWaypointType.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED)
-                    return;
-                WaypointType waypointType = (WaypointType) e.getItem();
-                getPosition().setWaypointType(waypointType);
-                validateModel();
-            }
+        comboBoxWaypointType.addItemListener(e -> {
+            if (e.getStateChange() != SELECTED)
+                return;
+            WaypointType waypointType = (WaypointType) e.getItem();
+            getPosition().setWaypointType(waypointType);
+            if (waypointType.equals(UserWaypoint))
+                getPosition().setCountryCode(null);
+            validateModel();
         });
 
         new CheckBoxPreferencesSynchronizer(checkBoxProposeIdentifierAndComment, preferences, PROPOSE_IDENTIFIER_AND_COMMENT_PREFERENCE, false);
-        checkBoxProposeIdentifierAndComment.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                updateView();
-            }
-        });
+        checkBoxProposeIdentifierAndComment.addItemListener(e -> updateView());
         updateView();
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
