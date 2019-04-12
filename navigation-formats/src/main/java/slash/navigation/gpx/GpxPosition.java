@@ -25,7 +25,6 @@ import slash.navigation.base.ExtendedSensorNavigationPosition;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.csv.CsvPosition;
-import slash.navigation.fpl.CountryCode;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gpx.binding11.WptType;
 
@@ -38,6 +37,7 @@ import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExt
 import static slash.navigation.base.RouteComments.parseDescription;
 import static slash.navigation.base.RouteComments.parseTripmasterHeading;
 import static slash.navigation.base.WaypointType.UserWaypoint;
+import static slash.navigation.fpl.CountryCode.None;
 import static slash.navigation.gpx.GpxFormat.*;
 
 /**
@@ -185,16 +185,14 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {
         GarminFlightPlanPosition position = new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getDescription());
         position.setWaypointType(UserWaypoint);
+        position.setCountryCode(None);
         WptType wptType = getOrigin(WptType.class);
         if (wptType != null) {
             String type = trim(wptType.getType());
             if (type != null) {
                 WaypointType waypointType = WaypointType.fromValue(type);
-                position.setWaypointType(waypointType);
-
-                String name = wptType.getName();
-                if (name != null && name.length() >= 2)
-                    position.setCountryCode(CountryCode.fromValue(name.substring(0, 2)));
+                if (waypointType != null)
+                    position.setWaypointType(waypointType);
             }
             String description = trim(wptType.getCmt());
             if (description != null) {

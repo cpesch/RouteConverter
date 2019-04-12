@@ -62,6 +62,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     private static final Preferences preferences = Preferences.userNodeForPackage(CompleteFlightPlanDialog.class);
     private static final Border INVALID_BORDER = createLineBorder(RED, 2);
     private static final Border VALID_BORDER = new JComboBox().getBorder();
+    private static final String PROPOSE_COUNTRY_CODE_PREFERENCE = "proposeCountryCode";
     private static final String PROPOSE_IDENTIFIER_AND_COMMENT_PREFERENCE = "proposeIdentifierAndComment";
     private JPanel contentPane;
     private JLabel labelPosition;
@@ -72,6 +73,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     private JButton buttonPrevious;
     private JButton buttonNextOrFinish;
     private JCheckBox checkBoxProposeIdentifierAndComment;
+    private JCheckBox checkBoxProposeCountryCode;
 
     private GarminFlightPlanRoute route;
     private int index;
@@ -143,6 +145,8 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
             validateModel();
         });
 
+        new CheckBoxPreferencesSynchronizer(checkBoxProposeCountryCode, preferences, PROPOSE_COUNTRY_CODE_PREFERENCE, true);
+        checkBoxProposeCountryCode.addItemListener(e -> updateView());
         new CheckBoxPreferencesSynchronizer(checkBoxProposeIdentifierAndComment, preferences, PROPOSE_IDENTIFIER_AND_COMMENT_PREFERENCE, false);
         checkBoxProposeIdentifierAndComment.addItemListener(e -> updateView());
         updateView();
@@ -181,8 +185,8 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         textFieldDescription.setText(proposeIdentifierAndCommentSelected ? createValidDescription(position.getDescription()) : position.getDescription());
         textFieldIdentifier.setText(proposeIdentifierAndCommentSelected ? createValidIdentifier(position, route.getPositions()) : position.getIdentifier());
 
-        CountryCode countryCode = position.getCountryCode();
-        comboBoxCountryCode.setSelectedItem(countryCode == null ? None : countryCode);
+        boolean proposeCountryCodeSelected = checkBoxProposeCountryCode.isSelected();
+        comboBoxCountryCode.setSelectedItem(proposeCountryCodeSelected ? createValidCountryCode(position) : None);
         comboBoxWaypointType.setSelectedItem(position.getWaypointType());
         validateModel();
     }
@@ -246,7 +250,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(6, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(7, 2, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("position-colon"));
@@ -273,6 +277,9 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         panel3.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldDescription = new JTextField();
         panel3.add(textFieldDescription, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        checkBoxProposeCountryCode = new JCheckBox();
+        this.$$$loadButtonText$$$(checkBoxProposeCountryCode, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("propose-country-code"));
+        panel3.add(checkBoxProposeCountryCode, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxProposeIdentifierAndComment = new JCheckBox();
         this.$$$loadButtonText$$$(checkBoxProposeIdentifierAndComment, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("propose-identifier-and-comment"));
         panel3.add(checkBoxProposeIdentifierAndComment, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

@@ -39,6 +39,7 @@ import static slash.navigation.base.RouteComments.createRouteName;
 import static slash.navigation.base.WaypointType.UserWaypoint;
 import static slash.navigation.common.NavigationConversion.formatElevation;
 import static slash.navigation.common.NavigationConversion.formatPosition;
+import static slash.navigation.fpl.CountryCode.None;
 import static slash.navigation.fpl.GarminFlightPlanUtil.marshal;
 import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
 
@@ -123,6 +124,17 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         }
         return result;
     }
+
+    public static CountryCode createValidCountryCode(GarminFlightPlanPosition position) {
+        String name = position.getIdentifier();
+        if (name != null && name.length() >= 2) {
+            CountryCode countryCode = CountryCode.fromValue(name.substring(0, 2));
+            if (countryCode != null)
+                return countryCode;
+        }
+        return None;
+    }
+
 
     private String createValidRouteName(BaseRoute<GarminFlightPlanPosition, GarminFlightPlanFormat> route) {
         String name = trim(route.getName());
