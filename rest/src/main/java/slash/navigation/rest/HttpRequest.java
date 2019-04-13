@@ -148,10 +148,12 @@ public abstract class HttpRequest {
     private Proxy findHTTPProxy(URI uri) {
         try {
             ProxySelector selector = ProxySelector.getDefault();
-            List<Proxy> proxyList = selector.select(uri);
-            for (Proxy proxy : proxyList) {
-                if (proxy.type().equals(HTTP))
-                    return proxy;
+            if(selector != null) {
+                List<Proxy> proxyList = selector.select(uri);
+                for (Proxy proxy : proxyList) {
+                    if (proxy.type().equals(HTTP))
+                        return proxy;
+                }
             }
         } catch (IllegalArgumentException e) {
             log.severe("Exception while finding proxy for " + uri + ": " + getLocalizedMessage(e));
