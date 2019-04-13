@@ -7,6 +7,8 @@
       <xs:element type="xs:string" name="road"/>
       <xs:element type="xs:string" name="suburb"/>
       <xs:element type="xs:string" name="hamlet"/>
+      <xs:element type="xs:string" name="county"/>
+      <xs:element type="xs:string" name="village"/>
       <xs:element type="xs:string" name="city"/>
       <xs:element type="xs:string" name="state_district"/>
       <xs:element type="xs:string" name="state"/>

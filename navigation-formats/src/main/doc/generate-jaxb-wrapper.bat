@@ -1,3 +1,5 @@
+Windows
+
 bin\xjc -verbose -d generated -p slash.navigation.gpx.binding10 c:\Development\RouteConverter\gpx\src\main\doc\gpx10.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gpx.binding11 c:\Development\RouteConverter\gpx\src\main\doc\gpx11.xsd
 bin\xjc -verbose -d generated -p slash.navigation.gpx.garmin3 c:\Development\RouteConverter\gpx\src\main\doc\GpxExtensionsv3.xsd
@@ -30,4 +32,7 @@ bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\route\sr
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\tileserver-maps\src\main\java -p slash.navigation.maps.tileserver.bindingmap c:\Development\RouteConverter\tileserver-maps\src\main\doc\mapserver-catalog.xsd
 bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\tileserver-maps\src\main\java -p slash.navigation.maps.tileserver.bindingoverlay c:\Development\RouteConverter\tileserver-maps\src\main\doc\overlayserver-catalog.xsd
 
+Java 8 on Mac
+
 xjc -verbose -d kml/src/main/java -p slash.navigation.kml.binding21 kml/src/main/doc/kml21.xsd
+xjc -verbose -d nominatim/src/main/java -p slash.navigation.nominatim.reverse nominatim/src/main/doc/reverse.xsd
