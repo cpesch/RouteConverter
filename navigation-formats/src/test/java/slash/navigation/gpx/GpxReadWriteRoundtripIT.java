@@ -277,7 +277,7 @@ public class GpxReadWriteRoundtripIT {
         if (wptType.getName().endsWith(wptType.getDesc()))
             assertEquals("Waypoint1 Name; Description", wptType.getName());
         else if ("Waypoint".equals(wptType.getSym()))
-            assertEquals("Waypoint1 Name", wptType.getName());
+            assertEquals("WP1 Name", wptType.getName());
         else
             assertEquals("Route Point1 Name", wptType.getName());
         assertEquals("Comment", wptType.getCmt());

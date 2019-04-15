@@ -102,7 +102,7 @@ public class BRouterIT {
     public void testGetRouteBetweenByCar() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("car-test"));
         assertTrue(result.isValid());
-        assertEquals(191, result.getPositions().size());
+        assertEquals(192, result.getPositions().size());
         assertEquals(13702.0, result.getDistanceAndTime().getDistance(), 5.0);
         assertNull(result.getDistanceAndTime().getTime());
     }

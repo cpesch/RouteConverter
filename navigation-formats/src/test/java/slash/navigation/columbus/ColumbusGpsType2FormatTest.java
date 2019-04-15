@@ -30,6 +30,7 @@ import java.text.DateFormat;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
+import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.columbus.ColumbusV1000Device.*;
 
 public class ColumbusGpsType2FormatTest {
@@ -56,10 +57,8 @@ public class ColumbusGpsType2FormatTest {
     }
 
     @Test
-    public void testParsePosition() {
-        boolean useLocalTimeZone = getUseLocalTimeZone();
-        try {
-            setUseLocalTimeZone(false);
+    public void testParsePosition() throws Exception {
+        ignoreLocalTimeZone(() -> {
             Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,1", new ParserContextImpl());
             assertDoubleEquals(119.269951, position.getLongitude());
             assertDoubleEquals(26.099775, position.getLatitude());
@@ -74,9 +73,7 @@ public class ColumbusGpsType2FormatTest {
             assertEquals(expected, actual);
             assertEquals(expectedCal, position.getTime());
             assertEquals("Waypoint 17", position.getDescription());
-        } finally {
-            setUseLocalTimeZone(useLocalTimeZone);
-        }
+        });
     }
 
     @Test
@@ -105,10 +102,8 @@ public class ColumbusGpsType2FormatTest {
     }
 
     @Test
-    public void testParseTypeBPosition() {
-        boolean useLocalTimeZone = getUseLocalTimeZone();
-        try {
-            setUseLocalTimeZone(false);
+    public void testParseTypeBPosition() throws Exception {
+        ignoreLocalTimeZone(() -> {
             Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51", new ParserContextImpl());
             assertDoubleEquals(119.269951, position.getLongitude());
             assertDoubleEquals(26.099775, position.getLatitude());
@@ -123,8 +118,6 @@ public class ColumbusGpsType2FormatTest {
             String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
             assertEquals(expected, actual);
             assertEquals(expectedCal, position.getTime());
-        } finally {
-            setUseLocalTimeZone(useLocalTimeZone);
-        }
+        });
     }
 }

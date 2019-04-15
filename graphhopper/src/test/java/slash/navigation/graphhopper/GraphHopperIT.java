@@ -86,8 +86,8 @@ public class GraphHopperIT {
     @Test
     public void testGetRouteBetweenByCar() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Car"));
-        assertEquals(223, result.getPositions().size());
-        assertEquals(13604.6, result.getDistanceAndTime().getDistance(), 5.0);
+        assertEquals(173, result.getPositions().size());
+        assertEquals(13631.6, result.getDistanceAndTime().getDistance(), 5.0);
         assertEquals(1062.0, result.getDistanceAndTime().getTime(), 100);
         assertTrue(result.isValid());
     }
@@ -95,9 +95,9 @@ public class GraphHopperIT {
     @Test
     public void testGetRouteBetweenByBike() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Bike"));
-        assertEquals(162, result.getPositions().size());
-        assertEquals(13636.0, result.getDistanceAndTime().getDistance(), 5.0);
-        assertEquals(2920.0, result.getDistanceAndTime().getTime(), 100);
+        assertEquals(119, result.getPositions().size());
+        assertEquals(13658.4, result.getDistanceAndTime().getDistance(), 5.0);
+        assertEquals(2752.0, result.getDistanceAndTime().getTime(), 100);
         assertTrue(result.isValid());
     }
 }

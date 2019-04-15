@@ -35,6 +35,7 @@ import slash.navigation.simple.GpsTunerFormat;
 import java.io.IOException;
 
 import static slash.navigation.base.ConvertBase.convertRoundtrip;
+import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
@@ -101,9 +102,11 @@ public class AccurracyConvertIT {
     }
 
     @Test
-    public void testConvertGpsTunerToColumbusGps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new ColumbusGpsType1Format());
-        convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new ColumbusGpsType2Format());
+    public void testConvertGpsTunerToColumbusGps() throws Exception {
+        ignoreLocalTimeZone(() -> {
+            convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new ColumbusGpsType1Format());
+            convertRoundtrip(TEST_PATH + "from-gpstuner.trk", new GpsTunerFormat(), new ColumbusGpsType2Format());
+        });
     }
 
     @Test
@@ -155,9 +158,11 @@ public class AccurracyConvertIT {
     }
 
     @Test
-    public void testConvertNmeaToColumbusGps() throws IOException {
-        convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new ColumbusGpsType1Format());
-        convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new ColumbusGpsType2Format());
+    public void testConvertNmeaToColumbusGps() throws Exception {
+        ignoreLocalTimeZone(() -> {
+            convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new ColumbusGpsType1Format());
+            convertRoundtrip(TEST_PATH + "from.nmea", new NmeaFormat(), new ColumbusGpsType2Format());
+        });
     }
 
     @Test
@@ -182,9 +187,11 @@ public class AccurracyConvertIT {
     }
 
     @Test
-    public void testConvertLogposTrackToColumbusGps() throws IOException {
-        convertRoundtrip(SAMPLE_PATH + "logpos1.itn", new TomTom5RouteFormat(), new ColumbusGpsType1Format());
-        convertRoundtrip(SAMPLE_PATH + "logpos1.itn", new TomTom5RouteFormat(), new ColumbusGpsType2Format());
+    public void testConvertLogposTrackToColumbusGps() throws Exception {
+        ignoreLocalTimeZone(() -> {
+            convertRoundtrip(SAMPLE_PATH + "logpos1.itn", new TomTom5RouteFormat(), new ColumbusGpsType1Format());
+            convertRoundtrip(SAMPLE_PATH + "logpos1.itn", new TomTom5RouteFormat(), new ColumbusGpsType2Format());
+        });
     }
 
     @Test

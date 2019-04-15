@@ -609,7 +609,10 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
 
-    private static void compareDescription(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition, boolean descriptionPositionNames, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
+    private static void compareDescription(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index,
+                                           NavigationPosition sourcePosition, NavigationPosition targetPosition,
+                                           boolean descriptionPositionNames, RouteCharacteristics sourceCharacteristics,
+                                           RouteCharacteristics targetCharacteristics) {
         // Test only if a position has not been commented by us
         String description = targetPosition.getDescription();
         if (!(sourcePosition.getDescription() == null && description.startsWith("Position"))) {
@@ -621,10 +624,17 @@ public abstract class NavigationTestCase extends TestCase {
                     targetFormat instanceof KompassFormat ||
                     targetFormat instanceof MagicMapsIktFormat || targetFormat instanceof MagicMapsPthFormat ||
                     targetFormat instanceof NavigonCruiserFormat ||
-                    targetFormat instanceof OvlFormat || targetFormat instanceof Tcx1Format || targetFormat instanceof Tcx2Format ||
+                    targetFormat instanceof OvlFormat ||
                     (targetFormat instanceof OziExplorerFormat && targetCharacteristics.equals(Track)) ||
                     ((targetFormat instanceof KmlFormat || targetFormat instanceof KmzFormat) && !targetCharacteristics.equals(Waypoints) && !descriptionPositionNames))
-                assertTrue("Description " + index + " does not match:" + description, description.startsWith("Position"));
+                assertTrue("Description " + index + " does not match: " + description, description.startsWith("Position"));
+            else if (targetFormat instanceof Tcx1Format || targetFormat instanceof Tcx2Format) {
+                if (index == 0)
+                    assertEquals("0 seconds", description);
+                else
+                    assertTrue("Description " + index + " does not match: " + description,
+                            description.startsWith("Position") || description.endsWith("seconds"));
+            }
             else if (sourceFormat instanceof AlanTrackLogFormat)
                 assertEquals("Description " + index + " does not match", sourcePosition.getDescription(), description);
             else if (sourceFormat instanceof ExcelFormat) {
@@ -879,7 +889,8 @@ public abstract class NavigationTestCase extends TestCase {
     }
 
     public static void comparePositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute, NavigationFormat sourceFormat,
-                                        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute, NavigationFormat targetFormat, boolean descriptionPositionNames) {
+                                        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute, NavigationFormat targetFormat,
+                                        boolean descriptionPositionNames) {
         if (sourceFormat instanceof Route66Format && targetFormat instanceof TomTomPoiFormat) {
             // both formats support no ordering
             assertTrue(true);
@@ -889,6 +900,9 @@ public abstract class NavigationTestCase extends TestCase {
             comparePositions(sourceRoute.getPositions().subList(sourceRoute.getPositionCount() - 1, sourceRoute.getPositionCount()), sourceFormat, targetRoute.getPositions().subList(1, 2), targetFormat, descriptionPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
             // TomTomPoiFormat has no order of the positions except for first and second
             // comparePositions(sourceRoute.getPositions().subList(1, sourceRoute.getPositionCount() - 1), sourceFormat, targetRoute.getPositions().subList(2, targetRoute.getPositionCount() - 2), targetFormat, false, targetRoute.getCharacteristics());
+        } else if (targetFormat instanceof Tcx2Format) {
+            assertEquals(2, targetRoute.getPositionCount());
+            comparePositions(sourceRoute.getPositions(), sourceFormat, targetRoute.getPositions(), targetFormat, descriptionPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());
         } else {
             assertEquals(sourceRoute.getPositionCount(), targetRoute.getPositionCount());
             comparePositions(sourceRoute.getPositions(), sourceFormat, targetRoute.getPositions(), targetFormat, descriptionPositionNames, false, sourceRoute.getCharacteristics(), targetRoute.getCharacteristics());

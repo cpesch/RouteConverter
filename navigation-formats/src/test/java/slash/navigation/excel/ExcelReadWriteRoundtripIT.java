@@ -24,13 +24,10 @@ import org.junit.Test;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.ReadWriteTestCallback;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
+import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
-import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
-import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 
 public class ExcelReadWriteRoundtripIT {
 
@@ -48,10 +45,8 @@ public class ExcelReadWriteRoundtripIT {
     }
 
     @Test
-    public void testXlsRoundtrip() throws IOException {
-        boolean useLocalTimeZone = getUseLocalTimeZone();
-        try {
-            setUseLocalTimeZone(false);
+    public void testXlsRoundtrip() throws Exception {
+        ignoreLocalTimeZone(() -> {
             readWriteRoundtrip(TEST_PATH + "from.xls", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     ExcelRoute sourceRoute = (ExcelRoute) source.getAllRoutes().get(0);
@@ -59,17 +54,12 @@ public class ExcelReadWriteRoundtripIT {
                     checkRoutes(sourceRoute, targetRoute);
                 }
             });
-        }
-        finally {
-            setUseLocalTimeZone(useLocalTimeZone);
-        }
+        });
     }
 
     @Test
-    public void testXlsxRoundtrip() throws IOException {
-        boolean useLocalTimeZone = getUseLocalTimeZone();
-        try {
-            setUseLocalTimeZone(false);
+    public void testXlsxRoundtrip() throws Exception {
+        ignoreLocalTimeZone(() -> {
             readWriteRoundtrip(TEST_PATH + "from.xlsx", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     ExcelRoute sourceRoute = (ExcelRoute) source.getAllRoutes().get(0);
@@ -77,9 +67,6 @@ public class ExcelReadWriteRoundtripIT {
                     checkRoutes(sourceRoute, targetRoute);
                 }
             });
-        }
-        finally {
-            setUseLocalTimeZone(useLocalTimeZone);
-        }
+        });
     }
 }

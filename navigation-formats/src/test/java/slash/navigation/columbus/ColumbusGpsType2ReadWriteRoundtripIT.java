@@ -30,6 +30,7 @@ import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.assertDoubleEquals;
+import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
 import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
@@ -38,10 +39,8 @@ import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 public class ColumbusGpsType2ReadWriteRoundtripIT {
 
     @Test
-    public void testTypeARoundtrip() throws IOException {
-        boolean useLocalTimeZone = getUseLocalTimeZone();
-        try {
-            setUseLocalTimeZone(false);
+    public void testTypeARoundtrip() throws Exception {
+        ignoreLocalTimeZone(() -> {
             readWriteRoundtrip(TEST_PATH + "from-columbusv1000-type2.csv", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
@@ -57,16 +56,12 @@ public class ColumbusGpsType2ReadWriteRoundtripIT {
                     }
                 }
             });
-        } finally {
-            setUseLocalTimeZone(useLocalTimeZone);
-        }
+        });
     }
 
     @Test
-    public void testTypeBRoundtrip() throws IOException {
-        boolean useLocalTimeZone = getUseLocalTimeZone();
-        try {
-            setUseLocalTimeZone(false);
+    public void testTypeBRoundtrip() throws Exception {
+        ignoreLocalTimeZone(() -> {
             readWriteRoundtrip(TEST_PATH + "from-columbusv1000-type2b.csv", new ReadWriteTestCallback() {
                 public void test(ParserResult source, ParserResult target) {
                     SimpleRoute sourceRoute = (SimpleRoute) source.getAllRoutes().get(0);
@@ -83,8 +78,6 @@ public class ColumbusGpsType2ReadWriteRoundtripIT {
                     }
                 }
             });
-        } finally {
-            setUseLocalTimeZone(useLocalTimeZone);
-        }
+        });
     }
 }

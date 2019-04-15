@@ -36,6 +36,8 @@ import static slash.navigation.base.NavigationFormatConverter.asFormat;
 import static slash.navigation.base.NavigationTestCase.comparePositions;
 import static slash.navigation.base.NavigationTestCase.compareRouteMetaData;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 
 public abstract class ConvertBase {
 
@@ -147,6 +149,21 @@ public abstract class ConvertBase {
             // avoid to clutter the temp directory
             if (target.exists())
                 assertTrue(target.delete());
+        }
+    }
+
+    public interface RunnableThrowsException {
+        void run() throws Exception;
+    }
+
+    public static void ignoreLocalTimeZone(RunnableThrowsException runnable) throws Exception {
+        boolean localTimeZone = getUseLocalTimeZone();
+        try {
+            setUseLocalTimeZone(false);
+
+            runnable.run();
+        } finally {
+            setUseLocalTimeZone(localTimeZone);
         }
     }
 }

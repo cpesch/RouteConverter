@@ -36,7 +36,7 @@ public class PhotonServiceIT {
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
                 new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
-                new SimpleNavigationPosition(10.200847241161895, 50.0011614, null, "Pfarrheim, 97506 Grafenrheinfeld, Bavaria, Germany (building)"),
+                new SimpleNavigationPosition(10.200785058788268, 50.0012567, null, "Pfarrheim, 97506 Grafenrheinfeld, Bavaria, Germany (building)"),
                 new SimpleNavigationPosition(10.2004901, 50.0014652, null, "Kindertagesst\u00e4tte St. Joseph, 97506 Grafenrheinfeld, Bavaria, Germany (amenity)")
         );
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
@@ -54,10 +54,10 @@ public class PhotonServiceIT {
         assertEquals("Atlas Buoy 0.00E 0.00N", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         String pole1 = service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0));
-        assertTrue(pole1.contains("PARKING"));
+        assertTrue(pole1.contains("Pole"));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
         String pole2 = service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0));
-        assertTrue(pole2.contains("PARKING"));
+        assertTrue(pole2.contains("Pole"));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
 }

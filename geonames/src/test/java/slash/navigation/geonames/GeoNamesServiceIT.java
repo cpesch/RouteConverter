@@ -124,7 +124,7 @@ public class GeoNamesServiceIT {
         assertEquals("Grafenrheinfeld", service.getNearByToponymFor(10.2, 50.001));
         assertEquals("Hoher Gaif", service.getNearByToponymFor(11.06561, 47.42428));
         assertEquals("Earth", service.getNearByToponymFor(0.0, 0.0));
-        assertEquals("South Pole", service.getNearByToponymFor(0.0, -90.0));
+        assertTrue(service.getNearByToponymFor(0.0, -90.0).contains("Amundsen"));
         assertEquals("North Pole", service.getNearByToponymFor(0.0, 90.0));
         assertNull(service.getNearByToponymFor(90.0, 90.0));
         assertNull(service.getNearByToponymFor(-90.0, -90.0));

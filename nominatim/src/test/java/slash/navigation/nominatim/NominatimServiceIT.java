@@ -36,9 +36,9 @@ public class NominatimServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
-                new SimpleNavigationPosition(10.2014032, 50.0002123, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland, Europe (residential)"),
-                new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland, Europe (living_street)"),
-                new SimpleNavigationPosition(10.1999752, 49.9999416, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland, Europe (service)")
+                new SimpleNavigationPosition(10.2014032, 50.0002123, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland (residential)"),
+                new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland (living_street)"),
+                new SimpleNavigationPosition(10.1999752, 49.9999416, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland (service)")
         );
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
@@ -47,7 +47,7 @@ public class NominatimServiceIT {
     @Test
     public void getAddressFor() throws IOException {
         assertEquals("M\u00fcslieggstrasse, 8733 Eschenbach (SG), Sankt Gallen, Schweiz/Suisse/Svizzera/Svizra", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
-        assertEquals("97506 Bayern, Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
+        assertEquals("97506 Grafenrheinfeld, Bayern, Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
         assertEquals("82467 Bayern, Deutschland", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
