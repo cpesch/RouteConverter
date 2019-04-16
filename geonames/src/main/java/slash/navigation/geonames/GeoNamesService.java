@@ -162,7 +162,7 @@ public class GeoNamesService implements ElevationService, GeocodingService {
             throw new IOException(geonames.getStatus().getMessage());
         List<String> result = new ArrayList<>();
         for (Geonames.Geoname geoname : geonames.getGeoname()) {
-            result.add(geoname.getName());
+            result.add(geoname.getName() + (trim(geoname.getCountryName()) != null ? ", " + geoname.getCountryName() : ""));
         }
         return result.size() > 0 ? result.get(0) : null;
     }

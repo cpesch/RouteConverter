@@ -108,9 +108,9 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testAddressFor() throws IOException {
-        assertEquals("St. Margarethen", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.5)));
-        assertEquals("Grafenrheinfeld", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
-        assertEquals("Hammersbach", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
+        assertEquals("St. Margarethen, Switzerland", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.5)));
+        assertEquals("Grafenrheinfeld, Germany", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
+        assertEquals("Hammersbach, Germany", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
         assertEquals("Earth", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertNotNull(service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
@@ -120,11 +120,12 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testNearByToponymFor() throws IOException {
-        assertEquals("Vogelh\u00e4rd", service.getNearByToponymFor(9.0, 47.5));
-        assertEquals("Grafenrheinfeld", service.getNearByToponymFor(10.2, 50.001));
-        assertEquals("Hoher Gaif", service.getNearByToponymFor(11.06561, 47.42428));
+        assertEquals("Vogelh\u00e4rd, Switzerland", service.getNearByToponymFor(9.0, 47.5));
+        assertEquals("Grafenrheinfeld, Germany", service.getNearByToponymFor(10.2, 50.001));
+        assertEquals("Hoher Gaif, Germany", service.getNearByToponymFor(11.06561, 47.42428));
         assertEquals("Earth", service.getNearByToponymFor(0.0, 0.0));
-        assertTrue(service.getNearByToponymFor(0.0, -90.0).contains("Amundsen"));
+        String southPole = service.getNearByToponymFor(0.0, -90.0);
+        assertTrue(southPole.contains("Antarctica"));
         assertEquals("North Pole", service.getNearByToponymFor(0.0, 90.0));
         assertNull(service.getNearByToponymFor(90.0, 90.0));
         assertNull(service.getNearByToponymFor(-90.0, -90.0));
@@ -132,9 +133,9 @@ public class GeoNamesServiceIT {
 
     @Test
     public void testNearByPlaceNameFor() throws IOException {
-        assertEquals("St. Margarethen", service.getNearByPlaceNameFor(9.0, 47.5));
-        assertEquals("Grafenrheinfeld", service.getNearByPlaceNameFor(10.2, 50.001));
-        assertEquals("Hammersbach", service.getNearByPlaceNameFor(11.06561, 47.42428));
+        assertEquals("St. Margarethen, Switzerland", service.getNearByPlaceNameFor(9.0, 47.5));
+        assertEquals("Grafenrheinfeld, Germany", service.getNearByPlaceNameFor(10.2, 50.001));
+        assertEquals("Hammersbach, Germany", service.getNearByPlaceNameFor(11.06561, 47.42428));
         assertNull(service.getNearByPlaceNameFor(0.0, 0.0));
         assertNull(service.getNearByPlaceNameFor(0.0, -90.0));
         assertNull(service.getNearByPlaceNameFor(0.0, 90.0));
