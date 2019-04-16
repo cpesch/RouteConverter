@@ -700,6 +700,7 @@ public abstract class BrowserMapView extends BaseMapView {
             }
             String url = AlephFormatter.str(tileServer.getUrlPattern())
                     .arg("host", "\" + tileServer + \"")
+                    .arg("language", Locale.getDefault().getLanguage())
                     .arg("tilex", "\" + coordinates.x + \"")
                     .arg("tiley", "\" + coordinates.y + \"")
                     .arg("zoom", "\" + zoom + \"")

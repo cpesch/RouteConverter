@@ -28,6 +28,7 @@ import slash.navigation.maps.tileserver.TileServer;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.prefs.Preferences;
 
 /**
@@ -80,6 +81,7 @@ public class TileServerMapSource extends AbstractTileSource {
         // Integer.toString() avoids points that group digits
         String url = AlephFormatter.str(tileServer.getUrlPattern())
                 .arg("host", getHostName())
+                .arg("language", Locale.getDefault().getLanguage())
                 .arg("tilex", Integer.toString(tile.tileX))
                 .arg("tiley", Integer.toString(tile.tileY))
                 .arg("zoom", Integer.toString(tile.zoomLevel))
