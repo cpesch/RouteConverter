@@ -127,9 +127,11 @@ public class NominatimService implements GeocodingService {
         if (result.length() > 0)
             result += ", ";
         result += (parts.getPostcode() != null ? parts.getPostcode() : "") + " " +
-                        (parts.getCity() != null ? parts.getCity() + ", " : "") +
-                        (parts.getVillage() != null ? parts.getVillage() + ", " : "") +
-                        (parts.getState() != null ? parts.getState() + ", " : "") +
+                        (parts.getCity() != null ? parts.getCity() + ", " :
+                                parts.getTown() != null ? parts.getTown() + ", " :
+                                        parts.getVillage() != null ? parts.getVillage() + ", " : "") +
+                        (parts.getState() != null ? parts.getState() + ", " :
+                                parts.getCounty() != null ? parts.getCounty() + ", " : "") +
                         (parts.getCountry() != null ? parts.getCountry() : "");
         return trim(result);
     }

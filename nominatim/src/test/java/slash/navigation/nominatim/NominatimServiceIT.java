@@ -46,14 +46,32 @@ public class NominatimServiceIT {
 
     @Test
     public void getAddressFor() throws IOException {
-        assertEquals("M\u00fcslieggstrasse, 8733 Eschenbach (SG), Sankt Gallen, Schweiz/Suisse/Svizzera/Svizra", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
         assertEquals("97506 Grafenrheinfeld, Bayern, Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
-        assertEquals("82467 Bayern, Deutschland", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
+        assertEquals("82467 Garmisch-Partenkirchen, Bayern, Deutschland", service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
         assertEquals("Galápagos, Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
+    }
+
+
+    @Test
+    public void getAddressForCity() throws IOException {
+        // https://nominatim.openstreetmap.org/reverse?lat=47.3&lon=9.0&format=xml
+        assertEquals("M\u00fcslieggstrasse, 8733 Eschenbach (SG), Sankt Gallen, Schweiz/Suisse/Svizzera/Svizra", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
+    }
+
+    @Test
+    public void getAddressForTown() throws IOException {
+        // https://nominatim.openstreetmap.org/reverse?lat=51.3141479&lon=10.1880035&format=xml
+        assertEquals("Picksweg, 37308 Heilbad Heiligenstadt, Th\u00fcringen, Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.1880035, 51.3141479)));
+    }
+
+    @Test
+    public void getAddressForVillage() throws IOException {
+        // https://nominatim.openstreetmap.org/reverse?&lat=51.610954&lon=10.210236&format=xml
+        assertEquals("37434 Gieboldehausen, Niedersachsen, Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.210236, 51.610954)));
     }
 }

@@ -2,7 +2,7 @@
 // Diese Datei wurde mit der JavaTM Architecture for XML Binding(JAXB) Reference Implementation, v2.2.8-b130911.1802 generiert 
 // Siehe <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
 // Änderungen an dieser Datei gehen bei einer Neukompilierung des Quellschemas verloren. 
-// Generiert: 2019.04.13 um 03:08:30 PM CEST 
+// Generiert: 2019.04.17 um 08:52:04 PM CEST 
 //
 
 
@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="hamlet" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="county" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="village" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="town" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="city" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="state_district" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="state" type="{http://www.w3.org/2001/XMLSchema}string"/>
@@ -52,6 +53,7 @@ import javax.xml.bind.annotation.XmlType;
     "hamlet",
     "county",
     "village",
+    "town",
     "city",
     "stateDistrict",
     "state",
@@ -73,6 +75,8 @@ public class AddresspartsType {
     protected String county;
     @XmlElement(required = true)
     protected String village;
+    @XmlElement(required = true)
+    protected String town;
     @XmlElement(required = true)
     protected String city;
     @XmlElement(name = "state_district", required = true)
@@ -228,6 +232,30 @@ public class AddresspartsType {
      */
     public void setVillage(String value) {
         this.village = value;
+    }
+
+    /**
+     * Ruft den Wert der town-Eigenschaft ab.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getTown() {
+        return town;
+    }
+
+    /**
+     * Legt den Wert der town-Eigenschaft fest.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setTown(String value) {
+        this.town = value;
     }
 
     /**
