@@ -122,16 +122,17 @@ public class NominatimService implements GeocodingService {
         if (parts == null)
             return null;
 
-        String result = (parts.getRoad() != null ? parts.getRoad() : "") +
+        String result = (parts.getRoad() != null ? parts.getRoad() :
+                parts.getSuburb() != null ? parts.getSuburb() : "") +
                 (parts.getHouseNumber() != null ? " " + parts.getHouseNumber() : "");
         if (result.length() > 0)
             result += ", ";
         result += (parts.getPostcode() != null ? parts.getPostcode() : "") + " " +
                         (parts.getCity() != null ? parts.getCity() + ", " :
                                 parts.getTown() != null ? parts.getTown() + ", " :
-                                        parts.getVillage() != null ? parts.getVillage() + ", " : "") +
-                        (parts.getState() != null ? parts.getState() + ", " :
-                                parts.getCounty() != null ? parts.getCounty() + ", " : "") +
+                                        parts.getVillage() != null ? parts.getVillage() + ", " :
+                                                parts.getCounty() != null ? parts.getCounty() + ", " : "") +
+                        (parts.getState() != null ? parts.getState() + ", " : "") +
                         (parts.getCountry() != null ? parts.getCountry() : "");
         return trim(result);
     }
