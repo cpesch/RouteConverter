@@ -51,7 +51,7 @@ public class NominatimServiceIT {
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
-        assertEquals("Galápagos, Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
+        assertEquals("Cantón San Cristóbal, Galápagos, Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
