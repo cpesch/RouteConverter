@@ -28,6 +28,7 @@ import slash.navigation.download.performer.GetPerformer;
 import slash.navigation.download.performer.GetRangePerformer;
 import slash.navigation.download.performer.HeadPerformer;
 
+import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.util.logging.Logger;
 
@@ -91,7 +92,7 @@ public class DownloadExecutor implements Runnable {
             performer.run();
         } catch (Exception e) {
             log.severe(format("Failed to download content from %s: %s %s", download.getUrl(), getLocalizedMessage(e),
-                    e instanceof UnknownHostException ? "" : printStackTrace(e)));
+                    e instanceof ConnectException || e instanceof UnknownHostException ? "" : printStackTrace(e)));
             downloadFailed();
         }
 
