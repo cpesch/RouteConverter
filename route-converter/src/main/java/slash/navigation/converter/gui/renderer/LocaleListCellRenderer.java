@@ -45,7 +45,11 @@ public class LocaleListCellRenderer extends DefaultListCellRenderer {
             text = RouteConverter.getBundle().getString("locale-default");
         else {
             try {
-                text = RouteConverter.getBundle().getString("locale-" + locale.getLanguage());
+                try {
+                    text = RouteConverter.getBundle().getString("locale-" + locale.getLanguage().toLowerCase() + "-" + locale.getCountry().toLowerCase());
+                } catch (MissingResourceException e) {
+                    text = RouteConverter.getBundle().getString("locale-" + locale.getLanguage().toLowerCase());
+                }
             } catch (MissingResourceException e) {
                 text = locale.getDisplayName();
             }

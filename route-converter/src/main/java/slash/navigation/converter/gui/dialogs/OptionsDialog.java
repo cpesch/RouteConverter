@@ -146,7 +146,7 @@ public class OptionsDialog extends SimpleDialog {
         final RouteConverter r = RouteConverter.getInstance();
 
         ComboBoxModel<Locale> localeModel = new DefaultComboBoxModel<>(new Locale[]{
-                ARABIA, CATALAN, CHINA, CZECH, DENMARK, GERMANY, US, SPAIN, FRANCE, CROATIA,
+                ARABIA, BRAZIL, CATALAN, CHINA, CZECH, DENMARK, GERMANY, US, SPAIN, FRANCE, CROATIA,
                 ITALY, JAPAN, NEDERLANDS, NORWAY_BOKMAL, POLAND, PORTUGAL, RUSSIA, SLOVAKIA, SERBIA, UKRAINE,
                 ROOT
         });

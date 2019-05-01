@@ -30,6 +30,7 @@ import java.util.Locale;
 public class LocaleHelper {
     // for language support which is not defined by a constant in Locale
     public static final Locale ARABIA = new Locale("ar", "SA");
+    public static final Locale BRAZIL = new Locale("pt", "BR");
     public static final Locale CATALAN = new Locale("ca", "ES");
     public static final Locale CZECH = new Locale("cs", "CZ");
     public static final Locale CROATIA = new Locale("hr", "HR");
