@@ -19,10 +19,6 @@
         </resources>
     </build>
 
-    <properties>
-        <httpclient.version>4.5.8</httpclient.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

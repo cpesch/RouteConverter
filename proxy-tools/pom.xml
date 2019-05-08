@@ -68,27 +68,15 @@
         <dependency>
             <groupId>com.github.markusbernhardt</groupId>
             <artifactId>proxy-vole</artifactId>
-            <version>1.0.5</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.javadelight</groupId>
-                    <artifactId>delight-nashorn-sandbox</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-api</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.javadelight</groupId>
             <artifactId>delight-nashorn-sandbox</artifactId>
-            <version>0.1.21</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.8</version>
+            <version>${httpclient.version}</version>
         </dependency>
     </dependencies>
 </project>
