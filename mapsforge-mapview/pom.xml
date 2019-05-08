@@ -55,6 +55,16 @@
             <version>${mapsforge.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.mapsforge</groupId>
+            <artifactId>mapsforge-poi</artifactId>
+            <version>${mapsforge.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mapsforge</groupId>
+            <artifactId>mapsforge-poi-awt</artifactId>
+            <version>${mapsforge.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>forms-rt</artifactId>
             <classifier>stripped</classifier>
@@ -63,6 +73,11 @@
             <groupId>net.sf.kxml</groupId>
             <artifactId>kxml2</artifactId>
             <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.27.2.1</version>
         </dependency>
     </dependencies>
 </project>

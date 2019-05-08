@@ -22,9 +22,11 @@ package slash.navigation.mapview.mapsforge;
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.Dimension;
-import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.MapPosition;
+import org.mapsforge.core.model.*;
+import org.mapsforge.core.util.LatLongUtils;
 import org.mapsforge.core.util.Parameters;
+import org.mapsforge.map.datastore.MapReadResult;
+import org.mapsforge.map.datastore.Way;
 import org.mapsforge.map.layer.*;
 import org.mapsforge.map.layer.cache.FileSystemTileCache;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
@@ -47,6 +49,8 @@ import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
 import org.mapsforge.map.scalebar.NauticalUnitAdapter;
 import org.mapsforge.map.util.MapViewProjection;
+import org.mapsforge.poi.awt.storage.AwtPoiPersistenceManagerFactory;
+import org.mapsforge.poi.storage.*;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.BoundingBox;
@@ -72,11 +76,13 @@ import slash.navigation.mapview.mapsforge.helpers.MapViewResizer;
 import slash.navigation.mapview.mapsforge.lines.Line;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
+import slash.navigation.mapview.mapsforge.overlays.PoiMarker;
 import slash.navigation.mapview.mapsforge.renderer.RouteRenderer;
 import slash.navigation.mapview.mapsforge.updater.*;
 
 import javax.swing.*;
 import javax.swing.event.*;
+import java.awt.Point;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -98,8 +104,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
-import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
-import static org.mapsforge.core.util.MercatorProjection.getMapSize;
+import static org.mapsforge.core.util.MercatorProjection.*;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
@@ -383,6 +388,7 @@ public class MapsforgeMapView extends BaseMapView {
         actionManager.register("extend-selection", new ExtendSelectionAction());
         actionManager.register("add-position", new AddPositionAction());
         actionManager.register("delete-position-from-map", new DeletePositionAction());
+        actionManager.register("find-poi", new FindPOIAction());
         actionManager.registerLocal("delete", MAP, "delete-position-from-map");
         actionManager.register("center-here", new CenterAction());
         actionManager.register("zoom-in", new ZoomAction(+1));
@@ -528,6 +534,7 @@ public class MapsforgeMapView extends BaseMapView {
         menu.add(createItem("select-position"));
         menu.add(createItem("add-position"));    // TODO should be "new-position"
         menu.add(createItem("delete-position-from-map"));
+        menu.add(createItem("find-poi"));
         menu.addSeparator();
         menu.add(createItem("center-here"));
         menu.add(createItem("zoom-in"));
@@ -998,8 +1005,12 @@ public class MapsforgeMapView extends BaseMapView {
         throw new UnsupportedOperationException("photo panel not available in " + MapsforgeMapView.class.getSimpleName());
     }
 
+    private Point getMousePoint() {
+        return mapViewMoverAndZoomer.getLastMousePoint();
+    }
+
     private LatLong getMousePosition() {
-        Point point = mapViewMoverAndZoomer.getLastMousePoint();
+        Point point = getMousePoint();
         return point != null ? new MapViewProjection(mapView).fromPixels(point.getX(), point.getY()) :
                 mapView.getModel().mapViewPosition.getCenter();
     }
@@ -1079,6 +1090,135 @@ public class MapsforgeMapView extends BaseMapView {
             if (latLong != null) {
                 Double threshold = getThresholdForPixel(latLong);
                 removePosition(latLong, threshold);
+            }
+        }
+    }
+
+    private class FindPOIAction extends FrameAction {
+        private List<Layer> layers = new ArrayList<>();
+        private PoiPersistenceManager persistenceManager = AwtPoiPersistenceManagerFactory.getPoiPersistenceManager("/Users/cpesch/.routeconverter/pois/mapsforge/germany.poi");
+
+        private Collection<org.mapsforge.poi.storage.PointOfInterest> find(org.mapsforge.core.model.BoundingBox boundingBox) {
+            // Search POI
+            try {
+                PoiCategoryManager categoryManager = persistenceManager.getCategoryManager();
+                PoiCategoryFilter categoryFilter = new ExactMatchPoiCategoryFilter();
+                categoryFilter.addCategory(categoryManager.getPoiCategoryByTitle("Restaurants"));
+                return persistenceManager.findInRect(boundingBox, categoryFilter, null, Integer.MAX_VALUE);
+            } catch (Throwable t) {
+                log.severe("Failed: " + t.getMessage());
+            }
+            return Collections.emptySet();
+        }
+
+
+        private void onLongPress(LatLong tapLatLong, org.mapsforge.core.model.Point tapXY, double threshold) {
+            byte zoomLevel = mapView.getModel().mapViewPosition.getZoomLevel();
+            long mapSize = getMapSize(zoomLevel, getTileSize());
+            org.mapsforge.core.model.BoundingBox boundingBox = mapView.getBoundingBox();
+
+            /*
+            double pixelX = longitudeToPixelX(tapLatLong.longitude, mapSize);
+            double pixelY = latitudeToPixelY(tapLatLong.latitude, mapSize);
+            int tileXMin = pixelXToTileX(pixelX - threshold, zoomLevel, getTileSize());
+            int tileXMax = pixelXToTileX(pixelX + threshold, zoomLevel, getTileSize());
+            int tileYMin = pixelYToTileY(pixelY - threshold, zoomLevel, getTileSize());
+            int tileYMax = pixelYToTileY(pixelY + threshold, zoomLevel, getTileSize());
+            */
+
+            int tileXMin = pixelXToTileX(longitudeToPixelX(boundingBox.minLongitude, mapSize), zoomLevel, getTileSize());
+            int tileXMax = pixelXToTileX(longitudeToPixelX(boundingBox.maxLongitude, mapSize), zoomLevel, getTileSize());
+            int tileYMin = pixelYToTileY(latitudeToPixelY(boundingBox.maxLatitude, mapSize), zoomLevel, getTileSize());
+            int tileYMax = pixelYToTileY(latitudeToPixelY(boundingBox.minLatitude, mapSize), zoomLevel, getTileSize());
+
+            Tile upperLeft = new Tile(tileXMin, tileYMin, zoomLevel, getTileSize());
+            Tile lowerRight = new Tile(tileXMax, tileYMax, zoomLevel, getTileSize());
+
+            // TODO not so nice
+            File file = getMapManager().getDisplayedMapModel().getItem().getFile();
+            MapReadResult mapReadResult = new MapFile(file).readLabels(upperLeft, lowerRight);
+
+            StringBuilder sb = new StringBuilder();
+
+            // Filter ways
+            String wayName = "";
+            sb.append("\n").append("*** WAYS ***");
+            for (Way way : mapReadResult.ways) {
+                if (!LatLongUtils.isClosedWay(way.latLongs[0])
+                        || !LatLongUtils.contains(way.latLongs[0], tapLatLong)) {
+                    continue;
+                }
+                sb.append("\n").append("@").append(way.labelPosition);
+                List<Tag> tags = way.tags;
+                for (Tag tag : tags) {
+                    sb.append("\n").append(tag.key).append("=").append(tag.value);
+
+                    if(tag.key.equals("name"))
+                        wayName = wayName + "/" + tag.value;
+                }
+            }
+            sb.append("\n");
+            sb.append("\n");
+            sb.append("\n");
+
+            for (Layer layer : layers)
+                removeLayer(layer);
+            layers.clear();
+
+            sb.append("*** POI MAP ***");
+            for (org.mapsforge.map.datastore.PointOfInterest pointOfInterest : mapReadResult.pointOfInterests) {
+                org.mapsforge.core.model.Point layerXY = mapView.getMapViewProjection().toPixels(pointOfInterest.position);
+                if (layerXY.distance(tapXY) > threshold) {
+                    continue;
+                }
+
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("\n").append("@").append(pointOfInterest.position);
+                List<Tag> tags = pointOfInterest.tags;
+                for (Tag tag : tags) {
+                    stringBuilder.append("\n").append(tag.key).append("=").append(tag.value);
+                }
+                sb.append(stringBuilder);
+
+                PoiMarker marker = new PoiMarker(pointOfInterest.position, markerIcon/*TODO*/, 0, -waypointIcon.getHeight() / 2, stringBuilder.toString(), mapView);
+                addLayer(marker);
+                layers.add(marker);
+            }
+            sb.append("\n");
+            sb.append("\n");
+            sb.append("\n");
+
+            sb.append("*** POI Storage ***");
+            for (org.mapsforge.poi.storage.PointOfInterest pointOfInterest : find(boundingBox)) {
+
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("\n").append("@").append(pointOfInterest.getLatLong());
+                stringBuilder.append("\n").append("name: ").append(pointOfInterest.getName());
+                Set<PoiCategory> categories = pointOfInterest.getCategories();
+                for (PoiCategory category : categories) {
+                    stringBuilder.append("\n").append("category: ").append(category.getTitle());
+                }
+                Set<Tag> tags = pointOfInterest.getTags();
+                for (Tag tag : tags) {
+                    stringBuilder.append("\n").append(tag.key).append("=").append(tag.value);
+                }
+                sb.append(stringBuilder);
+
+                PoiMarker marker = new PoiMarker(pointOfInterest.getLatLong(), waypointIcon/*TODO*/, 0, -waypointIcon.getHeight() / 2, stringBuilder.toString(), mapView);
+                addLayer(marker);
+                layers.add(marker);
+            }
+
+           System.out.println(sb.toString());
+        }
+
+
+        public void run() {
+            Point point = getMousePoint();
+            if (point != null) {
+                LatLong latLong = getMousePosition();
+                Double threshold = getThresholdForPixel(latLong) * 3.0; // TODO 45 pixel circle
+                onLongPress(latLong, new org.mapsforge.core.model.Point(point.getX(), point.getY()), threshold);
             }
         }
     }
