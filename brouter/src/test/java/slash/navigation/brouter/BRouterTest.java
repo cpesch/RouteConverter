@@ -21,6 +21,10 @@ package slash.navigation.brouter;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 public class BRouterTest {
@@ -39,7 +43,7 @@ public class BRouterTest {
     }
 
     @Test
-    public void createFileKey() {
+    public void testCreateFileKey() {
         assertEquals("E0_N0.rd5", router.createFileKey(0.1, 0.1));
         assertEquals("E0_S5.rd5", router.createFileKey(0.1, -0.1));
         assertEquals("W5_N0.rd5", router.createFileKey(-0.1, 0.1));
@@ -57,5 +61,11 @@ public class BRouterTest {
         assertEquals("E175_S90.rd5", router.createFileKey(179.9, -89.9));
         assertEquals("W180_N85.rd5", router.createFileKey(-179.9, 89.9));
         assertEquals("W180_S90.rd5", router.createFileKey(-179.9, -89.9));
+    }
+
+    @Test
+    public void testCreateFileKeys() {
+        assertEquals(new HashSet<>(asList("E5_N45.rd5", "E10_N45.rd5")), router.createFileKeys(9.9859064, 49.7386072));
+        assertEquals(new HashSet<>(asList("E5_N45.rd5", "E10_N45.rd5")), router.createFileKeys(9.988344, 49.7386959));
     }
 }

@@ -31,10 +31,7 @@ import slash.navigation.routing.*;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -111,7 +108,7 @@ public class BRouter extends BaseRoutingService {
 
     public List<TravelMode> getAvailableTravelModes() {
         List<TravelMode> result = new ArrayList<>();
-        if(getProfiles() != null) {
+        if (getProfiles() != null) {
             File[] files = getProfilesDirectory().listFiles(new FilenameFilter() {
                 public boolean accept(File dir, String name) {
                     return getExtension(name).equals(".brf");
@@ -186,6 +183,17 @@ public class BRouter extends BaseRoutingService {
                 lon < 0 ? -lon : lon,
                 lat < 0 ? "S" : "N",
                 lat < 0 ? -lat : lat);
+    }
+
+    Set<String> createFileKeys(double longitude, double latitude) {
+        // logic borrowed from RoutingEngine#preloadPosition in BRouter
+        Set<String> result = new HashSet<>();
+        for (double deltaLatitude = -0.1; deltaLatitude <= 0.1; deltaLatitude += 0.1) {
+            for (double deltaLongitude = -0.1; deltaLongitude <= 0.1; deltaLongitude += 0.1) {
+                result.add(createFileKey(longitude + deltaLongitude, latitude + deltaLatitude));
+            }
+        }
+        return result;
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
@@ -283,7 +291,7 @@ public class BRouter extends BaseRoutingService {
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         Collection<String> uris = new HashSet<>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            uris.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
+            uris.addAll(createFileKeys(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
         }
 
         final Collection<Downloadable> notExistingSegments = new HashSet<>();
