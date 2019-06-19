@@ -271,7 +271,10 @@ public class Gpx11Format extends GpxFormat {
         if (!isWriteTemperature())
             position.setTemperature(null);
 
-        if (position.getPositionExtension() != null) {
+        if (!isWriteExtensions())
+            wptType.setExtensions(null);
+
+        else if (position.getPositionExtension() != null) {
             position.getPositionExtension().mergeExtensions();
             position.getPositionExtension().removeEmptyExtensions();
         }

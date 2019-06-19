@@ -139,4 +139,8 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
     protected boolean isWriteTrip() {
         return preferences.getBoolean("writeTrip", false);
     }
+
+    protected boolean isWriteExtensions() {
+        return preferences.getBoolean("writeExtensions", true);
+    }
 }
