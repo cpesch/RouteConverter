@@ -153,6 +153,13 @@ public abstract class AbstractTableColumnModel extends DefaultTableColumnModel {
         if (columnIndex == newIndex)
             return;
 
+        // remove all indics before setting
+        for (int i = 0; i < getPreparedColumns().size(); i++) {
+            PositionTableColumn column = predefinedColumns.get(i);
+            preferences.remove(createOrderKey(column.getName()));
+        }
+
+        // now just set the indices of the visible columns
         for (int i = 0; i < getColumnCount(); i++) {
             PositionTableColumn column = (PositionTableColumn) getColumn(i);
             preferences.putInt(createOrderKey(column.getName()), i);
@@ -161,14 +168,18 @@ public abstract class AbstractTableColumnModel extends DefaultTableColumnModel {
 
     protected void initializeColumns() {
         VisibleListener visibleListener = new VisibleListener();
-        PositionTableColumn[] columns = new PositionTableColumn[predefinedColumns.size()];
+        PositionTableColumn[] columns = new PositionTableColumn[predefinedColumns.size() * 2];
         for (int i = 0; i < predefinedColumns.size(); i++) {
             PositionTableColumn column = predefinedColumns.get(i);
-            int index = preferences.getInt(createOrderKey(column.getName()), i);
+            // the index where the column is placed if it has not been moved
+            int defaultIndex = predefinedColumns.size() + i;
+            // take rearrangements of the user into account
+            int index = preferences.getInt(createOrderKey(column.getName()), defaultIndex);
+
             if(columns[index] == null)
                 columns[index] = column;
-            else if (columns[i] == null)
-                columns[i] = column;
+            else if (columns[defaultIndex] == null)
+                columns[defaultIndex] = column;
             else if(column.isVisible())
                 column.toggleVisibility();
 
@@ -179,15 +190,6 @@ public abstract class AbstractTableColumnModel extends DefaultTableColumnModel {
             if (column != null && column.isVisible())
                 addColumn(column);
         }
-    }
-
-    public int getVisibleColumnCount() {
-        int count = 0;
-        for (PositionTableColumn predefinedColumn : getPreparedColumns()) {
-            if (predefinedColumn.isVisible())
-                count++;
-        }
-        return count;
     }
 
     private void visibilityChanged(PositionTableColumn column) {
@@ -222,9 +224,5 @@ public abstract class AbstractTableColumnModel extends DefaultTableColumnModel {
 
     public void addChangeListener(ChangeListener l) {
         listenerList.add(ChangeListener.class, l);
-    }
-
-    public void removeChangeListener(ChangeListener l) {
-        listenerList.remove(ChangeListener.class, l);
     }
 }

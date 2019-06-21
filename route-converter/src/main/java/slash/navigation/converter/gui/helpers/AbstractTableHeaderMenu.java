@@ -156,7 +156,7 @@ public abstract class AbstractTableHeaderMenu {
     }
 
     private void visibilityChanged() {
-        if (columnModel.getVisibleColumnCount() > 1)
+        if (columnModel.getColumnCount() > 1)
             enableAllActions();
         else
             disableLastSelectedAction();
