@@ -86,7 +86,7 @@ public abstract class HttpRequest {
         } catch (Exception e) {
             log.severe("Cannot create SSL connection manager that supports letsencrypt root certificate: " + getLocalizedMessage(e));
         }
-        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "1.8"));
+        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "2.26"));
         this.method = method;
     }
 
