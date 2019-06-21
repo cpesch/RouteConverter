@@ -98,8 +98,8 @@ public class InsertPositionFacade {
         final PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
 
         List<NavigationPosition> selectedPositions = new ArrayList<>();
-        for (int i = 0; i < selectedRows.length; i++)
-            selectedPositions.add(positionsModel.getPosition(i));
+        for (int selectedRow : selectedRows)
+            selectedPositions.add(positionsModel.getPosition(selectedRow));
 
         if (routingService.isDownload()) {
             List<LongitudeAndLatitude> lal = new ArrayList<>();
