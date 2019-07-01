@@ -20,6 +20,7 @@
 package slash.navigation.rest.tools;
 
 import com.github.markusbernhardt.proxy.ProxySearch;
+import org.apache.commons.cli.*;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
@@ -34,6 +35,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.lang.System.exit;
+import static java.net.Authenticator.RequestorType.PROXY;
 import static java.net.Proxy.NO_PROXY;
 import static java.net.Proxy.Type.DIRECT;
 
@@ -45,9 +47,32 @@ import static java.net.Proxy.Type.DIRECT;
 
 public class CheckProxy {
     private static final Logger log = Logger.getLogger(CheckProxy.class.getName());
+    private static final String USERNAME_ARGUMENT = "username";
+    private static final String PASSWORD_ARGUMENT = "password";
 
-    private void run() throws Exception {
+    @SuppressWarnings("AccessStaticViaInstance")
+    private CommandLine parseCommandLine(String[] args) throws ParseException {
+        CommandLineParser parser = new DefaultParser();
+        Options options = new Options();
+        options.addOption(Option.builder().argName(USERNAME_ARGUMENT).numberOfArgs(1).longOpt("username").
+                desc("Username for the proxy authentication").build());
+        options.addOption(Option.builder().argName(PASSWORD_ARGUMENT).numberOfArgs(1).longOpt("password").
+                desc("Password for the proxy authentication").build());
+        try {
+            return parser.parse(options, args);
+        } catch (ParseException e) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp(getClass().getSimpleName(), options);
+            throw e;
+        }
+    }
+
+    private void run(String[] args) throws Exception {
         System.setProperty("java.net.useSystemProxies","true");
+
+        CommandLine line = parseCommandLine(args);
+        String userName = line.getOptionValue(USERNAME_ARGUMENT);
+        String password = line.getOptionValue(PASSWORD_ARGUMENT);
 
         ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
         ProxySelector proxySelector = proxySearch.getProxySelector();
@@ -55,6 +80,20 @@ public class CheckProxy {
 
         ProxySelector selector = ProxySelector.getDefault();
         log.info(format("ProxySelector %s", selector));
+
+        if(userName != null && password != null) {
+            log.info(format("Using proxy authentication with user %s", userName));
+
+            Authenticator.setDefault(new Authenticator() {
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    if (getRequestorType() == PROXY) {
+                        return new PasswordAuthentication(userName, password.toCharArray());
+                    } else {
+                        return super.getPasswordAuthentication();
+                    }
+                }
+            });
+        }
 
         checkProxy("https://api.routeconverter.com/v1/mapservers/?format=xml");
         checkProxy("https://static.routeconverter.com/maps/world.map");
@@ -103,7 +142,7 @@ public class CheckProxy {
     }
 
     public static void main(String[] args) throws Exception {
-        new CheckProxy().run();
+        new CheckProxy().run(args);
         exit(0);
     }
 }
