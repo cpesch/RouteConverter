@@ -23,9 +23,13 @@ import com.github.markusbernhardt.proxy.ProxySearch;
 import org.apache.commons.cli.*;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
+import org.apache.http.auth.AuthScope;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
@@ -86,6 +90,7 @@ public class CheckProxy {
 
             Authenticator.setDefault(new Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
+                    log.info("Authenticator#getPasswordAuthentication " + getRequestorType());
                     if (getRequestorType() == PROXY) {
                         return new PasswordAuthentication(userName, password.toCharArray());
                     } else {
@@ -95,17 +100,18 @@ public class CheckProxy {
             });
         }
 
-        checkProxy("https://api.routeconverter.com/v1/mapservers/?format=xml");
-        checkProxy("https://static.routeconverter.com/maps/world.map");
+        checkProxy("https://api.routeconverter.com/v1/mapservers/?format=xml", userName, password);
+        checkProxy("https://static.routeconverter.com/maps/world.map", userName, password);
     }
 
-    private void checkProxy(String url) throws Exception {
+    private void checkProxy(String url, String userName, String password) throws Exception {
         log.info(format("Checking proxy for %s", url));
 
         URI uri = new URI(url);
         List<Proxy> proxies = findProxies(uri);
         for(Proxy proxy : proxies) {
-            request(uri, proxy);
+            apacheCommonsHttpRequest(uri, proxy, userName, password);
+            javaHttpClientRequest(uri);
         }
     }
 
@@ -117,27 +123,56 @@ public class CheckProxy {
         return proxyList;
     }
 
-    private void request(URI uri, Proxy proxy) throws IOException {
+    private void apacheCommonsHttpRequest(URI uri, Proxy proxy, String userName, String password) throws IOException {
+        CredentialsProvider credentialsProvider = null;
+
         RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
         if (proxy != NO_PROXY && !proxy.type().equals(DIRECT)) {
+
             SocketAddress address = proxy.address();
             if (address instanceof InetSocketAddress) {
                 InetSocketAddress inetSocketAddress = (InetSocketAddress) address;
-                requestConfigBuilder.setProxy(new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort()));
+                HttpHost host = new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort());
+                requestConfigBuilder.setProxy(host);
+
+                credentialsProvider = new BasicCredentialsProvider();
+                credentialsProvider.setCredentials(new AuthScope(host), new UsernamePasswordCredentials(userName, password));
+                log.info("CredentialsProvider#setCredentials " + host);
             }
         }
 
-        log.info(format("Request to %s with proxy %s", uri, proxy));
+        log.info(format("Apache Commons HTTP request to %s with proxy %s", uri, proxy));
         RequestConfig requestConfig = requestConfigBuilder.build();
 
         HttpClientBuilder clientBuilder = HttpClientBuilder.create();
         clientBuilder.setDefaultRequestConfig(requestConfig);
+        if (credentialsProvider != null)
+            clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+
         HttpClientContext context = HttpClientContext.create();
         try {
             HttpResponse response = clientBuilder.build().execute(new HttpGet(uri), context);
-            log.info(format("Response %s", response));
+            log.info(format("Apache Commons HTTP response %s", response));
         } catch (SocketException e) {
-            log.info(format("Failed to request %s with proxy %s: %s", uri, proxy, e));
+            log.info(format("Failed to execute Apache Commons HTTP request %s with proxy %s: %s", uri, proxy, e));
+        }
+    }
+
+    private void javaHttpClientRequest(URI uri) throws IOException {
+        URL url = uri.toURL();
+
+        log.info(format("Java HTTP Client request to %s", uri));
+        try {
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            int status = connection.getResponseCode();
+            int length = connection.getContentLength();
+            log.info(format("Java HTTP Client status %s length %s", status, length));
+
+            connection.disconnect();
+        } catch (Exception e) {
+            log.info(format("Failed to execute Java HTTP Client request %s: %s", uri, e));
         }
     }
 
