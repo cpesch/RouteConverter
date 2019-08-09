@@ -329,6 +329,14 @@ public class BRouter extends BaseRoutingService {
 
             public void process() {
             }
+
+            public boolean hasNextDownload() {
+                return false;
+            }
+
+            public void nextDownload() {
+                throw new UnsupportedOperationException();
+            }
         };
     }
 

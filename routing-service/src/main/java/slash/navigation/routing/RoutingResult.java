@@ -35,6 +35,12 @@ public class RoutingResult   {
     private final List<NavigationPosition> positions;
     private final DistanceAndTime distanceAndTime;
     private final boolean valid;
+    private boolean pointNotFound = false;
+
+    public RoutingResult(boolean pointNotFound) {
+        this(null, null, false);
+        this.pointNotFound = pointNotFound;
+    }
 
     public RoutingResult(List<NavigationPosition> positions, DistanceAndTime distanceAndTime, boolean valid) {
         this.positions = positions;
@@ -56,5 +62,9 @@ public class RoutingResult   {
      */
     public boolean isValid() {
         return valid;
+    }
+
+    public boolean isPointNotFound() {
+        return pointNotFound;
     }
 }

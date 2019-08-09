@@ -24,12 +24,12 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.File;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static java.lang.Math.abs;
 import static java.lang.String.format;
 import static slash.navigation.common.Bearing.calculateBearing;
 
@@ -58,11 +58,8 @@ public class DownloadableFinder {
         return file != null && new java.io.File(directory, file.getUri()).exists();
     }
 
-    public Downloadable getDownloadableFor(BoundingBox routeBoundingBox) {
-        File coveringFile = null;
-        BoundingBox coveringBoundingBox = null;
-        Double closestDistanceOfCenters = null;
-        File centerFile = null;
+    public List<Downloadable> getDownloadablesFor(BoundingBox routeBoundingBox) {
+        List<RoutingTileInfo> resultList = new ArrayList<RoutingTileInfo>();
 
         for (File file : dataSource.getFiles()) {
             BoundingBox fileBoundingBox = file.getBoundingBox();
@@ -73,6 +70,11 @@ public class DownloadableFinder {
             if (!fileBoundingBox.contains(routeBoundingBox))
                 continue;
 
+            Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
+                    routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
+
+
+            /*
             // search for file which center has closest distance to the center of the route
             Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
                     routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
@@ -82,6 +84,7 @@ public class DownloadableFinder {
                 centerFile = file;
                 closestDistanceOfCenters = distance;
                 log.info(format("File %s has closest distance %f of centers", centerFile, closestDistanceOfCenters));
+                log.info(format("Center File has bounding box: NW %s SE %s",fileBoundingBox.getNorthWest(),fileBoundingBox.getSouthEast())); // TODO remove later
             }
 
             // search for existing largest file that covers the route
@@ -89,18 +92,99 @@ public class DownloadableFinder {
                 coveringFile = file;
                 coveringBoundingBox = fileBoundingBox;
                 log.info(format("File %s covers route with larger bounding box %s", coveringFile, fileBoundingBox.contains(coveringBoundingBox)));
+                log.info(format("File bounding box: NW %s SE %s",fileBoundingBox.getNorthWest(),fileBoundingBox.getSouthEast()));  // TODO remove later
             }
+             */
+            RoutingTileInfo fileInfo = new RoutingTileInfo();
+            fileInfo.downloadable = file;
+            fileInfo.centerDistance = distance;
+            fileInfo.fileBoundingBox = fileBoundingBox;
+            fileInfo.isExisting = existsFile(file);
+
+            resultList.add(fileInfo);
+
         }
 
-        log.info(format("File %s (exists %b) covers route, file %s (exists %b) has closest distance %f of centers", coveringFile, existsFile(coveringFile), centerFile, existsFile(centerFile), closestDistanceOfCenters));
+        // log.info(format("File %s (exists %b) covers route, file %s (exists %b) has closest distance %f of centers", coveringFile, existsFile(coveringFile), centerFile, existsFile(centerFile), closestDistanceOfCenters));
         // choose the closest distance of centers but prefer covering existing files if closest distance means download
-        return existsFile(centerFile) || !existsFile(coveringFile) ? centerFile : coveringFile;
+        // return existsFile(centerFile) || !existsFile(coveringFile) ? centerFile : coveringFile;
+
+        resultList.sort(null);
+
+        List<Downloadable> retVal = new ArrayList<Downloadable>();
+        for (RoutingTileInfo info : resultList) {
+            retVal.add(info.downloadable);
+        }
+        // retVal = resultList.stream().map(i->i.downloadable).collect(Collectors.toList());
+        log.info(format("Returning %d downloadables: %s",retVal.size(), retVal));
+        return retVal;
     }
 
-    public Collection<Downloadable> getDownloadableFor(List<BoundingBox> boundingBoxes) {
+
+    private static class RoutingTileInfo implements Comparable<RoutingTileInfo> {
+
+        public Downloadable downloadable;
+        public Double centerDistance;
+        public BoundingBox fileBoundingBox;
+        public boolean isExisting;
+
+        /*  Compare two Routing Tiles by:
+
+            A < B if B.contains(A)
+            B < A if A.contains(B)
+            if (neither contain each other)
+                A compares to B by Center-Distance to Route
+
+         */
+        public int compareTo(RoutingTileInfo o) {
+            if (fileBoundingBox != null && o.fileBoundingBox != null) {
+                if (fileBoundingBox.contains(o.fileBoundingBox)) return 1;
+                else if (o.fileBoundingBox.contains(fileBoundingBox)) return -1;
+            }
+            return centerDistance.compareTo(o.centerDistance);
+        }
+    }
+
+    /*
+    public List<Downloadable> getDownloadablesFor(BoundingBox routeBoundingBox) {
+        List<Downloadable> retVal = new ArrayList<Downloadable>();
+        List<RoutingTileInfo> resultList = new ArrayList<RoutingTileInfo>();
+
+        for (File file : dataSource.getFiles()) {
+            BoundingBox fileBoundingBox = file.getBoundingBox();
+            if (fileBoundingBox == null) {
+                log.warning(format("File $s doesn't have a bounding box. Ignoring it.", file));
+                continue;
+            }
+            if (!fileBoundingBox.contains(routeBoundingBox))
+                continue;
+
+            Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
+                    routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
+            RoutingTileInfo fileInfo = new RoutingTileInfo();
+            fileInfo.downloadable = file;
+            fileInfo.centerDistance = distance;
+            fileInfo.fileBoundingBox = fileBoundingBox;
+            fileInfo.isExisting = existsFile(file);
+
+            resultList.add(fileInfo);
+
+        }
+
+        resultList.sort(null);
+        for (RoutingTileInfo info : resultList) {
+            retVal.add(info.downloadable);
+        }
+        // retVal = resultList.stream().map(i->i.downloadable).collect(Collectors.toList());
+        log.info(format("Returning %d elements as downloadables",retVal.size()));
+        return retVal;
+    }
+     */
+
+    public Collection<Downloadable> getDownloadablesFor(List<BoundingBox> boundingBoxes) {
         Collection<Downloadable> result = new HashSet<>();
         for (BoundingBox boundingBox : boundingBoxes)
-            result.add(getDownloadableFor(boundingBox));
+            result.addAll(getDownloadablesFor(boundingBox));
         return result;
     }
 }

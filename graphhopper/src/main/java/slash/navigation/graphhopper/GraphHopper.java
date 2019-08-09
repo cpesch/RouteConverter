@@ -26,6 +26,7 @@ import com.graphhopper.reader.osm.GraphHopperOSM;
 import com.graphhopper.routing.util.EncodingManager;
 import com.graphhopper.routing.util.FlagEncoderFactory;
 import com.graphhopper.util.PointList;
+import com.graphhopper.util.exceptions.PointNotFoundException;
 import slash.navigation.common.*;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
@@ -171,6 +172,10 @@ public class GraphHopper extends BaseRoutingService {
             request.setVehicle(travelMode.getName().toUpperCase());
             GHResponse response = hopper.route(request);
             if(response.hasErrors()) {
+                boolean pointNotFound = response.getErrors().size() > 0 && response.getErrors().get(0) instanceof PointNotFoundException;
+                if(pointNotFound)
+                    return new RoutingResult(true);
+
                 String errors = printArrayToDialogString(response.getErrors().toArray(), false);
                 log.severe(format("Error while routing between %s and %s: %s", from, to, errors));
                 throw new RuntimeException(errors);
@@ -282,33 +287,49 @@ public class GraphHopper extends BaseRoutingService {
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         BoundingBox routeBoundingBox = createBoundingBox(longitudeAndLatitudes);
-        final Downloadable downloadable = finder.getDownloadableFor(routeBoundingBox);
-        final java.io.File file = downloadable != null ? createFile(downloadable.getUri()) : null;
-        setOsmPbfFile(file);
+        List<Downloadable> downloadables = finder.getDownloadablesFor(routeBoundingBox);
+        return new DownloadFutureImpl(downloadables);
+    }
 
-        return new DownloadFuture() {
-            public boolean isRequiresDownload() {
-                return file != null && !file.exists();
-            }
+    private class DownloadFutureImpl implements DownloadFuture {
+        private List<Downloadable> downloadables;
+        private Downloadable next;
 
-            public void download() {
-                fireDownloading();
-                downloadAndWait(downloadable);
-            }
+        DownloadFutureImpl(List<Downloadable> downloadables) {
+            this.downloadables = new ArrayList<>(downloadables);
+            nextDownload();
+        }
 
-            public boolean isRequiresProcessing() {
-                if(file == null)
-                    return false;
+        public boolean isRequiresDownload() {
+            return !getOsmPbfFile().exists();
+        }
 
-                File path = createPath(file);
-                File edges = new File(path, "edges");
-                return !path.exists() || !edges.exists();
-            }
+        public void download() {
+            fireDownloading();
+            downloadAndWait(next);
+        }
 
-            public void process() {
-                initializeHopper();
-            }
-        };
+        public boolean isRequiresProcessing() {
+            File path = createPath(getOsmPbfFile());
+            File edges = new File(path, "edges");
+            return !path.exists() || !edges.exists();
+        }
+
+        public void process() {
+            initializeHopper();
+        }
+
+        public boolean hasNextDownload() {
+            return !downloadables.isEmpty();
+        }
+
+        public void nextDownload() {
+            if(!hasNextDownload())
+                return;
+
+            next = downloadables.remove(0);
+            setOsmPbfFile(createFile(next.getUri()));
+        }
     }
 
     private BoundingBox createBoundingBox(List<LongitudeAndLatitude> longitudeAndLatitudes) {
@@ -332,7 +353,7 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> downloadables = finder.getDownloadableFor(boundingBoxes);
+        Collection<Downloadable> downloadables = finder.getDownloadablesFor(boundingBoxes);
         long notExists = 0L;
         for(Downloadable downloadable : downloadables) {
             Long contentLength = downloadable.getLatestChecksum().getContentLength();
@@ -347,7 +368,7 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> downloadables = finder.getDownloadableFor(boundingBoxes);
+        Collection<Downloadable> downloadables = finder.getDownloadablesFor(boundingBoxes);
         for (Downloadable downloadable : downloadables) {
             download(downloadable);
         }
