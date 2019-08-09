@@ -329,7 +329,7 @@ public class GraphHopper extends BaseRoutingService {
             if(!hasNextDownload())
                 return;
 
-            next = downloadables.remove(0);
+            this.next = downloadables.remove(0);
             setOsmPbfFile(createFile(next.getUri()));
         }
     }
