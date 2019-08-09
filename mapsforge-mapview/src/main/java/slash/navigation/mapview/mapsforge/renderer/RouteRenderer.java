@@ -48,6 +48,7 @@ import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asLatLong;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
+import static slash.navigation.routing.RoutingResult.Validity.*;
 
 /**
  * Renders a {@link List} of {@link PairWithLayer} for the {@link MapsforgeMapView}.
@@ -167,22 +168,6 @@ public class RouteRenderer {
         }
     }
 
-    private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
-        return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
-    }
-
-    private List<LongitudeAndLatitude> asLongitudeAndLatitude(List<PairWithLayer> pairWithLayers) {
-        List<LongitudeAndLatitude> result = new ArrayList<>();
-        for (PairWithLayer pairWithLayer : pairWithLayers) {
-            if(!pairWithLayer.hasCoordinates())
-                continue;
-
-            result.add(asLongitudeAndLatitude(pairWithLayer.getFirst()));
-            result.add(asLongitudeAndLatitude(pairWithLayer.getSecond()));
-        }
-        return result;
-    }
-
     private void waitForDownload(DownloadFuture future) {
         if (future == null)
             return;
@@ -218,6 +203,22 @@ public class RouteRenderer {
         }
     }
 
+    private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
+        return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
+    }
+
+    private List<LongitudeAndLatitude> asLongitudeAndLatitude(List<PairWithLayer> pairWithLayers) {
+        List<LongitudeAndLatitude> result = new ArrayList<>();
+        for (PairWithLayer pairWithLayer : pairWithLayers) {
+            if(!pairWithLayer.hasCoordinates())
+                continue;
+
+            result.add(asLongitudeAndLatitude(pairWithLayer.getFirst()));
+            result.add(asLongitudeAndLatitude(pairWithLayer.getSecond()));
+        }
+        return result;
+    }
+
     private void drawRoute(List<PairWithLayer> pairWithLayers) {
         Paint paint = graphicFactory.createPaint();
         paint.setColor(asRGBA(routeColorModel));
@@ -251,13 +252,13 @@ public class RouteRenderer {
         latLongs.add(asLatLong(pairWithLayer.getFirst()));
 
         RoutingResult result = calculateResult(routingService, future, pairWithLayer);
-        if (result.isValid())
+        if (result.getValidity().equals(Valid)) {
             // TODO could extract elevation from RoutingResult and set it on first/second if there is no elevation
             latLongs.addAll(asLatLong(result.getPositions()));
-
+        }
         pairWithLayer.setDistanceAndTime(result.getDistanceAndTime());
         latLongs.add(asLatLong(pairWithLayer.getSecond()));
-        return new IntermediateRoute(latLongs, result.isValid());
+        return new IntermediateRoute(latLongs, result.getValidity().equals(Valid));
     }
 
     private RoutingResult calculateResult(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {
@@ -266,11 +267,11 @@ public class RouteRenderer {
             waitForDownload(future);
             synchronized (notificationMutex) {
                 if (!drawingRoute)
-                    return new RoutingResult(null, null, false);
+                    return new RoutingResult(null, null, Invalid);
             }
 
             result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
-            if (result.isPointNotFound()) {
+            if (result.getValidity().equals(PointNotFound)) {
                 if(routingService.isDownload())
                     if(future.hasNextDownload()) {
                         future.nextDownload();

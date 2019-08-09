@@ -28,9 +28,9 @@ import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.routing.*;
+import slash.navigation.routing.RoutingResult.Validity;
 
 import java.io.File;
-import java.io.FilenameFilter;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -43,6 +43,8 @@ import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.removeExtension;
 import static slash.navigation.common.Bearing.calculateBearing;
+import static slash.navigation.routing.RoutingResult.Validity.Invalid;
+import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
 /**
  * Encapsulates access to the BRouter.
@@ -109,11 +111,7 @@ public class BRouter extends BaseRoutingService {
     public List<TravelMode> getAvailableTravelModes() {
         List<TravelMode> result = new ArrayList<>();
         if (getProfiles() != null) {
-            File[] files = getProfilesDirectory().listFiles(new FilenameFilter() {
-                public boolean accept(File dir, String name) {
-                    return getExtension(name).equals(".brf");
-                }
-            });
+            File[] files = getProfilesDirectory().listFiles((dir, name) -> getExtension(name).equals(".brf"));
             if (files != null) {
                 for (File file : files) {
                     result.add(new TravelMode(removeExtension(file.getName())));
@@ -215,7 +213,7 @@ public class BRouter extends BaseRoutingService {
                 List<TravelMode> availableTravelModes = getAvailableTravelModes();
                 if (availableTravelModes.size() == 0) {
                     log.warning(format("Cannot route between %s and %s: no travel modes found in %s", from, to, getProfilesDirectory()));
-                    return new RoutingResult(asList(from, to), new DistanceAndTime(calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), null), false);
+                    return new RoutingResult(asList(from, to), new DistanceAndTime(calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), null), Invalid);
                 }
 
                 TravelMode firstTravelMode = availableTravelModes.get(0);
@@ -240,7 +238,8 @@ public class BRouter extends BaseRoutingService {
 
             OsmTrack track = routingEngine.getFoundTrack();
             double distance = routingEngine.getDistance();
-            return new RoutingResult(asPositions(track), new DistanceAndTime(distance, null), routingEngine.getErrorMessage() == null);
+            Validity validity = routingEngine.getErrorMessage() == null ? Valid : Invalid;
+            return new RoutingResult(asPositions(track), new DistanceAndTime(distance, null), validity);
         } finally {
             secondCounter.stop();
 

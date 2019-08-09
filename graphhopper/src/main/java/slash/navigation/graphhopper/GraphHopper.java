@@ -54,6 +54,8 @@ import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Files.recursiveDelete;
 import static slash.navigation.graphhopper.PbfUtil.DOT_OSM;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
+import static slash.navigation.routing.RoutingResult.Validity.PointNotFound;
+import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
 /**
  * Encapsulates access to the GraphHopper.
@@ -174,14 +176,14 @@ public class GraphHopper extends BaseRoutingService {
             if(response.hasErrors()) {
                 boolean pointNotFound = response.getErrors().size() > 0 && response.getErrors().get(0) instanceof PointNotFoundException;
                 if(pointNotFound)
-                    return new RoutingResult(true);
+                    return new RoutingResult(null, null, PointNotFound);
 
                 String errors = printArrayToDialogString(response.getErrors().toArray(), false);
                 log.severe(format("Error while routing between %s and %s: %s", from, to, errors));
                 throw new RuntimeException(errors);
             }
             PathWrapper best = response.getBest();
-            return new RoutingResult(asPositions(best.getPoints()), new DistanceAndTime(best.getDistance(), best.getTime() / 1000), true);
+            return new RoutingResult(asPositions(best.getPoints()), new DistanceAndTime(best.getDistance(), best.getTime() / 1000), Valid);
         } finally {
             secondCounter.stop();
 

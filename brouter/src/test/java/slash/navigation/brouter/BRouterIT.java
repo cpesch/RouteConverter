@@ -42,6 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Externalization.extractFile;
+import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
 public class BRouterIT {
     private static final NavigationPosition FROM = new SimpleNavigationPosition(10.18587, 53.40451);
@@ -101,7 +102,7 @@ public class BRouterIT {
     @Test
     public void testGetRouteBetweenByCar() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("car-test"));
-        assertTrue(result.isValid());
+        assertEquals(Valid, result.getValidity());
         assertEquals(192, result.getPositions().size());
         assertEquals(13702.0, result.getDistanceAndTime().getDistance(), 5.0);
         assertNull(result.getDistanceAndTime().getTime());
@@ -110,7 +111,7 @@ public class BRouterIT {
     @Test
     public void testGetRouteBetweenByBike() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("trekking"));
-        assertTrue(result.isValid());
+        assertEquals(Valid, result.getValidity());
         assertEquals(123, result.getPositions().size());
         assertEquals(13858.0, result.getDistanceAndTime().getDistance(), 5.0);
         assertNull(result.getDistanceAndTime().getTime());

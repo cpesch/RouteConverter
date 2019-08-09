@@ -30,6 +30,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.navigation.common.Bearing.calculateBearing;
+import static slash.navigation.routing.RoutingResult.Validity.Invalid;
 
 /**
  * A routing service that does no routing, i.e. returns beelines.
@@ -86,7 +87,7 @@ public class Beeline extends BaseRoutingService {
 
     public static RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to) {
         double distance = calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance();
-        return new RoutingResult(asList(from, to), new DistanceAndTime(distance, null), false);
+        return new RoutingResult(asList(from, to), new DistanceAndTime(distance, null), Invalid);
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {

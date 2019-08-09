@@ -34,18 +34,12 @@ import java.util.List;
 public class RoutingResult   {
     private final List<NavigationPosition> positions;
     private final DistanceAndTime distanceAndTime;
-    private final boolean valid;
-    private boolean pointNotFound = false;
+    private final Validity validity;
 
-    public RoutingResult(boolean pointNotFound) {
-        this(null, null, false);
-        this.pointNotFound = pointNotFound;
-    }
-
-    public RoutingResult(List<NavigationPosition> positions, DistanceAndTime distanceAndTime, boolean valid) {
+    public RoutingResult(List<NavigationPosition> positions, DistanceAndTime distanceAndTime, Validity validity) {
         this.positions = positions;
         this.distanceAndTime = distanceAndTime;
-        this.valid = valid;
+        this.validity = validity;
     }
 
     public List<NavigationPosition> getPositions() {
@@ -56,15 +50,9 @@ public class RoutingResult   {
         return distanceAndTime;
     }
 
-    /**
-     * Return if this routing contains positions from a valid routing process
-     * @return true, if this routing contains positions from a valid routing process
-     */
-    public boolean isValid() {
-        return valid;
+    public Validity getValidity() {
+        return validity;
     }
 
-    public boolean isPointNotFound() {
-        return pointNotFound;
-    }
+    public enum Validity { Valid, Invalid, PointNotFound }
 }
