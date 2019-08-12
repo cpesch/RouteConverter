@@ -28,10 +28,13 @@ import slash.navigation.datasources.Downloadable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -57,8 +60,10 @@ public class DownloadableFinderIT {
         recursiveDelete(temporaryDirectory);
     }
 
-    private String extractUri(List<Downloadable> downloadables) {
-        return downloadables.size() == 1 ? downloadables.get(0).getUri() : null;
+    private List<String> extractUris(List<Downloadable> downloadables) {
+        return downloadables.stream()
+                .map(Downloadable::getUri)
+                .collect(toList());
     }
 
     @Test
@@ -71,8 +76,8 @@ public class DownloadableFinderIT {
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
         finder.setDataSource(dataSource);
 
-        List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
-        assertEquals(SMALL_URI, extractUri(downloadables));
+        Collection<Downloadable> downloadables = finder.getDownloadablesFor(singletonList(new BoundingBox(0.1, 0.1, -0.1, -0.1)));
+        assertEquals(singletonList(SMALL_URI), extractUris(new ArrayList<>(downloadables)));
     }
 
     @Test
@@ -92,7 +97,7 @@ public class DownloadableFinderIT {
         finder.setDataSource(dataSource);
 
         List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
-        assertEquals(SMALL_URI, extractUri(downloadables));
+        assertEquals(asList(SMALL_URI, MEDIUM_URI, LARGE_URI), extractUris(downloadables));
     }
 
     @Test
@@ -113,7 +118,7 @@ public class DownloadableFinderIT {
         finder.setDataSource(dataSource);
 
         List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
-        assertEquals(LARGE_URI, extractUri(downloadables));
+        assertEquals(asList(LARGE_URI, SMALL_URI, MEDIUM_URI), extractUris(downloadables));
     }
 
     @Test
@@ -131,6 +136,6 @@ public class DownloadableFinderIT {
         finder.setDataSource(dataSource);
 
         List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.2, 0.2, -0.2, -0.2));
-        assertEquals(MEDIUM_URI, extractUri(downloadables));
+        assertEquals(singletonList(MEDIUM_URI), extractUris(downloadables));
     }
 }

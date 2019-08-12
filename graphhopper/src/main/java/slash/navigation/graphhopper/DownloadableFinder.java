@@ -29,9 +29,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
@@ -72,6 +72,7 @@ public class DownloadableFinder {
 
             Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
                     routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
+
             boolean existsFile = existsFile(file);
             descriptors.add(new DownloadableDescriptor(file, distance, fileBoundingBox, existsFile));
         }
@@ -79,8 +80,8 @@ public class DownloadableFinder {
 
         List<Downloadable> result = descriptors.stream()
                 .map(DownloadableDescriptor::getDownloadable)
-                .collect(Collectors.toList());
-        log.info(format("Found %d downloadables for %s: %s", result.size(), routeBoundingBox, result));
+                .collect(toList());
+        log.info(format("Found %d downloadables for %s: %s", descriptors.size(), routeBoundingBox, descriptors));
         return result;
     }
 
@@ -120,16 +121,24 @@ public class DownloadableFinder {
         public int compareTo(DownloadableDescriptor other) {
             if(existsFile && !other.existsFile)
                 return -1;
-            if(other.existsFile && !existsFile)
-                return -1;
+            if(!existsFile && other.existsFile)
+                return 1;
 
             if (fileBoundingBox != null && other.fileBoundingBox != null) {
                 if (fileBoundingBox.contains(other.fileBoundingBox))
-                    return 2;
+                    return -2;
                 else if (other.fileBoundingBox.contains(fileBoundingBox))
                     return -2;
             }
+
             return distanceToCenter.compareTo(other.distanceToCenter);
+        }
+
+        public String toString() {
+            return getClass().getSimpleName() + "[downloadable=" + downloadable +
+                    ", distanceToCenter=" + distanceToCenter +
+                    ", fileBoundingBox=" + fileBoundingBox +
+                    ", existsFile=" + existsFile + "]";
         }
     }
 }

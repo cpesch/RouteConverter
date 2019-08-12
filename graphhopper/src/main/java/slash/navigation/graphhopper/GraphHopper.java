@@ -188,7 +188,7 @@ public class GraphHopper extends BaseRoutingService {
             secondCounter.stop();
 
             long end = currentTimeMillis();
-            log.info("GraphHopper: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
+            log.info(format("GraphHopper: routing from %s to %s took %d milliseconds", from, to, end-start));
         }
     }
 
@@ -272,7 +272,7 @@ public class GraphHopper extends BaseRoutingService {
                 secondCounter.stop();
 
                 long end = currentTimeMillis();
-                log.info("GraphHopper: initializing took " + (end - start) + " milliseconds");
+                log.info(format("GraphHopper: initializing from %s took %d milliseconds", file, end-start));
             }
 
             setOsmPbfFile(null);
