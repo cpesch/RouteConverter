@@ -70,7 +70,7 @@ public class DownloadableFinderIT {
     public void testSelectTheBoundingBox() {
         DataSource dataSource = mock(DataSource.class);
         slash.navigation.datasources.File small = mock(slash.navigation.datasources.File.class);
-        when(small.getBoundingBox()).thenReturn(new BoundingBox(0.2, 0.2, -0.2, -0.2));
+        when(small.getBoundingBox()).thenReturn(new BoundingBox(0.4, 0.2, -0.2, -0.2));
         when(small.getUri()).thenReturn(SMALL_URI);
         when(dataSource.getFiles()).thenReturn(singletonList(small));
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
@@ -92,7 +92,7 @@ public class DownloadableFinderIT {
         slash.navigation.datasources.File large = mock(slash.navigation.datasources.File.class);
         when(large.getBoundingBox()).thenReturn(new BoundingBox(2.0, 2.0, -2.0, -2.0));
         when(large.getUri()).thenReturn(LARGE_URI);
-        when(dataSource.getFiles()).thenReturn(asList(medium, small, large));
+        when(dataSource.getFiles()).thenReturn(asList(large, medium, small));
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
         finder.setDataSource(dataSource);
 
@@ -104,10 +104,10 @@ public class DownloadableFinderIT {
     public void testSelectLargeBoundingBoxThatExists() throws IOException {
         DataSource dataSource = mock(DataSource.class);
         slash.navigation.datasources.File small = mock(slash.navigation.datasources.File.class);
-        when(small.getBoundingBox()).thenReturn(new BoundingBox(0.2, 0.2, -0.2, -0.2));
+        when(small.getBoundingBox()).thenReturn(new BoundingBox(0.4, 0.2, -0.2, -0.2));
         when(small.getUri()).thenReturn(SMALL_URI);
         slash.navigation.datasources.File medium = mock(slash.navigation.datasources.File.class);
-        when(medium.getBoundingBox()).thenReturn(new BoundingBox(1.0, 1.0, -1.0, -1.0));
+        when(medium.getBoundingBox()).thenReturn(new BoundingBox(2.0, 1.0, -1.0, -1.0));
         when(medium.getUri()).thenReturn(MEDIUM_URI);
         slash.navigation.datasources.File large = mock(slash.navigation.datasources.File.class);
         when(large.getBoundingBox()).thenReturn(new BoundingBox(3.0, 3.0, -2.0, -2.0));
