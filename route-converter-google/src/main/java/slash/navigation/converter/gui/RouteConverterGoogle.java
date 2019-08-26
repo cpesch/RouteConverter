@@ -62,7 +62,7 @@ public class RouteConverterGoogle extends RouteConverter {
 
         String currentVersion = System.getProperty("java.version");
         if (!hasJavaFX()) {
-            showMessageDialog(null, "Java " + currentVersion + " does not support JavaFX. Please install Java 8.", "RouteConverter", ERROR_MESSAGE);
+            showMessageDialog(null, "Java " + currentVersion + " does not support JavaFX. Please install a Java 8 from Oracle. Avoid OpenJDK.", "RouteConverter", ERROR_MESSAGE);
             System.exit(8);
         }
 
