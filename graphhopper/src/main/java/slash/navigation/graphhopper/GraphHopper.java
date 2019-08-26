@@ -220,7 +220,7 @@ public class GraphHopper extends BaseRoutingService {
     void initializeHopper() {
         synchronized (initializationLock) {
             java.io.File file = getOsmPbfFile();
-            if (file == null)
+            if (file == null || !file.exists())
                 return;
 
             if (hopper != null) {
@@ -274,8 +274,6 @@ public class GraphHopper extends BaseRoutingService {
                 long end = currentTimeMillis();
                 log.info(format("GraphHopper: initializing from %s took %d milliseconds", file, end-start));
             }
-
-            setOsmPbfFile(null);
         }
     }
 
@@ -303,7 +301,8 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         public boolean isRequiresDownload() {
-            return !getOsmPbfFile().exists();
+            File file = getOsmPbfFile();
+            return file != null && !file.exists();
         }
 
         public void download() {
@@ -312,7 +311,11 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         public boolean isRequiresProcessing() {
-            File path = createPath(getOsmPbfFile());
+            File file = getOsmPbfFile();
+            if(file == null)
+                return false;
+
+            File path = createPath(file);
             File edges = new File(path, "edges");
             return !path.exists() || !edges.exists();
         }

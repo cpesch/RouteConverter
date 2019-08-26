@@ -72,15 +72,21 @@ public class DownloadableFinder {
 
             Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
                     routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
-
             boolean existsFile = existsFile(file);
             descriptors.add(new DownloadableDescriptor(file, distance, fileBoundingBox, existsFile));
         }
         descriptors.sort(null);
 
         List<Downloadable> result = descriptors.stream()
+                .filter(DownloadableDescriptor::hasValidBoundingBox)
                 .map(DownloadableDescriptor::getDownloadable)
                 .collect(toList());
+        // if there is no other choice use the Downloadables with the invalid bounding boxes
+        if(result.size() == 0)
+            result = descriptors.stream()
+                    .map(DownloadableDescriptor::getDownloadable)
+                    .collect(toList());
+
         log.info(format("Found %d downloadables for %s: %s", descriptors.size(), routeBoundingBox, descriptors));
         return result;
     }
@@ -109,6 +115,14 @@ public class DownloadableFinder {
             return downloadable;
         }
 
+        public boolean hasValidBoundingBox() {
+            /* basically it's a good idea to choose the Downloadable with the smallest enclosing bounding box
+               unfortunately, files like https://download.geofabrik.de/north-america/us/alaska-latest.osm.pbf
+               claim too large bounding boxes */
+            return !(fileBoundingBox.getNorthEast().getLongitude() >= 179.9999 ||
+                    fileBoundingBox.getSouthWest().getLongitude() <= -179.9999);
+        }
+
         /*  Compare two Downloadables by:
             A < B if A exists and B not
             B < A if B exists and A not
@@ -124,20 +138,14 @@ public class DownloadableFinder {
             if(!existsFile && other.existsFile)
                 return 1;
 
-            int compared = distanceToCenter.compareTo(other.distanceToCenter);
-            if(compared != 0)
-                return compared;
-
-            /* basically it's a good idea to choose the Downloadable with the smallest enclosing bounding box
-               unfortunately, files like https://download.geofabrik.de/north-america/us/alaska-latest.osm.pbf
-               claim too large bounding boxes - thus it's just used as a fallback */
             if (fileBoundingBox != null && other.fileBoundingBox != null) {
                 if (fileBoundingBox.contains(other.fileBoundingBox))
                     return 2;
                 else if (other.fileBoundingBox.contains(fileBoundingBox))
                     return -2;
             }
-            return 0;
+
+            return distanceToCenter.compareTo(other.distanceToCenter);
         }
 
         public String toString() {
