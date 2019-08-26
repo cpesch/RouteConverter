@@ -24,8 +24,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
-import static slash.common.system.Platform.isJavaLaterThan;
+import static slash.common.system.Platform.*;
 
 public class PlatformTest {
     @Test
@@ -72,5 +71,17 @@ public class PlatformTest {
         assertTrue(isJavaLaterThan("11", 10));
         assertTrue(isJavaLaterThan("11.0.1", 10));
         assertTrue(isJavaLaterThan("11", 11));
+    }
+
+    @Test
+    public void testHasJavaFX() {
+        assertFalse(hasJavaFX("1.7.0"));
+        assertTrue(hasJavaFX("1.8.0"));
+        assertTrue(hasJavaFX("9"));
+        assertTrue(hasJavaFX("10"));
+        assertTrue(hasJavaFX("10.0.1"));
+        assertFalse(hasJavaFX("11"));
+        assertFalse(hasJavaFX("11.0.1"));
+        assertFalse(hasJavaFX("12"));
     }
 }

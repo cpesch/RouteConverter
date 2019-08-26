@@ -45,14 +45,14 @@ public class Platform {
                 System.getProperty("os.arch");
     }
 
-    public static boolean isJavaFX7() {
+    static boolean hasJavaFX(String javaVersion) {
         return System.getProperty("java.vendor").contains("Oracle") &&
-                System.getProperty("java.version").compareTo("1.7.0_40") >= 0;
+                javaVersion.compareTo("1.7.0_40") >= 0 &&
+                !isJava11OrLater();
     }
 
-    public static boolean isJavaFX8() {
-        return System.getProperty("java.vendor").contains("Oracle") &&
-                System.getProperty("java.version").compareTo("1.8.0") >= 0;
+    public static boolean hasJavaFX() {
+       return hasJavaFX(System.getProperty("java.version"));
     }
 
     static boolean isJavaLaterThan(String javaVersion, int version) {
@@ -62,6 +62,10 @@ public class Platform {
 
     public static boolean isJava9OrLater() {
         return isJavaLaterThan(System.getProperty("java.version"), 9);
+    }
+
+    public static boolean isJava11OrLater() {
+        return isJavaLaterThan(System.getProperty("java.version"), 11);
     }
 
     public static String getJava() {
