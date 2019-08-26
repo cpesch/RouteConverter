@@ -103,4 +103,11 @@ public class PbfUtil {
     private static double asCoordinate(long coordinate) {
         return coordinate / LONGITUDE_LATITUDE_RESOLUTION;
     }
+
+    public static void main(String[] args) throws IOException {
+        for(String arg : args) {
+            File file = new File(arg);
+            log.info(format("File %s has bounding box %s", file, extractBoundingBox(file)));
+        }
+    }
 }
