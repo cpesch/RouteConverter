@@ -58,6 +58,7 @@ public class PlatformTest {
         assertTrue(isJavaLaterThan("1.8.0", 8));
         assertFalse(isJavaLaterThan("1.8.0", 9));
         assertFalse(isJavaLaterThan("1.8.0", 10));
+        assertFalse(isJavaLaterThan("1.8.0", 11));
 
         assertTrue(isJavaLaterThan("9", 8));
         assertTrue(isJavaLaterThan("9", 9));
