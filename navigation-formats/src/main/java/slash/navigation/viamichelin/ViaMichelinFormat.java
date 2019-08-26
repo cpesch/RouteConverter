@@ -71,7 +71,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return new ViaMichelinRoute(name, (List<Wgs84Position>) positions);
     }
 
-    private String parsedescription(Poi poi) {
+    private String parseDescription(Poi poi) {
         String city = trim(poi.getCpCity());
         String address = trim(poi.getAddress());
         if (address != null)
@@ -101,7 +101,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
             }
             if (itineraryOrPoi instanceof Poi) {
                 Poi poi = (Poi) itineraryOrPoi;
-                positions.add(asWgs84Position(parseDouble(poi.getLongitude()), parseDouble(poi.getLatitude()), parsedescription(poi)));
+                positions.add(asWgs84Position(parseDouble(poi.getLongitude()), parseDouble(poi.getLatitude()), parseDescription(poi)));
             }    
         }
         return new ViaMichelinRoute(routeName, positions);
