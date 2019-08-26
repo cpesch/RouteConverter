@@ -44,17 +44,25 @@
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>*.html</exclude>
+                                        <exclude>*.md</exclude>
                                         <exclude>*.txt</exclude>
+                                        <exclude>**/.java</exclude>
                                         <exclude>Doxyfile</exclude>
+                                        <exclude>example/**</exclude>
                                         <exclude>font_metrics.properties</exclude>
-                                        <exclude>jump-workbench-properties.xml</exclude>
                                         <exclude>help/**</exclude>
+                                        <exclude>images/**</exclude>
+                                        <exclude>jump-workbench-properties.xml</exclude>
                                         <exclude>MANIFEST.MF</exclude>
-                                        <exclude>META-INF/*</exclude>
-                                        <exclude>META-INF/jb/</exclude>
-                                        <exclude>META-INF/MANIFEST.MF</exclude>
+                                        <exclude>META-INF/**</exclude>
                                         <exclude>mozilla/**</exclude>
                                         <exclude>repackage/**</exclude>
+                                        <exclude>res/**</exclude>
+                                        <exclude>com/graphhopper/builddate</exclude>
+                                        <exclude>com/graphhopper/version</exclude>
+                                        <exclude>org/apache/tools/ant/defaultManifest.mf</exclude>
+                                        <exclude>org/apache/tools/ant/version.txt</exclude>
+                                        <exclude>xml/**</exclude>
                                     </excludes>
                                 </filter>
                             </filters>
@@ -72,6 +80,30 @@
                         <goals>
                             <goal>parse-version</goal>
                         </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.openjdk.java</groupId>
+                                    <artifactId>jlink-routeconverter-opensource</artifactId>
+                                    <version>14-jpackage-8</version>
+                                    <type>zip</type>
+                                    <classifier>osx</classifier>
+                                    <outputDirectory>${project.basedir}/target/runtime</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
@@ -100,6 +132,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>route-converter-opensource</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>route-converter-license</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
