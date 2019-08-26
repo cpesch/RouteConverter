@@ -53,6 +53,12 @@
             <groupId>org.mapsforge</groupId>
             <artifactId>mapsforge-map-awt</artifactId>
             <version>${mapsforge.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.ant</groupId>
+                    <artifactId>ant</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>

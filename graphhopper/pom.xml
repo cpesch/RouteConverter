@@ -42,6 +42,10 @@
                     <groupId>org.apache.xmlgraphics</groupId>
                     <artifactId>xmlgraphics-commons</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.locationtech.jts</groupId>
+                    <artifactId>jts-core</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -68,20 +72,5 @@
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-        <dependency>
-           <groupId>org.apache.xmlgraphics</groupId>
-           <artifactId>xmlgraphics-commons</artifactId>
-           <version>2.3</version>
-           <exclusions>
-               <exclusion>
-                   <groupId>commons-io</groupId>
-                   <artifactId>commons-io</artifactId>
-               </exclusion>
-               <exclusion>
-                   <groupId>commons-logging</groupId>
-                   <artifactId>commons-logging</artifactId>
-               </exclusion>
-           </exclusions>
-       </dependency>
     </dependencies>
 </project>
