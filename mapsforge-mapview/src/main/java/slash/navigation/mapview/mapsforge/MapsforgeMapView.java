@@ -372,13 +372,13 @@ public class MapsforgeMapView extends BaseMapView {
         routeRenderer = new RouteRenderer(this, this.mapViewCallback, routeColorModel, GRAPHIC_FACTORY);
     }
 
-    private boolean initializedActions = false;
+    private static boolean initializedActions = false;
 
-    private void initializeActions() {
-        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+    private synchronized void initializeActions() {
         if (initializedActions)
             return;
 
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         actionManager.register("select-position", new SelectPositionAction());
         actionManager.register("extend-selection", new ExtendSelectionAction());
         actionManager.register("add-position", new AddPositionAction());
