@@ -46,6 +46,10 @@ public class GeoNamesServiceIT {
     public void testAsterGDEMElevationFor() throws IOException {
         assertEquals(205, service.getAsterGDEMElevationFor(10.2, 50.001), 5);
         assertEquals(2060, service.getAsterGDEMElevationFor(11.06561, 47.42428), 5);
+    }
+
+    @Test(expected = IOException.class)
+    public void testAsterGDEMElevationForLoopholes() throws IOException {
         assertNull(service.getAsterGDEMElevationFor(0.0, 0.0));
 
         assertNull(service.getAsterGDEMElevationFor(18.0, 82.0));

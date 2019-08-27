@@ -48,7 +48,7 @@ public class GoogleServiceIT {
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         assertTrue(service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)).contains("Antarctica"));
-        assertNull(service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
+        assertEquals("Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
         assertTrue(service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)).contains("Antarctica"));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }

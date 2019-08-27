@@ -84,6 +84,10 @@ public class GeoNamesService implements ElevationService, GeocodingService {
         String result = execute(uri + "?lat=" + latitude + "&lng=" + longitude, uri); // could be up to 20 points
         if (result != null) {
             try {
+                // returns /home/data/asterv2/N82/N82E018.zip for not-existing data
+                if(result.contains("/home/data/aster"))
+                    return null;
+
                 Integer elevation = parseInteger(result);
                 if (elevation != null && !elevation.equals(nullValue))
                     return elevation;

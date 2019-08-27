@@ -54,10 +54,10 @@ public class PhotonServiceIT {
         assertEquals("Atlas Buoy 0.00E 0.00N", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         String pole1 = service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0));
-        assertTrue(pole1.contains("Pole"));
+        assertTrue(pole1.contains("Pole") || pole1.contains("Skiway"));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
         String pole2 = service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0));
-        assertTrue(pole2.contains("Pole"));
+        assertTrue(pole2.contains("Pole") || pole2.contains("Skiway"));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
 }
