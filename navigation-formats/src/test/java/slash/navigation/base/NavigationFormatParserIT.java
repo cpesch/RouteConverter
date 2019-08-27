@@ -140,12 +140,12 @@ public class NavigationFormatParserIT {
     @Test
     public void testIsValidGpx10() throws IOException {
         readWaypoints(TEST_PATH + "from10.gpx", 3);
-        readRoute(TEST_PATH + "from10.gpx", 3, 1, 2, 3);
+        readRoute(TEST_PATH + "from10.gpx", 3, 1, 3, 4);
         readTrack(TEST_PATH + "from10.gpx", 0);
 
         readWaypoints(TEST_PATH + "from10trk.gpx", 3);
         readRoute(TEST_PATH + "from10trk.gpx", 0);
-        readTrack(TEST_PATH + "from10trk.gpx", 4, 1, 2, 3, 4);
+        readTrack(TEST_PATH + "from10trk.gpx", 4, 1, 3, 4, 5);
 
         read(TEST_PATH + "large10.gpx");
     }
@@ -153,12 +153,12 @@ public class NavigationFormatParserIT {
     @Test
     public void testIsValidGpx11() throws IOException {
         readWaypoints(TEST_PATH + "from11.gpx", 3);
-        readRoute(TEST_PATH + "from11.gpx", 3, 1, 2, 3);
+        readRoute(TEST_PATH + "from11.gpx", 3, 1, 3, 4);
         readTrack(TEST_PATH + "from11.gpx", 0);
 
         readWaypoints(TEST_PATH + "from11trk.gpx", 3);
         readRoute(TEST_PATH + "from11trk.gpx", 0);
-        readTrack(TEST_PATH + "from11trk.gpx", 4, 5, 2, 3, 4);
+        readTrack(TEST_PATH + "from11trk.gpx", 4, 5, 3, 4, 5);
 
         read(TEST_PATH + "large11.gpx");
     }

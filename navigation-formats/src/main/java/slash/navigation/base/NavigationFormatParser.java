@@ -119,6 +119,7 @@ public class NavigationFormatParser {
                         firstSuccessfulFormat = format;
                 } catch (Exception e) {
                     log.severe(format("Error reading with %s: %s, %s", format, e.getClass(), e));
+                    // e.printStackTrace();
                 }
 
                 if (context.getRoutes().size() > routeCountBefore) {
@@ -134,7 +135,6 @@ public class NavigationFormatParser {
                 }
             }
         } finally {
-            //noinspection ThrowFromFinallyBlock
             buffer.close();
         }
 
@@ -206,7 +206,7 @@ public class NavigationFormatParser {
     }
 
     private class InternalParserContext<R extends BaseRoute> extends ParserContextImpl<R> {
-        public InternalParserContext(File file, CompactCalendar startDate) {
+        InternalParserContext(File file, CompactCalendar startDate) {
             super(file, startDate);
         }
 
@@ -228,7 +228,6 @@ public class NavigationFormatParser {
                 internalSetStartDate(startDate);
                 internalRead(buffer, getNavigationFormatRegistry().getReadFormats(), this);
             } finally {
-                //noinspection ThrowFromFinallyBlock
                 buffer.closeUnderlyingInputStream();
             }
         }
@@ -244,7 +243,6 @@ public class NavigationFormatParser {
             internalRead(buffer, formats, context);
             return createResult(context);
         } finally {
-            //noinspection ThrowFromFinallyBlock
             buffer.closeUnderlyingInputStream();
         }
     }

@@ -53,7 +53,6 @@ public class Tcx2Format extends TcxFormat {
         return "Training Center Database 2 (*" + getExtension() + ")";
     }
 
-
     private Double convertLongitude(PositionT positionT) {
         return positionT != null ? positionT.getLongitudeDegrees() : null;
     }
@@ -84,7 +83,8 @@ public class Tcx2Format extends TcxFormat {
                     coursePointT.getAltitudeMeters(),
                     null,
                     parseXMLTime(coursePointT.getTime()),
-                    coursePointT.getName()));
+                    coursePointT.getName(),
+                    coursePointT));
         }
         return positions.size() > 0 ? new TcxRoute(this, Route, courseT.getName(), positions) : null;
     }
@@ -96,13 +96,15 @@ public class Tcx2Format extends TcxFormat {
                 courseLapT.getBeginAltitudeMeters(),
                 null,
                 null,
-                "0 seconds"));
+                "0 seconds",
+                courseLapT));
         positions.add(new Wgs84Position(convertLongitude(courseLapT.getEndPosition()),
                 convertLatitude(courseLapT.getEndPosition()),
                 courseLapT.getEndAltitudeMeters(),
                 null,
                 null,
-                courseLapT.getTotalTimeSeconds() + " seconds"));
+                courseLapT.getTotalTimeSeconds() + " seconds",
+                courseLapT));
         return new TcxRoute(this, Waypoints, name, positions);
     }
 
