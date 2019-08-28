@@ -34,7 +34,7 @@
     </build>
 
     <properties>
-        <eclipselink.version>2.7.4</eclipselink.version>
+        <jaxb.version>2.3.1</jaxb.version>
     </properties>
 
     <dependencies>
@@ -56,55 +56,17 @@
             <groupId>org.javadelight</groupId>
             <artifactId>delight-nashorn-sandbox</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.asm</artifactId>
-            <version>${eclipselink.version}</version>
-            <classifier>stripped</classifier>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.core</artifactId>
-            <version>${eclipselink.version}</version>
-            <classifier>stripped</classifier>
-            <exclusions>
-                <exclusion>
-                     <groupId>org.eclipse.persistence</groupId>
-                     <artifactId>org.eclipse.persistence.asm</artifactId>
-                 </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>org.eclipse.persistence.moxy</artifactId>
-            <version>${eclipselink.version}</version>
-            <classifier>stripped</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>javax.validation</groupId>
-                    <artifactId>validation-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.persistence</groupId>
-                    <artifactId>org.eclipse.persistence.core</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish</groupId>
-            <artifactId>javax.json</artifactId>
-            <version>1.1</version>
-        </dependency>
+
+        <!-- JAXB for Java 9 and later -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
+            <version>${jaxb.version}</version>
         </dependency>
-        <!-- Java 9 removed JAXB -->
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
-            <version>2.3.1</version>
+            <version>${jaxb.version}</version>
         </dependency>
         <dependency>
             <groupId>com.sun.istack</groupId>
