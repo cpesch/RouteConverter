@@ -19,25 +19,38 @@
 */
 package slash.navigation.nmn.bindingcruiser;
 
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.xml.bind.annotation.XmlAccessType.FIELD;
-
-@XmlRootElement
-@XmlAccessorType(FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Route {
-    public List<String> coords = new ArrayList<>();
+    private List<String> coords = new ArrayList<>();
 
-    @SuppressWarnings("unused")
-    private String binary = null;
-    @SuppressWarnings("unused")
-    private int v = 1;
-    @SuppressWarnings("unused")
-    private Settings settings = new Settings();
+    public int v = 1;
+    public Settings settings = new Settings();
 
-    public String name = null;
-    public String creator = null;
+    private String name = null;
+    private String creator = null;
+
+    public List<String> getCoords() {
+        return coords;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
+    }
 }

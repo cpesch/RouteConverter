@@ -24,9 +24,9 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.nmn.bindingcruiser.Root;
 import slash.navigation.nmn.bindingcruiser.Route;
 
-import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -73,11 +73,11 @@ public class NavigonCruiserFormat extends XmlNavigationFormat<NavigonCruiserRout
     }
 
     private NavigonCruiserRoute process(Route route) {
-        String routeName = trim(route.name);
+        String routeName = trim(route.getName());
         List<Wgs84Position> positions = new ArrayList<>();
-        for(String coord : route.coords) {
+        for(String coord : route.getCoords()) {
             String[] parts = coord.split(",");
-            if(parts.length != 2)
+            if (parts.length != 2)
                 throw new IllegalArgumentException(coord + " are not valid coordinates");
             Double latitude = parseDouble(parts[0]);
             Double longitude = parseDouble(parts[1]);
@@ -87,28 +87,25 @@ public class NavigonCruiserFormat extends XmlNavigationFormat<NavigonCruiserRout
     }
 
 
-    public void read(InputStream source, ParserContext<NavigonCruiserRoute> context) throws Exception {
-        Route route = unmarshal(source);
-        context.appendRoute(process(route));
+    public void read(InputStream source, ParserContext<NavigonCruiserRoute> context) throws IOException {
+        Root root = unmarshal(source);
+        context.appendRoute(process(root.getRoute()));
     }
 
 
-    private Route createRoute(NavigonCruiserRoute route) {
+    private Root createRoute(NavigonCruiserRoute route) {
         Route result = new Route();
-        result.creator = GENERATED_BY;
-        result.name = route.getName();
         for (Wgs84Position position : route.getPositions()) {
-            result.coords.add(formatDoubleAsString(position.getLatitude(), 5) + "," +
+            result.getCoords().add(formatDoubleAsString(position.getLatitude(), 5) + "," +
                     formatDoubleAsString(position.getLongitude(), 5));
         }
-        return result;
+        result.setCreator(GENERATED_BY);
+        result.setName(route.getName());
+
+        return new Root(result);
     }
 
     public void write(NavigonCruiserRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
-        try {
-            marshal(createRoute(route), target);
-        } catch (JAXBException e) {
-            throw new IOException("Cannot marshall " + route + ": " + e, e);
-        }
+        marshal(createRoute(route), target);
     }
 }
