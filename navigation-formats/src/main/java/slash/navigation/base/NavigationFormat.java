@@ -46,6 +46,6 @@ public interface NavigationFormat<R extends BaseRoute> {
 
     <P extends NavigationPosition> R createRoute(RouteCharacteristics characteristics, String name, List<P> positions);
 
-    void read(InputStream source, ParserContext<R> context) throws Exception;
+    void read(InputStream source, ParserContext<R> context) throws IOException;
     void write(R route, OutputStream target, int startIndex, int endIndex) throws IOException;
 }

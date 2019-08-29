@@ -77,7 +77,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
         throw new UnsupportedOperationException();
     }
 
-    public void read(InputStream source, ParserContext<BaseRoute> context) {
+    public void read(InputStream source, ParserContext<BaseRoute> context) throws IOException {
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {

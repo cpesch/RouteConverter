@@ -82,7 +82,7 @@ public class KlickTelRouteFormat extends XmlNavigationFormat<KlickTelRoute> {
         return new KlickTelRoute(null, route.getRouteOptions(), positions);
     }
 
-    public void read(InputStream source, ParserContext<KlickTelRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KlickTelRoute> context) throws IOException {
         KDRoute KDRoute = unmarshal(source);
         context.appendRoute(process(KDRoute));
     }

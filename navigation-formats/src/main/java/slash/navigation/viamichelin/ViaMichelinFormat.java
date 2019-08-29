@@ -107,7 +107,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
         return new ViaMichelinRoute(routeName, positions);
     }
 
-    public void read(InputStream source, ParserContext<ViaMichelinRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<ViaMichelinRoute> context) throws IOException {
         try (InputStreamReader reader = new InputStreamReader(source)) {
             PoiList poiList = unmarshal(reader);
             context.appendRoute(process(poiList));

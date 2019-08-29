@@ -39,7 +39,7 @@ public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavi
         return startDate != null && startDate.hasDateDefined();
     }
 
-    public void read(InputStream source, ParserContext<R> context) throws Exception {
+    public void read(InputStream source, ParserContext<R> context) throws IOException {
         read(source, ISO_LATIN1_ENCODING, context);
     }
 

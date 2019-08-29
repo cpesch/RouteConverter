@@ -67,7 +67,7 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return "Opel Navi 600/900 (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, ParserContext<SimpleRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<SimpleRoute> context) throws IOException {
         read(source, UTF8_ENCODING, context);
     }
 

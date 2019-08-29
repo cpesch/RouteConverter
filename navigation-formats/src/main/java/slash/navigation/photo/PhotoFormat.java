@@ -118,35 +118,39 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         BufferedInputStream bufferedSource = new BufferedInputStream(source, READ_BUFFER_SIZE);
         bufferedSource.mark(READ_BUFFER_SIZE);
 
-        Dimension size = Imaging.getImageSize(bufferedSource, null);
-        if (size == null)
-            return;
+        try {
+            Dimension size = Imaging.getImageSize(bufferedSource, null);
+            if (size == null)
+                return;
 
-        PhotoPosition position = new PhotoPosition(NotTaggable, context.getStartDate(), "No EXIF data", null);
+            PhotoPosition position = new PhotoPosition(NotTaggable, context.getStartDate(), "No EXIF data", null);
 
-        bufferedSource.reset();
-        ImageMetadata metadata = Imaging.getMetadata(bufferedSource, null);
-        TiffImageMetadata tiffImageMetadata = extractTiffImageMetadata(metadata);
-        if (tiffImageMetadata != null) {
-            @SuppressWarnings("unchecked")
-            List<Directory> directories = (List<Directory>) tiffImageMetadata.getDirectories();
-            for (Directory directory : directories)
-                log.info("Reading EXIF directory " + directory);
+            bufferedSource.reset();
+            ImageMetadata metadata = Imaging.getMetadata(bufferedSource, null);
+            TiffImageMetadata tiffImageMetadata = extractTiffImageMetadata(metadata);
+            if (tiffImageMetadata != null) {
+                @SuppressWarnings("unchecked")
+                List<Directory> directories = (List<Directory>) tiffImageMetadata.getDirectories();
+                for (Directory directory : directories)
+                    log.info("Reading EXIF directory " + directory);
 
-            extendPosition(position, tiffImageMetadata, context.getStartDate());
+                extendPosition(position, tiffImageMetadata, context.getStartDate());
+            }
+
+            bufferedSource.reset();
+            File image = context.getFile();
+            if (image == null)
+                image = extractToTempFile(bufferedSource);
+            position.setOrigin(image);
+            position.setWaypointType(Photo);
+            context.appendRoute(new Wgs84Route(this, Waypoints, new ArrayList<Wgs84Position>(singletonList(position))));
+        } catch (ImageReadException e) {
+            throw new IOException("Image read error: " + e, e);
         }
-
-        bufferedSource.reset();
-        File image = context.getFile();
-        if (image == null)
-            image = extractToTempFile(bufferedSource);
-        position.setOrigin(image);
-        position.setWaypointType(Photo);
-        context.appendRoute(new Wgs84Route(this, Waypoints, new ArrayList<Wgs84Position>(singletonList(position))));
     }
 
     private TiffImageMetadata extractTiffImageMetadata(ImageMetadata metadata) {

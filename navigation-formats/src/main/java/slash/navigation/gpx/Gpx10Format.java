@@ -79,7 +79,7 @@ public class Gpx10Format extends GpxFormat {
         context.appendRoutes(extractTracks(gpx, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond));
     }
 
-    public void read(InputStream source, ParserContext<GpxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GpxRoute> context) throws IOException {
         Gpx gpx = unmarshal10(source);
         process(gpx, context);
     }

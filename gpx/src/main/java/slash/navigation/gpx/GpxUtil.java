@@ -63,22 +63,22 @@ public class GpxUtil {
     }
 
 
-    public static Gpx unmarshal10(Reader reader) throws JAXBException {
+    public static Gpx unmarshal10(Reader reader) throws IOException {
         Gpx result;
         try {
             result = (Gpx) newUnmarshaller10().unmarshal(reader);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
 
-    public static Gpx unmarshal10(InputStream inputStream) throws JAXBException {
+    public static Gpx unmarshal10(InputStream inputStream) throws IOException {
         Gpx result;
         try {
             result = (Gpx) newUnmarshaller10().unmarshal(inputStream);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
@@ -98,28 +98,28 @@ public class GpxUtil {
     }
 
 
-    public static GpxType unmarshal11(String string) throws JAXBException {
+    public static GpxType unmarshal11(String string) throws IOException {
         return unmarshal11(new StringReader(string));
     }
 
-    public static GpxType unmarshal11(Reader reader) throws JAXBException {
+    public static GpxType unmarshal11(Reader reader) throws IOException {
         GpxType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller11().unmarshal(reader);
             result = (GpxType) element.getValue();
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
 
-    public static GpxType unmarshal11(InputStream in) throws JAXBException {
+    public static GpxType unmarshal11(InputStream in) throws IOException {
         GpxType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller11().unmarshal(in);
             result = (GpxType) element.getValue();
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }

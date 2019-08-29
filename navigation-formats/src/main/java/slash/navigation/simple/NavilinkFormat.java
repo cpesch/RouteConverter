@@ -26,6 +26,7 @@ import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.nio.ByteBuffer;
@@ -202,7 +203,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
         return position;
     }
 
-    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         byte[] header = new byte[HEADER_SIZE];
         if ((source.read(header) == HEADER_SIZE) && checkHeader(header)) {
             ByteBuffer sbpRecordByteBuffer = ByteBuffer.allocate(SBP_RECORD_LENGTH);

@@ -155,20 +155,24 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
                     return routes;
                 } else //noinspection StatementWithEmptyBody
                     if (elementName.startsWith(GEO_OBJECTS_ELEMENT)) {
-                } else if (elementName.startsWith(GEO_OBJECT_ELEMENT)) {
-                    if (name == null)
-                        name = projectName;
-                    routes.add(new MagicMapsIktRoute(this, name, asDescription(description), positions));
-                }
+                    } else if (elementName.startsWith(GEO_OBJECT_ELEMENT)) {
+                        if (name == null)
+                            name = projectName;
+                        routes.add(new MagicMapsIktRoute(this, name, asDescription(description), positions));
+                    }
             }
         }
         return null;
     }
 
-    public void read(InputStream source, ParserContext<MagicMapsIktRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<MagicMapsIktRoute> context) throws IOException {
         XMLInputFactory factory = XMLInputFactory.newInstance();
-        XMLEventReader eventReader = factory.createXMLEventReader(source, UTF8_ENCODING);
-        context.appendRoutes(process(eventReader));
+        try {
+            XMLEventReader eventReader = factory.createXMLEventReader(source, UTF8_ENCODING);
+            context.appendRoutes(process(eventReader));
+        } catch (XMLStreamException e) {
+            throw new IOException("XML stream error: " + e, e);
+        }
     }
 
     private void writeHeader(String name, String description, XMLEventWriter writer, XMLEventFactory eventFactory) throws XMLStreamException {

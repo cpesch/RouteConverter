@@ -70,7 +70,7 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
 
     protected abstract char getColumnSeparator();
 
-    public void read(InputStream source, ParserContext<CsvRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<CsvRoute> context) throws IOException {
         // +1 since CsvDecoder is reading until the buffer is completely processed plus one to allow for #reset()
         source.mark(source.available() + 1);
         if(!read(source, UTF8_ENCODING, context)) {

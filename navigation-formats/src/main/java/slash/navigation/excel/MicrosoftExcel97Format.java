@@ -51,7 +51,7 @@ public class MicrosoftExcel97Format extends ExcelFormat {
         return workbook.createSheet(createSafeSheetName(name));
     }
 
-    public void read(InputStream source, ParserContext<ExcelRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<ExcelRoute> context) throws IOException {
         try (Workbook workbook = new HSSFWorkbook(source, false)) {
             parseWorkbook(workbook, context);
         }

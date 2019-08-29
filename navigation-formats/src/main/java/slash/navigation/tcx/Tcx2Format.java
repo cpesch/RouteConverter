@@ -177,7 +177,7 @@ public class Tcx2Format extends TcxFormat {
         return result;
     }
 
-    public void read(InputStream source, ParserContext<TcxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<TcxRoute> context) throws IOException {
         TrainingCenterDatabaseT trainingCenterDatabase = unmarshal2(source);
         context.appendRoutes(process(trainingCenterDatabase));
     }

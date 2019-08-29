@@ -74,88 +74,88 @@ public class KmlUtil {
     }
 
 
-    public static slash.navigation.kml.binding20.Kml unmarshal20(Reader reader) throws JAXBException {
+    public static slash.navigation.kml.binding20.Kml unmarshal20(Reader reader) throws IOException {
         slash.navigation.kml.binding20.Kml result;
         try {
             result = (slash.navigation.kml.binding20.Kml) newUnmarshaller20().unmarshal(reader);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
 
-    public static Object unmarshal20(InputStream in) throws JAXBException {
+    public static Object unmarshal20(InputStream in) throws IOException {
         Object result;
         try {
             result = newUnmarshaller20().unmarshal(in);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
 
-    public static slash.navigation.kml.binding21.KmlType unmarshal21(Reader reader) throws JAXBException {
+    public static slash.navigation.kml.binding21.KmlType unmarshal21(Reader reader) throws IOException {
         slash.navigation.kml.binding21.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(reader);
             result = (slash.navigation.kml.binding21.KmlType) element.getValue();
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
 
-    public static slash.navigation.kml.binding21.KmlType unmarshal21(InputStream in) throws JAXBException {
+    public static slash.navigation.kml.binding21.KmlType unmarshal21(InputStream in) throws IOException {
         slash.navigation.kml.binding21.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(in);
             result = (slash.navigation.kml.binding21.KmlType) element.getValue();
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
 
-    public static slash.navigation.kml.binding22beta.KmlType unmarshal22Beta(Reader reader) throws JAXBException {
+    public static slash.navigation.kml.binding22beta.KmlType unmarshal22Beta(Reader reader) throws IOException {
         slash.navigation.kml.binding22beta.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller22Beta().unmarshal(reader);
             result = (slash.navigation.kml.binding22beta.KmlType) element.getValue();
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
 
-    public static slash.navigation.kml.binding22beta.KmlType unmarshal22Beta(InputStream in) throws JAXBException {
+    public static slash.navigation.kml.binding22beta.KmlType unmarshal22Beta(InputStream in) throws IOException {
         slash.navigation.kml.binding22beta.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller22Beta().unmarshal(in);
             result = (slash.navigation.kml.binding22beta.KmlType) element.getValue();
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
 
-    public static slash.navigation.kml.binding22.KmlType unmarshal22(Reader reader) throws JAXBException {
+    public static slash.navigation.kml.binding22.KmlType unmarshal22(Reader reader) throws IOException {
         slash.navigation.kml.binding22.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(reader);
             result = (slash.navigation.kml.binding22.KmlType) element.getValue();
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
 
-    public static slash.navigation.kml.binding22.KmlType unmarshal22(InputStream in) throws JAXBException {
+    public static slash.navigation.kml.binding22.KmlType unmarshal22(InputStream in) throws IOException {
         slash.navigation.kml.binding22.KmlType result;
         try {
             JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(in);
             result = (slash.navigation.kml.binding22.KmlType) element.getValue();
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }

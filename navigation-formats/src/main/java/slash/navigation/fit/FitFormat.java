@@ -76,7 +76,7 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         Decode decode = new Decode();
         MesgBroadcaster broadcaster = new MesgBroadcaster(decode);
         broadcaster.addListener(new MesgLogger());

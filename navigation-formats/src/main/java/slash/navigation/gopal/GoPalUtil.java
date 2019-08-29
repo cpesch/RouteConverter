@@ -56,22 +56,22 @@ class GoPalUtil {
     }
 
 
-    public static slash.navigation.gopal.binding3.Tour unmarshal3(InputStream in) throws JAXBException {
+    public static slash.navigation.gopal.binding3.Tour unmarshal3(InputStream in) throws IOException {
         slash.navigation.gopal.binding3.Tour result;
         try {
             result = (slash.navigation.gopal.binding3.Tour) newUnmarshaller3().unmarshal(in);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
 
-    public static slash.navigation.gopal.binding5.Tour unmarshal5(InputStream in) throws JAXBException {
+    public static slash.navigation.gopal.binding5.Tour unmarshal5(InputStream in) throws IOException {
         slash.navigation.gopal.binding5.Tour result;
         try {
             result = (slash.navigation.gopal.binding5.Tour) newUnmarshaller5().unmarshal(in);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }

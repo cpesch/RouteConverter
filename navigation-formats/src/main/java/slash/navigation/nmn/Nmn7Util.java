@@ -51,12 +51,12 @@ class Nmn7Util {
         return marshaller;
     }
 
-    public static Route unmarshal(InputStream in) throws JAXBException {
+    public static Route unmarshal(InputStream in) throws IOException {
         Route result;
         try {
             result = (Route) newUnmarshaller().unmarshal(in);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }

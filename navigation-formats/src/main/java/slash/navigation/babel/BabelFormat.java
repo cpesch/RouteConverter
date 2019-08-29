@@ -190,7 +190,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         return process;
     }
 
-    private void readStream(InputStream source, ParserContext<GpxRoute> context) throws Exception {
+    private void readStream(InputStream source, ParserContext<GpxRoute> context) throws IOException {
         Process process = startBabel(source, getFormatName(), getGlobalOptions());
         Thread observer = observeProcess(process, getReadCommandExecutionTimeoutPreference());
         observer.start();
@@ -297,7 +297,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         log.fine("Read " + count + " bytes of " + streamName + " output: '" + output + "'");
     }
 
-    private void readFile(InputStream source, ParserContext<GpxRoute> context) throws Exception {
+    private void readFile(InputStream source, ParserContext<GpxRoute> context) throws IOException {
         File sourceFile = null, targetFile = null;
         try {
             sourceFile = createTempFile("babel-read-source", "." + getFormatName(), getTemporaryDirectory());
@@ -423,7 +423,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
 
-    public void read(InputStream source, ParserContext<GpxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GpxRoute> context) throws IOException {
         ParserContext<GpxRoute> gpxContext = new ParserContextImpl<>();
         if (isStreamingCapable()) {
             readStream(source, gpxContext);

@@ -172,7 +172,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
-    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         if (checkHeader(source)) {
             // copy whole file to a bytebuffer
             byte[] bodyBytes = new byte[source.available()];
