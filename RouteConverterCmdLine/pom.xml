@@ -45,6 +45,7 @@
                                         <exclude>*.md</exclude>
                                         <exclude>*.txt</exclude>
                                         <exclude>**/.java</exclude>
+                                        <exclude>**/package.html</exclude>
                                         <exclude>Doxyfile</exclude>
                                         <exclude>example/**</exclude>
                                         <exclude>font_metrics.properties</exclude>
@@ -52,7 +53,10 @@
                                         <exclude>images/**</exclude>
                                         <exclude>jump-workbench-properties.xml</exclude>
                                         <exclude>MANIFEST.MF</exclude>
-                                        <exclude>META-INF/**</exclude>
+                                        <exclude>META-INF/*</exclude>
+                                        <exclude>META-INF/jb/**</exclude>
+                                        <exclude>META-INF/maven/**</exclude>
+                                        <exclude>META-INF/versions/**</exclude>
                                         <exclude>mozilla/**</exclude>
                                         <exclude>repackage/**</exclude>
                                         <exclude>res/**</exclude>
