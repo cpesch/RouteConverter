@@ -63,9 +63,9 @@
         <maven.version>3.5</maven.version>
 
         <alephformatter.version>0.1.0</alephformatter.version>
-        <brouter.version>1.4.9</brouter.version>
+        <brouter.version>1.5.5</brouter.version>
         <graphhopper.version>0.12.0</graphhopper.version>
-        <httpclient.version>4.5.8</httpclient.version>
+        <httpclient.version>4.5.9</httpclient.version>
         <jackson.version>2.9.9</jackson.version>
         <mapsforge.version>0.11.0</mapsforge.version>
         <poi.version>4.1.0</poi.version>
@@ -345,17 +345,23 @@
             <artifactId>jcabi-matchers</artifactId>
             <version>1.4</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13-beta-2</version>
+            <version>4.13-beta-3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.27.0</version>
+            <version>3.0.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -376,12 +382,19 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.12</version>
+                <version>1.13</version>
+                <classifier>stripped</classifier>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>2.6</version>
+                <classifier>stripped</classifier>
+            </dependency>
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.2</version>
                 <classifier>stripped</classifier>
             </dependency>
             <dependency>
@@ -408,7 +421,7 @@
             <dependency>
                 <groupId>org.javadelight</groupId>
                 <artifactId>delight-nashorn-sandbox</artifactId>
-                <version>0.1.22</version>
+                <version>0.1.26</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
