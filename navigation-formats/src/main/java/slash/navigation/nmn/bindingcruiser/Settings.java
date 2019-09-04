@@ -19,21 +19,18 @@
 */
 package slash.navigation.nmn.bindingcruiser;
 
-import javax.xml.bind.annotation.XmlAccessorType;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-import static javax.xml.bind.annotation.XmlAccessType.FIELD;
-
-@SuppressWarnings("unused")
-@XmlAccessorType(FIELD)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Settings {
-    private int VT = 1; // Vehicle Type
-    private int BE = 0; // Bending
-    private int FR = 0; // Ferries, values are: 0=allow, 1=avoid, 2=forbid (nur 0 und 2 nutzen!)
-    private int ROUND = 0; // Round Trip
-    private int RT = 3; // Route Type
-    private int SR = 0; // Service Roads
-    private int HOV = 0; // HOV Lanes
-    private int HW = 0; // Highways
-    private int TR = 0; // Tollroads, values are: 0=allow, 1=avoid, 2=forbid (nur 0 und 2 nutzen!)
-    private int CU = 1; // Curvyness, values are: 0=less curvy ... 5=very curvy (nur so nutzen: 1=Autobahn erlaubt, 2=Autobahn verboten)
+    public int VT = 1; // Vehicle Type
+    public int BE = 0; // Bending
+    public int FR = 0; // Ferries, values are: 0=allow, 1=avoid, 2=forbid (nur 0 und 2 nutzen!)
+    public int ROUND = 0; // Round Trip
+    public int RT = 3; // Route Type
+    public int SR = 0; // Service Roads
+    public int HOV = 0; // HOV Lanes
+    public int HW = 0; // Highways
+    public int TR = 0; // Tollroads, values are: 0=allow, 1=avoid, 2=forbid (nur 0 und 2 nutzen!)
+    public int CU = 1; // Curvyness, values are: 0=less curvy ... 5=very curvy (nur so nutzen: 1=Autobahn erlaubt, 2=Autobahn verboten)
 }

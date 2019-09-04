@@ -20,61 +20,28 @@
 
 package slash.navigation.nmn;
 
-import org.eclipse.persistence.jaxb.JAXBContextFactory;
-import slash.navigation.nmn.bindingcruiser.Route;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import slash.navigation.nmn.bindingcruiser.Root;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.HashMap;
-import java.util.Map;
-
-import static javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
-import static org.eclipse.persistence.jaxb.MarshallerProperties.JSON_INCLUDE_ROOT;
-import static org.eclipse.persistence.jaxb.MarshallerProperties.MEDIA_TYPE;
 
 class NavigonCruiserUtil {
-
-    private static JAXBContext newContext() throws JAXBException {
-        Map<String, Object> properties = new HashMap<>();
-        properties.put(JAXB_FORMATTED_OUTPUT, true);
-        properties.put(MEDIA_TYPE, "application/json");
-        properties.put(JSON_INCLUDE_ROOT, true);
-        return JAXBContextFactory.createContext(new Class[]{Route.class}, properties);
+    private static ObjectMapper newMapper() {
+        return new ObjectMapper();
     }
 
-    private static Unmarshaller newUnmarshaller() throws JAXBException {
-        return newContext().createUnmarshaller();
+    public static Root unmarshal(InputStream inputStream) throws IOException {
+        return newMapper().readValue(inputStream, Root.class);
     }
 
-    private static Marshaller newMarshaller() throws JAXBException {
-        return newContext().createMarshaller();
-    }
-
-    public static Route unmarshal(InputStream in) throws JAXBException {
-        Route result;
+    public static void marshal(Root root, OutputStream outputStream) throws IOException {
         try {
-            result = (Route) newUnmarshaller().unmarshal(in);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
-        }
-        return result;
-    }
-
-    public static void marshal(Route route, OutputStream outputStream) throws JAXBException {
-        try {
-            try {
-                newMarshaller().marshal(route, outputStream);
-            } finally {
-                outputStream.flush();
-                outputStream.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e, e);
+            newMapper().writeValue(outputStream, root);
+        } finally {
+            outputStream.flush();
+            outputStream.close();
         }
     }
 }

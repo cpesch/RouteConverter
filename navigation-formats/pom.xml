@@ -24,10 +24,6 @@
         </repository>
     </repositories>
 
-    <properties>
-        <poi.version>4.1.0</poi.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -62,6 +58,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.dataformat</groupId>
             <artifactId>jackson-dataformat-csv</artifactId>
             <version>${jackson.version}</version>
@@ -73,19 +74,17 @@
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
-            <groupId>javax.json</groupId>
-            <artifactId>javax.json-api</artifactId>
-            <version>1.1.4</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-imaging</artifactId>
-            <version>1.0-20170929</version>
+            <version>1.0-alpha1</version>
         </dependency>
+
+        <!-- XLS, XSLX support -->
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
+            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -97,6 +96,7 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
+            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>com.github.virtuald</groupId>
@@ -105,6 +105,14 @@
                 <exclusion>
                     <groupId>org.apache.poi</groupId>
                     <artifactId>poi</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml-schemas</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-math3</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>stax</groupId>
@@ -116,6 +124,7 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml-schemas</artifactId>
             <version>${poi.version}</version>
+            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.xmlbeans</groupId>
@@ -127,6 +136,7 @@
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
             <version>3.1.0</version>
+            <classifier>stripped</classifier>
         </dependency>
     </dependencies>
 </project>

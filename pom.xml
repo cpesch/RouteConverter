@@ -66,8 +66,9 @@
         <brouter.version>1.4.9</brouter.version>
         <graphhopper.version>0.12.0</graphhopper.version>
         <httpclient.version>4.5.8</httpclient.version>
-        <jackson.version>2.9.8</jackson.version>
+        <jackson.version>2.9.9</jackson.version>
         <mapsforge.version>0.11.0</mapsforge.version>
+        <poi.version>4.1.0</poi.version>
     </properties>
 
     <build>
