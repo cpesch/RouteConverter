@@ -67,7 +67,7 @@ public class Kml22Format extends KmlFormat {
         return "Google Earth 5 (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, ParserContext<KmlRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KmlRoute> context) throws IOException {
         KmlType kmlType = unmarshal22(source);
         process(kmlType, context);
     }

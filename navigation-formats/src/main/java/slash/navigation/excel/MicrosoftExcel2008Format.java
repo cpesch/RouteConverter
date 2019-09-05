@@ -51,7 +51,7 @@ public class MicrosoftExcel2008Format extends ExcelFormat {
         return workbook.createSheet(createSafeSheetName(name));
     }
 
-    public void read(InputStream source, ParserContext<ExcelRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<ExcelRoute> context) throws IOException {
         Workbook workbook = new XSSFWorkbook(source);
         parseWorkbook(workbook, context);
         // do not close Workbook since this would close the underlying OPCPackage which has to be open to write later

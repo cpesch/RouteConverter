@@ -107,7 +107,7 @@ public class GoPal7RouteFormat extends GoPalRouteFormat<GoPalRoute> {
         return new GoPalRoute(this, null, tour.getRouteOptions(), positions);
     }
 
-    public void read(InputStream source, ParserContext<GoPalRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GoPalRoute> context) throws IOException {
         Tour tour = unmarshal5(source);
         GoPalRoute process = process(tour);
         if (process != null)

@@ -83,7 +83,8 @@ public class Tcx1Format extends TcxFormat {
                     coursePointT.getAltitudeMeters(),
                     null,
                     parseXMLTime(coursePointT.getTime()),
-                    coursePointT.getName()));
+                    coursePointT.getName(),
+                    coursePointT));
         }
         return positions.size() > 0 ? new TcxRoute(this, Route, name, positions) : null;
     }
@@ -223,7 +224,7 @@ public class Tcx1Format extends TcxFormat {
         return result;
     }
 
-    public void read(InputStream source, ParserContext<TcxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<TcxRoute> context) throws IOException {
         TrainingCenterDatabaseT trainingCenterDatabase = unmarshal1(source);
         context.appendRoutes(process(trainingCenterDatabase));
     }

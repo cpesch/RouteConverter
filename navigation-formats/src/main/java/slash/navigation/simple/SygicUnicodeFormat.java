@@ -48,7 +48,7 @@ public class SygicUnicodeFormat extends SygicFormat {
         return "Sygic POI Unicode (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, ParserContext<SimpleRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<SimpleRoute> context) throws IOException {
         read(source, UTF16_ENCODING, context);
     }
 

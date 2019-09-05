@@ -47,12 +47,12 @@ class KlickTelUtil {
     }
 
 
-    public static KDRoute unmarshal(InputStream in) throws JAXBException {
+    public static KDRoute unmarshal(InputStream in) throws IOException {
         KDRoute result;
         try {
             result = (KDRoute) newUnmarshaller().unmarshal(in);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }
@@ -62,8 +62,7 @@ class KlickTelUtil {
         try {
             try {
                 newMarshaller().marshal(new JAXBElement<>(new QName(KLICKTEL_NAMESPACE_URI, "kDRoute"), KDRoute.class, route), outputStream);
-            }
-            finally {
+            } finally {
                 outputStream.flush();
                 outputStream.close();
             }

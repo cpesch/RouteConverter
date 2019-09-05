@@ -53,7 +53,7 @@ public class Kml21Format extends KmlFormat {
         return "Google Earth 4 (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, ParserContext<KmlRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KmlRoute> context) throws IOException {
         KmlType kmlType = unmarshal21(source);
         process(kmlType, context);
     }

@@ -23,11 +23,14 @@ package slash.navigation.base;
 import org.junit.Test;
 import slash.navigation.babel.GarminMapSource6Format;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.tcx.TcxFormat;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.io.File.createTempFile;
 import static org.junit.Assert.*;
@@ -72,6 +75,21 @@ public abstract class ConvertBase {
         }
     }
 
+    private static void removeTcxLap(BaseNavigationFormat targetFormat, ParserResult targetResult) {
+        if (!(targetFormat instanceof TcxFormat))
+            return;
+
+        Set<BaseRoute> remove = new HashSet<>();
+        for(BaseRoute route : targetResult.getAllRoutes()) {
+            Wgs84Position first = (Wgs84Position) route.getPosition(0);
+            if(first.getOrigin().getClass().getName().contains("CourseLap"))
+                remove.add(route);
+        }
+
+        // remove 2 element <Lap>s with start and end from TcxFormat
+        targetResult.getAllRoutes().removeAll(remove);
+    }
+
     @SuppressWarnings("unchecked")
     private static void convertSingleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, BaseRoute sourceRoute) throws IOException {
         NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
@@ -91,6 +109,8 @@ public abstract class ConvertBase {
             assertEquals(targetFormat.getClass(), targetResult.getFormat().getClass());
             assertEquals(sourceFormat.getName(), sourceResult.getFormat().getName());
             assertEquals(targetFormat.getName(), targetResult.getFormat().getName());
+
+            removeTcxLap(targetFormat, targetResult);
 
             compareRouteMetaData(sourceRoute, targetResult.getTheRoute());
             comparePositions(sourceRoute, sourceFormat, targetResult.getTheRoute(), targetFormat, targetResult.getAllRoutes().size() > 0);
@@ -130,6 +150,8 @@ public abstract class ConvertBase {
             assertEquals(targetFormat.getClass(), targetResult.getFormat().getClass());
             assertEquals(sourceFormat.getName(), sourceResult.getFormat().getName());
             assertEquals(targetFormat.getName(), targetResult.getFormat().getName());
+
+            removeTcxLap(targetFormat, targetResult);
 
             compareRouteMetaData(sourceResult.getTheRoute(), targetResult.getTheRoute());
 

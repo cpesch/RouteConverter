@@ -24,6 +24,7 @@ import slash.navigation.base.GarbleNavigationFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.kml.binding21.KmlType;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
@@ -46,7 +47,7 @@ public class GarbleKml21LittleEndianFormat extends Kml21Format implements Garble
         return false;
     }
 
-    public void read(InputStream source, ParserContext<KmlRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KmlRoute> context) throws IOException {
         try (InputStreamReader reader = new InputStreamReader(source, StandardCharsets.UTF_16LE)) {
             KmlType kmlType = unmarshal21(reader);
             process(kmlType, context);

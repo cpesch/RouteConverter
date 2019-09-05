@@ -106,7 +106,7 @@ public class GarbleNavilinkFormat extends NavilinkFormat implements GarbleNaviga
         }
     }
 
-    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         byte[] record = new byte[SBP_RECORD_LENGTH];
         ByteBuffer sbpRecordByteBuffer = ByteBuffer.wrap(record);
         sbpRecordByteBuffer.order(ByteOrder.LITTLE_ENDIAN);

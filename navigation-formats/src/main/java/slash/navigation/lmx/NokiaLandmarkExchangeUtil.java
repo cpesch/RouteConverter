@@ -48,12 +48,12 @@ public class NokiaLandmarkExchangeUtil {
     }
 
 
-    public static Lmx unmarshal(InputStream in) throws JAXBException {
+    public static Lmx unmarshal(InputStream in) throws IOException {
         Lmx result;
         try {
             result = (Lmx) newUnmarshaller().unmarshal(in);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }

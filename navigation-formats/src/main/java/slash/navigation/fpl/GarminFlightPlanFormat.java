@@ -196,7 +196,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return new GarminFlightPlanRoute(flightPlan.getRoute().getRouteName(), asDescription(flightPlan.getRoute().getRouteDescription()), positions);
     }
 
-    public void read(InputStream source, ParserContext<GarminFlightPlanRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GarminFlightPlanRoute> context) throws IOException {
         FlightPlan flightPlan = unmarshal(source);
         context.appendRoute(process(flightPlan));
     }

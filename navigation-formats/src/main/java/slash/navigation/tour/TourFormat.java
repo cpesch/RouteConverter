@@ -88,7 +88,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
         return new TourRoute(name, (List<TourPosition>) positions);
     }
 
-    public void read(InputStream source, ParserContext<TourRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<TourRoute> context) throws IOException {
         read(source, UTF8_ENCODING, context);
     }
 

@@ -87,12 +87,12 @@ class ViaMichelinUtil {
         return xmlReader;
     }
 
-    public static PoiList unmarshal(Reader reader) throws JAXBException {
+    public static PoiList unmarshal(Reader reader) throws IOException {
         PoiList result;
         try {
             result = (PoiList) newUnmarshaller().unmarshal(new SAXSource(createXMLReader(), new InputSource(reader)));
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }

@@ -56,7 +56,7 @@ public class Kml20Format extends KmlFormat {
         return "Google Earth 3 (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, ParserContext<KmlRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<KmlRoute> context) throws IOException {
         Object o = unmarshal20(source);
         if (o instanceof Kml) {
             Kml kml = (Kml) o;

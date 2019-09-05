@@ -35,7 +35,7 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
 public abstract class BaseUrlFormat extends SimpleFormat<Wgs84Route> {
     private static final int READ_BUFFER_SIZE = 1024 * 1024;
 
-    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         // used to be a UTF-8 then ISO-8859-1 fallback style
         read(source, UTF8_ENCODING, context);
     }

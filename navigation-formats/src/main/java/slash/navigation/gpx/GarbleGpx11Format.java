@@ -24,6 +24,7 @@ import slash.navigation.base.GarbleNavigationFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.gpx.binding11.GpxType;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -45,7 +46,7 @@ public class GarbleGpx11Format extends Gpx11Format implements GarbleNavigationFo
         return false;
     }
 
-    public void read(InputStream source, ParserContext<GpxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GpxRoute> context) throws IOException {
         try (InputStreamReader reader = new InputStreamReader(source)) {
             GpxType gpxType = unmarshal11(reader);
             process(gpxType, context);

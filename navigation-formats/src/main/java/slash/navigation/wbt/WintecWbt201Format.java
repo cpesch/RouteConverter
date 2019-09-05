@@ -87,7 +87,7 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
     protected abstract List<Wgs84Route> internalRead(ByteBuffer buffer);
 
-    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         byte[] header = new byte[getHeaderSize()];
         if (source.read(header) == getHeaderSize()) {
 

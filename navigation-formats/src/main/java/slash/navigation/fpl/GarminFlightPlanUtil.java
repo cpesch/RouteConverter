@@ -47,12 +47,12 @@ class GarminFlightPlanUtil {
     }
 
 
-    public static FlightPlan unmarshal(InputStream in) throws JAXBException {
+    public static FlightPlan unmarshal(InputStream in) throws IOException {
         FlightPlan result;
         try {
             result = (FlightPlan) newUnmarshaller().unmarshal(in);
-        } catch (ClassCastException e) {
-            throw new JAXBException("Parse error: " + e, e);
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
         }
         return result;
     }

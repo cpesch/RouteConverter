@@ -148,7 +148,7 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
         return lmx;
     }
 
-    public void read(InputStream source, ParserContext<NokiaLandmarkExchangeRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<NokiaLandmarkExchangeRoute> context) throws IOException {
         Lmx lmx = unmarshal(source);
         context.appendRoute(process(lmx));
     }

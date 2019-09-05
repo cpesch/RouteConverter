@@ -33,7 +33,7 @@ import static slash.navigation.base.RouteComments.parseDescription;
  * @author Christian Pesch
  */
 
-public class Wgs84Position extends BaseNavigationPosition {
+public class Wgs84Position extends BaseNavigationPosition implements ExtendedSensorNavigationPosition {
     protected Double longitude, latitude, heading, pressure, temperature, hdop, vdop, pdop;
     protected String description;
     protected Integer satellites;

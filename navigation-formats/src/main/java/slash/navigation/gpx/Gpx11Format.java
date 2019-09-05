@@ -68,7 +68,7 @@ public class Gpx11Format extends GpxFormat {
         context.appendRoutes(extractTracks(gpxType));
     }
 
-    public void read(InputStream source, ParserContext<GpxRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<GpxRoute> context) throws IOException {
         GpxType gpxType = unmarshal11(source);
         process(gpxType, context);
     }

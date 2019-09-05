@@ -93,7 +93,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         if (isValidHeader(source)) {
             int available = source.available();
             ByteBuffer body = allocate(available);

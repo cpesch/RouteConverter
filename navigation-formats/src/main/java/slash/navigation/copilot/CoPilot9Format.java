@@ -42,7 +42,7 @@ public class CoPilot9Format extends CoPilotFormat {
         return "CoPilot 9 (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, ParserContext<Wgs84Route> context) throws Exception {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         read(source, UTF16LE_ENCODING, context);
     }
 

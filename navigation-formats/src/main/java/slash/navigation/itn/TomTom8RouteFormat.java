@@ -44,7 +44,7 @@ public class TomTom8RouteFormat extends TomTomRouteFormat {
         return false;
     }
 
-    public void read(InputStream source, ParserContext<TomTomRoute> context) throws Exception {
+    public void read(InputStream source, ParserContext<TomTomRoute> context) throws IOException {
         read(source, UTF8_ENCODING, context);
     }
 
