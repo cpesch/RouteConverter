@@ -24,8 +24,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static slash.common.system.Platform.isCurrentAtLeastMinimumVersion;
-import static slash.common.system.Platform.isJavaLaterThan;
+import static slash.common.system.Platform.*;
 
 public class PlatformTest {
     @Test
@@ -59,6 +58,7 @@ public class PlatformTest {
         assertTrue(isJavaLaterThan("1.8.0", 8));
         assertFalse(isJavaLaterThan("1.8.0", 9));
         assertFalse(isJavaLaterThan("1.8.0", 10));
+        assertFalse(isJavaLaterThan("1.8.0", 11));
 
         assertTrue(isJavaLaterThan("9", 8));
         assertTrue(isJavaLaterThan("9", 9));
@@ -72,5 +72,21 @@ public class PlatformTest {
         assertTrue(isJavaLaterThan("11", 10));
         assertTrue(isJavaLaterThan("11.0.1", 10));
         assertTrue(isJavaLaterThan("11", 11));
+    }
+
+    @Test
+    public void testHasJavaFX() {
+        assertFalse(hasJavaFX("Oracle", "1.7.0"));
+        assertTrue(hasJavaFX("Oracle", "1.8.0"));
+        assertFalse(hasJavaFX("OpenJDK", "1.8.0"));
+        assertTrue(hasJavaFX("Oracle", "9"));
+        assertFalse(hasJavaFX("OpenJDK", "9"));
+        assertTrue(hasJavaFX("Oracle", "10"));
+        assertFalse(hasJavaFX("OpenJDK", "10"));
+        assertTrue(hasJavaFX("Oracle", "10.0.1"));
+        assertFalse(hasJavaFX("OpenJDK", "10.0.1"));
+        assertFalse(hasJavaFX("Oracle", "11"));
+        assertFalse(hasJavaFX("Oracle", "11.0.1"));
+        assertFalse(hasJavaFX("Oracle", "12"));
     }
 }
