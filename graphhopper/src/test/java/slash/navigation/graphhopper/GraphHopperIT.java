@@ -39,10 +39,10 @@ import java.io.IOException;
 import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
 public class GraphHopperIT {
     private static final NavigationPosition FROM = new SimpleNavigationPosition(10.18587, 53.40451);
@@ -86,18 +86,18 @@ public class GraphHopperIT {
     @Test
     public void testGetRouteBetweenByCar() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Car"));
-        assertEquals(173, result.getPositions().size());
-        assertEquals(13631.6, result.getDistanceAndTime().getDistance(), 5.0);
+        assertEquals(Valid, result.getValidity());
+        assertEquals(223, result.getPositions().size());
+        assertEquals(13605.6, result.getDistanceAndTime().getDistance(), 5.0);
         assertEquals(1062.0, result.getDistanceAndTime().getTime(), 100);
-        assertTrue(result.isValid());
     }
 
     @Test
     public void testGetRouteBetweenByBike() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Bike"));
-        assertEquals(119, result.getPositions().size());
-        assertEquals(13658.4, result.getDistanceAndTime().getDistance(), 5.0);
-        assertEquals(2752.0, result.getDistanceAndTime().getTime(), 100);
-        assertTrue(result.isValid());
+        assertEquals(Valid, result.getValidity());
+        assertEquals(162, result.getPositions().size());
+        assertEquals(13636.4, result.getDistanceAndTime().getDistance(), 5.0);
+        assertEquals(2920.0, result.getDistanceAndTime().getTime(), 100);
     }
 }

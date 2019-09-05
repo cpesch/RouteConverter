@@ -28,9 +28,13 @@ import slash.navigation.datasources.Downloadable;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -56,18 +60,24 @@ public class DownloadableFinderIT {
         recursiveDelete(temporaryDirectory);
     }
 
+    private List<String> extractUris(List<Downloadable> downloadables) {
+        return downloadables.stream()
+                .map(Downloadable::getUri)
+                .collect(toList());
+    }
+
     @Test
     public void testSelectTheBoundingBox() {
         DataSource dataSource = mock(DataSource.class);
         slash.navigation.datasources.File small = mock(slash.navigation.datasources.File.class);
-        when(small.getBoundingBox()).thenReturn(new BoundingBox(0.2, 0.2, -0.2, -0.2));
+        when(small.getBoundingBox()).thenReturn(new BoundingBox(0.4, 0.2, -0.2, -0.2));
         when(small.getUri()).thenReturn(SMALL_URI);
         when(dataSource.getFiles()).thenReturn(singletonList(small));
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
         finder.setDataSource(dataSource);
 
-        Downloadable downloadable = finder.getDownloadableFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
-        assertEquals(SMALL_URI, downloadable.getUri());
+        Collection<Downloadable> downloadables = finder.getDownloadablesFor(singletonList(new BoundingBox(0.1, 0.1, -0.1, -0.1)));
+        assertEquals(singletonList(SMALL_URI), extractUris(new ArrayList<>(downloadables)));
     }
 
     @Test
@@ -82,22 +92,22 @@ public class DownloadableFinderIT {
         slash.navigation.datasources.File large = mock(slash.navigation.datasources.File.class);
         when(large.getBoundingBox()).thenReturn(new BoundingBox(2.0, 2.0, -2.0, -2.0));
         when(large.getUri()).thenReturn(LARGE_URI);
-        when(dataSource.getFiles()).thenReturn(asList(medium, small, large));
+        when(dataSource.getFiles()).thenReturn(asList(large, medium, small));
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
         finder.setDataSource(dataSource);
 
-        Downloadable downloadable = finder.getDownloadableFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
-        assertEquals(SMALL_URI, downloadable.getUri());
+        List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
+        assertEquals(asList(SMALL_URI, MEDIUM_URI, LARGE_URI), extractUris(downloadables));
     }
 
     @Test
     public void testSelectLargeBoundingBoxThatExists() throws IOException {
         DataSource dataSource = mock(DataSource.class);
         slash.navigation.datasources.File small = mock(slash.navigation.datasources.File.class);
-        when(small.getBoundingBox()).thenReturn(new BoundingBox(0.2, 0.2, -0.2, -0.2));
+        when(small.getBoundingBox()).thenReturn(new BoundingBox(0.4, 0.2, -0.2, -0.2));
         when(small.getUri()).thenReturn(SMALL_URI);
         slash.navigation.datasources.File medium = mock(slash.navigation.datasources.File.class);
-        when(medium.getBoundingBox()).thenReturn(new BoundingBox(1.0, 1.0, -1.0, -1.0));
+        when(medium.getBoundingBox()).thenReturn(new BoundingBox(2.0, 1.0, -1.0, -1.0));
         when(medium.getUri()).thenReturn(MEDIUM_URI);
         slash.navigation.datasources.File large = mock(slash.navigation.datasources.File.class);
         when(large.getBoundingBox()).thenReturn(new BoundingBox(3.0, 3.0, -2.0, -2.0));
@@ -107,8 +117,8 @@ public class DownloadableFinderIT {
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
         finder.setDataSource(dataSource);
 
-        Downloadable downloadable = finder.getDownloadableFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
-        assertEquals(LARGE_URI, downloadable.getUri());
+        List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
+        assertEquals(asList(LARGE_URI, SMALL_URI, MEDIUM_URI), extractUris(downloadables));
     }
 
     @Test
@@ -125,7 +135,7 @@ public class DownloadableFinderIT {
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
         finder.setDataSource(dataSource);
 
-        Downloadable downloadable = finder.getDownloadableFor(new BoundingBox(0.2, 0.2, -0.2, -0.2));
-        assertEquals(MEDIUM_URI, downloadable.getUri());
+        List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.2, 0.2, -0.2, -0.2));
+        assertEquals(singletonList(MEDIUM_URI), extractUris(downloadables));
     }
 }

@@ -31,4 +31,6 @@ public interface DownloadFuture {
     boolean isRequiresProcessing();
     void download();
     void process();
+    boolean hasNextDownload();
+    void nextDownload();
 }

@@ -24,13 +24,14 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.File;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Logger;
 
-import static java.lang.Math.abs;
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
@@ -58,12 +59,8 @@ public class DownloadableFinder {
         return file != null && new java.io.File(directory, file.getUri()).exists();
     }
 
-    public Downloadable getDownloadableFor(BoundingBox routeBoundingBox) {
-        File coveringFile = null;
-        BoundingBox coveringBoundingBox = null;
-        Double closestDistanceOfCenters = null;
-        File centerFile = null;
-
+    public List<Downloadable> getDownloadablesFor(BoundingBox routeBoundingBox) {
+        List<DownloadableDescriptor> descriptors = new ArrayList<>();
         for (File file : dataSource.getFiles()) {
             BoundingBox fileBoundingBox = file.getBoundingBox();
             if (fileBoundingBox == null) {
@@ -73,34 +70,89 @@ public class DownloadableFinder {
             if (!fileBoundingBox.contains(routeBoundingBox))
                 continue;
 
-            // search for file which center has closest distance to the center of the route
             Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
                     routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
-            if (closestDistanceOfCenters == null ||
-                    distance < closestDistanceOfCenters ||
-                    abs(distance - closestDistanceOfCenters) < 5.0 && centerFile.getBoundingBox().contains(fileBoundingBox)) {
-                centerFile = file;
-                closestDistanceOfCenters = distance;
-                log.info(format("File %s has closest distance %f of centers", centerFile, closestDistanceOfCenters));
-            }
-
-            // search for existing largest file that covers the route
-            if (existsFile(file) && (coveringBoundingBox == null || fileBoundingBox.contains(coveringBoundingBox))) {
-                coveringFile = file;
-                coveringBoundingBox = fileBoundingBox;
-                log.info(format("File %s covers route with larger bounding box %s", coveringFile, fileBoundingBox.contains(coveringBoundingBox)));
-            }
+            boolean existsFile = existsFile(file);
+            descriptors.add(new DownloadableDescriptor(file, distance, fileBoundingBox, existsFile));
         }
+        descriptors.sort(null);
 
-        log.info(format("File %s (exists %b) covers route, file %s (exists %b) has closest distance %f of centers", coveringFile, existsFile(coveringFile), centerFile, existsFile(centerFile), closestDistanceOfCenters));
-        // choose the closest distance of centers but prefer covering existing files if closest distance means download
-        return existsFile(centerFile) || !existsFile(coveringFile) ? centerFile : coveringFile;
+        List<Downloadable> result = descriptors.stream()
+                .filter(DownloadableDescriptor::hasValidBoundingBox)
+                .map(DownloadableDescriptor::getDownloadable)
+                .collect(toList());
+        // if there is no other choice use the Downloadables with the invalid bounding boxes
+        if(result.size() == 0)
+            result = descriptors.stream()
+                    .map(DownloadableDescriptor::getDownloadable)
+                    .collect(toList());
+
+        log.info(format("Found %d downloadables for %s: %s", descriptors.size(), routeBoundingBox, descriptors));
+        return result;
     }
 
-    public Collection<Downloadable> getDownloadableFor(List<BoundingBox> boundingBoxes) {
+    public Collection<Downloadable> getDownloadablesFor(List<BoundingBox> boundingBoxes) {
         Collection<Downloadable> result = new HashSet<>();
         for (BoundingBox boundingBox : boundingBoxes)
-            result.add(getDownloadableFor(boundingBox));
+            result.addAll(getDownloadablesFor(boundingBox));
         return result;
+    }
+
+    private static class DownloadableDescriptor implements Comparable<DownloadableDescriptor> {
+        private final Downloadable downloadable;
+        private final Double distanceToCenter;
+        private final BoundingBox fileBoundingBox;
+        private final boolean existsFile;
+
+        private DownloadableDescriptor(Downloadable downloadable, Double distanceToCenter, BoundingBox fileBoundingBox, boolean existsFile) {
+            this.downloadable = downloadable;
+            this.distanceToCenter = distanceToCenter;
+            this.fileBoundingBox = fileBoundingBox;
+            this.existsFile = existsFile;
+        }
+
+        public Downloadable getDownloadable() {
+            return downloadable;
+        }
+
+        public boolean hasValidBoundingBox() {
+            /* basically it's a good idea to choose the Downloadable with the smallest enclosing bounding box
+               unfortunately, files like https://download.geofabrik.de/north-america/us/alaska-latest.osm.pbf
+               claim too large bounding boxes */
+            return !(fileBoundingBox.getNorthEast().getLongitude() >= 179.9999 ||
+                    fileBoundingBox.getSouthWest().getLongitude() <= -179.9999);
+        }
+
+        /*  Compare two Downloadables by:
+            A < B if A exists and B not
+            B < A if B exists and A not
+            if (both exist or don't exist)
+                A < B if B.contains(A)
+                B < A if A.contains(B)
+                if (neither contain each other)
+                    A compares to B by DistanceToCenter of Route
+        */
+        public int compareTo(DownloadableDescriptor other) {
+            if(existsFile && !other.existsFile)
+                return -1;
+            if(!existsFile && other.existsFile)
+                return 1;
+
+            if (fileBoundingBox != null && other.fileBoundingBox != null) {
+                if (fileBoundingBox.contains(other.fileBoundingBox))
+                    return 2;
+                else if (other.fileBoundingBox.contains(fileBoundingBox))
+                    return -2;
+            }
+
+            return distanceToCenter.compareTo(other.distanceToCenter);
+        }
+
+        public String toString() {
+            return getClass().getSimpleName() + "[downloadable=" + downloadable +
+                    ", distanceToCenter=" + distanceToCenter +
+                    ", fileBoundingBox=" + fileBoundingBox +
+                    ", existsFile=" + existsFile + "]";
+        }
     }
 }
