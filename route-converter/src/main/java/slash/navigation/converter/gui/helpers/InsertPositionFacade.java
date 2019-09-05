@@ -44,6 +44,7 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.gui.helpers.WindowHelper.getFrame;
+import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
 /**
  * Helps to insert positions.
@@ -117,7 +118,7 @@ public class InsertPositionFacade {
                 continue;
 
             RoutingResult result = routingService.getRouteBetween(selectedPositions.get(i), selectedPositions.get(i + 1), travelMode);
-            if (result.isValid()) {
+            if (result.getValidity().equals(Valid)) {
                 final List<BaseNavigationPosition> positions = new ArrayList<>();
                 for (NavigationPosition position : result.getPositions()) {
                     positions.add(positionsModel.getRoute().createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, null));

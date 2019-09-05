@@ -224,7 +224,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         updateChecker.implicitCheck(getFrame());
     }
 
-    private void checkJavaPrequisites() {
+    protected void checkJavaPrequisites() {
         String currentVersion = System.getProperty("java.version");
         if (!isCurrentAtLeastMinimumVersion(currentVersion, "1.7.0_40")) {
             showMessageDialog(null, "Java " + currentVersion + " does not support JavaFX. Please install Java 8 or 10.", "RouteConverter", ERROR_MESSAGE);

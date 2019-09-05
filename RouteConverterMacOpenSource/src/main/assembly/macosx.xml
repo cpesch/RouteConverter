@@ -5,6 +5,15 @@
     <formats>
         <format>zip</format>
     </formats>
+    <fileSets>
+        <fileSet>
+            <directory>target/runtime/</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <outputDirectory>/Contents/</outputDirectory>
+        </fileSet>
+    </fileSets>
     <files>
         <file>
             <source>src/main/app-resources/Java/RouteConverterOpenSource.cfg</source>
@@ -13,16 +22,12 @@
             <lineEnding>lf</lineEnding>
         </file>
         <file>
-            <source>src/main/app-resources/Java/RouteConverterOpenSourceStart.jar</source>
-            <outputDirectory>/Contents/Java/</outputDirectory>
-        </file>
-        <file>
             <source>src/main/app-resources/MacOS/RouteConverterOpenSource</source>
             <outputDirectory>/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/app-resources/MacOS/libpackager.dylib</source>
+            <source>src/main/app-resources/MacOS/libapplauncher.dylib</source>
             <outputDirectory>/Contents/MacOS/</outputDirectory>
         </file>
         <file>

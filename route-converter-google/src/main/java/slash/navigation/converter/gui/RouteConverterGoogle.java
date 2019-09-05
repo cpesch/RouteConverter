@@ -32,9 +32,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.MessageFormat;
 
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.showInputDialog;
+import static javax.swing.JOptionPane.*;
+import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static slash.common.io.Transfer.trim;
+import static slash.common.system.Platform.*;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForGoogleAPIKey;
 
 /**
@@ -54,6 +55,21 @@ public class RouteConverterGoogle extends RouteConverter {
 
     public String getEditionId() {
         return "online";
+    }
+
+    protected void checkJavaPrequisites() {
+        super.checkJavaPrequisites();
+
+        String currentVersion = System.getProperty("java.version");
+        if (!hasJavaFX()) {
+            showMessageDialog(null, "Java " + currentVersion + " does not support JavaFX. Please install a Java 8 from Oracle. Avoid OpenJDK.", "RouteConverter", ERROR_MESSAGE);
+            System.exit(8);
+        }
+
+        if (isWindows() && (currentVersion.equals("1.8.0_161") || currentVersion.equals("1.8.0_162") || currentVersion.equals("1.8.0_171") || currentVersion.equals("1.8.0_172"))) {
+            showMessageDialog(null, "Java " + currentVersion + " contains a fatal bug in JavaFX on Windows. Please install Java 8 Update 181 or later.", "RouteConverter", ERROR_MESSAGE);
+            System.exit(9);
+        }
     }
 
     protected void checkForGoogleMapsAPIKey() {

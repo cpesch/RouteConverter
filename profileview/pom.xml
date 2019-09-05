@@ -53,6 +53,7 @@
             <groupId>org.jfree</groupId>
             <artifactId>jfreechart</artifactId>
             <version>1.5.0</version>
+            <classifier>stripped</classifier>
         </dependency>
     </dependencies>
 </project>
