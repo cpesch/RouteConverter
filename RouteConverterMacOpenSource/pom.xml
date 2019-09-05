@@ -104,7 +104,7 @@
                                     <version>14-jpackage-8</version>
                                     <type>zip</type>
                                     <classifier>osx</classifier>
-                                    <outputDirectory>${project.basedir}/target/runtime</outputDirectory>
+                                    <outputDirectory>${project.basedir}/target/Runtime</outputDirectory>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>

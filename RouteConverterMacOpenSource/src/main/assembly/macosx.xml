@@ -7,7 +7,7 @@
     </formats>
     <fileSets>
         <fileSet>
-            <directory>target/runtime/</directory>
+            <directory>target/Runtime/</directory>
             <includes>
                 <include>**/*</include>
             </includes>
