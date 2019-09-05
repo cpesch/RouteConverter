@@ -35,9 +35,9 @@ public class PhotonServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
-                new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
-                new SimpleNavigationPosition(10.200785058788268, 50.0012567, null, "Pfarrheim, 97506 Grafenrheinfeld, Bavaria, Germany (building)"),
-                new SimpleNavigationPosition(10.2004901, 50.0014652, null, "Kindertagesst\u00e4tte St. Joseph, 97506 Grafenrheinfeld, Bavaria, Germany (amenity)")
+                new SimpleNavigationPosition(10.1994416, 50.0002652, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
+                new SimpleNavigationPosition(10.2004901, 50.0014652, null, "Kindertagesst\u00e4tte St. Joseph, 97506 Grafenrheinfeld, Bavaria, Germany (amenity)"),
+                new SimpleNavigationPosition(10.200785058788268, 50.0012567, null, "Pfarrheim, 97506 Grafenrheinfeld, Bavaria, Germany (building)")
         );
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
@@ -46,7 +46,7 @@ public class PhotonServiceIT {
     @Test
     public void getAddressFor() throws IOException {
         String address1 = service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3));
-        assertTrue(address1.contains("Eschenbach") && address1.contains("Sankt Gallen") && address1.contains("Switzerland"));
+        assertTrue(address1.contains("Mosnang") && address1.contains("Sankt Gallen") && address1.contains("Switzerland"));
         String address2 = service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001));
         assertTrue(address2.contains("Grafenrheinfeld") && address2.contains("Bavaria") && address2.contains("Germany"));
         String address3 = service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428));
@@ -54,10 +54,10 @@ public class PhotonServiceIT {
         assertEquals("Atlas Buoy 0.00E 0.00N", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         String pole1 = service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0));
-        assertTrue(pole1.contains("Pole"));
+        assertTrue(pole1.contains("Pole") || pole1.contains("Skiway"));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
         String pole2 = service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0));
-        assertTrue(pole2.contains("Pole"));
+        assertTrue(pole2.contains("Pole") || pole2.contains("Skiway"));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
 }
