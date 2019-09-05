@@ -48,6 +48,7 @@ import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asLatLong;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
+import static slash.navigation.routing.RoutingResult.Validity.*;
 
 /**
  * Renders a {@link List} of {@link PairWithLayer} for the {@link MapsforgeMapView}.
@@ -126,12 +127,6 @@ public class RouteRenderer {
                 return;
         }
 
-        waitForDownload(service, pairWithLayers);
-        synchronized (notificationMutex) {
-            if(!drawingRoute)
-                return;
-        }
-
         waitForBeelineRendering();
         synchronized (notificationMutex) {
             if(!drawingRoute)
@@ -173,32 +168,15 @@ public class RouteRenderer {
         }
     }
 
-    private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
-        return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
-    }
+    private void waitForDownload(DownloadFuture future) {
+        if (future == null)
+            return;
 
-    private List<LongitudeAndLatitude> asLongitudeAndLatitude(List<PairWithLayer> pairWithLayers) {
-        List<LongitudeAndLatitude> result = new ArrayList<>();
-        for (PairWithLayer pairWithLayer : pairWithLayers) {
-            if(!pairWithLayer.hasCoordinates())
-                continue;
+        if (future.isRequiresDownload())
+            future.download();
 
-            result.add(asLongitudeAndLatitude(pairWithLayer.getFirst()));
-            result.add(asLongitudeAndLatitude(pairWithLayer.getSecond()));
-        }
-        return result;
-    }
-
-    private void waitForDownload(RoutingService service, List<PairWithLayer> pairWithLayers) {
-        if (service.isDownload()) {
-            DownloadFuture future = service.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers));
-            if (future.isRequiresDownload())
-                future.download();
-
-            if (future.isRequiresProcessing())
-                future.process();
-
-        }
+        if (future.isRequiresProcessing())
+            future.process();
     }
 
     private void drawBeeline(List<PairWithLayer> pairsWithLayer) {
@@ -225,18 +203,36 @@ public class RouteRenderer {
         }
     }
 
+    private LongitudeAndLatitude asLongitudeAndLatitude(NavigationPosition position) {
+        return new LongitudeAndLatitude(position.getLongitude(), position.getLatitude());
+    }
+
+    private List<LongitudeAndLatitude> asLongitudeAndLatitude(List<PairWithLayer> pairWithLayers) {
+        List<LongitudeAndLatitude> result = new ArrayList<>();
+        for (PairWithLayer pairWithLayer : pairWithLayers) {
+            if(!pairWithLayer.hasCoordinates())
+                continue;
+
+            result.add(asLongitudeAndLatitude(pairWithLayer.getFirst()));
+            result.add(asLongitudeAndLatitude(pairWithLayer.getSecond()));
+        }
+        return result;
+    }
+
     private void drawRoute(List<PairWithLayer> pairWithLayers) {
         Paint paint = graphicFactory.createPaint();
         paint.setColor(asRGBA(routeColorModel));
         paint.setStrokeWidth(getRouteLineWidth());
         RoutingService routingService = mapViewCallback.getRoutingService();
+
+        DownloadFuture future = routingService.isDownload() ? routingService.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers)) : null;
         for (PairWithLayer pairWithLayer : pairWithLayers) {
             if (!pairWithLayer.hasCoordinates())
                 continue;
 
             // first calculate route, then remove beeline layer then add polyline layer from routing
             Layer layer = pairWithLayer.getLayer();
-            IntermediateRoute intermediateRoute = calculateRoute(routingService, pairWithLayer);
+            IntermediateRoute intermediateRoute = calculateRoute(routingService, future, pairWithLayer);
 
             mapView.removeLayer(layer);
             pairWithLayer.setLayer(null);
@@ -251,15 +247,38 @@ public class RouteRenderer {
         return preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 4);
     }
 
-    private IntermediateRoute calculateRoute(RoutingService routingService, PairWithLayer pairWithLayer) {
+    private IntermediateRoute calculateRoute(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {
         List<LatLong> latLongs = new ArrayList<>();
         latLongs.add(asLatLong(pairWithLayer.getFirst()));
-        RoutingResult result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
-        if (result.isValid())
+
+        RoutingResult result = calculateResult(routingService, future, pairWithLayer);
+        if (result.getValidity().equals(Valid)) {
             // TODO could extract elevation from RoutingResult and set it on first/second if there is no elevation
             latLongs.addAll(asLatLong(result.getPositions()));
+        }
         pairWithLayer.setDistanceAndTime(result.getDistanceAndTime());
         latLongs.add(asLatLong(pairWithLayer.getSecond()));
-        return new IntermediateRoute(latLongs, result.isValid());
+        return new IntermediateRoute(latLongs, result.getValidity().equals(Valid));
+    }
+
+    private RoutingResult calculateResult(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {
+        RoutingResult result = null;
+        while (result == null) {
+            waitForDownload(future);
+            synchronized (notificationMutex) {
+                if (!drawingRoute)
+                    return new RoutingResult(null, null, Invalid);
+            }
+
+            result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
+            if (result.getValidity().equals(PointNotFound)) {
+                if(routingService.isDownload())
+                    if(future.hasNextDownload()) {
+                        future.nextDownload();
+                        result = null;
+                    }
+            }
+        }
+        return result;
     }
 }
