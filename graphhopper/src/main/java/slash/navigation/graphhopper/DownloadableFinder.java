@@ -74,13 +74,14 @@ public class DownloadableFinder {
         }
 
         List<Downloadable> result = descriptors.stream()
-                .sorted()
                 .filter(DownloadableDescriptor::hasValidBoundingBox)
+                .sorted()
                 .map(DownloadableDescriptor::getDownloadable)
                 .collect(toList());
         // if there is no other choice use the Downloadables with the invalid bounding boxes
         if(result.size() == 0)
             result = descriptors.stream()
+                    .sorted()
                     .map(DownloadableDescriptor::getDownloadable)
                     .collect(toList());
 
@@ -88,8 +89,8 @@ public class DownloadableFinder {
         return result;
     }
 
-    public Collection<Downloadable> getDownloadablesFor(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> result = new HashSet<>();
+    public Collection<Downloadable> getDownloadablesFor(Collection<BoundingBox> boundingBoxes) {
+        Set<Downloadable> result = new HashSet<>();
         for (BoundingBox boundingBox : boundingBoxes)
             result.addAll(getDownloadablesFor(boundingBox));
         return result;

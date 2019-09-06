@@ -38,9 +38,7 @@ import slash.navigation.routing.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -286,8 +284,14 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        BoundingBox routeBoundingBox = createBoundingBox(longitudeAndLatitudes);
-        List<Downloadable> downloadables = finder.getDownloadablesFor(routeBoundingBox);
+        Set<BoundingBox> boundingBoxes = new HashSet<>();
+        for (int i = 0; i < longitudeAndLatitudes.size() - 1; i+=2) {
+            LongitudeAndLatitude l1 = longitudeAndLatitudes.get(i);
+            LongitudeAndLatitude l2 = longitudeAndLatitudes.get(i + 1);
+            boundingBoxes.add(createBoundingBox(asList(l1, l2)));
+        }
+
+        Collection<Downloadable> downloadables = finder.getDownloadablesFor(boundingBoxes);
         return new DownloadFutureImpl(downloadables);
     }
 
@@ -295,7 +299,7 @@ public class GraphHopper extends BaseRoutingService {
         private List<Downloadable> downloadables;
         private Downloadable next;
 
-        DownloadFutureImpl(List<Downloadable> downloadables) {
+        DownloadFutureImpl(Collection<Downloadable> downloadables) {
             this.downloadables = new ArrayList<>(downloadables);
             nextDownload();
         }
