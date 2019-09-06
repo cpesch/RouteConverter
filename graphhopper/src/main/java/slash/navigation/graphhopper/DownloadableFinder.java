@@ -24,10 +24,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.File;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -75,9 +72,9 @@ public class DownloadableFinder {
             boolean existsFile = existsFile(file);
             descriptors.add(new DownloadableDescriptor(file, distance, fileBoundingBox, existsFile));
         }
-        descriptors.sort(null);
 
         List<Downloadable> result = descriptors.stream()
+                .sorted()
                 .filter(DownloadableDescriptor::hasValidBoundingBox)
                 .map(DownloadableDescriptor::getDownloadable)
                 .collect(toList());
@@ -87,7 +84,7 @@ public class DownloadableFinder {
                     .map(DownloadableDescriptor::getDownloadable)
                     .collect(toList());
 
-        log.info(format("Found %d downloadables for %s: %s", descriptors.size(), routeBoundingBox, descriptors));
+        log.info(format("Found %d downloadables for %s: %s", result.size(), routeBoundingBox, result));
         return result;
     }
 
