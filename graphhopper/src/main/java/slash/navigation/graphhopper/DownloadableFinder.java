@@ -56,7 +56,7 @@ public class DownloadableFinder {
         return file != null && new java.io.File(directory, file.getUri()).exists();
     }
 
-    public List<Downloadable> getDownloadablesFor(BoundingBox routeBoundingBox) {
+    private List<DownloadableDescriptor> getDownloadDescriptorsFor(BoundingBox routeBoundingBox) {
         List<DownloadableDescriptor> descriptors = new ArrayList<>();
         for (File file : dataSource.getFiles()) {
             BoundingBox fileBoundingBox = file.getBoundingBox();
@@ -73,6 +73,13 @@ public class DownloadableFinder {
             descriptors.add(new DownloadableDescriptor(file, distance, fileBoundingBox, existsFile));
         }
 
+        return descriptors.stream()
+                .filter(DownloadableDescriptor::hasValidBoundingBox)
+                .sorted()
+                .collect(toList());
+    }
+
+    private List<Downloadable> asDownloadables(Collection<DownloadableDescriptor> descriptors) {
         List<Downloadable> result = descriptors.stream()
                 .filter(DownloadableDescriptor::hasValidBoundingBox)
                 .sorted()
@@ -84,15 +91,22 @@ public class DownloadableFinder {
                     .sorted()
                     .map(DownloadableDescriptor::getDownloadable)
                     .collect(toList());
-
-        log.info(format("Found %d downloadables for %s: %s", result.size(), routeBoundingBox, result));
         return result;
     }
 
-    public Collection<Downloadable> getDownloadablesFor(Collection<BoundingBox> boundingBoxes) {
-        Set<Downloadable> result = new HashSet<>();
+    public List<Downloadable> getDownloadablesFor(BoundingBox boundingBox) {
+        List<DownloadableDescriptor> descriptors = getDownloadDescriptorsFor(boundingBox);
+        List<Downloadable> result = asDownloadables(descriptors);
+        log.info(format("Found %d downloadables for bounding box %s: %s", result.size(), boundingBox, result));
+        return result;
+    }
+
+    public List<Downloadable> getDownloadablesFor(Collection<BoundingBox> boundingBoxes) {
+        Set<DownloadableDescriptor> descriptors = new HashSet<>();
         for (BoundingBox boundingBox : boundingBoxes)
-            result.addAll(getDownloadablesFor(boundingBox));
+            descriptors.addAll(getDownloadDescriptorsFor(boundingBox));
+        List<Downloadable> result = asDownloadables(descriptors);
+        log.info(format("Found %d downloadables for %d bounding boxes: %s", result.size(), boundingBoxes.size(), result));
         return result;
     }
 
@@ -144,6 +158,19 @@ public class DownloadableFinder {
             }
 
             return distanceToCenter.compareTo(other.distanceToCenter);
+        }
+
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            DownloadableDescriptor that = (DownloadableDescriptor) o;
+
+            return getDownloadable().equals(that.getDownloadable());
+        }
+
+        public int hashCode() {
+            return getDownloadable().hashCode();
         }
 
         public String toString() {
