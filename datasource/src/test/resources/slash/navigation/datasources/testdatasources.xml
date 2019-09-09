@@ -1,25 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <catalog xmlns="http://api.routeconverter.com/v1/schemas/datasource-catalog">
+    <edition id="ed1" name="edition1" href="http://edition1">
+        <datasource id="id1"/>
+        <datasource id="id2"/>
+    </edition>
+    <edition id="ed2" name="edition2" href="http://edition2">
+        <datasource id="id3"/>
+    </edition>
     <datasource id="id1" name="name1" baseUrl="http://local1/1/" directory="dir1">
         <file uri="x/y/z.data">
-            <checksum contentLength="1" sha1="x"/>
+            <checksum contentLength="1" lastModified="2011-01-01T01:01:01Z" sha1="a"/>
             <fragment key="a">
-                <checksum contentLength="1" sha1="a"/>
+                <checksum contentLength="1" lastModified="2011-01-01T01:01:01Z" sha1="a"/>
             </fragment>
+            <boundingBox>
+                <northEast longitude="1.0" latitude="2.0"/>
+                <southWest longitude="3.0" latitude="4.0"/>
+            </boundingBox>
         </file>
     </datasource>
     <datasource id="id2" name="name2" baseUrl="http://local2/2/" directory="dir2/dir3">
         <file uri="z/y/x.data">
-            <checksum contentLength="2" sha1="z"/>
+            <checksum contentLength="1" lastModified="2011-01-01T01:01:01Z" sha1="a"/>
             <fragment key="c">
-                <checksum contentLength="2" sha1="c"/>
+                <checksum contentLength="1" lastModified="2011-01-01T01:01:01Z" sha1="a"/>
             </fragment>
+            <boundingBox>
+                <northEast longitude="1.0" latitude="2.0"/>
+                <southWest longitude="3.0" latitude="4.0"/>
+            </boundingBox>
         </file>
         <file uri="x/y/z.data">
-            <checksum contentLength="3" sha1="x"/>
+            <checksum contentLength="1" lastModified="2011-01-01T01:01:01Z" sha1="a"/>
             <fragment key="b">
-                <checksum contentLength="31" sha1="b"/>
+                <checksum contentLength="1" lastModified="2011-01-01T01:01:01Z" sha1="a"/>
             </fragment>
+            <boundingBox>
+                <northEast longitude="1.0" latitude="2.0"/>
+                <southWest longitude="3.0" latitude="4.0"/>
+            </boundingBox>
         </file>
     </datasource>
     <datasource id="id3" name="name3" baseUrl="http://local3/3/" directory="dir4"/>

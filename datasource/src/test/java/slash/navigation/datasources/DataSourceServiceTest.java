@@ -21,12 +21,17 @@ package slash.navigation.datasources;
 
 import org.junit.Before;
 import org.junit.Test;
+import slash.common.type.CompactCalendar;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.helpers.DataSourceService;
+import slash.navigation.download.Checksum;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static slash.common.TestCase.calendar;
 
 public class DataSourceServiceTest {
     private DataSourceService service;
@@ -37,7 +42,14 @@ public class DataSourceServiceTest {
         service.load(getClass().getResourceAsStream("testdatasources.xml"));
     }
 
-    private void checkDatasourceType(DataSource dataSource, String id, String name, String baseUrl, String directory) {
+    private void checkEdition(Edition edition, String id, String name, String href, int dataSourceCount) {
+        assertEquals(id, edition.getId());
+        assertEquals(name, edition.getName());
+        assertEquals(href, edition.getHref());
+        assertEquals(dataSourceCount, edition.getDataSources().size());
+    }
+
+    private void checkDatasource(DataSource dataSource, String id, String name, String baseUrl, String directory) {
         assertEquals(id, dataSource.getId());
         assertEquals(name, dataSource.getName());
         assertEquals(baseUrl, dataSource.getBaseUrl());
@@ -60,7 +72,21 @@ public class DataSourceServiceTest {
             Fragment<Downloadable> fragment = getFragment(fragments, key);
             assertNotNull(fragment);
             assertEquals(value, fragment.getKey());
+            checkChecksum(fragment.getLatestChecksum());
         }
+    }
+
+    private void checkChecksum(Checksum checksum) {
+        assertNotNull(checksum);
+        assertEquals(1L, checksum.getContentLength().longValue());
+        assertEquals( calendar(2011, 1, 1, 1, 1, 1), checksum.getLastModified());
+        assertEquals("a", checksum.getSHA1());
+    }
+
+    private void checkBoundingBox(BoundingBox boundingBox) {
+        assertNotNull(boundingBox);
+        assertEquals(new SimpleNavigationPosition(1.0, 2.0), boundingBox.getNorthEast());
+        assertEquals(new SimpleNavigationPosition(3.0, 4.0), boundingBox.getSouthWest());
     }
 
     private File getFile(List<File> files, String uri) {
@@ -77,12 +103,24 @@ public class DataSourceServiceTest {
             String value = keyValues[i + 1];
             File file = getFile(files, key);
             assertNotNull(file);
+            checkChecksum(file.getLatestChecksum());
+            checkBoundingBox(file.getBoundingBox());
             assertEquals(value, file.getLatestChecksum().getSHA1());
         }
     }
 
     @Test
-    public void testBaseUrl() {
+    public void testEditions() {
+        List<Edition> editions = service.getEditions();
+
+        assertEquals(2, editions.size());
+        checkEdition(editions.get(0), "ed1", "edition1", "http://edition1", 2);
+        checkDatasource(editions.get(0).getDataSources().get(1), "id2", null, null, null);
+        checkEdition(editions.get(1), "ed2", "edition2", "http://edition2", 1);
+    }
+
+    @Test
+    public void testDataSource() {
         List<DataSource> dataSources = service.getDataSources();
 
         String baseUrl1 = "http://local1/1/";
@@ -90,9 +128,9 @@ public class DataSourceServiceTest {
         String baseUrl3 = "http://local3/3/";
 
         assertEquals(3, dataSources.size());
-        checkDatasourceType(dataSources.get(0), "id1", "name1", baseUrl1, "dir1");
-        checkDatasourceType(service.getDataSourceByUrlPrefix(baseUrl2), "id2", "name2", baseUrl2, "dir2/dir3");
-        checkDatasourceType(dataSources.get(2), "id3", "name3", baseUrl3, "dir4");
+        checkDatasource(dataSources.get(0), "id1", "name1", baseUrl1, "dir1");
+        checkDatasource(service.getDataSourceByUrlPrefix(baseUrl2), "id2", "name2", baseUrl2, "dir2/dir3");
+        checkDatasource(dataSources.get(2), "id3", "name3", baseUrl3, "dir4");
 
         File file1 = getFile(service.getDataSourceByUrlPrefix(baseUrl1).getFiles(), "x/y/z.data");
         assertNotNull(file1);
@@ -104,8 +142,8 @@ public class DataSourceServiceTest {
         assertNotNull(file3);
         checkFragments(file3.getFragments(), "c", "c");
 
-        checkFiles(service.getDataSourceByUrlPrefix(baseUrl1).getFiles(), "x/y/z.data", "x");
+        checkFiles(service.getDataSourceByUrlPrefix(baseUrl1).getFiles(), "x/y/z.data", "a");
         checkFiles(service.getDataSourceByUrlPrefix(baseUrl3).getFiles());
-        checkFiles(service.getDataSourceByUrlPrefix(baseUrl2).getFiles(), "x/y/z.data", "x", "z/y/x.data", "z");
+        checkFiles(service.getDataSourceByUrlPrefix(baseUrl2).getFiles(), "x/y/z.data", "a", "z/y/x.data", "a");
     }
 }
