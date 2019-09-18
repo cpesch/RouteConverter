@@ -23,8 +23,8 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.PathWrapper;
 import com.graphhopper.reader.osm.GraphHopperOSM;
+import com.graphhopper.routing.util.DefaultFlagEncoderFactory;
 import com.graphhopper.routing.util.EncodingManager;
-import com.graphhopper.routing.util.FlagEncoderFactory;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.exceptions.PointNotFoundException;
 import slash.navigation.common.*;
@@ -242,7 +242,7 @@ public class GraphHopper extends BaseRoutingService {
                 EncodingManager encodingManager = new EncodingManager.
                         Builder(BYTES_FOR_EDGE_FLAGS).
                         setEnableInstructions(false).
-                        addAll(FlagEncoderFactory.DEFAULT, getAvailableTravelModeNames()).
+                        addAll(new DefaultFlagEncoderFactory(), getAvailableTravelModeNames()).
                         build();
                 hopper = new GraphHopperOSM().
                         setOSMFile(file.getAbsolutePath()).
@@ -254,7 +254,7 @@ public class GraphHopper extends BaseRoutingService {
             } catch (IllegalStateException e) {
                 log.warning("Could not initialize GraphHopper: " + e);
 
-                if (e.getMessage().contains("Version of nodes unsupported") || e.getMessage().contains("Encoding does not match")) {
+                if (e.getMessage().contains("Version of edges unsupported")) {
                     log.info("Deleting GraphHopper index " + path);
                     try {
                         recursiveDelete(path);

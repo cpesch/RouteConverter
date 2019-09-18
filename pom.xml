@@ -64,11 +64,11 @@
 
         <alephformatter.version>0.1.0</alephformatter.version>
         <brouter.version>1.5.5</brouter.version>
-        <graphhopper.version>0.12.0</graphhopper.version>
-        <httpclient.version>4.5.9</httpclient.version>
+        <graphhopper.version>0.13.0</graphhopper.version>
+        <httpclient.version>4.5.10</httpclient.version>
         <jackson.version>2.9.9</jackson.version>
         <jaxb.version>2.3.1</jaxb.version>
-        <mapsforge.version>0.11.0</mapsforge.version>
+        <mapsforge.version>0.12.0</mapsforge.version>
         <poi.version>4.1.0</poi.version>
     </properties>
 
