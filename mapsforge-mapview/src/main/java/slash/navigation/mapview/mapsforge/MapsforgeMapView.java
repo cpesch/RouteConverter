@@ -496,13 +496,14 @@ public class MapsforgeMapView extends BaseMapView {
         // No square frame buffer since the device orientation hardly changes
         Parameters.SQUARE_FRAME_BUFFER = false;
 
+        float deviceScaleFactor = getDeviceScaleFactor();
+        DisplayModel.setDeviceScaleFactor(deviceScaleFactor);
+        log.info(format("Map is scaled with factor %f, screen resolution is %d dpi", deviceScaleFactor, Toolkit.getDefaultToolkit().getScreenResolution()));
+
         AwtGraphicMapView mapView = new AwtGraphicMapView();
         new MapViewResizer(mapView, mapView.getModel().mapViewDimension);
         mapView.getMapScaleBar().setVisible(true);
         ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(SINGLE);
-        float deviceScaleFactor = getDeviceScaleFactor();
-        DisplayModel.setDeviceScaleFactor(deviceScaleFactor);
-        log.info(format("Map is scaled with factor %f, screen resolution is %d dpi", deviceScaleFactor, Toolkit.getDefaultToolkit().getScreenResolution()));
         return mapView;
     }
 
