@@ -19,6 +19,7 @@
 */
 package slash.navigation.maps.mapsforge.helpers;
 
+import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.TileMap;
@@ -37,6 +38,7 @@ import static javax.swing.event.TableModelEvent.*;
  */
 
 public class TileServerToTileMapMediator {
+    private static final String THUNDER_FOREST_API_KEY = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
     private final ItemTableModel<TileServer> sourceModel;
     private final ItemTableModel<TileMap> destinationModel;
     private TableModelListener listener;
@@ -71,7 +73,10 @@ public class TileServerToTileMapMediator {
     }
 
     private TileMap convert(TileServer tileServer) {
-        return new TileMap(tileServer.getId(), tileServer.getDescription(), tileServer.isActive(), new TileServerMapSource(tileServer));
+        TileServerMapSource tileSource = new TileServerMapSource(tileServer);
+        if (THUNDER_FOREST_API_KEY != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
+            tileSource.setApiKey(THUNDER_FOREST_API_KEY);
+        return new TileMap(tileServer.getId(), tileServer.getDescription(), tileServer.isActive(), tileSource);
     }
 
     private void handleAdd(int firstRow, int lastRow) {

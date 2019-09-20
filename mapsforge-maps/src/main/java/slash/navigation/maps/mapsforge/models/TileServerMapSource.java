@@ -23,7 +23,6 @@ import net.andreinc.aleph.AlephFormatter;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
-import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.maps.tileserver.TileServer;
 
 import java.net.MalformedURLException;
@@ -40,7 +39,6 @@ import java.util.prefs.Preferences;
 public class TileServerMapSource extends AbstractTileSource {
     private static final Preferences preferences = Preferences.userNodeForPackage(TileServerMapSource.class);
     private static final String PARALLEL_REQUEST_LIMIT_PREFERENCE = "parallelRequestLimit";
-    private static final String THUNDER_FOREST_API_KEY = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
     private final TileServer tileServer;
     private boolean alpha = false;
 
@@ -54,7 +52,7 @@ public class TileServerMapSource extends AbstractTileSource {
     public TileServerMapSource(TileServer tileServer) {
         super(getHostNames(tileServer), 80);
         this.tileServer = tileServer;
-        setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "2.26"));
+        setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "2.27"));
     }
 
     public int getParallelRequestsLimit() {
@@ -86,8 +84,8 @@ public class TileServerMapSource extends AbstractTileSource {
                 .arg("tiley", Integer.toString(tile.tileY))
                 .arg("zoom", Integer.toString(tile.zoomLevel))
                 .fmt();
-        if (THUNDER_FOREST_API_KEY != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
-            url += ("?apikey=" + THUNDER_FOREST_API_KEY);
+        if(getApiKey() != null)
+            url += ("?apikey=" + getApiKey());
         return new URL(url);
     }
 }
