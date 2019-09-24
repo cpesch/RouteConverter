@@ -485,7 +485,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     protected float getDeviceScaleFactor() {
-        return preferences.getInt(DEVICE_SCALE_FACTOR, 96) / 96.0f;
+        return preferences.getInt(DEVICE_SCALE_FACTOR, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0f;
     }
 
     private AwtGraphicMapView createMapView() {
