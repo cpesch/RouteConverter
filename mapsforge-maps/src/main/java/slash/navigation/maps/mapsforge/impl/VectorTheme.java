@@ -32,7 +32,7 @@ public class VectorTheme extends LocaleResourceImpl implements LocalTheme {
     private final XmlRenderTheme xmlRenderTheme;
 
     public VectorTheme(String description, String url, XmlRenderTheme xmlRenderTheme) {
-        super(description, url);
+        super(description, url, null);
         this.xmlRenderTheme = xmlRenderTheme;
     }
 

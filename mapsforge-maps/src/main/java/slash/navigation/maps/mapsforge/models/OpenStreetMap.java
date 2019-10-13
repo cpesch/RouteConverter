@@ -23,6 +23,7 @@ import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.TileMap;
 
 import static org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik.INSTANCE;
+import static slash.navigation.maps.tileserver.TileServerMapManager.retrieveCopyrightText;
 
 /**
  * Default {@link LocalMap} to display a map in the Opensource Edition without any downloads.
@@ -34,7 +35,7 @@ public class OpenStreetMap extends TileMap {
     public static final String OPENSTREETMAP_URL = "http://www.openstreetmap.org/";
 
     public OpenStreetMap() {
-        super("OpenStreetMap Default Map", OPENSTREETMAP_URL, true, INSTANCE);
+        super("OpenStreetMap Default Map", OPENSTREETMAP_URL, true, INSTANCE, retrieveCopyrightText("OpenStreetMap"));
         getTileSource().setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "2.26"));
     }
 }

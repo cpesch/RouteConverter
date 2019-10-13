@@ -33,8 +33,8 @@ import java.awt.*;
  */
 
 public class MapListCellRenderer extends DefaultListCellRenderer {
-    public static final LocalMap SEPARATOR_TO_DOWNLOAD_MAP = new VectorMap(null, null, null, null);
-    public static final LocalMap DOWNLOAD_MAP = new VectorMap(null, null, null, null);
+    public static final LocalMap SEPARATOR_TO_DOWNLOAD_MAP = new VectorMap(null, null, null, null, null);
+    public static final LocalMap DOWNLOAD_MAP = new VectorMap(null, null, null, null, null);
     private static final JSeparator SEPARATOR = new JSeparator();
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {

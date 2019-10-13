@@ -61,6 +61,7 @@ import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractBoundingBox;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.removePrefix;
 import static slash.navigation.maps.mapsforge.models.OpenStreetMap.OPENSTREETMAP_URL;
+import static slash.navigation.maps.tileserver.TileServerMapManager.retrieveCopyrightText;
 
 /**
  * Manages {@link LocalMap}s and {@link LocalTheme}s
@@ -223,7 +224,7 @@ public class MapsforgeMapManager {
 
             checkFile(file);
             invokeInAwtEventQueue(() ->
-                availableOfflineMapsModel.addOrUpdateItem(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file))
+                availableOfflineMapsModel.addOrUpdateItem(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file, retrieveCopyrightText("OpenStreetMap")))
             );
         }
 

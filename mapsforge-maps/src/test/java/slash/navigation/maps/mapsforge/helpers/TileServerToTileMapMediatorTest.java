@@ -53,7 +53,7 @@ public class TileServerToTileMapMediatorTest {
         };
         destinationModel.addTableModelListener(l);
 
-        sourceModel.addOrUpdateItem(new TileServer("a", "b", "c", singletonList("d"),false, 0, 0, "e"));
+        sourceModel.addOrUpdateItem(new TileServer("a", "b", "c", singletonList("d"),false, 0, 0, "e", "f"));
 
         while (true) {
             synchronized (found) {

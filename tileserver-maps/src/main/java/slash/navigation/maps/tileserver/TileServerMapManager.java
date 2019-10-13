@@ -26,6 +26,10 @@ import slash.navigation.maps.tileserver.helpers.ItemPreferencesMediator;
 import slash.navigation.maps.tileserver.helpers.TileServerService;
 
 import java.io.File;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Transfer.formatBoolean;
@@ -77,6 +81,24 @@ public class TileServerMapManager {
         availableOverlaysModel.clear();
     }
 
+    private static final Pattern HREF_PATTERN = Pattern.compile(".*href=\"([^\"]+).*");
+
+    public static String extractCopyrightHref(String copyrightText) {
+        Matcher matcher = HREF_PATTERN.matcher(copyrightText);
+        return matcher.matches() ? matcher.group(1) : null;
+    }
+
+    public static String retrieveCopyrightText(String copyrightKey) {
+        ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/maps/tileserver/copyright");
+        try {
+            return bundle.getString(copyrightKey.toLowerCase() + "-copyright-text");
+
+        }
+        catch (MissingResourceException e) {
+            return String.format(bundle.getString("missing-copyright-text"), copyrightKey);
+        }
+    }
+
     public void scanTileServers() {
         tileServerService.initialize();
 
@@ -85,13 +107,13 @@ public class TileServerMapManager {
                 availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
                         type.getUrlPattern(), type.getHost(), formatBoolean(type.getActive()),
                         formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
-                        type.getCopyright()));
+                        type.getCopyright(), retrieveCopyrightText(type.getCopyright())));
 
             for (OverlayServerType type : tileServerService.getOverlays())
                 availableOverlaysModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
                         type.getUrlPattern(), type.getHost(), formatBoolean(type.getActive()),
                         formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
-                        type.getCopyright()));
+                        type.getCopyright(), retrieveCopyrightText(type.getCopyright())));
         });
     }
 }

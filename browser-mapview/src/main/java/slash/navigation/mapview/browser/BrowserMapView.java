@@ -689,8 +689,11 @@ public abstract class BrowserMapView extends BaseMapView {
             if (!tileServer.isActive() || tileServer.getHosts().size() == 0)
                 continue;
 
-            buffer.append("registerCustomMap(\"").append(tileServer.getId()).append("\", \"").
-                    append(tileServer.getCopyright()).append("\", new google.maps.ImageMapType({\n").
+            String copyright = tileServer.getCopyright().toLowerCase();
+            // the Google Maps API sets the copyright notice anyway
+            String copyrightText = copyright.equals("Google") ? "" : tileServer.getCopyrightText();
+            buffer.append("registerCustomMap(\"").append(tileServer.getId()).append("\", '").
+                    append(copyrightText).append("', new google.maps.ImageMapType({\n").
                     append("  getTileUrl: function(coordinates, zoom) {\n").
                     append("    var tileServers = [");
             for (int i = 0, c = tileServer.getHosts().size(); i < c; i++) {
@@ -708,7 +711,7 @@ public abstract class BrowserMapView extends BaseMapView {
             buffer.append("];\n").
                     append("    var tileServer = tileServers[Math.floor(Math.random() * tileServers.length)];\n").
                     append("    var url = \"").append(url).append("\";\n");
-            if (apiKey != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
+            if (apiKey != null && copyright.contains("thunderforest"))
                 buffer.append("    url = url.concat(\"?apikey=").append(apiKey).append("\");\n");
             buffer.append("    return url;\n").
                     append("  },\n").

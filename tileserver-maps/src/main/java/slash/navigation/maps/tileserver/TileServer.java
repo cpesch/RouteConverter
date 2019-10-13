@@ -40,9 +40,10 @@ public class TileServer implements Item {
     private final int minZoom;
     private final int maxZoom;
     private final String copyright;
+    private final String copyrightText;
 
     public TileServer(String id, String description, String urlPattern, List<String> hosts,
-                      boolean active, int minZoom, int maxZoom, String copyright) {
+                      boolean active, int minZoom, int maxZoom, String copyright, String copyrightText) {
         this.id = id;
         this.description = description;
         this.urlPattern = urlPattern;
@@ -51,6 +52,7 @@ public class TileServer implements Item {
         this.minZoom = minZoom;
         this.maxZoom = maxZoom;
         this.copyright = copyright;
+        this.copyrightText = copyrightText;
     }
 
     public String getId() {
@@ -87,5 +89,9 @@ public class TileServer implements Item {
 
     public String getCopyright() {
         return copyright;
+    }
+
+    public String getCopyrightText() {
+        return copyrightText;
     }
 }

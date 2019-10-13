@@ -35,8 +35,8 @@ public class VectorMap extends LocaleResourceImpl implements LocalMap {
     private final File file;
     private final BoundingBox boundingBox;
 
-    public VectorMap(String description, String url, BoundingBox boundingBox, File file) {
-        super(description, url);
+    public VectorMap(String description, String url, BoundingBox boundingBox, File file, String copyrightText) {
+        super(description, url, copyrightText);
         this.boundingBox = boundingBox;
         this.file = file;
     }

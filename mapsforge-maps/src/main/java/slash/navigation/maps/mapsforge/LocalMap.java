@@ -39,4 +39,5 @@ public interface LocalMap extends LocalResource {
     File getFile();
     AbstractTileSource getTileSource();
     BoundingBox getBoundingBox();
+    String getCopyrightText();
 }

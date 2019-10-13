@@ -30,10 +30,12 @@ import slash.navigation.maps.mapsforge.LocalResource;
 abstract class LocaleResourceImpl implements LocalResource {
     private final String description;
     private final String url;
+    private final String copyrightText;
 
-    public LocaleResourceImpl(String description, String url) {
+    public LocaleResourceImpl(String description, String url, String copyrightText) {
         this.description = description;
         this.url = url;
+        this.copyrightText = copyrightText;
     }
 
     public String getDescription() {
@@ -42,6 +44,10 @@ abstract class LocaleResourceImpl implements LocalResource {
 
     public String getUrl() {
         return url;
+    }
+
+    public String getCopyrightText() {
+        return copyrightText;
     }
 
     public String toString() {

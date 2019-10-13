@@ -36,10 +36,10 @@ public class TileMap extends LocaleResourceImpl implements LocalMap {
     private static final Preferences preferences = Preferences.userNodeForPackage(TileMap.class);
     private static final String TILE_MAP_ACTIVE_PREFERENCE = "tileMapActive";
     private final AbstractTileSource tileSource;
-    private boolean active;
+    private final boolean active;
 
-    public TileMap(String description, String url, boolean active, AbstractTileSource tileSource) {
-        super(description, url);
+    public TileMap(String description, String url, boolean active, AbstractTileSource tileSource, String copyrightText) {
+        super(description, url, copyrightText);
         this.tileSource = tileSource;
         this.active = active;
     }
