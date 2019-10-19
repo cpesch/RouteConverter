@@ -483,6 +483,7 @@
         <module>TimeAlbumProLinux</module>
         <module>TimeAlbumProMac</module>
         <module>TimeAlbumProWindows</module>
+        <module>vtm-mapview</module>
         <module>download-tools</module>
         <module>proxy-tools</module>
         <module>route-converter-tools</module>
