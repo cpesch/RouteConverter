@@ -30,6 +30,7 @@ import java.util.List;
 
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
 import static slash.navigation.gui.events.IgnoreEvent.IGNORE;
+import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
@@ -62,7 +63,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         addListDataListener(new AbstractListDataListener() {
             public void process(ListDataEvent e) {
                 // ignore events following setSelectedRoute()
-                if (IgnoreEvent.isIgnoreEvent(e))
+                if (isIgnoreEvent(e))
                     return;
                 setModified(true);
             }
@@ -76,7 +77,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
 
             public void contentsChanged(ListDataEvent e) {
                 // ignore events following setRoute()
-                if (IgnoreEvent.isIgnoreEvent(e))
+                if (isIgnoreEvent(e))
                     return;
                 if (formatAndRoutes.getFormat().isWritingRouteCharacteristics())
                     setModified(true);
