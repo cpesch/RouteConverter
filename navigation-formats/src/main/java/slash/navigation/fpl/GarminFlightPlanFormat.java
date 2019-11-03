@@ -50,7 +50,7 @@ import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
  */
 
 public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlanRoute> {
-    private static final int MAXIMUM_IDENTIFIER_LENGTH = 5;
+    static final int MAXIMUM_IDENTIFIER_LENGTH = 5;
 
     public String getName() {
         return "Garmin Flight Plan (*" + getExtension() + ")";
@@ -81,7 +81,6 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
     private static boolean hasValidIdentifier(String identifier) {
         return hasValidDescription(identifier) && identifier.length() <= MAXIMUM_IDENTIFIER_LENGTH;
-
     }
 
     public static boolean hasValidIdentifier(String identifier, List<GarminFlightPlanPosition> positions) {
