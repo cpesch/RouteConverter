@@ -55,7 +55,7 @@ public class KmlFormatIT {
     }
 
     @Test
-    public void testUnmarshal20() throws IOException, JAXBException {
+    public void testUnmarshal20() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from20.kml");
         Kml kml = unmarshal20(reader);
         assertNotNull(kml);
@@ -63,34 +63,34 @@ public class KmlFormatIT {
         assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
     }
 
-    @Test(expected = JAXBException.class)
+    @Test(expected = IOException.class)
     public void testUnmarshal20TypeError() throws Exception {
         Reader reader = new FileReader(TEST_PATH + "from20.kml");
         unmarshal21(reader);
     }
 
     @Test
-    public void testUnmarshal21() throws IOException, JAXBException {
+    public void testUnmarshal21() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from21.kml");
         slash.navigation.kml.binding21.KmlType kml = unmarshal21(reader);
         assertNotNull(kml);
     }
 
-    @Test(expected = JAXBException.class)
+    @Test(expected = IOException.class)
     public void testUnmarshal21TypeError() throws Exception {
         Reader reader = new FileReader(TEST_PATH + "from21.kml");
         unmarshal20(reader);
     }
 
     @Test
-    public void testUnmarshal22Beta() throws IOException, JAXBException {
+    public void testUnmarshal22Beta() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from22beta.kml");
         slash.navigation.kml.binding22beta.KmlType kml = unmarshal22Beta(reader);
         assertNotNull(kml);
     }
 
     @Test
-    public void testUnmarshal22() throws IOException, JAXBException {
+    public void testUnmarshal22() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from22.kml");
         slash.navigation.kml.binding22.KmlType kml = unmarshal22(reader);
         assertNotNull(kml);

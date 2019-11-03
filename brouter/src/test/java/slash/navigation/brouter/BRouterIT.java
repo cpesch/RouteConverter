@@ -103,8 +103,8 @@ public class BRouterIT {
     public void testGetRouteBetweenByCar() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("car-test"));
         assertEquals(Valid, result.getValidity());
-        assertEquals(277, result.getPositions().size());
-        assertEquals(13767.0, result.getDistanceAndTime().getDistance(), 5.0);
+        assertEquals(192, result.getPositions().size());
+        assertEquals(13754.0, result.getDistanceAndTime().getDistance(), 25.0);
         assertNull(result.getDistanceAndTime().getTime());
     }
 
@@ -112,8 +112,8 @@ public class BRouterIT {
     public void testGetRouteBetweenByBike() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("trekking"));
         assertEquals(Valid, result.getValidity());
-        assertEquals(168, result.getPositions().size());
-        assertEquals(13886.0, result.getDistanceAndTime().getDistance(), 5.0);
+        assertEquals(123, result.getPositions().size());
+        assertEquals(13899.0, result.getDistanceAndTime().getDistance(), 25.0);
         assertNull(result.getDistanceAndTime().getTime());
     }
 }

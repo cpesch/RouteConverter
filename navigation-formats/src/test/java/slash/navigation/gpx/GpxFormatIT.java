@@ -71,14 +71,14 @@ public class GpxFormatIT {
         assertEquals(3, gpx.getRte().size());
     }
 
-    @Test(expected = JAXBException.class)
-    public void testUnmarshal10TypeError() throws Exception {
+    @Test(expected = IOException.class)
+    public void testUnmarshal10TypeError() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from10.gpx");
         GpxUtil.unmarshal11(reader);
     }
 
     @Test
-    public void testUnmarshal11() throws IOException, JAXBException {
+    public void testUnmarshal11() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from11.gpx");
         GpxType gpx = GpxUtil.unmarshal11(reader);
         assertNotNull(gpx);
@@ -86,8 +86,8 @@ public class GpxFormatIT {
         assertEquals(3, gpx.getWpt().size());
     }
 
-    @Test(expected = JAXBException.class)
-    public void testUnmarshal11TypeError() throws Exception {
+    @Test(expected = IOException.class)
+    public void testUnmarshal11TypeError() throws IOException {
         Reader reader = new FileReader(TEST_PATH + "from11.gpx");
         GpxUtil.unmarshal10(reader);
     }
