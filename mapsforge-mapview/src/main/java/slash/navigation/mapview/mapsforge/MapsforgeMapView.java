@@ -49,10 +49,7 @@ import org.mapsforge.map.scalebar.NauticalUnitAdapter;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.DistanceAndTime;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.UnitSystem;
+import slash.navigation.common.*;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
@@ -92,6 +89,7 @@ import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
@@ -108,11 +106,15 @@ import static slash.common.io.Transfer.encodeUri;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.TransformUtil.delta;
+import static slash.navigation.common.TransformUtil.isPositionInChina;
+import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
+import static slash.navigation.converter.gui.models.FixMapMode.Yes;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
-import static slash.navigation.maps.mapsforge.helpers.MapTransfer.*;
+import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
@@ -154,7 +156,7 @@ public class MapsforgeMapView extends BaseMapView {
     private PositionsModelListener positionsModelListener = new PositionsModelListener();
     private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
     private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
-    private ColorModelListener colorModelListener = new ColorModelListener();
+    private RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
     private UnitSystemListener unitSystemListener = new UnitSystemListener();
     private DisplayedMapListener displayedMapListener = new DisplayedMapListener();
     private AppliedThemeListener appliedThemeListener = new AppliedThemeListener();
@@ -247,11 +249,7 @@ public class MapsforgeMapView extends BaseMapView {
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
                 pairs.addAll(pairWithLayers);
-                routeRenderer.renderRoute(pairWithLayers, new Runnable() {
-                    public void run() {
-                        fireDistanceAndTime();
-                    }
-                });
+                routeRenderer.renderRoute(pairWithLayers, this::fireDistanceAndTime);
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
@@ -361,11 +359,11 @@ public class MapsforgeMapView extends BaseMapView {
         positionsModel.addTableModelListener(positionsModelListener);
         characteristicsModel.addListDataListener(characteristicsModelListener);
         showCoordinates.addChangeListener(showCoordinatesListener);
-        routeColorModel.addChangeListener(colorModelListener);
-        trackColorModel.addChangeListener(colorModelListener);
+        getFixMapModeModel().addChangeListener(repaintPositionListListener);
+        routeColorModel.addChangeListener(repaintPositionListListener);
+        trackColorModel.addChangeListener(repaintPositionListListener);
         unitSystemModel.addChangeListener(unitSystemListener);
-
-        this.mapViewCallback.getShowShadedHills().addChangeListener(shadedHillsListener);
+        getShowShadedHills().addChangeListener(shadedHillsListener);
 
         initializeActions();
         initializeMapView();
@@ -652,7 +650,7 @@ public class MapsforgeMapView extends BaseMapView {
     private void handleShadedHills() {
         hillsRenderConfig.setTileSource(null);
 
-        if (mapViewCallback.getShowShadedHills().getBoolean()) {
+        if (getShowShadedHills().getBoolean()) {
             ElevationService elevationService = mapViewCallback.getElevationService();
             if (elevationService.isDownload()) {
                 File directory = elevationService.getDirectory();
@@ -698,10 +696,11 @@ public class MapsforgeMapView extends BaseMapView {
 
         positionsModel.removeTableModelListener(positionsModelListener);
         characteristicsModel.removeListDataListener(characteristicsModelListener);
-        routeColorModel.removeChangeListener(colorModelListener);
-        trackColorModel.removeChangeListener(colorModelListener);
+        routeColorModel.removeChangeListener(repaintPositionListListener);
+        trackColorModel.removeChangeListener(repaintPositionListListener);
         unitSystemModel.removeChangeListener(unitSystemListener);
-        mapViewCallback.getShowShadedHills().removeChangeListener(shadedHillsListener);
+        getFixMapModeModel().addChangeListener(repaintPositionListListener);
+        getShowShadedHills().removeChangeListener(shadedHillsListener);
 
         long start = currentTimeMillis();
         if (routeRenderer != null)
@@ -776,8 +775,6 @@ public class MapsforgeMapView extends BaseMapView {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 getLayerManager().getLayers().add(layer);
-                if (!getLayerManager().getLayers().contains(layer))
-                    log.warning("Cannot add layer " + layer);
             }
         });
     }
@@ -785,18 +782,18 @@ public class MapsforgeMapView extends BaseMapView {
     public void addLayers(final List<? extends ObjectWithLayer> withLayers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
-                for (int i = 0, c = withLayers.size(); i < c; i++) {
-                    final ObjectWithLayer withLayer = withLayers.get(i);
-                    final Layer layer = withLayer.getLayer();
+                List<Layer> layers = new ArrayList<>();
+
+                for (ObjectWithLayer withLayer : withLayers) {
+                    Layer layer = withLayer.getLayer();
                     if (layer != null) {
-                        // redraw only for last added layer
-                        boolean redraw = i == c - 1;
-                        getLayerManager().getLayers().add(layer, redraw);
-                        if (!getLayerManager().getLayers().contains(layer))
-                            log.warning("Cannot add layer " + layer);
+                        layers.add(layer);
                     } else
                         log.warning("Could not find layer to add for " + withLayer);
                 }
+
+                if (!getLayerManager().getLayers().addAll(layers, true))
+                    log.warning("Cannot add layers " + layers);
             }
         });
     }
@@ -808,13 +805,8 @@ public class MapsforgeMapView extends BaseMapView {
     private void removeLayers(final List<Layer> layers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
-                for (int i = 0, c = layers.size(); i < c; i++) {
-                    Layer layer = layers.get(i);
-                    // redraw only for last removed layer
-                    boolean redraw = i == c - 1;
-                    if (!getLayerManager().getLayers().remove(layer, redraw))
-                        log.warning("Cannot remove layer " + layer);
-                }
+                if (!getLayerManager().getLayers().removeAll(layers, true))
+                    log.warning("Cannot remove layers " + layers);
             }
         });
     }
@@ -822,19 +814,19 @@ public class MapsforgeMapView extends BaseMapView {
     private void removeObjectWithLayers(final List<? extends ObjectWithLayer> withLayers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
-                for (int i = 0, c = withLayers.size(); i < c; i++) {
-                    ObjectWithLayer withLayer = withLayers.get(i);
+                List<Layer> layers = new ArrayList<>();
+
+                for (ObjectWithLayer withLayer : withLayers) {
                     Layer layer = withLayer.getLayer();
                     if (layer != null) {
-                        // redraw only for last removed layer
-                        boolean redraw = i == c - 1;
-                        if (!getLayerManager().getLayers().remove(layer, redraw))
-                            log.warning("Cannot remove layer " + layer);
+                        layers.add(layer);
                     } else
                         log.warning("Could not find layer to remove for " + withLayer);
-
                     withLayer.setLayer(null);
                 }
+
+                if (!getLayerManager().getLayers().removeAll(layers, true))
+                    log.warning("Cannot remove layers " + layers);
             }
         });
     }
@@ -859,6 +851,70 @@ public class MapsforgeMapView extends BaseMapView {
     private BoundingBox getRouteBoundingBox() {
         BaseRoute route = positionsModel.getRoute();
         return route != null && route.getPositions().size() > 0 ? new BoundingBox(route.getPositions()) : null;
+    }
+
+    private FixMapModeModel getFixMapModeModel() {
+        return mapViewCallback.getFixMapModeModel();
+    }
+
+    private BooleanModel getShowShadedHills() {
+        return mapViewCallback.getShowShadedHills();
+    }
+
+    private boolean isGoogleMap() {
+        return getMapManager().getDisplayedMapModel().getItem().getCopyrightText().contains("Google");
+    }
+
+    private boolean isFixMap(Double longitude, Double latitude) {
+        FixMapMode fixMapMode = getFixMapModeModel().getFixMapMode();
+        return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleMap() && isPositionInChina(longitude, latitude);
+    }
+
+    public LatLong asLatLong(NavigationPosition position) {
+        if (position == null)
+            return null;
+
+        double longitude = position.getLongitude() != null ? position.getLongitude() : 0.0;
+        double latitude = position.getLatitude() != null ? position.getLatitude() : 0.0;
+        if (isFixMap(longitude, latitude)) {
+            double[] delta = delta(latitude, longitude);
+            longitude += delta[1];
+            latitude += delta[0];
+        }
+        return new LatLong(latitude, longitude);
+    }
+
+    public List<LatLong> asLatLong(List<NavigationPosition> positions) {
+        List<LatLong> result = new ArrayList<>();
+        for (NavigationPosition position : positions) {
+            LatLong latLong = asLatLong(position);
+            if (latLong != null)
+                result.add(latLong);
+        }
+        return result;
+    }
+
+    private List<LatLong> asLatLong(BoundingBox boundingBox) {
+        return asLatLong(asList(
+                boundingBox.getNorthEast(),
+                boundingBox.getSouthEast(),
+                boundingBox.getSouthWest(),
+                boundingBox.getNorthWest(),
+                boundingBox.getNorthEast()
+        ));
+    }
+
+    org.mapsforge.core.model.BoundingBox asBoundingBox(BoundingBox boundingBox) {
+        return new org.mapsforge.core.model.BoundingBox(
+                boundingBox.getSouthWest().getLatitude(),
+                boundingBox.getSouthWest().getLongitude(),
+                boundingBox.getNorthEast().getLatitude(),
+                boundingBox.getNorthEast().getLongitude()
+        );
+    }
+
+    private NavigationPosition asNavigationPosition(LatLong latLong) {
+        return new SimpleNavigationPosition(latLong.longitude, latLong.latitude);
     }
 
     private void centerAndZoom(BoundingBox mapBoundingBox, BoundingBox routeBoundingBox,
@@ -1107,34 +1163,30 @@ public class MapsforgeMapView extends BaseMapView {
         private EventMapUpdater eventMapUpdater = getEventMapUpdaterFor(Waypoints);
 
         public void replaceRoute() {
-            executor.execute(new Runnable() {
-                public void run() {
-                    // remove all from previous event map updater
-                    eventMapUpdater.handleRemove(0, MAX_VALUE);
+            executor.execute(() -> {
+                // remove all from previous event map updater
+                eventMapUpdater.handleRemove(0, MAX_VALUE);
 
-                    // select current event map updater and let him add all
-                    eventMapUpdater = getEventMapUpdaterFor(positionsModel.getRoute().getCharacteristics());
-                    eventMapUpdater.handleAdd(0, MapsforgeMapView.this.positionsModel.getRowCount() - 1);
-                }
+                // select current event map updater and let him add all
+                eventMapUpdater = getEventMapUpdaterFor(positionsModel.getRoute().getCharacteristics());
+                eventMapUpdater.handleAdd(0, MapsforgeMapView.this.positionsModel.getRowCount() - 1);
             });
         }
 
         public void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
-            executor.execute(new Runnable() {
-                public void run() {
-                   switch (eventType) {
-                        case INSERT:
-                            eventMapUpdater.handleAdd(firstRow, lastRow);
-                            break;
-                        case UPDATE:
-                            eventMapUpdater.handleUpdate(firstRow, lastRow);
-                            break;
-                        case DELETE:
-                            eventMapUpdater.handleRemove(firstRow, lastRow);
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Event type " + eventType + " is not supported");
-                    }
+            executor.execute(() -> {
+               switch (eventType) {
+                    case INSERT:
+                        eventMapUpdater.handleAdd(firstRow, lastRow);
+                        break;
+                    case UPDATE:
+                        eventMapUpdater.handleUpdate(firstRow, lastRow);
+                        break;
+                    case DELETE:
+                        eventMapUpdater.handleRemove(firstRow, lastRow);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Event type " + eventType + " is not supported");
                 }
             });
         }
@@ -1199,7 +1251,7 @@ public class MapsforgeMapView extends BaseMapView {
         }
     }
 
-    private class ColorModelListener implements ChangeListener {
+    private class RepaintPositionListListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             updateDecoupler.replaceRoute();
         }
@@ -1246,5 +1298,4 @@ public class MapsforgeMapView extends BaseMapView {
             handleMapAndThemeUpdate(false, false);
         }
     }
-
 }

@@ -23,7 +23,6 @@ import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.models.BooleanModel;
-import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
 
@@ -58,20 +57,8 @@ public class MapViewCallbackOpenSourceImpl extends MapViewCallbackImpl implement
         return ((RouteConverter) Application.getInstance()).getElevationServiceFacade().getElevationService();
     }
 
-    private NotificationManager getNotificationManager() {
-        return Application.getInstance().getContext().getNotificationManager();
-    }
-
     private ResourceBundle getBundle() {
         return Application.getInstance().getContext().getBundle();
-    }
-
-    public void showDownloadNotification() {
-        getNotificationManager().showNotification(getBundle().getString("downloading-routing-data"), null);
-    }
-
-    public void showProcessNotification() {
-        getNotificationManager().showNotification(getBundle().getString("processing-routing-data"), null);
     }
 
     public void handleRoutingException(Throwable t) {

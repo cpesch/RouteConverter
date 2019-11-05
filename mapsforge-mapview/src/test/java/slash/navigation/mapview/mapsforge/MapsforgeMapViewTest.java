@@ -17,23 +17,23 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.mapsforge.impl;
+package slash.navigation.mapview.mapsforge;
 
 import org.junit.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
 
 import static org.junit.Assert.assertEquals;
-import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asBoundingBox;
-import static slash.navigation.maps.mapsforge.helpers.MapTransfer.toBoundingBox;
+import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 
-public class MapTransferTest {
+public class MapsforgeMapViewTest {
+    private MapsforgeMapView mapView = new MapsforgeMapView();
 
     @Test
     public void testBoundingBox() {
         BoundingBox from = new BoundingBox(new SimpleNavigationPosition(10.18587, 53.49249), new SimpleNavigationPosition(10.06767, 53.40451));
         assertEquals(from, from);
-        org.mapsforge.core.model.BoundingBox to = asBoundingBox(from);
+        org.mapsforge.core.model.BoundingBox to = mapView.asBoundingBox(from);
         BoundingBox roundtrip = toBoundingBox(to);
         assertEquals(roundtrip, from);
     }

@@ -31,6 +31,5 @@ import slash.navigation.mapview.MapViewCallback;
  */
 
 public interface MapViewCallbackGoogle extends MapViewCallback  {
-    FixMapModeModel getFixMapModeModel();
     GoogleMapsServerModel getGoogleMapsServerModel();
 }

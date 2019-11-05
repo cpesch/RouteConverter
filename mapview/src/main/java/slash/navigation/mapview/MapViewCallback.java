@@ -20,6 +20,7 @@
 
 package slash.navigation.mapview;
 
+import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
@@ -43,4 +44,5 @@ public interface MapViewCallback {
     boolean isAvoidTolls();
 
     TileServerMapManager getTileServerMapManager();
+    FixMapModeModel getFixMapModeModel();
 }

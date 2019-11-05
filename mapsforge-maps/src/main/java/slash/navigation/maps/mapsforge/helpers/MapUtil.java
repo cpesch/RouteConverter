@@ -31,7 +31,6 @@ import static java.io.File.createTempFile;
 import static java.io.File.separator;
 import static java.lang.String.format;
 import static slash.common.io.Files.writePartialFile;
-import static slash.navigation.maps.mapsforge.helpers.MapTransfer.toBoundingBox;
 
 /**
  * Provides map functionality.
@@ -41,6 +40,15 @@ import static slash.navigation.maps.mapsforge.helpers.MapTransfer.toBoundingBox;
 
 public class MapUtil {
     private static final Logger log = Logger.getLogger(MapUtil.class.getName());
+
+    public static BoundingBox toBoundingBox(org.mapsforge.core.model.BoundingBox boundingBox) {
+        return new BoundingBox(
+                boundingBox.maxLongitude,
+                boundingBox.maxLatitude,
+                boundingBox.minLongitude,
+                boundingBox.minLatitude
+        );
+    }
 
     public static BoundingBox extractBoundingBox(File file) {
         try {

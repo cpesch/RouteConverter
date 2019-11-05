@@ -89,8 +89,8 @@ import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERE
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.browser.helpers.ColorHelper.asColor;
 import static slash.navigation.mapview.browser.helpers.ColorHelper.asOpacity;
-import static slash.navigation.mapview.browser.helpers.TransformUtil.delta;
-import static slash.navigation.mapview.browser.helpers.TransformUtil.isPositionInChina;
+import static slash.navigation.common.TransformUtil.delta;
+import static slash.navigation.common.TransformUtil.isPositionInChina;
 
 /**
  * Base implementation for a browser-based map view.
@@ -672,7 +672,7 @@ public abstract class BrowserMapView extends BaseMapView {
         return preferences.get(MAP_TYPE_PREFERENCE, "google.maps.MapTypeId.ROADMAP");
     }
 
-    private boolean isGoogleFixMap() {
+    protected boolean isGoogleMap() {
         String mapType = getMapType();
         return mapType != null && GOOGLE_MAP_TYPES.contains(mapType.toUpperCase());
     }
@@ -970,11 +970,9 @@ public abstract class BrowserMapView extends BaseMapView {
         return parsePosition(latitude, longitude);
     }
 
-    // WGS/GCJ conversion
-
     private boolean isFixMap(Double longitude, Double latitude) {
         FixMapMode fixMapMode = getFixMapModeModel().getFixMapMode();
-        return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleFixMap() && isPositionInChina(longitude, latitude);
+        return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleMap() && isPositionInChina(longitude, latitude);
     }
 
     private NavigationPosition parsePosition(String latitudeString, String longitudeString) {
@@ -989,9 +987,9 @@ public abstract class BrowserMapView extends BaseMapView {
     }
 
     private String asCoordinates(NavigationPosition position) {
-        Double longitude = position.getLongitude();
-        Double latitude = position.getLatitude();
-        if (longitude != null && latitude != null && isFixMap(longitude, latitude)) {
+        double longitude = position.getLongitude() != null ? position.getLongitude() : 0.0;
+        double latitude = position.getLatitude() != null ? position.getLatitude() : 0.0;
+        if (isFixMap(longitude, latitude)) {
             double[] delta = delta(latitude, longitude);
             longitude += delta[1];
             latitude += delta[0];

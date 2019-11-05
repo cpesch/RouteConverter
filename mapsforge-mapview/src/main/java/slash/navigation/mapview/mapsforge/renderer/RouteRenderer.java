@@ -45,7 +45,6 @@ import java.util.prefs.Preferences;
 import static java.lang.Thread.sleep;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Transfer.isEmpty;
-import static slash.navigation.maps.mapsforge.helpers.MapTransfer.asLatLong;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 import static slash.navigation.routing.RoutingResult.Validity.*;
@@ -188,7 +187,7 @@ public class RouteRenderer {
                 if (!pairWithLayer.hasCoordinates())
                     continue;
 
-                Line line = new Line(asLatLong(pairWithLayer.getFirst()), asLatLong(pairWithLayer.getSecond()), ROUTE_DOWNLOADING_PAINT, mapView.getTileSize());
+                Line line = new Line(mapView.asLatLong(pairWithLayer.getFirst()), mapView.asLatLong(pairWithLayer.getSecond()), ROUTE_DOWNLOADING_PAINT, mapView.getTileSize());
                 pairWithLayer.setLayer(line);
                 mapView.addLayer(line);
 
@@ -249,15 +248,15 @@ public class RouteRenderer {
 
     private IntermediateRoute calculateRoute(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {
         List<LatLong> latLongs = new ArrayList<>();
-        latLongs.add(asLatLong(pairWithLayer.getFirst()));
+        latLongs.add(mapView.asLatLong(pairWithLayer.getFirst()));
 
         RoutingResult result = calculateResult(routingService, future, pairWithLayer);
         if (result.getValidity().equals(Valid)) {
             // TODO could extract elevation from RoutingResult and set it on first/second if there is no elevation
-            latLongs.addAll(asLatLong(result.getPositions()));
+            latLongs.addAll(mapView.asLatLong(result.getPositions()));
         }
         pairWithLayer.setDistanceAndTime(result.getDistanceAndTime());
-        latLongs.add(asLatLong(pairWithLayer.getSecond()));
+        latLongs.add(mapView.asLatLong(pairWithLayer.getSecond()));
         return new IntermediateRoute(latLongs, result.getValidity().equals(Valid));
     }
 

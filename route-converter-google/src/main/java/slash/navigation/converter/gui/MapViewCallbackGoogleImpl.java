@@ -20,7 +20,6 @@
 package slash.navigation.converter.gui;
 
 import slash.navigation.converter.gui.helpers.MapViewCallbackImpl;
-import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.gui.Application;
 import slash.navigation.mapview.browser.MapViewCallbackGoogle;
@@ -32,10 +31,6 @@ import slash.navigation.mapview.browser.MapViewCallbackGoogle;
  */
 
 public class MapViewCallbackGoogleImpl extends MapViewCallbackImpl implements MapViewCallbackGoogle {
-    public FixMapModeModel getFixMapModeModel() {
-        return ((RouteConverterGoogle) Application.getInstance()).getFixMapModeModel();
-    }
-
     public GoogleMapsServerModel getGoogleMapsServerModel() {
         return ((RouteConverterGoogle) Application.getInstance()).getGoogleMapsServerModel();
     }
