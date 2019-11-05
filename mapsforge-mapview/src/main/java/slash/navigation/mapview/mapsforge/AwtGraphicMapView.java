@@ -62,7 +62,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     private final MapViewProjection mapViewProjection;
     private final Model model;
 
-    public AwtGraphicMapView() {
+    AwtGraphicMapView() {
         super();
 
         this.model = new Model();
@@ -83,7 +83,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     }
 
     public void addLayer(Layer layer) {
-        this.layerManager.getLayers().add(layer);
+        layerManager.getLayers().add(layer);
     }
 
     public void destroy() {
@@ -98,7 +98,7 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
     public void destroyAll() {
         for (Layer layer : layerManager.getLayers()) {
             // this delays stopping RouteConverter for a very long time since all layers have to be removed one by one
-            // removeLayer(layer);
+            // layerManager.getLayers().remove(layer);
             layer.onDestroy();
             if (layer instanceof TileLayer) {
                 ((TileLayer) layer).getTileCache().destroy();
