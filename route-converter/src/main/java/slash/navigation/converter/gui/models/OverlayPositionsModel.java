@@ -31,7 +31,6 @@ import slash.navigation.common.NavigationPosition;
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -61,14 +60,12 @@ public class OverlayPositionsModel implements PositionsModel {
 
     public OverlayPositionsModel(PositionsModel delegate) {
         this.delegate = delegate;
-        delegate.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                // clear overlay for updates on columns that have an effect on the distance
-                if (e.getColumn() == LONGITUDE_COLUMN_INDEX ||
-                        e.getColumn() == LATITUDE_COLUMN_INDEX ||
-                        e.getColumn() == ALL_COLUMNS)
-                    clearOverlay();
-            }
+        delegate.addTableModelListener(e -> {
+            // clear overlay for updates on columns that have an effect on the distance
+            if (e.getColumn() == LONGITUDE_COLUMN_INDEX ||
+                    e.getColumn() == LATITUDE_COLUMN_INDEX ||
+                    e.getColumn() == ALL_COLUMNS)
+                clearOverlay();
         });
     }
 
@@ -93,8 +90,9 @@ public class OverlayPositionsModel implements PositionsModel {
         indexToDistanceAndTime.clear();
         distancesFromStart = null;
         indexToImageAndFile.clear();
-        if (getRowCount() > 0)
-            delegate.fireTableRowsUpdated(0, getRowCount() - 1, DISTANCE_COLUMN_INDEX);
+        // speed up deleting of large amounts of rows - unsure why I've decided to fire an event for the distance column here
+        // if (getRowCount() > 0)
+        //    delegate.fireTableRowsUpdated(0, getRowCount() - 1, DISTANCE_COLUMN_INDEX);
     }
 
     // TableModel

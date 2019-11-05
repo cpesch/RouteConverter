@@ -50,7 +50,7 @@ import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
  */
 
 public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlanRoute> {
-    static final int MAXIMUM_IDENTIFIER_LENGTH = 5;
+    static final int MAXIMUM_IDENTIFIER_LENGTH = 6;
 
     public String getName() {
         return "Garmin Flight Plan (*" + getExtension() + ")";
@@ -125,11 +125,13 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     }
 
     public static CountryCode createValidCountryCode(GarminFlightPlanPosition position) {
-        String name = position.getIdentifier();
-        if (name != null && name.length() >= 2) {
-            CountryCode countryCode = CountryCode.fromValue(name.substring(0, 2));
-            if (countryCode != null)
-                return countryCode;
+        if(!UserWaypoint.equals(position.getWaypointType())) {
+            String name = position.getIdentifier();
+            if (name != null && name.length() >= 2) {
+                CountryCode countryCode = CountryCode.fromValue(name.substring(0, 2));
+                if (countryCode != null)
+                    return countryCode;
+            }
         }
         return None;
     }

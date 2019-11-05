@@ -186,7 +186,7 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     public void add(int rowIndex, List<BaseNavigationPosition> positions) {
-        add(rowIndex, new ArrayList<NavigationPosition>(positions), true, true);
+        add(rowIndex, new ArrayList<>(positions), true, true);
     }
 
     @SuppressWarnings("unchecked")
@@ -206,7 +206,13 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     public void remove(int[] rowIndices) {
-        remove(rowIndices, true, true);
+        // speed up deletion of positions in large tracks
+        if (rowIndices.length > 1000) {
+            remove(rowIndices, false, true);
+            delegate.fireTableRowsDeleted(0, getRowCount() - 1);
+            delegate.fireTableRowsInserted(0, getRowCount() - 1);
+        } else
+            remove(rowIndices, true, true);
     }
 
     void remove(int from, int to, boolean fireEvent, boolean trackUndo) {
