@@ -34,11 +34,11 @@ public class TransformUtil {
     }
 
     @SuppressWarnings("RedundantIfStatement")
-    private static boolean outOfChina(double lat, double lng) {
-        if ((lng < 72.004) || (lng > 137.8347)) {
+    private static boolean outOfChina(double latitude, double longitude) {
+        if (longitude < 72.004 || longitude > 137.8347) {
             return true;
         }
-        if ((lat < 0.8293) || (lat > 55.8271)) {
+        if (latitude < 0.8293 || latitude > 55.8271) {
             return true;
         }
         return false;
