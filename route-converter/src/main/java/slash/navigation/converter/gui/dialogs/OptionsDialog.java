@@ -669,7 +669,6 @@ public class OptionsDialog extends SimpleDialog {
         textFieldThemesPath.setEnabled(download);
         textFieldThemesPath.setText(download ? service.getThemesPath() : "");
         buttonChooseThemesPath.setEnabled(download);
-        comboBoxFixMapMode.setEnabled(!download);
         comboBoxGoogleMapsServer.setEnabled(!download);
     }
 
