@@ -861,13 +861,14 @@ public class MapsforgeMapView extends BaseMapView {
         return mapViewCallback.getShowShadedHills();
     }
 
-    private boolean isGoogleMap() {
-        return getMapManager().getDisplayedMapModel().getItem().getCopyrightText().contains("Google");
+    private boolean isGoogleMap(LocalMap map) {
+        return map.getCopyrightText().contains("Google");
     }
 
     private boolean isFixMap(Double longitude, Double latitude) {
         FixMapMode fixMapMode = getFixMapModeModel().getFixMapMode();
-        return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleMap() && isPositionInChina(longitude, latitude);
+        LocalMap map = getMapManager().getDisplayedMapModel().getItem();
+        return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleMap(map) && isPositionInChina(longitude, latitude);
     }
 
     public LatLong asLatLong(NavigationPosition position) {
@@ -1264,8 +1265,18 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private class DisplayedMapListener implements ChangeListener {
+        private LocalMap lastMap;
+
         public void stateChanged(ChangeEvent e) {
             handleMapAndThemeUpdate(true, !isVisible(mapView.getModel().mapViewPosition.getCenter()));
+
+            // if the map changes from/to Google in Automatic mode, do a recalculation
+            LocalMap currentMap = getMapManager().getDisplayedMapModel().getItem();
+            if(getFixMapModeModel().getFixMapMode().equals(Automatic)) {
+                if(lastMap == null || isGoogleMap(lastMap) != isGoogleMap(currentMap))
+                    updateDecoupler.replaceRoute();
+            }
+            lastMap = currentMap;
         }
     }
 
