@@ -209,7 +209,7 @@ public class UndoPositionsModel implements PositionsModel {
         // speed up deletion of positions in large tracks
         if (rowIndices.length > 1000) {
             remove(rowIndices, false, true);
-            delegate.fireTableRowsDeleted(0, getRowCount() - 1);
+            delegate.fireTableRowsDeletedInContinousRange(0, getRowCount() - 1);
             delegate.fireTableRowsInserted(0, getRowCount() - 1);
         } else
             remove(rowIndices, true, true);

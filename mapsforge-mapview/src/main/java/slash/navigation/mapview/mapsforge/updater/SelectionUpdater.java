@@ -102,7 +102,11 @@ public class SelectionUpdater {
     private void applyDelta(List<PositionWithLayer> removed, List<PositionWithLayer> added) {
         if (!removed.isEmpty()) {
             selectionOperation.remove(removed);
-            positionWithLayers.removeAll(removed);
+            // optimize special case when the selection is completely removed due to deletion of all selected positions
+            if(removed == positionWithLayers)
+                positionWithLayers.clear();
+            else
+                positionWithLayers.removeAll(removed);
         }
         if (!added.isEmpty()) {
             selectionOperation.add(added);

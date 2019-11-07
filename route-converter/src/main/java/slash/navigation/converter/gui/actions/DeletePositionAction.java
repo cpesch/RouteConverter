@@ -45,17 +45,17 @@ public class DeletePositionAction extends FrameAction {
     public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
+            // speed up operation for large amounts of selected rows which are deleted and not selected afterways
+            // by clearing the selection before removing
+            table.getSelectionModel().clearSelection();
+
             positionsModel.remove(selectedRows);
             // select position above deleted positions like this:
             // final int deleteRow = selectedRows[0] > 0 ? selectedRows[0] - 1 : 0;
             final int deleteRow = selectedRows[0] < table.getRowCount() ?
                     selectedRows[0] : table.getRowCount() - 1;
             if (table.getRowCount() > 0) {
-                invokeLater(new Runnable() {
-                    public void run() {
-                        selectAndScrollToPosition(table, deleteRow, deleteRow);
-                    }
-                });
+                invokeLater(() -> selectAndScrollToPosition(table, deleteRow, deleteRow));
             }
         }
     }
