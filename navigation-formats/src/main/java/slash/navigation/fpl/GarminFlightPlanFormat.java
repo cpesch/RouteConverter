@@ -106,7 +106,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     private static String createValidIdentifier(String identifier) {
         identifier = createValidDescription(identifier);
         if(identifier != null)
-            identifier = identifier.substring(0, min(identifier.length(), MAXIMUM_IDENTIFIER_LENGTH - 1));
+            identifier = identifier.substring(0, min(identifier.length(), MAXIMUM_IDENTIFIER_LENGTH));
         return identifier;
     }
 
