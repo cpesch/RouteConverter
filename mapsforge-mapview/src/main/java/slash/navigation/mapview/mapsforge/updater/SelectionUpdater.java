@@ -24,8 +24,10 @@ import slash.navigation.converter.gui.models.PositionsModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
+import static java.util.Collections.list;
 
 /**
  * Stores the current selection state and minimizes {@link SelectionOperation}s.
@@ -127,5 +129,12 @@ public class SelectionUpdater {
 
     public synchronized List<PositionWithLayer> getPositionWithLayers() {
         return positionWithLayers;
+    }
+
+    public synchronized int[] getIndices() {
+        int[] indices = new int[positionWithLayers.size()];
+        for (int i = 0; i < positionWithLayers.size(); i++)
+            indices[i] = positionsModel.getIndex(positionWithLayers.get(i).getPosition());
+        return indices;
     }
 }

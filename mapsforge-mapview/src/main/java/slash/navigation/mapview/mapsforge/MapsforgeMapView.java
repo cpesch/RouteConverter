@@ -202,7 +202,7 @@ public class MapsforgeMapView extends BaseMapView {
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             private Marker createMarker(PositionWithLayer positionWithLayer, LatLong latLong) {
-                return new DraggableMarker(positionsModel, positionWithLayer, latLong, markerIcon, 0, -27);
+                return new DraggableMarker(MapsforgeMapView.this, positionWithLayer, latLong, markerIcon, 0, -27);
             }
 
             public void add(List<PositionWithLayer> positionWithLayers) {
@@ -1044,6 +1044,58 @@ public class MapsforgeMapView extends BaseMapView {
     public void routingPreferencesChanged() {
         if (positionsModel.getRoute().getCharacteristics().equals(Route))
             updateDecoupler.replaceRoute();
+    }
+
+    public void movePosition(PositionWithLayer positionWithLayer, Double longitude, Double latitude) {
+        final int row = positionsModel.getIndex(positionWithLayer.getPosition());
+        if(row == -1) {
+            log.warning("Marker without position " + this);
+            return;
+        }
+
+        NavigationPosition reference = positionsModel.getPosition(row);
+        Double diffLongitude = reference != null ? longitude - reference.getLongitude() : 0.0;
+        Double diffLatitude = reference != null ? latitude - reference.getLatitude() : 0.0;
+
+        boolean moveCompleteSelection = preferences.getBoolean(MOVE_COMPLETE_SELECTION_PREFERENCE, true);
+        boolean cleanElevation = preferences.getBoolean(CLEAN_ELEVATION_ON_MOVE_PREFERENCE, false);
+        boolean complementElevation = preferences.getBoolean(COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE, true);
+        boolean cleanTime = preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false);
+        boolean complementTime = preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, true);
+
+        int minimum = row;
+        for (int index : selectionUpdater.getIndices()) {
+            if (index < minimum)
+                minimum = index;
+
+            NavigationPosition position = positionsModel.getPosition(index);
+            if (position == null)
+                continue;
+
+            if (index != row) {
+                if (!moveCompleteSelection)
+                    continue;
+
+                positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
+                        Arrays.asList(position.getLongitude() + diffLongitude, position.getLatitude() + diffLatitude)), false, true);
+            } else {
+                positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
+                        Arrays.asList(longitude, latitude)), false, true);
+            }
+
+            if (cleanTime)
+                positionsModel.edit(index, new PositionColumnValues(DATE_TIME_COLUMN_INDEX, null), false, false);
+            if (cleanElevation)
+                positionsModel.edit(index, new PositionColumnValues(ELEVATION_COLUMN_INDEX, null), false, false);
+
+            if (preferences.getBoolean(COMPLEMENT_DATA_PREFERENCE, false) && (complementTime || complementElevation))
+                mapViewCallback.complementData(new int[]{index}, false, complementTime, complementElevation, true, false);
+        }
+
+        // updating all rows behind the modified is quite expensive, but necessary due to the distance
+        // calculation - if that didn't exist the single update of row would be sufficient
+        int size = positionsModel.getRoute().getPositions().size() - 1;
+        positionsModel.fireTableRowsUpdated(minimum, size, ALL_COLUMNS);
     }
 
     public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {

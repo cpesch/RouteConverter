@@ -106,12 +106,6 @@ public abstract class BrowserMapView extends BaseMapView {
     private static final String MAP_TYPE_PREFERENCE = "mapType";
     static final String DEBUG_PREFERENCE = "debug";
     private static final String BROWSER_SCALE_FACTOR_PREFERENCE = "browserScaleFactor";
-    private static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
-    private static final String COMPLEMENT_DATA_PREFERENCE = "complementData";
-    private static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
-    private static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
-    private static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
-    private static final String MOVE_COMPLETE_SELECTION_PREFERENCE = "moveCompleteSelection";
 
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
@@ -1567,11 +1561,11 @@ public abstract class BrowserMapView extends BaseMapView {
 
         Matcher directionsLoadMatcher = DIRECTIONS_LOAD_PATTERN.matcher(callback);
         if (directionsLoadMatcher.matches()) {
-            Integer generation = parseInt(directionsLoadMatcher.group(1));
+            int generation = parseInt(directionsLoadMatcher.group(1));
             if (generation != generationId) {
                 log.warning("Got directions load from generation id: " + generation + ", current: " + generationId);
             } else {
-                Integer generationIndex = parseInt(directionsLoadMatcher.group(2));
+                int generationIndex = parseInt(directionsLoadMatcher.group(2));
                 List<DistanceAndTime> distanceAndTimes = parseDistanceAndTimeParameters(directionsLoadMatcher.group(3));
                 directionsLoadCallback(generationIndex, distanceAndTimes);
             }

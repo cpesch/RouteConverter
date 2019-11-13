@@ -24,17 +24,10 @@ import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.map.layer.overlay.Marker;
-import slash.navigation.converter.gui.models.PositionColumnValues;
-import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.mapview.mapsforge.updater.PositionWithLayer;
 
-import java.util.Arrays;
-import java.util.logging.Logger;
-
-import static java.util.Arrays.asList;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 
 /**
  * A {@code Marker} that supports dragging.
@@ -42,13 +35,12 @@ import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_CO
  * @author Christian Pesch
  */
 public class DraggableMarker extends Marker {
-    private static final Logger log = Logger.getLogger(DraggableMarker.class.getName());
-    private final PositionsModel positionsModel;
+    private final MapsforgeMapView mapView;
     private final PositionWithLayer positionWithLayer;
 
-    public DraggableMarker(PositionsModel positionsModel, PositionWithLayer positionWithLayer, LatLong latLong, Bitmap bitmap, int horizontalOffset, int verticalOffset) {
+    public DraggableMarker(MapsforgeMapView mapView, PositionWithLayer positionWithLayer, LatLong latLong, Bitmap bitmap, int horizontalOffset, int verticalOffset) {
         super(latLong, bitmap, horizontalOffset, verticalOffset);
-        this.positionsModel = positionsModel;
+        this.mapView = mapView;
         this.positionWithLayer = positionWithLayer;
     }
 
@@ -57,21 +49,6 @@ public class DraggableMarker extends Marker {
     }
 
     public void onDrop(final LatLong latLong) {
-        final int index = positionsModel.getIndex(positionWithLayer.getPosition());
-        if(index == -1) {
-            log.warning("Marker without position " + this);
-            return;
-        }
-
-        invokeLater(new Runnable() {
-            public void run() {
-                // TODO add moving complete selection as in BrowserMapView#movePosition
-
-                positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                        Arrays.asList(latLong.longitude, latLong.latitude)), true, true);
-
-                // TODO add complementData as in BrowserMapView#movePosition
-            }
-        });
+        invokeLater(() -> mapView.movePosition(positionWithLayer, latLong.getLongitude(), latLong.getLatitude()));
     }
 }

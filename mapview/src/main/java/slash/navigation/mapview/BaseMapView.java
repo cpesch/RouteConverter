@@ -36,6 +36,13 @@ public abstract class BaseMapView implements MapView {
     protected static final String CENTER_LONGITUDE_PREFERENCE = "centerLongitude";
     protected static final String CENTER_ZOOM_PREFERENCE = "centerZoom";
 
+    protected static final String COMPLEMENT_DATA_PREFERENCE = "complementData";
+    protected static final String CLEAN_ELEVATION_ON_MOVE_PREFERENCE = "cleanElevationOnMove";
+    protected static final String COMPLEMENT_ELEVATION_ON_MOVE_PREFERENCE = "complementElevationOnMove";
+    protected static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
+    protected static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
+    protected static final String MOVE_COMPLETE_SELECTION_PREFERENCE = "moveCompleteSelection";
+
     private EventListenerList listenerList = new EventListenerList();
 
     protected void fireCalculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
