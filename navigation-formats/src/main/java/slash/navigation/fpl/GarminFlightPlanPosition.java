@@ -25,10 +25,10 @@ import slash.navigation.base.Wgs84Position;
 
 import java.math.BigDecimal;
 
-import static java.lang.Math.min;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.fpl.GarminFlightPlanFormat.MAXIMUM_IDENTIFIER_LENGTH;
+import static slash.navigation.fpl.GarminFlightPlanFormat.createValidDescription;
+import static slash.navigation.fpl.GarminFlightPlanFormat.createValidIdentifier;
 
 /**
  * Represents a position in a Garmin Flight Plan (.fpl) file.
@@ -42,8 +42,10 @@ public class GarminFlightPlanPosition extends Wgs84Position {
 
     public GarminFlightPlanPosition(Double longitude, Double latitude, Double elevation, String description) {
         super(longitude, latitude, elevation, null, null, description);
-        if(description != null)
-            this.identifier = description.substring(0, min(description.length(), MAXIMUM_IDENTIFIER_LENGTH)).toUpperCase();
+        if(description != null) {
+            this.identifier = createValidIdentifier(description);
+            this.description = createValidDescription(description);
+        }
     }
 
     public GarminFlightPlanPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, String description,
