@@ -31,6 +31,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import static java.lang.Math.min;
 import static slash.common.io.Transfer.*;
@@ -49,7 +50,7 @@ import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
  */
 
 public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlanRoute> {
-    static final int MAXIMUM_IDENTIFIER_LENGTH = 6;
+    private static final Preferences preferences = Preferences.userNodeForPackage(GarminFlightPlanFormat.class);
 
     public String getName() {
         return "Garmin Flight Plan (*" + getExtension() + ")";
@@ -72,14 +73,12 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return new GarminFlightPlanRoute(name, null, (List<GarminFlightPlanPosition>) positions);
     }
 
-    public static boolean hasValidDescription(String description) {
-        return description != null &&
-                description.equals(toLettersAndNumbers(description)) &&
-                description.equals(description.toUpperCase());
+    private static int getMaximumIdentifierLength() {
+        return preferences.getInt("maximumIdentifierLength", 6);
     }
 
     private static boolean hasValidIdentifier(String identifier) {
-        return hasValidDescription(identifier) && identifier.length() <= MAXIMUM_IDENTIFIER_LENGTH;
+        return hasValidDescription(identifier) && identifier.length() <= getMaximumIdentifierLength();
     }
 
     public static boolean hasValidIdentifier(String identifier, List<GarminFlightPlanPosition> positions) {
@@ -98,14 +97,10 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return count < 2;
     }
 
-    public static String createValidDescription(String description) {
-        return description != null ? toLettersAndNumbersAndSpaces(description).toUpperCase() : null;
-    }
-
     private static String createValidIdentifier(String identifier) {
         identifier = createValidDescription(identifier);
         if(identifier != null)
-            identifier = identifier.substring(0, min(identifier.length(), MAXIMUM_IDENTIFIER_LENGTH));
+            identifier = identifier.substring(0, min(identifier.length(), getMaximumIdentifierLength()));
         return identifier;
     }
 
@@ -123,6 +118,25 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return result;
     }
 
+    private static int getMaximumDescriptionLength() {
+        return preferences.getInt("maximumDescriptionLength", 25);
+    }
+
+    public static boolean hasValidDescription(String description) {
+        return description != null &&
+                description.equals(toLettersAndNumbers(description)) &&
+                description.equals(description.toUpperCase()) &&
+                description.length() <= getMaximumDescriptionLength();
+    }
+
+    public static String createValidDescription(String description) {
+        if (description != null) {
+            description = toLettersAndNumbersAndSpaces(description).toUpperCase();
+            description = description.substring(0, min(description.length(), getMaximumDescriptionLength()));
+        }
+        return description;
+    }
+
     public static CountryCode createValidCountryCode(GarminFlightPlanPosition position) {
         if(!UserWaypoint.equals(position.getWaypointType())) {
             String name = position.getIdentifier();
@@ -133,6 +147,10 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             }
         }
         return None;
+    }
+
+    public int getMaximumRouteNameLength() {
+        return preferences.getInt("maximumRouteNameLength", 25);
     }
 
     private String createValidRouteName(BaseRoute<GarminFlightPlanPosition, GarminFlightPlanFormat> route) {
