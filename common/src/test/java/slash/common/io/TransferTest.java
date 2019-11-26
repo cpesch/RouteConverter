@@ -120,6 +120,12 @@ public class TransferTest {
     }
 
     @Test
+    public void testToLettersAndNumbersAndSpaces() {
+        assertEquals("a bc", toLettersAndNumbersAndSpaces("a b/c"));
+        assertEquals("A1b 2 c", toLettersAndNumbersAndSpaces("A+1+b % 2 * c"));
+    }
+
+    @Test
     public void testEncodeFileName() {
         String original = ".A/B\\C:D.дцья";
         String expected = "%2eA%2fB%5cC%3aD.дцья";

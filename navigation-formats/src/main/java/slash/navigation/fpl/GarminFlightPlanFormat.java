@@ -33,8 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.Math.min;
-import static slash.common.io.Transfer.toLettersAndNumbers;
-import static slash.common.io.Transfer.trim;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteComments.createRouteName;
 import static slash.navigation.base.WaypointType.UserWaypoint;
 import static slash.navigation.common.NavigationConversion.formatElevation;
@@ -100,7 +99,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     }
 
     public static String createValidDescription(String description) {
-        return description != null ? toLettersAndNumbers(description).toUpperCase() : null;
+        return description != null ? toLettersAndNumbersAndSpaces(description).toUpperCase() : null;
     }
 
     private static String createValidIdentifier(String identifier) {
@@ -136,12 +135,11 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return None;
     }
 
-
     private String createValidRouteName(BaseRoute<GarminFlightPlanPosition, GarminFlightPlanFormat> route) {
         String name = trim(route.getName());
         if(name == null)
             name = createRouteName(route.getPositions());
-        return asRouteName(toLettersAndNumbers(name.toUpperCase()));
+        return asRouteName(toLettersAndNumbersAndSpaces(name.toUpperCase()));
     }
 
     private FlightPlan.WaypointTable.Waypoint find(FlightPlan.WaypointTable waypointTable, String waypointIdentifier) {
