@@ -242,7 +242,8 @@ public class LoginDialog extends SimpleDialog {
             pack();
         } catch (Throwable t) {
             log.severe("Could not register: " + t);
-            labelRegisterResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), t.getClass(), getLocalizedMessage(t)));
+            labelRegisterResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"),
+                    t.getClass().getSimpleName(), getLocalizedMessage(t)));
             pack();
         }
     }

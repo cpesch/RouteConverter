@@ -28,6 +28,7 @@ import slash.navigation.rest.Credentials;
 import slash.navigation.rest.Delete;
 import slash.navigation.rest.Post;
 import slash.navigation.rest.Put;
+import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
@@ -83,7 +84,7 @@ public class RouteFeedback {
         if (request.isBadRequest())
             throw new ForbiddenException("Cannot add user: " + result, apiUrl + USER_URI);
         if (request.isForbidden())
-            throw new ForbiddenException("Cannot add user: " + result, apiUrl + USER_URI);
+            throw new DuplicateNameException("User " + userName + " already exists", apiUrl + USER_URI);
         if (!request.isSuccessful())
             throw new IOException("POST on " + (apiUrl + USER_URI) + " with payload " + userName + "," + firstName + "," + lastName + "," + email + " not successful: " + result);
         return request.getLocation();
