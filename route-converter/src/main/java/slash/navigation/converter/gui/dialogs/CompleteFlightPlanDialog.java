@@ -182,28 +182,24 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         GarminFlightPlanPosition position = getPosition();
 
         boolean proposeIdentifierAndCommentSelected = checkBoxProposeIdentifierAndComment.isSelected();
-        textFieldDescription.setText(proposeIdentifierAndCommentSelected ? createValidDescription(position.getDescription()) : position.getDescription());
         textFieldIdentifier.setText(proposeIdentifierAndCommentSelected ? createValidIdentifier(position, route.getPositions()) : position.getIdentifier());
+        textFieldDescription.setText(proposeIdentifierAndCommentSelected ? createValidDescription(position.getDescription()) : position.getDescription());
 
         boolean proposeCountryCodeSelected = checkBoxProposeCountryCode.isSelected();
         comboBoxCountryCode.setSelectedItem(proposeCountryCodeSelected ? createValidCountryCode(position) : None);
-        comboBoxWaypointType.setSelectedItem(position.getWaypointType());
+        comboBoxWaypointType.setSelectedItem(proposeCountryCodeSelected ? createValidWaypointType(position) : position.getWaypointType());
         validateModel();
     }
 
     private void validateModel() {
-        boolean noCountryCode = getPosition().getCountryCode() == null || None.equals(getPosition().getCountryCode());
-        boolean validCountryCode = UserWaypoint.equals(getPosition().getWaypointType()) == noCountryCode;
-        comboBoxCountryCode.setBorder(validCountryCode ? VALID_BORDER : INVALID_BORDER);
-        boolean modifiableCountryCode = !UserWaypoint.equals(getPosition().getWaypointType()) || !noCountryCode;
-        comboBoxCountryCode.setEnabled(modifiableCountryCode);
-
         boolean proposeIdentifierAndCommentSelected = checkBoxProposeIdentifierAndComment.isSelected();
-        boolean validIdentifier = hasValidIdentifier(proposeIdentifierAndCommentSelected ? textFieldIdentifier.getText() : getPosition().getIdentifier(), route.getPositions());
+        boolean validIdentifier = hasValidIdentifier(proposeIdentifierAndCommentSelected ? textFieldIdentifier.getText() : getPosition().getIdentifier());
         textFieldIdentifier.setBorder(validIdentifier ? VALID_BORDER : INVALID_BORDER);
         boolean validDescription = hasValidDescription(proposeIdentifierAndCommentSelected ? textFieldDescription.getText() : getPosition().getDescription());
         textFieldDescription.setBorder(validDescription ? VALID_BORDER : INVALID_BORDER);
 
+        boolean validCountryCode = getPosition().getWaypointType().equals(Airport) ? getPosition().getCountryCode() != null : true;
+        comboBoxCountryCode.setBorder(validCountryCode ? VALID_BORDER : INVALID_BORDER);
         boolean validWaypointType = getPosition().getWaypointType() != null;
         comboBoxWaypointType.setBorder(validWaypointType ? VALID_BORDER : INVALID_BORDER);
 

@@ -27,8 +27,7 @@ import java.math.BigDecimal;
 
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.fpl.GarminFlightPlanFormat.createValidDescription;
-import static slash.navigation.fpl.GarminFlightPlanFormat.createValidIdentifier;
+import static slash.navigation.fpl.GarminFlightPlanFormat.*;
 
 /**
  * Represents a position in a Garmin Flight Plan (.fpl) file.
@@ -42,17 +41,27 @@ public class GarminFlightPlanPosition extends Wgs84Position {
 
     public GarminFlightPlanPosition(Double longitude, Double latitude, Double elevation, String description) {
         super(longitude, latitude, elevation, null, null, description);
-        if(description != null) {
-            this.identifier = createValidIdentifier(description);
-            this.description = createValidDescription(description);
-        }
+        if(description != null)
+            initialize(createValidIdentifier(description), createValidDescription(description));
     }
 
-    public GarminFlightPlanPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, String description,
-                                    WaypointType waypointType, String identifier, CountryCode countryCode) {
-        this(formatDouble(longitude), formatDouble(latitude), formatDouble(elevation), description);
-        this.waypointType = waypointType;
+    // for GPX positions with <name> and <desc>
+    public GarminFlightPlanPosition(Double longitude, Double latitude, Double elevation, String identifier, String description) {
+        this(longitude, latitude, elevation, null);
+        initialize(identifier, description);
+    }
+
+    private void initialize(String identifier, String description) {
         this.identifier = identifier;
+        this.description = description;
+        this.waypointType = createValidWaypointType(this);
+        this.countryCode = createValidCountryCode(this);
+    }
+
+    public GarminFlightPlanPosition(BigDecimal longitude, BigDecimal latitude, BigDecimal elevation, String identifier,
+                                    String description, WaypointType waypointType, CountryCode countryCode) {
+        this(formatDouble(longitude), formatDouble(latitude), formatDouble(elevation), identifier, description);
+        this.waypointType = waypointType;
         this.countryCode = countryCode;
     }
 

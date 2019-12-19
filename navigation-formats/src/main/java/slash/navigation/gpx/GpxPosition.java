@@ -36,8 +36,6 @@ import static slash.common.io.Transfer.*;
 import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
 import static slash.navigation.base.RouteComments.parseDescription;
 import static slash.navigation.base.RouteComments.parseTripmasterHeading;
-import static slash.navigation.base.WaypointType.UserWaypoint;
-import static slash.navigation.fpl.CountryCode.None;
 import static slash.navigation.gpx.GpxFormat.*;
 
 /**
@@ -183,9 +181,8 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
     // public ExcelPosition asMicrosoftExcelPosition() {..}
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {
-        GarminFlightPlanPosition position = new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(), getDescription());
-        position.setWaypointType(UserWaypoint);
-        position.setCountryCode(None);
+        GarminFlightPlanPosition position = new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(),
+                asName(getDescription()), asDesc(getDescription()));
         WptType wptType = getOrigin(WptType.class);
         if (wptType != null) {
             String type = trim(wptType.getType());
@@ -194,9 +191,11 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
                 if (waypointType != null)
                     position.setWaypointType(waypointType);
             }
-            String description = trim(wptType.getCmt());
-            if (description != null) {
-                position.setDescription(description);
+            if(getDescription() == null) {
+                String description = trim(wptType.getCmt());
+                if (description != null) {
+                    position.setDescription(description);
+                }
             }
         }
         return position;

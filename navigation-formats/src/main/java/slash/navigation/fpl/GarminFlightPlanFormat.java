@@ -30,12 +30,15 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.min;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteComments.createRouteName;
+import static slash.navigation.base.WaypointType.Airport;
 import static slash.navigation.base.WaypointType.UserWaypoint;
 import static slash.navigation.common.NavigationConversion.formatElevation;
 import static slash.navigation.common.NavigationConversion.formatPosition;
@@ -51,6 +54,8 @@ import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
 
 public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlanRoute> {
     private static final Preferences preferences = Preferences.userNodeForPackage(GarminFlightPlanFormat.class);
+    private static final int AIRPORT_IDENTIFIER_LENGTH = 4;
+    private static final int COUNTRY_CODE_IDENTIFIER_LENGTH = 2;
 
     public String getName() {
         return "Garmin Flight Plan (*" + getExtension() + ")";
@@ -77,30 +82,30 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         return preferences.getInt("maximumIdentifierLength", 6);
     }
 
-    private static boolean hasValidIdentifier(String identifier) {
-        return hasValidDescription(identifier) && identifier.length() <= getMaximumIdentifierLength();
+    public static boolean hasValidIdentifier(String identifier) {
+        return identifier != null &&
+                identifier.equals(toLettersAndNumbers(identifier)) &&
+                identifier.equals(identifier.toUpperCase()) &&
+                identifier.length() <= getMaximumIdentifierLength();
     }
 
-    public static boolean hasValidIdentifier(String identifier, List<GarminFlightPlanPosition> positions) {
-        if(!hasValidIdentifier(identifier))
+    private static boolean hasValidIdentifier(GarminFlightPlanPosition position, List<GarminFlightPlanPosition> positions) {
+        if(!hasValidIdentifier(position.getIdentifier()))
             return false;
 
-        int count = 0;
         for(GarminFlightPlanPosition p : positions) {
-            if(p.getIdentifier().equals(identifier))
-                count++;
+            if(p.getIdentifier().equals(position.getIdentifier()) &&
+                    !(p.getLongitude().equals(position.getLongitude()) && p.getLatitude().equals(position.getLatitude())))
+                return false;
         }
-
-        // 0: completely unique
-        // 1: the positions identifier
-        // >1: not unique
-        return count < 2;
+        return true;
     }
 
     static String createValidIdentifier(String identifier) {
-        identifier = createValidDescription(identifier);
-        if(identifier != null)
+        if (identifier != null) {
+            identifier = toLettersAndNumbers(identifier).toUpperCase();
             identifier = identifier.substring(0, min(identifier.length(), getMaximumIdentifierLength()));
+        }
         return identifier;
     }
 
@@ -111,7 +116,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             count = 0;
         String result = identifier;
 
-        while(!hasValidIdentifier(result, positions)) {
+        while(!hasValidIdentifier(position, positions)) {
             result = createValidIdentifier(count + identifier);
             count++;
         }
@@ -124,7 +129,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
     public static boolean hasValidDescription(String description) {
         return description != null &&
-                description.equals(toLettersAndNumbers(description)) &&
+                description.equals(toLettersAndNumbersAndSpaces(description)) &&
                 description.equals(description.toUpperCase()) &&
                 description.length() <= getMaximumDescriptionLength();
     }
@@ -138,15 +143,23 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     }
 
     public static CountryCode createValidCountryCode(GarminFlightPlanPosition position) {
-        if(!UserWaypoint.equals(position.getWaypointType())) {
-            String name = position.getIdentifier();
-            if (name != null && name.length() >= 2) {
-                CountryCode countryCode = CountryCode.fromValue(name.substring(0, 2));
+        String identifier = position.getIdentifier();
+        if (identifier != null) {
+            if (identifier.length() > 0 && identifier.charAt(0) == 'K')
+                return CountryCode.United_States;
+
+            if (identifier.length() >= COUNTRY_CODE_IDENTIFIER_LENGTH) {
+                CountryCode countryCode = CountryCode.fromValue(identifier.substring(0, COUNTRY_CODE_IDENTIFIER_LENGTH));
                 if (countryCode != null)
                     return countryCode;
             }
         }
         return None;
+    }
+
+    public static WaypointType createValidWaypointType(GarminFlightPlanPosition position) {
+        String identifier = position.getIdentifier();
+        return identifier != null && identifier.length() == AIRPORT_IDENTIFIER_LENGTH ? Airport : position.getWaypointType();
     }
 
     public int getMaximumRouteNameLength() {
@@ -183,10 +196,8 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             WaypointType type = parseWaypointType(routePoint.getWaypointType());
             String identifier = trim(routePoint.getWaypointIdentifier());
             CountryCode countryCode = parseCountryCode(routePoint.getWaypointCountryCode());
-            return new GarminFlightPlanPosition(null, null, null, null,
-                    type,
-                    identifier,
-                    countryCode
+            return new GarminFlightPlanPosition(null, null, null, identifier, null,
+                    type, countryCode
             );
         }
 
@@ -194,9 +205,8 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
                 waypoint.getLon(),
                 waypoint.getLat(),
                 waypoint.getElevation(),
-                trim(waypoint.getComment()),
+                trim(waypoint.getIdentifier()), trim(waypoint.getComment()),
                 parseWaypointType(waypoint.getType()),
-                trim(waypoint.getIdentifier()),
                 parseCountryCode(waypoint.getCountryCode())
         );
     }
@@ -228,35 +238,43 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         flightPlanRoute.setFlightPlanIndex((short) 1);
         FlightPlan.WaypointTable waypointTable = objectFactory.createFlightPlanWaypointTable();
 
+        Set<String> writtenIdentifiers = new HashSet<>();
         List<GarminFlightPlanPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GarminFlightPlanPosition position = positions.get(i);
 
-            FlightPlan.Route.RoutePoint routePoint = objectFactory.createFlightPlanRouteRoutePoint();
-            String countryCode = "";
+            String countryCode = null;
             if (position.getCountryCode() != null && position.getWaypointType() != null && !position.getWaypointType().equals(UserWaypoint))
                 countryCode = position.getCountryCode().value();
-            routePoint.setWaypointCountryCode(countryCode);
+
             String identifier = createValidIdentifier(position, positions);
+            if(!writtenIdentifiers.contains(identifier)) {
+                FlightPlan.WaypointTable.Waypoint waypoint = objectFactory.createFlightPlanWaypointTableWaypoint();
+                waypoint.setComment(createValidDescription(position.getDescription()));
+                if (countryCode != null)
+                    waypoint.setCountryCode(countryCode);
+                waypoint.setElevation(formatElevation(position.getElevation()));
+                waypoint.setIdentifier(identifier);
+                waypoint.setLat(formatPosition(position.getLatitude()));
+                waypoint.setLon(formatPosition(position.getLongitude()));
+                if (position.getWaypointType() != null)
+                    waypoint.setType(position.getWaypointType().value());
+                waypointTable.getWaypoint().add(waypoint);
+
+                writtenIdentifiers.add(identifier);
+            }
+
+            FlightPlan.Route.RoutePoint routePoint = objectFactory.createFlightPlanRouteRoutePoint();
+            if (countryCode != null)
+                routePoint.setWaypointCountryCode(countryCode);
             routePoint.setWaypointIdentifier(identifier);
             if (position.getWaypointType() != null)
                 routePoint.setWaypointType(position.getWaypointType().value());
             flightPlanRoute.getRoutePoint().add(routePoint);
-
-            FlightPlan.WaypointTable.Waypoint waypoint = objectFactory.createFlightPlanWaypointTableWaypoint();
-            waypoint.setComment(createValidDescription(position.getDescription()));
-            waypoint.setCountryCode(countryCode);
-            waypoint.setElevation(formatElevation(position.getElevation()));
-            waypoint.setIdentifier(identifier);
-            waypoint.setLat(formatPosition(position.getLatitude()));
-            waypoint.setLon(formatPosition(position.getLongitude()));
-            if (position.getWaypointType() != null)
-                waypoint.setType(position.getWaypointType().value());
-            waypointTable.getWaypoint().add(waypoint);
         }
 
-        flightPlan.setRoute(flightPlanRoute);
         flightPlan.setWaypointTable(waypointTable);
+        flightPlan.setRoute(flightPlanRoute);
         return flightPlan;
     }
 

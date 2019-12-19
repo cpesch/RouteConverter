@@ -67,7 +67,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         return trimLineFeeds(name + "; " + description);
     }
 
-    protected String asName(String description) {
+    public static String asName(String description) {
         if (description == null)
             return null;
         int index = description.indexOf(';');
@@ -76,7 +76,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         return trim(description);
     }
 
-    protected String asDesc(String description) {
+    public static String asDesc(String description) {
         if (description == null)
             return null;
         int index = description.indexOf(';');
