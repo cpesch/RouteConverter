@@ -78,7 +78,7 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
             return;
 
         Row header = sheet.getRow(0);
-        log.info(format("Parsing sheet '%s' with %d rows and %d columns", sheet.getSheetName(), sheet.getPhysicalNumberOfRows(), header.getPhysicalNumberOfCells()));
+        log.info(format("Parsing sheet '%s' with %d rows and %d columns", sheet.getSheetName(), sheet.getPhysicalNumberOfRows(), header.getLastCellNum()));
 
         ColumnTypeToRowIndexMapping mapping = parseHeader(header);
 
@@ -95,8 +95,11 @@ public abstract class ExcelFormat extends BaseNavigationFormat<ExcelRoute> imple
 
     private ColumnTypeToRowIndexMapping parseHeader(Row row) {
         ColumnTypeToRowIndexMapping result = new ColumnTypeToRowIndexMapping();
-        for (int i = 0, c = row.getPhysicalNumberOfCells(); i < c; i++) {
+        for (int i = 0, c = row.getLastCellNum(); i < c; i++) {
             Cell cell = row.getCell(i);
+            // empty cell
+            if(cell == null)
+                continue;
             String cellValue = cell.getStringCellValue();
             ColumnType columnType = parseColumnType(cellValue);
             log.info(format("Column %d with name '%s' is identified as %s", i, cellValue, columnType));

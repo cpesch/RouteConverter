@@ -27,6 +27,7 @@ import slash.navigation.base.ExtendedSensorNavigationPosition;
 import slash.navigation.csv.CsvPosition;
 import slash.navigation.gpx.GpxPosition;
 
+import static org.apache.poi.ss.usermodel.CellType.NUMERIC;
 import static slash.common.io.Transfer.toDouble;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
@@ -74,7 +75,10 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
 
     private String getCellAsString(ColumnType type) {
         Cell cell = getCell(type);
-        return cell != null ? cell.getStringCellValue() : null;
+        if(cell == null)
+            return null;
+        CellType cellType = cell.getCellType();
+        return cellType.equals(NUMERIC)? Double.toString(cell.getNumericCellValue()) : cell.getStringCellValue();
     }
 
     private CompactCalendar getCellAsTime(ColumnType type) {
