@@ -19,7 +19,6 @@
 */
 package slash.navigation.rest.tools;
 
-import com.github.markusbernhardt.proxy.ProxySearch;
 import org.apache.commons.cli.*;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
@@ -42,6 +41,7 @@ import static java.lang.System.exit;
 import static java.net.Authenticator.RequestorType.PROXY;
 import static java.net.Proxy.NO_PROXY;
 import static java.net.Proxy.Type.DIRECT;
+import static slash.common.helpers.ProxyHelper.setUseSystemProxies;
 
 /**
  * Checks for proxy settings.
@@ -72,15 +72,11 @@ public class CheckProxy {
     }
 
     private void run(String[] args) throws Exception {
-        System.setProperty("java.net.useSystemProxies","true");
-
         CommandLine line = parseCommandLine(args);
         String userName = line.getOptionValue(USERNAME_ARGUMENT);
         String password = line.getOptionValue(PASSWORD_ARGUMENT);
 
-        ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
-        ProxySelector proxySelector = proxySearch.getProxySelector();
-        ProxySelector.setDefault(proxySelector);
+        setUseSystemProxies();
 
         ProxySelector selector = ProxySelector.getDefault();
         log.info(format("ProxySelector %s", selector));
