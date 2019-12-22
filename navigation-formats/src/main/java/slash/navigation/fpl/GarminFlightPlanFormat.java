@@ -159,7 +159,8 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
     public static WaypointType createValidWaypointType(GarminFlightPlanPosition position) {
         String identifier = position.getIdentifier();
-        return identifier != null && identifier.length() == AIRPORT_IDENTIFIER_LENGTH ? Airport : position.getWaypointType();
+        return identifier != null && identifier.length() == AIRPORT_IDENTIFIER_LENGTH ? Airport :
+                position.getWaypointType() != null ? position.getWaypointType() : UserWaypoint;
     }
 
     public int getMaximumRouteNameLength() {
