@@ -25,7 +25,6 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.WaypointType;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.renderer.CountryCodeListCellRenderer;
 import slash.navigation.converter.gui.renderer.WaypointTypeListCellRenderer;
 import slash.navigation.fpl.CountryCode;
@@ -37,9 +36,11 @@ import slash.navigation.gui.actions.DialogAction;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ResourceBundle;
-import java.util.prefs.Preferences;
 
 import static java.awt.Color.RED;
 import static java.awt.event.ItemEvent.SELECTED;
@@ -49,7 +50,6 @@ import static javax.swing.BorderFactory.createLineBorder;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.base.WaypointType.*;
-import static slash.navigation.fpl.CountryCode.None;
 import static slash.navigation.fpl.GarminFlightPlanFormat.*;
 
 /**
@@ -59,11 +59,8 @@ import static slash.navigation.fpl.GarminFlightPlanFormat.*;
  */
 
 public class CompleteFlightPlanDialog extends SimpleDialog {
-    private static final Preferences preferences = Preferences.userNodeForPackage(CompleteFlightPlanDialog.class);
     private static final Border INVALID_BORDER = createLineBorder(RED, 2);
     private static final Border VALID_BORDER = new JComboBox().getBorder();
-    private static final String PROPOSE_COUNTRY_CODE_PREFERENCE = "proposeCountryCode";
-    private static final String PROPOSE_IDENTIFIER_AND_COMMENT_PREFERENCE = "proposeIdentifierAndComment";
     private JPanel contentPane;
     private JLabel labelPosition;
     private JTextField textFieldDescription;
@@ -72,8 +69,6 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     private JComboBox<WaypointType> comboBoxWaypointType;
     private JButton buttonPrevious;
     private JButton buttonNextOrFinish;
-    private JCheckBox checkBoxProposeIdentifierAndComment;
-    private JCheckBox checkBoxProposeCountryCode;
 
     private GarminFlightPlanRoute route;
     private int index;
@@ -145,10 +140,6 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
             validateModel();
         });
 
-        new CheckBoxPreferencesSynchronizer(checkBoxProposeCountryCode, preferences, PROPOSE_COUNTRY_CODE_PREFERENCE, true);
-        checkBoxProposeCountryCode.addItemListener(e -> updateView());
-        new CheckBoxPreferencesSynchronizer(checkBoxProposeIdentifierAndComment, preferences, PROPOSE_IDENTIFIER_AND_COMMENT_PREFERENCE, false);
-        checkBoxProposeIdentifierAndComment.addItemListener(e -> updateView());
         updateView();
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
@@ -170,9 +161,6 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     }
 
     private void updateModel() {
-        boolean proposeIdentifierAndCommentSelected = checkBoxProposeIdentifierAndComment.isSelected();
-        if (!proposeIdentifierAndCommentSelected)
-            return;
         getPosition().setIdentifier(textFieldIdentifier.getText());
         getPosition().setDescription(textFieldDescription.getText());
     }
@@ -181,26 +169,23 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         labelPosition.setText(format(RouteConverter.getBundle().getString("position-index"), index + 1, route.getPositionCount()));
         GarminFlightPlanPosition position = getPosition();
 
-        boolean proposeIdentifierAndCommentSelected = checkBoxProposeIdentifierAndComment.isSelected();
-        textFieldIdentifier.setText(proposeIdentifierAndCommentSelected ? createValidIdentifier(position, route.getPositions()) : position.getIdentifier());
-        textFieldDescription.setText(proposeIdentifierAndCommentSelected ? createValidDescription(position.getDescription()) : position.getDescription());
+        textFieldIdentifier.setText(createValidIdentifier(position, route.getPositions()));
+        textFieldDescription.setText(createValidDescription(position.getDescription()));
 
-        boolean proposeCountryCodeSelected = checkBoxProposeCountryCode.isSelected();
-        comboBoxCountryCode.setSelectedItem(proposeCountryCodeSelected ? createValidCountryCode(position) : None);
-        comboBoxWaypointType.setSelectedItem(proposeCountryCodeSelected ? createValidWaypointType(position) : position.getWaypointType());
+        comboBoxCountryCode.setSelectedItem(createValidCountryCode(position));
+        comboBoxWaypointType.setSelectedItem(createValidWaypointType(position));
         validateModel();
     }
 
     private void validateModel() {
-        boolean proposeIdentifierAndCommentSelected = checkBoxProposeIdentifierAndComment.isSelected();
-        boolean validIdentifier = hasValidIdentifier(proposeIdentifierAndCommentSelected ? textFieldIdentifier.getText() : getPosition().getIdentifier());
+        boolean validIdentifier = hasValidIdentifier(textFieldIdentifier.getText());
         textFieldIdentifier.setBorder(validIdentifier ? VALID_BORDER : INVALID_BORDER);
-        boolean validDescription = hasValidDescription(proposeIdentifierAndCommentSelected ? textFieldDescription.getText() : getPosition().getDescription());
+        boolean validDescription = hasValidDescription(textFieldDescription.getText());
         textFieldDescription.setBorder(validDescription ? VALID_BORDER : INVALID_BORDER);
 
         boolean validWaypointType = getPosition().getWaypointType() != null;
         comboBoxWaypointType.setBorder(validWaypointType ? VALID_BORDER : INVALID_BORDER);
-        boolean validCountryCode = getPosition().getWaypointType() != null && getPosition().getWaypointType().equals(Airport) ? getPosition().getCountryCode() != null : true;
+        boolean validCountryCode = validWaypointType && Airport.equals(getPosition().getWaypointType()) ? getPosition().getCountryCode() != null : true;
         comboBoxCountryCode.setBorder(validCountryCode ? VALID_BORDER : INVALID_BORDER);
 
         buttonPrevious.setEnabled(index > 0);
@@ -246,7 +231,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(7, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("position-colon"));
@@ -273,12 +258,6 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         panel3.add(label5, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldDescription = new JTextField();
         panel3.add(textFieldDescription, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        checkBoxProposeCountryCode = new JCheckBox();
-        this.$$$loadButtonText$$$(checkBoxProposeCountryCode, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("propose-country-code"));
-        panel3.add(checkBoxProposeCountryCode, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxProposeIdentifierAndComment = new JCheckBox();
-        this.$$$loadButtonText$$$(checkBoxProposeIdentifierAndComment, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("propose-identifier-and-comment"));
-        panel3.add(checkBoxProposeIdentifierAndComment, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
         this.$$$loadLabelText$$$(label6, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("complete-flight-plan-description"));
         contentPane.add(label6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

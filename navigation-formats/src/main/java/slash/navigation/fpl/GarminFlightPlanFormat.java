@@ -43,6 +43,7 @@ import static slash.navigation.base.WaypointType.UserWaypoint;
 import static slash.navigation.common.NavigationConversion.formatElevation;
 import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.fpl.CountryCode.None;
+import static slash.navigation.fpl.CountryCode.United_States;
 import static slash.navigation.fpl.GarminFlightPlanUtil.marshal;
 import static slash.navigation.fpl.GarminFlightPlanUtil.unmarshal;
 
@@ -116,6 +117,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
             count = 0;
         String result = identifier;
 
+        // for the same coordinates only one identifier can be present
         while(!hasValidIdentifier(position, positions)) {
             result = createValidIdentifier(count + identifier);
             count++;
@@ -145,10 +147,12 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     public static CountryCode createValidCountryCode(GarminFlightPlanPosition position) {
         String identifier = position.getIdentifier();
         if (identifier != null) {
+            // extra rule for the United States
             if (identifier.length() > 0 && identifier.charAt(0) == 'K')
-                return CountryCode.United_States;
+                return United_States;
 
             if (identifier.length() >= COUNTRY_CODE_IDENTIFIER_LENGTH) {
+                // find first two characters from identifier in country codes
                 CountryCode countryCode = CountryCode.fromValue(identifier.substring(0, COUNTRY_CODE_IDENTIFIER_LENGTH));
                 if (countryCode != null)
                     return countryCode;
@@ -159,8 +163,10 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
     public static WaypointType createValidWaypointType(GarminFlightPlanPosition position) {
         String identifier = position.getIdentifier();
-        return identifier != null && identifier.length() == AIRPORT_IDENTIFIER_LENGTH ? Airport :
-                position.getWaypointType() != null ? position.getWaypointType() : UserWaypoint;
+        // identifier with four characters are always airports
+        if (identifier != null && identifier.length() == AIRPORT_IDENTIFIER_LENGTH)
+            return Airport;
+        return position.getWaypointType() != null ? position.getWaypointType() : UserWaypoint;
     }
 
     public int getMaximumRouteNameLength() {
