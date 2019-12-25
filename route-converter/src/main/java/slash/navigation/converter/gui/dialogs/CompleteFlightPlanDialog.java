@@ -183,9 +183,12 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         boolean validDescription = hasValidDescription(textFieldDescription.getText());
         textFieldDescription.setBorder(validDescription ? VALID_BORDER : INVALID_BORDER);
 
-        boolean validWaypointType = getPosition().getWaypointType() != null;
+        boolean validWaypointType = comboBoxWaypointType.getSelectedItem() != null;
         comboBoxWaypointType.setBorder(validWaypointType ? VALID_BORDER : INVALID_BORDER);
-        boolean validCountryCode = validWaypointType && Airport.equals(getPosition().getWaypointType()) ? getPosition().getCountryCode() != null : true;
+        boolean validCountryCode = Airport.equals(comboBoxWaypointType.getSelectedItem()) ?
+                !CountryCode.None.equals(comboBoxCountryCode.getSelectedItem()) :
+                UserWaypoint.equals(comboBoxWaypointType.getSelectedItem()) ?
+                        CountryCode.None.equals(comboBoxCountryCode.getSelectedItem()) : true;
         comboBoxCountryCode.setBorder(validCountryCode ? VALID_BORDER : INVALID_BORDER);
 
         buttonPrevious.setEnabled(index > 0);

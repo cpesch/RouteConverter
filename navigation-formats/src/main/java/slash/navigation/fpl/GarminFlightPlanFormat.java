@@ -145,6 +145,9 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     }
 
     public static CountryCode createValidCountryCode(GarminFlightPlanPosition position) {
+        if(position.getWaypointType().equals(UserWaypoint))
+            return None;
+
         String identifier = position.getIdentifier();
         if (identifier != null) {
             // extra rule for the United States
