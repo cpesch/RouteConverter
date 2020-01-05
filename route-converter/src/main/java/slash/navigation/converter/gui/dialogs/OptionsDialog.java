@@ -147,20 +147,18 @@ public class OptionsDialog extends SimpleDialog {
 
         ComboBoxModel<Locale> localeModel = new DefaultComboBoxModel<>(new Locale[]{
                 ARABIA, BRAZIL, CATALAN, CHINA, CZECH, DENMARK, GERMANY, US, SPAIN, FRANCE, CROATIA,
-                ITALY, JAPAN, NEDERLANDS, NORWAY_BOKMAL, POLAND, PORTUGAL, RUSSIA, SLOVAKIA, SERBIA, UKRAINE,
+                ITALY, JAPAN, KOREA, NEDERLANDS, NORWAY_BOKMAL, POLAND, PORTUGAL, RUSSIA, SLOVAKIA, SERBIA, UKRAINE,
                 ROOT
         });
         localeModel.setSelectedItem(Application.getInstance().getLocale());
         comboBoxLocale.setModel(localeModel);
         comboBoxLocale.setRenderer(new LocaleListCellRenderer());
-        comboBoxLocale.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED) {
-                    return;
-                }
-                Locale locale = (Locale) e.getItem();
-                Application.getInstance().setLocale(locale);
+        comboBoxLocale.addItemListener(e -> {
+            if (e.getStateChange() != SELECTED) {
+                return;
             }
+            Locale locale = (Locale) e.getItem();
+            Application.getInstance().setLocale(locale);
         });
 
         List<MapViewImplementation> mapViews = r.getAvailableMapViews();
@@ -169,15 +167,13 @@ public class OptionsDialog extends SimpleDialog {
         mapViewModel.setSelectedItem(r.getMapViewPreference());
         comboBoxMapService.setModel(mapViewModel);
         comboBoxMapService.setRenderer(new MapViewListCellRenderer());
-        comboBoxMapService.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED) {
-                    return;
-                }
-                MapViewImplementation mapView = (MapViewImplementation) e.getItem();
-                r.setMapView(mapView);
-                handleMapServiceUpdate();
+        comboBoxMapService.addItemListener(e -> {
+            if (e.getStateChange() != SELECTED) {
+                return;
             }
+            MapViewImplementation mapView = (MapViewImplementation) e.getItem();
+            r.setMapView(mapView);
+            handleMapServiceUpdate();
         });
         handleMapServiceUpdate();
         textFieldMapsPath.getDocument().addDocumentListener(new DocumentListener() {
@@ -237,14 +233,12 @@ public class OptionsDialog extends SimpleDialog {
         googleMapsServerModel.setSelectedItem(r.getGoogleMapsServerModel().getGoogleMapsServer());
         comboBoxGoogleMapsServer.setModel(googleMapsServerModel);
         comboBoxGoogleMapsServer.setRenderer(new GoogleMapsServerListCellRenderer());
-        comboBoxGoogleMapsServer.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED) {
-                    return;
-                }
-                GoogleMapsServer googleMapsServer = (GoogleMapsServer) e.getItem();
-                r.getGoogleMapsServerModel().setGoogleMapsServer(googleMapsServer);
+        comboBoxGoogleMapsServer.addItemListener(e -> {
+            if (e.getStateChange() != SELECTED) {
+                return;
             }
+            GoogleMapsServer googleMapsServer = (GoogleMapsServer) e.getItem();
+            r.getGoogleMapsServerModel().setGoogleMapsServer(googleMapsServer);
         });
 
         ComboBoxModel<FixMapMode> fixMapModeModel = new DefaultComboBoxModel<>(new FixMapMode[]{
@@ -253,14 +247,12 @@ public class OptionsDialog extends SimpleDialog {
         fixMapModeModel.setSelectedItem(r.getFixMapModeModel().getFixMapMode());
         comboBoxFixMapMode.setModel(fixMapModeModel);
         comboBoxFixMapMode.setRenderer(new FixMapModeListCellRenderer());
-        comboBoxFixMapMode.addItemListener(new ItemListener() {
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() != SELECTED) {
-                    return;
-                }
-                FixMapMode fixMapMode = (FixMapMode) e.getItem();
-                r.getFixMapModeModel().setFixMapMode(fixMapMode);
+        comboBoxFixMapMode.addItemListener(e -> {
+            if (e.getStateChange() != SELECTED) {
+                return;
             }
+            FixMapMode fixMapMode = (FixMapMode) e.getItem();
+            r.getFixMapModeModel().setFixMapMode(fixMapMode);
         });
 
         textFieldBabelPath.getDocument().addDocumentListener(new DocumentListener() {
