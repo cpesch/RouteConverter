@@ -60,7 +60,7 @@ import static slash.navigation.fpl.GarminFlightPlanFormat.*;
 
 public class CompleteFlightPlanDialog extends SimpleDialog {
     private static final Border INVALID_BORDER = createLineBorder(RED, 2);
-    private static final Border VALID_BORDER = new JComboBox().getBorder();
+    private static final Border VALID_BORDER = new JComboBox<>().getBorder();
     private JPanel contentPane;
     private JLabel labelPosition;
     private JTextField textFieldDescription;
@@ -188,7 +188,8 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         boolean validCountryCode = Airport.equals(comboBoxWaypointType.getSelectedItem()) ?
                 !CountryCode.None.equals(comboBoxCountryCode.getSelectedItem()) :
                 UserWaypoint.equals(comboBoxWaypointType.getSelectedItem()) ?
-                        CountryCode.None.equals(comboBoxCountryCode.getSelectedItem()) : true;
+                        CountryCode.None.equals(comboBoxCountryCode.getSelectedItem()) :
+                        !CountryCode.None.equals(comboBoxCountryCode.getSelectedItem());
         comboBoxCountryCode.setBorder(validCountryCode ? VALID_BORDER : INVALID_BORDER);
 
         buttonPrevious.setEnabled(index > 0);
