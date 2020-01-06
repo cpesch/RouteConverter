@@ -66,7 +66,7 @@
         <brouter.version>1.5.5</brouter.version>
         <graphhopper.version>0.13.0</graphhopper.version>
         <httpclient.version>4.5.10</httpclient.version>
-        <jackson.version>2.10.1</jackson.version>
+        <jackson.version>2.10.2</jackson.version>
         <jaxb.version>2.3.1</jaxb.version>
         <mapsforge.version>0.12.0</mapsforge.version>
         <poi.version>4.1.0</poi.version>
@@ -356,7 +356,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13-rc-2</version>
+            <version>4.13</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -422,7 +422,7 @@
             <dependency>
                 <groupId>org.javadelight</groupId>
                 <artifactId>delight-nashorn-sandbox</artifactId>
-                <version>0.1.27</version>
+                <version>0.1.28</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.webjars.bower</groupId>
