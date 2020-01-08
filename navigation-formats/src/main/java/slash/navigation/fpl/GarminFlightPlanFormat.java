@@ -90,12 +90,12 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
                 identifier.length() <= getMaximumIdentifierLength();
     }
 
-    private static boolean hasValidIdentifier(GarminFlightPlanPosition position, List<GarminFlightPlanPosition> positions) {
-        if(!hasValidIdentifier(position.getIdentifier()))
+    private static boolean hasValidIdentifier(GarminFlightPlanPosition position, String identifier, List<GarminFlightPlanPosition> positions) {
+        if(!hasValidIdentifier(identifier))
             return false;
 
         for(GarminFlightPlanPosition p : positions) {
-            if(p.getIdentifier().equals(position.getIdentifier()) &&
+            if(p.getIdentifier().equals(identifier) &&
                     !(p.getLongitude().equals(position.getLongitude()) && p.getLatitude().equals(position.getLatitude())))
                 return false;
         }
@@ -118,7 +118,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         String result = identifier;
 
         // for the same coordinates only one identifier can be present
-        while(!hasValidIdentifier(position, positions)) {
+        while(!hasValidIdentifier(position, result, positions)) {
             result = createValidIdentifier(count + identifier);
             count++;
         }

@@ -182,8 +182,8 @@ public abstract class NavigationTestCase extends TestCase {
     private static String getFlightPlaneRouteName(BaseRoute route) {
         String name = route.getName();
         name = name.replaceAll(";", "");
-        name = name.replaceAll(" ", "");
-        return name.toUpperCase();
+        name = name.toUpperCase();
+        return trim(name, 25);
     }
 
     @SuppressWarnings("unchecked")
@@ -607,7 +607,8 @@ public abstract class NavigationTestCase extends TestCase {
         description = description.replaceAll(";", "");
         description = description.replaceAll(",", "");
         description = description.replaceAll(" ", "");
-        return description.toUpperCase();
+        description = description.toUpperCase();
+        return trim(description, 25);
     }
 
     private static String getNavigatingPoiWarnerDescription(NavigationPosition position) {
@@ -732,7 +733,6 @@ public abstract class NavigationTestCase extends TestCase {
                 String targetName = getTourExchangePositionDescription(targetPosition);
                 assertEquals("Description " + index + " does not match", sourceName, targetName);
             } else if (targetFormat instanceof GarminFlightPlanFormat) {
-                // GarminFlightPlanFormat strips spaces and special characters and makes everything UPPERCASE
                 String sourceName = getFlightPlanPositionDescription(sourcePosition);
                 String targetName = getFlightPlanPositionDescription(targetPosition);
                 assertEquals("Description " + index + " does not match", sourceName, targetName);
