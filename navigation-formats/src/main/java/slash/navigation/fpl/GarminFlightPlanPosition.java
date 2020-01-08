@@ -68,7 +68,7 @@ public class GarminFlightPlanPosition extends Wgs84Position {
     public String getDescription() {
         String description = trim(super.getDescription());
         return description != null ? description :
-                getIdentifier() + ", " + getWaypointType() + (getCountryCode() != null ? ", " + getCountryCode() : "");
+                getIdentifier() + "," + getWaypointType() + (getCountryCode() != null ? ", " + getCountryCode() : "");
     }
 
     public String getIdentifier() {

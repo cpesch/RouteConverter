@@ -36,8 +36,10 @@ public class PhotonServiceIT {
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
                 new SimpleNavigationPosition(10.1994416, 50.0002652, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
-                new SimpleNavigationPosition(10.2004901, 50.0014652, null, "Kindertagesst\u00e4tte St. Joseph, 97506 Grafenrheinfeld, Bavaria, Germany (amenity)"),
-                new SimpleNavigationPosition(10.200785058788268, 50.0012567, null, "Pfarrheim, 97506 Grafenrheinfeld, Bavaria, Germany (building)")
+                new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
+                new SimpleNavigationPosition(10.1999752, 49.9999416, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
+                new SimpleNavigationPosition(10.200785058788268, 50.0012567, null, "Pfarrheim, 97506 Grafenrheinfeld, Bavaria, Germany (building)"),
+                new SimpleNavigationPosition(10.2004901, 50.0014652, null, "Kindertagesst\u00e4tte St. Joseph, 97506 Grafenrheinfeld, Bavaria, Germany (amenity)")
         );
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
