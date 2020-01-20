@@ -65,10 +65,10 @@
         <alephformatter.version>0.1.0</alephformatter.version>
         <brouter.version>1.5.5</brouter.version>
         <graphhopper.version>0.13.0</graphhopper.version>
-        <httpclient.version>4.5.10</httpclient.version>
+        <httpclient.version>4.5.11</httpclient.version>
         <jackson.version>2.10.2</jackson.version>
         <jaxb.version>2.3.1</jaxb.version>
-        <mapsforge.version>0.12.0</mapsforge.version>
+        <mapsforge.version>0.13.0</mapsforge.version>
         <poi.version>4.1.0</poi.version>
     </properties>
 
@@ -379,7 +379,7 @@
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.13</version>
+                <version>1.14</version>
                 <classifier>stripped</classifier>
             </dependency>
             <dependency>
