@@ -36,9 +36,9 @@ public class NominatimServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
-                new SimpleNavigationPosition(10.2014032, 50.0002123, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland (residential)"),
-                new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland (living_street)"),
-                new SimpleNavigationPosition(10.1999752, 49.9999416, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Unterfranken, Bayern, 97506, Deutschland (service)")
+                new SimpleNavigationPosition(10.2014032, 50.0002123, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland (residential)"),
+                new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland (living_street)"),
+                new SimpleNavigationPosition(10.1999752, 49.9999416, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland (service)")
         );
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
@@ -60,7 +60,7 @@ public class NominatimServiceIT {
     @Test
     public void getAddressForCity() throws IOException {
         // https://nominatim.openstreetmap.org/reverse?lat=47.3&lon=9.0&format=xml
-        assertEquals("M\u00fcslieggstrasse, 8733 Eschenbach (SG), Sankt Gallen, Schweiz/Suisse/Svizzera/Svizra", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
+        assertEquals("M\u00fcslieggstrasse, 8733 Eschenbach (SG), Sankt Gallen, Switzerland", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
     }
 
     @Test
