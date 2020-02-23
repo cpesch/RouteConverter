@@ -40,6 +40,8 @@ public class HgtFilesService {
     private static final Set<String> DATASOURCE_URIS = new HashSet<>(asList(
             "srtm3",
             "srtm1",
+            "sonny3",
+            "sonny1",
             "ferranti3",
             "ferranti1"
     ));

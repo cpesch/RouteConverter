@@ -141,11 +141,13 @@ public class AutomaticElevationService implements ElevationService {
         private static final Map<String, Integer> PRIORITY = new HashMap<>();
         static {
             PRIORITY.put("Jonathan de Ferranti DEM 1", 1);
-            PRIORITY.put("NASA SRTM 1", 2);
-            PRIORITY.put(JONATHAN_DE_FERRANTI_DEM_3, 3);
-            PRIORITY.put("NASA SRTM 3", 4);
-            PRIORITY.put("GeoNames", 5);
-            PRIORITY.put("Google Maps", 6);
+            PRIORITY.put("Sonny LiDAR DGM 1", 2);
+            PRIORITY.put("NASA SRTM 1", 3);
+            PRIORITY.put(JONATHAN_DE_FERRANTI_DEM_3, 4);
+            PRIORITY.put("Sonny LiDAR DGM 3", 5);
+            PRIORITY.put("NASA SRTM 3", 6);
+            PRIORITY.put("GeoNames", 7);
+            PRIORITY.put("Google Maps", 8);
         }
 
         private int getPriority(ElevationService elevationService) {
