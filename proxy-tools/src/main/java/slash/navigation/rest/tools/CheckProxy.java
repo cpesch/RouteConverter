@@ -126,6 +126,7 @@ public class CheckProxy {
         if (proxy != NO_PROXY && !proxy.type().equals(DIRECT)) {
 
             SocketAddress address = proxy.address();
+            log.info("SocketAddress " + address);
             if (address instanceof InetSocketAddress) {
                 InetSocketAddress inetSocketAddress = (InetSocketAddress) address;
                 HttpHost host = new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort());
