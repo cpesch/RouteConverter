@@ -51,7 +51,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     private final MapViewProjection projection;
     private final LayerManager layerManager;
     private Point lastMousePressPoint;
-    private Marker mousePressMarker;
+    private MarkerAndDelta markerAndDelta;
 
     public MapViewMoverAndZoomer(AwtGraphicMapView mapView, LayerManager layerManager) {
         this.mapView = mapView;
@@ -63,8 +63,8 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public void mousePressed(MouseEvent e) {
-        mousePressMarker = getMarkerFor(e);
-        if (mousePressMarker == null)
+        markerAndDelta = getMarkerFor(e);
+        if (markerAndDelta == null)
             lastMousePressPoint = e.getPoint();
     }
 
@@ -72,9 +72,10 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         if (isLeftMouseButton(e)) {
             if (isMousePressedOnMarker()) {
                 startDragCursor(mapView);
-                LatLong latLong = projection.fromPixels(e.getX(), e.getY());
-                mousePressMarker.setLatLong(latLong);
-                mousePressMarker.requestRedraw();
+                LatLong latLong = projection.fromPixels(e.getX() + markerAndDelta.getDeltaX(), e.getY() + markerAndDelta.getDeltaY());
+                Marker marker = markerAndDelta.getMarker();
+                marker.setLatLong(latLong);
+                marker.requestRedraw();
 
             } else if (getLastMousePoint() != null) {
                 Point point = e.getPoint();
@@ -88,10 +89,10 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
 
     public void mouseReleased(MouseEvent e) {
         if (isMousePressedOnMarker() && isDragCursor(mapView)) {
-            LatLong latLong = projection.fromPixels(e.getX(), e.getY());
-            if(mousePressMarker instanceof DraggableMarker)
-                ((DraggableMarker)mousePressMarker).onDrop(latLong);
-            mousePressMarker = null;
+            LatLong latLong = projection.fromPixels(e.getX() + markerAndDelta.getDeltaX(), e.getY() + markerAndDelta.getDeltaY());
+            DraggableMarker marker = markerAndDelta.getMarker();
+            marker.onDrop(latLong);
+            markerAndDelta = null;
             stopWaitCursor(mapView);
         }
     }
@@ -101,7 +102,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         zoomToMousePosition((byte) -e.getWheelRotation());
     }
 
-    private Marker getMarkerFor(MouseEvent e) {
+    private MarkerAndDelta getMarkerFor(MouseEvent e) {
         LatLong tapLatLong = projection.fromPixels(e.getX(), e.getY());
         org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(e.getX(), e.getY());
 
@@ -111,8 +112,9 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
                 continue;
 
             org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
-            if (layer.onTap(tapLatLong, layerXY, tapXY))
-                return (Marker) layer;
+            if (layer.onTap(tapLatLong, layerXY, tapXY)) {
+                return new MarkerAndDelta((DraggableMarker) layer, layerXY.x - tapXY.x, layerXY.y - tapXY.y);
+            }
         }
         return null;
     }
@@ -126,17 +128,15 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public void animateCenter(final int horizontalDiff, final int verticalDiff) {
-        new Thread(new Runnable() {
-            public void run() {
-                double stepSizeX = horizontalDiff / (double)STEPS_TO_MOVE_CENTER;
-                double stepSizeY = verticalDiff / (double)STEPS_TO_MOVE_CENTER;
-                for (int i = 0; i < STEPS_TO_MOVE_CENTER; i++) {
-                    mapView.getModel().mapViewPosition.moveCenter(stepSizeX, stepSizeY);
-                    try {
-                        sleep(10);
-                    } catch (InterruptedException e) {
-                        // intentionally left empty
-                    }
+        new Thread(() -> {
+            double stepSizeX = horizontalDiff / (double) STEPS_TO_MOVE_CENTER;
+            double stepSizeY = verticalDiff / (double) STEPS_TO_MOVE_CENTER;
+            for (int i = 0; i < STEPS_TO_MOVE_CENTER; i++) {
+                mapView.getModel().mapViewPosition.moveCenter(stepSizeX, stepSizeY);
+                try {
+                    sleep(10);
+                } catch (InterruptedException e) {
+                    // intentionally left empty
                 }
             }
         }).start();
@@ -167,6 +167,30 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public boolean isMousePressedOnMarker() {
-        return mousePressMarker != null;
+        return markerAndDelta != null;
+    }
+
+    private static class MarkerAndDelta {
+        private DraggableMarker marker;
+        private double deltaX;
+        private double deltaY;
+
+        public MarkerAndDelta(DraggableMarker marker, double deltaX, double deltaY) {
+            this.marker = marker;
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
+        }
+
+        public DraggableMarker getMarker() {
+            return marker;
+        }
+
+        public double getDeltaX() {
+            return deltaX;
+        }
+
+        public double getDeltaY() {
+            return deltaY;
+        }
     }
 }
