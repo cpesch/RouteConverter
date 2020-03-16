@@ -41,28 +41,28 @@ import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
- * Reads and writes MotoPlaner URLs from/to files.
+ * Reads and writes Kurviger URLs from/to files.
  *
  * @author Christian Pesch
  */
 
-public class MotoPlanerUrlFormat extends BaseUrlParsingFormat {
-    private static final Preferences preferences = Preferences.userNodeForPackage(MotoPlanerUrlFormat.class);
-    private static final Pattern URL_PATTERN = Pattern.compile(".*http[s]?://www.motoplaner.de/#([^\\s]+).*");
+public class KurvigerUrlFormat extends BaseUrlParsingFormat {
+    private static final Preferences preferences = Preferences.userNodeForPackage(KurvigerUrlFormat.class);
+    private static final Pattern URL_PATTERN = Pattern.compile(".*http[s]?://kurviger.de/\\?([^\\s]+).*");
 
     public String getExtension() {
         return ".url";
     }
 
     public String getName() {
-        return "MotoPlaner URL (*" + getExtension() + ")";
+        return "Kurviger URL (*" + getExtension() + ")";
     }
 
     public int getMaximumPositionCount() {
-        return preferences.getInt("maximumMotoPlanerUrlPositionCount", 100);
+        return preferences.getInt("maximumKurvigerUrlPositionCount", 100);
     }
 
-    public static boolean isMotoPlanerUrl(URL url) {
+    public static boolean isKurvigerUrl(URL url) {
         String found = internalFindUrl(url.toExternalForm());
         return found != null;
     }
@@ -83,11 +83,11 @@ public class MotoPlanerUrlFormat extends BaseUrlParsingFormat {
 
     List<Wgs84Position> parsePositions(String data) {
         List<Wgs84Position> result = new ArrayList<>();
-        StringTokenizer tokenizer = new StringTokenizer(data, ";");
+        StringTokenizer tokenizer = new StringTokenizer(data, "&");
         while (tokenizer.hasMoreTokens()) {
             String token = tokenizer.nextToken();
-            if (token.startsWith("1,"))
-                token = token.substring(2);
+            if (token.startsWith("point="))
+                token = token.substring(6);
             Wgs84Position position = parsePosition(token);
             if (position != null)
                 result.add(position);
@@ -120,15 +120,15 @@ public class MotoPlanerUrlFormat extends BaseUrlParsingFormat {
     }
 
     String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {
-        StringBuilder buffer = new StringBuilder("http://www.motoplaner.de/#");
+        StringBuilder buffer = new StringBuilder("https://kurviger.de/?");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             String longitude = position.getLongitude() != null ? formatDoubleAsString(position.getLongitude(), 6) : null;
             String latitude = position.getLatitude() != null ? formatDoubleAsString(position.getLatitude(), 6) : null;
             if (longitude != null && latitude != null)
-                buffer.append(latitude).append(",").append(longitude).append(";1");
+                buffer.append("point=").append(latitude).append(",").append(longitude);
             if (i < endIndex - 1)
-                buffer.append(",");
+                buffer.append("&");
         }
         return buffer.toString();
     }

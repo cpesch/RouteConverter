@@ -65,6 +65,7 @@ import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
+import slash.navigation.url.KurvigerUrlFormat;
 import slash.navigation.url.MotoPlanerUrlFormat;
 import slash.navigation.url.UrlFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
@@ -189,6 +190,7 @@ public class NavigationFormatRegistry {
 
         addFormat(NmnUrlFormat.class);
         addFormat(GoogleMapsUrlFormat.class);
+        addFormat(KurvigerUrlFormat.class);
         addFormat(MotoPlanerUrlFormat.class);
         addFormat(UrlFormat.class);
         addFormat(CsvCommaFormat.class);

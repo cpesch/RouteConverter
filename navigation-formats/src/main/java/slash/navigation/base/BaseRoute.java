@@ -72,6 +72,7 @@ import slash.navigation.tour.TourFormat;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
 import slash.navigation.url.GoogleMapsUrlFormat;
+import slash.navigation.url.KurvigerUrlFormat;
 import slash.navigation.url.MotoPlanerUrlFormat;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.viamichelin.ViaMichelinRoute;
@@ -498,7 +499,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         @SuppressWarnings({"SuspiciousToArrayCall", "unchecked"})
         P[] sorted = (P[]) positions.toArray(new BaseNavigationPosition[0]);
         Arrays.sort(sorted, comparator);
-        //noinspection unchecked
         order(asList(sorted));
     }
 
@@ -551,98 +551,98 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     protected abstract TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format);
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asApeMapFormat() {
         if (getFormat() instanceof ApeMapFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new ApeMapFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asColumbusGpsBinaryFormat() {
         if (getFormat() instanceof ColumbusGpsBinaryFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new ColumbusGpsBinaryFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asColumbusGpsType1Format() {
         if (getFormat() instanceof ColumbusGpsType1Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new ColumbusGpsType1Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asColumbusGpsType2Format() {
         if (getFormat() instanceof ColumbusGpsType2Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new ColumbusGpsType2Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asCoPilot6Format() {
         if (getFormat() instanceof CoPilot6Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new CoPilot6Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asCoPilot7Format() {
         if (getFormat() instanceof CoPilot7Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new CoPilot7Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asCoPilot8Format() {
         if (getFormat() instanceof CoPilot8Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new CoPilot8Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asCoPilot9Format() {
         if (getFormat() instanceof CoPilot9Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new CoPilot9Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public CsvRoute asCsvCommaFormat() {
         if (getFormat() instanceof CsvCommaFormat)
             return (CsvRoute) this;
         return asCsvFormat(new CsvCommaFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public CsvRoute asCsvSemicolonFormat() {
         if (getFormat() instanceof CsvSemicolonFormat)
             return (CsvRoute) this;
         return asCsvFormat(new CsvSemicolonFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asFitFormat() {
         if (getFormat() instanceof FitFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new FitFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public ExcelRoute asMicrosoftExcel97Format() {
         if (getFormat() instanceof MicrosoftExcel97Format)
             return (ExcelRoute) this;
         return asExcelFormat(new MicrosoftExcel97Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public ExcelRoute asMicrosoftExcel2008Format() {
         if (getFormat() instanceof MicrosoftExcel2008Format)
             return (ExcelRoute) this;
         return asExcelFormat(new MicrosoftExcel2008Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public GarminFlightPlanRoute asGarminFlightPlanFormat() {
         if (getFormat() instanceof GarminFlightPlanFormat)
             return (GarminFlightPlanRoute) this;
@@ -654,119 +654,119 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return new GarminFlightPlanRoute(getName(), getDescription(), flightPlanPositions);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asGlopusFormat() {
         if (getFormat() instanceof GlopusFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new GlopusFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asGoogleMapsUrlFormat() {
         if (getFormat() instanceof GoogleMapsUrlFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new GoogleMapsUrlFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public GoPalRoute asGoPal3RouteFormat() {
         if (getFormat() instanceof GoPal3RouteFormat)
             return (GoPalRoute) this;
         return asGoPalRouteFormat(new GoPal3RouteFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public GoPalRoute asGoPal5RouteFormat() {
         if (getFormat() instanceof GoPal5RouteFormat)
             return (GoPalRoute) this;
         return asGoPalRouteFormat(new GoPal5RouteFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public GoPalRoute asGoPal7RouteFormat() {
         if (getFormat() instanceof GoPal5RouteFormat)
             return (GoPalRoute) this;
         return asGoPalRouteFormat(new GoPal7RouteFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asGoPalTrackFormat() {
         if (getFormat() instanceof GoPalTrackFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new GoPalTrackFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asGoRiderGpsFormat() {
         if (getFormat() instanceof GoRiderGpsFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new GoRiderGpsFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asGpsTunerFormat() {
         if (getFormat() instanceof GpsTunerFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new GpsTunerFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public GpxRoute asGpx10Format() {
         if (getFormat() instanceof Gpx10Format)
             return (GpxRoute) this;
         return asGpxFormat(new Gpx10Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public GpxRoute asGpx11Format() {
         if (getFormat() instanceof Gpx11Format)
             return (GpxRoute) this;
         return asGpxFormat(new Gpx11Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asGroundTrackFormat() {
         if (getFormat() instanceof GroundTrackFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new GroundTrackFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asHaicomLoggerFormat() {
         if (getFormat() instanceof HaicomLoggerFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new HaicomLoggerFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asIblue747Format() {
         if (getFormat() instanceof Iblue747Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new Iblue747Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public KmlRoute asIgo8RouteFormat() {
         if (getFormat() instanceof Igo8RouteFormat)
             return (KmlRoute) this;
         return asKmlFormat(new Igo8RouteFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asPhotoFormat() {
         if (getFormat() instanceof PhotoFormat)
             return (SimpleRoute) this;
         return asPhotoFormat(new PhotoFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asKienzleGpsFormat() {
         if (getFormat() instanceof KienzleGpsFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new KienzleGpsFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public KlickTelRoute asKlickTelRouteFormat() {
         if (getFormat() instanceof KlickTelRouteFormat)
             return (KlickTelRoute) this;
@@ -778,91 +778,98 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return new KlickTelRoute(getName(), wgs84Positions);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public KmlRoute asKml20Format() {
         if (getFormat() instanceof Kml20Format)
             return (KmlRoute) this;
         return asKmlFormat(new Kml20Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public KmlRoute asKml21Format() {
         if (getFormat() instanceof Kml21Format)
             return (KmlRoute) this;
         return asKmlFormat(new Kml21Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public KmlRoute asKml22BetaFormat() {
         if (getFormat() instanceof Kml22BetaFormat)
             return (KmlRoute) this;
         return asKmlFormat(new Kml22BetaFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public KmlRoute asKml22Format() {
         if (getFormat() instanceof Kml22Format)
             return (KmlRoute) this;
         return asKmlFormat(new Kml22Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public KmlRoute asKmz20Format() {
         if (getFormat() instanceof Kmz20Format)
             return (KmlRoute) this;
         return asKmlFormat(new Kmz20Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public KmlRoute asKmz21Format() {
         if (getFormat() instanceof Kmz21Format)
             return (KmlRoute) this;
         return asKmlFormat(new Kmz21Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public KmlRoute asKmz22BetaFormat() {
         if (getFormat() instanceof Kmz22BetaFormat)
             return (KmlRoute) this;
         return asKmlFormat(new Kmz22BetaFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public KmlRoute asKmz22Format() {
         if (getFormat() instanceof Kmz22Format)
             return (KmlRoute) this;
         return asKmlFormat(new Kmz22Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asKompassFormat() {
         if (getFormat() instanceof KompassFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new KompassFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
+    public SimpleRoute asKurvigerUrlFormat() {
+        if (getFormat() instanceof KurvigerUrlFormat)
+            return (SimpleRoute) this;
+        return asSimpleFormat(new KurvigerUrlFormat());
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
     public NmeaRoute asMagellanExploristFormat() {
         if (getFormat() instanceof MagellanExploristFormat)
             return (NmeaRoute) this;
         return asNmeaFormat(new MagellanExploristFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public NmeaRoute asMagellanRouteFormat() {
         if (getFormat() instanceof MagellanRouteFormat)
             return (NmeaRoute) this;
         return asNmeaFormat(new MagellanRouteFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asMagicMaps2GoFormat() {
         if (getFormat() instanceof MagicMaps2GoFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new MagicMaps2GoFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public MagicMapsIktRoute asMagicMapsIktFormat() {
         if (getFormat() instanceof MagicMapsIktFormat)
             return (MagicMapsIktRoute) this;
@@ -874,7 +881,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return new MagicMapsIktRoute(getName(), getDescription(), wgs84Positions);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public MagicMapsPthRoute asMagicMapsPthFormat() {
         if (getFormat() instanceof MagicMapsPthFormat)
             return (MagicMapsPthRoute) this;
@@ -886,28 +893,28 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return new MagicMapsPthRoute(getCharacteristics(), gkPositions);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asMotoPlanerUrlFormat() {
         if (getFormat() instanceof MotoPlanerUrlFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new MotoPlanerUrlFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public BcrRoute asMTP0607Format() {
         if (getFormat() instanceof MTP0607Format)
             return (BcrRoute) this;
         return asBcrFormat(new MTP0607Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public BcrRoute asMTP0809Format() {
         if (getFormat() instanceof MTP0809Format)
             return (BcrRoute) this;
         return asBcrFormat(new MTP0809Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public NavigonCruiserRoute asNavigonCruiserFormat() {
         if (getFormat() instanceof NavigonCruiserFormat)
             return (NavigonCruiserRoute) this;
@@ -919,67 +926,67 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return new NavigonCruiserRoute(getName(), wgs84Positions);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asNavigatingPoiWarnerFormat() {
         if (getFormat() instanceof NavigatingPoiWarnerFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new NavigatingPoiWarnerFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asNavilinkFormat() {
         if (getFormat() instanceof NavilinkFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new NavilinkFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public NmeaRoute asNmeaFormat() {
         if (getFormat() instanceof NmeaFormat)
             return (NmeaRoute) this;
         return asNmeaFormat(new NmeaFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public NmnRoute asNmn4Format() {
         return asNmnFormat(new Nmn4Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public NmnRoute asNmn5Format() {
         return asNmnFormat(new Nmn5Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public NmnRoute asNmn6Format() {
         return asNmnFormat(new Nmn6Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public NmnRoute asNmn6FavoritesFormat() {
         return asNmnFormat(new Nmn6FavoritesFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public NmnRoute asNmn7Format() {
         return asNmnFormat(new Nmn7Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asNmnRouteFormat() {
         if (getFormat() instanceof NmnRouteFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new NmnRouteFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asNmnUrlFormat() {
         if (getFormat() instanceof NmnUrlFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new NmnUrlFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public NokiaLandmarkExchangeRoute asNokiaLandmarkExchangeFormat() {
         if (getFormat() instanceof NokiaLandmarkExchangeFormat)
             return (NokiaLandmarkExchangeRoute) this;
@@ -991,14 +998,14 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return new NokiaLandmarkExchangeRoute(getName(), getDescription(), wgs84Positions);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asOpelNaviFormat() {
         if (getFormat() instanceof OpelNaviFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new OpelNaviFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public OvlRoute asOvlFormat() {
         if (getFormat() instanceof OvlFormat)
             return (OvlRoute) this;
@@ -1010,70 +1017,70 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return new OvlRoute(getCharacteristics(), getName(), ovlPositions);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asQstarzQ1000Format() {
         if (getFormat() instanceof QstarzQ1000Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new QstarzQ1000Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asRoute66Format() {
         if (getFormat() instanceof Route66Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new Route66Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asSygicAsciiFormat() {
         if (getFormat() instanceof SygicAsciiFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new SygicAsciiFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asSygicUnicodeFormat() {
         if (getFormat() instanceof SygicUnicodeFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new SygicUnicodeFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public TcxRoute asTcx1Format() {
         if (getFormat() instanceof Tcx1Format)
             return (TcxRoute) this;
         return asTcxFormat(new Tcx1Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public TcxRoute asTcx2Format() {
         if (getFormat() instanceof Tcx2Format)
             return (TcxRoute) this;
         return asTcxFormat(new Tcx2Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public TomTomRoute asTomTom5RouteFormat() {
         if (getFormat() instanceof TomTom5RouteFormat)
             return (TomTomRoute) this;
         return asTomTomRouteFormat(new TomTom5RouteFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public TomTomRoute asTomTom8RouteFormat() {
         if (getFormat() instanceof TomTom8RouteFormat)
             return (TomTomRoute) this;
         return asTomTomRouteFormat(new TomTom8RouteFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public TomTomRoute asTomTom95RouteFormat() {
         if (getFormat() instanceof TomTom95RouteFormat)
             return (TomTomRoute) this;
         return asTomTomRouteFormat(new TomTom95RouteFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public TourRoute asTourFormat() {
         if (getFormat() instanceof TourFormat)
             return (TourRoute) this;
@@ -1085,7 +1092,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return new TourRoute(getName(), tourPositions);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration"})
     public ViaMichelinRoute asViaMichelinFormat() {
         if (getFormat() instanceof ViaMichelinFormat)
             return (ViaMichelinRoute) this;
@@ -1097,28 +1104,28 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return new ViaMichelinRoute(getName(), wgs84Positions);
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asWebPageFormat() {
         if (getFormat() instanceof WebPageFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new WebPageFormat());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asWintecWbt201Tk1Format() {
         if (getFormat() instanceof WintecWbt201Tk1Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new WintecWbt201Tk1Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asWintecWbt201Tk2Format() {
         if (getFormat() instanceof WintecWbt201Tk2Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new WintecWbt201Tk2Format());
     }
 
-    @SuppressWarnings("UnusedDeclaration")
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
     public SimpleRoute asWintecWbt202TesFormat() {
         if (getFormat() instanceof WintecWbt202TesFormat)
             return (SimpleRoute) this;

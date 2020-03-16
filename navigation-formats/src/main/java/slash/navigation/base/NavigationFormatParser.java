@@ -34,6 +34,7 @@ import slash.navigation.photo.PhotoFormat;
 import slash.navigation.rest.Get;
 import slash.navigation.tcx.TcxFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
+import slash.navigation.url.KurvigerUrlFormat;
 import slash.navigation.url.MotoPlanerUrlFormat;
 
 import java.io.*;
@@ -56,6 +57,7 @@ import static slash.navigation.base.NavigationFormatConverter.convertRoute;
 import static slash.navigation.base.RouteComments.*;
 import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsLinkUrl;
 import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsProfileUrl;
+import static slash.navigation.url.KurvigerUrlFormat.isKurvigerUrl;
 import static slash.navigation.url.MotoPlanerUrlFormat.isMotoPlanerUrl;
 
 /**
@@ -305,6 +307,12 @@ public class NavigationFormatParser {
             byte[] bytes = url.toExternalForm().getBytes();
             List<NavigationFormat> readFormats = new ArrayList<>(formats);
             readFormats.add(0, new GoogleMapsUrlFormat());
+            return read(new ByteArrayInputStream(bytes), bytes.length, null, null, readFormats);
+
+        } else if (isKurvigerUrl(url)) {
+            byte[] bytes = url.toExternalForm().getBytes();
+            List<NavigationFormat> readFormats = new ArrayList<>(formats);
+            readFormats.add(0, new KurvigerUrlFormat());
             return read(new ByteArrayInputStream(bytes), bytes.length, null, null, readFormats);
 
         } else if (isMotoPlanerUrl(url)) {
