@@ -35,8 +35,10 @@ import slash.navigation.routing.TravelMode;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 import static java.io.File.createTempFile;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -66,7 +68,8 @@ public class GraphHopperIT {
         when(dataSource.getFiles()).thenReturn(singletonList(file));
         hopper = new GraphHopper(new DownloadManager(createTempFile("queueFile", ".xml")));
         hopper.setDataSource(dataSource);
-        DownloadFuture future = hopper.downloadRoutingDataFor(singletonList(new LongitudeAndLatitude(10.18587, 53.40451)));
+        DownloadFuture future = hopper.downloadRoutingDataFor(asList(new LongitudeAndLatitude(10.33637, 53.7465),
+                new LongitudeAndLatitude(9.613465, 53.38581)));
         if(future.isRequiresDownload())
             future.download();
         else {
@@ -87,7 +90,7 @@ public class GraphHopperIT {
     public void testGetRouteBetweenByCar() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Car"));
         assertEquals(Valid, result.getValidity());
-        assertEquals(223, result.getPositions().size(), 10);
+        assertEquals(267, result.getPositions().size(), 10);
         assertEquals(13605.6, result.getDistanceAndTime().getDistance(), 25.0);
         assertEquals(1062.0, result.getDistanceAndTime().getTime(), 100);
     }
@@ -96,7 +99,7 @@ public class GraphHopperIT {
     public void testGetRouteBetweenByBike() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Bike"));
         assertEquals(Valid, result.getValidity());
-        assertEquals(162, result.getPositions().size(), 10);
+        assertEquals(175, result.getPositions().size(), 10);
         assertEquals(13658.8, result.getDistanceAndTime().getDistance(), 25.0);
         assertEquals(2920.0, result.getDistanceAndTime().getTime(), 100.0);
     }
