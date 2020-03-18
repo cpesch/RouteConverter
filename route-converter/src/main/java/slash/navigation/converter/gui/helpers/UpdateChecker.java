@@ -162,6 +162,7 @@ public class UpdateChecker {
         private static final String JAVA11_VERSION_KEY = "java11.version";
         private static final String JAVA12_VERSION_KEY = "java12.version";
         private static final String JAVA13_VERSION_KEY = "java13.version";
+        private static final String JAVA14_VERSION_KEY = "java14.version";
 
         private final String myRouteConverterVersion;
         private final String myJavaVersion;
@@ -192,7 +193,8 @@ public class UpdateChecker {
 
         public String getLatestJavaVersion() {
             Version version = new Version(myJavaVersion);
-            String latestVersionKey = version.isLaterVersionThan(new Version("12.9")) ? JAVA13_VERSION_KEY :
+            String latestVersionKey = version.isLaterVersionThan(new Version("13.9")) ? JAVA14_VERSION_KEY :
+                    version.isLaterVersionThan(new Version("12.9")) ? JAVA13_VERSION_KEY :
                     version.isLaterVersionThan(new Version("11.9")) ? JAVA12_VERSION_KEY :
                     version.isLaterVersionThan(new Version("10.9")) ? JAVA11_VERSION_KEY :
                     version.isLaterVersionThan(new Version("9.9")) ? JAVA10_VERSION_KEY :

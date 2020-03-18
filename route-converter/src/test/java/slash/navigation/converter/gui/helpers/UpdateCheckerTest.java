@@ -165,9 +165,21 @@ public class UpdateCheckerTest {
     }
 
     @Test
-    public void noJava14Supported() {
+    public void existsLaterJavaVersion14() {
         UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "14");
+        result.setParameters("java14.version=14");
+        assertFalse(result.existsLaterJavaVersion());
+        assertEquals("14", result.getLatestJavaVersion());
+
         result.setParameters("java14.version=14.0.1");
+        assertTrue(result.existsLaterJavaVersion());
+        assertEquals("14.0.1", result.getLatestJavaVersion());
+    }
+
+    @Test
+    public void noJava15Supported() {
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "14");
+        result.setParameters("java15.version=15.0.1");
         assertFalse(result.existsLaterJavaVersion());
         assertNull(result.getLatestJavaVersion());
     }
