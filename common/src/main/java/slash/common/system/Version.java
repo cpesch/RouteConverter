@@ -53,6 +53,16 @@ public class Version {
         return string.replaceAll("-SNAPSHOT", "").replaceAll("\\?", "9");
     }
 
+    public int getMajor() {
+        String major = version.startsWith("1.") ? version.substring(2) : version;
+
+        Scanner s = createScanner(major);
+        if(s.hasNextInt())
+            return s.nextInt();
+        // default is Java 8
+        return 8;
+    }
+
     public boolean isLaterVersionThan(Version other) {
         return compareVersion(removeSnapshot(version), removeSnapshot(other.getVersion())) > 0;
     }

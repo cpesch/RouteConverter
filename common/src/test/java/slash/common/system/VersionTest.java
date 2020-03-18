@@ -40,6 +40,14 @@ public class VersionTest {
     }
 
     @Test
+    public void testGetMajor() {
+        assertEquals(14, new Version("14").getMajor());
+        assertEquals(11, new Version("11.0.1").getMajor());
+        assertEquals(8, new Version("1.8.0_241").getMajor());
+        assertEquals(8, new Version("").getMajor());
+    }
+
+    @Test
     public void testGetDate() {
         Date date = calendar(2009, 11, 23, 13, 53, 49, 0, "UTC").getCalendar().getTime();
         DateFormat dateFormat = DateFormat.getDateInstance(DateFormat.LONG);

@@ -122,23 +122,13 @@ public class UpdateChecker {
         if (!getPreferences().getBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, true))
             return;
 
-        new Thread(new Runnable() {
-            public void run() {
-                final UpdateResult result = check();
-                if (result.existsLaterRouteConverterVersion()) {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            offerRouteConverterUpdate(window, result);
-                        }
-                    });
+        new Thread(() -> {
+            final UpdateResult result = check();
+            if (result.existsLaterRouteConverterVersion()) {
+                invokeLater(() -> offerRouteConverterUpdate(window, result));
 
-                } else if (result.existsLaterJavaVersion()) {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            offerJavaUpdate(window, result);
-                        }
-                    });
-                }
+            } else if (result.existsLaterJavaVersion()) {
+                invokeLater(() -> offerJavaUpdate(window, result));
             }
         }, "UpdateChecker").start();
     }
@@ -156,13 +146,7 @@ public class UpdateChecker {
 
     static class UpdateResult {
         private static final String ROUTECONVERTER_VERSION_KEY = "routeconverter.version";
-        private static final String JAVA8_VERSION_KEY = "java8.version";
-        private static final String JAVA9_VERSION_KEY = "java9.version";
-        private static final String JAVA10_VERSION_KEY = "java10.version";
-        private static final String JAVA11_VERSION_KEY = "java11.version";
-        private static final String JAVA12_VERSION_KEY = "java12.version";
-        private static final String JAVA13_VERSION_KEY = "java13.version";
-        private static final String JAVA14_VERSION_KEY = "java14.version";
+        private static final String JAVA_VERSION_KEY = "java%s.version";
 
         private final String myRouteConverterVersion;
         private final String myJavaVersion;
@@ -193,13 +177,7 @@ public class UpdateChecker {
 
         public String getLatestJavaVersion() {
             Version version = new Version(myJavaVersion);
-            String latestVersionKey = version.isLaterVersionThan(new Version("13.9")) ? JAVA14_VERSION_KEY :
-                    version.isLaterVersionThan(new Version("12.9")) ? JAVA13_VERSION_KEY :
-                    version.isLaterVersionThan(new Version("11.9")) ? JAVA12_VERSION_KEY :
-                    version.isLaterVersionThan(new Version("10.9")) ? JAVA11_VERSION_KEY :
-                    version.isLaterVersionThan(new Version("9.9")) ? JAVA10_VERSION_KEY :
-                    version.isLaterVersionThan(new Version("8.9")) ? JAVA9_VERSION_KEY :
-                            JAVA8_VERSION_KEY;
+            String latestVersionKey = String.format(JAVA_VERSION_KEY, version.getMajor());
             return getValue(latestVersionKey);
         }
 
