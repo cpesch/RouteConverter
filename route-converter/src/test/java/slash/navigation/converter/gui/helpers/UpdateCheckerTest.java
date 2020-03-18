@@ -44,7 +44,6 @@ public class UpdateCheckerTest {
         assertEquals("1.3", result.getLatestRouteConverterVersion());
         assertFalse(result.existsLaterRouteConverterVersion());
         assertEquals("1.6.0_03", result.getMyJavaVersion());
-        assertEquals("1.8.0_05", result.getLatestJavaVersion());
         assertTrue(result.existsLaterJavaVersion());
     }
 
@@ -52,22 +51,6 @@ public class UpdateCheckerTest {
     public void noJava5Supported() {
         UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "1.5.0_21");
         result.setParameters("java6.version=1.5.0_19");
-        assertFalse(result.existsLaterJavaVersion());
-        assertNull(result.getLatestJavaVersion());
-    }
-
-    @Test
-    public void noJava6Supported() {
-        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "1.6.0_01");
-        result.setParameters("java6.version=1.6.0_02");
-        assertFalse(result.existsLaterJavaVersion());
-        assertNull(result.getLatestJavaVersion());
-    }
-
-    @Test
-    public void noJava7Supported() {
-        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "1.7.0_01");
-        result.setParameters("java7.version=1.7.0_02");
         assertFalse(result.existsLaterJavaVersion());
         assertNull(result.getLatestJavaVersion());
     }
