@@ -36,43 +36,49 @@ How to develop for RouteConverter
 2. Install a recent Maven 3.5 from http://maven.apache.org/download.html
 
 3. Clone RouteConverter from github:
-   > git clone git://github.com/cpesch/RouteConverter.git
+   
+       git clone git://github.com/cpesch/RouteConverter.git
 
 4. Open RouteConverter sources in an Integrated Development Environment (IDE)
 
-   Install Intellij IDEA Community Edition from http://www.jetbrains.com/idea/download/
-   Choose "File/Open Project..." and the root pom.xml.
+   IntelliJ
+   * Install IntelliJ IDEA Community Edition from http://www.jetbrains.com/idea/download/
+   * Choose "File/Open Project..." and the root pom.xml.
 
-   Install Eclipse IDE for Java Developers from http://www.eclipse.org/downloads/
-   Install m2eclipse from http://m2eclipse.sonatype.org/sites/m2e/
-   Choose "File/Import..." and "General/Maven Projects" and the root directory.
+   Eclipse
+   * Install Eclipse IDE for Java Developers from http://www.eclipse.org/downloads/
+   * Install m2eclipse from http://m2eclipse.sonatype.org/sites/m2e/
+   * Choose "File/Import..." and "General/Maven Projects" and the root directory.
 
-   Install NetBeans IDE Java SE from http://netbeans.org/downloads/
-   Install Git via "My NetBeans > Install Plugins"
-   Choose "Open Project..." and the root directory.
+   NetBeans
+   * Install NetBeans IDE Java SE from http://netbeans.org/downloads/
+   * Install Git via "My NetBeans > Install Plugins"
+   * Choose "Open Project..." and the root directory.
 
 5. Build RouteConverter
 
    Let JAVA_HOME refer to the Java 8 SDK
-   > set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_241
+   
+       set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_241
                                                                     
    Let M2_HOME refer to your Maven 3 Installation
-   > set M2_HOME=c:\Program Files\apache-maven-3.5.3
+   
+       set M2_HOME=c:\Program Files\apache-maven-3.5.3
                                                                      
    Put JAVA_HOME and M2_HOME into your PATH
-   > set %PATH%=%JAVA_HOME%:%M2_HOME%:%PATH%
+   
+       set %PATH%=%JAVA_HOME%:%M2_HOME%:%PATH%
                                                                      
    Call
-   > mvn clean package
+   
+       mvn clean package
 
 6. Run RouteConverter
-   > java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
-                         
-   > java -jar RouteConverterLinuxOpenSource/target/RouteConverterLinuxOpenSource.jar
-                         
-   > java -jar RouteConverterMacOpenSource/target/RouteConverterMacOpenSource.jar
-                         
-   > java -jar RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.jar
+    
+       java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
+       java -jar RouteConverterLinuxOpenSource/target/RouteConverterLinuxOpenSource.jar
+       java -jar RouteConverterMacOpenSource/target/RouteConverterMacOpenSource.jar
+       java -jar RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.jar
 
 Have fun!
 Christian
