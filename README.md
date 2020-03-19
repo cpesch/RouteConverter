@@ -1,3 +1,8 @@
+[![Build Status](https://travis-ci.org/cpesch/RouteConverter.svg?branch=master)](https://travis-ci.org/cpesch/RouteConverter)
+<a href="https://hosted.weblate.org/engage/routeconverter/?utm_source=widget">
+<img src="https://hosted.weblate.org/widgets/routeconverter/-/svg-badge.svg" alt="Translation status" />
+</a>
+
 What is RouteConverter?
 =======================
 
@@ -10,6 +15,7 @@ Downloads
 =========
 
 Stable releases are available at http://www.routeconverter.com/releases/
+
 Prereleases are frequently offered at http://www.routeconverter.com/prereleases/
 
 If you want to contribute
@@ -48,21 +54,24 @@ How to develop for RouteConverter
 5. Build RouteConverter
 
    Let JAVA_HOME refer to the Java 8 SDK
-   > set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_191
+   > set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_241
+                                                                    
    Let M2_HOME refer to your Maven 3 Installation
    > set M2_HOME=c:\Program Files\apache-maven-3.5.3
+                                                                     
    Put JAVA_HOME and M2_HOME into your PATH
    > set %PATH%=%JAVA_HOME%:%M2_HOME%:%PATH%
+                                                                     
    Call
    > mvn clean package
 
 6. Run RouteConverter
    > java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
-   > java -jar RouteConverterLinuxGoogle/target/RouteConverterLinuxGoogle.jar
+                         
    > java -jar RouteConverterLinuxOpenSource/target/RouteConverterLinuxOpenSource.jar
-   > java -jar RouteConverterMacGoogle/target/RouteConverterMacGoogle.jar
-   > java -jar RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.jar
-   > java -jar RouteConverterWindowsGoogle/target/RouteConverterWindowsGoogle.jar
+                         
+   > java -jar RouteConverterMacOpenSource/target/RouteConverterMacOpenSource.jar
+                         
    > java -jar RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.jar
 
 Have fun!
