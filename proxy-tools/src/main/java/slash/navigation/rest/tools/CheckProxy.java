@@ -54,7 +54,6 @@ public class CheckProxy {
     private static final String USERNAME_ARGUMENT = "username";
     private static final String PASSWORD_ARGUMENT = "password";
 
-    @SuppressWarnings("AccessStaticViaInstance")
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
@@ -107,8 +106,8 @@ public class CheckProxy {
         List<Proxy> proxies = findProxies(uri);
         for(Proxy proxy : proxies) {
             apacheCommonsHttpRequest(uri, proxy, userName, password);
-            javaHttpClientRequest(uri);
         }
+        javaHttpClientRequest(uri);
     }
 
     private List<Proxy> findProxies(URI uri) {
