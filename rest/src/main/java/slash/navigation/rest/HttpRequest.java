@@ -155,7 +155,7 @@ public abstract class HttpRequest {
                         return proxy;
                 }
             }
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
             log.severe("Exception while finding proxy for " + uri + ": " + getLocalizedMessage(e));
         }
         return NO_PROXY;
