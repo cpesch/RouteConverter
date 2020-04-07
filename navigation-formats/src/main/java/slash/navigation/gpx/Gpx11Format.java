@@ -39,6 +39,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static slash.common.io.Transfer.*;
+import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.NavigationConversion.*;
 import static slash.navigation.gpx.GpxUtil.marshal11;
@@ -367,10 +368,11 @@ public class Gpx11Format extends GpxFormat {
         if (metadataType == null)
             metadataType = objectFactory.createMetadataType();
 
-        if (isWriteMetaData()) {
+        if (route != null) {
             metadataType.setName(asRouteName(route.getName()));
             metadataType.setDesc(asDescription(route.getDescription()));
         }
+        metadataType.setTime(formatXMLTime(now()));
         return metadataType;
     }
 
@@ -383,8 +385,10 @@ public class Gpx11Format extends GpxFormat {
         gpxType.setCreator(getCreator());
         gpxType.setVersion(VERSION);
 
-        if (route.getCharacteristics().equals(Waypoints))
+        if (isWriteMetaData()) {
             gpxType.setMetadata(createMetaData(route, gpxType));
+        } else
+            gpxType.setMetadata(null);
 
         gpxType.getWpt().addAll(createWayPoints(route, startIndex, endIndex));
         gpxType.getRte().addAll(createRoute(route, startIndex, endIndex));
@@ -406,10 +410,11 @@ public class Gpx11Format extends GpxFormat {
         gpxType.setCreator(getCreator());
         gpxType.setVersion(VERSION);
 
+        GpxRoute routeForMetadata = null;
         for (GpxRoute route : routes) {
             switch (route.getCharacteristics()) {
                 case Waypoints:
-                    gpxType.setMetadata(createMetaData(route, gpxType));
+                    routeForMetadata = route;
                     gpxType.getWpt().addAll(createWayPoints(route, 0, route.getPositionCount()));
                     break;
                 case Route:
@@ -422,6 +427,12 @@ public class Gpx11Format extends GpxFormat {
                     throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
             }
         }
+
+        if (isWriteMetaData()) {
+            gpxType.setMetadata(createMetaData(routeForMetadata, gpxType));
+        } else
+            gpxType.setMetadata(null);
+
         return gpxType;
     }
 

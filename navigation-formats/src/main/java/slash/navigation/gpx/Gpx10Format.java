@@ -36,6 +36,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.*;
+import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.NavigationConversion.*;
 import static slash.navigation.common.UnitConversion.kmhToMs;
@@ -360,6 +361,8 @@ public class Gpx10Format extends GpxFormat {
             gpx = objectFactory.createGpx();
         gpx.setCreator(getCreator());
         gpx.setVersion(VERSION);
+        if (isWriteMetaData())
+            gpx.setTime(formatXMLTime(now()));
 
         for (GpxRoute route : routes) {
             switch (route.getCharacteristics()) {
