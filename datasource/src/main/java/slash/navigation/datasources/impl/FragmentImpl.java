@@ -36,7 +36,7 @@ import static slash.navigation.datasources.helpers.DataSourcesUtil.asChecksum;
  * @author Christian Pesch
  */
 
-public class FragmentImpl<T extends Downloadable> implements Fragment {
+public class FragmentImpl<T extends Downloadable> implements Fragment<T> {
     private final FragmentType fragmentType;
     private final T downloadable;
 
@@ -68,7 +68,7 @@ public class FragmentImpl<T extends Downloadable> implements Fragment {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Fragment fragment = (Fragment) o;
+        FragmentImpl<?> fragment = (FragmentImpl<?>) o;
 
         return getDownloadable().equals(fragment.getDownloadable()) && getKey().equals(fragment.getKey());
     }

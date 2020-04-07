@@ -21,7 +21,6 @@ package slash.navigation.datasources;
 
 import org.junit.Before;
 import org.junit.Test;
-import slash.common.type.CompactCalendar;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.helpers.DataSourceService;

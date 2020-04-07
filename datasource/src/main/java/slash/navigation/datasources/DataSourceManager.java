@@ -178,11 +178,7 @@ public class DataSourceManager {
     // for {@link SnapshotCatalog}
     public static DataSourceService loadAllDataSources(java.io.File directory) throws IOException, JAXBException {
         DataSourceService result = new DataSourceService();
-        java.io.File[] files = directory.listFiles(new FilenameFilter() {
-            public boolean accept(java.io.File dir, String name) {
-                return name.endsWith(DOT_XML);
-            }
-        });
+        java.io.File[] files = directory.listFiles((dir, name) -> name.endsWith(DOT_XML));
         if (files != null) {
             for (java.io.File file : files) {
                 try (InputStream inputStream = new FileInputStream(file)) {
