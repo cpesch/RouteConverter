@@ -28,13 +28,14 @@ import java.util.logging.Logger;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Locale.*;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static slash.common.helpers.LocaleHelper.*;
 
 public class ResourceBundleTest {
     private static final Logger log = Logger.getLogger(ResourceBundleTest.class.getName());
-    private List<Locale> LOCALES = asList(ARABIA, BRAZIL, CATALAN, CHINA, CROATIA, CZECH, DENMARK, FRANCE, GERMANY, ITALY,
-            JAPAN, KOREA, NEDERLANDS, NORWAY_BOKMAL, POLAND, PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, UKRAINE, US);
+    private List<Locale> LOCALES = asList(ARABIA, BRAZIL, CATALAN, CHINA, CROATIA, CZECH, DENMARK, FRANCE,
+            GERMANY, ITALY, JAPAN, KOREA, HUNGARY, NEDERLANDS, NORWAY_BOKMAL, POLAND, PORTUGAL, RUSSIA,
+            SERBIA, SLOVAKIA, SPAIN, UKRAINE, US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
             return singletonList(new Locale(locale.getLanguage()));
@@ -76,7 +77,7 @@ public class ResourceBundleTest {
                 } catch (MissingResourceException e) {
                     log.fine("key " + key + " does not exist in locale " + locale);
                     if (throwException)
-                        assertTrue("key " + key + " does not exist in " + locale, false);
+                        fail("key " + key + " does not exist in " + locale);
                 }
 
                 try {
@@ -84,7 +85,7 @@ public class ResourceBundleTest {
                 } catch (MissingResourceException e) {
                     log.fine("key " + key + " does not exist in root " + root);
                     if (throwException)
-                        assertTrue("key " + key + " does not exist in root " + root, false);
+                        fail("key " + key + " does not exist in root " + root);
                 }
 
                 String englishValue = english.getString(key);
@@ -110,11 +111,7 @@ public class ResourceBundleTest {
                 continue;
 
             String mnemonic = bundle.getString(key);
-            Set<String> existing = mnemonics.get(mnemonic);
-            if (existing == null) {
-                existing = new HashSet<>();
-                mnemonics.put(mnemonic, existing);
-            }
+            Set<String> existing = mnemonics.computeIfAbsent(mnemonic, k -> new HashSet<>());
             existing.add(key);
         }
 
