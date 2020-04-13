@@ -29,8 +29,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.Files.*;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -135,21 +134,21 @@ public class FilesTest {
     public void testCalculateConvertFileNameThrowsException() {
         try {
             calculateConvertFileName(file, 10000, 10000, "gpx", 64);
-            assertTrue("IllegalArgumentException expected", false);
+            fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }
 
         try {
             calculateConvertFileName(file, 5000, 10000, "gpx", 64);
-            assertTrue("IllegalArgumentException expected", false);
+            fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }
 
         try {
             calculateConvertFileName(file, 1001, 999, "gpx", 64);
-            assertTrue("IllegalArgumentException expected", false);
+            fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }

@@ -154,7 +154,7 @@ public class RemoteCategoryIT extends BaseRemoteCatalogTest {
 
         for (Category category : catalog.getRootCategory().getCategories()) {
             if (category.getHref().equals(url)) {
-                assertTrue("Category " + name + " still exists", false);
+                fail("Category " + name + " still exists");
             }
         }
     }
