@@ -26,6 +26,10 @@ import slash.navigation.maps.mapsforge.LocalMap;
 import java.io.File;
 import java.util.prefs.Preferences;
 
+import static java.util.prefs.Preferences.MAX_KEY_LENGTH;
+import static slash.common.io.Transfer.encodeUmlauts;
+import static slash.common.io.Transfer.trim;
+
 /**
  * A {@link LocalMap} that is downloaded on request from an online service.
  *
@@ -44,12 +48,16 @@ public class TileMap extends LocaleResourceImpl implements LocalMap {
         this.active = active;
     }
 
+    private String getActiveKey() {
+        return trim(encodeUmlauts(TILE_MAP_ACTIVE_PREFERENCE + getUrl()), MAX_KEY_LENGTH);
+    }
+
     public boolean isActive() {
-        return preferences.getBoolean(TILE_MAP_ACTIVE_PREFERENCE + getUrl(), active);
+        return preferences.getBoolean(getActiveKey(), active);
     }
 
     public void setActive(boolean active) {
-        preferences.putBoolean(TILE_MAP_ACTIVE_PREFERENCE + getUrl(), active);
+        preferences.putBoolean(getActiveKey(), active);
     }
 
     public BoundingBox getBoundingBox() {
@@ -66,5 +74,10 @@ public class TileMap extends LocaleResourceImpl implements LocalMap {
 
     public boolean isVector() {
         return false;
+    }
+
+    public String toString() {
+        return getClass().getSimpleName() + "[description=" + getDescription() +
+                ", url=" + getUrl() + ", active=" + isActive() + "]";
     }
 }
