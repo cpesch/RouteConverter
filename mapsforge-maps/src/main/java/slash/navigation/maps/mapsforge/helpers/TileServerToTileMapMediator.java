@@ -76,6 +76,7 @@ public class TileServerToTileMapMediator {
         TileServerMapSource tileSource = new TileServerMapSource(tileServer);
         if (THUNDER_FOREST_API_KEY != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
             tileSource.setApiKey(THUNDER_FOREST_API_KEY);
+
         return new TileMap(tileServer.getId(), tileServer.getDescription(), tileServer.isActive(), tileSource, tileServer.getCopyrightText());
     }
 

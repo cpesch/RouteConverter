@@ -331,6 +331,16 @@ public class Transfer {
         }
     }
 
+    public static String encodeUmlauts(String string) {
+        return string.replace("\u00fc", "ue")
+                .replace("\u00f6", "oe")
+                .replace("\u00e4", "ae")
+                .replace("\u00df", "ss")
+                .replace("\u00dc", "UE")
+                .replace("\u00d6", "OE")
+                .replace("\u00c4", "AE");
+    }
+
     public static String encodeUriButKeepSlashes(String uri) {
         return encodeUri(uri).replace("%2F", "/"); // better not .replace("%3A", ":");
     }

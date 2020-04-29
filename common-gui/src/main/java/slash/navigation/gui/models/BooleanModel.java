@@ -26,6 +26,9 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.util.prefs.Preferences;
 
+import static java.util.prefs.Preferences.MAX_KEY_LENGTH;
+import static slash.common.io.Transfer.trim;
+
 /**
  * A model for a {@link Boolean}.
  *
@@ -50,7 +53,7 @@ public class BooleanModel {
     }
 
     public void setBoolean(boolean booleanValue) {
-        preferences.putBoolean(preferencesName, booleanValue);
+        preferences.putBoolean(trim(preferencesName, MAX_KEY_LENGTH), booleanValue);
         fireChanged();
     }
 

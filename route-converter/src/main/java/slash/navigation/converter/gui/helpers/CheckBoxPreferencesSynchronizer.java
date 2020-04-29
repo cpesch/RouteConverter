@@ -25,6 +25,9 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.util.prefs.Preferences;
 
+import static java.util.prefs.Preferences.MAX_KEY_LENGTH;
+import static slash.common.io.Transfer.trim;
+
 /**
  * Synchronizes the selected state of a checkbox with a preferences setting.
  *
@@ -43,12 +46,16 @@ public class CheckBoxPreferencesSynchronizer implements ChangeListener {
         initialize(defaultValue);
     }
 
+    private String getKey() {
+        return trim(keyName, MAX_KEY_LENGTH);
+    }
+
     private void initialize(boolean defaultValue) {
-        checkBox.setSelected(preferences.getBoolean(keyName, defaultValue));
+        checkBox.setSelected(preferences.getBoolean(getKey(), defaultValue));
         checkBox.addChangeListener(this);
     }
 
     public void stateChanged(ChangeEvent e) {
-        preferences.putBoolean(keyName, checkBox.isSelected());
+        preferences.putBoolean(getKey(), checkBox.isSelected());
     }
 }

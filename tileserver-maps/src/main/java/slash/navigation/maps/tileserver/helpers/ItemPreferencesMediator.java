@@ -30,7 +30,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.prefs.Preferences;
 
+import static java.util.prefs.Preferences.MAX_KEY_LENGTH;
 import static javax.swing.event.TableModelEvent.*;
+import static slash.common.io.Transfer.trim;
 
 /**
  * Listens to an {@link ItemTableModel} and stores added {@link Item}s in the {@link Preferences}.
@@ -96,7 +98,7 @@ public abstract class ItemPreferencesMediator<T extends Item> {
     }
 
     private String getKey(T item) {
-        return preferenceName + itemToString(item);
+        return trim(preferenceName + itemToString(item), MAX_KEY_LENGTH);
     }
 
     protected abstract String itemToString(T item);
