@@ -43,6 +43,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
@@ -249,32 +250,32 @@ public class DeletePositionsDialog extends SimpleDialog {
         panel3.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         panel2.add(panel3, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-select-by-order"));
+        this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-order"));
         panel3.add(label1);
         textFieldOrder = new JTextField();
         textFieldOrder.setColumns(3);
         panel3.add(textFieldOrder);
         final JLabel label2 = new JLabel();
-        this.$$$loadLabelText$$$(label2, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-select-by-order-meter"));
+        this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-order-meter"));
         panel3.add(label2);
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         panel2.add(panel4, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
-        this.$$$loadLabelText$$$(label3, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-select-by-distance"));
+        this.$$$loadLabelText$$$(label3, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-distance"));
         panel4.add(label3);
         textFieldDistance = new JTextField();
         textFieldDistance.setColumns(5);
         panel4.add(textFieldDistance);
         final JLabel label4 = new JLabel();
         label4.setMaximumSize(new Dimension(-1, 14));
-        this.$$$loadLabelText$$$(label4, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-select-by-distance-meter"));
+        this.$$$loadLabelText$$$(label4, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-distance-meter"));
         panel4.add(label4);
         buttonSelectByDistance = new JButton();
-        this.$$$loadButtonText$$$(buttonSelectByDistance, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("select"));
+        this.$$$loadButtonText$$$(buttonSelectByDistance, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select"));
         panel2.add(buttonSelectByDistance, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonSelectByOrder = new JButton();
-        this.$$$loadButtonText$$$(buttonSelectByOrder, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("select"));
+        this.$$$loadButtonText$$$(buttonSelectByOrder, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select"));
         panel2.add(buttonSelectByOrder, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), 5, -1));
@@ -290,16 +291,16 @@ public class DeletePositionsDialog extends SimpleDialog {
         panel7.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         panel2.add(panel7, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 60), null, null, 0, false));
         final JLabel label5 = new JLabel();
-        this.$$$loadLabelText$$$(label5, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-select-by-significance"));
+        this.$$$loadLabelText$$$(label5, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-significance"));
         panel7.add(label5);
         textFieldSignificance = new JTextField();
         textFieldSignificance.setColumns(3);
         panel7.add(textFieldSignificance);
         labelDouglasPeucker = new JLabel();
-        this.$$$loadLabelText$$$(labelDouglasPeucker, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-select-by-significance-meter"));
+        this.$$$loadLabelText$$$(labelDouglasPeucker, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-significance-meter"));
         panel7.add(labelDouglasPeucker);
         buttonSelectBySignificance = new JButton();
-        this.$$$loadButtonText$$$(buttonSelectBySignificance, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("select"));
+        this.$$$loadButtonText$$$(buttonSelectBySignificance, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select"));
         panel2.add(buttonSelectBySignificance, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel8 = new JPanel();
         panel8.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), 5, -1));
@@ -307,10 +308,10 @@ public class DeletePositionsDialog extends SimpleDialog {
         final JSeparator separator3 = new JSeparator();
         panel8.add(separator3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonClearSelection = new JButton();
-        this.$$$loadButtonText$$$(buttonClearSelection, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("clear-selection-action"));
+        this.$$$loadButtonText$$$(buttonClearSelection, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "clear-selection-action"));
         panel2.add(buttonClearSelection, new GridConstraints(6, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeletePositions = new JButton();
-        this.$$$loadButtonText$$$(buttonDeletePositions, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-selected-positions"));
+        this.$$$loadButtonText$$$(buttonDeletePositions, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-selected-positions"));
         panel2.add(buttonDeletePositions, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
@@ -321,11 +322,28 @@ public class DeletePositionsDialog extends SimpleDialog {
         labelSelection.setText("-");
         panel9.add(labelSelection, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
-        this.$$$loadLabelText$$$(label6, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("selection"));
+        this.$$$loadLabelText$$$(label6, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "selection"));
         panel9.add(label6, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel10 = new JPanel();
         panel10.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel10, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
+    }
+
+    private static Method $$$cachedGetBundleMethod$$$ = null;
+
+    private String $$$getMessageFromBundle$$$(String path, String key) {
+        ResourceBundle bundle;
+        try {
+            Class<?> thisClass = this.getClass();
+            if ($$$cachedGetBundleMethod$$$ == null) {
+                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+                $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
+            }
+            bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
+        } catch (Exception e) {
+            bundle = ResourceBundle.getBundle(path);
+        }
+        return bundle.getString(key);
     }
 
     /**

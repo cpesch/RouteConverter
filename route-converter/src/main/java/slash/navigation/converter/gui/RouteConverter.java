@@ -65,6 +65,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
@@ -958,22 +959,39 @@ public abstract class RouteConverter extends SingleFrameApplication {
         mapSplitPane.setRightComponent(tabbedPane);
         convertPanel = new JPanel();
         convertPanel.setLayout(new BorderLayout(0, 0));
-        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("convert-tab"), convertPanel);
+        tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "convert-tab"), convertPanel);
         pointOfInterestPanel = new JPanel();
         pointOfInterestPanel.setLayout(new BorderLayout(0, 0));
-        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("points-of-interest-tab"), pointOfInterestPanel);
+        tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "points-of-interest-tab"), pointOfInterestPanel);
         photoPanel = new JPanel();
         photoPanel.setLayout(new BorderLayout(0, 0));
-        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("photos-tab"), photoPanel);
+        tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "photos-tab"), photoPanel);
         browsePanel = new JPanel();
         browsePanel.setLayout(new BorderLayout(0, 0));
-        tabbedPane.addTab(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("browse-tab"), browsePanel);
+        tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "browse-tab"), browsePanel);
         profilePanel = new JPanel();
         profilePanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         profilePanel.setMinimumSize(new Dimension(0, 0));
         profilePanel.setPreferredSize(new Dimension(0, 0));
         profilePanel.setVisible(true);
         profileSplitPane.setRightComponent(profilePanel);
+    }
+
+    private static Method $$$cachedGetBundleMethod$$$ = null;
+
+    private String $$$getMessageFromBundle$$$(String path, String key) {
+        ResourceBundle bundle;
+        try {
+            Class<?> thisClass = this.getClass();
+            if ($$$cachedGetBundleMethod$$$ == null) {
+                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+                $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
+            }
+            bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
+        } catch (Exception e) {
+            bundle = ResourceBundle.getBundle(path);
+        }
+        return bundle.getString(key);
     }
 
     /**

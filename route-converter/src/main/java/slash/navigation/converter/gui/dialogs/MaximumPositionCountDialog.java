@@ -32,6 +32,7 @@ import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
@@ -133,17 +134,34 @@ public class MaximumPositionCountDialog extends SimpleDialog {
         labelDescription = new JLabel();
         panel1.add(labelDescription, new GridConstraints(0, 0, 1, 4, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, new Dimension(300, -1), null, null, 1, false));
         buttonSplit = new JButton();
-        this.$$$loadButtonText$$$(buttonSplit, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("split"));
+        this.$$$loadButtonText$$$(buttonSplit, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "split"));
         panel1.add(buttonSplit, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonReduce = new JButton();
-        this.$$$loadButtonText$$$(buttonReduce, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("reduce"));
+        this.$$$loadButtonText$$$(buttonReduce, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "reduce"));
         panel1.add(buttonReduce, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonIgnore = new JButton();
-        this.$$$loadButtonText$$$(buttonIgnore, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("ignore"));
+        this.$$$loadButtonText$$$(buttonIgnore, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "ignore"));
         panel1.add(buttonIgnore, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonCancel = new JButton();
-        this.$$$loadButtonText$$$(buttonCancel, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("cancel"));
+        this.$$$loadButtonText$$$(buttonCancel, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "cancel"));
         panel1.add(buttonCancel, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    }
+
+    private static Method $$$cachedGetBundleMethod$$$ = null;
+
+    private String $$$getMessageFromBundle$$$(String path, String key) {
+        ResourceBundle bundle;
+        try {
+            Class<?> thisClass = this.getClass();
+            if ($$$cachedGetBundleMethod$$$ == null) {
+                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+                $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
+            }
+            bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
+        } catch (Exception e) {
+            bundle = ResourceBundle.getBundle(path);
+        }
+        return bundle.getString(key);
     }
 
     /**

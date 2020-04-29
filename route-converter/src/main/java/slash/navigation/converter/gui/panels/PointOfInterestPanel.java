@@ -40,6 +40,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
 import java.io.File;
+import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_DELETE;
@@ -227,19 +228,36 @@ public class PointOfInterestPanel implements PanelInTab {
         panel1.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
         pointsOfInterestPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonPlayVoice = new JButton();
-        this.$$$loadButtonText$$$(buttonPlayVoice, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("play-voice-action"));
-        buttonPlayVoice.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("play-voice-action-tooltip"));
+        this.$$$loadButtonText$$$(buttonPlayVoice, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "play-voice-action"));
+        buttonPlayVoice.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "play-voice-action-tooltip"));
         panel1.add(buttonPlayVoice, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeletePointsOfInterest = new JButton();
-        this.$$$loadButtonText$$$(buttonDeletePointsOfInterest, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-points-of-interest-action"));
-        buttonDeletePointsOfInterest.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("delete-points-of-interest-action-tooltip"));
+        this.$$$loadButtonText$$$(buttonDeletePointsOfInterest, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-points-of-interest-action"));
+        buttonDeletePointsOfInterest.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-points-of-interest-action-tooltip"));
         panel1.add(buttonDeletePointsOfInterest, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         buttonAddAudio = new JButton();
-        this.$$$loadButtonText$$$(buttonAddAudio, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-audio-action"));
-        buttonAddAudio.setToolTipText(ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("add-audio-action-tooltip"));
+        this.$$$loadButtonText$$$(buttonAddAudio, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-audio-action"));
+        buttonAddAudio.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-audio-action-tooltip"));
         panel1.add(buttonAddAudio, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    }
+
+    private static Method $$$cachedGetBundleMethod$$$ = null;
+
+    private String $$$getMessageFromBundle$$$(String path, String key) {
+        ResourceBundle bundle;
+        try {
+            Class<?> thisClass = this.getClass();
+            if ($$$cachedGetBundleMethod$$$ == null) {
+                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+                $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
+            }
+            bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
+        } catch (Exception e) {
+            bundle = ResourceBundle.getBundle(path);
+        }
+        return bundle.getString(key);
     }
 
     /**
@@ -275,4 +293,5 @@ public class PointOfInterestPanel implements PanelInTab {
     public JComponent $$$getRootComponent$$$() {
         return pointsOfInterestPanel;
     }
+
 }

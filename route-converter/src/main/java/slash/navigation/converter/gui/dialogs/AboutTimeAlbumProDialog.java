@@ -33,6 +33,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.lang.reflect.Method;
 import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
@@ -129,10 +130,10 @@ public class AboutTimeAlbumProDialog extends SimpleDialog {
         panel1.setLayout(new GridLayoutManager(5, 1, new Insets(3, 3, 3, 3), -1, -1));
         contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         labelAbout = new JLabel();
-        this.$$$loadLabelText$$$(labelAbout, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("about-timealbum-pro"));
+        this.$$$loadLabelText$$$(labelAbout, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-timealbum-pro"));
         panel1.add(labelAbout, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelContact = new JLabel();
-        this.$$$loadLabelText$$$(labelContact, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("about-timealbum-contact"));
+        this.$$$loadLabelText$$$(labelContact, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-timealbum-contact"));
         panel1.add(labelContact, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelFeature = new JLabel();
         labelFeature.setVisible(false);
@@ -141,12 +142,29 @@ public class AboutTimeAlbumProDialog extends SimpleDialog {
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(3, 0, 1, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonClose = new JButton();
-        this.$$$loadButtonText$$$(buttonClose, ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter").getString("close"));
+        this.$$$loadButtonText$$$(buttonClose, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "close"));
         panel2.add(buttonClose, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JSeparator separator1 = new JSeparator();
         panel1.add(separator1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+    }
+
+    private static Method $$$cachedGetBundleMethod$$$ = null;
+
+    private String $$$getMessageFromBundle$$$(String path, String key) {
+        ResourceBundle bundle;
+        try {
+            Class<?> thisClass = this.getClass();
+            if ($$$cachedGetBundleMethod$$$ == null) {
+                Class<?> dynamicBundleClass = thisClass.getClassLoader().loadClass("com.intellij.DynamicBundle");
+                $$$cachedGetBundleMethod$$$ = dynamicBundleClass.getMethod("getBundle", String.class, Class.class);
+            }
+            bundle = (ResourceBundle) $$$cachedGetBundleMethod$$$.invoke(null, path, thisClass);
+        } catch (Exception e) {
+            bundle = ResourceBundle.getBundle(path);
+        }
+        return bundle.getString(key);
     }
 
     /**
@@ -209,4 +227,5 @@ public class AboutTimeAlbumProDialog extends SimpleDialog {
     public JComponent $$$getRootComponent$$$() {
         return contentPane;
     }
+
 }
