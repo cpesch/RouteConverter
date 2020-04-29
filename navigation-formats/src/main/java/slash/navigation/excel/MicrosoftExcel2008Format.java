@@ -19,6 +19,7 @@
 */
 package slash.navigation.excel;
 
+import org.apache.poi.openxml4j.util.ZipSecureFile;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -38,6 +39,10 @@ import static org.apache.poi.ss.util.WorkbookUtil.createSafeSheetName;
  */
 
 public class MicrosoftExcel2008Format extends ExcelFormat {
+    static {
+        ZipSecureFile.setMinInflateRatio(0.001);
+    }
+
     public String getName() {
         return "Microsoft Excel 2008 (" + getExtension() + ")";
     }
