@@ -196,13 +196,14 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
             city = trim(city);
             String address = index != -1 ? description.substring(index + 1) : description;
             address = trim(address);
-            boolean first = i == startIndex;
-            boolean last = i == endIndex - 1;
 
             // only store address if there was a comma in the description
             writer.println(ADDRESS + NAME_VALUE_SEPARATOR + (index != -1 ? address : ""));
             // otherwise store description als city
             writer.println(CITY + NAME_VALUE_SEPARATOR + city);
+
+            boolean first = i == startIndex;
+            boolean last = i == endIndex - 1;
             if (first || last || preferences.getBoolean("writeTargets", false))
                 writer.println(SHOW + NAME_VALUE_SEPARATOR + "1"); // Target/Stop target
             else

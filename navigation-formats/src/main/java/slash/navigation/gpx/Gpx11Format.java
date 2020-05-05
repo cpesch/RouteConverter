@@ -315,7 +315,9 @@ public class Gpx11Format extends GpxFormat {
                 rteType.getRtept().add(wptType);
 
                 if (isWriteTrip()) {
-                    if (i == startIndex || i == endIndex - 1)
+                    boolean first = i == startIndex;
+                    boolean last = i == endIndex - 1;
+                    if (first || last)
                         setViaPoint(wptType);
                     else
                         setShapingPoint(wptType);

@@ -219,9 +219,9 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
             TomTomPosition position = positions.get(i);
             String longitude = formatIntAsString(position.getLongitudeAsInt());
             String latitude = formatIntAsString(position.getLatitudeAsInt());
+
             boolean first = i == startIndex;
             boolean last = i == endIndex - 1;
-
             int type = WAYPOINT;
             if (first)
                 type = START_TYPE;
