@@ -28,7 +28,7 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 public class SnapshotCatalogIT {
-    private static final String API = System.getProperty("api", "http://localhost:8000/");
+    private static final String API = System.getProperty("api", "https://api.routeconverter.com/");
 
     private File createEditionsXml(SnapshotCatalog snapshotCatalog) {
         return new File(snapshotCatalog.getRootDirectory(), "editions.xml");
