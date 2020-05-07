@@ -20,7 +20,6 @@
 
 package slash.navigation.tcx;
 
-import slash.common.io.Transfer;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.tcx.binding1.*;
@@ -34,8 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static slash.common.io.Transfer.isEmpty;
-import static slash.common.io.Transfer.parseXMLTime;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.UnitConversion.MILLISECONDS_OF_A_SECOND;
 import static slash.navigation.tcx.TcxUtil.marshal1;
@@ -275,10 +273,12 @@ public class Tcx1Format extends TcxFormat {
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             TrackpointT trackpointT = objectFactory.createTrackpointT();
-            trackpointT.setAltitudeMeters(position.getElevation());
+            // avoid useless 0.0 elevations
+            if (!isEmpty(position.getElevation()))
+                trackpointT.setAltitudeMeters(position.getElevation());
             trackpointT.setHeartRateBpm(getHeartBeatRate(position));
             trackpointT.setPosition(createPosition(position));
-            trackpointT.setTime(Transfer.formatXMLTime(position.getTime()));
+            trackpointT.setTime(formatXMLTime(position.getTime()));
 
             if (previous != null) {
                 Double previousDistance = previous.calculateDistance(position);

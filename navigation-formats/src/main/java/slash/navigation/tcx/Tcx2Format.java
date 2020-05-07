@@ -20,7 +20,6 @@
 
 package slash.navigation.tcx;
 
-import slash.common.io.Transfer;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.tcx.binding2.*;
@@ -34,8 +33,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static slash.common.io.Transfer.isEmpty;
-import static slash.common.io.Transfer.parseXMLTime;
+import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.UnitConversion.MILLISECONDS_OF_A_SECOND;
 import static slash.navigation.tcx.TcxUtil.marshal2;
@@ -109,18 +107,19 @@ public class Tcx2Format extends TcxFormat {
     }
 
 
-    private TcxRoute process(ActivityLapT activityLapT) {
+    private TcxRoute process(ActivityLapT activityLapT, String routeName) {
         List<Wgs84Position> positions = new ArrayList<>();
         for (TrackT trackT : activityLapT.getTrack()) {
             positions.addAll(processTrack(trackT));
         }
-        return new TcxRoute(this, Track, activityLapT.getNotes(), positions);
+        String lapRouteName = activityLapT.getNotes() != null ? activityLapT.getNotes() : routeName;
+        return new TcxRoute(this, Track, lapRouteName, positions);
     }
 
     private List<TcxRoute> process(ActivityT activityT) {
         List<TcxRoute> result = new ArrayList<>();
         for (ActivityLapT activityLapT : activityT.getLap()) {
-            result.add(process(activityLapT));
+            result.add(process(activityLapT, activityT.getNotes()));
         }
         return result;
     }
@@ -139,7 +138,7 @@ public class Tcx2Format extends TcxFormat {
         for (TrackT trackT : courseT.getTrack()) {
             positions.addAll(processTrack(trackT));
         }
-        result.add(new TcxRoute(this, Track, courseT.getName(), positions));
+        result.add(new TcxRoute(this, Route, courseT.getName(), positions));
         return result;
     }
 
@@ -160,7 +159,7 @@ public class Tcx2Format extends TcxFormat {
                 result.addAll(process(multiSportSessionT.getFirstSport().getActivity()));
                 for (NextSportT nextSportT : multiSportSessionT.getNextSport()) {
                     result.addAll(process(nextSportT.getActivity()));
-                    result.add(process(nextSportT.getTransition()));
+                    result.add(process(nextSportT.getTransition(), nextSportT.getActivity().getNotes()));
                 }
             }
         }
@@ -246,10 +245,12 @@ public class Tcx2Format extends TcxFormat {
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             TrackpointT trackpointT = objectFactory.createTrackpointT();
-            trackpointT.setAltitudeMeters(position.getElevation());
+            // avoid useless 0.0 elevations
+            if (!isEmpty(position.getElevation()))
+                trackpointT.setAltitudeMeters(position.getElevation());
             trackpointT.setHeartRateBpm(getHeartBeatRateT(position));
             trackpointT.setPosition(createPosition(position));
-            trackpointT.setTime(Transfer.formatXMLTime(position.getTime()));
+            trackpointT.setTime(formatXMLTime(position.getTime()));
 
             if (previous != null) {
                 Double previousDistance = previous.calculateDistance(position);
@@ -272,29 +273,58 @@ public class Tcx2Format extends TcxFormat {
         return courseT;
     }
 
-    private TrainingCenterDatabaseT createTrainingCenterDatabase(TcxRoute route, int startIndex, int endIndex) {
+    private ActivityT createActivity(TcxRoute route, String routeName, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        TrainingCenterDatabaseT trainingCenterDatabaseT = objectFactory.createTrainingCenterDatabaseT();
-        CourseListT courseListT = objectFactory.createCourseListT();
-        trainingCenterDatabaseT.setCourses(courseListT);
-        List<CourseT> courses = courseListT.getCourse();
-        courses.add(createCourse(route, asRouteName(route.getName()), startIndex, endIndex));
-        return trainingCenterDatabaseT;
+
+        ActivityT activityT = objectFactory.createActivityT();
+        activityT.setNotes(routeName);
+        ActivityLapT activityLapT = objectFactory.createActivityLapT();
+        activityT.getLap().add(activityLapT);
+        activityLapT.setDistanceMeters(route.getDistance());
+        activityLapT.setIntensity(IntensityT.fromValue("Active"));
+        activityLapT.setTotalTimeSeconds(route.getTime() / MILLISECONDS_OF_A_SECOND);
+        activityLapT.getTrack().add(createTrack(route, startIndex, endIndex));
+        return activityT;
+    }
+
+    private void addToTrainingCenterDatabase(TrainingCenterDatabaseT trainingCenterDatabaseT, Set<String> routeNames,
+                                             TcxRoute route, int startIndex, int endIndex) {
+        ObjectFactory objectFactory = new ObjectFactory();
+
+        String routeName = createUniqueRouteName(route.getName(), routeNames);
+        routeNames.add(routeName);
+
+        switch (route.getCharacteristics()) {
+            case Route:
+                if (trainingCenterDatabaseT.getCourses() == null)
+                    trainingCenterDatabaseT.setCourses(objectFactory.createCourseListT());
+                trainingCenterDatabaseT.getCourses().getCourse().
+                        add(createCourse(route, routeName, startIndex, endIndex));
+                break;
+            case Waypoints:
+            case Track:
+                if (trainingCenterDatabaseT.getActivities() == null)
+                    trainingCenterDatabaseT.setActivities(objectFactory.createActivityListT());
+                trainingCenterDatabaseT.getActivities().getActivity()
+                        .add(createActivity(route, routeName, startIndex, endIndex));
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
+        }
     }
 
     private TrainingCenterDatabaseT createTrainingCenterDatabase(List<TcxRoute> routes) {
-        ObjectFactory objectFactory = new ObjectFactory();
-        TrainingCenterDatabaseT trainingCenterDatabaseT = objectFactory.createTrainingCenterDatabaseT();
-        CourseListT courseListT = objectFactory.createCourseListT();
-        trainingCenterDatabaseT.setCourses(courseListT);
-        List<CourseT> courses = courseListT.getCourse();
-
-        Set<String> routeNames = new HashSet<>(routes.size());
-        for (TcxRoute route : routes) {
-            String routeName = createUniqueRouteName(route.getName(), routeNames);
-            routeNames.add(routeName);
-            courses.add(createCourse(route, routeName, 0, route.getPositionCount()));
+        TrainingCenterDatabaseT trainingCenterDatabaseT = new ObjectFactory().createTrainingCenterDatabaseT();
+        for(TcxRoute route : routes) {
+            addToTrainingCenterDatabase(trainingCenterDatabaseT, new HashSet<>(routes.size()),
+                    route, 0, route.getPositionCount());
         }
+        return trainingCenterDatabaseT;
+    }
+
+    private TrainingCenterDatabaseT createTrainingCenterDatabase(TcxRoute route, int startIndex, int endIndex) {
+        TrainingCenterDatabaseT trainingCenterDatabaseT = new ObjectFactory().createTrainingCenterDatabaseT();
+        addToTrainingCenterDatabase(trainingCenterDatabaseT, new HashSet<>(), route, startIndex, endIndex);
         return trainingCenterDatabaseT;
     }
 
