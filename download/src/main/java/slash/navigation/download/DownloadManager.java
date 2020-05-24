@@ -248,7 +248,7 @@ public class DownloadManager {
                 model.removeDownload(queued);
             else {
                 if (COMPLETED.contains(queued.getState()) && startExecutor) {
-                    log.info("Restarting completed download " + download);
+                    log.fine("Restarting completed download " + download);
                     startExecutor(queued);
                 }
                 return queued;

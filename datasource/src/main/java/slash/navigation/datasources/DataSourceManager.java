@@ -34,9 +34,11 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Files.printArrayToDialogString;
 import static slash.navigation.download.Action.*;
 
 /**
@@ -75,14 +77,14 @@ public class DataSourceManager {
         getDownloadManager().dispose();
     }
 
-    public void initialize(String edition, java.io.File directory) throws IOException, JAXBException {
-        java.io.File file = new File(directory, edition + DOT_XML);
-        log.info(format("Initializing edition '%s' from %s", edition, file));
+    public void initialize(String editionId, java.io.File directory) throws IOException, JAXBException {
+        java.io.File file = new File(directory, editionId + DOT_XML);
+        log.info(format("Initializing edition '%s' from %s", editionId, file));
         Edition anEdition = loadEdition(file);
         if(anEdition == null)
             return;
 
-        this.dataSourceService = loadDataSources(anEdition.getDataSources(), directory);
+        loadDataSources(anEdition.getDataSources(), directory);
     }
 
     private Edition loadEdition(java.io.File file) throws IOException, JAXBException {
@@ -96,33 +98,43 @@ public class DataSourceManager {
         return editions.size() > 0 ? editions.get(0) : null;
     }
 
-    private DataSourceService loadDataSources(List<DataSource> dataSources, java.io.File directory) throws IOException, JAXBException {
-        DataSourceService result = new DataSourceService();
+    private void loadDataSources(List<DataSource> dataSources, java.io.File dataSourceDirectory) throws IOException, JAXBException {
+        long start = currentTimeMillis();
+
+        List<File> dataSourceFiles = new ArrayList<>();
+        DataSourceService dataSourceService = new DataSourceService();
         for (DataSource dataSource : new ArrayList<>(dataSources)) {
-            java.io.File file = new java.io.File(directory, dataSource.getId() + DOT_XML);
-            log.info(format("Initializing data source from %s", file));
+            java.io.File file = new java.io.File(dataSourceDirectory, dataSource.getId() + DOT_XML);
+            log.fine(format("Initializing data source from %s", file));
             if (!file.exists()) {
                 log.warning(format("Cannot find data source file %s", file));
                 continue;
             }
 
+            dataSourceFiles.add(file);
+
             try (InputStream inputStream = new FileInputStream(file)) {
-                result.load(inputStream);
+                dataSourceService.load(inputStream);
             }
         }
-        return result;
+        this.dataSourceService = dataSourceService;
+
+        long end = currentTimeMillis();
+        File[] dataSourceFilesArray = dataSourceFiles.toArray(new File[0]);
+        log.info(format("Initialized %d data source files %s from %s in %d milliseconds",
+                dataSourceFilesArray.length, printArrayToDialogString(dataSourceFilesArray, false), dataSourceDirectory, (end - start)));
     }
 
-    public void update(String edition, String url, java.io.File directory) throws IOException, JAXBException {
-        log.info(format("Updating edition '%s' from %s to %s", edition, url, directory));
-        java.io.File file = new java.io.File(directory, edition + DOT_XML);
-        downloadEdition(edition, url, file);
+    public void update(String editionId, String url, java.io.File directory) throws IOException, JAXBException {
+        java.io.File file = new java.io.File(directory, editionId + DOT_XML);
+        log.info(format("Updating edition '%s' from %s to %s", editionId, url, file));
+        downloadEdition(editionId, url, file);
         Edition anEdition = loadEdition(file);
         if(anEdition == null)
             return;
 
         downloadDataSources(anEdition.getDataSources(), directory);
-        this.dataSourceService = loadDataSources(anEdition.getDataSources(), directory);
+        loadDataSources(anEdition.getDataSources(), directory);
 
         updateQueueFromDataSources();
     }
@@ -135,9 +147,9 @@ public class DataSourceManager {
         downloadManager.waitForCompletion(singletonList(download));
     }
 
-    private void downloadEdition(String edition, String url, java.io.File file) {
-        String editionUrl = url + EDITIONS_URI + edition + "/" + FORMAT_XML;
-        Download download = downloadManager.queueForDownload("RouteConverter Edition: " + edition, editionUrl, Copy,
+    private void downloadEdition(String editionId, String url, java.io.File file) {
+        String editionUrl = url + EDITIONS_URI + editionId + "/" + FORMAT_XML;
+        Download download = downloadManager.queueForDownload("RouteConverter Edition: " + editionId, editionUrl, Copy,
                 new FileAndChecksum(file, null), null);
         downloadManager.waitForCompletion(singletonList(download));
     }
