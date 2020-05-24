@@ -80,7 +80,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-imaging</artifactId>
-            <version>1.0-alpha1</version>
+            <version>1.0-20200524</version>
         </dependency>
 
         <!-- XLS, XSLX support -->
@@ -88,6 +88,7 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
+            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -99,6 +100,7 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
+            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>com.github.virtuald</groupId>
@@ -126,6 +128,7 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml-schemas</artifactId>
             <version>${poi.version}</version>
+            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.xmlbeans</groupId>
