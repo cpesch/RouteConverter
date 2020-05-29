@@ -394,29 +394,30 @@ public class NmeaFormat extends BaseNmeaFormat {
         String latitude = formatLatitude(latitudeAsValueAndOrientation.getValue());
         String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
         String satellites = position.getSatellites() != null ? formatIntAsString(position.getSatellites()) : "";
-        String description = escape(position.getDescription(), SEPARATOR, ';');
+        String description = escape(position.getDescription(), SEPARATOR, ';', null);
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatAltitude(position.getElevation());
         String speedKnots = position.getSpeed() != null ? formatSpeed(kiloMeterToNauticMiles(position.getSpeed())) : "";
 
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
-        String gga = "GPGGA" + SEPARATOR + time + SEPARATOR +
-                latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                "1" + SEPARATOR + satellites + SEPARATOR + SEPARATOR + altitude + SEPARATOR + "M" +
-                SEPARATOR + SEPARATOR + "M" + SEPARATOR + SEPARATOR;
-        writeSentence(writer, gga);
+        if(time.length() > 0 || altitude.length() > 0 || satellites.length() > 0) {
+            String gga = "GPGGA" + SEPARATOR + time + SEPARATOR + latitude + SEPARATOR + northOrSouth + SEPARATOR +
+                    longitude + SEPARATOR + westOrEast + SEPARATOR + "1" + SEPARATOR + satellites + SEPARATOR + SEPARATOR +
+                    altitude + SEPARATOR + "M" + SEPARATOR + SEPARATOR + "M" + SEPARATOR + SEPARATOR;
+            writeSentence(writer, gga);
+        }
 
         // $GPWPL,5334.169,N,01001.920,E,STATN1*22
-        String wpl = "GPWPL" + SEPARATOR +
-                latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                description;
-        writeSentence(writer, wpl);
+        if(description != null) {
+            String wpl = "GPWPL" + SEPARATOR + latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR +
+                    westOrEast + SEPARATOR + description;
+            writeSentence(writer, wpl);
+        }
 
         // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,A*76
-        String rmc = "GPRMC" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR +
-                latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                speedKnots + SEPARATOR + SEPARATOR +
+        String rmc = "GPRMC" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR + latitude + SEPARATOR +
+                northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR + speedKnots + SEPARATOR + SEPARATOR +
                 date + SEPARATOR + SEPARATOR + "A";
         writeSentence(writer, rmc);
 

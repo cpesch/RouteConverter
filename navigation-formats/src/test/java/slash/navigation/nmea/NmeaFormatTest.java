@@ -37,7 +37,7 @@ import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.navigation.common.UnitConversion.nauticMilesToKiloMeter;
 
 public class NmeaFormatTest {
-    private NmeaFormat format = new NmeaFormat();
+    private final NmeaFormat format = new NmeaFormat();
 
     @Test
     public void testIsValidLine() {
@@ -464,7 +464,7 @@ public class NmeaFormatTest {
         format.read(new BufferedReader(reader), ISO_LATIN1_ENCODING, context);
         List<NmeaRoute> routes = context.getRoutes();
         assertEquals(1, routes.size());
-        SimpleRoute route = routes.get(0);
+        SimpleRoute<NmeaPosition, BaseNmeaFormat> route = routes.get(0);
         assertEquals(1, route.getPositionCount());
         NmeaPosition position = (NmeaPosition) route.getPositions().get(0);
         assertDoubleEquals(9.8037979667, position.getLongitude());
@@ -507,7 +507,6 @@ public class NmeaFormatTest {
         format.write(route, new PrintWriter(writer), 0, 1);
         String eol = System.getProperty("line.separator");
         String expectedLines = "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,8,,-48.8,M,,M,,*4F" + eol +
-                "$GPWPL,4837.4374,N,00903.4036,E,*4C" + eol +
                 "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.0,,260707,,A*69" + eol +
                 "$GPZDA,134012.000,26,07,2007,,*55" + eol +
                 "$GPVTG,,T,,M,3.0,N,5.6,K,A*23" + eol;
