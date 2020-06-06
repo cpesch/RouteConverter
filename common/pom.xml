@@ -45,7 +45,7 @@
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
-            <groupId>com.github.markusbernhardt</groupId>
+            <groupId>org.bidib.com.github.markusbernhardt</groupId>
             <artifactId>proxy-vole</artifactId>
         </dependency>
         <dependency>
