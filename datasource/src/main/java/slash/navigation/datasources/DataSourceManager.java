@@ -229,8 +229,6 @@ public class DataSourceManager {
         File target = directory; // Flatten
         if (action.equals(Copy))
             target = new File(directory, downloadable.getUri());
-        else if (action.equals(Extract))
-            target = target.getParentFile();
 
         downloadManager.addOrUpdateInQueue(dataSource.getName() + ": " + downloadable.getUri(),
                 dataSource.getBaseUrl() + downloadable.getUri(), action,
