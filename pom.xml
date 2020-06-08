@@ -397,7 +397,7 @@
             <dependency>
                 <groupId>org.bidib.com.github.markusbernhardt</groupId>
                 <artifactId>proxy-vole</artifactId>
-                <version>1.0.6-RC2</version>
+                <version>1.0.6</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.javadelight</groupId>
