@@ -239,13 +239,18 @@ public class BRouter extends BaseRoutingService {
             OsmTrack track = routingEngine.getFoundTrack();
             double distance = routingEngine.getDistance();
             Validity validity = routingEngine.getErrorMessage() == null ? Valid : Invalid;
-            return new RoutingResult(asPositions(track), new DistanceAndTime(distance, null), validity);
+            return new RoutingResult(asPositions(track), new DistanceAndTime(distance, getTotalSeconds(track)), validity);
         } finally {
             secondCounter.stop();
 
             long end = currentTimeMillis();
             log.info("BRouter: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
         }
+    }
+
+    private long getTotalSeconds(OsmTrack track) {
+        float s = track.nodes.size() < 2 ? 0 : track.nodes.get( track.nodes.size()-1 ).getTime() - track.nodes.get( 0 ).getTime();
+        return (long)(s + 0.5);
     }
 
     private List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {
