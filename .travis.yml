@@ -8,6 +8,7 @@ jdk:
   - openjdk8
   - openjdk10
   - openjdk11
+  - oraclejdk8
   - oraclejdk11
 git:
   depth: 3
