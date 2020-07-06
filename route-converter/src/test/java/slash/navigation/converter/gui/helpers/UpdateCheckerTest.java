@@ -160,6 +160,14 @@ public class UpdateCheckerTest {
     }
 
     @Test
+    public void ignoreJava14jackage() {
+        UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "14-jpackage");
+        result.setParameters("java14.version=14.0.1");
+        assertFalse(result.existsLaterJavaVersion());
+        assertEquals("14.0.1", result.getLatestJavaVersion());
+    }
+
+    @Test
     public void noJava15Supported() {
         UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult(null, "14");
         result.setParameters("java15.version=15.0.1");

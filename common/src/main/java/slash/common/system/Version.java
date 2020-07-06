@@ -64,6 +64,8 @@ public class Version {
     }
 
     public boolean isLaterVersionThan(Version other) {
+        if(other.getVersion().equals("14-jpackage"))
+            return false;
         return compareVersion(removeSnapshot(version), removeSnapshot(other.getVersion())) > 0;
     }
 
@@ -110,7 +112,7 @@ public class Version {
 
     public String getVersion() {
         if (version != null) {
-            if (version.contains("-SNAPSHOT"))
+            if (version.contains("-SNAPSHOT") || version.endsWith("-jpackage"))
                 return version;
             int index = version.indexOf('-');
             if (index != -1)
