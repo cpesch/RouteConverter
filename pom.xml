@@ -64,7 +64,7 @@
 
         <alephformatter.version>0.1.1</alephformatter.version>
         <brouter.version>1.6.1</brouter.version>
-        <graphhopper.version>0.13</graphhopper.version>
+        <graphhopper.version>0.13.0</graphhopper.version>
         <httpclient.version>4.5.12</httpclient.version>
         <jackson.version>2.11.1</jackson.version>
         <jaxb.version>2.3.1</jaxb.version>
