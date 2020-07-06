@@ -47,9 +47,9 @@ import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
  */
 
 public class AddPositionAction extends FrameAction {
-    private JTable table;
-    private PositionsModel positionsModel;
-    private PositionsSelectionModel positionsSelectionModel;
+    private final JTable table;
+    private final PositionsModel positionsModel;
+    private final PositionsSelectionModel positionsSelectionModel;
 
     public AddPositionAction(JTable table, PositionsModel positionsModel, PositionsSelectionModel positionsSelectionModel) {
         this.table = table;
@@ -58,10 +58,10 @@ public class AddPositionAction extends FrameAction {
     }
 
     private NavigationPosition calculateCenter(int row) {
-        NavigationPosition position = positionsModel.getPosition(row);
-        // if there is only one position or it is the first row, choose the map center
-        if (row >= positionsModel.getRowCount() - 1)
+        // if there is only one position or it is the first or last row, choose the map center
+        if (row >= positionsModel.getRowCount() - 1 || row == positionsModel.getRowCount())
             return null;
+        NavigationPosition position = positionsModel.getPosition(row);
         // otherwise center between given positions
         NavigationPosition second = positionsModel.getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
@@ -118,11 +118,9 @@ public class AddPositionAction extends FrameAction {
 
             final int[] rows = toArray(insertedRows);
             final int insertRow = rows.length > 0 ? rows[0] : table.getRowCount();
-            invokeLater(new Runnable() {
-                public void run() {
-                    scrollToPosition(table, insertRow);
-                    positionsSelectionModel.setSelectedPositions(rows, true);
-                }
+            invokeLater(() -> {
+                scrollToPosition(table, insertRow);
+                positionsSelectionModel.setSelectedPositions(rows, true);
             });
         }
     }
