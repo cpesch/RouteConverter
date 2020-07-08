@@ -23,10 +23,17 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.PathWrapper;
 import com.graphhopper.reader.osm.GraphHopperOSM;
-import com.graphhopper.routing.util.DefaultFlagEncoderFactory;
+import com.graphhopper.routing.profiles.DefaultEncodedValueFactory;
+import com.graphhopper.routing.profiles.EncodedValueFactory;
+import com.graphhopper.routing.util.BikeFlagEncoder;
+import com.graphhopper.routing.util.CarFlagEncoder;
 import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.routing.util.FootFlagEncoder;
+import com.graphhopper.storage.GHDirectory;
+import com.graphhopper.storage.StorableProperties;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.exceptions.PointNotFoundException;
+import slash.common.io.Transfer;
 import slash.navigation.common.*;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
@@ -37,11 +44,15 @@ import slash.navigation.download.FileAndChecksum;
 import slash.navigation.routing.*;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static com.graphhopper.routing.ch.CHAlgoFactoryDecorator.EdgeBasedCHMode.EDGE_OR_NODE;
+import static com.graphhopper.storage.DAType.RAM;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
@@ -49,9 +60,8 @@ import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.printArrayToDialogString;
-import static slash.common.io.Files.recursiveDelete;
-import static slash.navigation.graphhopper.PbfUtil.DOT_OSM;
-import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
+import static slash.common.io.Transfer.trim;
+import static slash.navigation.graphhopper.PbfUtil.*;
 import static slash.navigation.routing.RoutingResult.Validity.PointNotFound;
 import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
@@ -66,20 +76,33 @@ public class GraphHopper extends BaseRoutingService {
     private static final Logger log = Logger.getLogger(GraphHopper.class.getName());
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
-    private static final TravelMode CAR = new TravelMode("Car");
-    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("Bike"), CAR, new TravelMode("Foot"));
-    // omitted: Hike, MotorCycle, MTB, RacingBike, Scooter, Small_Truck, Truck
-    private static final int BYTES_FOR_EDGE_FLAGS = 4;
+    private static final TravelMode CAR = new TravelMode("car");
+    private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("bike"), CAR, new TravelMode("foot"));
 
     private final DownloadManager downloadManager;
     private DataSource dataSource;
 
     private DownloadableFinder finder;
     private com.graphhopper.GraphHopper hopper;
+    private final EncodingManager encodingManager;
     private java.io.File osmPbfFile;
 
     public GraphHopper(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
+
+        EncodedValueFactory encodedValueFactory = new DefaultEncodedValueFactory();
+        this.encodingManager = new EncodingManager
+                .Builder(8)
+                .setEnableInstructions(true)
+                .add(encodedValueFactory.create("road_class"))
+                .add(encodedValueFactory.create("road_class_link"))
+                .add(encodedValueFactory.create("road_environment"))
+                .add(encodedValueFactory.create("max_speed"))
+                .add(encodedValueFactory.create("road_access"))
+                .add(new CarFlagEncoder("turn_costs=true|edge_based=true"))
+                .add(new FootFlagEncoder())
+                .add(new BikeFlagEncoder())
+                .build();
     }
 
     public String getName() {
@@ -151,13 +174,10 @@ public class GraphHopper extends BaseRoutingService {
         return new java.io.File(getDirectory(), key);
     }
 
-    private java.io.File createPath(java.io.File file) {
-        String name = file.getName().replace(DOT_PBF, "").replace(DOT_OSM, "");
-        return new java.io.File(file.getParent(), name);
-    }
-
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
         initializeHopper();
+        if (hopper == null)
+            throw new IllegalStateException("Could not initialize from graph directory of GraphHopper");
 
         SecondCounter secondCounter = new SecondCounter() {
             protected void second(int second) {
@@ -171,9 +191,9 @@ public class GraphHopper extends BaseRoutingService {
             GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
             request.setVehicle(travelMode.getName().toUpperCase());
             GHResponse response = hopper.route(request);
-            if(response.hasErrors()) {
+            if (response.hasErrors()) {
                 boolean pointNotFound = response.getErrors().size() > 0 && response.getErrors().get(0) instanceof PointNotFoundException;
-                if(pointNotFound)
+                if (pointNotFound)
                     return new RoutingResult(null, null, PointNotFound);
 
                 String errors = printArrayToDialogString(response.getErrors().toArray(), false);
@@ -186,19 +206,8 @@ public class GraphHopper extends BaseRoutingService {
             secondCounter.stop();
 
             long end = currentTimeMillis();
-            log.info(format("GraphHopper: routing from %s to %s took %d milliseconds", from, to, end-start));
+            log.info(format("GraphHopper: routing from %s to %s took %d milliseconds", from, to, end - start));
         }
-    }
-
-    private String getAvailableTravelModeNames() {
-        StringBuilder result = new StringBuilder();
-        List<TravelMode> availableTravelModes = getAvailableTravelModes();
-        for(int i=0; i < availableTravelModes.size(); i++) {
-            result.append(availableTravelModes.get(i).getName().toLowerCase());
-            if(i < availableTravelModes.size() - 1)
-                result.append(",");
-        }
-        return result.toString();
     }
 
     private static final Object initializationLock = new Object();
@@ -215,18 +224,37 @@ public class GraphHopper extends BaseRoutingService {
         }
     }
 
+    private File getPropertiesFile() {
+        File file = getOsmPbfFile();
+        File path = createGraphDirectory(file);
+        return new File(path, "properties");
+    }
+
+    private boolean existsOsmPbfFile() {
+        File file = getOsmPbfFile();
+        return file != null && file.exists();
+    }
+
+    private boolean existsGraphDirectory() {
+        File edges = getPropertiesFile();
+        return edges.exists();
+    }
+
     void initializeHopper() {
         synchronized (initializationLock) {
-            java.io.File file = getOsmPbfFile();
-            if (file == null || !file.exists())
+            if (!existsGraphDirectory() && !existsOsmPbfFile())
                 return;
 
+            java.io.File osmPbfFile = getOsmPbfFile();
+            File graphDirectory = createGraphDirectory(osmPbfFile);
             if (hopper != null) {
                 // avoid close() and importOrLoad() if the osmPbfFile stayed the same
-                if (((GraphHopperOSM)hopper).getOSMFile().equals(file.getAbsolutePath()))
+                String location = hopper.getGraphHopperLocation();
+                if (location != null && location.equals(graphDirectory.getAbsolutePath()))
                     return;
 
                 hopper.close();
+                hopper = null;
             }
 
             SecondCounter secondCounter = new SecondCounter() {
@@ -237,42 +265,60 @@ public class GraphHopper extends BaseRoutingService {
             secondCounter.start();
 
             long start = currentTimeMillis();
-            File path = createPath(file);
             try {
-                EncodingManager encodingManager = new EncodingManager.
-                        Builder(BYTES_FOR_EDGE_FLAGS).
-                        setEnableInstructions(false).
-                        addAll(new DefaultFlagEncoderFactory(), getAvailableTravelModeNames()).
-                        build();
-                hopper = new GraphHopperOSM().
-                        setOSMFile(file.getAbsolutePath()).
-                        forDesktop().
-                        setEncodingManager(encodingManager).
-                        setCHEnabled(false).
-                        setGraphHopperLocation(path.getAbsolutePath()).
-                        importOrLoad();
-            } catch (IllegalStateException e) {
-                log.warning("Could not initialize GraphHopper: " + e);
-
-                if (e.getMessage().contains("Version of edges unsupported")) {
-                    log.info("Deleting GraphHopper index " + path);
-                    try {
-                        recursiveDelete(path);
-                        log.info("Reinitializing GraphHopper");
-                        initializeHopper();
-                    } catch (IOException e2) {
-                        log.severe("Could not delete GraphHopper index " + path + ": " + e2);
-                    }
+                // load existing graph first
+                if (existsGraphDirectory()) {
+                    this.hopper = loadHopper(getPropertiesFile(), graphDirectory);
+                    if(this.hopper != null)
+                        return;
                 }
 
+                // if there is none or it fails:
+                this.hopper = importHopper(osmPbfFile, graphDirectory);
+            } catch (IllegalStateException e) {
+                log.warning("Could not initialize GraphHopper: " + e);
                 throw e;
             } finally {
                 secondCounter.stop();
 
                 long end = currentTimeMillis();
-                log.info(format("GraphHopper: initializing from %s took %d milliseconds", file, end-start));
+                log.info(format("GraphHopper: initializing from %s took %d milliseconds", osmPbfFile, end - start));
             }
         }
+    }
+
+    private com.graphhopper.GraphHopper loadHopper(File propertiesFile, File graphDirectory) {
+        Properties properties = new Properties();
+        try {
+            properties.load(new FileInputStream(propertiesFile));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        GraphHopperOSM osm = new GraphHopperOSM();
+        boolean existsCH = !"[]".equals(trim(properties.getProperty("graph.ch.profiles")));
+        osm.getCHFactoryDecorator().setEnabled(existsCH);
+        if(existsCH) {
+            osm.getCHFactoryDecorator().setEdgeBasedCHMode(EDGE_OR_NODE);
+
+        }
+
+        if(osm.load(graphDirectory.getAbsolutePath()))
+            return osm;
+        else
+            return null;
+    }
+
+    private com.graphhopper.GraphHopper importHopper(File osmPbfFile, File graphDirectory) {
+        GraphHopperOSM osm = new GraphHopperOSM()
+                .setOSMFile(osmPbfFile.getAbsolutePath());
+        osm.getCHFactoryDecorator()
+                .setEdgeBasedCHMode(EDGE_OR_NODE);
+        return osm
+                .setEncodingManager(encodingManager)
+                .setGraphHopperLocation(graphDirectory.getAbsolutePath())
+                .forDesktop()
+                .importOrLoad();
     }
 
     private List<NavigationPosition> asPositions(PointList points) {
@@ -285,7 +331,7 @@ public class GraphHopper extends BaseRoutingService {
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         Set<BoundingBox> boundingBoxes = new HashSet<>();
-        for (int i = 0; i < longitudeAndLatitudes.size() - 1; i+=2) {
+        for (int i = 0; i < longitudeAndLatitudes.size() - 1; i += 2) {
             LongitudeAndLatitude l1 = longitudeAndLatitudes.get(i);
             LongitudeAndLatitude l2 = longitudeAndLatitudes.get(i + 1);
             boundingBoxes.add(createBoundingBox(asList(l1, l2)));
@@ -296,7 +342,7 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     private class DownloadFutureImpl implements DownloadFuture {
-        private List<Downloadable> downloadables;
+        private final List<Downloadable> downloadables;
         private Downloadable next;
 
         DownloadFutureImpl(Collection<Downloadable> downloadables) {
@@ -305,8 +351,13 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         public boolean isRequiresDownload() {
-            File file = getOsmPbfFile();
-            return file != null && !file.exists();
+            boolean requiresDownload = !existsGraphDirectory() && !existsOsmPbfFile();
+            log.info("requiresDownload=" + requiresDownload +
+                    " existsGraphDirectory()=" + existsGraphDirectory() +
+                    " getPropertiesFile()=" + getPropertiesFile() +
+                    " existsOsmPbfFile()=" + existsOsmPbfFile() +
+                    " getOsmPbfFile()=" + getOsmPbfFile());
+            return requiresDownload;
         }
 
         public void download() {
@@ -315,13 +366,13 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         public boolean isRequiresProcessing() {
-            File file = getOsmPbfFile();
-            if(file == null)
-                return false;
-
-            File path = createPath(file);
-            File edges = new File(path, "edges");
-            return !path.exists() || !edges.exists();
+            boolean requiresProcessing = !existsGraphDirectory() && existsOsmPbfFile();
+            log.info("requiresProcessing=" + requiresProcessing +
+                    " existsGraphDirectory()=" + existsGraphDirectory() +
+                    " getPropertiesFile()=" + getPropertiesFile() +
+                    " existsOsmPbfFile()=" + existsOsmPbfFile() +
+                    " getOsmPbfFile()=" + getOsmPbfFile());
+            return requiresProcessing;
         }
 
         public void process() {
@@ -333,7 +384,7 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         public void nextDownload() {
-            if(!hasNextDownload())
+            if (!hasNextDownload())
                 return;
 
             this.next = downloadables.remove(0);
@@ -364,13 +415,13 @@ public class GraphHopper extends BaseRoutingService {
     public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
         Collection<Downloadable> downloadables = finder.getDownloadablesFor(boundingBoxes);
         long notExists = 0L;
-        for(Downloadable downloadable : downloadables) {
+        for (Downloadable downloadable : downloadables) {
             Long contentLength = downloadable.getLatestChecksum().getContentLength();
-            if(contentLength == null)
+            if (contentLength == null)
                 continue;
 
             java.io.File file = createFile(downloadable.getUri());
-            if(!file.exists())
+            if (!file.exists())
                 notExists += contentLength;
         }
         return notExists;

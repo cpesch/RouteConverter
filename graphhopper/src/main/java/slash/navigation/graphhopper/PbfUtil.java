@@ -42,6 +42,11 @@ public class PbfUtil {
     public static final String DOT_PBF = ".pbf";
     private static final double LONGITUDE_LATITUDE_RESOLUTION = 1000.0 * 1000.0 * 1000.0;
 
+    public static File createGraphDirectory(java.io.File file) {
+        String name = file.getName().replace(DOT_PBF, "").replace(DOT_OSM, "");
+        return new java.io.File(file.getParent(), name);
+    }
+
     public static BoundingBox extractBoundingBox(File file) throws IOException {
         try (InputStream inputStream = new FileInputStream(file)) {
             return extractBoundingBox(inputStream);

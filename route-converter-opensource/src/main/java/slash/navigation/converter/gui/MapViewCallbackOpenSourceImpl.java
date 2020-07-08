@@ -26,6 +26,8 @@ import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
@@ -65,7 +67,9 @@ public class MapViewCallbackOpenSourceImpl extends MapViewCallbackImpl implement
         if (t instanceof OutOfMemoryError)
             handleOutOfMemoryError((OutOfMemoryError) t);
         else {
-            log.severe("Cannot route position list: " + getLocalizedMessage(t));
+            StringWriter writer = new StringWriter();
+            t.printStackTrace(new PrintWriter(writer));
+            log.severe("Cannot route position list: " + getLocalizedMessage(t) + ", " + writer);
             showMessageDialog(getFrame(), format(getBundle().getString("cannot-route-position-list"), t),
                     getFrame().getTitle(), ERROR_MESSAGE);
         }

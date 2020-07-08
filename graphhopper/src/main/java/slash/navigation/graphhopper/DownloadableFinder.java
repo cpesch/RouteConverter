@@ -30,6 +30,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static slash.navigation.common.Bearing.calculateBearing;
+import static slash.navigation.graphhopper.PbfUtil.createGraphDirectory;
 
 /**
  * Finds {@link Downloadable}s for {@link BoundingBox}es from a given {@link DataSource}
@@ -52,8 +53,16 @@ public class DownloadableFinder {
         this.dataSource = dataSource;
     }
 
+    private java.io.File toFile(File file) {
+        return new java.io.File(directory, file.getUri());
+    }
+
     private boolean existsFile(File file) {
-        return file != null && new java.io.File(directory, file.getUri()).exists();
+        return file != null && toFile(file).exists();
+    }
+
+    private boolean existsGraphDirectory(File file) {
+        return file != null && createGraphDirectory(toFile(file)).exists();
     }
 
     private List<DownloadableDescriptor> getDownloadDescriptorsFor(BoundingBox routeBoundingBox) {
@@ -70,7 +79,8 @@ public class DownloadableFinder {
             Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
                     routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
             boolean existsFile = existsFile(file);
-            descriptors.add(new DownloadableDescriptor(file, distance, fileBoundingBox, existsFile));
+            boolean existsGraphDirectory = existsGraphDirectory(file);
+            descriptors.add(new DownloadableDescriptor(file, distance, fileBoundingBox, existsFile, existsGraphDirectory));
         }
 
         return descriptors.stream()
@@ -115,12 +125,15 @@ public class DownloadableFinder {
         private final Double distanceToCenter;
         private final BoundingBox fileBoundingBox;
         private final boolean existsFile;
+        private final boolean existsGraphDirectory;
 
-        private DownloadableDescriptor(Downloadable downloadable, Double distanceToCenter, BoundingBox fileBoundingBox, boolean existsFile) {
+        private DownloadableDescriptor(Downloadable downloadable, Double distanceToCenter, BoundingBox fileBoundingBox,
+                                       boolean existsFile, boolean existsGraphDirectory) {
             this.downloadable = downloadable;
             this.distanceToCenter = distanceToCenter;
             this.fileBoundingBox = fileBoundingBox;
             this.existsFile = existsFile;
+            this.existsGraphDirectory = existsGraphDirectory;
         }
 
         public Downloadable getDownloadable() {
@@ -135,6 +148,10 @@ public class DownloadableFinder {
                     fileBoundingBox.getSouthWest().getLongitude() <= -179.9999);
         }
 
+        private boolean existsFileOrGraphDirectory() {
+            return existsFile || existsGraphDirectory;
+        }
+
         /*  Compare two Downloadables by:
             A < B if A exists and B not
             B < A if B exists and A not
@@ -145,9 +162,9 @@ public class DownloadableFinder {
                     A compares to B by DistanceToCenter of Route
         */
         public int compareTo(DownloadableDescriptor other) {
-            if(existsFile && !other.existsFile)
+            if(existsFileOrGraphDirectory() && !other.existsFileOrGraphDirectory())
                 return -1;
-            if(!existsFile && other.existsFile)
+            if(!existsFileOrGraphDirectory() && other.existsFileOrGraphDirectory())
                 return 1;
 
             if (fileBoundingBox != null && other.fileBoundingBox != null) {
@@ -177,7 +194,8 @@ public class DownloadableFinder {
             return getClass().getSimpleName() + "[downloadable=" + downloadable +
                     ", distanceToCenter=" + distanceToCenter +
                     ", fileBoundingBox=" + fileBoundingBox +
-                    ", existsFile=" + existsFile + "]";
+                    ", existsFile=" + existsFile +
+                    ", existsGraphDirectory=" + existsGraphDirectory + "]";
         }
     }
 }
