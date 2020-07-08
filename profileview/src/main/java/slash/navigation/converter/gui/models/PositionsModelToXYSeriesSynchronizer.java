@@ -29,6 +29,7 @@ import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
 import static javax.swing.event.TableModelEvent.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
  * Synchronizes changes at a {@link PositionsModel} with a {@link XYSeries}.
@@ -64,7 +65,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
                         handleAdd(e.getFirstRow(), e.getLastRow());
                         break;
                     case UPDATE:
-                        handleUpdate(e.getFirstRow(), e.getLastRow(), e.getColumn());
+                        handleUpdate(e);
                         break;
                     case DELETE:
                         if (getPositions().isContinousRange())
@@ -84,11 +85,14 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         }
     }
 
-    private void handleUpdate(int firstRow, int lastRow, int columnIndex) {
+    private void handleUpdate(TableModelEvent e) {
         // special treatment for fireTableDataChanged() notifications
-        if (firstRow == 0 && lastRow == MAX_VALUE) {
+        if (isFirstToLastRow(e)) {
             handleFullUpdate();
         } else {
+            int firstRow = e.getFirstRow();
+            int lastRow = e.getLastRow();
+            int columnIndex = e.getColumn();
             // ignored updates on columns not displayed
             if (columnIndex == LONGITUDE_COLUMN_INDEX ||
                     columnIndex == LATITUDE_COLUMN_INDEX ||
