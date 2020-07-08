@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.lang.Integer.MAX_VALUE;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -310,6 +311,8 @@ public class OverlayPositionsModel implements PositionsModel {
             else if (index > lastIndex)
                 lastIndex = index;
         }
+        if(firstIndex > 0)
+            firstIndex = firstIndex - 1;
         delegate.fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
     }
 
