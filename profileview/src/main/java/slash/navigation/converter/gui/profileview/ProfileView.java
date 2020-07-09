@@ -180,13 +180,17 @@ public class ProfileView implements PositionsSelectionModel {
 
         if (profileModel.getXAxisMode().equals(Distance)) {
             double[] distances = positionsModel.getDistancesFromStart(selectPositions);
-            for (double distance : distances) {
-                plot.addDomainMarker(0, new ValueMarker(profileModel.formatDistance(distance)), FOREGROUND, false);
+            if(distances != null) {
+                for (double distance : distances) {
+                    plot.addDomainMarker(0, new ValueMarker(profileModel.formatDistance(distance)), FOREGROUND, false);
+                }
             }
         } else {
             long[] times = positionsModel.getTimesFromStart(selectPositions);
-            for (long time : times) {
-                plot.addDomainMarker(0, new ValueMarker(profileModel.formatTime(time)), FOREGROUND, false);
+            if(times != null) {
+                for (long time : times) {
+                    plot.addDomainMarker(0, new ValueMarker(profileModel.formatTime(time)), FOREGROUND, false);
+                }
             }
         }
 
