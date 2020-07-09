@@ -54,6 +54,6 @@ public class DescriptionColumnTableCellEditor extends PositionsTableCellEditor {
         File file = extractFile(position);
         if (file != null)
             return (file.exists() ? "" : "MISSING: ") + file.getPath();
-        return "";
+        return null;
     }
 }
