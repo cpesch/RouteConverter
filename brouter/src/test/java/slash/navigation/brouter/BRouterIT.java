@@ -105,7 +105,7 @@ public class BRouterIT {
         assertEquals(Valid, result.getValidity());
         assertEquals(233, result.getPositions().size(), 10);
         assertEquals(13754.0, result.getDistanceAndTime().getDistance(), 25.0);
-        assertNull(result.getDistanceAndTime().getTime());
+        assertEquals(0, (long)result.getDistanceAndTime().getTimeInMillis());
     }
 
     @Test
@@ -114,6 +114,6 @@ public class BRouterIT {
         assertEquals(Valid, result.getValidity());
         assertEquals(153, result.getPositions().size(), 8);
         assertEquals(13899.0, result.getDistanceAndTime().getDistance(), 25.0);
-        assertNull(result.getDistanceAndTime().getTime());
+        assertEquals(2332000, (long)result.getDistanceAndTime().getTimeInMillis());
     }
 }

@@ -132,6 +132,22 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return result;
     }
 
+    public double[] getDistancesFromStart(int startIndex, int endIndex) {
+        return getRoute().getDistancesFromStart(startIndex, endIndex);
+    }
+
+    public double[] getDistancesFromStart(int[] indices) {
+        return getRoute().getDistancesFromStart(indices);
+    }
+
+    public long[] getTimesFromStart(int startIndex, int endIndex) {
+        return getRoute().getTimesFromStart(startIndex, endIndex);
+    }
+
+    public long[] getTimesFromStart(int[] indices) {
+        return getRoute().getTimesFromStart(indices);
+    }
+
     public int[] getContainedPositions(BoundingBox boundingBox) {
         return getRoute().getContainedPositions(boundingBox);
     }

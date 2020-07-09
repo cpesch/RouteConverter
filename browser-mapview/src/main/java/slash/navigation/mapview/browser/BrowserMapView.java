@@ -1676,7 +1676,8 @@ public abstract class BrowserMapView extends BaseMapView {
             String distance = trim(tokenizer.nextToken());
             if (tokenizer.hasMoreTokens()) {
                 String time = trim(tokenizer.nextToken());
-                result.add(new DistanceAndTime(parseDouble(distance), parseLong(time)));
+                Long timeInSeconds = parseLong(time);
+                result.add(new DistanceAndTime(parseDouble(distance), timeInSeconds != null ? timeInSeconds * 1000 : null));
             }
         }
         return result;
@@ -1858,7 +1859,7 @@ public abstract class BrowserMapView extends BaseMapView {
                         Double distance = distanceAndTime.getDistance();
                         if (!isEmpty(distance))
                             aggregatedDistance += distance;
-                        Long time = distanceAndTime.getTime();
+                        Long time = distanceAndTime.getTimeInMillis();
                         if (!isEmpty(time))
                             aggregatedTime += time;
                     }

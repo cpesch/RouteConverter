@@ -71,6 +71,22 @@ public class FilteringPositionsModel<E extends NavigationPosition> extends Filte
         throw new UnsupportedOperationException();
     }
 
+    public double[] getDistancesFromStart(int startIndex, int endIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    public double[] getDistancesFromStart(int[] indices) {
+        throw new UnsupportedOperationException();
+    }
+
+    public long[] getTimesFromStart(int startIndex, int endIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    public long[] getTimesFromStart(int[] indices) {
+        throw new UnsupportedOperationException();
+    }
+
     public int[] getContainedPositions(BoundingBox boundingBox) {
         throw new UnsupportedOperationException();
     }

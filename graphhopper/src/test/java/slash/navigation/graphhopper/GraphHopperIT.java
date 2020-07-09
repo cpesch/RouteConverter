@@ -35,7 +35,6 @@ import slash.navigation.routing.TravelMode;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
@@ -88,19 +87,19 @@ public class GraphHopperIT {
 
     @Test
     public void testGetRouteBetweenByCar() {
-        RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Car"));
+        RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("car"));
         assertEquals(Valid, result.getValidity());
         assertEquals(267, result.getPositions().size(), 10);
         assertEquals(13605.6, result.getDistanceAndTime().getDistance(), 25.0);
-        assertEquals(1062.0, result.getDistanceAndTime().getTime(), 100);
+        assertEquals(1062.0, result.getDistanceAndTime().getTimeInMillis(), 100);
     }
 
     @Test
     public void testGetRouteBetweenByBike() {
-        RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("Bike"));
+        RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("bike"));
         assertEquals(Valid, result.getValidity());
         assertEquals(175, result.getPositions().size(), 10);
         assertEquals(13658.8, result.getDistanceAndTime().getDistance(), 25.0);
-        assertEquals(2920.0, result.getDistanceAndTime().getTime(), 100.0);
+        assertEquals(2920.0, result.getDistanceAndTime().getTimeInMillis(), 100.0);
     }
 }

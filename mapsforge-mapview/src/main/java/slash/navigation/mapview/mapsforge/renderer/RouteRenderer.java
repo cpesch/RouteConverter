@@ -193,7 +193,7 @@ public class RouteRenderer {
 
                 Double distance = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());
                 Long time = pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond());
-                pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, !isEmpty(time) ? time / 1000 : null));
+                pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, time));
             }
         } finally {
             synchronized (notificationMutex) {

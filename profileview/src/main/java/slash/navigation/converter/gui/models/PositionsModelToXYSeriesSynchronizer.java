@@ -25,9 +25,9 @@ import org.jfree.data.xy.XYSeries;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
-import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
 import static javax.swing.event.TableModelEvent.*;
+import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
@@ -86,16 +86,20 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
     }
 
     private void handleUpdate(TableModelEvent e) {
-        // special treatment for fireTableDataChanged() notifications
-        if (isFirstToLastRow(e)) {
+        if (getPositions().isContinousRange())
+            return;
+        int columnIndex = e.getColumn();
+        // do a full update for routes to avoid IndexOutOfBoundsException from the depths of XYSeries
+        if (isFirstToLastRow(e) ||
+                (getPositions().getRoute().getCharacteristics().equals(Route) && columnIndex == DISTANCE_COLUMN_INDEX)) {
             handleFullUpdate();
         } else {
             int firstRow = e.getFirstRow();
             int lastRow = e.getLastRow();
-            int columnIndex = e.getColumn();
             // ignored updates on columns not displayed
             if (columnIndex == LONGITUDE_COLUMN_INDEX ||
                     columnIndex == LATITUDE_COLUMN_INDEX ||
+                    // don't do to avoid IndexOutOfBoundsException: columnIndex == DISTANCE_COLUMN_INDEX ||
                     columnIndex == ALL_COLUMNS) {
                 handleIntervalXUpdate(firstRow, lastRow);
             } else if (columnIndex == ELEVATION_COLUMN_INDEX ||
@@ -105,13 +109,13 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         }
     }
 
-    protected void handleFullUpdate() {
+    protected synchronized void handleFullUpdate() {
         series.delete(0, series.getItemCount() - 1);
         if (positions.getRowCount() > 0)
             handleAdd(0, positions.getRowCount() - 1);
     }
 
-    protected void handleIntervalXUpdate(int firstRow, int lastRow) {
+    protected synchronized void handleIntervalXUpdate(int firstRow, int lastRow) {
         getSeries().setFireSeriesChanged(false);
         series.delete(firstRow, min(lastRow, series.getItemCount() - 1));
         handleAdd(firstRow, lastRow);
@@ -119,7 +123,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         getSeries().fireSeriesChanged();
     }
 
-    protected void handleIntervalYUpdate(int firstRow, int lastRow) {
+    protected synchronized void handleIntervalYUpdate(int firstRow, int lastRow) {
         for (int i = firstRow; i < lastRow + 1; i++) {
             series.update((double) i - firstRow, i);
         }

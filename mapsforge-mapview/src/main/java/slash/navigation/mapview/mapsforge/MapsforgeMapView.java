@@ -276,7 +276,7 @@ public class MapsforgeMapView extends BaseMapView {
                         Double distance = distanceAndTime.getDistance();
                         if (!isEmpty(distance))
                             aggregatedDistance += distance;
-                        Long time = distanceAndTime.getTime();
+                        Long time = distanceAndTime.getTimeInMillis();
                         if (!isEmpty(time))
                             aggregatedTime += time;
                     }

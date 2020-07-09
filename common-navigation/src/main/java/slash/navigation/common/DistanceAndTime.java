@@ -20,28 +20,45 @@
 package slash.navigation.common;
 
 /**
- * Combines distance in meters and time in seconds between two {@link NavigationPosition}s.
+ * Combines distance in meters and time in milliseconds between two {@link NavigationPosition}s.
  *
  * @author Christian Pesch
  */
 public class DistanceAndTime {
     private final Double distance;
-    private final Long time;
+    private final Long timeInMillis;
 
-    public DistanceAndTime(Double distance, Long time) {
+    public DistanceAndTime(Double distance, Long timeInMillis) {
         this.distance = distance;
-        this.time = time;
+        this.timeInMillis = timeInMillis;
     }
 
     public Double getDistance() {
         return distance;
     }
 
-    public Long getTime() {
-        return time;
+    public Long getTimeInMillis() {
+        return timeInMillis;
+    }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DistanceAndTime that = (DistanceAndTime) o;
+
+        if (getDistance() != null ? !getDistance().equals(that.getDistance()) : that.getDistance() != null)
+            return false;
+        return getTimeInMillis() != null ? getTimeInMillis().equals(that.getTimeInMillis()) : that.getTimeInMillis() == null;
+    }
+
+    public int hashCode() {
+        int result = getDistance() != null ? getDistance().hashCode() : 0;
+        result = 31 * result + (getTimeInMillis() != null ? getTimeInMillis().hashCode() : 0);
+        return result;
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "[distance=" + getDistance() + ", time=" + getTime() + "]";
+        return getClass().getSimpleName() + "[distance=" + getDistance() + ", time=" + getTimeInMillis() + "]";
     }
 }

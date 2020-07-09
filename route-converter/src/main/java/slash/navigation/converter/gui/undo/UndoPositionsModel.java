@@ -152,6 +152,22 @@ public class UndoPositionsModel implements PositionsModel {
         return delegate.getPositions(firstIndex, lastIndex);
     }
 
+    public double[] getDistancesFromStart(int startIndex, int endIndex) {
+        return delegate.getDistancesFromStart(startIndex, endIndex);
+    }
+
+    public double[] getDistancesFromStart(int[] indices) {
+        return delegate.getDistancesFromStart(indices);
+    }
+
+    public long[] getTimesFromStart(int startIndex, int endIndex) {
+        return delegate.getTimesFromStart(startIndex, endIndex);
+    }
+
+    public long[] getTimesFromStart(int[] indices) {
+        return delegate.getTimesFromStart(indices);
+    }
+
     public int[] getContainedPositions(BoundingBox boundingBox) {
         return delegate.getContainedPositions(boundingBox);
     }

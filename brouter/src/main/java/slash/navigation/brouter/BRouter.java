@@ -239,7 +239,7 @@ public class BRouter extends BaseRoutingService {
             OsmTrack track = routingEngine.getFoundTrack();
             double distance = routingEngine.getDistance();
             Validity validity = routingEngine.getErrorMessage() == null ? Valid : Invalid;
-            return new RoutingResult(asPositions(track), new DistanceAndTime(distance, getTotalSeconds(track)), validity);
+            return new RoutingResult(asPositions(track), new DistanceAndTime(distance, getTime(track)), validity);
         } finally {
             secondCounter.stop();
 
@@ -248,9 +248,9 @@ public class BRouter extends BaseRoutingService {
         }
     }
 
-    private long getTotalSeconds(OsmTrack track) {
+    private long getTime(OsmTrack track) {
         float s = track.nodes.size() < 2 ? 0 : track.nodes.get( track.nodes.size()-1 ).getTime() - track.nodes.get( 0 ).getTime();
-        return (long)(s + 0.5);
+        return (long)(s + 0.5) * 1000;
     }
 
     private List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {

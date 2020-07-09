@@ -47,6 +47,10 @@ public interface PositionsModel extends TableModel {
     List<NavigationPosition> getPositions(int[] rowIndices);
     List<NavigationPosition> getPositions(int firstIndex, int lastIndex);
 
+    double[] getDistancesFromStart(int startIndex, int endIndex);
+    double[] getDistancesFromStart(int[] indices);
+    long[] getTimesFromStart(int startIndex, int endIndex);
+    long[] getTimesFromStart(int[] indices);
     int[] getContainedPositions(BoundingBox boundingBox);
     int[] getPositionsWithinDistanceToPredecessor(double distance);
     int[] getInsignificantPositions(double threshold);

@@ -122,7 +122,7 @@ public class LengthCalculator {
             if (!isEmpty(distance) && distance > meters)
                 meters = distance;
 
-            Long time = distanceAndTime.getTime();
+            Long time = distanceAndTime.getTimeInMillis();
             if (!isEmpty(time) && time > seconds)
                 seconds = time;
         }

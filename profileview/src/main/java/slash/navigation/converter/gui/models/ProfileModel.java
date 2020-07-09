@@ -74,7 +74,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         recomputeEverythingAfter(firstRow);
     }
 
-    private void recomputeEverythingAfter(int firstRow) {
+    private synchronized void recomputeEverythingAfter(int firstRow) {
         getSeries().setFireSeriesChanged(false);
 
         int itemCount = getSeries().getItemCount();
@@ -88,15 +88,19 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         int lastRow = getPositions().getRowCount() - 1;
         if (firstRow <= lastRow && lastRow >= 0) {
             if(getXAxisMode().equals(Distance)) {
-                double[] distances = route.getDistancesFromStart(firstRow, lastRow);
-                for (int i = firstRow; i < lastRow + 1; i++) {
-                    getSeries().add(formatDistance(distances[i - firstRow]), formatYValue(getPositions().getPosition(i)), false);
+                double[] distances = getPositions().getDistancesFromStart(firstRow, lastRow);
+                if(distances != null) {
+                    for (int i = firstRow; i < lastRow + 1; i++) {
+                        getSeries().add(formatDistance(distances[i - firstRow]), formatYValue(getPositions().getPosition(i)), false);
+                    }
                 }
             } else {
-                long[] times = route.getTimesFromStart(firstRow, lastRow);
-                for (int i = firstRow; i < lastRow + 1; i++) {
-                    // XYSeries only works with doubles so it's hard to format the time as a date and time string
-                    getSeries().add(formatTime(times[i - firstRow]), formatYValue(getPositions().getPosition(i)), false);
+                long[] times = getPositions().getTimesFromStart(firstRow, lastRow);
+                if(times != null) {
+                    for (int i = firstRow; i < lastRow + 1; i++) {
+                        // XYSeries only works with doubles so it's hard to format the time as a date and time string
+                        getSeries().add(formatTime(times[i - firstRow]), formatYValue(getPositions().getPosition(i)), false);
+                    }
                 }
             }
         }
@@ -120,8 +124,8 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         return unitSystem.distanceToUnit(distance);
     }
 
-    public long formatTime(long time) {
-        return time / 1000;
+    public long formatTime(long timeInMilliseconds) {
+        return timeInMilliseconds / 1000;
     }
 
     private Double formatElevation(Double elevation) {
