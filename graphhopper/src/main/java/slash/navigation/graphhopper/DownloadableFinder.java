@@ -30,7 +30,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
 import static slash.navigation.common.Bearing.calculateBearing;
-import static slash.navigation.graphhopper.PbfUtil.createGraphDirectory;
+import static slash.navigation.graphhopper.PbfUtil.existsGraphDirectory;
 
 /**
  * Finds {@link Downloadable}s for {@link BoundingBox}es from a given {@link DataSource}
@@ -58,8 +58,8 @@ public class DownloadableFinder {
         return file != null && toFile(file).exists();
     }
 
-    private boolean existsGraphDirectory(File file) {
-        return file != null && createGraphDirectory(toFile(file)).exists();
+    private boolean existsGraph(File file) {
+        return file != null && existsGraphDirectory(toFile(file));
     }
 
     private List<DownloadableDescriptor> getDownloadDescriptorsFor(BoundingBox routeBoundingBox) {
@@ -79,7 +79,7 @@ public class DownloadableFinder {
             Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
                     routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
             boolean existsFile = existsFile(file);
-            boolean existsGraphDirectory = existsGraphDirectory(file);
+            boolean existsGraphDirectory = existsGraph(file);
             descriptors.add(new DownloadableDescriptor(file, distance, fileBoundingBox, existsFile, existsGraphDirectory));
         }
 

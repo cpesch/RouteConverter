@@ -244,7 +244,7 @@ public class BRouter extends BaseRoutingService {
             secondCounter.stop();
 
             long end = currentTimeMillis();
-            log.info("BRouter: routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
+            log.info("Routing from " + from + " to " + to + " took " + (end - start) + " milliseconds");
         }
     }
 

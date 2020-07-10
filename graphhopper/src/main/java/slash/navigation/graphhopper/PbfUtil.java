@@ -40,11 +40,30 @@ public class PbfUtil {
     private static final String OSM_HEADER = "OSMHeader";
     public static final String DOT_OSM = ".osm";
     public static final String DOT_PBF = ".pbf";
+    private static final String LATEST = "-latest";
+    private static final String PROPERTIES = "properties";
     private static final double LONGITUDE_LATITUDE_RESOLUTION = 1000.0 * 1000.0 * 1000.0;
 
-    public static File createGraphDirectory(java.io.File file) {
+    private static File createGraphDirectory(java.io.File file, boolean removeLatest) {
         String name = file.getName().replace(DOT_PBF, "").replace(DOT_OSM, "");
+        if(removeLatest)
+            name = name.replaceAll(LATEST, "");
         return new java.io.File(file.getParent(), name);
+    }
+
+    public static File lookupGraphDirectory(java.io.File file) {
+        File directory = createGraphDirectory(file, false);
+        if(!directory.exists())
+            directory = createGraphDirectory(file, true);
+        return directory;
+    }
+
+    public static File createPropertiesFile(java.io.File file) {
+        return new File(lookupGraphDirectory(file), PROPERTIES);
+    }
+
+    public static boolean existsGraphDirectory(java.io.File file) {
+        return createPropertiesFile(file).exists();
     }
 
     public static BoundingBox extractBoundingBox(File file) throws IOException {

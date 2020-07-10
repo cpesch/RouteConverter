@@ -52,7 +52,7 @@ import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.printArrayToDialogString;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.graphhopper.PbfUtil.createGraphDirectory;
+import static slash.navigation.graphhopper.PbfUtil.lookupGraphDirectory;
 import static slash.navigation.routing.RoutingResult.Validity.*;
 
 /**
@@ -216,7 +216,7 @@ public class GraphHopper extends BaseRoutingService {
             secondCounter.stop();
 
             long end = currentTimeMillis();
-            log.info(format("GraphHopper: routing from %s to %s took %d milliseconds", from, to, end - start));
+            log.info(format("Routing from %s to %s took %d milliseconds", from, to, end - start));
         }
     }
 
@@ -234,20 +234,18 @@ public class GraphHopper extends BaseRoutingService {
         }
     }
 
-    private File getPropertiesFile() {
-        File file = getOsmPbfFile();
-        File path = createGraphDirectory(file);
-        return new File(path, "properties");
-    }
-
     private boolean existsOsmPbfFile() {
         File file = getOsmPbfFile();
         return file != null && file.exists();
     }
 
+    private File getGraphDirectory() {
+        File file = getOsmPbfFile();
+        return lookupGraphDirectory(file);
+    }
+
     private boolean existsGraphDirectory() {
-        File file = getPropertiesFile();
-        return file.exists();
+        return PbfUtil.createPropertiesFile(getGraphDirectory()).exists();
     }
 
     void initializeHopper() {
@@ -256,7 +254,7 @@ public class GraphHopper extends BaseRoutingService {
                 return;
 
             java.io.File osmPbfFile = getOsmPbfFile();
-            File graphDirectory = createGraphDirectory(osmPbfFile);
+            File graphDirectory = getGraphDirectory();
             if (hopper != null) {
                 // avoid close() and importOrLoad() if the osmPbfFile stayed the same
                 String location = hopper.getGraphHopperLocation();
@@ -279,7 +277,7 @@ public class GraphHopper extends BaseRoutingService {
                 // load existing graph first
                 if (existsGraphDirectory()) {
                     log.info(format("Loading existing graph from %s", graphDirectory));
-                    this.hopper = loadHopper(getPropertiesFile(), graphDirectory);
+                    this.hopper = loadHopper(graphDirectory);
                     if(this.hopper != null)
                         return;
                 }
@@ -294,17 +292,17 @@ public class GraphHopper extends BaseRoutingService {
                 secondCounter.stop();
 
                 long end = currentTimeMillis();
-                log.info(format("GraphHopper: initializing from %s took %d milliseconds", osmPbfFile, end - start));
+                log.info(format("Initializing from %s took %d milliseconds", graphDirectory, end - start));
             }
         }
     }
 
-    private com.graphhopper.GraphHopper loadHopper(File propertiesFile, File graphDirectory) {
+    private com.graphhopper.GraphHopper loadHopper(File graphDirectory) {
         Properties properties = new Properties();
         try {
-            properties.load(new FileInputStream(propertiesFile));
+            properties.load(new FileInputStream(PbfUtil.createPropertiesFile(graphDirectory)));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.warning(format("Cannot load properties: %s", e.getMessage()));
         }
 
         GraphHopperOSM osm = new GraphHopperOSM();
@@ -365,7 +363,7 @@ public class GraphHopper extends BaseRoutingService {
             boolean requiresDownload = !existsGraphDirectory() && !existsOsmPbfFile();
             if (requiresDownload)
                 log.fine("requiresDownload=" + requiresDownload +
-                        " existsGraphDirectory()=" + existsGraphDirectory() + " getPropertiesFile()=" + getPropertiesFile() +
+                        " existsGraphDirectory()=" + existsGraphDirectory() + " getGraphDirectory()=" + getGraphDirectory() +
                         " existsOsmPbfFile()=" + existsOsmPbfFile() + " getOsmPbfFile()=" + getOsmPbfFile());
             return requiresDownload;
         }
@@ -379,7 +377,7 @@ public class GraphHopper extends BaseRoutingService {
             boolean requiresProcessing = !existsGraphDirectory() && existsOsmPbfFile();
             if (requiresProcessing)
                 log.info("requiresProcessing=" + requiresProcessing +
-                        " existsGraphDirectory()=" + existsGraphDirectory() + " getPropertiesFile()=" + getPropertiesFile() +
+                        " existsGraphDirectory()=" + existsGraphDirectory() + " getGraphDirectory()=" + getGraphDirectory() +
                         " existsOsmPbfFile()=" + existsOsmPbfFile() + " getOsmPbfFile()=" + getOsmPbfFile());
             return requiresProcessing;
         }
