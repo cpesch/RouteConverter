@@ -70,7 +70,7 @@ public class DownloadableFinder {
         for (File file : dataSource.getFiles()) {
             BoundingBox fileBoundingBox = file.getBoundingBox();
             if (fileBoundingBox == null) {
-                log.warning(format("File %s doesn't have a bounding box. Ignoring it.", file));
+                log.fine(format("File %s doesn't have a bounding box. Ignoring it.", file));
                 continue;
             }
             if (!fileBoundingBox.contains(routeBoundingBox))
@@ -104,7 +104,7 @@ public class DownloadableFinder {
         return result;
     }
 
-    public List<Downloadable> getDownloadablesFor(BoundingBox boundingBox) {
+    List<Downloadable> getDownloadablesFor(BoundingBox boundingBox) {
         List<DownloadableDescriptor> descriptors = getDownloadDescriptorsFor(boundingBox);
         List<Downloadable> result = asDownloadables(descriptors);
         log.info(format("Found %d downloadables for bounding box %s: %s", result.size(), boundingBox, result));

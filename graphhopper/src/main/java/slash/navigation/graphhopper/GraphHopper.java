@@ -363,11 +363,10 @@ public class GraphHopper extends BaseRoutingService {
 
         public boolean isRequiresDownload() {
             boolean requiresDownload = !existsGraphDirectory() && !existsOsmPbfFile();
-            log.fine("requiresDownload=" + requiresDownload +
-                    " existsGraphDirectory()=" + existsGraphDirectory() +
-                    " getPropertiesFile()=" + getPropertiesFile() +
-                    " existsOsmPbfFile()=" + existsOsmPbfFile() +
-                    " getOsmPbfFile()=" + getOsmPbfFile());
+            if (requiresDownload)
+                log.fine("requiresDownload=" + requiresDownload +
+                        " existsGraphDirectory()=" + existsGraphDirectory() + " getPropertiesFile()=" + getPropertiesFile() +
+                        " existsOsmPbfFile()=" + existsOsmPbfFile() + " getOsmPbfFile()=" + getOsmPbfFile());
             return requiresDownload;
         }
 
@@ -378,11 +377,10 @@ public class GraphHopper extends BaseRoutingService {
 
         public boolean isRequiresProcessing() {
             boolean requiresProcessing = !existsGraphDirectory() && existsOsmPbfFile();
-            log.fine("requiresProcessing=" + requiresProcessing +
-                    " existsGraphDirectory()=" + existsGraphDirectory() +
-                    " getPropertiesFile()=" + getPropertiesFile() +
-                    " existsOsmPbfFile()=" + existsOsmPbfFile() +
-                    " getOsmPbfFile()=" + getOsmPbfFile());
+            if (requiresProcessing)
+                log.info("requiresProcessing=" + requiresProcessing +
+                        " existsGraphDirectory()=" + existsGraphDirectory() + " getPropertiesFile()=" + getPropertiesFile() +
+                        " existsOsmPbfFile()=" + existsOsmPbfFile() + " getOsmPbfFile()=" + getOsmPbfFile());
             return requiresProcessing;
         }
 
