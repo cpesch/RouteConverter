@@ -74,7 +74,6 @@ public class DownloadableFinderIT {
         when(small.getUri()).thenReturn(SMALL_URI);
         when(dataSource.getFiles()).thenReturn(singletonList(small));
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
-        finder.setDataSource(dataSource);
 
         Collection<Downloadable> downloadables = finder.getDownloadablesFor(singletonList(new BoundingBox(0.1, 0.1, -0.1, -0.1)));
         assertEquals(singletonList(SMALL_URI), extractUris(new ArrayList<>(downloadables)));
@@ -94,7 +93,6 @@ public class DownloadableFinderIT {
         when(large.getUri()).thenReturn(LARGE_URI);
         when(dataSource.getFiles()).thenReturn(asList(large, medium, small));
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
-        finder.setDataSource(dataSource);
 
         List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
         assertEquals(asList(SMALL_URI, MEDIUM_URI, LARGE_URI), extractUris(downloadables));
@@ -115,7 +113,6 @@ public class DownloadableFinderIT {
         when(dataSource.getFiles()).thenReturn(asList(medium, small, large));
         assertTrue(new File(temporaryDirectory, LARGE_URI).createNewFile());
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
-        finder.setDataSource(dataSource);
 
         List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
         assertEquals(asList(LARGE_URI, SMALL_URI, MEDIUM_URI), extractUris(downloadables));
@@ -133,7 +130,6 @@ public class DownloadableFinderIT {
         when(dataSource.getFiles()).thenReturn(asList(medium, small));
         assertTrue(new File(temporaryDirectory, SMALL_URI).createNewFile());
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
-        finder.setDataSource(dataSource);
 
         List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.2, 0.2, -0.2, -0.2));
         assertEquals(singletonList(MEDIUM_URI), extractUris(downloadables));

@@ -41,16 +41,13 @@ import static slash.navigation.graphhopper.PbfUtil.createGraphDirectory;
 
 public class DownloadableFinder {
     private static final Logger log = Logger.getLogger(DownloadableFinder.class.getName());
-    private DataSource dataSource;
-    private java.io.File directory;
+    private final DataSource dataSource;
+    private final java.io.File directory;
+    private boolean wroteMessageAboutMissingBoundingBox = false;
 
     public DownloadableFinder(DataSource dataSource, java.io.File directory) {
         this.dataSource = dataSource;
         this.directory = directory;
-    }
-
-    public void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
     }
 
     private java.io.File toFile(File file) {
@@ -70,7 +67,10 @@ public class DownloadableFinder {
         for (File file : dataSource.getFiles()) {
             BoundingBox fileBoundingBox = file.getBoundingBox();
             if (fileBoundingBox == null) {
-                log.fine(format("File %s doesn't have a bounding box. Ignoring it.", file));
+                if (!wroteMessageAboutMissingBoundingBox) {
+                    log.fine(format("File %s doesn't have a bounding box. Ignoring it.", file));
+                    wroteMessageAboutMissingBoundingBox = true;
+                }
                 continue;
             }
             if (!fileBoundingBox.contains(routeBoundingBox))
