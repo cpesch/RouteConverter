@@ -141,6 +141,15 @@ public class DownloadManager {
         pool.purge();
     }
 
+    public void removeDownloads(List<Download> downloads) {
+        stopDownloads(downloads);
+
+        for (Download download : downloads) {
+            log.info("Removing download " + download);
+            model.removeDownload(download);
+        }
+    }
+
     public void saveQueue() {
         try {
             new QueuePersister().save(queueFile, model.getDownloads());

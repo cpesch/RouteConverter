@@ -43,6 +43,7 @@ public class DownloadsTablePopupMenu extends AbstractTablePopupMenu {
         JPopupMenu menu = new JPopupMenu();
         menu.add(createItem("restart-download"));
         menu.add(createItem("stop-download"));
+        menu.add(createItem("remove-download"));
         return menu;
     }
 }

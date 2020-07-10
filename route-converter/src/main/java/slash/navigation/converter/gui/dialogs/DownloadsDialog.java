@@ -24,6 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.actions.RemoveDownloadsAction;
 import slash.navigation.converter.gui.actions.RestartDownloadsAction;
 import slash.navigation.converter.gui.actions.StopDownloadsAction;
 import slash.navigation.converter.gui.helpers.DownloadsTablePopupMenu;
@@ -64,6 +65,7 @@ public class DownloadsDialog extends SimpleDialog {
     private JButton buttonRestart;
     private JButton buttonStop;
     private JButton buttonClose;
+    private JButton buttonRemove;
 
     public DownloadsDialog() {
         super(RouteConverter.getInstance().getFrame(), "downloads");
@@ -130,10 +132,12 @@ public class DownloadsDialog extends SimpleDialog {
         final ActionManager actionManager = r.getContext().getActionManager();
         actionManager.register("restart-download", new RestartDownloadsAction(tableDownloads, r.getDownloadManager()));
         actionManager.register("stop-download", new StopDownloadsAction(tableDownloads, r.getDownloadManager()));
+        actionManager.register("remove-download", new RemoveDownloadsAction(tableDownloads, r.getDownloadManager()));
 
         new DownloadsTablePopupMenu(tableDownloads).createPopupMenu();
         registerAction(buttonRestart, "restart-download");
         registerAction(buttonStop, "stop-download");
+        registerAction(buttonRemove, "remove-download");
 
         setMnemonic(buttonClose, "close-mnemonic");
         buttonClose.addActionListener(new DialogAction(this) {
@@ -199,7 +203,7 @@ public class DownloadsDialog extends SimpleDialog {
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonRestart = new JButton();
         this.$$$loadButtonText$$$(buttonRestart, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "restart-download-action"));
@@ -210,7 +214,11 @@ public class DownloadsDialog extends SimpleDialog {
         buttonStop.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "stop-download-action-tooltip"));
         panel2.add(buttonStop, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
-        panel2.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel2.add(spacer2, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        buttonRemove = new JButton();
+        this.$$$loadButtonText$$$(buttonRemove, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "remove-download-action"));
+        buttonRemove.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "remove-download-action-tooltip"));
+        panel2.add(buttonRemove, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;
