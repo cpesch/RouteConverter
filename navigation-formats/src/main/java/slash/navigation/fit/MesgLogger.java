@@ -31,6 +31,7 @@ import com.garmin.fit.MesgListener;
  */
 class MesgLogger implements MesgListener {
     public void onMesg(Mesg mesg) {
+        FitFormat.log.fine("Mesg: " + mesg.getName() + " Num: " + mesg.getNum());
         for (Field field : mesg.getFields())
             FitFormat.log.fine("Field: " + field.getName() + " value: " + field.getValue());
     }

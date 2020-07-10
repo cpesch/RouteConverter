@@ -80,17 +80,23 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
     }
 
     public void onMesg(GpsMetadataMesg mesg) {
-        Float velocity = mesg.getNumVelocity() > 0 ? mesg.getVelocity(0) : null;
+        CompactCalendar time = asCalendar(mesg.getUtcTimestamp() != null ? mesg.getUtcTimestamp() : mesg.getTimestamp());
+        Float speed = mesg.getEnhancedSpeed() != null ? mesg.getEnhancedSpeed() :
+                mesg.getNumVelocity() > 0 ? mesg.getVelocity(0) : null;
+
         Wgs84Position position = new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
-                null, asDouble(velocity), asCalendar(mesg.getTimestamp()), asDescription(mesg));
+                asDouble(mesg.getEnhancedAltitude()), asDouble(speed), time, asDescription(mesg));
         position.setHeading(asDouble(mesg.getHeading()));
         position.setOrigin(mesg);
         positions.add(position);
     }
 
     public void onMesg(RecordMesg mesg) {
+        Float elevation = mesg.getEnhancedAltitude() != null ? mesg.getEnhancedAltitude() : mesg.getAltitude();
+        Float speed = mesg.getEnhancedSpeed() != null ? mesg.getEnhancedSpeed() : mesg.getSpeed();
+
         Wgs84Position position = new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
-                asDouble(mesg.getAltitude()), asDouble(mesg.getSpeed()), asCalendar(mesg.getTimestamp()), asDescription(mesg));
+                asDouble(elevation), asDouble(speed), asCalendar(mesg.getTimestamp()), asDescription(mesg));
         position.setTemperature(asDouble(mesg.getTemperature()));
         position.setPdop(asDouble(mesg.getGpsAccuracy()));
         position.setOrigin(mesg);

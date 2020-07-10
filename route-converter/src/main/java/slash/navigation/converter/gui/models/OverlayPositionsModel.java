@@ -383,8 +383,7 @@ public class OverlayPositionsModel implements PositionsModel {
         if (getRoute().getCharacteristics().equals(Route)) {
             // difference of first row is null, for second row the first is 0.0 but not in the data
             DistanceAndTime previous = rowIndex > 1 ? indexToDistanceAndTime.get(rowIndex - 1) :
-                    rowIndex == 1 ? new DistanceAndTime(0.0, null) :
-                            null;
+                    rowIndex == 1 ? new DistanceAndTime(0.0, null) : null;
             DistanceAndTime current = indexToDistanceAndTime.get(rowIndex);
             if(previous != null && current != null) {
                 Double d1 = previous.getDistance();
