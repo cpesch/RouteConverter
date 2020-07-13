@@ -67,6 +67,7 @@ import java.util.*;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.util.Arrays.asList;
+import static java.util.Comparator.comparing;
 import static java.util.Locale.*;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JFileChooser.*;
@@ -684,7 +685,9 @@ public class OptionsDialog extends SimpleDialog {
         RoutingServiceFacade serviceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
         RoutingService service = serviceFacade.getRoutingService();
         MutableComboBoxModel<TravelMode> travelModeModel = new DefaultComboBoxModel<>();
-        for (TravelMode travelMode : service.getAvailableTravelModes()) {
+        List<TravelMode> availableTravelModes = service.getAvailableTravelModes();
+        availableTravelModes.sort(comparing(TravelMode::getName));
+        for (TravelMode travelMode : availableTravelModes) {
             travelModeModel.addElement(travelMode);
         }
         travelModeModel.setSelectedItem(serviceFacade.getTravelMode());
