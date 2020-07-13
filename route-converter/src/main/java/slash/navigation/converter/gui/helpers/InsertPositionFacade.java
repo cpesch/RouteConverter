@@ -82,14 +82,13 @@ public class InsertPositionFacade {
     private final ExecutorService executor = createSingleThreadExecutor("InsertPositions");
 
     private void insertWithRoutingService(final RoutingService routingService, final int[] selectedRows) {
-        executor.execute(new Runnable() {
-            public void run() {
-                try {
-                    doInsertWithRoutingService(routingService, selectedRows);
-                } catch (Exception e) {
-                    log.severe("Cannot insert positions: " + getLocalizedMessage(e));
-                    showMessageDialog(getFrame(), format(Application.getInstance().getContext().getBundle().getString("cannot-insert-positions"), e),
-                            getFrame().getTitle(), ERROR_MESSAGE);                }
+        executor.execute(() -> {
+            try {
+                doInsertWithRoutingService(routingService, selectedRows);
+            } catch (Exception e) {
+                log.severe("Cannot insert positions: " + e);
+                showMessageDialog(getFrame(), format(Application.getInstance().getContext().getBundle().getString("cannot-insert-positions"), getLocalizedMessage(e)),
+                        getFrame().getTitle(), ERROR_MESSAGE);
             }
         });
     }
