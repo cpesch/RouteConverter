@@ -21,8 +21,8 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.helpers.LengthCalculator;
-import slash.navigation.converter.gui.helpers.LengthCalculatorListener;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -31,6 +31,7 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.formatDuration;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.DistanceAndTime.ZERO;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatDistance;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
@@ -54,25 +55,16 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         this.labelLength = labelLength;
         this.labelDuration = labelDuration;
 
-        lengthCalculator.addLengthCalculatorListener(new LengthCalculatorListener() {
-            public void calculatedDistance(final double meters, final long seconds) {
-                invokeLater(new Runnable() {
-                    public void run() {
-                        updateLabel(meters, seconds);
-                    }
-                });
-            }
-        });
+        lengthCalculator.addLengthCalculatorListener(distanceAndTime -> invokeLater(() -> updateLabel(distanceAndTime)));
     }
 
     protected String getDelegateValue() {
         throw new UnsupportedOperationException();
     }
 
-    private void updateLabel(double meters, long seconds) {
-        labelLength.setText(meters > 0 ? formatDistance(meters) : "-");
-        long milliseconds = seconds * 1000;
-        labelDuration.setText(milliseconds > 0 ? formatDuration(milliseconds) : "-");
+    private void updateLabel(DistanceAndTime distanceAndTime) {
+        labelLength.setText(distanceAndTime.getDistance() > 0 ? formatDistance(distanceAndTime.getDistance()) : "-");
+        labelDuration.setText(distanceAndTime.getTimeInMillis() > 0 ? formatDuration(distanceAndTime.getTimeInMillis()) : "-");
     }
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
@@ -84,9 +76,10 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         if (getDelegate().isContinousRange())
             return;
 
+        @SuppressWarnings("rawtypes")
         BaseRoute route = getDelegate().getRoute();
         if (route != null && route.getCharacteristics() == Waypoints) {
-            updateLabel(0, 0);
+            updateLabel(ZERO);
         }
     }
 }

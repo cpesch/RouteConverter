@@ -42,6 +42,7 @@ import static java.lang.System.arraycopy;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.common.DistanceAndTime.ZERO;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.ImageHelper.resize;
 
@@ -383,7 +384,7 @@ public class OverlayPositionsModel implements PositionsModel {
         if (getRoute().getCharacteristics().equals(Route)) {
             // difference of first row is null, for second row the first is 0.0 but not in the data
             DistanceAndTime previous = rowIndex > 1 ? indexToDistanceAndTime.get(rowIndex - 1) :
-                    rowIndex == 1 ? new DistanceAndTime(0.0, null) : null;
+                    rowIndex == 1 ? ZERO : null;
             DistanceAndTime current = indexToDistanceAndTime.get(rowIndex);
             if(previous != null && current != null) {
                 Double d1 = previous.getDistance();

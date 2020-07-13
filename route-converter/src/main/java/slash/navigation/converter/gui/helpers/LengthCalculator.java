@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.helpers;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.DistanceAndTime;
+import slash.navigation.common.DistanceAndTimeAggregator;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -41,6 +42,7 @@ import static slash.common.helpers.ThreadHelper.safeJoin;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.DistanceAndTime.ZERO;
 import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
 import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
@@ -105,34 +107,20 @@ public class LengthCalculator {
         lengthCalculatorListeners.add(listener);
     }
 
-    private void fireCalculatedDistance(double meters, long seconds) {
+    private void fireCalculatedDistance(DistanceAndTime distanceAndTime) {
         for (LengthCalculatorListener listener : lengthCalculatorListeners) {
-            listener.calculatedDistance(meters, seconds);
+            listener.calculatedDistanceAndTime(distanceAndTime);
         }
     }
 
     public void calculateDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        double meters = 0;
-        long seconds = 0;
-        for (DistanceAndTime distanceAndTime : indexToDistanceAndTime.values()) {
-            if(distanceAndTime == null)
-                continue;
-
-            Double distance = distanceAndTime.getDistance();
-            if (!isEmpty(distance) && distance > meters)
-                meters = distance;
-
-            Long time = distanceAndTime.getTimeInMillis();
-            if (!isEmpty(time) && time > seconds)
-                seconds = time;
-        }
-        fireCalculatedDistance(meters, seconds);
+        fireCalculatedDistance(DistanceAndTimeAggregator.max(indexToDistanceAndTime));
     }
 
 
     private void calculateDistance() {
         if (getCharacteristics().equals(Waypoints)) {
-            fireCalculatedDistance(0, 0);
+            fireCalculatedDistance(ZERO);
             return;
         }
         if (getCharacteristics().equals(Route))
@@ -145,10 +133,10 @@ public class LengthCalculator {
     }
 
     private void recalculateDistance() {
-        fireCalculatedDistance(0, 0);
+        fireCalculatedDistance(ZERO);
 
-        double distanceMeters = 0.0;
-        long totalTimeMilliSeconds = 0;
+        double aggregatedDistance = 0.0;
+        long aggregatedTime = 0;
         CompactCalendar minimumTime = null, maximumTime = null;
         NavigationPosition previous = null;
         for (int i = 0; i < positionsModel.getRowCount(); i++) {
@@ -156,10 +144,10 @@ public class LengthCalculator {
             if (previous != null) {
                 Double distance = previous.calculateDistance(next);
                 if (!isEmpty(distance))
-                    distanceMeters += distance;
+                    aggregatedDistance += distance;
                 Long time = previous.calculateTime(next);
                 if (time != null && time > 0)
-                    totalTimeMilliSeconds += time;
+                    aggregatedTime += time;
             }
 
             CompactCalendar time = next.getTime();
@@ -171,14 +159,14 @@ public class LengthCalculator {
             }
 
             if (i > 0 && i % 100 == 0)
-                fireCalculatedDistance(distanceMeters, totalTimeMilliSeconds > 0 ? totalTimeMilliSeconds / 1000 : 0);
+                fireCalculatedDistance(new DistanceAndTime(aggregatedDistance, aggregatedTime > 0 ? aggregatedTime : 0));
 
             previous = next;
         }
 
-        long summedUp = totalTimeMilliSeconds > 0 ? totalTimeMilliSeconds / 1000 : 0;
-        long maxMinusMin = minimumTime != null ? (maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) / 1000 : 0;
-        fireCalculatedDistance(distanceMeters, max(maxMinusMin, summedUp));
+        long summedUp = aggregatedTime > 0 ? aggregatedTime : 0;
+        long maxMinusMin = minimumTime != null ? (maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) : 0;
+        fireCalculatedDistance(new DistanceAndTime(aggregatedDistance, max(maxMinusMin, summedUp)));
     }
 
     private void initialize() {

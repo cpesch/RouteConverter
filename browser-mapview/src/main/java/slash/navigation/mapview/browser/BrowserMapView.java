@@ -63,7 +63,6 @@ import static java.lang.System.currentTimeMillis;
 import static java.lang.Thread.sleep;
 import static java.util.Arrays.asList;
 import static java.util.Calendar.SECOND;
-import static java.util.Collections.sort;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -79,6 +78,8 @@ import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.base.WaypointType.*;
+import static slash.navigation.common.TransformUtil.delta;
+import static slash.navigation.common.TransformUtil.isPositionInChina;
 import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
@@ -89,8 +90,6 @@ import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERE
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.browser.helpers.ColorHelper.asColor;
 import static slash.navigation.mapview.browser.helpers.ColorHelper.asOpacity;
-import static slash.navigation.common.TransformUtil.delta;
-import static slash.navigation.common.TransformUtil.isPositionInChina;
 
 /**
  * Base implementation for a browser-based map view.
@@ -1848,23 +1847,7 @@ public abstract class BrowserMapView extends BaseMapView {
                     indexToDistanceAndTime.put(index, distanceAndTimes.get(i));
                 }
 
-                Map<Integer, DistanceAndTime> result = new HashMap<>(indexToDistanceAndTime.size());
-                double aggregatedDistance = 0.0;
-                long aggregatedTime = 0L;
-                List<Integer> indices = new ArrayList<>(indexToDistanceAndTime.keySet());
-                sort(indices);
-                for(Integer index : indices) {
-                    DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(index);
-                    if(distanceAndTime != null) {
-                        Double distance = distanceAndTime.getDistance();
-                        if (!isEmpty(distance))
-                            aggregatedDistance += distance;
-                        Long time = distanceAndTime.getTimeInMillis();
-                        if (!isEmpty(time))
-                            aggregatedTime += time;
-                    }
-                    result.put(index, new DistanceAndTime(aggregatedDistance, aggregatedTime));
-                }
+                Map<Integer, DistanceAndTime> result = DistanceAndTimeAggregator.add(indexToDistanceAndTime);
                 fireCalculatedDistances(result);
             }
         });

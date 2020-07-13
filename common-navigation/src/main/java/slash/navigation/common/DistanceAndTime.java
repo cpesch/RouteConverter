@@ -25,6 +25,8 @@ package slash.navigation.common;
  * @author Christian Pesch
  */
 public class DistanceAndTime {
+    public static final DistanceAndTime ZERO = new DistanceAndTime(0.0, 0L);
+
     private final Double distance;
     private final Long timeInMillis;
 

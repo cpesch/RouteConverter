@@ -266,23 +266,12 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             private void fireDistanceAndTime() {
-                Map<Integer, DistanceAndTime> result = new HashMap<>(pairs.size());
-                double aggregatedDistance = 0.0;
-                long aggregatedTime = 0L;
+                Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairs.size());
                 for (int i = 0; i < pairs.size(); i++) {
                     PairWithLayer pairWithLayer = pairs.get(i);
-                    DistanceAndTime distanceAndTime = pairWithLayer.getDistanceAndTime();
-                    if (distanceAndTime != null) {
-                        Double distance = distanceAndTime.getDistance();
-                        if (!isEmpty(distance))
-                            aggregatedDistance += distance;
-                        Long time = distanceAndTime.getTimeInMillis();
-                        if (!isEmpty(time))
-                            aggregatedTime += time;
-                    }
-                    result.put(i + 1, new DistanceAndTime(aggregatedDistance, aggregatedTime));
+                    indexToDistanceAndTime.put(i + 1, pairWithLayer.getDistanceAndTime());
                 }
-                fireCalculatedDistances(result);
+                fireCalculatedDistances(DistanceAndTimeAggregator.add(indexToDistanceAndTime));
             }
         });
 

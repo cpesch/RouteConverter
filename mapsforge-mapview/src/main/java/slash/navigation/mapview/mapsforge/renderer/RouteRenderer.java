@@ -44,7 +44,6 @@ import java.util.prefs.Preferences;
 
 import static java.lang.Thread.sleep;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
-import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 import static slash.navigation.routing.RoutingResult.Validity.*;

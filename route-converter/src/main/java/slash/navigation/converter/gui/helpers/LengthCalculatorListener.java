@@ -20,6 +20,8 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.common.DistanceAndTime;
+
 /**
  * Interface for events from a {@link LengthCalculator}
  *
@@ -27,5 +29,5 @@ package slash.navigation.converter.gui.helpers;
  */
 
 public interface LengthCalculatorListener {
-    void calculatedDistance(double meters, long seconds);
+    void calculatedDistanceAndTime(DistanceAndTime distanceAndTime);
 }
