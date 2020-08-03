@@ -41,6 +41,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.gui.helpers.WindowHelper.getFrame;
@@ -86,7 +87,7 @@ public class InsertPositionFacade {
             try {
                 doInsertWithRoutingService(routingService, selectedRows);
             } catch (Exception e) {
-                log.severe("Cannot insert positions: " + e);
+                log.severe(format("Cannot insert positions: %s, %s", e, printStackTrace(e)));
                 showMessageDialog(getFrame(), format(Application.getInstance().getContext().getBundle().getString("cannot-insert-positions"), getLocalizedMessage(e)),
                         getFrame().getTitle(), ERROR_MESSAGE);
             }
