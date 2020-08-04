@@ -103,7 +103,6 @@ import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Transfer.encodeUri;
-import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.TransformUtil.delta;
@@ -479,7 +478,7 @@ public class MapsforgeMapView extends BaseMapView {
         // Multithreaded map rendering
         Parameters.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
         // Maximum read buffer size
-        Parameters.MAXIMUM_BUFFER_SIZE = preferences.getInt(READ_BUFFER_SIZE_PREFERENCE, 2500000);
+        Parameters.MAXIMUM_BUFFER_SIZE = preferences.getInt(READ_BUFFER_SIZE_PREFERENCE, 16000000);
         // No square frame buffer since the device orientation hardly changes
         Parameters.SQUARE_FRAME_BUFFER = false;
 
