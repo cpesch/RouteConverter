@@ -77,6 +77,7 @@ import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Math.abs;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -164,7 +165,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String TAG_STRATEGY_PREFERENCE = "tagStrategy";
 
     private static final String MAP_DIVIDER_LOCATION_PREFERENCE = "mapDividerLocation";
+    private static final String MAP_DIVIDER_RATIO_PREFERENCE = "mapDividerRatio";
     private static final String PROFILE_DIVIDER_LOCATION_PREFERENCE = "profileDividerLocation";
+    private static final String PROFILE_DIVIDER_RATIO_PREFERENCE = "profileDividerRatio";
 
     private static final String USERNAME_PREFERENCE = "userName";
     private static final String PASSWORD_PREFERENCE = "userAuthentication";
@@ -354,6 +357,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                         invokeLater(() -> {
                             openProfileView();
 
+                            adjustDividersForScreenMovement();
                             invokeLater(this::initializeDividerListeners);
                         });
                     });
@@ -435,6 +439,24 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
         profileSplitPane.setDividerLocation(profileDividerLocation);
         log.info("Initialized profile divider to " + profileDividerLocation);
+    }
+
+    private void adjustDividersForScreenMovement() {
+        double mapDividerRatio = preferences.getDouble(MAP_DIVIDER_RATIO_PREFERENCE, -1.0);
+        int mapDividerLocation = (int) (contentPane.getWidth() * mapDividerRatio);
+
+        if (mapDividerRatio > 0 && abs(mapDividerLocation - mapSplitPane.getDividerLocation()) > 10) {
+            mapSplitPane.setDividerLocation(mapDividerLocation);
+            log.info("Adjusted map divider to " + mapDividerLocation);
+        }
+
+        double profileDividerRatio = preferences.getDouble(PROFILE_DIVIDER_RATIO_PREFERENCE, -1.0);
+        int profileDividerLocation = (int) (contentPane.getHeight() * profileDividerRatio);
+
+        if (profileDividerRatio > 0 && abs(profileDividerLocation - profileSplitPane.getDividerLocation()) > 10) {
+            profileSplitPane.setDividerLocation(profileDividerLocation);
+            log.info("Adjusted profile divider to " + profileDividerLocation);
+        }
     }
 
     private void initializeDividerListeners() {
@@ -1111,7 +1133,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
             this.location = newValue;
             getMapView().resize();
             preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, newValue);
-            log.fine("Changed map divider to " + newValue);
+            double newRatio = new Integer(newValue).doubleValue() / contentPane.getWidth();
+            preferences.putDouble(MAP_DIVIDER_RATIO_PREFERENCE, newRatio);
+            log.info("Changed map divider to " + newValue + " and ratio " + newRatio); // TODO fine
             enableActions();
         }
 
@@ -1151,7 +1175,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 getMapView().resize();
             }
             preferences.putInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, newValue);
-            log.fine("Changed profile divider to " + newValue);
+            double newRatio = new Integer(newValue).doubleValue() / contentPane.getHeight();
+            preferences.putDouble(PROFILE_DIVIDER_RATIO_PREFERENCE, newRatio);
+            log.info("Changed profile divider to " + newValue + " and ratio " + newRatio); // TODO fine
             enableActions();
         }
 
