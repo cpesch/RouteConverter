@@ -270,11 +270,12 @@ public class RouteRenderer {
 
             result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
             if (result.getValidity().equals(PointNotFound)) {
-                if(routingService.isDownload())
-                    if(future.hasNextDownload()) {
+                if(routingService.isDownload()) {
+                    if (future.hasNextDownload()) {
                         future.nextDownload();
                         result = null;
                     }
+                }
             }
         }
         return result;

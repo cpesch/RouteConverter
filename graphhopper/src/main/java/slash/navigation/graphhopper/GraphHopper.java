@@ -188,12 +188,12 @@ public class GraphHopper extends BaseRoutingService {
         if (hopper == null)
             throw new IllegalStateException("Could not initialize from graph directory of GraphHopper");
 
-        SecondCounter secondCounter = new SecondCounter() {
+        SecondCounter counter = new SecondCounter() {
             protected void second(int second) {
                 fireRouting(second);
             }
         };
-        secondCounter.start();
+        counter.start();
 
         long start = currentTimeMillis();
         try {
@@ -213,25 +213,19 @@ public class GraphHopper extends BaseRoutingService {
             RoutingResult.Validity validity = best.getErrors().size() == 0 ? Valid : Invalid;
             return new RoutingResult(asPositions(best.getPoints()), new DistanceAndTime(best.getDistance(), best.getTime()), validity);
         } finally {
-            secondCounter.stop();
+            counter.stop();
 
             long end = currentTimeMillis();
             log.info(format("Routing from %s to %s took %d milliseconds", from, to, end - start));
         }
     }
 
-    private static final Object initializationLock = new Object();
-
-    private java.io.File getOsmPbfFile() {
-        synchronized (initializationLock) {
-            return osmPbfFile;
-        }
+    private synchronized java.io.File getOsmPbfFile() {
+        return osmPbfFile;
     }
 
-    void setOsmPbfFile(java.io.File osmPbfFile) {
-        synchronized (initializationLock) {
-            this.osmPbfFile = osmPbfFile;
-        }
+    synchronized void setOsmPbfFile(java.io.File osmPbfFile) {
+        this.osmPbfFile = osmPbfFile;
     }
 
     private boolean existsOsmPbfFile() {
@@ -248,52 +242,50 @@ public class GraphHopper extends BaseRoutingService {
         return PbfUtil.createPropertiesFile(getGraphDirectory()).exists();
     }
 
-    void initializeHopper() {
-        synchronized (initializationLock) {
-            if (!existsGraphDirectory() && !existsOsmPbfFile())
+    synchronized void initializeHopper() {
+        if (!existsGraphDirectory() && !existsOsmPbfFile())
+            return;
+
+        java.io.File osmPbfFile = getOsmPbfFile();
+        File graphDirectory = getGraphDirectory();
+        if (hopper != null) {
+            // avoid close() and importOrLoad() if the osmPbfFile stayed the same
+            String location = hopper.getGraphHopperLocation();
+            if (location != null && location.equals(graphDirectory.getAbsolutePath()))
                 return;
 
-            java.io.File osmPbfFile = getOsmPbfFile();
-            File graphDirectory = getGraphDirectory();
-            if (hopper != null) {
-                // avoid close() and importOrLoad() if the osmPbfFile stayed the same
-                String location = hopper.getGraphHopperLocation();
-                if (location != null && location.equals(graphDirectory.getAbsolutePath()))
+            hopper.close();
+            hopper = null;
+        }
+
+        SecondCounter counter = new SecondCounter() {
+            protected void second(int second) {
+                fireInitializing(second);
+            }
+        };
+        counter.start();
+
+        long start = currentTimeMillis();
+        try {
+            // load existing graph first
+            if (existsGraphDirectory()) {
+                log.info(format("Loading existing graph from %s", graphDirectory));
+                this.hopper = loadHopper(graphDirectory);
+                if (this.hopper != null)
                     return;
-
-                hopper.close();
-                hopper = null;
             }
 
-            SecondCounter secondCounter = new SecondCounter() {
-                protected void second(int second) {
-                    fireInitializing(second);
-                }
-            };
-            secondCounter.start();
+            // if there is none or it fails:
+            log.info(format("Creating graph from %s to %s", osmPbfFile, graphDirectory));
+            this.hopper = importHopper(osmPbfFile, graphDirectory);
+        } catch (IllegalStateException e) {
+            log.warning("Could not initialize GraphHopper: " + e);
+            throw e;
+        } finally {
+            counter.stop();
 
-            long start = currentTimeMillis();
-            try {
-                // load existing graph first
-                if (existsGraphDirectory()) {
-                    log.info(format("Loading existing graph from %s", graphDirectory));
-                    this.hopper = loadHopper(graphDirectory);
-                    if(this.hopper != null)
-                        return;
-                }
-
-                // if there is none or it fails:
-                log.info(format("Creating graph from %s to %s", osmPbfFile, graphDirectory));
-                this.hopper = importHopper(osmPbfFile, graphDirectory);
-            } catch (IllegalStateException e) {
-                log.warning("Could not initialize GraphHopper: " + e);
-                throw e;
-            } finally {
-                secondCounter.stop();
-
-                long end = currentTimeMillis();
-                log.info(format("Initializing from %s took %d milliseconds", graphDirectory, end - start));
-            }
+            long end = currentTimeMillis();
+            log.info(format("Initializing from %s took %d milliseconds", graphDirectory, end - start));
         }
     }
 
