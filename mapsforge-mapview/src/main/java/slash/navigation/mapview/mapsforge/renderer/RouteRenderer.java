@@ -40,8 +40,10 @@ import slash.navigation.routing.RoutingService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
@@ -56,6 +58,7 @@ import static slash.navigation.routing.RoutingResult.Validity.*;
 
 public class RouteRenderer {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
+    private static final Logger log = Logger.getLogger(RouteRenderer.class.getName());
     private Paint ROUTE_NOT_VALID_PAINT, ROUTE_DOWNLOADING_PAINT;
 
     private final Object notificationMutex = new Object();
@@ -272,6 +275,7 @@ public class RouteRenderer {
             if (result.getValidity().equals(PointNotFound)) {
                 if(routingService.isDownload()) {
                     if (future.hasNextDownload()) {
+                        log.warning(format("Point not found when routing from %s to %s, trying next download", pairWithLayer.getFirst(), pairWithLayer.getSecond()));
                         future.nextDownload();
                         result = null;
                     }
