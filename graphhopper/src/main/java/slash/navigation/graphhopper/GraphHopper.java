@@ -35,6 +35,7 @@ import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.routing.*;
+import slash.navigation.routing.RoutingResult.Validity;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -210,7 +211,7 @@ public class GraphHopper extends BaseRoutingService {
                 throw new RuntimeException(errors);
             }
             PathWrapper best = response.getBest();
-            RoutingResult.Validity validity = best.getErrors().size() == 0 ? Valid : Invalid;
+            Validity validity = best.getErrors().size() == 0 ? Valid : Invalid;
             return new RoutingResult(asPositions(best.getPoints()), new DistanceAndTime(best.getDistance(), best.getTime()), validity);
         } finally {
             counter.stop();

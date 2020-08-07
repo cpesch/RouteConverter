@@ -25,6 +25,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.Application;
+import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
@@ -45,7 +46,7 @@ import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.gui.helpers.WindowHelper.getFrame;
-import static slash.navigation.routing.RoutingResult.Validity.Valid;
+import static slash.navigation.routing.RoutingResult.Validity.*;
 
 /**
  * Helps to insert positions.
@@ -95,23 +96,32 @@ public class InsertPositionFacade {
     }
 
     private void doInsertWithRoutingService(RoutingService routingService, int[] selectedRows) throws InvocationTargetException, InterruptedException {
-        final RouteConverter r = RouteConverter.getInstance();
-        final PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
+        RouteConverter r = RouteConverter.getInstance();
+        PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
 
         List<NavigationPosition> selectedPositions = new ArrayList<>();
         for (int selectedRow : selectedRows)
             selectedPositions.add(positionsModel.getPosition(selectedRow));
 
+        DownloadFuture future = null;
         if (routingService.isDownload()) {
-            List<LongitudeAndLatitude> lal = new ArrayList<>();
+            List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<>();
             for (NavigationPosition position : selectedPositions) {
-                lal.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
+                longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
             }
-            routingService.downloadRoutingDataFor(lal);
+            future = routingService.downloadRoutingDataFor(longitudeAndLatitudes);
         }
 
-        final List<Integer> augmentRows = new ArrayList<>();
         TravelMode travelMode = r.getRoutingServiceFacade().getTravelMode();
+        List<Integer> positions = insertPositions(routingService, future, travelMode, selectedPositions);
+        if (positions.size() > 0)
+            invokeLater(() -> r.getPositionAugmenter().addData(toArray(positions), false, true, true, false, false));
+    }
+
+    private List<Integer> insertPositions(RoutingService routingService, DownloadFuture future, TravelMode travelMode, List<NavigationPosition> selectedPositions) throws InterruptedException, InvocationTargetException {
+        PositionsModel positionsModel = RouteConverter.getInstance().getConvertPanel().getPositionsModel();
+
+        List<Integer> insertedPositions = new ArrayList<>();
         for (int i = 0; i < selectedPositions.size(); i++) {
             // skip the very last position without successor
             if (i == positionsModel.getRowCount() - 1 || i == selectedPositions.size() - 1)
@@ -126,22 +136,13 @@ public class InsertPositionFacade {
                 final int insertRow = positionsModel.getIndex(selectedPositions.get(i)) + 1;
 
                 // wait for adding to positions model to be completed before inserting the next positions
-                invokeAndWait(new Runnable() {
-                    public void run() {
-                        positionsModel.add(insertRow, positions);
-                    }
-                });
+                invokeAndWait(() -> positionsModel.add(insertRow, positions));
 
                 // collect rows to augment them in a batch
                 for (int j = 0; j < positions.size(); j++)
-                    augmentRows.add(insertRow + j);
+                    insertedPositions.add(insertRow + j);
             }
         }
-
-        invokeLater(new Runnable() {
-            public void run() {
-                r.getPositionAugmenter().addData(toArray(augmentRows), false, true, true, false, false);
-            }
-        });
+        return insertedPositions;
     }
 }

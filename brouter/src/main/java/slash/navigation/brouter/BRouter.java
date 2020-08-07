@@ -317,31 +317,7 @@ public class BRouter extends BaseRoutingService {
             }
         }
 
-        return new DownloadFuture() {
-            public boolean isRequiresDownload() {
-                return !notExistingProfiles.isEmpty() || !notExistingSegments.isEmpty();
-            }
-
-            public void download() {
-                fireDownloading();
-                downloadAndWait(notExistingProfiles, notExistingSegments);
-            }
-
-            public boolean isRequiresProcessing() {
-                return false;
-            }
-
-            public void process() {
-            }
-
-            public boolean hasNextDownload() {
-                return false;
-            }
-
-            public void nextDownload() {
-                throw new UnsupportedOperationException();
-            }
-        };
+        return new DownloadFutureImpl(notExistingProfiles, notExistingSegments);
     }
 
     private void downloadAndWait(Collection<Downloadable> profiles, Collection<Downloadable> segments) {
@@ -415,6 +391,40 @@ public class BRouter extends BaseRoutingService {
         Collection<Downloadable> downloadables = getDownloadablesFor(boundingBoxes);
         for (Downloadable downloadable : downloadables) {
             downloadSegment(downloadable);
+        }
+    }
+
+    private class DownloadFutureImpl implements DownloadFuture {
+        private final Collection<Downloadable> notExistingProfiles;
+        private final Collection<Downloadable> notExistingSegments;
+
+        public DownloadFutureImpl(Collection<Downloadable> notExistingProfiles, Collection<Downloadable> notExistingSegments) {
+            this.notExistingProfiles = notExistingProfiles;
+            this.notExistingSegments = notExistingSegments;
+        }
+
+        public boolean isRequiresDownload() {
+            return !notExistingProfiles.isEmpty() || !notExistingSegments.isEmpty();
+        }
+
+        public void download() {
+            fireDownloading();
+            downloadAndWait(notExistingProfiles, notExistingSegments);
+        }
+
+        public boolean isRequiresProcessing() {
+            return false;
+        }
+
+        public void process() {
+        }
+
+        public boolean hasNextDownload() {
+            return false;
+        }
+
+        public void nextDownload() {
+            throw new UnsupportedOperationException();
         }
     }
 }

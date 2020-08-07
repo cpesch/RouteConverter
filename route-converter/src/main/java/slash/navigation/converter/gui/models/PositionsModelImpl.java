@@ -506,7 +506,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private static class ContinousRangeTableModelEvent extends TableModelEvent {
-        @SuppressWarnings("MagicConstant")
         ContinousRangeTableModelEvent(TableModel source, int firstRow, int lastRow, int column, int type) {
             super(source, firstRow, lastRow, column, type);
         }
