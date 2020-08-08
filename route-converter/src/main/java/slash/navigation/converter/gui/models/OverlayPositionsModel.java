@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Integer.min;
 import static java.lang.System.arraycopy;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -176,7 +177,13 @@ public class OverlayPositionsModel implements PositionsModel {
     private double[] getTrackDistancesFromStart(int startIndex, int endIndex) {
         if (distancesFromStart == null)
             distancesFromStart = getRoute().getDistancesFromStart(0, getRoute().getPositionCount() - 1);
-        double[] result = new double[endIndex - startIndex + 1];
+        // address https://forum.routeconverter.com/thread-3058.html
+        int count = min(endIndex - startIndex + 1, distancesFromStart.length);
+        double[] result = new double[count];
+        if(startIndex > distancesFromStart.length)
+            throw new IllegalArgumentException("startIndex " + startIndex + " is larger than distancesFromStart.length " + distancesFromStart.length);
+        if(result.length > distancesFromStart.length)
+            throw new IllegalArgumentException("result.length " + result.length + " is larger than distancesFromStart.length " + distancesFromStart.length);
         arraycopy(distancesFromStart, startIndex, result, 0, result.length);
         return result;
     }
