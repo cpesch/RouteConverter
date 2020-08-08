@@ -189,7 +189,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
-        if (rowIndex == getRowCount())
+        // avoid exceptions due to parallel deletions
+        if (rowIndex > getRowCount() - 1)
             return;
 
         if (columnToValues.getNextValues() != null) {

@@ -42,8 +42,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
+import static java.lang.Math.*;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -315,6 +314,10 @@ public class PositionAugmenter {
             return;
         List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<>();
         for (int row : rows) {
+            // avoid exceptions due to parallel deletions
+            if(row > positionsModel.getRowCount() - 1)
+                continue;
+
             NavigationPosition position = positionsModel.getPosition(row);
             if (position.hasCoordinates())
                 longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
@@ -411,6 +414,10 @@ public class PositionAugmenter {
 
     int findPredecessorWithTime(PositionsModel positionsModel, int index) {
         while (index >= 0) {
+            // avoid exceptions due to parallel deletions
+            if(index > positionsModel.getRowCount() - 1)
+                continue;
+
             NavigationPosition position = positionsModel.getPosition(index);
             if (position.hasTime())
                 return index;
