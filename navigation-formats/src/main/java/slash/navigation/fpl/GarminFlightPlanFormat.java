@@ -253,7 +253,8 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         for (int i = startIndex; i < endIndex; i++) {
             GarminFlightPlanPosition position = positions.get(i);
 
-            String countryCode = null;
+            // always write country code for Garmin G1000 https://forum.routeconverter.com/thread-3057.html
+            String countryCode = preferences.getBoolean("writeEmptyCountryCode", true) ? "" : null;
             if (position.getCountryCode() != null && position.getWaypointType() != null && !position.getWaypointType().equals(UserWaypoint))
                 countryCode = position.getCountryCode().value();
 
