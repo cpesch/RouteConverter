@@ -36,9 +36,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Integer.min;
 import static java.lang.System.arraycopy;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -173,17 +173,18 @@ public class OverlayPositionsModel implements PositionsModel {
         }
         return null;
     }
+    private static final Logger log = Logger.getLogger(OverlayPositionsModel.class.getName());
 
     private double[] getTrackDistancesFromStart(int startIndex, int endIndex) {
         if (distancesFromStart == null)
             distancesFromStart = getRoute().getDistancesFromStart(0, getRoute().getPositionCount() - 1);
-        // address https://forum.routeconverter.com/thread-3058.html
-        int count = min(endIndex - startIndex + 1, distancesFromStart.length);
-        double[] result = new double[count];
-        if(startIndex > distancesFromStart.length)
-            throw new IllegalArgumentException("startIndex " + startIndex + " is larger than distancesFromStart.length " + distancesFromStart.length);
-        if(result.length > distancesFromStart.length)
-            throw new IllegalArgumentException("result.length " + result.length + " is larger than distancesFromStart.length " + distancesFromStart.length);
+
+        // avoid exceptions due to parallel insertions
+        if (startIndex > distancesFromStart.length - 1) {
+            return null;
+        }
+
+        double[] result = new double[endIndex - startIndex + 1];
         arraycopy(distancesFromStart, startIndex, result, 0, result.length);
         return result;
     }
