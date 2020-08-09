@@ -47,7 +47,7 @@ import static slash.navigation.routing.RoutingResult.Validity.Valid;
 public class BRouterIT {
     private static final NavigationPosition FROM = new SimpleNavigationPosition(10.18587, 53.40451);
     private static final NavigationPosition TO = new SimpleNavigationPosition(10.06767, 53.49249);
-    private static final String CAR_PROFILE_URI = "car-test.brf";
+    private static final String CAR_PROFILE_URI = "car-eco.brf";
     private static final String TREKKING_PROFILE_URI = "trekking.brf";
     private static final String SEGMENT_URI = "E10_N50.rd5";
 
@@ -101,7 +101,7 @@ public class BRouterIT {
 
     @Test
     public void testGetRouteBetweenByCar() {
-        RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("car-test"));
+        RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("car-eco"));
         assertEquals(Valid, result.getValidity());
         assertEquals(233, result.getPositions().size(), 10);
         assertEquals(13754.0, result.getDistanceAndTime().getDistance(), 25.0);
