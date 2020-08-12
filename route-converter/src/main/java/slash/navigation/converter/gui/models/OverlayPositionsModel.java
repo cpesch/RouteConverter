@@ -36,7 +36,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Logger;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.System.arraycopy;
@@ -173,7 +172,6 @@ public class OverlayPositionsModel implements PositionsModel {
         }
         return null;
     }
-    private static final Logger log = Logger.getLogger(OverlayPositionsModel.class.getName());
 
     private double[] getTrackDistancesFromStart(int startIndex, int endIndex) {
         if (distancesFromStart == null)
