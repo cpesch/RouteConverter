@@ -36,7 +36,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.logging.Logger;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.min;

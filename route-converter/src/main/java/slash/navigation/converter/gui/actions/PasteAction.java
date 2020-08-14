@@ -68,16 +68,13 @@ public class PasteAction extends FrameAction {
 
         try {
             if (transferable.isDataFlavorSupported(POSITION_FLAVOR)) {
-                Object selection = transferable.getTransferData(POSITION_FLAVOR);
-                if (selection != null) {
-                    PositionSelection positionsSelection = (PositionSelection) selection;
-                    paste(positionsSelection.getPositions());
-                }
+                Object data = transferable.getTransferData(POSITION_FLAVOR);
+                PositionSelection positionsSelection = (PositionSelection) data;
+                paste(positionsSelection.getPositions());
             } else if (transferable.isDataFlavorSupported(STRING_FLAVOR)) {
-                Object string = transferable.getTransferData(STRING_FLAVOR);
-                if (string != null) {
-                    paste((String) string);
-                }
+                Object data = transferable.getTransferData(STRING_FLAVOR);
+                String string = (String) data;
+                paste(string);
             }
         } catch (UnsupportedFlavorException | IOException e) {
             // intentionally left empty
