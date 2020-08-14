@@ -175,8 +175,6 @@ public class OverlayPositionsModel implements PositionsModel {
         return null;
     }
 
-    private static final Logger log = Logger.getLogger(OverlayPositionsModel.class.getName()); // TODO remove me
-
     private double[] getTrackDistancesFromStart(int startIndex, int endIndex) {
         if (distancesFromStart == null)
             distancesFromStart = getRoute().getDistancesFromStart(0, getRoute().getPositionCount() - 1);
