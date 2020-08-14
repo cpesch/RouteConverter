@@ -36,8 +36,10 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Integer.min;
 import static java.lang.System.arraycopy;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -173,17 +175,15 @@ public class OverlayPositionsModel implements PositionsModel {
         return null;
     }
 
+    private static final Logger log = Logger.getLogger(OverlayPositionsModel.class.getName()); // TODO remove me
+
     private double[] getTrackDistancesFromStart(int startIndex, int endIndex) {
         if (distancesFromStart == null)
             distancesFromStart = getRoute().getDistancesFromStart(0, getRoute().getPositionCount() - 1);
 
-        // avoid exceptions due to parallel insertions
-        if (startIndex > distancesFromStart.length - 1) {
-            return null;
-        }
-
         double[] result = new double[endIndex - startIndex + 1];
-        arraycopy(distancesFromStart, startIndex, result, 0, result.length);
+        // min() is used to avoid exceptions due to parallel insertions
+        arraycopy(distancesFromStart, startIndex, result, 0, min(result.length, distancesFromStart.length - startIndex));
         return result;
     }
 
