@@ -30,6 +30,7 @@ import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
@@ -253,7 +254,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         List<P> positions = getPositions();
         for (int i = 0; i < positions.size(); ++i) {
             P position = positions.get(i);
-            Double distance = position.calculateDistance(longitude, latitude);
+            Double distance = position.calculateDistance(new SimpleNavigationPosition(longitude, latitude));
             if (distance != null && distance < closestDistance && distance <= threshold) {
                 closestDistance = distance;
                 closestIndex = i;
@@ -496,7 +497,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     public void sort(Comparator<P> comparator) {
         List<P> positions = getPositions();
-        @SuppressWarnings({"SuspiciousToArrayCall", "unchecked"})
         P[] sorted = (P[]) positions.toArray(new BaseNavigationPosition[0]);
         Arrays.sort(sorted, comparator);
         order(asList(sorted));

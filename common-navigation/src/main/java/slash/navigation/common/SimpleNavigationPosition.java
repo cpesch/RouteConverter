@@ -116,10 +116,6 @@ public class SimpleNavigationPosition implements NavigationPosition {
         throw new UnsupportedOperationException();
     }
 
-    public Double calculateDistance(double longitude, double latitude) {
-        throw new UnsupportedOperationException();
-    }
-
     public Double calculateOrthogonalDistance(NavigationPosition pointA, NavigationPosition pointB) {
         throw new UnsupportedOperationException();
     }

@@ -90,7 +90,6 @@ public interface NavigationPosition {
      *         or null if the distance cannot be calculated
      */
     Double calculateDistance(NavigationPosition other);
-    Double calculateDistance(double longitude, double latitude);
 
     /**
      * Calculate the orthogonal distance of this position to the line from pointA to pointB,

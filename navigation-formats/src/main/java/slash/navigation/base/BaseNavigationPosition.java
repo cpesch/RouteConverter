@@ -37,13 +37,11 @@ import slash.navigation.tour.TourPosition;
 
 import java.util.Calendar;
 
-import static java.lang.Double.isNaN;
 import static java.lang.Math.*;
 import static java.util.Calendar.*;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.common.Bearing.EARTH_RADIUS;
-import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.common.UnitConversion.MILLISECONDS_OF_A_SECOND;
 
 /**
@@ -77,16 +75,25 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         }
     }
 
-    public Double calculateDistance(NavigationPosition other) {
-        return other.hasCoordinates() ? calculateDistance(other.getLongitude(), other.getLatitude()) : null;
+    public Bearing calculateBearing(NavigationPosition other) {
+        if (hasCoordinates() && other.hasCoordinates()) {
+            return Bearing.calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
+        }
+        return null;
     }
 
-    public Double calculateDistance(double longitude, double latitude) {
-        if (hasCoordinates()) {
-            Bearing bearing = calculateBearing(getLongitude(), getLatitude(), longitude, latitude);
-            double distance = bearing.getDistance();
-            if (!isNaN(distance))
-                return distance;
+    public Double calculateDistance(NavigationPosition other) {
+        if (hasCoordinates() && other.hasCoordinates()) {
+            Bearing bearing = calculateBearing(other);
+            return bearing.getDistance();
+        }
+        return null;
+    }
+
+    public Double calculateAngle(NavigationPosition other) {
+        if (hasCoordinates() && other.hasCoordinates()) {
+            Bearing bearing = calculateBearing(other);
+            return bearing.getAngle();
         }
         return null;
     }
@@ -105,17 +112,9 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
         return null;
     }
 
-    public Double calculateAngle(NavigationPosition other) {
-        if (hasCoordinates() && other.hasCoordinates()) {
-            Bearing bearing = calculateBearing(getLongitude(), getLatitude(), other.getLongitude(), other.getLatitude());
-            return bearing.getAngle();
-        }
-        return null;
-    }
-
     public Double calculateOrthogonalDistance(NavigationPosition pointA, NavigationPosition pointB) {
         if (hasCoordinates() && pointA.hasCoordinates() && pointB.hasCoordinates()) {
-            Bearing bearingAD = calculateBearing(pointA.getLongitude(), pointA.getLatitude(), getLongitude(), getLatitude());
+            Bearing bearingAD = calculateBearing(pointA);
             double distanceAtoD = bearingAD.getDistance();
             double courseAtoD = toRadians(bearingAD.getAngle());
             double courseAtoB = toRadians(pointA.calculateAngle(pointB));
