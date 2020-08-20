@@ -230,7 +230,7 @@ public class OptionsDialog extends SimpleDialog {
         });
 
         ComboBoxModel<GoogleMapsServer> googleMapsServerModel = new DefaultComboBoxModel<>(new GoogleMapsServer[]{
-                International, China2, China1, Ditu, Uzbekistan
+                International, China, Ditu, Uzbekistan
         });
         googleMapsServerModel.setSelectedItem(r.getGoogleMapsServerModel().getGoogleMapsServer());
         comboBoxGoogleMapsServer.setModel(googleMapsServerModel);

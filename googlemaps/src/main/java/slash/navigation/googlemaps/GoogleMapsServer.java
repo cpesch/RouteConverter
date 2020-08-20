@@ -35,8 +35,8 @@ import static slash.common.helpers.LocaleHelper.UZBEKISTAN;
  */
 
 public enum GoogleMapsServer {
-    China2("http://www.google.cn//maps", "http://www.google.cn//maps", CHINA),
-    China1("http://maps.google.cn", "http://maps.google.cn", null),
+    China(Preferences.userNodeForPackage(GoogleMapsServer.class).get("apiUrl", "http://maps.google.cn"),
+          Preferences.userNodeForPackage(GoogleMapsServer.class).get("fileUrl", "http://maps.google.cn"), CHINA),
     Ditu("http://ditu.google.cn", "http://ditu.google.cn", null),
     International("https://maps.googleapis.com", "http://maps.google.com", null),
     Uzbekistan("http://maps.google.ru", "http://maps.google.ru", UZBEKISTAN);
