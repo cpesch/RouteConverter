@@ -153,7 +153,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(File source) throws IOException {
-        return read(source, getNavigationFormatRegistry().getReadFormats());
+        return read(source, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source)));
     }
 
     private NavigationFormat determineFormat(List<BaseRoute> routes, NavigationFormat preferredFormat) {
