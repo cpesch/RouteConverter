@@ -49,6 +49,7 @@ import java.util.logging.Logger;
 import static java.io.File.separatorChar;
 import static java.lang.Math.min;
 import static java.lang.String.format;
+import static slash.common.io.Files.getExtension;
 import static slash.common.io.Transfer.ceiling;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -338,7 +339,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(URL url) throws IOException {
-        return read(url, getNavigationFormatRegistry().getReadFormats());
+        return read(url, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(url)));
     }
 
 

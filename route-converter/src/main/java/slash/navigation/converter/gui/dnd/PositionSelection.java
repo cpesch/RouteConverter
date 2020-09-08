@@ -61,7 +61,7 @@ public class PositionSelection implements Transferable {
     private List<NavigationPosition> createCopyFrom(List<NavigationPosition> sourcePositions) {
         try {
             List<BaseNavigationPosition> targetPositions = convertPositions(sourcePositions, new Gpx10Format());
-            return new ArrayList<NavigationPosition>(targetPositions);
+            return new ArrayList<>(targetPositions);
         } catch (IOException e) {
             log.severe("Cannot convert " + sourcePositions + " for selection: " + e);
         }

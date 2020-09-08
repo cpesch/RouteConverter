@@ -68,10 +68,16 @@ public class Files {
         return name.substring(index).toLowerCase();
     }
 
+    public static String getExtension(URL url) {
+        return getExtension(url.toExternalForm()).toLowerCase();
+    }
+
     public static String getExtension(List<URL> urls) {
         String extension = "";
         for (URL url : urls) {
-            extension = getExtension(url.toExternalForm());
+            String found = getExtension(url.toExternalForm());
+            if (found.length() > extension.length())
+                extension = found;
         }
         return extension.toLowerCase();
     }
