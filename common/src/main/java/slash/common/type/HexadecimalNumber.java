@@ -52,6 +52,13 @@ public class HexadecimalNumber {
         return Integer.toHexString(integer);
     }
 
+    public static String encodeInt(int integer, int digits) {
+        StringBuilder builder = new StringBuilder(encodeInt(integer));
+        while(builder.length() < digits)
+            builder.insert(0, 0);
+        return builder.toString();
+    }
+
     public static int decodeInt(String string) {
         return (int) Long.parseLong(string, 16);
     }

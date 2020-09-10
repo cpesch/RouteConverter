@@ -25,6 +25,7 @@ import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
 import org.mapsforge.core.util.Parameters;
+import org.mapsforge.map.awt.graphics.AwtBitmap;
 import org.mapsforge.map.layer.*;
 import org.mapsforge.map.layer.cache.FileSystemTileCache;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
@@ -47,6 +48,9 @@ import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
 import org.mapsforge.map.scalebar.NauticalUnitAdapter;
 import org.mapsforge.map.util.MapViewProjection;
+import slash.common.io.TokenReplacingReader;
+import slash.common.io.TokenResolver;
+import slash.common.io.Transfer;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.*;
@@ -75,8 +79,8 @@ import slash.navigation.mapview.mapsforge.updater.*;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -103,6 +107,7 @@ import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Transfer.encodeUri;
+import static slash.common.type.HexadecimalNumber.encodeInt;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.TransformUtil.delta;
@@ -116,7 +121,9 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
+import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asAlpha;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
+import static slash.navigation.mapview.mapsforge.helpers.SVGHelper.getResourceBitmap;
 import static slash.navigation.mapview.mapsforge.helpers.WithLayerHelper.*;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
 
@@ -147,8 +154,7 @@ public class MapsforgeMapView extends BaseMapView {
     private BooleanModel showAllPositionsAfterLoading;
     private BooleanModel recenterAfterZooming;
     private BooleanModel showCoordinates;
-    private ColorModel routeColorModel;
-    private ColorModel trackColorModel;
+    private ColorModel routeColorModel, trackColorModel, waypointColorModel;
     private UnitSystemModel unitSystemModel;
     private MapViewCallbackOpenSource mapViewCallback;
 
@@ -166,7 +172,7 @@ public class MapsforgeMapView extends BaseMapView {
     private AwtGraphicMapView mapView;
     private MapViewMoverAndZoomer mapViewMoverAndZoomer;
     private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
-    private static Bitmap markerIcon, waypointIcon;
+    private static Bitmap markerIcon;
     private GroupLayer overlaysLayer = new GroupLayer();
     private TileRendererLayer backgroundLayer;
     private HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
@@ -186,7 +192,8 @@ public class MapsforgeMapView extends BaseMapView {
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,       /* ignored */
                            ColorModel aRouteColorModel,
-                           final ColorModel aTrackColorModel,
+                           ColorModel aTrackColorModel,
+                           ColorModel aWaypointColorModel,
                            UnitSystemModel unitSystemModel             /* ignored */) {
         this.mapViewCallback = (MapViewCallbackOpenSource) mapViewCallback;
         this.positionsModel = positionsModel;
@@ -197,6 +204,7 @@ public class MapsforgeMapView extends BaseMapView {
         this.showCoordinates = showCoordinates;
         this.routeColorModel = aRouteColorModel;
         this.trackColorModel = aTrackColorModel;
+        this.waypointColorModel = aWaypointColorModel;
         this.unitSystemModel = unitSystemModel;
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
@@ -228,7 +236,7 @@ public class MapsforgeMapView extends BaseMapView {
         });
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
-            private List<PairWithLayer> pairs = new ArrayList<>();
+            private final List<PairWithLayer> pairs = new ArrayList<>();
 
             public void add(List<PairWithLayer> pairWithLayers) {
                 internalAdd(pairWithLayers);
@@ -312,7 +320,7 @@ public class MapsforgeMapView extends BaseMapView {
 
         this.waypointUpdater = new WaypointUpdater(positionsModel, new WaypointOperation() {
             private Marker createMarker(PositionWithLayer positionWithLayer) {
-                return new Marker(asLatLong(positionWithLayer.getPosition()), waypointIcon, 1, 0);
+               return new Marker(asLatLong(positionWithLayer.getPosition()), createWaypointIcon(), 0, 0);
             }
 
             public void add(List<PositionWithLayer> positionWithLayers) {
@@ -350,6 +358,7 @@ public class MapsforgeMapView extends BaseMapView {
         getFixMapModeModel().addChangeListener(repaintPositionListListener);
         routeColorModel.addChangeListener(repaintPositionListListener);
         trackColorModel.addChangeListener(repaintPositionListListener);
+        waypointColorModel.addChangeListener(repaintPositionListListener);
         unitSystemModel.addChangeListener(unitSystemListener);
         getShowShadedHills().addChangeListener(shadedHillsListener);
 
@@ -391,7 +400,6 @@ public class MapsforgeMapView extends BaseMapView {
 
         try {
             markerIcon = GRAPHIC_FACTORY.createTileBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"), -1, false);
-            waypointIcon = GRAPHIC_FACTORY.createTileBitmap(MapsforgeMapView.class.getResourceAsStream("waypoint.png"), -1, false);
         } catch (IOException e) {
             log.severe("Cannot create marker and waypoint icon: " + e);
         }
@@ -491,6 +499,31 @@ public class MapsforgeMapView extends BaseMapView {
         mapView.getMapScaleBar().setVisible(true);
         ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(SINGLE);
         return mapView;
+    }
+
+    private Bitmap waypointIcon;
+
+    private synchronized Bitmap createWaypointIcon() {
+        if(waypointIcon == null) {
+            String color = encodeInt(waypointColorModel.getColor().getRed(), 2) +
+                    encodeInt(waypointColorModel.getColor().getGreen(), 2) +
+                    encodeInt(waypointColorModel.getColor().getBlue(), 2);
+            String opacity = Transfer.formatDoubleAsString(new Float(asAlpha(waypointColorModel)).doubleValue(), 2);
+
+            InputStream inputStream = MapsforgeMapView.class.getResourceAsStream("waypoint.svg");
+            Reader reader = new TokenReplacingReader(new InputStreamReader(inputStream), new TokenResolver() {
+                public String resolveToken(String tokenName) {
+                    if (tokenName.equals("color"))
+                        return color;
+                    if (tokenName.equals("opacity"))
+                        return opacity;
+                    return tokenName;
+                }
+            });
+            BufferedImage bufferedImage = getResourceBitmap(reader, "waypoint-" + color + "-" + opacity, getDeviceScaleFactor(), 100f, 16, 16, 100);
+            waypointIcon = new AwtBitmap(bufferedImage);
+        }
+        return waypointIcon;
     }
 
     private void handleUnitSystem() {
@@ -686,6 +719,7 @@ public class MapsforgeMapView extends BaseMapView {
         characteristicsModel.removeListDataListener(characteristicsModelListener);
         routeColorModel.removeChangeListener(repaintPositionListListener);
         trackColorModel.removeChangeListener(repaintPositionListListener);
+        waypointColorModel.removeChangeListener(repaintPositionListListener);
         unitSystemModel.removeChangeListener(unitSystemListener);
         getFixMapModeModel().addChangeListener(repaintPositionListListener);
         getShowShadedHills().removeChangeListener(shadedHillsListener);
@@ -1294,6 +1328,9 @@ public class MapsforgeMapView extends BaseMapView {
 
     private class RepaintPositionListListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
+            synchronized (MapsforgeMapView.this) {
+                waypointIcon = null;
+            }
             updateDecoupler.replaceRoute();
         }
     }

@@ -30,7 +30,16 @@ import java.awt.*;
  */
 
 public class ColorHelper {
-    private static final int MINIMUM_ALPHA = (int)(256 * 0.3);
+    private static final float MINIMUM_ALPHA_FACTOR = 0.3f;
+    private static final int MINIMUM_ALPHA = (int)(256 * MINIMUM_ALPHA_FACTOR);
+
+    public static float asAlpha(ColorModel colorModel) {
+        return asAlpha( colorModel.getColor());
+    }
+
+    static float asAlpha(Color color) {
+        return MINIMUM_ALPHA_FACTOR + (1-MINIMUM_ALPHA_FACTOR) * color.getAlpha() / 256f;
+    }
 
     public static int asRGBA(ColorModel colorModel) {
         return asRGBA(colorModel.getColor());

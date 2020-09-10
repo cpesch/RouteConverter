@@ -46,6 +46,7 @@ public class ColorModel {
     public ColorModel(String preferencesPrefix, String defaultValue) {
         this.preferencesPrefix = preferencesPrefix;
         this.defaultValue = defaultValue;
+        preferences.remove(preferencesPrefix + COLOR_SUFFIX);
     }
 
     private Color fromString(String color) {

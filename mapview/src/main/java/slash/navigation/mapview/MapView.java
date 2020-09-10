@@ -46,6 +46,7 @@ public interface MapView extends PositionsSelectionModel {
                     BooleanModel showWaypointDescription,
                     ColorModel routeColorModel,
                     ColorModel trackColorModel,
+                    ColorModel waypointColorModel,
                     UnitSystemModel unitSystemModel);
     boolean isInitialized();
     boolean isDownload();

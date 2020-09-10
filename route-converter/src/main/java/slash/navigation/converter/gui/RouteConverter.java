@@ -196,6 +196,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private FixMapModeModel fixMapModeModel = new FixMapModeModel();
     private ColorModel routeColorModel = new ColorModel("route", "C86CB1F3"); // "6CB1F3" w 0.8 alpha
     private ColorModel trackColorModel = new ColorModel("track", "FF0033FF"); // "0033FF" w 1.0 alpha
+    private ColorModel waypointColorModel = new ColorModel("waypoint", "FF000000"); // "000000" w 1.0 alpha
     private UnitSystemModel unitSystemModel = new UnitSystemModel();
     private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
@@ -396,6 +397,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     getShowWaypointDescription(),
                     getRouteColorModel(),
                     getTrackColorModel(),
+                    getWaypointColorModel(),
                     getUnitSystemModel());
 
             @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
@@ -620,6 +622,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public ColorModel getTrackColorModel() {
         return trackColorModel;
+    }
+
+    public ColorModel getWaypointColorModel() {
+        return waypointColorModel;
     }
 
     public UnitSystemModel getUnitSystemModel() {

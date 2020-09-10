@@ -158,6 +158,7 @@ public abstract class BrowserMapView extends BaseMapView {
                            BooleanModel showWaypointDescription,
                            ColorModel aRouteColorModel,
                            ColorModel aTrackColorModel,
+                           ColorModel aWaypointColorModel,
                            UnitSystemModel unitSystemModel) {
         this.mapViewCallback = (MapViewCallbackGoogle) mapViewCallback;
         this.positionsModel = positionsModel;

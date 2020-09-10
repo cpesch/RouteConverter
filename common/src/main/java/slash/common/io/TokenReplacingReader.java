@@ -33,14 +33,14 @@ import java.nio.CharBuffer;
  * @author Jakob Jenkov
  */
 
-class TokenReplacingReader extends Reader {
+public class TokenReplacingReader extends Reader {
     private PushbackReader pushbackReader;
     private TokenResolver tokenResolver;
     private StringBuilder tokenNameBuffer = new StringBuilder();
     private String tokenValue;
     private int tokenValueIndex;
 
-    TokenReplacingReader(Reader source, TokenResolver resolver) {
+    public TokenReplacingReader(Reader source, TokenResolver resolver) {
         this.pushbackReader = new PushbackReader(source, 2);
         this.tokenResolver = resolver;
     }

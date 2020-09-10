@@ -25,6 +25,14 @@ public class HexadecimalNumberTest {
     }
 
     @Test
+    public void testEncodeIntWithDigits() {
+        assertEquals("1", encodeInt(1, 0));
+        assertEquals("1", encodeInt(1, 1));
+        assertEquals("01", encodeInt(1, 2));
+        assertEquals("001", encodeInt(1, 3));
+    }
+
+    @Test
     public void testDecodeInt() {
         assertEquals(2 * 256 * 256 + 3 * 256 + 4, decodeInt("020304"));
     }
