@@ -158,7 +158,7 @@ public abstract class RouteComments {
             case Number_Directly_Followed_By_Description:
                 return description != null ? number + description : number;
             case Number_Space_Then_Description:
-                return  description != null ? number + " " + description : number;
+                return description != null ? number + " " + description : number;
             default:
                 throw new IllegalArgumentException("Number pattern " + numberPattern + " is not supported");
         }
