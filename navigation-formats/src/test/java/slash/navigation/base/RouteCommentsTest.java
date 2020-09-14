@@ -24,12 +24,13 @@ import org.junit.Test;
 import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
+import slash.navigation.common.NavigationPosition;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.TestCase.assertNull;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static slash.common.io.Transfer.formatIntAsString;
 import static slash.navigation.base.RouteComments.*;
 import static slash.navigation.common.NumberPattern.*;
@@ -37,11 +38,15 @@ import static slash.navigation.common.NumberPattern.*;
 public class RouteCommentsTest {
     private BcrRoute route = new BcrRoute(new MTP0607Format(), "r", null, new ArrayList<>());
 
+    private BcrPosition createPosition(String description) {
+        return new BcrPosition(1, 2, 3, description);
+    }
+
     @Test
     public void testCommentPositions() {
         List<BcrPosition> positions = route.getPositions();
         for (int i = 0; i < 10; i++) {
-            positions.add(new BcrPosition(i, i, i, null));
+            positions.add(createPosition(null));
         }
 
         for (int i = 0; i < 10; i++) {
@@ -59,7 +64,7 @@ public class RouteCommentsTest {
     public void testCommentAndRenumberPositions() {
         List<BcrPosition> positions = route.getPositions();
         for (int i = 0; i < 10; i++) {
-            positions.add(new BcrPosition(i, i, i, null));
+            positions.add(createPosition(null));
         }
 
         commentPositions(positions);
@@ -98,30 +103,63 @@ public class RouteCommentsTest {
     }
 
     @Test
-    public void getNumberPositions() {
-        assertEquals("Hamburg", getNumberedPosition(new BcrPosition(1, 2, 3, "1234 Hamburg"), 5, 3, Description_Only));
-        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, Number_Only));
-        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, " Waypoint  9 "), 5, 3, Number_Only));
+    public void testIsDefaultDescription() {
+        assertTrue(isDefaultDescription("Position 12"));
+        assertTrue(isDefaultDescription("Waypoint 123"));
+        assertTrue(isDefaultDescription("Position 1234 abc"));
+        assertTrue(isDefaultDescription("abcPosition 1234abc"));
+        assertTrue(isDefaultDescription("abc Position 1234 abc"));
 
-        assertEquals("006Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, Number_Directly_Followed_By_Description));
-        assertEquals("006Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Waypoint  9 "), 5, 3, Number_Directly_Followed_By_Description));
+        assertFalse(isDefaultDescription("Position"));
+        assertFalse(isDefaultDescription("abc Position"));
+        assertFalse(isDefaultDescription("Position abc"));
+        assertFalse(isDefaultDescription("abc Position abc"));
+    }
 
-        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position  9 "), 5, 3, Number_Space_Then_Description));
-        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Waypoint  9 "), 5, 3, Number_Space_Then_Description));
-        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, "9 Position 9"), 5, 3, Number_Space_Then_Description));
-        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, "8Position 9"), 5, 3, Number_Space_Then_Description));
-        assertEquals("006 Position 6", getNumberedPosition(new BcrPosition(1, 2, 3, " Position7 "), 5, 3, Number_Space_Then_Description));
-        assertEquals("006 aPosition 6a", getNumberedPosition(new BcrPosition(1, 2, 3, "aPositiona5a"), 5, 3, Number_Space_Then_Description));
-        assertEquals("006 a", getNumberedPosition(new BcrPosition(1, 2, 3, "04a"), 5, 3, Number_Space_Then_Description));
-        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, " 3 "), 5, 3, Number_Space_Then_Description));
-        assertEquals("006", getNumberedPosition(new BcrPosition(1, 2, 3, "0002"), 5, 3, Number_Space_Then_Description));
+    @Test
+    public void testGetDefaultDescription() {
+        assertEquals("Position 1", getDefaultDescription(0));
+
+        assertEquals("Position 2", getDefaultDescription(createPosition(null), 1));
+        assertEquals("Position 2", getDefaultDescription(createPosition(""), 1));
+        assertEquals("Position 2", getDefaultDescription(createPosition("Position 2"), 1));
+        assertEquals("Position 2abc", getDefaultDescription(createPosition("Position 23abc"), 1));
+        assertEquals("Position 2 abc", getDefaultDescription(createPosition("Position 234 abc"), 1));
+        assertEquals("abcPosition 2", getDefaultDescription(createPosition("abcPosition 234"), 1));
+        assertEquals("abc Position 2", getDefaultDescription(createPosition("abc Position 234"), 1));
+        assertEquals("abcPosition 2abc", getDefaultDescription(createPosition("abcPosition 234abc"), 1));
+        assertEquals("abc Position 2 abc", getDefaultDescription(createPosition("abc Position 234 abc"), 1));
+        assertEquals("abc Position 2 abc", getDefaultDescription(createPosition(" abc Position 234 abc "), 1));
+    }
+
+    @Test
+    public void testGetNumberedPosition() {
+        assertEquals("Hamburg", getNumberedPosition(createPosition("1234 Hamburg"), 5, 3, Description_Only));
+        assertNull(getNumberedPosition(createPosition("1234"), 5, 3, Description_Only));
+        assertEquals("006", getNumberedPosition(createPosition(" Position  9 "), 5, 3, Number_Only));
+        assertEquals("06", getNumberedPosition(createPosition(" Waypoint  9 "), 5, 2, Number_Only));
+        assertEquals("6", getNumberedPosition(createPosition(" Waypoint  9 "), 5, 1, Number_Only));
+        assertEquals("6", getNumberedPosition(createPosition(null), 5, 1, Number_Only));
+
+        assertEquals("006Position 6", getNumberedPosition(createPosition(" Position  9 "), 5, 3, Number_Directly_Followed_By_Description));
+        assertEquals("006Position 6", getNumberedPosition(createPosition(" Waypoint  9 "), 5, 3, Number_Directly_Followed_By_Description));
+
+        assertEquals("006 Position 6", getNumberedPosition(createPosition(" Position  9 "), 5, 3, Number_Space_Then_Description));
+        assertEquals("006 Position 6", getNumberedPosition(createPosition(" Waypoint  9 "), 5, 3, Number_Space_Then_Description));
+        assertEquals("006 Position 6", getNumberedPosition(createPosition("9 Position 9"), 5, 3, Number_Space_Then_Description));
+        assertEquals("006 Position 6", getNumberedPosition(createPosition("8Position 9"), 5, 3, Number_Space_Then_Description));
+        assertEquals("006 Position 6", getNumberedPosition(createPosition(" Position7 "), 5, 3, Number_Space_Then_Description));
+        assertEquals("006 aPosition 6a", getNumberedPosition(createPosition("aPositiona5a"), 5, 3, Number_Space_Then_Description));
+        assertEquals("006 a", getNumberedPosition(createPosition("04a"), 5, 3, Number_Space_Then_Description));
+        assertEquals("006", getNumberedPosition(createPosition(" 3 "), 5, 3, Number_Space_Then_Description));
+        assertEquals("006", getNumberedPosition(createPosition("0002"), 5, 3, Number_Space_Then_Description));
     }
 
     @Test
     public void testNumberPositionsWithGetNumberPositions() {
         List<BcrPosition> positions = route.getPositions();
         for (int i = 0; i < 10; i++) {
-            positions.add(new BcrPosition(i, i, i, "description"));
+            positions.add(createPosition("description"));
         }
 
         for (int i = 0; i < positions.size(); i++) {

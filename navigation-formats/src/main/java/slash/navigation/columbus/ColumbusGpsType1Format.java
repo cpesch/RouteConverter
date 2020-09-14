@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 import static java.lang.Math.abs;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.*;
-import static slash.navigation.base.RouteComments.isPositionDescription;
+import static slash.navigation.base.RouteComments.isDefaultDescription;
 import static slash.navigation.common.NavigationConversion.formatAccuracyAsString;
 
 /**
@@ -160,7 +160,7 @@ public class ColumbusGpsType1Format extends ColumbusGpsFormat {
         String pdop = fillWithZeros(position.getPdop() != null ? formatAccuracyAsString(position.getPdop()) : "", 5);
         String hdop = fillWithZeros(position.getHdop() != null ? formatAccuracyAsString(position.getHdop()) : "", 5);
         String vdop = fillWithZeros(position.getVdop() != null ? formatAccuracyAsString(position.getVdop()) : "", 5);
-        String description = !isPositionDescription(position.getDescription()) ? position.getDescription() : "";
+        String description = !isDefaultDescription(position.getDescription()) ? position.getDescription() : "";
 
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
                 formatTag(position) + SEPARATOR +

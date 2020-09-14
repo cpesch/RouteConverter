@@ -103,38 +103,38 @@ public abstract class RouteComments {
     }
 
     private static final String POSITION = "Position";
-    private static final Pattern POSITION_PATTERN = Pattern.compile("(.*)(" + POSITION + "|Waypoint).*(\\d+)(.*)");
-
-    private static String getPositionDescription(int index) {
-        return POSITION + " " + (index + 1);
-    }
+    private static final Pattern DEFAULT_DESCRIPTION_PATTERN = Pattern.compile("(.* ?)(" + POSITION + "|Waypoint).*(\\d+)( ?.*)");
 
     public static void commentPositions(List<? extends NavigationPosition> positions) {
         for (int i = 0; i < positions.size(); i++) {
             NavigationPosition position = positions.get(i);
             String original = position.getDescription();
-            String modified = getPositionDescription(position, i);
+            String modified = getDefaultDescription(position, i);
             if (original == null || !original.equals(modified))
                 position.setDescription(modified);
         }
     }
 
-    private static String getPositionDescription(NavigationPosition position, int index) {
-        if (position.getDescription() == null || "(null)".equals(position.getDescription())) {
-            return getPositionDescription(index);
+    static String getDefaultDescription(int index) {
+        return POSITION + " " + (index + 1);
+    }
+
+    static String getDefaultDescription(NavigationPosition position, int index) {
+        if (trim(position.getDescription()) == null || "(null)".equals(position.getDescription())) {
+            return getDefaultDescription(index);
         } else {
-            Matcher matcher = POSITION_PATTERN.matcher(position.getDescription());
+            Matcher matcher = DEFAULT_DESCRIPTION_PATTERN.matcher(position.getDescription());
             if (matcher.matches()) {
-                String prefix = trim(matcher.group(1));
-                String postfix = trim(matcher.group(4));
-                return (prefix != null ? prefix : "") + getPositionDescription(index) + (postfix != null ? postfix : "");
+                String prefix = matcher.group(1);
+                String postfix = matcher.group(4);
+                return trim((prefix != null ? prefix : "") + getDefaultDescription(index) + (postfix != null ? postfix : ""));
             }
         }
         return position.getDescription();
     }
 
-    public static boolean isPositionDescription(String description) {
-        Matcher matcher = POSITION_PATTERN.matcher(description);
+    public static boolean isDefaultDescription(String description) {
+        Matcher matcher = DEFAULT_DESCRIPTION_PATTERN.matcher(description);
         return matcher.matches();
     }
 
@@ -143,7 +143,7 @@ public abstract class RouteComments {
     public static String getNumberedPosition(NavigationPosition position, int index,
                                              int digitCount, NumberPattern numberPattern) {
         String number = formatIntAsString((index + 1), digitCount);
-        String comment = getPositionDescription(position, index);
+        String comment = getDefaultDescription(position, index);
         Matcher matcher = NUMBER_PATTERN.matcher(comment);
         String description = matcher.matches() ? matcher.group(2) : comment;
         return formatNumberedPosition(numberPattern, number, trim(description));

@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 import static java.lang.Math.abs;
 import static slash.common.io.Transfer.*;
-import static slash.navigation.base.RouteComments.isPositionDescription;
+import static slash.navigation.base.RouteComments.isDefaultDescription;
 import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
 import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
 
@@ -145,7 +145,7 @@ public class ColumbusGpsType2Format extends ColumbusGpsFormat {
         String heading = fillWithZeros(position.getHeading() != null ? formatIntAsString(position.getHeading().intValue()) : "0", 3);
         String pressure = position.getPressure() != null ? formatDoubleAsString(position.getPressure()) : "0";
         String temperature = fillWithZeros(position.getTemperature() != null ? formatIntAsString(position.getTemperature().intValue()) : "0", 2);
-        String description = !isPositionDescription(position.getDescription()) ? position.getDescription() : "";
+        String description = !isDefaultDescription(position.getDescription()) ? position.getDescription() : "";
 
         writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
                 formatTag(position) + SEPARATOR +
