@@ -273,6 +273,12 @@ public class ReadIT {
     }
 
     @Test
+    public void testNmnFavoriteFilesAreValid() throws IOException {
+        // Navigon Mobile Navigator Favorites
+        readFiles(".storage");
+    }
+
+    @Test
     public void testNavilinkFilesAreValid() throws IOException {
         readFiles(".sbp");
     }
