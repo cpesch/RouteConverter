@@ -94,6 +94,7 @@ import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
+import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
@@ -796,7 +797,8 @@ public class MapsforgeMapView extends BaseMapView {
     public void addLayer(final Layer layer) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
-                getLayerManager().getLayers().add(layer);
+                if (!getLayerManager().getLayers().addAll(singleton(layer)))
+                    log.warning("Cannot add layer " + layer);
             }
         });
     }
