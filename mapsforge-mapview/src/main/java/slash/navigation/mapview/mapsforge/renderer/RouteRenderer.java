@@ -39,13 +39,11 @@ import slash.navigation.routing.RoutingService;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
-import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 import static slash.navigation.routing.RoutingResult.Validity.*;
@@ -94,24 +92,20 @@ public class RouteRenderer {
         }
     }
 
-    private final ExecutorService executor = createSingleThreadExecutor("RouteRenderer");
+    public synchronized void renderRoute(final List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
+        synchronized (notificationMutex) {
+            drawingRoute = true;
+        }
 
-    public void renderRoute(final List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
-        executor.execute(() -> {
+        try {
+            internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
+        } catch (Throwable t) {
+            mapViewCallback.handleRoutingException(t);
+        } finally {
             synchronized (notificationMutex) {
-                drawingRoute = true;
+                drawingRoute = false;
             }
-
-            try {
-                internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
-            } catch (Throwable t) {
-                mapViewCallback.handleRoutingException(t);
-            } finally {
-                synchronized (notificationMutex) {
-                    drawingRoute = false;
-                }
-            }
-        });
+        }
     }
 
     private void internalRenderRoute(List<PairWithLayer> pairWithLayers, Runnable invokeAfterRenderingRunnable) {
