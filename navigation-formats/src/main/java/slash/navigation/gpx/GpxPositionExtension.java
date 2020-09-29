@@ -46,8 +46,9 @@ import static slash.navigation.gpx.GpxFormat.asMs;
  */
 
 public class GpxPositionExtension {
-    private WptType wptType;
     private static final Set<String> WELL_KNOWN_ELEMENT_NAMES = new HashSet<>(asList("course", "speed", "temperature"));
+
+    private final WptType wptType;
 
     GpxPositionExtension(WptType wptType) {
         this.wptType = wptType;
@@ -360,7 +361,7 @@ public class GpxPositionExtension {
 
     private boolean isEmptyExtension(slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
         return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getBearing()) && isEmpty(trackPoint.getCad()) &&
-                isEmpty(trackPoint.getCourse()) &&  isEmpty(trackPoint.getDepth()) && isEmpty(trackPoint.getHr()) &&
+                isEmpty(trackPoint.getCourse()) && isEmpty(trackPoint.getDepth()) && isEmpty(trackPoint.getHr()) &&
                 isEmpty(trackPoint.getSpeed()) && isEmpty(trackPoint.getWtemp()) &&
                 (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().size() == 0);
     }

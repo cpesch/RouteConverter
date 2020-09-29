@@ -171,12 +171,6 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
             super.setTemperature(temperature);
     }
 
-    public CsvPosition asCsvPosition() {
-        CsvPosition position = super.asCsvPosition();
-        transferExtendedSensorData(this, position);
-        return position;
-    }
-
     // handled in CsvRoute#asExcelFormat
     // public ExcelPosition asMicrosoftExcelPosition() {..}
 

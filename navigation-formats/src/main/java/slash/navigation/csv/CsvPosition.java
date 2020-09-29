@@ -22,6 +22,8 @@ package slash.navigation.csv;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ExtendedSensorNavigationPosition;
+import slash.navigation.base.Wgs84Position;
+import slash.navigation.excel.ExcelPosition;
 import slash.navigation.gpx.GpxPosition;
 
 import java.util.Calendar;
@@ -181,11 +183,23 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
         setValueAsString(Description, description);
     }
 
+    public CsvPosition asCsvPosition() {
+        return this;
+    }
+
     // handled in CsvRoute#asExcelFormat
-    // public ExcelPosition asMicrosoftExcelPosition() {..}
+    public ExcelPosition asMicrosoftExcelPosition() {
+        throw new UnsupportedOperationException();
+    }
 
     public GpxPosition asGpxPosition() {
         GpxPosition position = super.asGpxPosition();
+        transferExtendedSensorData(this, position);
+        return position;
+    }
+
+    public Wgs84Position asWgs84Position() {
+        Wgs84Position position = super.asWgs84Position();
         transferExtendedSensorData(this, position);
         return position;
     }

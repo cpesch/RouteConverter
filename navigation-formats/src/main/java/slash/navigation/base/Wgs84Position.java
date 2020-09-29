@@ -21,6 +21,8 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.csv.CsvPosition;
+import slash.navigation.excel.ExcelPosition;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.nmea.NmeaPosition;
@@ -188,11 +190,21 @@ public class Wgs84Position extends BaseNavigationPosition implements ExtendedSen
         this.origin = origin;
     }
 
+    public CsvPosition asCsvPosition() {
+        CsvPosition position = super.asCsvPosition();
+        ExtendedSensorNavigationPosition.transferExtendedSensorData(this, position);
+        return position;
+    }
+
+    public ExcelPosition asMicrosoftExcelPosition() {
+        ExcelPosition position = super.asMicrosoftExcelPosition();
+        ExtendedSensorNavigationPosition.transferExtendedSensorData(this, position);
+        return position;
+    }
+
     public GpxPosition asGpxPosition() {
         GpxPosition position = super.asGpxPosition();
-        position.setHeading(getHeading());
-        position.setPressure(getPressure());
-        position.setTemperature(getTemperature());
+        ExtendedSensorNavigationPosition.transferExtendedSensorData(this, position);
         position.setHdop(getHdop());
         position.setPdop(getPdop());
         position.setVdop(getVdop());

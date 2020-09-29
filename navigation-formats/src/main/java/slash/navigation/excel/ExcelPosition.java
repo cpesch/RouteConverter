@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.*;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ExtendedSensorNavigationPosition;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.csv.CsvPosition;
 import slash.navigation.gpx.GpxPosition;
 
@@ -203,15 +204,24 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
         setCellAsString(Description, description);
     }
 
-
     public CsvPosition asCsvPosition() {
         CsvPosition position = super.asCsvPosition();
         transferExtendedSensorData(this, position);
         return position;
     }
 
+    public ExcelPosition asMicrosoftExcelPosition() {
+        return this;
+    }
+
     public GpxPosition asGpxPosition() {
         GpxPosition position = super.asGpxPosition();
+        transferExtendedSensorData(this, position);
+        return position;
+    }
+
+    public Wgs84Position asWgs84Position() {
+        Wgs84Position position = super.asWgs84Position();
         transferExtendedSensorData(this, position);
         return position;
     }
