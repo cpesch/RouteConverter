@@ -25,6 +25,7 @@ import slash.navigation.base.ExtendedSensorNavigationPosition;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.csv.CsvPosition;
+import slash.navigation.excel.ExcelPosition;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gpx.binding11.WptType;
 
@@ -170,9 +171,6 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
         else
             super.setTemperature(temperature);
     }
-
-    // handled in CsvRoute#asExcelFormat
-    // public ExcelPosition asMicrosoftExcelPosition() {..}
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {
         GarminFlightPlanPosition position = new GarminFlightPlanPosition(getLongitude(), getLatitude(), getElevation(),

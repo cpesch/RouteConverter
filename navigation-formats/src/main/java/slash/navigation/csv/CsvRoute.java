@@ -165,11 +165,7 @@ public class CsvRoute extends BaseRoute<CsvPosition, CsvFormat> {
     }
 
     protected SimpleRoute asPhotoFormat(PhotoFormat format) {
-        List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (CsvPosition position : getPositions()) {
-            wgs84Positions.add(position.asWgs84Position());
-        }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+        return asSimpleFormat(format);
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
