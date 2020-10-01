@@ -121,8 +121,8 @@ public class NavigationFormatParser {
                     if (firstSuccessfulFormat == null)
                         firstSuccessfulFormat = format;
                 } catch (Exception e) {
-                    log.severe(format("Error reading with %s: %s, %s", format, e.getClass(), e));
-                    // e.printStackTrace();
+                    log.severe(format("Error reading with %s: %s", format, e));
+                    e.printStackTrace();
                 }
 
                 if (context.getRoutes().size() > routeCountBefore) {
