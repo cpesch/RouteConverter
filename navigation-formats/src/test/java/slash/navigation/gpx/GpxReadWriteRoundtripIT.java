@@ -272,6 +272,10 @@ public class GpxReadWriteRoundtripIT {
         assertDoubleEquals(26.0, position.getTemperature());
     }
 
+    private void checkHeartBeatRate(GpxPosition position) {
+        assertEquals(Short.valueOf("107"), position.getHeartBeatRate());
+    }
+
     private void checkUnprocessed(WptType wptType) {
         assertNotNull(wptType);
         if (wptType.getName().endsWith(wptType.getDesc()))
@@ -358,12 +362,14 @@ public class GpxReadWriteRoundtripIT {
                 checkHeading(sourceTrackPoint1);
                 checkSpeed(sourceTrackPoint1);
                 checkTemperature(sourceTrackPoint1);
+                checkHeartBeatRate(sourceTrackPoint1);
 
                 GpxPosition sourceTrackPoint2 = sourceTrack.getPosition(1);
                 assertNotNull(sourceTrackPoint2.getOrigin());
                 checkHeading(sourceTrackPoint2);
                 checkSpeed(sourceTrackPoint2);
                 checkTemperature(sourceTrackPoint2);
+                checkHeartBeatRate(sourceTrackPoint2);
 
                 GpxPosition sourceTrackPoint3 = sourceTrack.getPosition(2);
                 assertNotNull(sourceTrackPoint3.getOrigin());
@@ -376,12 +382,21 @@ public class GpxReadWriteRoundtripIT {
                 assertNull(sourceTrackPoint4.getHeading());
                 checkSpeed(sourceTrackPoint4);
                 assertNull(sourceTrackPoint4.getTemperature());
+                assertNull(sourceTrackPoint4.getHeartBeatRate());
 
                 GpxPosition sourceTrackPoint5 = sourceTrack.getPosition(4);
                 assertNotNull(sourceTrackPoint5.getOrigin());
                 checkHeading(sourceTrackPoint5);
                 assertNull(sourceTrackPoint5.getSpeed());
                 assertNull(sourceTrackPoint5.getTemperature());
+                assertNull(sourceTrackPoint5.getHeartBeatRate());
+
+                GpxPosition sourceTrackPoint6 = sourceTrack.getPosition(5);
+                assertNotNull(sourceTrackPoint6.getOrigin());
+                assertNull(sourceTrackPoint6.getHeading());
+                assertNull(sourceTrackPoint6.getSpeed());
+                assertNull(sourceTrackPoint4.getTemperature());
+                checkHeartBeatRate(sourceTrackPoint6);
 
                 GpxRoute targetWaypoints = (GpxRoute) source.getAllRoutes().get(0);
                 assertNotNull(targetWaypoints.getOrigins());

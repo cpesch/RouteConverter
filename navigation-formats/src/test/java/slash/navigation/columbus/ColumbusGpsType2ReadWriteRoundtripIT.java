@@ -26,15 +26,12 @@ import slash.navigation.base.ReadWriteTestCallback;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
 
-import java.io.IOException;
-
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
-import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
-import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 
 public class ColumbusGpsType2ReadWriteRoundtripIT {
 
@@ -53,6 +50,7 @@ public class ColumbusGpsType2ReadWriteRoundtripIT {
                         assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
                         assertEquals(targetPosition.getPressure(), sourcePosition.getPressure());
                         assertEquals(targetPosition.getTemperature(), sourcePosition.getTemperature());
+                        assertEquals(targetPosition.getHeartBeatRate(), sourcePosition.getHeartBeatRate());
                     }
                 }
             });
@@ -75,6 +73,7 @@ public class ColumbusGpsType2ReadWriteRoundtripIT {
                         // since always Type A is written and Type A always stores at least a zero
                         assertDoubleEquals(0.0, targetPosition.getPressure());
                         assertDoubleEquals(0.0, targetPosition.getTemperature());
+                        assertNull(targetPosition.getHeartBeatRate());
                     }
                 }
             });

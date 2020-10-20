@@ -38,7 +38,7 @@ import static slash.navigation.common.NavigationConversion.semiCircleToDegree;
  * @author Christian Pesch
  */
 class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, RecordMesgListener, SegmentPointMesgListener {
-    private List<Wgs84Position> positions = new ArrayList<>();
+    private final List<Wgs84Position> positions = new ArrayList<>();
     private int index = 1;
     private RouteCharacteristics characteristics = Waypoints;
 
@@ -56,6 +56,10 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
 
     private Double asDouble(Float aFloat) {
         return aFloat != null ? aFloat.doubleValue() : null;
+    }
+
+    private Double asDouble(Long aLong) {
+        return aLong != null ? aLong.doubleValue() : null;
     }
 
     private Double asDouble(Short aShort) {
@@ -97,7 +101,9 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
 
         Wgs84Position position = new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
                 asDouble(elevation), asDouble(speed), asCalendar(mesg.getTimestamp()), asDescription(mesg));
+        position.setPressure(asDouble(mesg.getAbsolutePressure()));
         position.setTemperature(asDouble(mesg.getTemperature()));
+        position.setHeartBeatRate(mesg.getHeartRate());
         position.setPdop(asDouble(mesg.getGpsAccuracy()));
         position.setOrigin(mesg);
         positions.add(position);

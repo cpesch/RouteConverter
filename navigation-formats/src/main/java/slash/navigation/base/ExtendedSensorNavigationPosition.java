@@ -53,9 +53,18 @@ public interface ExtendedSensorNavigationPosition extends NavigationPosition {
     Double getTemperature();
     void setTemperature(Double temperature);
 
+    /**
+     * Return the heart beat rate in beats per minute
+     *
+     * @return the heart beat rate in beats per minute
+     */
+    Short getHeartBeatRate();
+    void setHeartBeatRate(Short heartBeatRate);
+
     static void transferExtendedSensorData(ExtendedSensorNavigationPosition from, ExtendedSensorNavigationPosition to) {
         to.setHeading(from.getHeading());
         to.setPressure(from.getPressure());
         to.setTemperature(from.getTemperature());
+        to.setHeartBeatRate(from.getHeartBeatRate());
     }
 }

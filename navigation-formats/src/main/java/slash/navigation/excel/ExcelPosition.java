@@ -74,6 +74,11 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
         return cell != null ? cell.getNumericCellValue() : null;
     }
 
+    private Short getCellAsShort(ColumnType type) {
+        Cell cell = getCell(type);
+        return cell != null ? Double.valueOf(cell.getNumericCellValue()).shortValue() : null;
+    }
+
     private String getCellAsString(ColumnType type) {
         Cell cell = getCell(type);
         if(cell == null)
@@ -111,6 +116,12 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
     }
 
     private void setCellAsDouble(ColumnType type, Double value) {
+        Cell cell = getOrCreateCell(type);
+        if (cell != null)
+            cell.setCellValue(toDouble(value));
+    }
+
+    private void setCellAsShort(ColumnType type, Short value) {
         Cell cell = getOrCreateCell(type);
         if (cell != null)
             cell.setCellValue(toDouble(value));
@@ -172,6 +183,14 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
         setCellAsDouble(Speed, speed);
     }
 
+    public Double getPressure() {
+        return getCellAsDouble(Pressure);
+    }
+
+    public void setPressure(Double pressure) {
+        setCellAsDouble(Pressure, pressure);
+    }
+
     public Double getTemperature() {
         return getCellAsDouble(Temperature);
     }
@@ -180,12 +199,12 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
         setCellAsDouble(Temperature, temperature);
     }
 
-    public Double getPressure() {
-        return getCellAsDouble(Pressure);
+    public Short getHeartBeatRate() {
+        return getCellAsShort(HeartBeatRate);
     }
 
-    public void setPressure(Double pressure) {
-        setCellAsDouble(Pressure, pressure);
+    public void setHeartBeatRate(Short heartBeatRate) {
+        setCellAsShort(HeartBeatRate, heartBeatRate);
     }
 
     public Double getHeading() {

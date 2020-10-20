@@ -49,6 +49,7 @@ public class PositionsTableColumnModel extends AbstractTableColumnModel {
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);
         predefineColumn(TEMPERATURE_COLUMN_INDEX, "temperature", getMaxWidth("100°C", 5), false, new TemperatureColumnTableCellEditor(), headerRenderer);
         predefineColumn(PRESSURE_COLUMN_INDEX, "pressure", getMaxWidth("1150 hPa", 5), false, new PressureColumnTableCellEditor(), headerRenderer);
+        predefineColumn(HEART_BEAT_RATE_COLUMN_INDEX, "heartbeat", getMaxWidth("180 bpm", 5), false, new HeartBeatRateColumnTableCellEditor(), headerRenderer);
         predefineColumn(DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
         predefineColumn(DISTANCE_DIFFERENCE_COLUMN_INDEX, "distance-difference", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
         predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 84, true, new LongitudeColumnTableCellEditor(), headerRenderer);

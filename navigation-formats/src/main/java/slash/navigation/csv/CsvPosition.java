@@ -30,8 +30,7 @@ import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static slash.common.io.Transfer.formatDoubleAsString;
-import static slash.common.io.Transfer.parseDouble;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.parseDate;
@@ -47,7 +46,7 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
     private static final String DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm:ss";
     private static final String DATE_AND_TIME_WITHOUT_SECONDS_FORMAT = "dd.MM.yy HH:mm";
 
-    private Map<String, String> rowAsMap;
+    private final Map<String, String> rowAsMap;
 
     public CsvPosition(Map<String, String> rowAsMap) {
         this.rowAsMap = rowAsMap;
@@ -85,6 +84,11 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
         return parseDouble(value);
     }
 
+    private Short getValueAsShort(ColumnType type) {
+        String value = getValueAsString(type);
+        return parseShort(value);
+    }
+
     private CompactCalendar getValueAsTime(ColumnType type) {
         String value = getValueAsString(type);
         CompactCalendar calendar = parseDate(value, DATE_AND_TIME_FORMAT);
@@ -104,6 +108,10 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
 
     private void setValueAsDouble(ColumnType type, Double value) {
         setValueAsString(type, formatDoubleAsString(value));
+    }
+
+    private void setValueAsShort(ColumnType type, Short value) {
+        setValueAsString(type, formatShortAsString(value));
     }
 
     private void setValueAsTime(ColumnType type, CompactCalendar calendar) {
@@ -151,6 +159,14 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
         setValueAsDouble(Speed, speed);
     }
 
+    public Double getPressure() {
+        return getValueAsDouble(Pressure);
+    }
+
+    public void setPressure(Double pressure) {
+        setValueAsDouble(Pressure, pressure);
+    }
+
     public Double getTemperature() {
         return getValueAsDouble(Temperature);
     }
@@ -159,12 +175,12 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
         setValueAsDouble(Temperature, temperature);
     }
 
-    public Double getPressure() {
-        return getValueAsDouble(Pressure);
+    public Short getHeartBeatRate() {
+        return getValueAsShort(HeartBeatRate);
     }
 
-    public void setPressure(Double pressure) {
-        setValueAsDouble(Pressure, pressure);
+    public void setHeartBeatRate(Short heartBeatRate) {
+        setValueAsShort(HeartBeatRate, heartBeatRate);
     }
 
     public Double getHeading() {

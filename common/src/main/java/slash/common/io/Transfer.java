@@ -231,6 +231,12 @@ public class Transfer {
         return aDouble.floatValue();
     }
 
+    public static String formatShortAsString(Short aShort) {
+        if (aShort == null)
+            return "0";
+        return Short.toString(aShort);
+    }
+
     public static Double parseDouble(String string) {
         String trimmed = trim(string);
         if (trimmed != null) {
@@ -278,6 +284,11 @@ public class Transfer {
             return null;
     }
 
+    public static Short parseShort(String string) {
+        Integer integer = parseInteger(string);
+        return integer != null ? integer.shortValue() : -1;
+    }
+
     public static boolean isEmpty(String string) {
         return string == null || string.length() == 0;
     }
@@ -304,6 +315,10 @@ public class Transfer {
 
     public static double toDouble(Double aDouble) {
         return aDouble == null || isNaN(aDouble) ? 0.0 : aDouble;
+    }
+
+    public static double toDouble(Short aShort) {
+        return aShort == null ? 0.0 : aShort.doubleValue();
     }
 
     public static int[] toArray(List<Integer> integers) {

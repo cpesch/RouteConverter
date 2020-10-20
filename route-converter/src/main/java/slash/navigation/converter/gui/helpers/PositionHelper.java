@@ -122,6 +122,15 @@ public class PositionHelper {
         return formatSpeed(position.getSpeed());
     }
 
+    public static String extractPressure(NavigationPosition position) {
+        Double pressure = null;
+        if (position instanceof ExtendedSensorNavigationPosition)
+            pressure = ((ExtendedSensorNavigationPosition) position).getPressure();
+        if(pressure == null)
+            return "";
+        return format("%d hPa", round(pressure));
+    }
+
     public static String extractTemperature(NavigationPosition position) {
         Double temperature = null;
         if (position instanceof ExtendedSensorNavigationPosition)
@@ -131,13 +140,13 @@ public class PositionHelper {
         return format("%d\u00B0C", round(temperature));
     }
 
-    public static String extractPressure(NavigationPosition position) {
-        Double pressure = null;
+    public static String extractHeartBeatRate(NavigationPosition position) {
+        Short heartBeatRate = null;
         if (position instanceof ExtendedSensorNavigationPosition)
-            pressure = ((ExtendedSensorNavigationPosition) position).getPressure();
-        if(pressure == null)
+            heartBeatRate = ((ExtendedSensorNavigationPosition) position).getHeartBeatRate();
+        if(heartBeatRate == null)
             return "";
-        return format("%d hPa", round(pressure));
+        return format("%d bpm", round(heartBeatRate));
     }
 
     public static String extractPattern(DateFormat dateFormat) {

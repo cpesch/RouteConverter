@@ -39,8 +39,9 @@ enum ColumnType {
     Elevation(NUMERIC, "H\u00f6he", "Altitude"),
     Speed(NUMERIC, "Geschwindigkeit"),
     Heading(NUMERIC, "Richtung", "Kurs", "Heading", "Course"),
-    Temperature(NUMERIC, "Temperatur", "Temperature"),
     Pressure(NUMERIC, "Druck", "Pressure"),
+    Temperature(NUMERIC, "Temperatur", "Temperature"),
+    HeartBeatRate(NUMERIC, "Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
     Time(NUMERIC, "Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
     Description(STRING, "Beschreibung", "Comment", "Kommentar"),
     Unsupported(STRING);

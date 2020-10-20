@@ -42,6 +42,10 @@ class MesgCreator {
         return aDouble != null ? aDouble.byteValue() : null;
     }
 
+    private Long asLong(Double aDouble) {
+        return aDouble != null ? aDouble.longValue() : null;
+    }
+
     private Short asShort(Double aDouble) {
         return aDouble != null ? aDouble.shortValue() : null;
     }
@@ -55,7 +59,9 @@ class MesgCreator {
             mesg.setTimestamp(new DateTime(time.getTime()));
         mesg.setAltitude(formatFloat(position.getElevation()));
         mesg.setSpeed(formatFloat(position.getSpeed()));
+        mesg.setAbsolutePressure(asLong(position.getPressure()));
         mesg.setTemperature(asByte(position.getTemperature()));
+        mesg.setHeartRate(position.getHeartBeatRate());
         mesg.setGpsAccuracy(asShort(position.getPdop()));
         return mesg;
     }

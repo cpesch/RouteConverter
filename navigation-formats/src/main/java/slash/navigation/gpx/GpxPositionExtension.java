@@ -291,6 +291,74 @@ public class GpxPositionExtension {
         }
     }
 
+    public Short getHeartBeatRate() {
+        Short result = null;
+
+        ExtensionsType extensions = wptType.getExtensions();
+        if (extensions != null) {
+            for (Object any : extensions.getAny()) {
+                if (any instanceof JAXBElement) {
+                    Object anyValue = ((JAXBElement) any).getValue();
+                    if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
+                        slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
+                        result = trackPoint.getHr();
+
+                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                        result = trackPoint.getHr();
+                    }
+
+                } else if (any instanceof Element) {
+                    Element element = (Element) any;
+                    if ("hr".equalsIgnoreCase(element.getLocalName()))
+                        result = parseShort(element.getTextContent());
+                }
+
+                if(result != null)
+                    break;
+            }
+        }
+        return result;
+    }
+
+    public void setHeartBeatRate(Short heartBeatRate) {
+        if (wptType.getExtensions() == null)
+            wptType.setExtensions(new ObjectFactory().createExtensionsType());
+        List<Object> anys = wptType.getExtensions().getAny();
+
+        boolean foundHeartBeatRate = false;
+        for (Object any : anys) {
+            if (any instanceof JAXBElement) {
+                Object anyValue = ((JAXBElement) any).getValue();
+                if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
+                    slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
+                    trackPoint.setHr(heartBeatRate);
+                    foundHeartBeatRate = true;
+
+                } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
+                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                    trackPoint.setHr(heartBeatRate);
+                    foundHeartBeatRate = true;
+                }
+
+            } else if (any instanceof Element) {
+                Element element = (Element) any;
+                if ("hr".equalsIgnoreCase(element.getLocalName())) {
+                    element.setTextContent(formatShortAsString(heartBeatRate));
+                    foundHeartBeatRate = true;
+                }
+            }
+        }
+
+        // create new TrackPointExtension v2 element if there was no existing value found
+        if (!foundHeartBeatRate) {
+            slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
+            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
+            trackPointExtensionT.setHr(heartBeatRate);
+            anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
+        }
+    }
+
 
     private <T> T getExtension(Class<T> extensionClass) {
         List<Object> anys = wptType.getExtensions().getAny();

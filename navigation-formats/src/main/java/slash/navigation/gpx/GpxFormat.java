@@ -120,6 +120,10 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return preferences.getBoolean("writeTemperature", true);
     }
 
+    protected boolean isWriteHeartBeatRate() {
+        return preferences.getBoolean("writeHeartBeatRate", true);
+    }
+
     protected boolean isWriteName() {
         return preferences.getBoolean("writeName", true);
     }

@@ -623,4 +623,23 @@ public class Gpx11ExtensionsTest {
         assertFalse(after2.contains("<extensions"));
         assertFalse(after2.contains(":TrackPointExtension"));
     }
+
+    @Test
+    public void testWriteHeartBeatRate() throws Exception {
+        WptType trkptType = createWptType();
+        GpxType gpx = createGpxType(trkptType);
+
+        String before = toXml(gpx);
+        List<GpxRoute> routes1 = readGpx(before);
+
+        GpxPosition position1 = getFirstPositionOfFirstRoute(routes1);
+        position1.setHeartBeatRate(Short.valueOf("64"));
+
+        String after = writeGpx(routes1);
+
+        List<GpxRoute> routes2 = readGpx(after);
+        GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
+        assertEquals(Short.valueOf("64"), position2.getHeartBeatRate());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), position2.getPositionExtension().getExtensionTypes());
+    }
 }

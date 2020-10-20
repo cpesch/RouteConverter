@@ -17,38 +17,31 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.csv;
 
-import java.util.List;
+package slash.navigation.converter.gui.renderer;
 
-import static java.util.Arrays.asList;
+import slash.navigation.common.NavigationPosition;
+
+import javax.swing.*;
+
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractHeartBeatRate;
 
 /**
- * Enumeration of supported column types.
+ * Renders the heart beat rate column of the positions table.
  *
  * @author Christian Pesch
  */
 
-enum ColumnType {
-    Latitude("Breite", "Breitengrad"),
-    Longitude("L\u00e4nge", "L\u00e4ngengrad"),
-    Elevation("H\u00f6he", "Altitude"),
-    Speed("Geschwindigkeit"),
-    Heading("Richtung", "Kurs", "Heading", "Course"),
-    Pressure("Druck", "Pressure"),
-    Temperature("Temperatur", "Temperature"),
-    HeartBeatRate("Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
-    Time("Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
-    Description("Beschreibung", "Comment", "Kommentar"),
-    Unsupported();
-
-    private List<String> alternativeNames;
-
-    ColumnType(String... alternativeNames) {
-        this.alternativeNames = asList(alternativeNames);
+public class HeartBeatRateColumnTableCellEditor extends PositionsTableCellEditor {
+    public HeartBeatRateColumnTableCellEditor() {
+        super(RIGHT);
     }
 
-    public List<String> getAlternativeNames() {
-        return alternativeNames;
+    protected void formatCell(JLabel label, NavigationPosition position) {
+        label.setText(extractValue(position));
+    }
+
+    protected String extractValue(NavigationPosition position) {
+        return extractHeartBeatRate(position);
     }
 }

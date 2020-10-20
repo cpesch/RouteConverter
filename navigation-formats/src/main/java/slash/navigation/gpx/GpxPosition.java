@@ -24,8 +24,6 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.ExtendedSensorNavigationPosition;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.csv.CsvPosition;
-import slash.navigation.excel.ExcelPosition;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.gpx.binding11.WptType;
 
@@ -34,7 +32,6 @@ import java.math.BigInteger;
 import java.util.regex.Matcher;
 
 import static slash.common.io.Transfer.*;
-import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
 import static slash.navigation.base.RouteComments.parseDescription;
 import static slash.navigation.base.RouteComments.parseTripmasterHeading;
 import static slash.navigation.gpx.GpxFormat.*;
@@ -170,6 +167,17 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
             getPositionExtension().setTemperature(temperature);
         else
             super.setTemperature(temperature);
+    }
+
+    public Short getHeartBeatRate() {
+        return getPositionExtension() != null ? getPositionExtension().getHeartBeatRate() : super.getHeartBeatRate();
+    }
+
+    public void setHeartBeatRate(Short heartBeatRate) {
+        if (getPositionExtension() != null)
+            getPositionExtension().setHeartBeatRate(heartBeatRate);
+        else
+            super.setHeartBeatRate(heartBeatRate);
     }
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {
