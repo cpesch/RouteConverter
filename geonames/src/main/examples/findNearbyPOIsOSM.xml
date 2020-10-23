@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<geonames>
+    <poi>
+        <name>Mermaid Inn</name>
+        <typeClass>tourism</typeClass>
+        <typeName>motel</typeName>
+        <lng>-122.17931</lng>
+        <lat>37.45129</lat>
+        <distance>0.07</distance>
+    </poi>
+    <poi>
+        <name>Cook's Seafood</name>
+        <typeClass>amenity</typeClass>
+        <typeName>restaurant</typeName>
+        <lng>-122.17952</lng>
+        <lat>37.4515</lat>
+        <distance>0.07</distance>
+    </poi>
+    <poi>
+        <name>Jenny Craig Weight Loss</name>
+        <typeClass>shop</typeClass>
+        <typeName>yes</typeName>
+        <lng>-122.18006</lng>
+        <lat>37.45189</lat>
+        <distance>0.1</distance>
+    </poi>
+    <poi>
+        <name>Safeway 2719</name>
+        <typeClass>shop</typeClass>
+        <typeName>supermarket</typeName>
+        <lng>-122.17897</lng>
+        <lat>37.45059</lat>
+        <distance>0.1</distance>
+    </poi>
+    <poi>
+        <name>Lydian Academy</name>
+        <typeClass>amenity</typeClass>
+        <typeName>school</typeName>
+        <lng>-122.18012</lng>
+        <lat>37.45192</lat>
+        <distance>0.1</distance>
+    </poi>
+    <poi>
+        <name/>
+        <typeClass>amenity</typeClass>
+        <typeName>bicycle_parking</typeName>
+        <lng>-122.18022</lng>
+        <lat>37.45195</lat>
+        <distance>0.11</distance>
+    </poi>
+    <poi>
+        <name/>
+        <typeClass>amenity</typeClass>
+        <typeName>bench</typeName>
+        <lng>-122.1802</lng>
+        <lat>37.45197</lat>
+        <distance>0.11</distance>
+    </poi>
+    <poi>
+        <name>PKS Cleaners</name>
+        <typeClass>shop</typeClass>
+        <typeName>dry_cleaning</typeName>
+        <lng>-122.18048</lng>
+        <lat>37.45198</lat>
+        <distance>0.12</distance>
+    </poi>
+    <poi>
+        <name>Starbucks</name>
+        <typeClass>amenity</typeClass>
+        <typeName>cafe</typeName>
+        <lng>-122.18034</lng>
+        <lat>37.45206</lat>
+        <distance>0.12</distance>
+    </poi>
+    <poi>
+        <name/>
+        <typeClass>amenity</typeClass>
+        <typeName>bench</typeName>
+        <lng>-122.18035</lng>
+        <lat>37.45207</lat>
+        <distance>0.12</distance>
+    </poi>
+</geonames>
