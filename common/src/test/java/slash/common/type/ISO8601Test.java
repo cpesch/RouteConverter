@@ -42,8 +42,8 @@ public class ISO8601Test {
     }
 
     @Test
-    public void testParseTimeZoneSeparatedByPlus() {
-        Calendar actual = parseDate("2007-03-04T14:49:05+03:00");
+    public void testParseTimeZoneSeparatedByT() {
+        Calendar actual = parseDate("2007-03-04T14:49:05T03:00");
         Calendar expected = calendar(2007, 3, 4, 11, 49, 5).getCalendar();
         assert actual != null;
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
@@ -51,8 +51,8 @@ public class ISO8601Test {
     }
 
     @Test
-    public void testParseTimeZoneSeparatedByT() {
-        Calendar actual = parseDate("2007-03-04T14:49:05T03:00");
+    public void testParseTimeZoneSeparatedByPlus() {
+        Calendar actual = parseDate("2007-03-04T14:49:05+03:00");
         Calendar expected = calendar(2007, 3, 4, 11, 49, 5).getCalendar();
         assert actual != null;
         assertEquals(expected.getTimeInMillis(), actual.getTimeInMillis());
@@ -106,6 +106,20 @@ public class ISO8601Test {
     public void testFormatWithMilliSeconds3() {
         Calendar actual = parseDate("2010-09-18T03:13:32.293Z");
         Calendar expected = calendar(2010, 9, 18, 3, 13, 32, 293).getCalendar();
+        assertEquals(formatDate(expected, true), formatDate(actual, true));
+    }
+
+    @Test
+    public void testFormatWithSpaces() {
+        Calendar actual = parseDate("2010-09-18 03:13:32Z");
+        Calendar expected = calendar(2010, 9, 18, 3, 13, 32).getCalendar();
+        assertEquals(formatDate(expected, true), formatDate(actual, true));
+    }
+
+    @Test
+    public void testFormatWithoutTimezone() {
+        Calendar actual = parseDate("2010-09-18 03:13:32");
+        Calendar expected = calendar(2010, 9, 18, 3, 13, 32).getCalendar();
         assertEquals(formatDate(expected, true), formatDate(actual, true));
     }
 }

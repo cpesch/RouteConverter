@@ -96,7 +96,7 @@ public final class ISO8601 {
          * parsing because it can't handle years <= 0 and TZD's
          */
 
-        TimeZone timeZone;
+        TimeZone timeZone = UTC;
         int year, month, day, hour, minutes, seconds, milliseconds = 0;
         try {
             // year (YYYY)
@@ -118,8 +118,8 @@ public final class ISO8601 {
             // day (DD)
             day = parseInt(text.substring(start, start + 2));
             start += 2;
-            // delimiter 'T'
-            if (text.charAt(start) != 'T') {
+            // delimiter 'T' or ' '
+            if (text.charAt(start) != 'T' && text.charAt(start) != ' ') {
                 return null;
             }
             start++;
@@ -142,7 +142,11 @@ public final class ISO8601 {
             // second (ss)
             seconds = parseInt(text.substring(start, start + 2));
             start += 2;
+        } catch (IndexOutOfBoundsException | NumberFormatException e) {
+            return null;
+        }
 
+        try {
             // delimiter '.' 'Z' '+' (or 'T')
             char delimiter = text.charAt(start++);
             if (delimiter == '.') {
@@ -172,7 +176,7 @@ public final class ISO8601 {
             } else
                 return null;
         } catch (IndexOutOfBoundsException | NumberFormatException e) {
-            return null;
+            // default timezone is UTC
         }
 
         // initialize Calendar object
