@@ -43,7 +43,7 @@ public class GoogleServiceIT {
     @Test
     public void getAddressFor() throws IOException {
         assertEquals("Chammstrasse 28, 8638 Goldingen, Switzerland", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
-        assertEquals("B\u00fchlstra\u00dfe 19, 97506 Grafenrheinfeld, Germany", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
+        assertEquals("B\u00fchlstra\u00dfe 21, 97506 Grafenrheinfeld, Germany", service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001)));
         assertTrue(service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428)).endsWith("82467 Garmisch-Partenkirchen, Germany"));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));

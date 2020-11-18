@@ -50,10 +50,10 @@ public class PhotonServiceIT {
         String address1 = service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3));
         assertTrue(address1.contains("Sankt Gallen") && address1.contains("Switzerland"));
         String address2 = service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001));
-        assertTrue(address2.contains("Grafenrheinfeld") && address2.contains("Bavaria") && address2.contains("Germany"));
+        assertTrue(address2.contains("Grafenrheinfeld") && address2.contains("Bayern") && address2.contains("Deutschland"));
         String address3 = service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428));
-        assertTrue(address3.contains("Garmisch-Partenkirchen") && address3.contains("Bavaria") && address3.contains("Germany"));
-        assertEquals("Atlas Buoy 0.00E 0.00N", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
+        assertTrue(address3.contains("Garmisch-Partenkirchen") && address3.contains("Bayern") && address3.contains("Deutschland"));
+        assertEquals("Soul Buoy", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         String pole1 = service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0));
         assertTrue(pole1.contains("Pole") || pole1.contains("Skiway"));
