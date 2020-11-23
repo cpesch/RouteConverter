@@ -400,10 +400,6 @@
                 <version>1.0.10</version>
                 <exclusions>
                     <exclusion>
-                        <groupId>org.javadelight</groupId>
-                        <artifactId>delight-nashorn-sandbox</artifactId>
-                    </exclusion>
-                    <exclusion>
                         <groupId>org.slf4j</groupId>
                         <artifactId>slf4j-api</artifactId>
                     </exclusion>
@@ -414,21 +410,6 @@
                 <artifactId>javahelp</artifactId>
                 <version>2.0.05</version>
                 <classifier>stripped</classifier>
-            </dependency>
-            <dependency>
-                <groupId>org.javadelight</groupId>
-                <artifactId>delight-nashorn-sandbox</artifactId>
-                <version>0.1.31</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>org.webjars.bower</groupId>
-                        <artifactId>js-beautify</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-api</artifactId>
-                    </exclusion>
-                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>
