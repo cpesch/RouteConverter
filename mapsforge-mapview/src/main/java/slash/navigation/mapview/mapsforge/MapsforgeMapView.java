@@ -485,7 +485,7 @@ public class MapsforgeMapView extends BaseMapView {
 
     private AwtGraphicMapView createMapView() {
         // Multithreaded map rendering
-        Parameters.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors();
+        Parameters.NUMBER_OF_THREADS = Runtime.getRuntime().availableProcessors() + 1;
         // Maximum read buffer size
         Parameters.MAXIMUM_BUFFER_SIZE = preferences.getInt(READ_BUFFER_SIZE_PREFERENCE, 16000000);
         // No square frame buffer since the device orientation hardly changes
