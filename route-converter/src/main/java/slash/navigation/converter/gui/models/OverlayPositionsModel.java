@@ -41,6 +41,7 @@ import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.min;
 import static java.lang.System.arraycopy;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.common.DistanceAndTime.ZERO;
@@ -56,8 +57,9 @@ public class OverlayPositionsModel implements PositionsModel {
     private static final int IMAGE_HEIGHT_FOR_IMAGE_COLUMN = 200;
     private final PositionsModel delegate;
     private final Map<Integer, ImageAndFile> indexToImageAndFile = new HashMap<>();
-    private final Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>();
-    private double[] distancesFromStart;
+    private final Map<Integer, DistanceAndTime> indexToRouteDistanceAndTime = new HashMap<>();
+    private double[] trackDistancesFromStart;
+    private long[] trackTimesFromStart;
 
     public OverlayPositionsModel(PositionsModel delegate) {
         this.delegate = delegate;
@@ -92,8 +94,9 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     private void clearOverlay() {
-        indexToDistanceAndTime.clear();
-        distancesFromStart = null;
+        indexToRouteDistanceAndTime.clear();
+        trackDistancesFromStart = null;
+        trackTimesFromStart = null;
         indexToImageAndFile.clear();
     }
 
@@ -165,6 +168,7 @@ public class OverlayPositionsModel implements PositionsModel {
         return delegate.getPositions(firstIndex, lastIndex);
     }
 
+
     public double[] getDistancesFromStart(int startIndex, int endIndex) {
         if (getRoute().getCharacteristics().equals(Track)) {
             return getTrackDistancesFromStart(startIndex, endIndex);
@@ -175,12 +179,15 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     private double[] getTrackDistancesFromStart(int startIndex, int endIndex) {
-        if (distancesFromStart == null)
-            distancesFromStart = getRoute().getDistancesFromStart(0, getRoute().getPositionCount() - 1);
+        if (trackDistancesFromStart == null) {
+            trackDistancesFromStart = getRoute().getDistancesFromStart(0, getRoute().getPositionCount() - 1);
+            System.out.println("getTrackDistancesFromStart startIndex=" + startIndex + " endIndex=" + endIndex);
+        } else
+            System.out.println("CACHED getTrackDistancesFromStart startIndex=" + startIndex + " endIndex=" + endIndex);
 
         double[] result = new double[endIndex - startIndex + 1];
         // min() is used to avoid exceptions due to parallel insertions
-        arraycopy(distancesFromStart, startIndex, result, 0, min(result.length, distancesFromStart.length - startIndex));
+        arraycopy(trackDistancesFromStart, startIndex, result, 0, min(result.length, trackDistancesFromStart.length - startIndex));
         return result;
     }
 
@@ -189,7 +196,7 @@ public class OverlayPositionsModel implements PositionsModel {
         int index = 0;
         double distance = 0.0;
         while (index <= endIndex) {
-            DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(index);
+            DistanceAndTime distanceAndTime = indexToRouteDistanceAndTime.get(index);
             if(distanceAndTime != null && distanceAndTime.getDistance() != null)
                 distance = distanceAndTime.getDistance();
             if (index >= startIndex)
@@ -199,8 +206,10 @@ public class OverlayPositionsModel implements PositionsModel {
         return result;
     }
 
+
     public double[] getDistancesFromStart(int[] indices) {
         if (getRoute().getCharacteristics().equals(Track)) {
+            System.out.println("getTrackDistancesFromStart indices=" + indices.length);
             return getRoute().getDistancesFromStart(indices);
         }
 
@@ -215,16 +224,17 @@ public class OverlayPositionsModel implements PositionsModel {
         Arrays.sort(indices);
 
         for (int i = 0; i < indices.length; i++) {
-            DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(indices[i]);
+            DistanceAndTime distanceAndTime = indexToRouteDistanceAndTime.get(indices[i]);
             if (distanceAndTime != null && distanceAndTime.getDistance() != null)
                 result[i] = distanceAndTime.getDistance();
         }
         return result;
     }
 
+
     public long[] getTimesFromStart(int startIndex, int endIndex) {
         if (getRoute().getCharacteristics().equals(Track)) {
-            return getRoute().getTimesFromStart(startIndex, endIndex);
+            return getTrackTimesFromStart(startIndex, endIndex);
         }
 
         if (getRoute().getCharacteristics().equals(Route)) {
@@ -233,12 +243,24 @@ public class OverlayPositionsModel implements PositionsModel {
         return null;
     }
 
+    private long[] getTrackTimesFromStart(int startIndex, int endIndex) {
+        if (trackTimesFromStart == null) {
+            trackTimesFromStart = getRoute().getTimesFromStart(0, getRoute().getPositionCount() - 1);
+            System.out.println("getTrackTimesFromStart startIndex=" + startIndex + " endIndex=" + endIndex);
+        } else
+            System.out.println("CACHED getTrackTimesFromStart startIndex=" + startIndex + " endIndex=" + endIndex);
+
+        long[] result = new long[endIndex - startIndex + 1];
+        arraycopy(trackTimesFromStart, startIndex, result, 0, result.length);
+        return result;
+    }
+
     private long[] getRouteTimesFromStart(int startIndex, int endIndex) {
         long[] result = new long[endIndex - startIndex + 1];
         int index = 0;
         long time = 0;
         while (index <= endIndex) {
-            DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(index);
+            DistanceAndTime distanceAndTime = indexToRouteDistanceAndTime.get(index);
             if (distanceAndTime != null && distanceAndTime.getTimeInMillis() != null)
                 time = distanceAndTime.getTimeInMillis();
             if (index >= startIndex)
@@ -250,6 +272,7 @@ public class OverlayPositionsModel implements PositionsModel {
 
     public long[] getTimesFromStart(int[] indices) {
         if (getRoute().getCharacteristics().equals(Track)) {
+            System.out.println("getTrackTimesFromStart indices=" + indices.length);
             return getRoute().getTimesFromStart(indices);
         }
 
@@ -264,12 +287,13 @@ public class OverlayPositionsModel implements PositionsModel {
         Arrays.sort(indices);
 
         for (int i = 0; i < indices.length; i++) {
-            DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(indices[i]);
+            DistanceAndTime distanceAndTime = indexToRouteDistanceAndTime.get(indices[i]);
             if (distanceAndTime != null && distanceAndTime.getTimeInMillis() != null)
                 result[i] = distanceAndTime.getTimeInMillis();
         }
         return result;
     }
+
 
     public int[] getContainedPositions(BoundingBox boundingBox) {
         return delegate.getContainedPositions(boundingBox);
@@ -345,6 +369,8 @@ public class OverlayPositionsModel implements PositionsModel {
                 return getDistance(rowIndex);
             case DISTANCE_DIFFERENCE_COLUMN_INDEX:
                 return getDistanceDifference(rowIndex);
+            case TIME_COLUMN_INDEX:
+                return getTime(rowIndex);
             case ELEVATION_ASCEND_COLUMN_INDEX:
                 return getRoute().getElevationAscend(0, rowIndex);
             case ELEVATION_DESCEND_COLUMN_INDEX:
@@ -386,9 +412,9 @@ public class OverlayPositionsModel implements PositionsModel {
 
         if (getRoute().getCharacteristics().equals(Route)) {
             // difference of first row is null, for second row the first is 0.0 but not in the data
-            DistanceAndTime previous = rowIndex > 1 ? indexToDistanceAndTime.get(rowIndex - 1) :
+            DistanceAndTime previous = rowIndex > 1 ? indexToRouteDistanceAndTime.get(rowIndex - 1) :
                     rowIndex == 1 ? ZERO : null;
-            DistanceAndTime current = indexToDistanceAndTime.get(rowIndex);
+            DistanceAndTime current = indexToRouteDistanceAndTime.get(rowIndex);
             if(previous != null && current != null) {
                 Double d1 = previous.getDistance();
                 Double d2 = current.getDistance();
@@ -399,11 +425,16 @@ public class OverlayPositionsModel implements PositionsModel {
         return null;
     }
 
+    private CompactCalendar getTime(int rowIndex) {
+        long[] timesFromStart = getTimesFromStart(rowIndex, rowIndex);
+        return timesFromStart != null ? fromMillis(timesFromStart[0]) : null;
+    }
+
     public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToRoutedDistanceAndTime) {
-        this.indexToDistanceAndTime.putAll(indexToRoutedDistanceAndTime);
+        this.indexToRouteDistanceAndTime.putAll(indexToRoutedDistanceAndTime);
         int firstIndex = getRowCount() - 1;
         int lastIndex = 0;
-        for (Integer index : this.indexToDistanceAndTime.keySet()) {
+        for (Integer index : this.indexToRouteDistanceAndTime.keySet()) {
             if (index < firstIndex)
                 firstIndex = index;
             else if (index > lastIndex)

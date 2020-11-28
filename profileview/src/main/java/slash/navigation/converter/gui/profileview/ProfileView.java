@@ -174,19 +174,19 @@ public class ProfileView implements PositionsSelectionModel {
         });
     }
 
-    public synchronized void setSelectedPositions(int[] selectPositions, boolean replaceSelection) {
+    public synchronized void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
         if (replaceSelection)
             plot.clearDomainMarkers();
 
         if (profileModel.getXAxisMode().equals(Distance)) {
-            double[] distances = positionsModel.getDistancesFromStart(selectPositions);
+            double[] distances = positionsModel.getDistancesFromStart(selectedPositions);
             if(distances != null) {
                 for (double distance : distances) {
                     plot.addDomainMarker(0, new ValueMarker(profileModel.formatDistance(distance)), FOREGROUND, false);
                 }
             }
         } else {
-            long[] times = positionsModel.getTimesFromStart(selectPositions);
+            long[] times = positionsModel.getTimesFromStart(selectedPositions);
             if(times != null) {
                 for (long time : times) {
                     plot.addDomainMarker(0, new ValueMarker(profileModel.formatTime(time)), FOREGROUND, false);
