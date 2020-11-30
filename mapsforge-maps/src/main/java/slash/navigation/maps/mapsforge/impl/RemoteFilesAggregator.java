@@ -34,11 +34,11 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class MapFilesService {
-    private final List<MapFiles> mapFiles = new ArrayList<>();
+public class RemoteFilesAggregator {
+    private final List<DataSourceRemoteFiles> dataSourceRemoteFiles = new ArrayList<>();
     private DataSourceManager dataSourceManager;
 
-    public MapFilesService(DataSourceManager dataSourceManager) {
+    public RemoteFilesAggregator(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
     }
 
@@ -46,17 +46,17 @@ public class MapFilesService {
         DataSourceService dataSourceService = dataSourceManager.getDataSourceService();
 
         for (DataSource dataSource : dataSourceService.getDataSources()) {
-            mapFiles.add(new MapFiles(dataSource));
+            dataSourceRemoteFiles.add(new DataSourceRemoteFiles(dataSource));
         }
     }
 
-    private List<MapFiles> getMapFiles() {
-        return mapFiles;
+    private List<DataSourceRemoteFiles> getMapFiles() {
+        return dataSourceRemoteFiles;
     }
 
     public List<RemoteMap> getMaps() {
         List<RemoteMap> result = new ArrayList<>();
-        for (MapFiles files : getMapFiles()) {
+        for (DataSourceRemoteFiles files : getMapFiles()) {
             result.addAll(files.getMaps());
         }
         return result;
@@ -64,7 +64,7 @@ public class MapFilesService {
 
     public List<RemoteTheme> getThemes() {
         List<RemoteTheme> result = new ArrayList<>();
-        for (MapFiles files : getMapFiles()) {
+        for (DataSourceRemoteFiles files : getMapFiles()) {
             result.addAll(files.getThemes());
         }
         return result;

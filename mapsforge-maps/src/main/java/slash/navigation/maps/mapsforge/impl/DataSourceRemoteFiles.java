@@ -28,15 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Encapsulates access to mapsforge .map and theme files.
+ * Encapsulates access to remote map and theme files from a single {@link DataSource}.
  *
  * @author Christian Pesch
  */
 
-public class MapFiles {
+public class DataSourceRemoteFiles {
     private final DataSource dataSource;
 
-    public MapFiles(DataSource dataSource) {
+    public DataSourceRemoteFiles(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 

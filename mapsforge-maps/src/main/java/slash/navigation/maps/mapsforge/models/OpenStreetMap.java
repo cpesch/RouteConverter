@@ -20,7 +20,7 @@
 package slash.navigation.maps.mapsforge.models;
 
 import slash.navigation.maps.mapsforge.LocalMap;
-import slash.navigation.maps.mapsforge.impl.TileMap;
+import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 
 import static org.mapsforge.map.layer.download.tilesource.OpenStreetMapMapnik.INSTANCE;
 import static slash.navigation.maps.tileserver.TileServerMapManager.retrieveCopyrightText;
@@ -31,7 +31,7 @@ import static slash.navigation.maps.tileserver.TileServerMapManager.retrieveCopy
  * @author Christian Pesch
  */
 
-public class OpenStreetMap extends TileMap {
+public class OpenStreetMap extends TileDownloadMap {
     public static final String OPENSTREETMAP_URL = "http://www.openstreetmap.org/";
 
     public OpenStreetMap() {

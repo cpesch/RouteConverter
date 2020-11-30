@@ -57,7 +57,7 @@ public class ThemeForMapMediator {
         mapListener = new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 LocalMap map = getDisplayedMapModel().getItem();
-                if (!map.isVector())
+                if (!map.getType().isThemed())
                     return;
 
                 String themeId = preferences.get(getMapKey(map), getMapTheme(map));
@@ -71,7 +71,7 @@ public class ThemeForMapMediator {
         themeListener = new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 LocalMap map = getDisplayedMapModel().getItem();
-                if (!map.isVector())
+                if (!map.getType().isThemed())
                     return;
 
                 String themeId = getAppliedThemeModel().getItem().getDescription();
@@ -118,7 +118,7 @@ public class ThemeForMapMediator {
     }
 
     private String extractMapProvider(LocalMap map) {
-        if(!map.isVector())
+        if (map.getType().isDownload())
             return "online";
         String prefix = removePrefix(mapManager.getMapsDirectory(), map.getFile());
         int index = prefix.indexOf("/");

@@ -35,8 +35,8 @@ import static slash.common.helpers.LocaleHelper.UZBEKISTAN;
  */
 
 public enum GoogleMapsServer {
-    China(Preferences.userNodeForPackage(GoogleMapsServer.class).get("apiUrl", "http://maps.google.cn"),
-          Preferences.userNodeForPackage(GoogleMapsServer.class).get("fileUrl", "http://maps.google.cn"), CHINA),
+    China(Constants.preferences.get(Constants.API_URL_PREFERENCE, "http://maps.google.cn"),
+          Constants.preferences.get(Constants.FILE_URL_PREFERENCE, "http://maps.google.cn"), CHINA),
     Ditu("http://ditu.google.cn", "http://ditu.google.cn", null),
     International("https://maps.googleapis.com", "http://maps.google.com", null),
     Uzbekistan("http://maps.google.ru", "http://maps.google.ru", UZBEKISTAN);
@@ -65,7 +65,12 @@ public enum GoogleMapsServer {
 
     // manage defaults
 
-    private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsServer.class);
+
+    private static class Constants {
+        private static final Preferences preferences = Preferences.userNodeForPackage(GoogleMapsServer.class);
+        private static final String API_URL_PREFERENCE = "apiUrl";
+        private static final String FILE_URL_PREFERENCE = "fileUrl";
+    }
     private static final String GOOGLE_MAPS_SERVER_PREFERENCE = "googleMapsServer";
 
     private static GoogleMapsServer getDefaultGoogleMapsServer() {
@@ -78,13 +83,13 @@ public enum GoogleMapsServer {
 
     public static GoogleMapsServer getGoogleMapsServer() {
         try {
-            return GoogleMapsServer.valueOf(preferences.get(GOOGLE_MAPS_SERVER_PREFERENCE, getDefaultGoogleMapsServer().name()));
+            return GoogleMapsServer.valueOf(Constants.preferences.get(GOOGLE_MAPS_SERVER_PREFERENCE, getDefaultGoogleMapsServer().name()));
         } catch (IllegalArgumentException e) {
             return International;
         }
     }
 
     public static void setGoogleMapsServer(GoogleMapsServer googleMapsServer) {
-        preferences.put(GOOGLE_MAPS_SERVER_PREFERENCE, googleMapsServer.name());
+        Constants.preferences.put(GOOGLE_MAPS_SERVER_PREFERENCE, googleMapsServer.name());
     }
 }

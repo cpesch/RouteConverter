@@ -43,7 +43,7 @@ import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.RemoteMap;
-import slash.navigation.maps.mapsforge.impl.TileMap;
+import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 import slash.navigation.maps.mapsforge.models.TileMapTableModel;
 import slash.navigation.routing.RoutingService;
 
@@ -68,6 +68,7 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
+import static slash.navigation.maps.mapsforge.MapType.MapsforgeFile;
 
 /**
  * Dialog to show available and downloadable maps of the program.
@@ -110,8 +111,8 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<>(tableAvailableOnlineMaps.getModel());
         sorterAvailableMaps.setSortsOnUpdates(true);
-        sorterAvailableMaps.setComparator(TileMapTableModel.DESCRIPTION_COLUMN, new Comparator<TileMap>() {
-            public int compare(TileMap m1, TileMap m2) {
+        sorterAvailableMaps.setComparator(TileMapTableModel.DESCRIPTION_COLUMN, new Comparator<TileDownloadMap>() {
+            public int compare(TileDownloadMap m1, TileDownloadMap m2) {
                 return m1.getDescription().compareToIgnoreCase(m2.getDescription());
             }
         });
@@ -130,7 +131,7 @@ public class MapsDialog extends SimpleDialog {
                     return;
                 int row = tableAvailableOnlineMaps.convertRowIndexToView(selectedRow);
                 LocalMap map = getMapsforgeMapManager().getAvailableOnlineMapsModel().getItem(row);
-                r.showMapBorder(map.isVector() ? map.getBoundingBox() : null);
+                r.showMapBorder(map.getType().equals(MapsforgeFile) ? map.getBoundingBox() : null);
             }
         });
 
@@ -167,7 +168,7 @@ public class MapsDialog extends SimpleDialog {
                     return;
                 int row = tableAvailableOfflineMaps.convertRowIndexToView(selectedRow);
                 LocalMap map = getMapsforgeMapManager().getAvailableOfflineMapsModel().getItem(row);
-                r.showMapBorder(map.isVector() ? map.getBoundingBox() : null);
+                r.showMapBorder(map.getType().equals(MapsforgeFile) ? map.getBoundingBox() : null);
             }
         });
 

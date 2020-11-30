@@ -30,9 +30,9 @@ import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.helpers.ActiveTileMapPredicate;
 import slash.navigation.maps.mapsforge.helpers.ThemeForMapMediator;
 import slash.navigation.maps.mapsforge.helpers.TileServerToTileMapMediator;
-import slash.navigation.maps.mapsforge.impl.MapFilesService;
-import slash.navigation.maps.mapsforge.impl.TileMap;
-import slash.navigation.maps.mapsforge.impl.VectorMap;
+import slash.navigation.maps.mapsforge.impl.RemoteFilesAggregator;
+import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
+import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
 import slash.navigation.maps.mapsforge.impl.VectorTheme;
 import slash.navigation.maps.mapsforge.models.JoinedTableModel;
 import slash.navigation.maps.mapsforge.models.OpenStreetMap;
@@ -81,7 +81,7 @@ public class MapsforgeMapManager {
     private static final String DOT_MAP = ".map";
 
     private final DataSourceManager dataSourceManager;
-    private ItemTableModel<TileMap> availableOnlineMapsModel = new TileMapTableModel();
+    private ItemTableModel<TileDownloadMap> availableOnlineMapsModel = new TileMapTableModel();
     private ItemTableModel<LocalMap> availableOfflineMapsModel = new ItemTableModel<>(1);
     private JoinedTableModel<LocalMap> availableMapsModel = new JoinedTableModel<>(availableOfflineMapsModel,
             new FilteringTableModel<>(availableOnlineMapsModel, new ActiveTileMapPredicate()));
@@ -132,7 +132,7 @@ public class MapsforgeMapManager {
         return availableMapsModel;
     }
 
-    public ItemTableModel<TileMap> getAvailableOnlineMapsModel() {
+    public ItemTableModel<TileDownloadMap> getAvailableOnlineMapsModel() {
         return availableOnlineMapsModel;
     }
 
@@ -224,7 +224,7 @@ public class MapsforgeMapManager {
 
             checkFile(file);
             invokeInAwtEventQueue(() ->
-                availableOfflineMapsModel.addOrUpdateItem(new VectorMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file, retrieveCopyrightText("OpenStreetMap")))
+                availableOfflineMapsModel.addOrUpdateItem(new MapsforgeFileMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file, retrieveCopyrightText("OpenStreetMap")))
             );
         }
 
@@ -258,17 +258,17 @@ public class MapsforgeMapManager {
     }
 
     public void scanDatasources() {
-        MapFilesService mapFilesService = new MapFilesService(dataSourceManager);
-        mapFilesService.initialize();
+        RemoteFilesAggregator remoteFilesAggregator = new RemoteFilesAggregator(dataSourceManager);
+        remoteFilesAggregator.initialize();
 
-        List<RemoteMap> maps = mapFilesService.getMaps();
+        List<RemoteMap> maps = remoteFilesAggregator.getMaps();
         RemoteMap[] remoteMaps = maps.toArray(new RemoteMap[0]);
         sort(remoteMaps, (Comparator<RemoteResource>) (r1, r2) ->
                 (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl()));
         for (RemoteMap remoteMap : remoteMaps)
             downloadableMapsModel.addOrUpdateItem(remoteMap);
 
-        List<RemoteTheme> themes = mapFilesService.getThemes();
+        List<RemoteTheme> themes = remoteFilesAggregator.getThemes();
         RemoteTheme[] remoteThemes = themes.toArray(new RemoteTheme[0]);
         sort(remoteThemes, (Comparator<RemoteResource>) (r1, r2) ->
                 (r1.getDataSource() + r1.getUrl()).compareToIgnoreCase(r2.getDataSource() + r2.getUrl()));

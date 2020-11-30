@@ -20,36 +20,38 @@
 package slash.navigation.mapview.mapsforge.renderer;
 
 import slash.navigation.gui.Application;
-import slash.navigation.maps.mapsforge.LocalTheme;
-import slash.navigation.maps.mapsforge.impl.VectorTheme;
+import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the {@link LocalTheme} labels of the map and theme selector combo box.
+ * Renders the {@link LocalMap} labels of the map and theme selector combo box.
  *
  * @author Christian Pesch
  */
 
-public class ThemeListCellRenderer extends DefaultListCellRenderer {
-    public static final LocalTheme SEPARATOR_TO_DOWNLOAD_THEME = new VectorTheme(null, null, null);
-    public static final LocalTheme DOWNLOAD_THEME = new VectorTheme(null, null, null);
+public class LocalMapListCellRenderer extends DefaultListCellRenderer {
+    public static final LocalMap SEPARATOR_TO_DOWNLOAD_MAP = new MapsforgeFileMap(null, null, null, null, null);
+    public static final LocalMap DOWNLOAD_MAP = new MapsforgeFileMap(null, null, null, null, null);
     private static final JSeparator SEPARATOR = new JSeparator();
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        if (SEPARATOR_TO_DOWNLOAD_THEME.equals(value))
+        if (SEPARATOR_TO_DOWNLOAD_MAP.equals(value))
             return SEPARATOR;
 
-        LocalTheme theme = (LocalTheme) value;
+        LocalMap map = (LocalMap) value;
         String text = "?";
         String tooltip = "";
-        if (DOWNLOAD_THEME.equals(value)) {
-            text = Application.getInstance().getContext().getBundle().getString("download-theme-text");
-            tooltip = Application.getInstance().getContext().getBundle().getString("download-theme-tooltip");
-        } else if (theme != null) {
-            text = theme.getDescription();
-            tooltip = theme.getUrl();
+        if (DOWNLOAD_MAP.equals(value)) {
+            text = Application.getInstance().getContext().getBundle().getString("download-map-text");
+            tooltip = Application.getInstance().getContext().getBundle().getString("download-map-tooltip");
+        } else if (map != null) {
+            text = map.getDescription();
+            if(map.getType().isDownload())
+                text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
+            tooltip = map.getUrl();
         }
 
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);

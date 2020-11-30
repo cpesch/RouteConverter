@@ -20,17 +20,17 @@
 package slash.navigation.maps.mapsforge.models;
 
 import slash.navigation.maps.item.ItemTableModel;
-import slash.navigation.maps.mapsforge.impl.TileMap;
+import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 
 import javax.swing.table.TableModel;
 
 /**
- * Acts as a {@link TableModel} for {@link TileMap}s
+ * Acts as a {@link TableModel} for {@link TileDownloadMap}s
  *
  * @author Christian Pesch
  */
 
-public class TileMapTableModel extends ItemTableModel<TileMap> {
+public class TileMapTableModel extends ItemTableModel<TileDownloadMap> {
     public static final int DESCRIPTION_COLUMN = 0;
     public static final int ACTIVE_COLUMN = 1;
 
@@ -54,7 +54,7 @@ public class TileMapTableModel extends ItemTableModel<TileMap> {
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (columnIndex == ACTIVE_COLUMN) {
-            TileMap map = getItem(rowIndex);
+            TileDownloadMap map = getItem(rowIndex);
             map.setActive((Boolean) aValue);
             fireTableRowsUpdated(rowIndex, rowIndex);
         }

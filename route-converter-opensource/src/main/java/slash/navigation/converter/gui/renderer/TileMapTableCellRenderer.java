@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.mapsforge.impl.TileMap;
+import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,7 +28,7 @@ import java.awt.*;
 import static slash.navigation.maps.mapsforge.models.TileMapTableModel.DESCRIPTION_COLUMN;
 
 /**
- * Renders the table cells of the available online {@link TileMap} table.
+ * Renders the table cells of the available online {@link TileDownloadMap} table.
  *
  * @author Christian Pesch
  */
@@ -38,7 +38,7 @@ public class TileMapTableCellRenderer extends AlternatingColorTableCellRenderer 
         Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         switch (columnIndex) {
             case DESCRIPTION_COLUMN:
-                TileMap map = (TileMap) value;
+                TileDownloadMap map = (TileDownloadMap) value;
                 JLabel label = (JLabel) component;
                 label.setText(map.getDescription());
                 label.setToolTipText(map.getUrl());

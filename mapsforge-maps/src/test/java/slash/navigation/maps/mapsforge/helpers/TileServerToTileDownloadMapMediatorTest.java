@@ -21,7 +21,7 @@ package slash.navigation.maps.mapsforge.helpers;
 
 import org.junit.Test;
 import slash.navigation.maps.item.ItemTableModel;
-import slash.navigation.maps.mapsforge.impl.TileMap;
+import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 import slash.navigation.maps.tileserver.TileServer;
 
 import javax.swing.event.TableModelEvent;
@@ -30,12 +30,12 @@ import javax.swing.event.TableModelListener;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
-public class TileServerToTileMapMediatorTest {
+public class TileServerToTileDownloadMapMediatorTest {
 
     @Test
     public void testEvents() throws InterruptedException {
         ItemTableModel<TileServer> sourceModel = new ItemTableModel<>(1);
-        ItemTableModel<TileMap> destinationModel = new ItemTableModel<>(2);
+        ItemTableModel<TileDownloadMap> destinationModel = new ItemTableModel<>(2);
         TileServerToTileMapMediator mediator = new TileServerToTileMapMediator(sourceModel, destinationModel);
 
         assertEquals(0, destinationModel.getRowCount());

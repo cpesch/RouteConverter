@@ -20,20 +20,20 @@
 package slash.navigation.maps.mapsforge.helpers;
 
 import slash.common.filtering.FilterPredicate;
-import slash.navigation.maps.mapsforge.impl.TileMap;
+import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 
 /**
- * Includes {@link TileMap}s which are active.
+ * Includes {@link TileDownloadMap}s which are active.
  *
  * @author Christian Pesch
  */
 
-public class ActiveTileMapPredicate implements FilterPredicate<TileMap> {
+public class ActiveTileMapPredicate implements FilterPredicate<TileDownloadMap> {
     public String getName() {
         return "Active";
     }
 
-    public boolean shouldInclude(TileMap tileMap) {
-        return tileMap.isActive();
+    public boolean shouldInclude(TileDownloadMap map) {
+        return map.isActive();
     }
 }

@@ -119,6 +119,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
+import static slash.navigation.maps.mapsforge.MapType.MapsforgeFile;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
@@ -584,7 +585,7 @@ public class MapsforgeMapView extends BaseMapView {
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
         Layer layer;
         try {
-            layer = map.isVector() ? createTileRendererLayer(map.getFile(), map.getUrl()) : createTileDownloadLayer(map.getTileSource(), map.getUrl());
+            layer = map.getType().equals(MapsforgeFile) ? createTileRendererLayer(map.getFile(), map.getUrl()) : createTileDownloadLayer(map.getTileSource(), map.getUrl());
         } catch (Exception e) {
             mapViewCallback.showMapException(map != null ? map.getDescription() : "<no map>", e);
             return;
@@ -665,7 +666,7 @@ public class MapsforgeMapView extends BaseMapView {
         layers.remove(backgroundLayer);
 
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
-        if (map.isVector())
+        if (map.getType().equals(MapsforgeFile))
             layers.add(0, backgroundLayer);
     }
 
@@ -983,17 +984,17 @@ public class MapsforgeMapView extends BaseMapView {
     private void limitZoomLevel() {
         LocalMap map = mapsToLayers.keySet().iterator().next();
 
-        byte zoomLevelMin = map.isVector() ? MINIMUM_ZOOM_LEVEL : map.getTileSource().getZoomLevelMin();
+        byte zoomLevelMin = map.getType().equals(MapsforgeFile) ? MINIMUM_ZOOM_LEVEL : map.getTileSource().getZoomLevelMin();
         // limit minimum zoom to prevent zooming out too much and losing the map
         MapViewDimension mapViewDimension = mapView.getModel().mapViewDimension;
-        if (map.isVector() && mapViewDimension.getDimension() != null)
+        if (map.getType().equals(MapsforgeFile) && mapViewDimension.getDimension() != null)
             zoomLevelMin = (byte) max(0, zoomForBounds(mapViewDimension.getDimension(),
                     asBoundingBox(map.getBoundingBox()), getTileSize()) - 3);
 
         IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setZoomLevelMin(zoomLevelMin);
 
-        byte zoomLevelMax = map.isVector() ? MAXIMUM_ZOOM_LEVEL : map.getTileSource().getZoomLevelMax();
+        byte zoomLevelMax = map.getType().equals(MapsforgeFile) ? MAXIMUM_ZOOM_LEVEL : map.getTileSource().getZoomLevelMax();
         // limit maximum to prevent zooming in to grey area
         mapViewPosition.setZoomLevelMax(zoomLevelMax);
     }

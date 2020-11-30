@@ -26,11 +26,11 @@ import slash.navigation.gui.Application;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
-import slash.navigation.maps.mapsforge.impl.VectorMap;
+import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
 import slash.navigation.mapview.mapsforge.models.JoinedListComboBoxModel;
 import slash.navigation.mapview.mapsforge.models.TableModelToComboBoxModelAdapter;
-import slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer;
-import slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer;
+import slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer;
+import slash.navigation.mapview.mapsforge.renderer.LocalThemeListCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -49,10 +49,10 @@ import static slash.common.io.Transfer.toArray;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 import static slash.navigation.maps.tileserver.TileServerMapManager.extractCopyrightHref;
-import static slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer.DOWNLOAD_MAP;
-import static slash.navigation.mapview.mapsforge.renderer.MapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
-import static slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer.DOWNLOAD_THEME;
-import static slash.navigation.mapview.mapsforge.renderer.ThemeListCellRenderer.SEPARATOR_TO_DOWNLOAD_THEME;
+import static slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer.DOWNLOAD_MAP;
+import static slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
+import static slash.navigation.mapview.mapsforge.renderer.LocalThemeListCellRenderer.DOWNLOAD_THEME;
+import static slash.navigation.mapview.mapsforge.renderer.LocalThemeListCellRenderer.SEPARATOR_TO_DOWNLOAD_THEME;
 
 /**
  * The map and theme chooser panel of the mapsforge map view.
@@ -94,14 +94,14 @@ public class MapSelector {
                 new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableMapsModel(), mapManager.getDisplayedMapModel()),
                 asList(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP))
         );
-        comboBoxMap.setPrototypeDisplayValue(new VectorMap("Map", "http://mal.url", null, null, null));
-        comboBoxMap.setRenderer(new MapListCellRenderer());
+        comboBoxMap.setPrototypeDisplayValue(new MapsforgeFileMap("Map", "http://mal.url", null, null, null));
+        comboBoxMap.setRenderer(new LocalMapListCellRenderer());
         comboBoxMap.addItemListener(e -> {
             if (e.getStateChange() != SELECTED) {
                 return;
             }
             LocalMap map = (LocalMap) e.getItem();
-            comboBoxTheme.setEnabled(map.isVector());
+            comboBoxTheme.setEnabled(map.getType().isThemed());
 
             handleMapUpdate(map);
         });
@@ -111,9 +111,9 @@ public class MapSelector {
                 asList(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME))
         );
         comboBoxTheme.setPrototypeDisplayValue(mapManager.getAvailableThemesModel().getItem(0));
-        comboBoxTheme.setRenderer(new ThemeListCellRenderer());
+        comboBoxTheme.setRenderer(new LocalThemeListCellRenderer());
         LocalMap selectedItem = (LocalMap) comboBoxMap.getSelectedItem();
-        comboBoxTheme.setEnabled(selectedItem != null && selectedItem.isVector());
+        comboBoxTheme.setEnabled(selectedItem != null && selectedItem.getType().isThemed());
 
         labelCopyrightText.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {

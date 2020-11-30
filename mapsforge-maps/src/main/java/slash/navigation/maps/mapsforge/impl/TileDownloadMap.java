@@ -22,6 +22,7 @@ package slash.navigation.maps.mapsforge.impl;
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.mapsforge.MapType;
 
 import java.io.File;
 import java.util.prefs.Preferences;
@@ -29,6 +30,7 @@ import java.util.prefs.Preferences;
 import static java.util.prefs.Preferences.MAX_KEY_LENGTH;
 import static slash.common.io.Transfer.encodeUmlauts;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.maps.mapsforge.MapType.TileDownload;
 
 /**
  * A {@link LocalMap} that is downloaded on request from an online service.
@@ -36,16 +38,20 @@ import static slash.common.io.Transfer.trim;
  * @author Christian Pesch
  */
 
-public class TileMap extends LocaleResourceImpl implements LocalMap {
-    private static final Preferences preferences = Preferences.userNodeForPackage(TileMap.class);
+public class TileDownloadMap extends LocaleResourceImpl implements LocalMap {
+    private static final Preferences preferences = Preferences.userNodeForPackage(TileDownloadMap.class);
     private static final String TILE_MAP_ACTIVE_PREFERENCE = "tileMapActive";
     private final AbstractTileSource tileSource;
     private final boolean active;
 
-    public TileMap(String description, String url, boolean active, AbstractTileSource tileSource, String copyrightText) {
+    public TileDownloadMap(String description, String url, boolean active, AbstractTileSource tileSource, String copyrightText) {
         super(description, url, copyrightText);
         this.tileSource = tileSource;
         this.active = active;
+    }
+
+    public MapType getType() {
+        return TileDownload;
     }
 
     private String getActiveKey() {

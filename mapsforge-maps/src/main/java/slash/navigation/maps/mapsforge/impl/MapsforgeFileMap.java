@@ -22,23 +22,31 @@ package slash.navigation.maps.mapsforge.impl;
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.mapsforge.MapType;
 
 import java.io.File;
 
+import static slash.navigation.maps.mapsforge.MapType.MapsforgeFile;
+
 /**
- * A {@link LocalMap} that is rendered from a local vector data set.
+ * A {@link LocalMap} that is rendered from a locally stored
+ * <a href="https://github.com/mapsforge/mapsforge/blob/master/docs/Specification-Binary-Map-File.md">Mapsforge Binary Map File</a>.
  *
  * @author Christian Pesch
  */
 
-public class VectorMap extends LocaleResourceImpl implements LocalMap {
+public class MapsforgeFileMap extends LocaleResourceImpl implements LocalMap {
     private final File file;
     private final BoundingBox boundingBox;
 
-    public VectorMap(String description, String url, BoundingBox boundingBox, File file, String copyrightText) {
+    public MapsforgeFileMap(String description, String url, BoundingBox boundingBox, File file, String copyrightText) {
         super(description, url, copyrightText);
         this.boundingBox = boundingBox;
         this.file = file;
+    }
+
+    public MapType getType() {
+        return MapsforgeFile;
     }
 
     public BoundingBox getBoundingBox() {
@@ -51,9 +59,5 @@ public class VectorMap extends LocaleResourceImpl implements LocalMap {
 
     public AbstractTileSource getTileSource() {
         throw new UnsupportedOperationException();
-    }
-
-    public boolean isVector() {
-        return true;
     }
 }

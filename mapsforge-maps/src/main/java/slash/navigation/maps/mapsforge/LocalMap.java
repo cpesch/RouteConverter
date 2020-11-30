@@ -31,11 +31,7 @@ import java.io.File;
  */
 
 public interface LocalMap extends LocalResource {
-    /**
-     * Return if this is a vector map that is rendered from the {@link File} or if it is downloaded from the {@link AbstractTileSource}
-     * @return true, if this is a vector map that is rendered from the {@link File} or false, if it is downloaded from the {@link AbstractTileSource}
-     */
-    boolean isVector();
+    MapType getType();
     File getFile();
     AbstractTileSource getTileSource();
     BoundingBox getBoundingBox();

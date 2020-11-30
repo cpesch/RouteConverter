@@ -22,11 +22,10 @@ package slash.navigation.maps.mapsforge.helpers;
 import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.LocalMap;
-import slash.navigation.maps.mapsforge.impl.TileMap;
+import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
 
-import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 
 import static javax.swing.event.TableModelEvent.*;
@@ -40,28 +39,26 @@ import static javax.swing.event.TableModelEvent.*;
 public class TileServerToTileMapMediator {
     private static final String THUNDER_FOREST_API_KEY = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
     private final ItemTableModel<TileServer> sourceModel;
-    private final ItemTableModel<TileMap> destinationModel;
+    private final ItemTableModel<TileDownloadMap> destinationModel;
     private TableModelListener listener;
 
-    public TileServerToTileMapMediator(ItemTableModel<TileServer> sourceModel, ItemTableModel<TileMap> destinationModel) {
+    public TileServerToTileMapMediator(ItemTableModel<TileServer> sourceModel, ItemTableModel<TileDownloadMap> destinationModel) {
         this.sourceModel = sourceModel;
         this.destinationModel = destinationModel;
 
-        listener = new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                switch (e.getType()) {
-                    case INSERT:
-                        handleAdd(e.getFirstRow(), e.getLastRow());
-                        break;
-                    case DELETE:
-                        handleRemove(e.getFirstRow(), e.getLastRow());
-                        break;
-                    case UPDATE:
-                        handleUpdate(e.getFirstRow(), e.getLastRow());
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
-                }
+        listener = e -> {
+            switch (e.getType()) {
+                case INSERT:
+                    handleAdd(e.getFirstRow(), e.getLastRow());
+                    break;
+                case DELETE:
+                    handleRemove(e.getFirstRow(), e.getLastRow());
+                    break;
+                case UPDATE:
+                    handleUpdate(e.getFirstRow(), e.getLastRow());
+                    break;
+                default:
+                    throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
             }
         };
         sourceModel.addTableModelListener(listener);
@@ -72,27 +69,27 @@ public class TileServerToTileMapMediator {
         listener = null;
     }
 
-    private TileMap convert(TileServer tileServer) {
+    private TileDownloadMap convert(TileServer tileServer) {
         TileServerMapSource tileSource = new TileServerMapSource(tileServer);
         if (THUNDER_FOREST_API_KEY != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
             tileSource.setApiKey(THUNDER_FOREST_API_KEY);
 
-        return new TileMap(tileServer.getId(), tileServer.getDescription(), tileServer.isActive(), tileSource, tileServer.getCopyrightText());
+        return new TileDownloadMap(tileServer.getId(), tileServer.getDescription(), tileServer.isActive(), tileSource, tileServer.getCopyrightText());
     }
 
     private void handleAdd(int firstRow, int lastRow) {
         for (int i = firstRow; i < lastRow + 1; i++) {
             TileServer tileServer = sourceModel.getItem(i);
-            TileMap tileMap = convert(tileServer);
-            destinationModel.add(i, tileMap);
+            TileDownloadMap map = convert(tileServer);
+            destinationModel.add(i, map);
         }
     }
 
     private void handleUpdate(int firstRow, int lastRow) {
         for (int i = firstRow; i < lastRow + 1; i++) {
             TileServer tileServer = sourceModel.getItem(i);
-            TileMap tileMap = convert(tileServer);
-            destinationModel.update(i, tileMap);
+            TileDownloadMap map = convert(tileServer);
+            destinationModel.update(i, map);
         }
     }
 
