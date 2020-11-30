@@ -302,7 +302,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 "ColorChooser.rgbBlueText", "ColorChooser.rgbAlphaText");
         initializePreferences(preferences);
 
-        addExitListener(event -> getConvertPanel().confirmDiscard());
+        addExitListener(event -> getConvertPanel() == null || getConvertPanel().confirmDiscard());
 
         tabInitializer = new LazyTabInitializer();
         tabbedPane.addChangeListener(tabInitializer);
