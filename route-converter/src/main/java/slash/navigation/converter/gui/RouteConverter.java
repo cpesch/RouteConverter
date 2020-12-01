@@ -22,6 +22,7 @@ package slash.navigation.converter.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.common.helpers.APIKeyRegistry;
+import slash.common.io.Files;
 import slash.common.log.LoggingHelper;
 import slash.common.system.Version;
 import slash.navigation.babel.BabelException;
@@ -666,7 +667,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public void handleOpenError(final Throwable throwable, final List<URL> urls) {
         invokeLater(() -> {
-            String dialogUrls = printArrayToDialogString(urls.toArray(), true);
+            String dialogUrls = asDialogString(urls, true);
             log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + printStackTrace(throwable));
             showMessageDialog(frame, new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable))),
                     frame.getTitle(), ERROR_MESSAGE);

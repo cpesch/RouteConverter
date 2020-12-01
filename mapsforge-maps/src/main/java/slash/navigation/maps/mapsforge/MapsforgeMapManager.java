@@ -57,7 +57,7 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
-import static slash.common.io.Files.printArrayToDialogString;
+import static slash.common.io.Files.asDialogString;
 import static slash.navigation.datasources.DataSourceManager.DOT_MAP;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractBoundingBox;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.removePrefix;
@@ -216,8 +216,7 @@ public class MapsforgeMapManager {
 
         final File mapsDirectory = getMapsDirectory();
         List<File> mapFiles = collectFiles(mapsDirectory, DOT_MAP);
-        File[] mapFilesArray = mapFiles.toArray(new File[0]);
-        for (final File file : mapFilesArray) {
+        for (final File file : mapFiles) {
             // avoid directory with world.map
             if(file.getParent().endsWith("routeconverter"))
                 continue;
@@ -230,7 +229,7 @@ public class MapsforgeMapManager {
 
         long end = currentTimeMillis();
         log.info(format("Collected %d map files %s from %s in %d milliseconds",
-                mapFilesArray.length, printArrayToDialogString(mapFilesArray, false), mapsDirectory, (end - start)));
+                mapFiles.size(), asDialogString(mapFiles, false), mapsDirectory, (end - start)));
     }
 
     public synchronized void scanThemes() throws IOException {
@@ -243,8 +242,7 @@ public class MapsforgeMapManager {
 
         final File themesDirectory = getThemesDirectory();
         List<File> themeFiles = collectFiles(themesDirectory, ".xml");
-        File[] themeFilesArray = themeFiles.toArray(new File[0]);
-        for (final File file : themeFilesArray) {
+        for (final File file : themeFiles) {
             checkFile(file);
             final ExternalRenderTheme renderTheme = new ExternalRenderTheme(file);
             invokeInAwtEventQueue(() ->
@@ -254,7 +252,7 @@ public class MapsforgeMapManager {
 
         long end = currentTimeMillis();
         log.info(format("Collected %d theme files %s from %s in %d milliseconds",
-                themeFilesArray.length, printArrayToDialogString(themeFilesArray,false), themesDirectory, (end - start)));
+                themeFiles.size(), asDialogString(themeFiles,false), themesDirectory, (end - start)));
     }
 
     public void scanDatasources() {

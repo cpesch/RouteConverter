@@ -23,6 +23,7 @@ import com.bulenkov.iconloader.IconLoader;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.common.io.Files;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.*;
 import slash.navigation.common.DistanceAndTime;
@@ -85,6 +86,7 @@ import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.format;
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
@@ -741,7 +743,7 @@ public class ConvertPanel implements PanelInTab {
     private void saveFiles(File[] files, NavigationFormat format, BaseRoute route,
                            boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         final RouteConverter r = RouteConverter.getInstance();
-        String targetsAsString = printArrayToDialogString(files, true);
+        String targetsAsString = asDialogString(asList(files), true);
         startWaitCursor(r.getFrame().getRootPane());
         try {
             if (!checkWriteFormat(format))

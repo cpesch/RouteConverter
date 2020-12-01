@@ -427,18 +427,18 @@ public class Files {
         delete(path);
     }
 
-    public static String printArrayToDialogString(Object[] array, boolean shorten) {
-        if (array == null)
+    public static <T> String asDialogString(List<T> list, boolean shorten) {
+        if (list == null)
             return "null";
 
         StringBuilder buffer = new StringBuilder();
-        for (int i = 0; i < array.length; i++) {
+        for (int i = 0; i < list.size(); i++) {
             if (i > 0)
-                if (i == array.length - 1)
+                if (i == list.size() - 1)
                     buffer.append(" and\n");
                 else
                     buffer.append(",\n");
-            String string = array[i].toString();
+            String string = list.get(i).toString();
             if(shorten)
                 string = shortenPath(string, 60);
             buffer.append("'").append(string).append("'");

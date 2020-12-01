@@ -51,7 +51,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Files.printArrayToDialogString;
+import static slash.common.io.Files.asDialogString;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.graphhopper.PbfUtil.lookupGraphDirectory;
 import static slash.navigation.routing.RoutingResult.Validity.*;
@@ -206,7 +206,7 @@ public class GraphHopper extends BaseRoutingService {
                 if (pointNotFound)
                     return new RoutingResult(null, null, PointNotFound);
 
-                String errors = printArrayToDialogString(response.getErrors().toArray(), false);
+                String errors = asDialogString(response.getErrors(), false);
                 log.severe(format("Error while routing between %s and %s: %s", from, to, errors));
                 throw new RuntimeException(errors);
             }

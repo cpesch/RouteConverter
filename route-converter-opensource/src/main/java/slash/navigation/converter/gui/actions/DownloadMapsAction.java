@@ -38,7 +38,7 @@ import static java.util.concurrent.Executors.newCachedThreadPool;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.io.Files.printArrayToDialogString;
+import static slash.common.io.Files.asDialogString;
 
 /**
  * {@link Action} that downloads {@link RemoteMap}s from the {@link MapsforgeMapManager}.
@@ -88,7 +88,7 @@ public class DownloadMapsAction extends FrameAction {
                 selectedBoundingBoxes.add(boundingBox);
 
         }
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedMapsNames.toArray(), true)), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), asDialogString(selectedMapsNames, true)), getAction());
 
         executor.execute(new Runnable() {
             public void run() {

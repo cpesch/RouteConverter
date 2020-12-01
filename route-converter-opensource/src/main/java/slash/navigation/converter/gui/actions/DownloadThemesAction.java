@@ -38,7 +38,7 @@ import static java.util.concurrent.Executors.newCachedThreadPool;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.io.Files.printArrayToDialogString;
+import static slash.common.io.Files.asDialogString;
 
 /**
  * {@link Action} that downloads {@link RemoteTheme}s from the {@link MapsforgeMapManager}.
@@ -78,7 +78,7 @@ public class DownloadThemesAction extends FrameAction {
             selectedThemes.add(theme);
             selectedThemesNames.add(theme.getUrl());
         }
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), printArrayToDialogString(selectedThemesNames.toArray(), true)), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), asDialogString(selectedThemesNames, true)), getAction());
 
         executor.execute(new Runnable() {
             public void run() {
