@@ -59,6 +59,7 @@ import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.asDialogString;
 import static slash.navigation.datasources.DataSourceManager.DOT_MAP;
+import static slash.navigation.datasources.DataSourceManager.DOT_XML;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractBoundingBox;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.removePrefix;
 import static slash.navigation.maps.mapsforge.models.OpenStreetMap.OPENSTREETMAP_URL;
@@ -241,7 +242,7 @@ public class MapsforgeMapManager {
         long start = currentTimeMillis();
 
         final File themesDirectory = getThemesDirectory();
-        List<File> themeFiles = collectFiles(themesDirectory, ".xml");
+        List<File> themeFiles = collectFiles(themesDirectory, DOT_XML);
         for (final File file : themeFiles) {
             checkFile(file);
             final ExternalRenderTheme renderTheme = new ExternalRenderTheme(file);

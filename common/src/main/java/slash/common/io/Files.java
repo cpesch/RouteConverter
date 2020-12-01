@@ -28,8 +28,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -338,24 +338,23 @@ public class Files {
     }
 
     /**
-     * Collects files/directories with the given extension in the given
+     * Collects files/directories with the given extension(s) in the given
      * list. If path is a directory, it recursively descends the directory
      * tree. If no extension is given, all files are collected.
      *
      * @param path               the path to collect files below
      * @param collectDirectories decides whether directories are collected
      * @param collectFiles       decides whether file are collected
-     * @param extension          the extension in lower case
+     * @param extensions         the extensions in lower case
      * @param list               the list to add hits to
      */
     private static void recursiveCollect(File path,
                                          final boolean collectDirectories,
                                          final boolean collectFiles,
-                                         final String extension,
+                                         final Set<String> extensions,
                                          final List<File> list) {
         if (path.isFile()) {
-            if (collectFiles &&
-                    (extension == null || getExtension(path).equals(extension)))
+            if (collectFiles && extensions.contains(getExtension(path)))
                 list.add(path);
 
         } else {
@@ -363,29 +362,31 @@ public class Files {
                 list.add(path);
 
             //noinspection ResultOfMethodCallIgnored
-            path.listFiles(new FileFilter() {
-                public boolean accept(File file) {
-                    recursiveCollect(file, collectDirectories, collectFiles, extension, list);
-                    return true;
-                }
+            path.listFiles(file -> {
+                recursiveCollect(file, collectDirectories, collectFiles, extensions, list);
+                return true;
             });
         }
     }
 
     /**
-     * Collects files below the given path with the given extension.
+     * Collects files below the given path with the given extension(s).
      * If path is a directory, the collection recursively descends the
      * directory tree. The extension comparison is case insensitive
      *
-     * @param path      the path to collect files below
-     * @param extension the case insensitively compare extension
+     * @param path       the path to collect files below
+     * @param extensions the case insensitively compare extensions
      * @return the list of files found below the given path and
-     * with the given extension
+     * with the given extension(s)
      */
-    public static List<File> collectFiles(File path, String extension) {
-        extension = extension != null ? extension.toLowerCase() : null;
+    public static List<File> collectFiles(File path, String... extensions) {
+        Set<String> lowercase = Arrays.stream(extensions).
+                filter(Objects::nonNull).
+                map(String::toLowerCase).
+                collect(Collectors.toSet());
+
         List<File> list = new ArrayList<>(1);
-        recursiveCollect(path, false, true, extension, list);
+        recursiveCollect(path, false, true, lowercase, list);
         return list;
     }
 
