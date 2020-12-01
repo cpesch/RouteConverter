@@ -48,12 +48,14 @@ import static java.lang.System.exit;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.extractFileName;
+import static slash.navigation.datasources.DataSourceManager.DOT_MAP;
 import static slash.navigation.datasources.DataSourceManager.DOT_ZIP;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.Failed;
 import static slash.navigation.download.State.NotModified;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
+import static slash.navigation.hgt.HgtFiles.DOT_HGT;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
 /**
@@ -65,8 +67,6 @@ import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 public class UpdateCatalog extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
     private static final String MIRROR_ARGUMENT = "mirror";
-    private static final String DOT_HGT = ".hgt";
-    private static final String DOT_MAP = ".map";
 
     private DataSourceManager dataSourceManager;
     private java.io.File mirror;

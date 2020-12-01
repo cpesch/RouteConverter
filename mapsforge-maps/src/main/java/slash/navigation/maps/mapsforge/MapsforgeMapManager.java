@@ -58,6 +58,7 @@ import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.printArrayToDialogString;
+import static slash.navigation.datasources.DataSourceManager.DOT_MAP;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractBoundingBox;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.removePrefix;
 import static slash.navigation.maps.mapsforge.models.OpenStreetMap.OPENSTREETMAP_URL;
@@ -78,7 +79,6 @@ public class MapsforgeMapManager {
     private static final String APPLIED_THEME_PREFERENCE = "appliedTheme";
     private static final String DEFAULT_URL = "http://wiki.openstreetmap.org/wiki/Default";
     private static final String OSMARENDER_URL = "http://wiki.openstreetmap.org/wiki/Osmarender";
-    private static final String DOT_MAP = ".map";
 
     private final DataSourceManager dataSourceManager;
     private ItemTableModel<TileDownloadMap> availableOnlineMapsModel = new TileMapTableModel();

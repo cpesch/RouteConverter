@@ -50,7 +50,7 @@ public class HgtFiles implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(HgtFiles.class);
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
-    private static final String DOT_HGT = ".hgt";
+    public static final String DOT_HGT = ".hgt";
 
     private final Map<java.io.File, RandomAccessFile> randomAccessFileCache = new HashMap<>();
     private final DataSource dataSource;
