@@ -55,6 +55,8 @@ public class DataSourceManager {
     public static final String DATASOURCES_URI = V1 + "datasources/";
     public static final String FORMAT_XML = "?format=xml";
     public static final String DOT_MAP = ".map";
+    public static final String DOT_MBTILES = ".mbtiles";
+    private static final String DOT_XML = ".xml";
     public static final String DOT_XML = ".xml";
     public static final String DOT_ZIP = ".zip";
 
