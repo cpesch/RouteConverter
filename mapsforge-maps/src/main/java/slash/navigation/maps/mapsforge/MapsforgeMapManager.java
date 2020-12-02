@@ -59,6 +59,7 @@ import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.asDialogString;
 import static slash.navigation.datasources.DataSourceManager.DOT_MAP;
+import static slash.navigation.datasources.DataSourceManager.DOT_MBTILES;
 import static slash.navigation.datasources.DataSourceManager.DOT_XML;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractBoundingBox;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.removePrefix;
@@ -215,8 +216,9 @@ public class MapsforgeMapManager {
 
         long start = currentTimeMillis();
 
-        final File mapsDirectory = getMapsDirectory();
-        List<File> mapFiles = collectFiles(mapsDirectory, DOT_MAP);
+        File mapsDirectory = getMapsDirectory();
+
+        List<File> mapFiles = collectFiles(mapsDirectory, DOT_MAP, DOT_MBTILES);
         for (final File file : mapFiles) {
             // avoid directory with world.map
             if(file.getParent().endsWith("routeconverter"))
