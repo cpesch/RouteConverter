@@ -26,7 +26,7 @@ import slash.navigation.maps.mapsforge.MapType;
 
 import java.io.File;
 
-import static slash.navigation.maps.mapsforge.MapType.MBTilesFile;
+import static slash.navigation.maps.mapsforge.MapType.MBTiles;
 
 /**
  * A {@link LocalMap} that is rendered from a locally stored
@@ -46,7 +46,7 @@ public class MBTilesFileMap extends LocaleResourceImpl implements LocalMap {
     }
 
     public MapType getType() {
-        return MBTilesFile;
+        return MBTiles;
     }
 
     public BoundingBox getBoundingBox() {

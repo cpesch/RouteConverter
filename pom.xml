@@ -434,6 +434,7 @@
         <module>kml</module>
         <module>mapsforge-maps</module>
         <module>mapsforge-mapview</module>
+        <module>mapsforge-mbtiles</module>
         <module>mapview</module>
         <module>navigation-formats</module>
         <module>nominatim</module>

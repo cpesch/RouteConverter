@@ -21,6 +21,7 @@ package slash.navigation.maps.mapsforge;
 
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import slash.common.filtering.FilteringTableModel;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
@@ -28,11 +29,12 @@ import slash.navigation.download.Download;
 import slash.navigation.maps.item.ItemModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.helpers.ActiveTileMapPredicate;
+import slash.navigation.maps.mapsforge.helpers.MapUtil;
 import slash.navigation.maps.mapsforge.helpers.ThemeForMapMediator;
 import slash.navigation.maps.mapsforge.helpers.TileServerToTileMapMediator;
 import slash.navigation.maps.mapsforge.impl.RemoteFilesAggregator;
 import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
-import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
+import slash.navigation.maps.mapsforge.impl.LocalFileMap;
 import slash.navigation.maps.mapsforge.impl.VectorTheme;
 import slash.navigation.maps.mapsforge.models.JoinedTableModel;
 import slash.navigation.maps.mapsforge.models.OpenStreetMap;
@@ -56,13 +58,13 @@ import static org.mapsforge.map.rendertheme.InternalRenderTheme.OSMARENDER;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Files.collectFiles;
-import static slash.common.io.Files.asDialogString;
+import static slash.common.io.Files.*;
 import static slash.navigation.datasources.DataSourceManager.DOT_MAP;
 import static slash.navigation.datasources.DataSourceManager.DOT_MBTILES;
 import static slash.navigation.datasources.DataSourceManager.DOT_XML;
-import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractBoundingBox;
-import static slash.navigation.maps.mapsforge.helpers.MapUtil.removePrefix;
+import static slash.navigation.maps.mapsforge.MapType.MBTiles;
+import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
+import static slash.navigation.maps.mapsforge.helpers.MapUtil.*;
 import static slash.navigation.maps.mapsforge.models.OpenStreetMap.OPENSTREETMAP_URL;
 import static slash.navigation.maps.tileserver.TileServerMapManager.retrieveCopyrightText;
 
@@ -217,7 +219,6 @@ public class MapsforgeMapManager {
         long start = currentTimeMillis();
 
         File mapsDirectory = getMapsDirectory();
-
         List<File> mapFiles = collectFiles(mapsDirectory, DOT_MAP, DOT_MBTILES);
         for (final File file : mapFiles) {
             // avoid directory with world.map
@@ -225,9 +226,13 @@ public class MapsforgeMapManager {
                 continue;
 
             checkFile(file);
+            MapType mapType = getExtension(file).equals(DOT_MAP) ? Mapsforge : MBTiles;
+            BoundingBox boundingBox = getExtension(file).equals(DOT_MAP) ? MapUtil.extractMapBoundingBox(file) : extractMBTilesBoundingBox(file);
             invokeInAwtEventQueue(() ->
-                availableOfflineMapsModel.addOrUpdateItem(new MapsforgeFileMap(removePrefix(mapsDirectory, file), file.toURI().toString(), extractBoundingBox(file), file, retrieveCopyrightText("OpenStreetMap")))
-            );
+            {
+                availableOfflineMapsModel.addOrUpdateItem(new LocalFileMap(removePrefix(mapsDirectory, file),
+                        file.toURI().toString(), file, mapType, boundingBox, retrieveCopyrightText("OpenStreetMap")));
+            });
         }
 
         long end = currentTimeMillis();
@@ -243,13 +248,14 @@ public class MapsforgeMapManager {
 
         long start = currentTimeMillis();
 
-        final File themesDirectory = getThemesDirectory();
+        File themesDirectory = getThemesDirectory();
         List<File> themeFiles = collectFiles(themesDirectory, DOT_XML);
         for (final File file : themeFiles) {
             checkFile(file);
-            final ExternalRenderTheme renderTheme = new ExternalRenderTheme(file);
+            ExternalRenderTheme renderTheme = new ExternalRenderTheme(file);
             invokeInAwtEventQueue(() ->
-                availableThemesModel.addOrUpdateItem(new VectorTheme(removePrefix(themesDirectory, file), file.toURI().toString(), renderTheme))
+                availableThemesModel.addOrUpdateItem(new VectorTheme(removePrefix(themesDirectory, file),
+                        file.toURI().toString(), renderTheme))
             );
         }
 

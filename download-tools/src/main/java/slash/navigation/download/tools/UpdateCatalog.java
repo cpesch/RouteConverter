@@ -206,7 +206,7 @@ public class UpdateCatalog extends BaseDownloadTool {
                         log.info(format("Found map %s in URI %s", entry.getName(), map.getUri()));
                         mapType.getFragment().add(createFragmentType(entry.getName(), entry.getTime(), entry.getSize()));
 
-                        BoundingBox boundingBox = MapUtil.extractBoundingBox(zipInputStream, entry.getSize());
+                        BoundingBox boundingBox = MapUtil.extractMapBoundingBox(zipInputStream, entry.getSize());
                         if (boundingBox != null)
                             mapType.setBoundingBox(asBoundingBoxType(boundingBox));
 
@@ -231,7 +231,7 @@ public class UpdateCatalog extends BaseDownloadTool {
 
         } else if (map.getUri().endsWith(DOT_MAP)) {
             log.info(format("Found map %s", map.getUri()));
-            BoundingBox boundingBox = MapUtil.extractBoundingBox(download.getFile().getFile());
+            BoundingBox boundingBox = MapUtil.extractMapBoundingBox(download.getFile().getFile());
             if (boundingBox != null)
                 mapType.setBoundingBox(asBoundingBoxType(boundingBox));
         } else

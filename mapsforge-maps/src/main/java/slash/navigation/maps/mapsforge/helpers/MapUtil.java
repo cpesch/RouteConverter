@@ -21,6 +21,7 @@ package slash.navigation.maps.mapsforge.helpers;
 
 import org.mapsforge.map.reader.MapFile;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.maps.mapsforge.mbtiles.MBTilesFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,23 +51,35 @@ public class MapUtil {
         );
     }
 
-    public static BoundingBox extractBoundingBox(File file) {
+    public static BoundingBox extractMapBoundingBox(File file) {
         try {
             MapFile mapFile = new MapFile(file);
             org.mapsforge.core.model.BoundingBox boundingBox = mapFile.boundingBox();
             mapFile.close();
             return toBoundingBox(boundingBox);
         } catch (Exception e) {
-            log.warning(format("Could not extract mapsforge bounding box from %s: %s", file, e));
+            log.warning(format("Could not extract Mapsforge bounding box from %s: %s", file, e));
         }
         return null;
     }
 
-    public static BoundingBox extractBoundingBox(InputStream inputStream, long fileSize) {
+    public static BoundingBox extractMBTilesBoundingBox(File file) {
+        try {
+            MBTilesFile mapFile = new MBTilesFile(file);
+            org.mapsforge.core.model.BoundingBox boundingBox = mapFile.getBoundingBox();
+            mapFile.close();
+            return toBoundingBox(boundingBox);
+        } catch (Exception e) {
+            log.warning(format("Could not extract MBTiles bounding box from %s: %s", file, e));
+        }
+        return null;
+    }
+
+    public static BoundingBox extractMapBoundingBox(InputStream inputStream, long fileSize) {
         try {
             File file = createTempFile("partialmap", ".map");
             writePartialFile(inputStream, fileSize, file);
-            BoundingBox result = extractBoundingBox(file);
+            BoundingBox result = extractMapBoundingBox(file);
             if (!file.delete())
                 throw new IOException(format("Could not delete temporary partial map file '%s'", file));
             return result;

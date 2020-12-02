@@ -68,7 +68,7 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
-import static slash.navigation.maps.mapsforge.MapType.MapsforgeFile;
+import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 
 /**
  * Dialog to show available and downloadable maps of the program.
@@ -131,7 +131,7 @@ public class MapsDialog extends SimpleDialog {
                     return;
                 int row = tableAvailableOnlineMaps.convertRowIndexToView(selectedRow);
                 LocalMap map = getMapsforgeMapManager().getAvailableOnlineMapsModel().getItem(row);
-                r.showMapBorder(map.getType().equals(MapsforgeFile) ? map.getBoundingBox() : null);
+                r.showMapBorder(map.getType().equals(Mapsforge) ? map.getBoundingBox() : null);
             }
         });
 
@@ -168,7 +168,7 @@ public class MapsDialog extends SimpleDialog {
                     return;
                 int row = tableAvailableOfflineMaps.convertRowIndexToView(selectedRow);
                 LocalMap map = getMapsforgeMapManager().getAvailableOfflineMapsModel().getItem(row);
-                r.showMapBorder(map.getType().equals(MapsforgeFile) ? map.getBoundingBox() : null);
+                r.showMapBorder(map.getType().equals(Mapsforge) ? map.getBoundingBox() : null);
             }
         });
 

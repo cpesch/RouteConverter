@@ -26,27 +26,28 @@ import slash.navigation.maps.mapsforge.MapType;
 
 import java.io.File;
 
-import static slash.navigation.maps.mapsforge.MapType.MapsforgeFile;
-
 /**
  * A {@link LocalMap} that is rendered from a locally stored
- * <a href="https://github.com/mapsforge/mapsforge/blob/master/docs/Specification-Binary-Map-File.md">Mapsforge Binary Map</a> file.
+ * <a href="https://github.com/mapsforge/mapsforge/blob/master/docs/Specification-Binary-Map-File.md">Mapsforge Binary Map</a>
+ * <a href="https://github.com/mapbox/mbtiles-spec">MBTiles</a> SQLite database file.
  *
  * @author Christian Pesch
  */
 
-public class MapsforgeFileMap extends LocaleResourceImpl implements LocalMap {
+public class LocalFileMap extends LocaleResourceImpl implements LocalMap {
     private final File file;
+    private final MapType mapType;
     private final BoundingBox boundingBox;
 
-    public MapsforgeFileMap(String description, String url, BoundingBox boundingBox, File file, String copyrightText) {
+    public LocalFileMap(String description, String url, File file, MapType mapType, BoundingBox boundingBox, String copyrightText) {
         super(description, url, copyrightText);
-        this.boundingBox = boundingBox;
         this.file = file;
+        this.mapType = mapType;
+        this.boundingBox = boundingBox;
     }
 
     public MapType getType() {
-        return MapsforgeFile;
+        return mapType;
     }
 
     public BoundingBox getBoundingBox() {

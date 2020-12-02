@@ -26,7 +26,7 @@ import slash.navigation.gui.Application;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
-import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
+import slash.navigation.maps.mapsforge.impl.LocalFileMap;
 import slash.navigation.mapview.mapsforge.models.JoinedListComboBoxModel;
 import slash.navigation.mapview.mapsforge.models.TableModelToComboBoxModelAdapter;
 import slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer;
@@ -48,6 +48,7 @@ import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
+import static slash.navigation.maps.mapsforge.MapType.Download;
 import static slash.navigation.maps.tileserver.TileServerMapManager.extractCopyrightHref;
 import static slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer.DOWNLOAD_MAP;
 import static slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
@@ -94,7 +95,7 @@ public class MapSelector {
                 new TableModelToComboBoxModelAdapter<>(mapManager.getAvailableMapsModel(), mapManager.getDisplayedMapModel()),
                 asList(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP))
         );
-        comboBoxMap.setPrototypeDisplayValue(new MapsforgeFileMap("Map", "http://mal.url", null, null, null));
+        comboBoxMap.setPrototypeDisplayValue(new LocalFileMap("Map", "http://mal.url", null, Download, null, null));
         comboBoxMap.setRenderer(new LocalMapListCellRenderer());
         comboBoxMap.addItemListener(e -> {
             if (e.getStateChange() != SELECTED) {

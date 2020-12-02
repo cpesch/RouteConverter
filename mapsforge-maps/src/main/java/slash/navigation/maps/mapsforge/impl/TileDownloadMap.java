@@ -30,7 +30,7 @@ import java.util.prefs.Preferences;
 import static java.util.prefs.Preferences.MAX_KEY_LENGTH;
 import static slash.common.io.Transfer.encodeUmlauts;
 import static slash.common.io.Transfer.trim;
-import static slash.navigation.maps.mapsforge.MapType.TileDownload;
+import static slash.navigation.maps.mapsforge.MapType.Download;
 
 /**
  * A {@link LocalMap} that is downloaded on request from an online service.
@@ -51,7 +51,7 @@ public class TileDownloadMap extends LocaleResourceImpl implements LocalMap {
     }
 
     public MapType getType() {
-        return TileDownload;
+        return Download;
     }
 
     private String getActiveKey() {
