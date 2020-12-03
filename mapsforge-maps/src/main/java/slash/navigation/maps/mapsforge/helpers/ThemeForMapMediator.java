@@ -94,9 +94,7 @@ public class ThemeForMapMediator {
     }
 
     private String getFirstTheme(LocalMap map) {
-        String mapProvider = extractMapProvider(map);
-
-        File themesDirectory = new File(mapManager.getThemesDirectory(), mapProvider);
+        File themesDirectory = new File(mapManager.getThemesDirectory(), map.getProvider());
         if (themesDirectory.exists()) {
             List<File> themes = collectFiles(mapManager.getThemesDirectory(), DOT_XML);
             if(themes.size() > 0)
@@ -117,21 +115,13 @@ public class ThemeForMapMediator {
         return mapManager.getAppliedThemeModel();
     }
 
-    private String extractMapProvider(LocalMap map) {
-        if (map.getType().isDownload())
-            return "online";
-        String prefix = removePrefix(mapManager.getMapsDirectory(), map.getFile());
-        int index = prefix.indexOf("/");
-        return index != -1 ? prefix.substring(0, index) : prefix;
-    }
-
     private String getMapKey(LocalMap map) {
         String key = THEME_FOR_MAP_PREFERENCE + map.getDescription();
         return key.substring(0, min(key.length(), MAX_KEY_LENGTH));
     }
 
     private String getMapProviderKey(LocalMap map) {
-        String key = THEME_FOR_MAP_PROVIDER_PREFERENCE + extractMapProvider(map);
+        String key = THEME_FOR_MAP_PROVIDER_PREFERENCE + map.getProvider();
         return key.substring(0, min(key.length(), MAX_KEY_LENGTH));
     }
 }

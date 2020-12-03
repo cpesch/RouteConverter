@@ -54,7 +54,6 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.*;
 import slash.navigation.converter.gui.models.*;
-import slash.navigation.datasources.DataSource;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
@@ -62,7 +61,9 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
-import slash.navigation.maps.mapsforge.mbtiles.MBTilesFile;
+import slash.navigation.maps.mapsforge.impl.MBTilesFileMap;
+import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
+import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 import slash.navigation.maps.mapsforge.mbtiles.TileMBTilesLayer;
 import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
@@ -121,7 +122,6 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
-import static slash.navigation.maps.mapsforge.MapType.Download;
 import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
@@ -474,7 +474,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     public void setBackgroundMap(File backgroundMap) {
-        backgroundLayer = createTileRendererLayer(backgroundMap, backgroundMap.getName());
+        backgroundLayer = createTileRendererLayer(new MapFile(backgroundMap), backgroundMap.getName());
         handleBackground();
     }
 
@@ -560,8 +560,8 @@ public class MapsforgeMapView extends BaseMapView {
         return menu;
     }
 
-    private TileRendererLayer createTileRendererLayer(File mapFile, String cacheId) {
-        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(cacheId), new MapFile(mapFile),
+    private TileRendererLayer createTileRendererLayer(MapFile mapFile, String cacheId) {
+        TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(cacheId), mapFile,
                 mapView.getModel().mapViewPosition, true, true, true,
                 GRAPHIC_FACTORY, hillsRenderConfig);
         tileRendererLayer.setXmlRenderTheme(getMapManager().getAppliedThemeModel().getItem().getXmlRenderTheme());
@@ -578,11 +578,11 @@ public class MapsforgeMapView extends BaseMapView {
     private Layer createLayerForMap(LocalMap map) {
         switch (map.getType()) {
             case Mapsforge:
-                return createTileRendererLayer(map.getFile(), map.getUrl());
+                return createTileRendererLayer(((MapsforgeFileMap)map).getMapFile(), map.getUrl());
             case MBTiles:
-                return new TileMBTilesLayer(createTileCache(map.getUrl()), mapView.getModel().mapViewPosition, true, new MBTilesFile(map.getFile()), GRAPHIC_FACTORY);
+                return new TileMBTilesLayer(createTileCache(map.getUrl()), mapView.getModel().mapViewPosition, true, ((MBTilesFileMap)map).getMBTilesFile(), GRAPHIC_FACTORY);
             case Download:
-                return new TileDownloadLayer(createTileCache(map.getUrl()), mapView.getModel().mapViewPosition, map.getTileSource(), GRAPHIC_FACTORY);
+                return new TileDownloadLayer(createTileCache(map.getUrl()), mapView.getModel().mapViewPosition, ((TileDownloadMap)map).getTileSource(), GRAPHIC_FACTORY);
             default:
                 throw new IllegalArgumentException("Unknown MapType " + map.getType());
         }
@@ -996,8 +996,8 @@ public class MapsforgeMapView extends BaseMapView {
     private void limitZoomLevel() {
         LocalMap map = mapsToLayers.keySet().iterator().next();
 
-        // TODO keep 1 MBTilesFile / 1 MapFile to answer this
-        byte zoomLevelMin = map.getType().equals(Download) ? map.getTileSource().getZoomLevelMin() : MINIMUM_ZOOM_LEVEL;
+        Integer min = map.getZoomLevelMin();
+        byte zoomLevelMin = min != null ? min.byteValue() : MINIMUM_ZOOM_LEVEL;
         // limit minimum zoom to prevent zooming out too much and losing the map
         MapViewDimension mapViewDimension = mapView.getModel().mapViewDimension;
         if (map.getType().equals(Mapsforge) && mapViewDimension.getDimension() != null)
@@ -1007,8 +1007,8 @@ public class MapsforgeMapView extends BaseMapView {
         IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setZoomLevelMin(zoomLevelMin);
 
-        // TODO keep 1 MBTilesFile / 1 MapFile to answer this
-        byte zoomLevelMax = map.getType().equals(Download) ? map.getTileSource().getZoomLevelMax() : MAXIMUM_ZOOM_LEVEL;
+        Integer max = map.getZoomLevelMax();
+        byte zoomLevelMax = max != null ? max.byteValue() : MAXIMUM_ZOOM_LEVEL;
         // limit maximum to prevent zooming in to grey area
         mapViewPosition.setZoomLevelMax(zoomLevelMax);
     }

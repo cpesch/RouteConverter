@@ -48,14 +48,15 @@ import static java.lang.System.exit;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.extractFileName;
-import static slash.navigation.datasources.DataSourceManager.DOT_MAP;
-import static slash.navigation.datasources.DataSourceManager.DOT_ZIP;
+import static slash.navigation.datasources.DataSourceManager.*;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.Failed;
 import static slash.navigation.download.State.NotModified;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
 import static slash.navigation.hgt.HgtFiles.DOT_HGT;
+import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractMBTilesBoundingBox;
+import static slash.navigation.maps.mapsforge.helpers.MapUtil.extractMapBoundingBox;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
 /**
@@ -206,7 +207,7 @@ public class UpdateCatalog extends BaseDownloadTool {
                         log.info(format("Found map %s in URI %s", entry.getName(), map.getUri()));
                         mapType.getFragment().add(createFragmentType(entry.getName(), entry.getTime(), entry.getSize()));
 
-                        BoundingBox boundingBox = MapUtil.extractMapBoundingBox(zipInputStream, entry.getSize());
+                        BoundingBox boundingBox = extractMapBoundingBox(zipInputStream, entry.getSize());
                         if (boundingBox != null)
                             mapType.setBoundingBox(asBoundingBoxType(boundingBox));
 
@@ -230,8 +231,13 @@ public class UpdateCatalog extends BaseDownloadTool {
             }
 
         } else if (map.getUri().endsWith(DOT_MAP)) {
-            log.info(format("Found map %s", map.getUri()));
-            BoundingBox boundingBox = MapUtil.extractMapBoundingBox(download.getFile().getFile());
+            log.info(format("Found Mapsforge map %s", map.getUri()));
+            BoundingBox boundingBox = extractMapBoundingBox(download.getFile().getFile());
+            if (boundingBox != null)
+                mapType.setBoundingBox(asBoundingBoxType(boundingBox));
+        } else if (map.getUri().endsWith(DOT_MBTILES)) {
+            log.info(format("Found MBTiles map %s", map.getUri()));
+            BoundingBox boundingBox = extractMBTilesBoundingBox(download.getFile().getFile());
             if (boundingBox != null)
                 mapType.setBoundingBox(asBoundingBoxType(boundingBox));
         } else

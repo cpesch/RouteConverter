@@ -21,7 +21,6 @@ package slash.navigation.maps.mapsforge;
 
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
 import slash.common.filtering.FilteringTableModel;
-import slash.navigation.common.BoundingBox;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
@@ -29,13 +28,9 @@ import slash.navigation.download.Download;
 import slash.navigation.maps.item.ItemModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.helpers.ActiveTileMapPredicate;
-import slash.navigation.maps.mapsforge.helpers.MapUtil;
 import slash.navigation.maps.mapsforge.helpers.ThemeForMapMediator;
 import slash.navigation.maps.mapsforge.helpers.TileServerToTileMapMediator;
-import slash.navigation.maps.mapsforge.impl.RemoteFilesAggregator;
-import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
-import slash.navigation.maps.mapsforge.impl.LocalFileMap;
-import slash.navigation.maps.mapsforge.impl.VectorTheme;
+import slash.navigation.maps.mapsforge.impl.*;
 import slash.navigation.maps.mapsforge.models.JoinedTableModel;
 import slash.navigation.maps.mapsforge.models.OpenStreetMap;
 import slash.navigation.maps.mapsforge.models.TileMapTableModel;
@@ -59,12 +54,8 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.*;
-import static slash.navigation.datasources.DataSourceManager.DOT_MAP;
-import static slash.navigation.datasources.DataSourceManager.DOT_MBTILES;
-import static slash.navigation.datasources.DataSourceManager.DOT_XML;
-import static slash.navigation.maps.mapsforge.MapType.MBTiles;
-import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
-import static slash.navigation.maps.mapsforge.helpers.MapUtil.*;
+import static slash.navigation.datasources.DataSourceManager.*;
+import static slash.navigation.maps.mapsforge.helpers.MapUtil.removePrefix;
 import static slash.navigation.maps.mapsforge.models.OpenStreetMap.OPENSTREETMAP_URL;
 import static slash.navigation.maps.tileserver.TileServerMapManager.retrieveCopyrightText;
 
@@ -213,6 +204,12 @@ public class MapsforgeMapManager {
             throw new FileNotFoundException("cannot read file: " + file.getAbsolutePath());
     }
 
+    private String extractMapProvider(File mapFile) {
+        String prefix = removePrefix(getMapsDirectory(), mapFile);
+        int index = prefix.indexOf("/");
+        return index != -1 ? prefix.substring(0, index) : prefix;
+    }
+
     public synchronized void scanMaps() throws IOException {
         invokeInAwtEventQueue(() -> availableOfflineMapsModel.clear());
 
@@ -226,12 +223,12 @@ public class MapsforgeMapManager {
                 continue;
 
             checkFile(file);
-            MapType mapType = getExtension(file).equals(DOT_MAP) ? Mapsforge : MBTiles;
-            BoundingBox boundingBox = getExtension(file).equals(DOT_MAP) ? MapUtil.extractMapBoundingBox(file) : extractMBTilesBoundingBox(file);
+            LocalMap map = getExtension(file).equals(DOT_MAP) ?
+                    new MapsforgeFileMap(removePrefix(mapsDirectory, file), file.toURI().toString(), file, extractMapProvider(file), retrieveCopyrightText("OpenStreetMap")) :
+                    new MBTilesFileMap(removePrefix(mapsDirectory, file), file.toURI().toString(), file, extractMapProvider(file), retrieveCopyrightText("OpenStreetMap"));
             invokeInAwtEventQueue(() ->
             {
-                availableOfflineMapsModel.addOrUpdateItem(new LocalFileMap(removePrefix(mapsDirectory, file),
-                        file.toURI().toString(), file, mapType, boundingBox, retrieveCopyrightText("OpenStreetMap")));
+                availableOfflineMapsModel.addOrUpdateItem(map);
             });
         }
 

@@ -24,9 +24,9 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapType;
 
-import java.io.File;
 import java.util.prefs.Preferences;
 
+import static java.lang.Byte.toUnsignedInt;
 import static java.util.prefs.Preferences.MAX_KEY_LENGTH;
 import static slash.common.io.Transfer.encodeUmlauts;
 import static slash.common.io.Transfer.trim;
@@ -54,6 +54,10 @@ public class TileDownloadMap extends LocaleResourceImpl implements LocalMap {
         return Download;
     }
 
+    public String getProvider() {
+        return "online";
+    }
+
     private String getActiveKey() {
         return trim(encodeUmlauts(TILE_MAP_ACTIVE_PREFERENCE + getUrl()), MAX_KEY_LENGTH);
     }
@@ -66,20 +70,20 @@ public class TileDownloadMap extends LocaleResourceImpl implements LocalMap {
         preferences.putBoolean(getActiveKey(), active);
     }
 
-    public BoundingBox getBoundingBox() {
-        throw new UnsupportedOperationException();
+    public Integer getZoomLevelMin() {
+        return toUnsignedInt(getTileSource().getZoomLevelMin());
     }
 
-    public File getFile() {
+    public Integer getZoomLevelMax() {
+        return toUnsignedInt(getTileSource().getZoomLevelMax());
+    }
+
+    public BoundingBox getBoundingBox() {
         throw new UnsupportedOperationException();
     }
 
     public AbstractTileSource getTileSource() {
         return tileSource;
-    }
-
-    public boolean isVector() {
-        return false;
     }
 
     public String toString() {

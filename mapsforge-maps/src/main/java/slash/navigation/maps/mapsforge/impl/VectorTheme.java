@@ -23,7 +23,7 @@ import org.mapsforge.map.rendertheme.XmlRenderTheme;
 import slash.navigation.maps.mapsforge.LocalTheme;
 
 /**
- * A {@link LocalTheme} that is used when rendering a {@link LocalFileMap}.
+ * A {@link LocalTheme} that is used when rendering a {@link MapsforgeFileMap}.
  *
  * @author Christian Pesch
  */

@@ -19,10 +19,7 @@
 */
 package slash.navigation.maps.mapsforge;
 
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import slash.navigation.common.BoundingBox;
-
-import java.io.File;
 
 /**
  * Represents a locally stored mapsforge map.
@@ -32,8 +29,9 @@ import java.io.File;
 
 public interface LocalMap extends LocalResource {
     MapType getType();
-    File getFile();
-    AbstractTileSource getTileSource();
+    String getProvider();
+    Integer getZoomLevelMin();
+    Integer getZoomLevelMax();
     BoundingBox getBoundingBox();
     String getCopyrightText();
 }

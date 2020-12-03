@@ -1,7 +1,6 @@
 package slash.navigation.maps.mapsforge.mbtiles;
 
 import org.mapsforge.core.model.BoundingBox;
-import org.mapsforge.core.util.MercatorProjection;
 
 import java.io.File;
 import java.io.InputStream;
@@ -65,18 +64,13 @@ public class MBTilesFile {
         return new BoundingBox(minimumLatitude, minimumLongitude, maximumLatitude, maximumLongitude);
     }
 
-    public int getMaxZoom() {
-        String maxZoom = getMetadata().get("maxzoom");
-        return maxZoom != null ? Integer.parseInt(maxZoom) : 21 /*TODO really?*/;
-    }
-
-    public int getMinZoom() {
-        String minZoom = getMetadata().get("minzoom");
-        return minZoom != null ? Integer.parseInt(minZoom) : 0 /*TODO really?*/;
-    }
-
     private String getFormat() {
         return getMetadata().get("format");
+    }
+
+    private Integer getMetadata(String name) {
+        String value = getMetadata().get(name);
+        return value != null ? Integer.parseInt(value) : null;
     }
 
     private Map<String, String> getMetadata() {
@@ -101,11 +95,59 @@ public class MBTilesFile {
         return metadata;
     }
 
-    public static double zoomLevelToScale(byte zoomLevel) { // TODO
+    private Integer getZoomLevel(String name, String function) {
+        Integer maxZoom = getMetadata(name);
+        if (maxZoom == null) {
+            String result = getSingleValue("SELECT " + function + "(zoom_level) AS value FROM tiles");
+            if (result != null) {
+                getMetadata().put(name, result);
+            }
+        }
+        return getMetadata(name);
+    }
+
+    public Integer getZoomLevelMax() {
+        return getZoomLevel("maxzoom", "MAX");
+    }
+
+    public int getZoomLevelMin() {
+        return getZoomLevel("minzoom", "MIN");
+    }
+
+    private String getSingleValue(String query) {
+        try (Statement statement = connection.createStatement()) {
+            statement.setQueryTimeout(30);
+
+            try (ResultSet resultSet = statement.executeQuery(query)) {
+                if(resultSet.next()) {
+                    return resultSet.getString("value");
+                }
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return null;
+    }
+
+    /**
+     * Converts a zoom level to a scale factor.
+     *
+     * @param zoomLevel the zoom level to convert.
+     * @return the corresponding scale factor.
+     */
+   private double zoomLevelToScale(byte zoomLevel) {
         return 1 << zoomLevel;
     }
 
-    public static long tileYToTMS(long tileY, byte zoomLevel) { // TODO
+    /**
+     * Converts a tile Y number at a certain zoom level to TMS notation.
+     *
+     * @param tileY     the tile Y number that should be converted.
+     * @param zoomLevel the zoom level at which the number should be converted.
+     * @return the TMS value of the tile Y number.
+     */
+    private long tileYToTMS(long tileY, byte zoomLevel) {
         return (long) (zoomLevelToScale(zoomLevel) - tileY - 1);
     }
 

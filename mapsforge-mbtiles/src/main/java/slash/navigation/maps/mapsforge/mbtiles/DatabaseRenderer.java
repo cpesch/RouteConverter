@@ -32,12 +32,18 @@ class DatabaseRenderer {
     public TileBitmap executeJob(RendererJob rendererJob) {
         try {
             InputStream inputStream = file.getTileAsBytes(rendererJob.tile.tileX, rendererJob.tile.tileY, rendererJob.tile.zoomLevel);
-            TileBitmap bitmap = inputStream != null ? this.graphicFactory.createTileBitmap(inputStream, rendererJob.tile.tileSize, rendererJob.hasAlpha) :
-                    this.graphicFactory.createTileBitmap(rendererJob.tile.tileSize, rendererJob.hasAlpha);
+
+            TileBitmap bitmap;
+            if (inputStream == null)
+                bitmap = graphicFactory.createTileBitmap(rendererJob.tile.tileSize, rendererJob.hasAlpha);
+            else {
+                bitmap = graphicFactory.createTileBitmap(inputStream, rendererJob.tile.tileSize, rendererJob.hasAlpha);
+                bitmap.scaleTo(rendererJob.tile.tileSize, rendererJob.tile.tileSize);
+            }
             bitmap.setTimestamp(rendererJob.databaseRenderer.getDataTimestamp(rendererJob.tile));
             return bitmap;
         } catch (Exception e) {
-            LOGGER.warning("Exception: " + e.getMessage());
+            LOGGER.warning("Error while rendering job " + rendererJob + ": " + e.getMessage());
             return null;
         }
     }

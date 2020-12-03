@@ -19,46 +19,58 @@
 */
 package slash.navigation.maps.mapsforge.impl;
 
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
+import org.mapsforge.map.reader.MapFile;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapType;
 
 import java.io.File;
 
+import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
+import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
+
 /**
  * A {@link LocalMap} that is rendered from a locally stored
- * <a href="https://github.com/mapsforge/mapsforge/blob/master/docs/Specification-Binary-Map-File.md">Mapsforge Binary Map</a>
- * <a href="https://github.com/mapbox/mbtiles-spec">MBTiles</a> SQLite database file.
+ * <a href="https://github.com/mapsforge/mapsforge/blob/master/docs/Specification-Binary-Map-File.md">Mapsforge Binary Map</a>.
  *
  * @author Christian Pesch
  */
 
-public class LocalFileMap extends LocaleResourceImpl implements LocalMap {
+public class MapsforgeFileMap extends LocaleResourceImpl implements LocalMap {
     private final File file;
-    private final MapType mapType;
-    private final BoundingBox boundingBox;
+    private final String provider;
+    private MapFile mapFile = null;
 
-    public LocalFileMap(String description, String url, File file, MapType mapType, BoundingBox boundingBox, String copyrightText) {
+    public MapsforgeFileMap(String description, String url, File file, String provider, String copyrightText) {
         super(description, url, copyrightText);
         this.file = file;
-        this.mapType = mapType;
-        this.boundingBox = boundingBox;
+        this.provider = provider;
     }
 
     public MapType getType() {
-        return mapType;
+        return Mapsforge;
+    }
+
+    public String getProvider() {
+        return provider;
+    }
+
+    public synchronized MapFile getMapFile() {
+        if(mapFile == null) {
+            mapFile = new MapFile(file);
+        }
+        return mapFile;
+    }
+
+    public Integer getZoomLevelMin() {
+        return null;
+    }
+
+    public Integer getZoomLevelMax() {
+        return null;
     }
 
     public BoundingBox getBoundingBox() {
-        return boundingBox;
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public AbstractTileSource getTileSource() {
-        throw new UnsupportedOperationException();
+        return toBoundingBox(getMapFile().boundingBox());
     }
 }

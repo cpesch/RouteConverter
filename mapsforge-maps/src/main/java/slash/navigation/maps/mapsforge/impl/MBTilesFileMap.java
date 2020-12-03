@@ -19,14 +19,15 @@
 */
 package slash.navigation.maps.mapsforge.impl;
 
-import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapType;
+import slash.navigation.maps.mapsforge.mbtiles.MBTilesFile;
 
 import java.io.File;
 
 import static slash.navigation.maps.mapsforge.MapType.MBTiles;
+import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 
 /**
  * A {@link LocalMap} that is rendered from a locally stored
@@ -37,27 +38,39 @@ import static slash.navigation.maps.mapsforge.MapType.MBTiles;
 
 public class MBTilesFileMap extends LocaleResourceImpl implements LocalMap {
     private final File file;
-    private final BoundingBox boundingBox;
+    private final String provider;
+    private MBTilesFile mbTilesFile = null;
 
-    public MBTilesFileMap(String description, String url, BoundingBox boundingBox, File file, String copyrightText) {
+    public MBTilesFileMap(String description, String url, File file, String provider, String copyrightText) {
         super(description, url, copyrightText);
-        this.boundingBox = boundingBox;
         this.file = file;
+        this.provider = provider;
     }
 
     public MapType getType() {
         return MBTiles;
     }
 
+    public String getProvider() {
+        return provider;
+    }
+
+    public synchronized MBTilesFile getMBTilesFile() {
+        if (mbTilesFile == null) {
+            mbTilesFile = new MBTilesFile(file);
+        }
+        return mbTilesFile;
+    }
+
+    public Integer getZoomLevelMin() {
+        return getMBTilesFile().getZoomLevelMin();
+    }
+
+    public Integer getZoomLevelMax() {
+        return getMBTilesFile().getZoomLevelMax();
+    }
+
     public BoundingBox getBoundingBox() {
-        return boundingBox;
-    }
-
-    public File getFile() {
-        return file;
-    }
-
-    public AbstractTileSource getTileSource() {
-        throw new UnsupportedOperationException();
+        return toBoundingBox(getMBTilesFile().getBoundingBox());
     }
 }
