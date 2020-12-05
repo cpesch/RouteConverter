@@ -96,7 +96,7 @@ public abstract class SimpleDialog extends JDialog {
 
         preferences.putInt(getName() + "-" + X_PREFERENCE, x);
         preferences.putInt(getName() + "-" + Y_PREFERENCE, y);
-        log.info("Storing dialog " + getName() + " location as " + getLocation());
+        log.fine("Storing dialog " + getName() + " location as " + getLocation());
     }
 
     private void putPreferencesSize() {
@@ -107,7 +107,7 @@ public abstract class SimpleDialog extends JDialog {
 
         preferences.putInt(getName() + "-" + WIDTH_PREFERENCE, width);
         preferences.putInt(getName() + "-" + HEIGHT_PREFERENCE, height);
-        log.info("Storing dialog " + getName() + " size as " + getSize());
+        log.fine("Storing dialog " + getName() + " size as " + getSize());
     }
 
     public void dispose() {

@@ -1142,7 +1142,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, newValue);
             double newRatio = new Integer(newValue).doubleValue() / contentPane.getWidth();
             preferences.putDouble(MAP_DIVIDER_RATIO_PREFERENCE, newRatio);
-            log.info("Changed map divider to " + newValue + " and ratio " + newRatio); // TODO fine
+            log.fine("Changed map divider to " + newValue + " and ratio " + newRatio);
             enableActions();
         }
 
@@ -1184,7 +1184,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             preferences.putInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, newValue);
             double newRatio = new Integer(newValue).doubleValue() / contentPane.getHeight();
             preferences.putDouble(PROFILE_DIVIDER_RATIO_PREFERENCE, newRatio);
-            log.info("Changed profile divider to " + newValue + " and ratio " + newRatio); // TODO fine
+            log.fine("Changed profile divider to " + newValue + " and ratio " + newRatio);
             enableActions();
         }
 
