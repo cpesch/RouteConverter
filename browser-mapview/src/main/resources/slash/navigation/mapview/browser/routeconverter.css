@@ -14,6 +14,11 @@ body {
     display: none;
     padding-top: 20px
 }
+.gm-bundled-control
+,.gm-style-mtc
+,.gm-fullscreen-control {
+    transform: scale(.8);
+}
 #LatLngControl {
     background: #ffc;
     border: 1px solid #676767;
