@@ -22,11 +22,13 @@ package slash.navigation.converter.gui.models;
 
 import org.jfree.data.xy.XYSeries;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.ExtendedSensorNavigationPosition;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.profileview.XAxisMode;
 import slash.navigation.converter.gui.profileview.YAxisMode;
 
+import static java.lang.Math.round;
 import static java.lang.String.format;
 import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
@@ -115,6 +117,8 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
                 return formatElevation(position.getElevation());
             case Speed:
                 return formatSpeed(position.getSpeed());
+            case HeartBeat:
+                return formatHeartBeat(position);
             default:
                 throw new IllegalArgumentException(format("X-Axis mode %s is not supported", yAxisMode));
         }
@@ -134,6 +138,13 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
 
     private Double formatSpeed(Double speed) {
         return speed != null ? unitSystem.distanceToUnit(speed * METERS_OF_A_KILOMETER) : null;
+    }
+
+    private Double formatHeartBeat(NavigationPosition position) {
+        Short heartBeat = null;
+        if (position instanceof ExtendedSensorNavigationPosition)
+            heartBeat = ((ExtendedSensorNavigationPosition) position).getHeartBeat();
+        return heartBeat != null ? heartBeat.doubleValue() : null;
     }
 
     public UnitSystem getUnitSystem() {

@@ -25,5 +25,5 @@ package slash.navigation.converter.gui.profileview;
  */
 
 public enum YAxisMode {
-    Elevation, Speed
+    Elevation, Speed, HeartBeat
 }

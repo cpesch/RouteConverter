@@ -49,7 +49,6 @@ import static org.jfree.chart.axis.NumberAxis.createIntegerTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 import static org.jfree.chart.ui.Layer.FOREGROUND;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
-import static slash.navigation.converter.gui.profileview.YAxisMode.Elevation;
 
 /**
  * Displays the elevations of a {@link PositionsModel}.
@@ -153,17 +152,39 @@ public class ProfileView implements PositionsSelectionModel {
         updateAxis();
     }
 
-    private void updateAxis() {
-        UnitSystem unitSystem = profileModel.getUnitSystem();
+    private String getYAxisUnit(YAxisMode mode) {
+        switch (mode) {
+            case Elevation:
+                return profileModel.getUnitSystem().getElevationName();
+            case Speed:
+                return profileModel.getUnitSystem().getSpeedName();
+            case HeartBeat:
+                return "bpm";
+            default:
+                throw new IllegalArgumentException("YAxisMode " + mode + " is not supported");
+        }
+    }
 
+    private String getXAxisUnit(XAxisMode mode) {
+        switch (mode) {
+            case Distance:
+                return profileModel.getUnitSystem().getDistanceName();
+            case Time:
+                return "s";
+            default:
+                throw new IllegalArgumentException("XAxisMode " + mode + " is not supported");
+        }
+    }
+
+    private void updateAxis() {
         YAxisMode yAxisMode = profileModel.getYAxisMode();
-        String yAxisUnit = yAxisMode.equals(Elevation) ? unitSystem.getElevationName() : unitSystem.getSpeedName();
-        String yAxisKey = yAxisMode.equals(Elevation) ? "elevation-axis" : "speed-axis";
+        String yAxisUnit = getYAxisUnit(yAxisMode);
+        String yAxisKey = yAxisMode.name().toLowerCase() + "-axis";
         plot.getRangeAxis().setLabel(format(getBundle().getString(yAxisKey), yAxisUnit));
 
         XAxisMode xAxisMode = profileModel.getXAxisMode();
-        String xAxisUnit = xAxisMode.equals(Distance) ? unitSystem.getDistanceName() : "s";
-        String xAxisKey = xAxisMode.equals(Distance) ? "distance-axis" : "time-axis";
+        String xAxisUnit = getXAxisUnit(xAxisMode);
+        String xAxisKey = xAxisMode.name().toLowerCase() + "-axis";
         plot.getDomainAxis().setLabel(format(getBundle().getString(xAxisKey), xAxisUnit));
 
         chartPanel.setToolTipGenerator(new StandardXYToolTipGenerator(
