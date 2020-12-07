@@ -92,7 +92,6 @@ public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer
         if (tileCache != null) {
             tileCache.removeObserver(this);
         }
-        this.databaseRenderer.close();
 
         super.onRemove();
     }

@@ -20,10 +20,6 @@ class DatabaseRenderer {
         this.timestamp = System.currentTimeMillis();
     }
 
-    void close() {
-        file.close();
-    }
-
     /**
      * Called when a job needs to be executed.
      *
