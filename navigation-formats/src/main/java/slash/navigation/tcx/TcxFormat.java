@@ -63,13 +63,13 @@ public abstract class TcxFormat extends XmlNavigationFormat<TcxRoute> implements
         return new TcxRoute(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
-    protected Short getHeartBeatRate(Wgs84Position position) {
+    protected Short getHeartBeat(Wgs84Position position) {
         if (position != null) {
             WptType wpt = position.getOrigin(WptType.class);
             if (wpt != null) {
-                Double heartBeatRate = getHeartBeatRate(wpt);
-                if (heartBeatRate != null)
-                    return heartBeatRate.shortValue();
+                Double heartBeat = getHeartBeat(wpt);
+                if (heartBeat != null)
+                    return heartBeat.shortValue();
             }
             slash.navigation.tcx.binding1.TrackpointT trackpointT1 = position.getOrigin(slash.navigation.tcx.binding1.TrackpointT.class);
             if (trackpointT1 != null) {
@@ -85,8 +85,8 @@ public abstract class TcxFormat extends XmlNavigationFormat<TcxRoute> implements
         return null;
     }
 
-    private Double getHeartBeatRate(WptType wptType) {
-        Double heartBeatRate = null;
+    private Double getHeartBeat(WptType wptType) {
+        Double heartBeat = null;
         if (wptType.getExtensions() != null) {
             for (Object any : wptType.getExtensions().getAny()) {
                 if (any instanceof Element) {
@@ -95,13 +95,13 @@ public abstract class TcxFormat extends XmlNavigationFormat<TcxRoute> implements
                         for (int i = 0; i < extension.getChildNodes().getLength(); i++) {
                             Node hr = extension.getChildNodes().item(i);
                             if ("hr".equals(hr.getLocalName()))
-                                heartBeatRate = parseDouble(hr.getTextContent());
+                                heartBeat = parseDouble(hr.getTextContent());
                         }
                     }
                 }
             }
         }
-        return heartBeatRate;
+        return heartBeat;
     }
 
     public int getMaximumRouteNameLength() {

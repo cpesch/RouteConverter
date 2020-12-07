@@ -169,15 +169,15 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
             super.setTemperature(temperature);
     }
 
-    public Short getHeartBeatRate() {
-        return getPositionExtension() != null ? getPositionExtension().getHeartBeatRate() : super.getHeartBeatRate();
+    public Short getHeartBeat() {
+        return getPositionExtension() != null ? getPositionExtension().getHeartBeat() : super.getHeartBeat();
     }
 
-    public void setHeartBeatRate(Short heartBeatRate) {
+    public void setHeartBeat(Short heartBeat) {
         if (getPositionExtension() != null)
-            getPositionExtension().setHeartBeatRate(heartBeatRate);
+            getPositionExtension().setHeartBeat(heartBeat);
         else
-            super.setHeartBeatRate(heartBeatRate);
+            super.setHeartBeat(heartBeat);
     }
 
     public GarminFlightPlanPosition asGarminFlightPlanPosition() {

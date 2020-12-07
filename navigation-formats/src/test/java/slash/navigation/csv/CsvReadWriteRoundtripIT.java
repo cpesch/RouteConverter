@@ -44,7 +44,7 @@ public class CsvReadWriteRoundtripIT {
             assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
             assertEquals(targetPosition.getPressure(), sourcePosition.getPressure());
             assertEquals(targetPosition.getTemperature(), sourcePosition.getTemperature());
-            assertEquals(targetPosition.getHeartBeatRate(), sourcePosition.getHeartBeatRate());
+            assertEquals(targetPosition.getHeartBeat(), sourcePosition.getHeartBeat());
             assertEquals(targetPosition.getDescription(), sourcePosition.getDescription());
         }
     }

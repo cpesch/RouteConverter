@@ -175,12 +175,12 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
         setValueAsDouble(Temperature, temperature);
     }
 
-    public Short getHeartBeatRate() {
-        return getValueAsShort(HeartBeatRate);
+    public Short getHeartBeat() {
+        return getValueAsShort(Heartbeat);
     }
 
-    public void setHeartBeatRate(Short heartBeatRate) {
-        setValueAsShort(HeartBeatRate, heartBeatRate);
+    public void setHeartBeat(Short heartBeat) {
+        setValueAsShort(Heartbeat, heartBeat);
     }
 
     public Double getHeading() {

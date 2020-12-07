@@ -71,7 +71,7 @@ public class GpxExtensionsIT {
         GpxPosition position = readPosition(TEST_PATH + "garmin-track-point-extension-v1.gpx");
         checkPositionBasics(position);
         assertDoubleEquals(25.0, position.getTemperature());
-        assertEquals(Short.valueOf("107"), position.getHeartBeatRate());
+        assertEquals(Short.valueOf("107"), position.getHeartBeat());
     }
 
     @Test
@@ -81,7 +81,7 @@ public class GpxExtensionsIT {
         assertDoubleEquals(25.0, position.getTemperature());
         assertDoubleEquals(43.2, position.getSpeed());
         assertDoubleEquals(98.0, position.getHeading());
-        assertEquals(Short.valueOf("107"), position.getHeartBeatRate());
+        assertEquals(Short.valueOf("107"), position.getHeartBeat());
     }
 
     @Test

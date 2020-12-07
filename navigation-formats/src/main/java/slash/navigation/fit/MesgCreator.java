@@ -61,7 +61,7 @@ class MesgCreator {
         mesg.setSpeed(formatFloat(position.getSpeed()));
         mesg.setAbsolutePressure(asLong(position.getPressure()));
         mesg.setTemperature(asByte(position.getTemperature()));
-        mesg.setHeartRate(position.getHeartBeatRate());
+        mesg.setHeartRate(position.getHeartBeat());
         mesg.setGpsAccuracy(asShort(position.getPdop()));
         return mesg;
     }

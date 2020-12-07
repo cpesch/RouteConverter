@@ -245,14 +245,14 @@ public class Gpx11Format extends GpxFormat {
             Double heading = position.getHeading();
             Double speed = position.getSpeed();
             Double temperature = position.getTemperature();
-            Short heartBeatRate = position.getHeartBeatRate();
+            Short heartBeat = position.getHeartBeat();
 
             position.setPositionExtension(new GpxPositionExtension(wptType));
 
             position.setHeading(heading);
             position.setSpeed(speed);
             position.setTemperature(temperature);
-            position.setHeartBeatRate(heartBeatRate);
+            position.setHeartBeat(heartBeat);
         }
         wptType.setLat(latitude);
         wptType.setLon(longitude);
@@ -272,8 +272,8 @@ public class Gpx11Format extends GpxFormat {
             position.setSpeed(null);
         if (!isWriteTemperature())
             position.setTemperature(null);
-        if (!isWriteHeartBeatRate())
-            position.setHeartBeatRate(null);
+        if (!isWriteHeartBeat())
+            position.setHeartBeat(null);
 
         if (!isWriteExtensions())
             wptType.setExtensions(null);

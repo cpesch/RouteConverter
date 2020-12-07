@@ -140,13 +140,13 @@ public class PositionHelper {
         return format("%d\u00B0C", round(temperature));
     }
 
-    public static String extractHeartBeatRate(NavigationPosition position) {
-        Short heartBeatRate = null;
+    public static String extractHeartBeat(NavigationPosition position) {
+        Short heartBeat = null;
         if (position instanceof ExtendedSensorNavigationPosition)
-            heartBeatRate = ((ExtendedSensorNavigationPosition) position).getHeartBeatRate();
-        if(heartBeatRate == null)
+            heartBeat = ((ExtendedSensorNavigationPosition) position).getHeartBeat();
+        if(heartBeat == null)
             return "";
-        return format("%d bpm", round(heartBeatRate));
+        return format("%d bpm", round(heartBeat));
     }
 
     public static String extractPattern(DateFormat dateFormat) {

@@ -103,7 +103,7 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
                 asDouble(elevation), asDouble(speed), asCalendar(mesg.getTimestamp()), asDescription(mesg));
         position.setPressure(asDouble(mesg.getAbsolutePressure()));
         position.setTemperature(asDouble(mesg.getTemperature()));
-        position.setHeartBeatRate(mesg.getHeartRate());
+        position.setHeartBeat(mesg.getHeartRate());
         position.setPdop(asDouble(mesg.getGpsAccuracy()));
         position.setOrigin(mesg);
         positions.add(position);

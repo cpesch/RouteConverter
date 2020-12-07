@@ -50,7 +50,7 @@ public class ColumbusGpsType2ReadWriteRoundtripIT {
                         assertEquals(targetPosition.getHeading(), sourcePosition.getHeading());
                         assertEquals(targetPosition.getPressure(), sourcePosition.getPressure());
                         assertEquals(targetPosition.getTemperature(), sourcePosition.getTemperature());
-                        assertEquals(targetPosition.getHeartBeatRate(), sourcePosition.getHeartBeatRate());
+                        assertEquals(targetPosition.getHeartBeat(), sourcePosition.getHeartBeat());
                     }
                 }
             });
@@ -73,7 +73,7 @@ public class ColumbusGpsType2ReadWriteRoundtripIT {
                         // since always Type A is written and Type A always stores at least a zero
                         assertDoubleEquals(0.0, targetPosition.getPressure());
                         assertDoubleEquals(0.0, targetPosition.getTemperature());
-                        assertNull(targetPosition.getHeartBeatRate());
+                        assertNull(targetPosition.getHeartBeat());
                     }
                 }
             });

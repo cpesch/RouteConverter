@@ -24,16 +24,16 @@ import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractHeartBeatRate;
+import static slash.navigation.converter.gui.helpers.PositionHelper.extractHeartBeat;
 
 /**
- * Renders the heart beat rate column of the positions table.
+ * Renders the heart beat column of the positions table.
  *
  * @author Christian Pesch
  */
 
-public class HeartBeatRateColumnTableCellEditor extends PositionsTableCellEditor {
-    public HeartBeatRateColumnTableCellEditor() {
+public class HeartBeatColumnTableCellEditor extends PositionsTableCellEditor {
+    public HeartBeatColumnTableCellEditor() {
         super(RIGHT);
     }
 
@@ -42,6 +42,6 @@ public class HeartBeatRateColumnTableCellEditor extends PositionsTableCellEditor
     }
 
     protected String extractValue(NavigationPosition position) {
-        return extractHeartBeatRate(position);
+        return extractHeartBeat(position);
     }
 }

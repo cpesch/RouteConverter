@@ -37,7 +37,7 @@ enum ColumnType {
     Heading("Richtung", "Kurs", "Heading", "Course"),
     Pressure("Druck", "Pressure"),
     Temperature("Temperatur", "Temperature"),
-    HeartBeatRate("Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
+    Heartbeat("Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
     Time("Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
     Description("Beschreibung", "Comment", "Kommentar"),
     Unsupported();

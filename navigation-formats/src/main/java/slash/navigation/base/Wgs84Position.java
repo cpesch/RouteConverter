@@ -41,7 +41,7 @@ public class Wgs84Position extends BaseNavigationPosition implements ExtendedSen
     protected Integer satellites;
     protected WaypointType waypointType;
     private Double elevation, speed;
-    private Short heartBeatRate;
+    private Short heartBeat;
     private CompactCalendar time;
     private Object origin;
 
@@ -143,12 +143,12 @@ public class Wgs84Position extends BaseNavigationPosition implements ExtendedSen
         this.temperature = temperature;
     }
 
-    public Short getHeartBeatRate() {
-        return heartBeatRate;
+    public Short getHeartBeat() {
+        return heartBeat;
     }
 
-    public void setHeartBeatRate(Short heartBeatRate) {
-        this.heartBeatRate = heartBeatRate;
+    public void setHeartBeat(Short heartBeat) {
+        this.heartBeat = heartBeat;
     }
 
     public Double getHdop() {

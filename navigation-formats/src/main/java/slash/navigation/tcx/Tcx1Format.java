@@ -244,7 +244,7 @@ public class Tcx1Format extends TcxFormat {
         if (last == null)
             last = first;
 
-        courseLapT.setAverageHeartRateBpm(getHeartBeatRate(first));
+        courseLapT.setAverageHeartRateBpm(getHeartBeat(first));
         courseLapT.setDistanceMeters(route.getDistance());
         courseLapT.setIntensity(IntensityT.fromValue("Active"));
         courseLapT.setTotalTimeSeconds(route.getTime() / MILLISECONDS_OF_A_SECOND);
@@ -276,7 +276,7 @@ public class Tcx1Format extends TcxFormat {
             // avoid useless 0.0 elevations
             if (!isEmpty(position.getElevation()))
                 trackpointT.setAltitudeMeters(position.getElevation());
-            trackpointT.setHeartRateBpm(getHeartBeatRate(position));
+            trackpointT.setHeartRateBpm(getHeartBeat(position));
             trackpointT.setPosition(createPosition(position));
             trackpointT.setTime(formatXMLTime(position.getTime()));
 

@@ -291,7 +291,7 @@ public class GpxPositionExtension {
         }
     }
 
-    public Short getHeartBeatRate() {
+    public Short getHeartBeat() {
         Short result = null;
 
         ExtensionsType extensions = wptType.getExtensions();
@@ -321,40 +321,40 @@ public class GpxPositionExtension {
         return result;
     }
 
-    public void setHeartBeatRate(Short heartBeatRate) {
+    public void setHeartBeat(Short heartBeat) {
         if (wptType.getExtensions() == null)
             wptType.setExtensions(new ObjectFactory().createExtensionsType());
         List<Object> anys = wptType.getExtensions().getAny();
 
-        boolean foundHeartBeatRate = false;
+        boolean foundHeartBeat = false;
         for (Object any : anys) {
             if (any instanceof JAXBElement) {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
                     slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
-                    trackPoint.setHr(heartBeatRate);
-                    foundHeartBeatRate = true;
+                    trackPoint.setHr(heartBeat);
+                    foundHeartBeat = true;
 
                 } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
                     slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
-                    trackPoint.setHr(heartBeatRate);
-                    foundHeartBeatRate = true;
+                    trackPoint.setHr(heartBeat);
+                    foundHeartBeat = true;
                 }
 
             } else if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("hr".equalsIgnoreCase(element.getLocalName())) {
-                    element.setTextContent(formatShortAsString(heartBeatRate));
-                    foundHeartBeatRate = true;
+                    element.setTextContent(formatShortAsString(heartBeat));
+                    foundHeartBeat = true;
                 }
             }
         }
 
         // create new TrackPointExtension v2 element if there was no existing value found
-        if (!foundHeartBeatRate) {
+        if (!foundHeartBeat) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
             slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-            trackPointExtensionT.setHr(heartBeatRate);
+            trackPointExtensionT.setHr(heartBeat);
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
     }

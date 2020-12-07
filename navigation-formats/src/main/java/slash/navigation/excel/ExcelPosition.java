@@ -199,12 +199,12 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
         setCellAsDouble(Temperature, temperature);
     }
 
-    public Short getHeartBeatRate() {
-        return getCellAsShort(HeartBeatRate);
+    public Short getHeartBeat() {
+        return getCellAsShort(Heartbeat);
     }
 
-    public void setHeartBeatRate(Short heartBeatRate) {
-        setCellAsShort(HeartBeatRate, heartBeatRate);
+    public void setHeartBeat(Short heartBeat) {
+        setCellAsShort(Heartbeat, heartBeat);
     }
 
     public Double getHeading() {

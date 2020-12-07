@@ -182,7 +182,7 @@ public class Tcx2Format extends TcxFormat {
     }
 
 
-    private HeartRateInBeatsPerMinuteT getHeartBeatRateT(Wgs84Position position) {
+    private HeartRateInBeatsPerMinuteT getHeartBeatT(Wgs84Position position) {
         TrackpointT trackpointT = position.getOrigin(TrackpointT.class);
         if (trackpointT != null) {
             HeartRateInBeatsPerMinuteT heartRateBpm = trackpointT.getHeartRateBpm();
@@ -190,10 +190,10 @@ public class Tcx2Format extends TcxFormat {
                 return heartRateBpm;
         }
 
-        Short heartBeatRate = getHeartBeatRate(position);
-        if (heartBeatRate != null) {
+        Short heartBeat = getHeartBeat(position);
+        if (heartBeat != null) {
             HeartRateInBeatsPerMinuteT result = new ObjectFactory().createHeartRateInBeatsPerMinuteT();
-            result.setValue(heartBeatRate);
+            result.setValue(heartBeat);
             return result;
         }
         return null;
@@ -216,7 +216,7 @@ public class Tcx2Format extends TcxFormat {
             last = first;
 
         if (first != null)
-            courseLapT.setAverageHeartRateBpm(getHeartBeatRateT(first));
+            courseLapT.setAverageHeartRateBpm(getHeartBeatT(first));
         courseLapT.setDistanceMeters(route.getDistance());
         courseLapT.setIntensity(IntensityT.fromValue("Active"));
         courseLapT.setTotalTimeSeconds(route.getTime() / MILLISECONDS_OF_A_SECOND);
@@ -248,7 +248,7 @@ public class Tcx2Format extends TcxFormat {
             // avoid useless 0.0 elevations
             if (!isEmpty(position.getElevation()))
                 trackpointT.setAltitudeMeters(position.getElevation());
-            trackpointT.setHeartRateBpm(getHeartBeatRateT(position));
+            trackpointT.setHeartRateBpm(getHeartBeatT(position));
             trackpointT.setPosition(createPosition(position));
             trackpointT.setTime(formatXMLTime(position.getTime()));
 

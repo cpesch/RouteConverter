@@ -41,7 +41,7 @@ enum ColumnType {
     Heading(NUMERIC, "Richtung", "Kurs", "Heading", "Course"),
     Pressure(NUMERIC, "Druck", "Pressure"),
     Temperature(NUMERIC, "Temperatur", "Temperature"),
-    HeartBeatRate(NUMERIC, "Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
+    Heartbeat(NUMERIC, "Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
     Time(NUMERIC, "Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
     Description(STRING, "Beschreibung", "Comment", "Kommentar"),
     Unsupported(STRING);
