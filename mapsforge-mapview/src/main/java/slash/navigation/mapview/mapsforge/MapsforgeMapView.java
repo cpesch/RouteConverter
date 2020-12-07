@@ -995,6 +995,17 @@ public class MapsforgeMapView extends BaseMapView {
 
     private void limitZoomLevel() {
         LocalMap map = mapsToLayers.keySet().iterator().next();
+        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+
+        // first set maximum as the implementation checks that minimum > maximum
+        Integer max = map.getZoomLevelMax();
+        byte zoomLevelMax = max != null ? max.byteValue() : MAXIMUM_ZOOM_LEVEL;
+        // limit maximum to prevent zooming in to grey areas
+        mapViewPosition.setZoomLevelMax(zoomLevelMax);
+
+        // don't zoom above maximum
+        if(mapViewPosition.getZoomLevel() > zoomLevelMax)
+            mapViewPosition.setZoomLevel(zoomLevelMax);
 
         Integer min = map.getZoomLevelMin();
         byte zoomLevelMin = min != null ? min.byteValue() : MINIMUM_ZOOM_LEVEL;
@@ -1003,14 +1014,11 @@ public class MapsforgeMapView extends BaseMapView {
         if (map.getType().equals(Mapsforge) && mapViewDimension.getDimension() != null)
             zoomLevelMin = (byte) max(0, zoomForBounds(mapViewDimension.getDimension(),
                     asBoundingBox(map.getBoundingBox()), getTileSize()) - 3);
-
-        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setZoomLevelMin(zoomLevelMin);
 
-        Integer max = map.getZoomLevelMax();
-        byte zoomLevelMax = max != null ? max.byteValue() : MAXIMUM_ZOOM_LEVEL;
-        // limit maximum to prevent zooming in to grey area
-        mapViewPosition.setZoomLevelMax(zoomLevelMax);
+        // don't zoom below minimum
+        if(mapViewPosition.getZoomLevel() < zoomLevelMin)
+            mapViewPosition.setZoomLevel(zoomLevelMin);
     }
 
     private boolean isVisible(LatLong latLong) {
