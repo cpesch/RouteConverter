@@ -1099,6 +1099,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 startWaitCursor(frame.getRootPane());
                 try {
                     runnable.run();
+                } catch (Exception e) {
+                    log.severe("Cannot initialize tab " + selected + ": " + getLocalizedMessage(e));
                 } finally {
                     stopWaitCursor(frame.getRootPane());
                 }
