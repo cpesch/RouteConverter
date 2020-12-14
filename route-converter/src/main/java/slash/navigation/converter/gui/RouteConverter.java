@@ -22,7 +22,6 @@ package slash.navigation.converter.gui;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import slash.common.helpers.APIKeyRegistry;
-import slash.common.io.Files;
 import slash.common.log.LoggingHelper;
 import slash.common.system.Version;
 import slash.navigation.babel.BabelException;
