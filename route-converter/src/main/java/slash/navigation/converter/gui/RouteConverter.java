@@ -316,6 +316,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         openMapAndProfileView();
 
+        initializeMenus();
         initializeHelp();
         getContext().getActionManager().logUsage();
         APIKeyRegistry.getInstance().logUsage();
@@ -1100,6 +1101,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     runnable.run();
                 } catch (Exception e) {
                     log.severe("Cannot initialize tab " + selected + ": " + getLocalizedMessage(e));
+                    e.printStackTrace();
                 } finally {
                     stopWaitCursor(frame.getRootPane());
                 }
@@ -1244,7 +1246,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
         actionManager.register("send-error-report", new SendErrorReportAction());
         actionManager.register("show-about", createAboutAction());
+    }
 
+    private void initializeMenus() {
         JMenu xAxisModeMenu = findMenu(getContext().getMenuBar(), "view", "show-profile-x-axis");
         new XAxisModeMenu(xAxisModeMenu, getProfileModeModel());
         JMenu yAxisModeMenu = findMenu(getContext().getMenuBar(), "view", "show-profile-y-axis");
