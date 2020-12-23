@@ -117,6 +117,11 @@ public class MapsforgeMapManager {
     }
 
     public void dispose() {
+        for(LocalMap map : availableOfflineMapsModel.getItems()) {
+            if(map instanceof MapsforgeFileMap) {
+                ((MapsforgeFileMap) map).destroy();
+            }
+        }
         themeForMapMediator.dispose();
         themeForMapMediator = null;
         tileServerToTileMapMediator.dispose();

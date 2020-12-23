@@ -33,14 +33,11 @@ import slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer;
 import slash.navigation.mapview.mapsforge.renderer.LocalThemeListCellRenderer;
 
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
-import javax.swing.text.StyleContext;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
 import java.net.URI;
-import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static com.intellij.uiDesigner.core.GridConstraints.*;
@@ -51,7 +48,6 @@ import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
-import static slash.navigation.maps.mapsforge.MapType.Download;
 import static slash.navigation.maps.tileserver.TileServerMapManager.extractCopyrightHref;
 import static slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer.DOWNLOAD_MAP;
 import static slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer.SEPARATOR_TO_DOWNLOAD_MAP;
@@ -91,7 +87,7 @@ public class MapSelector {
         comboBoxZoom.setMaximumSize(new Dimension(width, comboBoxZoom.getMaximumSize().height));
         comboBoxZoom.setPreferredSize(new Dimension(width, comboBoxZoom.getPreferredSize().height));
 
-        final IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.addObserver(() -> zoomChanged(mapViewPosition.getZoomLevelMin(), mapViewPosition.getZoomLevelMax(), mapViewPosition.getZoomLevel()));
 
         comboBoxMap.setModel(new JoinedListComboBoxModel<>(

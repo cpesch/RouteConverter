@@ -39,7 +39,7 @@ import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 public class MapsforgeFileMap extends LocaleResourceImpl implements LocalMap {
     private final File file;
     private final String provider;
-    private MapFile mapFile = null;
+    private NotClosingMapFile mapFile = null;
 
     public MapsforgeFileMap(String description, String url, File file, String provider, String copyrightText) {
         super(description, url, copyrightText);
@@ -57,9 +57,16 @@ public class MapsforgeFileMap extends LocaleResourceImpl implements LocalMap {
 
     public synchronized MapFile getMapFile() {
         if(mapFile == null) {
-            mapFile = new MapFile(file);
+            mapFile = new NotClosingMapFile(file);
         }
         return mapFile;
+    }
+
+    public synchronized void destroy() {
+        if(mapFile != null) {
+            mapFile.destroy();
+            mapFile = null;
+        }
     }
 
     public Integer getZoomLevelMin() {

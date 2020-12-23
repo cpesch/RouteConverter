@@ -23,7 +23,7 @@ public enum MapType {
 
     MapType(boolean download, boolean themed) {
         this.download = download;
-        this.themed = false;
+        this.themed = themed;
     }
 
     public boolean isDownload() {
