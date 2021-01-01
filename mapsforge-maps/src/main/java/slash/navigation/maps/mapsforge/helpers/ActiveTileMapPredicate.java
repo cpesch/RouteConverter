@@ -19,7 +19,7 @@
 */
 package slash.navigation.maps.mapsforge.helpers;
 
-import slash.common.filtering.FilterPredicate;
+import slash.navigation.gui.models.FilterPredicate;
 import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 
 /**

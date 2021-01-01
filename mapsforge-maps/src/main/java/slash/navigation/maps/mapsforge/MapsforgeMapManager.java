@@ -20,11 +20,11 @@
 package slash.navigation.maps.mapsforge;
 
 import org.mapsforge.map.rendertheme.ExternalRenderTheme;
-import slash.common.filtering.FilteringTableModel;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Download;
+import slash.navigation.gui.models.FilteringTableModel;
 import slash.navigation.maps.item.ItemModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.helpers.ActiveTileMapPredicate;
@@ -76,15 +76,15 @@ public class MapsforgeMapManager {
     private static final String OSMARENDER_URL = "http://wiki.openstreetmap.org/wiki/Osmarender";
 
     private final DataSourceManager dataSourceManager;
-    private ItemTableModel<TileDownloadMap> availableOnlineMapsModel = new TileMapTableModel();
-    private ItemTableModel<LocalMap> availableOfflineMapsModel = new ItemTableModel<>(1);
-    private JoinedTableModel<LocalMap> availableMapsModel = new JoinedTableModel<>(availableOfflineMapsModel,
+    private final ItemTableModel<TileDownloadMap> availableOnlineMapsModel = new TileMapTableModel();
+    private final ItemTableModel<LocalMap> availableOfflineMapsModel = new ItemTableModel<>(1);
+    private final JoinedTableModel<LocalMap> availableMapsModel = new JoinedTableModel<>(availableOfflineMapsModel,
             new FilteringTableModel<>(availableOnlineMapsModel, new ActiveTileMapPredicate()));
-    private ItemTableModel<LocalTheme> availableThemesModel = new ItemTableModel<>(1);
-    private ItemTableModel<RemoteMap> downloadableMapsModel = new ItemTableModel<>(3);
-    private ItemTableModel<RemoteTheme> downloadableThemesModel = new ItemTableModel<>(3);
+    private final ItemTableModel<LocalTheme> availableThemesModel = new ItemTableModel<>(1);
+    private final ItemTableModel<RemoteMap> downloadableMapsModel = new ItemTableModel<>(3);
+    private final ItemTableModel<RemoteTheme> downloadableThemesModel = new ItemTableModel<>(3);
 
-    private ItemModel<LocalMap> displayedMapModel = new ItemModel<LocalMap>(DISPLAYED_MAP_PREFERENCE,  OPENSTREETMAP_URL) {
+    private final ItemModel<LocalMap> displayedMapModel = new ItemModel<LocalMap>(DISPLAYED_MAP_PREFERENCE,  OPENSTREETMAP_URL) {
         protected LocalMap stringToItem(String url) {
             return getAvailableMapsModel().getItemByUrl(url);
         }
@@ -94,7 +94,7 @@ public class MapsforgeMapManager {
         }
     };
 
-    private ItemModel<LocalTheme> appliedThemeModel = new ItemModel<LocalTheme>(APPLIED_THEME_PREFERENCE, OSMARENDER_URL) {
+    private final ItemModel<LocalTheme> appliedThemeModel = new ItemModel<LocalTheme>(APPLIED_THEME_PREFERENCE, OSMARENDER_URL) {
         protected LocalTheme stringToItem(String url) {
             return getAvailableThemesModel().getItemByUrl(url);
         }
