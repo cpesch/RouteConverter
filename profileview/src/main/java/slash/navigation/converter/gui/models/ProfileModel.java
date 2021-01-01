@@ -64,11 +64,14 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
     }
 
     protected void handleIntervalYUpdate(int firstRow, int lastRow) {
-        getSeries().setFireSeriesChanged(false);
-        for (int i = firstRow; i < lastRow + 1; i++) {
-            getSeries().updateByIndex(i, formatYValue(getPositions().getPosition(i)));
+        if(getSeries().getItemCount() > 0) {
+            getSeries().setFireSeriesChanged(false);
+
+            for (int i = firstRow; i < lastRow + 1; i++) {
+                getSeries().updateByIndex(i, formatYValue(getPositions().getPosition(i)));
+            }
+            getSeries().setFireSeriesChanged(true);
         }
-        getSeries().setFireSeriesChanged(true);
         getSeries().fireSeriesChanged();
     }
 
