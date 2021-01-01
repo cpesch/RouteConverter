@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.common.filtering;
+package slash.navigation.gui.models;
 
 /**
  * A predicate on the given {@link E} that allows to filter a list of {@link E}s.

@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.panels;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.common.filtering.FilterPredicate;
+import slash.navigation.gui.models.FilterPredicate;
 import slash.common.helpers.TimeZoneAndId;
 import slash.common.helpers.TimeZoneAndIds;
 import slash.navigation.base.Wgs84Position;

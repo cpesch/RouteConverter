@@ -18,39 +18,30 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.gui.jarinjar;
+package slash.common.jarinjar;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
+import java.net.URLStreamHandler;
+import java.net.URLStreamHandlerFactory;
 
-import static java.net.URLDecoder.decode;
-import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.common.jarinjar.JarInJarURLStreamHandler.JAR_IN_JAR;
 
 /**
- * An {@link URLConnection} that reads URLs from the classpath.
+ * Factory that creates a {@link JarInJarURLStreamHandler} for each {@link URL} with the
+ * {@link JarInJarURLStreamHandler#JAR_IN_JAR} protocol.
  *
  * @author Christian Pesch, inspired from https://code.google.com/p/entail/source/browse/jarinjarloader/org/eclipse/jdt/internal/jarinjarloader/
  */
-class ClassPathURLConnection extends URLConnection {
+class JarInJarURLStreamHandlerFactory implements URLStreamHandlerFactory {
     private ClassLoader classLoader;
 
-    ClassPathURLConnection(URL url, ClassLoader classLoader) {
-        super(url);
+    JarInJarURLStreamHandlerFactory(ClassLoader classLoader) {
         this.classLoader = classLoader;
     }
 
-    public void connect() {
-    }
-
-    public InputStream getInputStream() throws IOException {
-        String file = decode(url.getFile(), UTF8_ENCODING);
-        InputStream result = classLoader.getResourceAsStream(file);
-        if (result == null) {
-            throw new MalformedURLException("Could not open InputStream for URL '" + url + "'");
-        }
-        return result;
+    public URLStreamHandler createURLStreamHandler(String protocol) {
+        if (JAR_IN_JAR.equals(protocol))
+            return new JarInJarURLStreamHandler(classLoader);
+        return null;
     }
 }

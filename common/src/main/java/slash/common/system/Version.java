@@ -37,7 +37,9 @@ import static slash.common.type.CompactCalendar.createDateFormat;
 
 public class Version {
     private static final String BUILD_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    private String version, date, name;
+    private final String version;
+    private final String date;
+    private final String name;
 
     public Version(String version, String date, String name) {
         this.version = version;

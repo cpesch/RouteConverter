@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.gui.jarinjar;
+package slash.common.jarinjar;
 
 import java.net.URL;
 import java.net.URLConnection;
@@ -34,7 +34,7 @@ import java.net.URLStreamHandler;
 class JarInJarURLStreamHandler extends URLStreamHandler {
     public static final String JAR_IN_JAR = "jarinjar";
     public static final String JAR_IN_JAR_PROTOCOL = JAR_IN_JAR + ":";
-    private ClassLoader classLoader;
+    private final ClassLoader classLoader;
 
     JarInJarURLStreamHandler(ClassLoader classLoader) {
         this.classLoader = classLoader;

@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.common.filtering.FilterPredicate;
+import slash.navigation.gui.models.FilterPredicate;
 import slash.navigation.converter.gui.RouteConverter;
 
 import javax.swing.*;

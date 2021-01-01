@@ -19,8 +19,8 @@
 */
 package slash.navigation.converter.gui.models;
 
-import slash.common.filtering.FilterPredicate;
-import slash.common.filtering.FilteringTableModel;
+import slash.navigation.gui.models.FilterPredicate;
+import slash.navigation.gui.models.FilteringTableModel;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
@@ -37,9 +37,9 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class FilteringPositionsModel<E extends NavigationPosition> extends FilteringTableModel implements PositionsModel {
+public class FilteringPositionsModel<P extends NavigationPosition> extends FilteringTableModel<P> implements PositionsModel {
 
-    public FilteringPositionsModel(PositionsModel delegate, FilterPredicate<E> predicate) {
+    public FilteringPositionsModel(PositionsModel delegate, FilterPredicate<P> predicate) {
         super(delegate, predicate);
     }
 

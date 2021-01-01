@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.common.filtering;
+package slash.navigation.gui.models;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;

@@ -19,7 +19,7 @@
 */
 package slash.navigation.converter.gui.predicates;
 
-import slash.common.filtering.FilterPredicate;
+import slash.navigation.gui.models.FilterPredicate;
 import slash.navigation.common.NavigationPosition;
 
 /**

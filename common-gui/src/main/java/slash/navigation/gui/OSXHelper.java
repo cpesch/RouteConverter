@@ -71,7 +71,7 @@ public class OSXHelper {
     public static class OSXHandler implements InvocationHandler {
         Object targetObject;
         Method targetMethod;
-        private String proxySignature;
+        private final String proxySignature;
 
         private OSXHandler(String proxySignature, Object target, Method handler) {
             this.proxySignature = proxySignature;

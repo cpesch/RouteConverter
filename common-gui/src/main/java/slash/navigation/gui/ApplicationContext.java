@@ -40,8 +40,8 @@ import java.util.ResourceBundle;
 
 public class ApplicationContext {
     private ResourceBundle bundle;
-    private ActionManager actionManager = new ActionManager();
-    private UndoManager undoManager = new UndoManager();
+    private final ActionManager actionManager = new ActionManager();
+    private final UndoManager undoManager = new UndoManager();
     private NotificationManager notificationManager;
     private JMenuBar menuBar;
     private HelpBroker broker;

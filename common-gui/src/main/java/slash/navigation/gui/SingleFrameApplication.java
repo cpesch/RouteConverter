@@ -103,11 +103,8 @@ public abstract class SingleFrameApplication extends Application {
             }
         });
 
-        contentPane.registerKeyboardAction(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                Application.getInstance().getContext().getActionManager().run("exit");
-            }
-        }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        contentPane.registerKeyboardAction(e -> Application.getInstance().getContext().getActionManager().run("exit"),
+                getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
         frame.pack();
         frame.setLocationRelativeTo(null);
@@ -127,7 +124,7 @@ public abstract class SingleFrameApplication extends Application {
             width = (int)bounds.getWidth() - (insets.left + insets.right);
         if((state & MAXIMIZED_VERT) == MAXIMIZED_VERT)
             height = (int)bounds.getHeight() - (insets.top + insets.bottom);
-        if (width != -1 && height != -1 && width > 120 && height > 60)
+        if (width > 120 && height > 60)
             frame.setSize(width, height);
         log.info("Frame size is " + frame.getSize());
 
@@ -159,11 +156,7 @@ public abstract class SingleFrameApplication extends Application {
                 putPreferencesSize();
             }
         });
-        frame.addWindowStateListener(new WindowStateListener() {
-            public void windowStateChanged(WindowEvent e) {
-                putPreferencesState();
-            }
-        });
+        frame.addWindowStateListener(e -> putPreferencesState());
     }
 
     private int getPreferencesX() {

@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.gui.jarinjar;
+package slash.common.jarinjar;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
@@ -26,7 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import static slash.navigation.gui.jarinjar.JarInJarURLStreamHandler.JAR_IN_JAR_PROTOCOL;
+import static slash.common.jarinjar.JarInJarURLStreamHandler.JAR_IN_JAR_PROTOCOL;
 
 /**
  * Creates a {@link ClassLoader} that allows to include JARs in the classpath and in the file systems.

@@ -20,7 +20,7 @@
 
 package slash.navigation.gui;
 
-import slash.navigation.gui.jarinjar.ClassPathExtender;
+import slash.common.jarinjar.ClassPathExtender;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -53,7 +53,7 @@ public abstract class Application {
     private static Application application;
     private final List<ExitListener> exitListeners;
     private final ApplicationContext context;
-    private Preferences preferences = userNodeForPackage(getClass());
+    private final Preferences preferences = userNodeForPackage(getClass());
 
     private static final String PREFERRED_LANGUAGE_PREFERENCE = "preferredLanguage";
     private static final String PREFERRED_COUNTRY_PREFERENCE = "preferredCountry";
@@ -140,27 +140,25 @@ public abstract class Application {
         if (contextClassLoader != null)
             Thread.currentThread().setContextClassLoader(contextClassLoader);
 
-        Runnable doCreateAndShowGUI = new Runnable() {
-            public void run() {
-                try {
-                    if (contextClassLoader != null)
-                        Thread.currentThread().setContextClassLoader(contextClassLoader);
+        Runnable doCreateAndShowGUI = () -> {
+            try {
+                if (contextClassLoader != null)
+                    Thread.currentThread().setContextClassLoader(contextClassLoader);
 
-                    setLookAndFeel();
-                    setUseSystemProxies();
-                    initializeLocale(userNodeForPackage(applicationClass));
-                    ResourceBundle bundle = initializeBundles(bundleNames);
+                setLookAndFeel();
+                setUseSystemProxies();
+                initializeLocale(userNodeForPackage(applicationClass));
+                ResourceBundle bundle = initializeBundles(bundleNames);
 
-                    Application application = create(applicationClass);
-                    setInstance(application);
-                    application.getContext().setBundle(bundle);
-                    application.startup();
-                    application.parseInitialArgs(args);
-                } catch (Exception e) {
-                    String msg = format("Application %s failed to launch", applicationClass);
-                    log.log(SEVERE, msg, e);
-                    throw new Error(msg, e);
-                }
+                Application application = create(applicationClass);
+                setInstance(application);
+                application.getContext().setBundle(bundle);
+                application.startup();
+                application.parseInitialArgs(args);
+            } catch (Exception e) {
+                String msg = format("Application %s failed to launch", applicationClass);
+                log.log(SEVERE, msg, e);
+                throw new Error(msg, e);
             }
         };
         invokeLater(doCreateAndShowGUI);
