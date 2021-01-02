@@ -179,11 +179,8 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     private double[] getTrackDistancesFromStart(int startIndex, int endIndex) {
-        if (trackDistancesFromStart == null) {
+        if (trackDistancesFromStart == null)
             trackDistancesFromStart = getRoute().getDistancesFromStart(0, getRoute().getPositionCount() - 1);
-            System.out.println("getTrackDistancesFromStart startIndex=" + startIndex + " endIndex=" + endIndex);
-        } else
-            System.out.println("CACHED getTrackDistancesFromStart startIndex=" + startIndex + " endIndex=" + endIndex);
 
         double[] result = new double[endIndex - startIndex + 1];
         // min() is used to avoid exceptions due to parallel insertions
@@ -209,7 +206,6 @@ public class OverlayPositionsModel implements PositionsModel {
 
     public double[] getDistancesFromStart(int[] indices) {
         if (getRoute().getCharacteristics().equals(Track)) {
-            System.out.println("getTrackDistancesFromStart indices=" + indices.length);
             return getRoute().getDistancesFromStart(indices);
         }
 
