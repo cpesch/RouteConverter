@@ -68,15 +68,19 @@ public class Directories {
         return ensureDirectory(new File(directory));
     }
 
-    public synchronized static File getTemporaryDirectory() {
-        return ensureDirectory(temporaryDirectory);
-    }
-
     public synchronized static File getApplicationDirectory() {
         return ensureDirectory(applicationDirectory);
     }
 
     public synchronized static File getApplicationDirectory(String subDirectory) {
         return ensureDirectory(getApplicationDirectory() + separator + subDirectory);
+    }
+
+    public synchronized static File getRoutesDirectory() {
+        return getApplicationDirectory("routes");
+    }
+
+    public synchronized static File getTemporaryDirectory() {
+        return ensureDirectory(temporaryDirectory);
     }
 }

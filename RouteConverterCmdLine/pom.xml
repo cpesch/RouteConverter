@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>RouteConverterCmdLine</artifactId>
     <packaging>jar</packaging>
-    <name>The RouteConverter command line tool</name>
+    <name>RouteConverter as a command line tool</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>

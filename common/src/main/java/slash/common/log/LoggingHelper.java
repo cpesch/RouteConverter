@@ -24,6 +24,7 @@ import java.io.*;
 import java.util.logging.*;
 
 import static java.util.logging.Level.*;
+import static slash.common.io.Directories.getTemporaryDirectory;
 
 /**
  * Allows to control log output
@@ -32,8 +33,9 @@ import static java.util.logging.Level.*;
  */
 
 public class LoggingHelper {
-    private static PrintStream stdout = System.out, stderr = System.err;
+    private static final PrintStream stdout = System.out, stderr = System.err;
     private static final int LOG_SIZE = 5 * 1024 * 1024;
+    private static final String ROUTE_CONVERTER_LOG_FILE = "RouteConverter.log";
     private static LoggingHelper instance;
 
     private LoggingHelper() {
@@ -46,7 +48,7 @@ public class LoggingHelper {
     }
 
     private FileHandler createFileHandler() throws IOException {
-        FileHandler fileHandler = new FileHandler("%t/RouteConverter.log", LOG_SIZE, 1, true);
+        FileHandler fileHandler = new FileHandler("%t/" + ROUTE_CONVERTER_LOG_FILE, LOG_SIZE, 1, true);
         fileHandler.setLevel(ALL);
         fileHandler.setFilter(FILTER);
         fileHandler.setFormatter(new SimpleFormatter());
@@ -117,7 +119,7 @@ public class LoggingHelper {
         try {
             logAsString = readFile(logFile);
         } catch (IOException e) {
-            logAsString = "Cannot read file " + logFile + ":" + e;
+            logAsString = "Cannot read log file " + logFile + " to string:" + e;
         }
 
         logToFile();
@@ -126,11 +128,11 @@ public class LoggingHelper {
 
     private static final Filter FILTER = record ->
             record.getLoggerName().startsWith("slash") ||
-            record.getLoggerName().startsWith("com.graphhopper") ||
-            (record.getLoggerName().startsWith("org.mapsforge") && !record.getLoggerName().contains("TileDownloadThread"));
+                    record.getLoggerName().startsWith("com.graphhopper") ||
+                    (record.getLoggerName().startsWith("org.mapsforge") && !record.getLoggerName().contains("TileDownloadThread"));
 
     private File getLogFile() {
-        return new File(System.getProperty("java.io.tmpdir"), "RouteConverter.log");
+        return new File(getTemporaryDirectory(), ROUTE_CONVERTER_LOG_FILE);
     }
 
     private String readFile(File file) throws IOException {

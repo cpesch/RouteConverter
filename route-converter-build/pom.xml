@@ -24,7 +24,7 @@
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <!-- workaround for https://issues.apache.org/jira/browse/MASSEMBLY-603 -->
         <maven.build.timestamp.clone>${maven.build.timestamp}</maven.build.timestamp.clone>
-    </properties>
+   </properties>
 
     <build>
         <plugins>
@@ -50,6 +50,18 @@
                     <doUpdate>false</doUpdate>
                     <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>parse-version</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

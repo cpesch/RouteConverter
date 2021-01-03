@@ -37,5 +37,5 @@ Xiaoming Huang, Mandy Wang, LXLXJ for the Chinese translation
 
 Of course a lot more people helped. If your name is missing drop me an email or a patch!
 
-Have fun!
+Have fun
 Christian

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>mapsforge-mbtiles</artifactId>
     <packaging>jar</packaging>
-    <name>Read MBTiles files and render them as a mapsforge Layer</name>
+    <name>Read and render MBTiles as mapsforge Layer</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>

@@ -69,7 +69,7 @@ public abstract class SingleFrameApplication extends Application {
             for (GraphicsDevice device : devices) {
                 if (deviceId.equals(device.getIDstring())) {
                     gc = device.getDefaultConfiguration();
-                    log.info("Graphics device is " + deviceId);
+                    log.fine("Using graphics device: " + deviceId);
                     break;
                 }
             }
@@ -111,7 +111,7 @@ public abstract class SingleFrameApplication extends Application {
 
         Rectangle bounds = frame.getGraphicsConfiguration().getBounds();
         Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(frame.getGraphicsConfiguration());
-        log.info("Screen size is " + bounds + ", insets are " + insets);
+        log.info("Screen size: " + bounds + ", insets are " + insets);
 
         int state = getPreferencesState();
         int width = crop("width", getPreferenceWidth(),
@@ -126,7 +126,6 @@ public abstract class SingleFrameApplication extends Application {
             height = (int)bounds.getHeight() - (insets.top + insets.bottom);
         if (width > 120 && height > 60)
             frame.setSize(width, height);
-        log.info("Frame size is " + frame.getSize());
 
         int x = crop("x", getPreferencesX(),
                 (int) bounds.getX() + insets.left,
@@ -140,10 +139,10 @@ public abstract class SingleFrameApplication extends Application {
             y = insets.top;
         if (x != -1 && y != -1)
             frame.setLocation(x, y);
-        log.info("Frame location is " + frame.getLocation());
+        log.info("Frame size: " + frame.getSize() + ", frame location: " + frame.getLocation());
 
         frame.setExtendedState(state);
-        log.info("Frame state is " + frame.getExtendedState());
+        log.fine("Frame state: " + frame.getExtendedState());
 
         frame.setVisible(true);
         frame.toFront();
@@ -194,11 +193,11 @@ public abstract class SingleFrameApplication extends Application {
 
         preferences.putInt(X_PREFERENCE, x);
         preferences.putInt(Y_PREFERENCE, y);
-        log.info("Storing frame location as " + frame.getLocation());
+        log.fine("Storing frame location as " + frame.getLocation());
 
         String deviceId = frame.getGraphicsConfiguration().getDevice().getIDstring();
         preferences.put(DEVICE_PREFERENCE, deviceId);
-        log.info("Storing graphics device as " + deviceId);
+        log.fine("Storing graphics device as " + deviceId);
     }
 
     private void putPreferencesSize() {
@@ -209,7 +208,7 @@ public abstract class SingleFrameApplication extends Application {
 
         preferences.putInt(WIDTH_PREFERENCE, width);
         preferences.putInt(HEIGHT_PREFERENCE, height);
-        log.info("Storing frame size as " + frame.getSize());
+        log.fine("Storing frame size as " + frame.getSize());
     }
 
     private void putPreferencesState() {
@@ -218,7 +217,7 @@ public abstract class SingleFrameApplication extends Application {
             return;
 
         preferences.putInt(STATE_PREFERENCE, state);
-        log.info("Storing frame state as " + state);
+        log.fine("Storing frame state as " + state);
     }
 
     void closeFrame() {

@@ -92,6 +92,7 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.LocaleHelper.*;
 import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.*;
 import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
@@ -265,8 +266,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void initializeLogging() {
         LoggingHelper loggingHelper = LoggingHelper.getInstance();
         loggingHelper.logToFileAndConsole();
-        log.info("Started " + getTitle() + " for " + parseVersionFromManifest().getOperationSystem() + " with locale " + Locale.getDefault() +
-                " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
+        log.info(format("Started %s for %s with locale %s on %s and %s with %d MByte maximum heap",
+                getTitle(), parseVersionFromManifest().getOperationSystem(), Locale.getDefault(), getJava(), getPlatform(), getMaximumMemory()));
+        log.info(format("java.io.tmpdir: %s, user.home: %s, Application directory: %s, Temporary directory: %s",
+                System.getProperty("java.io.tmpdir"), System.getProperty("user.home"), getApplicationDirectory(), getTemporaryDirectory()));
     }
 
     private List<String> getLanguagesWithActiveTranslators() {
@@ -372,7 +375,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     public synchronized void setMapView(MapViewImplementation mapViewImplementation) {
-        log.info("Using map view " + mapViewImplementation);
+        log.info("Using map view: " + mapViewImplementation);
         setMapViewPreference(mapViewImplementation);
 
         if (isMapViewAvailable()) {

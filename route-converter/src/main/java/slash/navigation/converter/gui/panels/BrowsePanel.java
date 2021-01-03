@@ -67,7 +67,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
@@ -82,6 +81,7 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.tree.TreeSelectionModel.CONTIGUOUS_TREE_SELECTION;
+import static slash.common.io.Directories.getRoutesDirectory;
 import static slash.common.io.Files.createReadablePath;
 import static slash.navigation.base.RouteComments.createRouteDescription;
 import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavor;
@@ -106,9 +106,6 @@ import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 
 public class BrowsePanel implements PanelInTab {
     private static final Logger log = Logger.getLogger(BrowsePanel.class.getName());
-    private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
-
-    private static final String LOCAL_CATALOG_ROOT_FOLDER_PREFERENCE = "localCatalogRootFolder";
 
     private JPanel browsePanel;
     private JTree treeCategories;
@@ -273,16 +270,7 @@ public class BrowsePanel implements PanelInTab {
     }
 
     private String createRootFolder() {
-        String rootFolderPreference = preferences.get(LOCAL_CATALOG_ROOT_FOLDER_PREFERENCE,
-                new File(System.getProperty("user.home"), RouteConverter.getBundle().getString("local-catalog")).getAbsolutePath());
-        File rootFolder = new File(rootFolderPreference);
-        if (!rootFolder.exists()) {
-            if (!rootFolder.mkdirs()) {
-                log.severe("Cannot create local catalog root folder " + rootFolder);
-                getOperator().handleServiceError(new FileNotFoundException(rootFolder.getAbsolutePath()));
-            }
-        }
-        return rootFolder.getAbsolutePath();
+        return getRoutesDirectory().getAbsolutePath();
     }
 
     public Component getRootComponent() {

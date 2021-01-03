@@ -59,7 +59,7 @@ How to develop for RouteConverter
 
    Let JAVA_HOME refer to the Java 8 SDK
    
-       set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_241
+       set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_271
                                                                     
    Let M2_HOME refer to your Maven 3 Installation
    
