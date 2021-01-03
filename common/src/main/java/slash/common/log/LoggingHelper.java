@@ -48,7 +48,7 @@ public class LoggingHelper {
     }
 
     private FileHandler createFileHandler() throws IOException {
-        FileHandler fileHandler = new FileHandler("%t/" + ROUTE_CONVERTER_LOG_FILE, LOG_SIZE, 1, true);
+        FileHandler fileHandler = new FileHandler("%t/routeconverter/" + ROUTE_CONVERTER_LOG_FILE, LOG_SIZE, 1, true);
         fileHandler.setLevel(ALL);
         fileHandler.setFilter(FILTER);
         fileHandler.setFormatter(new SimpleFormatter());
