@@ -45,13 +45,16 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(alignment);
         NavigationPosition position = (NavigationPosition) value;
-        formatCell(label, position);
+        if (position != null)
+            formatCell(label, position);
+        else
+            label.setText("");
         return label;
     }
 
     protected abstract void formatCell(JLabel label, NavigationPosition position);
 
-    private DefaultCellEditor editor = new DefaultCellEditor(new JTextField());
+    private final DefaultCellEditor editor = new DefaultCellEditor(new JTextField());
     {
         editor.setClickCountToStart(2);
     }
