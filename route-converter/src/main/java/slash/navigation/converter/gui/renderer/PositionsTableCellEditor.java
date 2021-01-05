@@ -45,6 +45,7 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(alignment);
         NavigationPosition position = (NavigationPosition) value;
+        // should never happen, but on some iMac from 2013 position was consistently null
         if (position != null)
             formatCell(label, position);
         else
