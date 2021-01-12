@@ -23,7 +23,6 @@ import com.bulenkov.iconloader.IconLoader;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.common.io.Files;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.*;
 import slash.navigation.common.DistanceAndTime;
@@ -145,6 +144,7 @@ public class ConvertPanel implements PanelInTab {
     private PositionsSelectionModel positionsSelectionModel;
     private CharacteristicsModel characteristicsModel;
     private LengthCalculator lengthCalculator;
+    private PositionsTableHeaderMenu tableHeaderMenu;
 
     private JPanel convertPanel;
     private JLabel labelFormat;
@@ -166,7 +166,6 @@ public class ConvertPanel implements PanelInTab {
     private JButton buttonDeletePosition;
     private JButton buttonMovePositionDown;
     private JButton buttonMovePositionToBottom;
-    private PositionsTableHeaderMenu tableHeaderMenu;
 
     public ConvertPanel() {
         $$$setupUI$$$();
