@@ -20,11 +20,13 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
 
 /**
  * Renders the time column of the positions table.
@@ -43,5 +45,16 @@ public class TimeColumnTableCellEditor extends PositionsTableCellEditor {
 
     protected String extractValue(NavigationPosition position) {
         return extractTime(position);
+    }
+
+    protected void formatLabel(JLabel label, Object value, boolean firstRow, boolean lastRow) {
+        if(value instanceof CompactCalendar) {
+            CompactCalendar time = (CompactCalendar) value;
+            label.setText(formatTime(time));
+        } else if(value instanceof NavigationPosition) {
+            NavigationPosition position = (NavigationPosition) value;
+            formatCell(label, position);
+        } else
+            label.setText("");
     }
 }

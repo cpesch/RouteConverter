@@ -242,9 +242,7 @@ public class OverlayPositionsModel implements PositionsModel {
     private long[] getTrackTimesFromStart(int startIndex, int endIndex) {
         if (trackTimesFromStart == null) {
             trackTimesFromStart = getRoute().getTimesFromStart(0, getRoute().getPositionCount() - 1);
-            System.out.println("getTrackTimesFromStart startIndex=" + startIndex + " endIndex=" + endIndex);
-        } else
-            System.out.println("CACHED getTrackTimesFromStart startIndex=" + startIndex + " endIndex=" + endIndex);
+        }
 
         long[] result = new long[endIndex - startIndex + 1];
         arraycopy(trackTimesFromStart, startIndex, result, 0, result.length);
@@ -268,7 +266,6 @@ public class OverlayPositionsModel implements PositionsModel {
 
     public long[] getTimesFromStart(int[] indices) {
         if (getRoute().getCharacteristics().equals(Track)) {
-            System.out.println("getTrackTimesFromStart indices=" + indices.length);
             return getRoute().getTimesFromStart(indices);
         }
 
@@ -365,8 +362,10 @@ public class OverlayPositionsModel implements PositionsModel {
                 return getDistance(rowIndex);
             case DISTANCE_DIFFERENCE_COLUMN_INDEX:
                 return getDistanceDifference(rowIndex);
-            case TIME_COLUMN_INDEX:
-                return getTime(rowIndex);
+// Time may have two functions: displaying the route time and the time from the datetime of a track: for now, stick to the second
+//            case TIME_COLUMN_INDEX:
+//                if (getRoute().getCharacteristics().equals(Route))
+//                    return getTime(rowIndex);
             case ELEVATION_ASCEND_COLUMN_INDEX:
                 return getRoute().getElevationAscend(0, rowIndex);
             case ELEVATION_DESCEND_COLUMN_INDEX:

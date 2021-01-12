@@ -43,27 +43,27 @@ public class WaypointTypeColumnTableCellEditor extends PositionsTableCellEditor 
         super(LEFT);
     }
 
-    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
-        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
-        NavigationPosition position = (NavigationPosition) value;
+    protected void formatLabel(JLabel label, Object value, boolean firstRow, boolean lastRow) {
+        if(value instanceof NavigationPosition) {
+            NavigationPosition position = (NavigationPosition) value;
+            String key = null;
+            if (lastRow)
+                key = "end";
+            else if (firstRow)
+                key = "start";
+            else {
+                WaypointType waypointType = getWaypointType(position);
+                if (waypointType != null && waypointType != Waypoint)
+                    key = waypointType.name().toLowerCase();
+            }
 
-        String key = null;
-        if (rowIndex == table.getRowCount() - 1)
-            key = "end";
-        else if (rowIndex == 0)
-            key = "start";
-        else {
-            WaypointType waypointType = getWaypointType(position);
-            if (waypointType != null && waypointType != Waypoint)
-                key = waypointType.name().toLowerCase();
-        }
+            Icon icon = null;
+            if (key != null)
+                icon = IconLoader.getIcon("/slash/navigation/converter/gui/waypoint-type/" + key + ".png");
 
-        Icon icon = null;
-        if (key != null)
-            icon = IconLoader.getIcon("/slash/navigation/converter/gui/waypoint-type/" + key + ".png");
-
-        label.setIcon(icon);
-        return label;
+            label.setIcon(icon);
+        } else
+            label.setText("");
     }
 
     protected void formatCell(JLabel label, NavigationPosition position) {

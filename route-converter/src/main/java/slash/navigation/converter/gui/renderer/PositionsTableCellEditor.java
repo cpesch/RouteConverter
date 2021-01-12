@@ -44,13 +44,16 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         label.setHorizontalAlignment(alignment);
-        NavigationPosition position = (NavigationPosition) value;
-        // should never happen, but on some iMac from 2013 position was consistently null
-        if (position != null)
-            formatCell(label, position);
-        else
-            label.setText("");
+        formatLabel(label, value, rowIndex == 0, rowIndex == table.getRowCount() - 1);
         return label;
+    }
+
+    protected void formatLabel(JLabel label, Object value, boolean firstRow, boolean lastRow) {
+        if(value instanceof NavigationPosition) {
+            NavigationPosition position = (NavigationPosition) value;
+            formatCell(label, position);
+        } else
+            label.setText("");
     }
 
     protected abstract void formatCell(JLabel label, NavigationPosition position);
@@ -89,9 +92,12 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
     }
 
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        NavigationPosition position = (NavigationPosition) value;
-        Object editedValue = extractValue(position);
-        return editor.getTableCellEditorComponent(table, editedValue, isSelected, row, column);
+        if (value instanceof NavigationPosition) {
+            NavigationPosition position = (NavigationPosition) value;
+            Object editedValue = extractValue(position);
+            return editor.getTableCellEditorComponent(table, editedValue, isSelected, row, column);
+        } else
+            return editor.getTableCellEditorComponent(table, value, isSelected, row, column);
     }
 
     protected abstract String extractValue(NavigationPosition position);
