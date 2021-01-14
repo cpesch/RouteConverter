@@ -38,13 +38,13 @@ import static slash.navigation.gui.helpers.WindowHelper.*;
  */
 
 public abstract class FrameAction extends AbstractAction implements ActionListener {
-    private static ThreadLocal<ActionEvent> ACTION_EVENT = new ThreadLocal<>();
+    private static final ThreadLocal<ActionEvent> ACTION_EVENT = new ThreadLocal<>();
 
     protected ActionEvent getEvent() {
         return ACTION_EVENT.get();
     }
 
-    public final void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         ACTION_EVENT.set(e);
         startWaitCursor(getFrame().getRootPane());
         try {

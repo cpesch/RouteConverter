@@ -59,7 +59,7 @@ import static slash.common.type.CompactCalendar.UTC;
  * @author Unknown
  */
 
-public final class ISO8601 {
+public class ISO8601 {
     private static final DecimalFormat XX_FORMAT = new DecimalFormat("00");
     private static final DecimalFormat XXX_FORMAT = new DecimalFormat("000");
     private static final DecimalFormat XXXX_FORMAT = new DecimalFormat("0000");

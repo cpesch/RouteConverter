@@ -36,7 +36,7 @@ class DatabaseRenderer {
                 bitmap = graphicFactory.createTileBitmap(inputStream, rendererJob.tile.tileSize, rendererJob.hasAlpha);
                 bitmap.scaleTo(rendererJob.tile.tileSize, rendererJob.tile.tileSize);
             }
-            bitmap.setTimestamp(rendererJob.databaseRenderer.getDataTimestamp(rendererJob.tile));
+            bitmap.setTimestamp(rendererJob.getDatabaseRenderer().getDataTimestamp(rendererJob.tile));
             return bitmap;
         } catch (Exception e) {
             LOGGER.warning("Error while rendering job " + rendererJob + ": " + e.getMessage());

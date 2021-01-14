@@ -46,7 +46,7 @@ public abstract class DialogAction implements ActionListener {
         return dialog;
     }
 
-    public final void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {
         startWaitCursor(getDialog().getRootPane());
         try {
             run();

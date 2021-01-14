@@ -71,7 +71,7 @@ public abstract class Application {
         application = theApplication;
     }
 
-    public final ApplicationContext getContext() {
+    public ApplicationContext getContext() {
         return context;
     }
 

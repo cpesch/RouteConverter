@@ -38,7 +38,7 @@ import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
  * @author Christian Pesch
  */
 
-public final class RFC2616 {
+public class RFC2616 {
     private static final String RFC1123_DATE = "EEE, dd MMM yyyy HH:mm:ss zzz";
     private static final TimeZone GMT = getTimeZone("GMT");
 
