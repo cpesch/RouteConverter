@@ -436,7 +436,7 @@ public class OverlayPositionsModel implements PositionsModel {
             else if (index > lastIndex)
                 lastIndex = index;
         }
-        // second two events for the columns and filter out the second everywhere exception during the rendering of the JTable
+        // send two events for the columns and filter out the second everywhere exception during the rendering of the JTable
         fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
         fireTableRowsUpdated(firstIndex, lastIndex, TIME_COLUMN_INDEX);
     }
