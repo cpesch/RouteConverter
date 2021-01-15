@@ -49,8 +49,10 @@ public class TableModelToComboBoxModelAdapter<E extends Item> implements ComboBo
         // since DefaultComboBoxModel communicates changes of the selected item like this
         selectedDelegate.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                for (ListDataListener listener : listToTableListener.keySet())
-                    listener.contentsChanged(new ListDataEvent(this, CONTENTS_CHANGED, -1, -1));
+                synchronized (TableModelToComboBoxModelAdapter.this) {
+                    for (ListDataListener listener : listToTableListener.keySet())
+                        listener.contentsChanged(new ListDataEvent(this, CONTENTS_CHANGED, -1, -1));
+                }
             }
         });
     }
@@ -64,13 +66,13 @@ public class TableModelToComboBoxModelAdapter<E extends Item> implements ComboBo
         return (E) modelDelegate.getValueAt(index, -1);
     }
 
-    public void addListDataListener(ListDataListener listener) {
+    public synchronized void addListDataListener(ListDataListener listener) {
         TableModelToListDataListenerAdapter adapter = new TableModelToListDataListenerAdapter(listener);
         listToTableListener.put(listener, adapter);
         modelDelegate.addTableModelListener(adapter);
     }
 
-    public void removeListDataListener(ListDataListener listener) {
+    public synchronized void removeListDataListener(ListDataListener listener) {
         TableModelListener adapter = listToTableListener.get(listener);
         if (adapter != null)
             modelDelegate.removeTableModelListener(adapter);
