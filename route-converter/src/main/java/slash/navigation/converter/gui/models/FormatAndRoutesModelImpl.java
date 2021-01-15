@@ -22,13 +22,12 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.*;
 import slash.navigation.converter.gui.helpers.AbstractListDataListener;
-import slash.navigation.gui.events.IgnoreEvent;
 
 import javax.swing.*;
 import javax.swing.event.*;
 import java.util.List;
 
-import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.IgnoreEvent.IGNORE;
 import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
@@ -54,8 +53,8 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
                 // ignore events following setSelectedRoute()
                 if (isFirstToLastRow(e))
                     return;
-                // ignore distance column updates from the overlay position model
-                if (e.getColumn() == DISTANCE_COLUMN_INDEX)
+                // ignore distance and time column updates from the overlay position model
+                if (e.getColumn() == DISTANCE_COLUMN_INDEX || e.getColumn() == TIME_COLUMN_INDEX)
                     return;
                 setModified(true);
             }

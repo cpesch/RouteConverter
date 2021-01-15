@@ -89,17 +89,21 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         if (getPositions().isContinousRange())
             return;
         int columnIndex = e.getColumn();
-        // do a full update for routes to avoid IndexOutOfBoundsException from the depths of XYSeries
-        if (isFirstToLastRow(e) ||
-                (getPositions().getRoute().getCharacteristics().equals(Route) && columnIndex == DISTANCE_COLUMN_INDEX)) {
+        if (isFirstToLastRow(e)) {
+            // do a full update for routes to avoid IndexOutOfBoundsException from the depths of XYSeries
             handleFullUpdate();
+        } else if (getPositions().getRoute().getCharacteristics().equals(Route) &&
+                (columnIndex == DISTANCE_COLUMN_INDEX || columnIndex == TIME_COLUMN_INDEX)) {
+            // handle distance and time column updates from the overlay position model - but only once
+            if(columnIndex == DISTANCE_COLUMN_INDEX)
+                handleFullUpdate();
         } else {
             int firstRow = e.getFirstRow();
             int lastRow = e.getLastRow();
             // ignored updates on columns not displayed
             if (columnIndex == LONGITUDE_COLUMN_INDEX ||
                     columnIndex == LATITUDE_COLUMN_INDEX ||
-                    // don't do to avoid IndexOutOfBoundsException: columnIndex == DISTANCE_COLUMN_INDEX ||
+                    // don't do to avoid IndexOutOfBoundsException: columnIndex == DISTANCE_AND_TIME_COLUMN_INDEX ||
                     columnIndex == ALL_COLUMNS) {
                 handleIntervalXUpdate(firstRow, lastRow);
             } else if (columnIndex == ELEVATION_COLUMN_INDEX ||

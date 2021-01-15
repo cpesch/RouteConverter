@@ -86,9 +86,10 @@ public class OverlayPositionsModel implements PositionsModel {
                 // clear overlay when route characteristics is changed
                 clearOverlay();
 
-                // when switching to/from Waypoints fire an event so that the distance column and the table get updated
-                if (getRowCount() > 0)
-                    delegate.fireTableRowsUpdated(0, MAX_VALUE, DISTANCE_COLUMN_INDEX);
+                // when switching to/from Waypoints fire an event so that the distance and time  column get updated
+                if (getRowCount() > 0) {
+                    fireTableRowsUpdated(0, MAX_VALUE, DISTANCE_COLUMN_INDEX);
+                }
             }
         });
     }
@@ -194,7 +195,7 @@ public class OverlayPositionsModel implements PositionsModel {
         double distance = 0.0;
         while (index <= endIndex) {
             DistanceAndTime distanceAndTime = indexToRouteDistanceAndTime.get(index);
-            if(distanceAndTime != null && distanceAndTime.getDistance() != null)
+            if (distanceAndTime != null && distanceAndTime.getDistance() != null)
                 distance = distanceAndTime.getDistance();
             if (index >= startIndex)
                 result[index - startIndex] = distance;
@@ -362,10 +363,10 @@ public class OverlayPositionsModel implements PositionsModel {
                 return getDistance(rowIndex);
             case DISTANCE_DIFFERENCE_COLUMN_INDEX:
                 return getDistanceDifference(rowIndex);
-// Time may have two functions: displaying the route time and the time from the datetime of a track: for now, stick to the second
-//            case TIME_COLUMN_INDEX:
-//                if (getRoute().getCharacteristics().equals(Route))
-//                    return getTime(rowIndex);
+            case TIME_COLUMN_INDEX:
+                if (getRoute().getCharacteristics().equals(Route))
+                    return getTime(rowIndex);
+                break;
             case ELEVATION_ASCEND_COLUMN_INDEX:
                 return getRoute().getElevationAscend(0, rowIndex);
             case ELEVATION_DESCEND_COLUMN_INDEX:
@@ -385,7 +386,7 @@ public class OverlayPositionsModel implements PositionsModel {
                 File file = wgs84Position.getOrigin(File.class);
                 if (file != null && file.exists()) {
                     BufferedImage resize = resize(file, IMAGE_HEIGHT_FOR_IMAGE_COLUMN);
-                    if(resize != null) {
+                    if (resize != null) {
                         imageAndFile = new ImageAndFile(new ImageIcon(resize), file);
                         indexToImageAndFile.put(rowIndex, imageAndFile);
                     }
@@ -401,7 +402,7 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     private Double getDistanceDifference(int rowIndex) {
-        if(getRoute().getCharacteristics().equals(Track)) {
+        if (getRoute().getCharacteristics().equals(Track)) {
             return getRoute().getDistanceDifference(rowIndex);
         }
 
@@ -410,10 +411,10 @@ public class OverlayPositionsModel implements PositionsModel {
             DistanceAndTime previous = rowIndex > 1 ? indexToRouteDistanceAndTime.get(rowIndex - 1) :
                     rowIndex == 1 ? ZERO : null;
             DistanceAndTime current = indexToRouteDistanceAndTime.get(rowIndex);
-            if(previous != null && current != null) {
+            if (previous != null && current != null) {
                 Double d1 = previous.getDistance();
                 Double d2 = current.getDistance();
-                if(d1 != null && d2 != null)
+                if (d1 != null && d2 != null)
                     return d2 - d1;
             }
         }
@@ -435,7 +436,9 @@ public class OverlayPositionsModel implements PositionsModel {
             else if (index > lastIndex)
                 lastIndex = index;
         }
-        delegate.fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
+        // second two events for the columns and filter out the second everywhere exception during the rendering of the JTable
+        fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
+        fireTableRowsUpdated(firstIndex, lastIndex, TIME_COLUMN_INDEX);
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
