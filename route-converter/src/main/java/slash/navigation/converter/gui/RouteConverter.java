@@ -1331,7 +1331,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
             updateElevationServices();
             updateRoutingServices();
-            downloadThirdparty();
+            downloadDependencies();
 
             scanRemoteMapsAndThemes();
             scanForFilesMissingInQueue();
@@ -1349,7 +1349,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     protected abstract void updateRoutingServices();
 
-    private void downloadThirdparty() {
+    protected void downloadDependencies() {
         if (isMac() || isWindows())
             getDownloadManager().executeDownload("GPSBabel for " + getOperationSystem(),
                     "https://static.routeconverter.com/thirdparty/" + "gpsbabel-" + getOperationSystem() + ".zip",

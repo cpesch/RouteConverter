@@ -292,58 +292,22 @@ public class BRouter extends BaseRoutingService {
         return (latitude / 1000000.0) - 90.0;
     }
 
-    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        Collection<String> uris = new HashSet<>();
-        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            uris.addAll(createFileKeys(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
+
+    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+        Collection<Downloadable> downloadables = getDownloadablesFor(boundingBoxes);
+        long notExists = 0L;
+        for (Downloadable downloadable : downloadables) {
+            Long contentLength = downloadable.getLatestChecksum().getContentLength();
+            if (contentLength == null)
+                continue;
+
+            java.io.File file = createSegmentFile(downloadable.getUri());
+            if (!file.exists())
+                notExists += contentLength;
         }
-
-        final Collection<Downloadable> notExistingSegments = new HashSet<>();
-        if (isInitialized()) {
-            for (String key : uris) {
-                Downloadable downloadable = getSegments().getDownloadable(key);
-                if (downloadable != null) {
-                    if (!createSegmentFile(downloadable.getUri()).exists())
-                        notExistingSegments.add(downloadable);
-                }
-            }
-        }
-
-        final Collection<Downloadable> notExistingProfiles = new HashSet<>();
-        if (isInitialized()) {
-            for (Downloadable downloadable : getProfiles().getFiles()) {
-                if (!createProfileFile(downloadable.getUri()).exists())
-                    notExistingProfiles.add(downloadable);
-            }
-        }
-
-        return new DownloadFutureImpl(notExistingProfiles, notExistingSegments);
+        return notExists;
     }
 
-    private void downloadAndWait(Collection<Downloadable> profiles, Collection<Downloadable> segments) {
-        Collection<Download> downloads = new HashSet<>();
-        for (Downloadable downloadable : profiles)
-            downloads.add(downloadProfile(downloadable));
-        for (Downloadable downloadable : segments)
-            downloads.add(downloadSegment(downloadable));
-
-        if (!downloads.isEmpty())
-            downloadManager.waitForCompletion(downloads);
-    }
-
-    private Download downloadProfile(Downloadable downloadable) {
-        String uri = downloadable.getUri();
-        String url = getProfilesBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " Routing Profile: " + uri, url, Action.valueOf(getProfiles().getAction()),
-                new FileAndChecksum(createProfileFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
-    }
-
-    private Download downloadSegment(Downloadable downloadable) {
-        String uri = downloadable.getUri();
-        String url = getSegmentsBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " Routing Segment: " + uri, url, Action.valueOf(getSegments().getAction()),
-                new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
-    }
 
     private Collection<Downloadable> getDownloadablesFor(BoundingBox boundingBox) {
         Collection<Downloadable> result = new HashSet<>();
@@ -372,19 +336,11 @@ public class BRouter extends BaseRoutingService {
         return result;
     }
 
-    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> downloadables = getDownloadablesFor(boundingBoxes);
-        long notExists = 0L;
-        for (Downloadable downloadable : downloadables) {
-            Long contentLength = downloadable.getLatestChecksum().getContentLength();
-            if (contentLength == null)
-                continue;
-
-            java.io.File file = createSegmentFile(downloadable.getUri());
-            if (!file.exists())
-                notExists += contentLength;
-        }
-        return notExists;
+    private Download downloadSegment(Downloadable downloadable) {
+        String uri = downloadable.getUri();
+        String url = getSegmentsBaseUrl() + uri;
+        return downloadManager.queueForDownload(getName() + " Routing Segment: " + uri, url, Action.valueOf(getSegments().getAction()),
+                new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 
     public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
@@ -394,22 +350,49 @@ public class BRouter extends BaseRoutingService {
         }
     }
 
-    private class DownloadFutureImpl implements DownloadFuture {
-        private final Collection<Downloadable> notExistingProfiles;
-        private final Collection<Downloadable> notExistingSegments;
+    private void downloadAndWait(Collection<Downloadable> segments) {
+        Collection<Download> downloads = new HashSet<>();
+        for (Downloadable downloadable : segments)
+            downloads.add(downloadSegment(downloadable));
 
-        public DownloadFutureImpl(Collection<Downloadable> notExistingProfiles, Collection<Downloadable> notExistingSegments) {
-            this.notExistingProfiles = notExistingProfiles;
-            this.notExistingSegments = notExistingSegments;
+        if (!downloads.isEmpty())
+            downloadManager.waitForCompletion(downloads);
+    }
+
+    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        Collection<String> uris = new HashSet<>();
+        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
+            uris.addAll(createFileKeys(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
+        }
+
+        Collection<Downloadable> segments = new HashSet<>();
+        if (isInitialized()) {
+            for (String key : uris) {
+                Downloadable downloadable = getSegments().getDownloadable(key);
+                if (downloadable != null) {
+                    if (!createSegmentFile(downloadable.getUri()).exists())
+                        segments.add(downloadable);
+                }
+            }
+        }
+
+        return new DownloadFutureImpl(segments);
+    }
+
+    private class DownloadFutureImpl implements DownloadFuture {
+        private final Collection<Downloadable> segments;
+
+        public DownloadFutureImpl(Collection<Downloadable> segments) {
+            this.segments = segments;
         }
 
         public boolean isRequiresDownload() {
-            return !notExistingProfiles.isEmpty() || !notExistingSegments.isEmpty();
+            return !segments.isEmpty();
         }
 
         public void download() {
             fireDownloading();
-            downloadAndWait(notExistingProfiles, notExistingSegments);
+            downloadAndWait(segments);
         }
 
         public boolean isRequiresProcessing() {
@@ -425,6 +408,23 @@ public class BRouter extends BaseRoutingService {
 
         public void nextDownload() {
             throw new UnsupportedOperationException();
+        }
+    }
+
+
+    private void downloadProfile(Downloadable downloadable) {
+        String uri = downloadable.getUri();
+        String url = getProfilesBaseUrl() + uri;
+        downloadManager.queueForDownload(getName() + " Routing Profile: " + uri, url, Action.valueOf(getProfiles().getAction()),
+                new FileAndChecksum(createProfileFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+    }
+
+    public void downloadProfiles() {
+        if (isInitialized()) {
+            for (Downloadable downloadable : getProfiles().getFiles()) {
+                if (!createProfileFile(downloadable.getUri()).exists())
+                    downloadProfile(downloadable);
+            }
         }
     }
 }

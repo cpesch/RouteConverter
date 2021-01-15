@@ -195,6 +195,13 @@ public class RouteConverterOpenSource extends RouteConverter {
         }
     }
 
+    protected void downloadDependencies() {
+        super.downloadDependencies();
+
+        BRouter router = getRoutingServiceFacade().getRoutingService(BRouter.class);
+        router.downloadProfiles();
+    }
+
     private NotificationManager getNotificationManager() {
         return Application.getInstance().getContext().getNotificationManager();
     }
