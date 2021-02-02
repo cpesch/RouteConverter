@@ -157,10 +157,11 @@ public class MapsforgeMapView extends BaseMapView {
     private MapViewCallbackOpenSource mapViewCallback;
 
     private PositionsModelListener positionsModelListener = new PositionsModelListener();
+    private RoutingPreferencesListener routingPreferencesListener = new RoutingPreferencesListener();
     private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
+    private UnitSystemListener unitSystemListener = new UnitSystemListener();
     private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
     private RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
-    private UnitSystemListener unitSystemListener = new UnitSystemListener();
     private DisplayedMapListener displayedMapListener = new DisplayedMapListener();
     private AppliedThemeListener appliedThemeListener = new AppliedThemeListener();
     private AppliedOverlayListener appliedOverlayListener = new AppliedOverlayListener();
@@ -334,6 +335,7 @@ public class MapsforgeMapView extends BaseMapView {
         this.updateDecoupler = new UpdateDecoupler();
 
         positionsModel.addTableModelListener(positionsModelListener);
+        preferencesModel.getRoutingPreferencesModel().addChangeListener(routingPreferencesListener);
         preferencesModel.getCharacteristicsModel().addListDataListener(characteristicsModelListener);
         preferencesModel.getUnitSystemModel().addChangeListener(unitSystemListener);
         preferencesModel.getShowCoordinatesModel().addChangeListener(showCoordinatesListener);
@@ -707,6 +709,7 @@ public class MapsforgeMapView extends BaseMapView {
         mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().removeTableModelListener(appliedOverlayListener);
 
         positionsModel.removeTableModelListener(positionsModelListener);
+        preferencesModel.getRoutingPreferencesModel().removeChangeListener(routingPreferencesListener);
         preferencesModel.getCharacteristicsModel().removeListDataListener(characteristicsModelListener);
         preferencesModel.getUnitSystemModel().removeChangeListener(unitSystemListener);
         preferencesModel.getShowCoordinatesModel().removeChangeListener(showCoordinatesListener);
@@ -1058,11 +1061,6 @@ public class MapsforgeMapView extends BaseMapView {
         getMapManager().scanThemes();
     }
 
-    public void routingPreferencesChanged() {
-        if (positionsModel.getRoute().getCharacteristics().equals(Route))
-            updateDecoupler.replaceRoute();
-    }
-
     public void movePosition(PositionWithLayer positionWithLayer, Double longitude, Double latitude) {
         final int row = positionsModel.getIndex(positionWithLayer.getPosition());
         if(row == -1) {
@@ -1327,6 +1325,13 @@ public class MapsforgeMapView extends BaseMapView {
                 waypointIcon = null;
             }
             updateDecoupler.replaceRoute();
+        }
+    }
+
+    private class RoutingPreferencesListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            if (positionsModel.getRoute().getCharacteristics().equals(Route))
+                updateDecoupler.replaceRoute();
         }
     }
 

@@ -46,6 +46,7 @@ import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.mapview.MapView;
+import slash.navigation.routing.RoutingPreferencesModel;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
@@ -247,7 +248,7 @@ public class OptionsDialog extends SimpleDialog {
         ComboBoxModel<FixMapMode> fixMapModeModel = new DefaultComboBoxModel<>(new FixMapMode[]{
                 Automatic, Yes, No
         });
-        fixMapModeModel.setSelectedItem(r.getPreferencesModel().getFixMapModeModel().getFixMapMode());
+        fixMapModeModel.setSelectedItem(r.getMapPreferencesModel().getFixMapModeModel().getFixMapMode());
         comboBoxFixMapMode.setModel(fixMapModeModel);
         comboBoxFixMapMode.setRenderer(new FixMapModeListCellRenderer());
         comboBoxFixMapMode.addItemListener(e -> {
@@ -255,7 +256,7 @@ public class OptionsDialog extends SimpleDialog {
                 return;
             }
             FixMapMode fixMapMode = (FixMapMode) e.getItem();
-            r.getPreferencesModel().getFixMapModeModel().setFixMapMode(fixMapMode);
+            r.getMapPreferencesModel().getFixMapModeModel().setFixMapMode(fixMapMode);
         });
 
         textFieldBabelPath.getDocument().addDocumentListener(new DocumentListener() {
@@ -358,23 +359,23 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        checkBoxShowCoordinates.setSelected(r.getPreferencesModel().getShowCoordinatesModel().getBoolean());
+        checkBoxShowCoordinates.setSelected(r.getMapPreferencesModel().getShowCoordinatesModel().getBoolean());
         checkBoxShowCoordinates.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                r.getPreferencesModel().getShowCoordinatesModel().setBoolean(checkBoxShowCoordinates.isSelected());
+                r.getMapPreferencesModel().getShowCoordinatesModel().setBoolean(checkBoxShowCoordinates.isSelected());
             }
         });
 
-        checkBoxShowWaypointDescription.setSelected(r.getPreferencesModel().getShowWaypointDescriptionModel().getBoolean());
+        checkBoxShowWaypointDescription.setSelected(r.getMapPreferencesModel().getShowWaypointDescriptionModel().getBoolean());
         checkBoxShowWaypointDescription.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                r.getPreferencesModel().getShowWaypointDescriptionModel().setBoolean(checkBoxShowWaypointDescription.isSelected());
+                r.getMapPreferencesModel().getShowWaypointDescriptionModel().setBoolean(checkBoxShowWaypointDescription.isSelected());
             }
         });
         checkBoxShowWaypointDescription.setEnabled(r.isMapViewAvailable() && !r.getMapView().isDownload());
 
         DefaultComboBoxModel<RoutingService> routingServiceModel = new DefaultComboBoxModel<>();
-        for (RoutingService service : r.getRoutingServiceFacade().getRoutingServices()) {
+        for (RoutingService service : r.getRoutingServiceFacade().getRoutingPreferencesModel().getRoutingServices()) {
             routingServiceModel.addElement(service);
         }
         routingServiceModel.setSelectedItem(r.getRoutingServiceFacade().getRoutingService());
@@ -421,22 +422,22 @@ public class OptionsDialog extends SimpleDialog {
                     return;
                 }
                 TravelMode travelMode = (TravelMode) e.getItem();
-                r.getRoutingServiceFacade().setTravelMode(travelMode);
+                r.getRoutingServiceFacade().getRoutingPreferencesModel().setTravelMode(travelMode);
             }
         });
         checkBoxAvoidFerries.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                r.getRoutingServiceFacade().setAvoidFerries(checkBoxAvoidFerries.isSelected());
+                r.getRoutingServiceFacade().getRoutingPreferencesModel().setAvoidFerries(checkBoxAvoidFerries.isSelected());
             }
         });
         checkBoxAvoidHighways.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                r.getRoutingServiceFacade().setAvoidHighways(checkBoxAvoidHighways.isSelected());
+                r.getRoutingServiceFacade().getRoutingPreferencesModel().setAvoidHighways(checkBoxAvoidHighways.isSelected());
             }
         });
         checkBoxAvoidTolls.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                r.getRoutingServiceFacade().setAvoidTolls(checkBoxAvoidTolls.isSelected());
+                r.getRoutingServiceFacade().getRoutingPreferencesModel().setAvoidTolls(checkBoxAvoidTolls.isSelected());
             }
         });
 
@@ -588,15 +589,15 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        colorChooserRoute.setColor(r.getPreferencesModel().getRouteColorModel().getColor());
+        colorChooserRoute.setColor(r.getMapPreferencesModel().getRouteColorModel().getColor());
         reducePanels(colorChooserRoute);
-        colorChooserRoute.getSelectionModel().addChangeListener(e -> r.getPreferencesModel().getRouteColorModel().setColor(colorChooserRoute.getColor()));
-        colorChooserTrack.setColor(r.getPreferencesModel().getTrackColorModel().getColor());
+        colorChooserRoute.getSelectionModel().addChangeListener(e -> r.getMapPreferencesModel().getRouteColorModel().setColor(colorChooserRoute.getColor()));
+        colorChooserTrack.setColor(r.getMapPreferencesModel().getTrackColorModel().getColor());
         reducePanels(colorChooserTrack);
-        colorChooserTrack.getSelectionModel().addChangeListener(e -> r.getPreferencesModel().getTrackColorModel().setColor(colorChooserTrack.getColor()));
-        colorChooserWaypoint.setColor(r.getPreferencesModel().getWaypointColorModel().getColor());
+        colorChooserTrack.getSelectionModel().addChangeListener(e -> r.getMapPreferencesModel().getTrackColorModel().setColor(colorChooserTrack.getColor()));
+        colorChooserWaypoint.setColor(r.getMapPreferencesModel().getWaypointColorModel().getColor());
         reducePanels(colorChooserWaypoint);
-        colorChooserWaypoint.getSelectionModel().addChangeListener(e -> r.getPreferencesModel().getWaypointColorModel().setColor(colorChooserWaypoint.getColor()));
+        colorChooserWaypoint.getSelectionModel().addChangeListener(e -> r.getMapPreferencesModel().getWaypointColorModel().setColor(colorChooserWaypoint.getColor()));
 
         setMnemonic(buttonClose, "close-mnemonic");
         buttonClose.addActionListener(new DialogAction(this) {
@@ -663,30 +664,32 @@ public class OptionsDialog extends SimpleDialog {
     }
 
     private void handleRoutingServiceUpdate() {
-        RoutingServiceFacade routingServiceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
-        RoutingService service = routingServiceFacade.getRoutingService();
+        RoutingServiceFacade facade = RouteConverter.getInstance().getRoutingServiceFacade();
+        RoutingPreferencesModel preferences = facade.getRoutingPreferencesModel();
+        RoutingService service = facade.getRoutingService();
         textFieldRoutingServicePath.setEnabled(service.isDownload());
         textFieldRoutingServicePath.setText(service.isDownload() ? service.getPath() : "");
         buttonChooseRoutingServicePath.setEnabled(service.isDownload());
         checkBoxAvoidFerries.setEnabled(service.isSupportAvoidFerries());
-        checkBoxAvoidFerries.setSelected(routingServiceFacade.isAvoidFerries());
+        checkBoxAvoidFerries.setSelected(preferences.isAvoidFerries());
         checkBoxAvoidHighways.setEnabled(service.isSupportAvoidHighways());
-        checkBoxAvoidHighways.setSelected(routingServiceFacade.isAvoidHighways());
+        checkBoxAvoidHighways.setSelected(preferences.isAvoidHighways());
         checkBoxAvoidTolls.setEnabled(service.isSupportAvoidTolls());
-        checkBoxAvoidTolls.setSelected(routingServiceFacade.isAvoidTolls());
+        checkBoxAvoidTolls.setSelected(preferences.isAvoidTolls());
         updateTravelModes();
     }
 
     private void updateTravelModes() {
-        RoutingServiceFacade serviceFacade = RouteConverter.getInstance().getRoutingServiceFacade();
-        RoutingService service = serviceFacade.getRoutingService();
+        RoutingServiceFacade facade = RouteConverter.getInstance().getRoutingServiceFacade();
+        RoutingPreferencesModel preferences = facade.getRoutingPreferencesModel();
+        RoutingService service = facade.getRoutingService();
         MutableComboBoxModel<TravelMode> travelModeModel = new DefaultComboBoxModel<>();
         List<TravelMode> availableTravelModes = service.getAvailableTravelModes();
         availableTravelModes.sort(comparing(TravelMode::getName));
         for (TravelMode travelMode : availableTravelModes) {
             travelModeModel.addElement(travelMode);
         }
-        travelModeModel.setSelectedItem(serviceFacade.getTravelMode());
+        travelModeModel.setSelectedItem(preferences.getTravelMode());
         comboboxTravelMode.setModel(travelModeModel);
     }
 

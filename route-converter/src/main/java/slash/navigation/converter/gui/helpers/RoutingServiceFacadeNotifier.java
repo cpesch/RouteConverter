@@ -19,22 +19,22 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.RoutingServiceListener;
 
 import javax.swing.*;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 /**
- * Shows notifications via the {@link NotificationManager} upon {@link RoutingServiceFacadeListener} events on {@link RoutingService}s.
+ * Shows notifications via the {@link NotificationManager} upon {@link RoutingServiceListener} events on {@link RoutingService}s.
  *
  * @author Christian Pesch
  */
 
-public class RoutingServiceFacadeNotifier implements RoutingServiceFacadeListener {
+public class RoutingServiceFacadeNotifier implements RoutingServiceListener {
     private Action getAction() {
         return Application.getInstance().getContext().getActionManager().get("show-options");
     }
@@ -60,9 +60,5 @@ public class RoutingServiceFacadeNotifier implements RoutingServiceFacadeListene
     public void routing(int second) {
         String message = MessageFormat.format(getBundle().getString("running-routing"), second);
         showNotification(message);
-    }
-
-    public void preferencesChanged() {
-        RouteConverter.getInstance().getMapView().routingPreferencesChanged();
     }
 }

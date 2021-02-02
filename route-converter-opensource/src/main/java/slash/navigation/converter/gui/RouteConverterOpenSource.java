@@ -105,7 +105,7 @@ public class RouteConverterOpenSource extends RouteConverter {
             JMenu overlaysMenu = createMenu("show-overlays");
             viewMenu.add(overlaysMenu, 2);
             new OverlaysMenu(overlaysMenu, getTileServerMapManager().getAvailableOverlaysModel(), getTileServerMapManager().getAppliedOverlaysModel());
-            viewMenu.add(createCheckBoxItem("show-shaded-hills", getPreferencesModel().getShowShadedHills()), 3);
+            viewMenu.add(createCheckBoxItem("show-shaded-hills", getMapPreferencesModel().getShowShadedHills()), 3);
             viewMenu.add(new JPopupMenu.Separator(), 4);
         }
     }

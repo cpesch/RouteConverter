@@ -112,7 +112,7 @@ public class InsertPositionFacade {
             future = routingService.downloadRoutingDataFor(longitudeAndLatitudes);
         }
 
-        TravelMode travelMode = r.getRoutingServiceFacade().getTravelMode();
+        TravelMode travelMode = r.getRoutingServiceFacade().getRoutingPreferencesModel().getTravelMode();
         List<Integer> positions = insertPositions(routingService, future, travelMode, selectedPositions);
         if (positions.size() > 0)
             invokeLater(() -> r.getPositionAugmenter().addData(toArray(positions), false, true, true, false, false));

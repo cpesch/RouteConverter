@@ -123,11 +123,12 @@ public abstract class BrowserMapView extends BaseMapView {
             haveToRepaintSelection, ignoreNextZoomCallback;
 
     private PositionsModelListener positionsModelListener = new PositionsModelListener();
+    private RoutingPreferencesListener routingPreferencesListener = new RoutingPreferencesListener();
     private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
+    private UnitSystemListener unitSystemListener = new UnitSystemListener();
     private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
     private ShowWaypointDescriptionListener showWaypointDescriptionListener = new ShowWaypointDescriptionListener();
     private RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
-    private UnitSystemListener unitSystemListener = new UnitSystemListener();
     private GoogleMapsServerListener googleMapsServerListener = new GoogleMapsServerListener();
 
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
@@ -149,6 +150,7 @@ public abstract class BrowserMapView extends BaseMapView {
         initializeBrowser();
 
         positionsModel.addTableModelListener(positionsModelListener);
+        preferencesModel.getRoutingPreferencesModel().addChangeListener(routingPreferencesListener);
         preferencesModel.getCharacteristicsModel().addListDataListener(characteristicsModelListener);
         preferencesModel.getUnitSystemModel().addChangeListener(unitSystemListener);
         preferencesModel.getShowCoordinatesModel().addChangeListener(showCoordinatesListener);
@@ -307,11 +309,6 @@ public abstract class BrowserMapView extends BaseMapView {
 
     public void setThemesPath(String path) {
         throw new UnsupportedOperationException();
-    }
-
-    public void routingPreferencesChanged() {
-        if (positionsModel.getRoute().getCharacteristics().equals(Route))
-            update(false, false);
     }
 
     protected void initializeBrowserInteraction() {
@@ -754,6 +751,7 @@ public abstract class BrowserMapView extends BaseMapView {
     public void dispose() {
         if(positionsModel != null) {
             positionsModel.removeTableModelListener(positionsModelListener);
+            preferencesModel.getRoutingPreferencesModel().removeChangeListener(routingPreferencesListener);
             preferencesModel.getCharacteristicsModel().removeListDataListener(characteristicsModelListener);
             preferencesModel.getUnitSystemModel().removeChangeListener(unitSystemListener);
             preferencesModel.getShowCoordinatesModel().removeChangeListener(showCoordinatesListener);
@@ -1896,6 +1894,13 @@ public abstract class BrowserMapView extends BaseMapView {
     private class RepaintPositionListListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             update(true, false);
+        }
+    }
+
+    private class RoutingPreferencesListener implements ChangeListener {
+        public void stateChanged(ChangeEvent e) {
+            if (positionsModel.getRoute().getCharacteristics().equals(Route))
+                update(false, false);
         }
     }
 

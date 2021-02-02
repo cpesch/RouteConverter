@@ -24,6 +24,7 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.mapview.MapView;
+import slash.navigation.routing.RoutingPreferencesModel;
 
 /**
  * A model for the preferences that affect a {@link MapView}.
@@ -35,6 +36,7 @@ public class MapPreferencesModel {
     private static final String SHOW_SHADED_HILLS_PREFERENCE = "showShadedHills";
     private static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
 
+    private final RoutingPreferencesModel routingPreferencesModel;
     private final CharacteristicsModel characteristicsModel;
     private final UnitSystemModel unitSystemModel;
     private final BooleanModel showCoordinatesModel = new BooleanModel(SHOW_COORDINATES_PREFERENCE, false);
@@ -45,9 +47,16 @@ public class MapPreferencesModel {
     private final ColorModel waypointColorModel = new ColorModel("waypoint", "FF000000"); // "000000" w 1.0 alpha
     private final FixMapModeModel fixMapModeModel = new FixMapModeModel();
 
-    public MapPreferencesModel(CharacteristicsModel characteristicsModel, UnitSystemModel unitSystemModel) {
+    public MapPreferencesModel(RoutingPreferencesModel routingPreferencesModel,
+                               CharacteristicsModel characteristicsModel,
+                               UnitSystemModel unitSystemModel) {
+        this.routingPreferencesModel = routingPreferencesModel;
         this.characteristicsModel = characteristicsModel;
         this.unitSystemModel = unitSystemModel;
+    }
+
+    public RoutingPreferencesModel getRoutingPreferencesModel() {
+        return routingPreferencesModel;
     }
 
     public CharacteristicsModel getCharacteristicsModel() {

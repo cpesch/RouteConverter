@@ -37,7 +37,7 @@ public class FixMapModeModel {
     private static final Preferences preferences = Preferences.userNodeForPackage(FixMapModeModel.class);
     private static final String FIX_MAP_MODE_PREFERENCE = "fixMapMode";
 
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     public FixMapMode getFixMapMode() {
         try {

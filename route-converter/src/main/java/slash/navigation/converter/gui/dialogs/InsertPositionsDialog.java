@@ -26,12 +26,13 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.helpers.RoutingServiceFacadeListener;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -115,20 +116,7 @@ public class InsertPositionsDialog extends SimpleDialog {
                 return;
             handlePositionsUpdate();
         });
-        r.getRoutingServiceFacade().addRoutingServiceFacadeListener(new RoutingServiceFacadeListener() {
-            public void preferencesChanged() {
-                handlePositionsUpdate();
-            }
-
-            public void downloading() {
-            }
-
-            public void processing(int second) {
-            }
-
-            public void routing(int second) {
-            }
-        });
+        r.getRoutingServiceFacade().addPreferencesChangeListener(e -> handlePositionsUpdate());
         positionsModel.addTableModelListener(e -> {
             if (positionsModel.isContinousRange())
                 return;
@@ -145,7 +133,7 @@ public class InsertPositionsDialog extends SimpleDialog {
 
         boolean existsSelectedPosition = selectedRowCount > 0;
         buttonInsertAllWaypoints.setEnabled(existsSelectedPosition);
-        buttonInsertOnlyTurnpoints.setEnabled(existsSelectedPosition && r.getRoutingServiceFacade().getRoutingService().isSupportTurnpoints());
+        buttonInsertOnlyTurnpoints.setEnabled(existsSelectedPosition && r.getRoutingServiceFacade().getRoutingPreferencesModel().getRoutingService().isSupportTurnpoints());
         buttonClearSelection.setEnabled(existsSelectedPosition);
 
         boolean notAllPositionsSelected = r.getConvertPanel().getPositionsView().getRowCount() > selectedRowCount;

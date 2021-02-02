@@ -63,19 +63,19 @@ public abstract class MapViewCallbackImpl implements MapViewCallback {
     }
 
     public TravelMode getTravelMode() {
-        return RouteConverter.getInstance().getRoutingServiceFacade().getTravelMode();
+        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().getTravelMode();
     }
 
     public boolean isAvoidFerries() {
-        return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidFerries();
+        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().isAvoidFerries();
     }
 
     public boolean isAvoidHighways() {
-        return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidHighways();
+        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().isAvoidHighways();
     }
 
     public boolean isAvoidTolls() {
-        return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidTolls();
+        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().isAvoidTolls();
     }
 
     public boolean isShowAllPositionsAfterLoading() {

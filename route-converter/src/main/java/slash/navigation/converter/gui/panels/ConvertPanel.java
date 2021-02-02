@@ -142,7 +142,6 @@ public class ConvertPanel implements PanelInTab {
     private FormatAndRoutesModel formatAndRoutesModel;
     private OverlayPositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
-    private CharacteristicsModel characteristicsModel;
     private LengthCalculator lengthCalculator;
     private PositionsTableHeaderMenu tableHeaderMenu;
 
@@ -181,9 +180,8 @@ public class ConvertPanel implements PanelInTab {
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.addChangeListener(e -> handleUndoUpdate());
 
-        characteristicsModel = new CharacteristicsModel();
-        positionsModel = new OverlayPositionsModel(new UndoPositionsModel(undoManager), characteristicsModel);
-        formatAndRoutesModel = new UndoFormatAndRoutesModel(undoManager, new FormatAndRoutesModelImpl(positionsModel, characteristicsModel));
+        positionsModel = new OverlayPositionsModel(new UndoPositionsModel(undoManager), r.getCharacteristicsModel());
+        formatAndRoutesModel = new UndoFormatAndRoutesModel(undoManager, new FormatAndRoutesModelImpl(positionsModel, r.getCharacteristicsModel()));
         positionsSelectionModel = (selectedPositions, replaceSelection) -> {
             if (replaceSelection) {
                 ListSelectionModel selectionModel = tablePositions.getSelectionModel();
@@ -208,7 +206,7 @@ public class ConvertPanel implements PanelInTab {
         };
 
         lengthCalculator = new LengthCalculator();
-        lengthCalculator.initialize(positionsModel, characteristicsModel);
+        lengthCalculator.initialize(positionsModel, r.getCharacteristicsModel());
 
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
@@ -389,7 +387,7 @@ public class ConvertPanel implements PanelInTab {
                 formatAndRoutesModel.setSelectedItem(e.getItem());
             }
         });
-        comboBoxRouteCharacteristics.setModel(characteristicsModel);
+        comboBoxRouteCharacteristics.setModel(r.getCharacteristicsModel());
         comboBoxRouteCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
 
         convertPanel.setTransferHandler(dropHandler);
@@ -901,7 +899,6 @@ public class ConvertPanel implements PanelInTab {
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsAPosition = positionsModel.getRowCount() > 0;
         boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
-        RouteCharacteristics characteristics = characteristicsModel.getSelectedCharacteristics();
 
         comboBoxPositionLists.setEnabled(existsMoreThanOneRoute);
 
@@ -911,6 +908,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("delete-positions", existsMoreThanOnePosition);
         actionManager.enable("new-positionlist", supportsMultipleRoutes);
         actionManager.enable("rename-positionlist", existsARoute);
+        RouteCharacteristics characteristics = r.getCharacteristicsModel().getSelectedCharacteristics();
         actionManager.enable("convert-route-to-track", existsAPosition && characteristics.equals(Route));
         actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));
         actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
@@ -1075,10 +1073,6 @@ public class ConvertPanel implements PanelInTab {
 
     public PositionsSelectionModel getPositionsSelectionModel() {
         return positionsSelectionModel;
-    }
-
-    public CharacteristicsModel getCharacteristicsModel() {
-        return characteristicsModel;
     }
 
     // helpers for external components

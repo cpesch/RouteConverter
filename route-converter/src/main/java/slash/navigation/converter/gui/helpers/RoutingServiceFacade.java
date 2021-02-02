@@ -20,15 +20,13 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.routing.RoutingPreferencesModel;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.RoutingServiceListener;
-import slash.navigation.routing.TravelMode;
 
+import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
 
@@ -40,115 +38,50 @@ import static java.lang.String.format;
 
 public class RoutingServiceFacade {
     private static final Logger log = Logger.getLogger(RoutingServiceFacade.class.getName());
-    private static final Preferences preferences = Preferences.userNodeForPackage(RoutingServiceFacade.class);
-    private static final String ROUTING_SERVICE_PREFERENCE = "routingService";
-    private static final String TRAVEL_MODE_PREFERENCE = "travelMode";
-    private static final String AVOID_FERRIES_PREFERENCE = "avoidFerries";
-    private static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
-    private static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
 
-    private final List<RoutingService> routingServices = new ArrayList<>();
-    private RoutingService preferredRoutingService;
+    private final RoutingPreferencesModel routingPreferencesModel = new RoutingPreferencesModel();
     private final EventListenerList listenerList = new EventListenerList();
-    private boolean loggedFailedRoutingServiceWarning, loggedFailedTravelModeWarning;
+
+    public RoutingPreferencesModel getRoutingPreferencesModel() {
+        return routingPreferencesModel;
+    }
 
     public void addRoutingService(RoutingService routingService) {
-        routingServices.add(routingService);
+        routingPreferencesModel.addRoutingService(routingService);
         routingService.addRoutingServiceListener(new RoutingServiceEventForwarder());
         log.info(format("Added routing service '%s'", routingService.getName()));
     }
 
     public void setPreferredRoutingService(RoutingService preferredRoutingService) {
-        this.preferredRoutingService = preferredRoutingService;
+        routingPreferencesModel.setPreferredRoutingService(preferredRoutingService);
     }
 
-    public List<RoutingService> getRoutingServices() {
-        return routingServices;
+    public RoutingService getRoutingService() {
+        return routingPreferencesModel.getRoutingService();
+    }
+
+    public void setRoutingService(RoutingService service) {
+        routingPreferencesModel.setRoutingService(service);
     }
 
     @SuppressWarnings("unchecked")
     public <T> T getRoutingService(Class<T> clazz) {
-        for(RoutingService service : getRoutingServices()) {
-            if(service.getClass().equals(clazz))
-                return (T)service;
+        for (RoutingService service : routingPreferencesModel.getRoutingServices()) {
+            if (service.getClass().equals(clazz))
+                return (T) service;
         }
         return null;
     }
 
-    public RoutingService getRoutingService() {
-        String lookupServiceName = preferences.get(ROUTING_SERVICE_PREFERENCE, preferredRoutingService.getName());
-
-        for (RoutingService service : getRoutingServices()) {
-            if (lookupServiceName.endsWith(service.getName()))
-                return service;
-        }
-
-        if (!loggedFailedRoutingServiceWarning) {
-            log.warning(format("Failed to find routing service %s; using preferred %s", lookupServiceName, preferredRoutingService.getName()));
-            loggedFailedRoutingServiceWarning = true;
-        }
-        return preferredRoutingService;
-    }
-
-    public void setRoutingService(RoutingService service) {
-        preferences.put(ROUTING_SERVICE_PREFERENCE, service.getName());
-        firePreferencesChanged();
-    }
-
-    public TravelMode getTravelMode() {
-        RoutingService service = getRoutingService();
-        TravelMode preferredTravelMode = service.getPreferredTravelMode();
-        String lookupName = preferences.get(TRAVEL_MODE_PREFERENCE + service.getName(), preferredTravelMode.getName());
-
-        for (TravelMode travelMode : service.getAvailableTravelModes()) {
-            if (lookupName.equals(travelMode.getName()))
-                return travelMode;
-        }
-
-        if (!loggedFailedTravelModeWarning) {
-            log.warning(format("Failed to find travel mode %s; using preferred travel mode %s", lookupName, preferredTravelMode.getName()));
-            loggedFailedTravelModeWarning = true;
-        }
-        return preferredTravelMode;
-    }
-
-    public void setTravelMode(TravelMode travelMode) {
-        preferences.put(TRAVEL_MODE_PREFERENCE + getRoutingService().getName(), travelMode.getName());
-        firePreferencesChanged();
-    }
-
-    public boolean isAvoidFerries() {
-        return preferences.getBoolean(AVOID_FERRIES_PREFERENCE + getRoutingService().getName(), false);
-    }
-
-    public void setAvoidFerries(boolean avoidFerries) {
-        preferences.putBoolean(AVOID_FERRIES_PREFERENCE + getRoutingService().getName(), avoidFerries);
-        firePreferencesChanged();
-    }
-
-    public boolean isAvoidHighways() {
-        return preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE + getRoutingService().getName(), false);
-    }
-
-    public void setAvoidHighways(boolean avoidHighways) {
-        preferences.putBoolean(AVOID_HIGHWAYS_PREFERENCE + getRoutingService().getName(), avoidHighways);
-        firePreferencesChanged();
-    }
-
-    public boolean isAvoidTolls() {
-        return preferences.getBoolean(AVOID_TOLLS_PREFERENCE + getRoutingService().getName(), false);
-    }
-
-    public void setAvoidTolls(boolean avoidTolls) {
-        preferences.putBoolean(AVOID_TOLLS_PREFERENCE + getRoutingService().getName(), avoidTolls);
-        firePreferencesChanged();
+    public void addPreferencesChangeListener(ChangeListener l) {
+        routingPreferencesModel.addChangeListener(l);
     }
 
     private void fireDownloading() {
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == RoutingServiceFacadeListener.class) {
-                ((RoutingServiceFacadeListener) listeners[i + 1]).downloading();
+            if (listeners[i] == RoutingServiceListener.class) {
+                ((RoutingServiceListener) listeners[i + 1]).downloading();
             }
         }
     }
@@ -156,8 +89,8 @@ public class RoutingServiceFacade {
     private void fireInitializing(int second) {
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == RoutingServiceFacadeListener.class) {
-                ((RoutingServiceFacadeListener) listeners[i + 1]).processing(second);
+            if (listeners[i] == RoutingServiceListener.class) {
+                ((RoutingServiceListener) listeners[i + 1]).processing(second);
             }
         }
     }
@@ -165,23 +98,14 @@ public class RoutingServiceFacade {
     private void fireRouting(int second) {
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == RoutingServiceFacadeListener.class) {
-                ((RoutingServiceFacadeListener) listeners[i + 1]).routing(second);
+            if (listeners[i] == RoutingServiceListener.class) {
+                ((RoutingServiceListener) listeners[i + 1]).routing(second);
             }
         }
     }
 
-    private void firePreferencesChanged() {
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == RoutingServiceFacadeListener.class) {
-                ((RoutingServiceFacadeListener) listeners[i + 1]).preferencesChanged();
-            }
-        }
-    }
-
-    public void addRoutingServiceFacadeListener(RoutingServiceFacadeListener l) {
-        listenerList.add(RoutingServiceFacadeListener.class, l);
+    public void addRoutingServiceFacadeListener(RoutingServiceListener l) {
+        listenerList.add(RoutingServiceListener.class, l);
     }
 
     private class RoutingServiceEventForwarder implements RoutingServiceListener {

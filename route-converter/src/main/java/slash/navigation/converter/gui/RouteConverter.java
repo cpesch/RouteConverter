@@ -52,6 +52,7 @@ import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.rest.Credentials;
+import slash.navigation.routing.RoutingPreferencesModel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -184,14 +185,15 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private DataSourceManager dataSourceManager;
     private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade();
     private GeocodingServiceFacade geocodingServiceFacade = new GeocodingServiceFacade();
-    private RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private BooleanModel showAllPositionsAfterLoading = new BooleanModel(SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE, true);
     private BooleanModel recenterAfterZooming = new BooleanModel(RECENTER_AFTER_ZOOMING_PREFERENCE, true);
     private TimeZoneModel timeZoneModel = new TimeZoneModel(TIME_ZONE_PREFERENCE, TimeZone.getDefault());
     private TimeZoneModel photoTimeZoneModel = new TimeZoneModel(PHOTO_TIMEZONE_PREFERENCE, timeZoneModel.getTimeZone());
     private final UnitSystemModel unitSystemModel = new UnitSystemModel();
-    private final MapPreferencesModel preferencesModel = new MapPreferencesModel(getConvertPanel().getCharacteristicsModel(), unitSystemModel);
+    private final CharacteristicsModel characteristicsModel = new CharacteristicsModel();
+    private final RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
+    private final MapPreferencesModel mapPreferencesModel = new MapPreferencesModel(getRoutingServiceFacade().getRoutingPreferencesModel(), getCharacteristicsModel(), getUnitSystemModel());
     private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
     private TileServerMapManager tileServerMapManager;
@@ -340,6 +342,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         try {
             getDownloadManager().removeDownload(getApiUrl() + V1 + "tileservers/" + FORMAT_XML);
             getDownloadManager().removeDownload(getApiUrl() + V1 + "tileservers-offline/" + FORMAT_XML);
+            getDownloadManager().removeDownload(getApiUrl() + V1 + "datasources/openandromaps-themes/" + FORMAT_XML);
 
             File mapServers = new File(getApplicationDirectory("tileservers"), "mapservers.xml");
             getDownloadManager().executeDownload("RouteConverter Map Servers", getApiUrl() + V1 + "mapservers/" + FORMAT_XML, Copy, mapServers, () -> {
@@ -384,7 +387,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         } else {
             getMapView().addMapViewListener(calculatedDistanceNotifier);
-            getMapView().initialize(getConvertPanel().getPositionsModel(), preferencesModel, getMapViewCallback()
+            getMapView().initialize(getConvertPanel().getPositionsModel(), mapPreferencesModel, getMapViewCallback()
             );
 
             @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
@@ -604,7 +607,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     public CharacteristicsModel getCharacteristicsModel() {
-        return getConvertPanel().getCharacteristicsModel();
+        return characteristicsModel;
     }
 
     public UnitSystemModel getUnitSystemModel() {
@@ -721,7 +724,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     public void setRouteCharacteristics(RouteCharacteristics characteristics) {
-        getConvertPanel().getCharacteristicsModel().setSelectedItem(characteristics);
+        getCharacteristicsModel().setSelectedItem(characteristics);
     }
 
     public void selectPositionsInMap(int[] selectedPositions) {
@@ -829,8 +832,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return recenterAfterZooming;
     }
 
-    public MapPreferencesModel getPreferencesModel() {
-        return preferencesModel;
+    public MapPreferencesModel getMapPreferencesModel() {
+        return mapPreferencesModel;
     }
 
     public TimeZoneModel getTimeZone() {
@@ -1189,7 +1192,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         });
         tileServerMapManager = new TileServerMapManager(getTileServersDirectory());
         routingServiceFacade.addRoutingServiceFacadeListener(new RoutingServiceFacadeNotifier());
-    }
+     }
 
     protected void initializeActions() {
         ActionManager actionManager = getContext().getActionManager();
