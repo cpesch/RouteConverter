@@ -20,7 +20,6 @@
 
 package slash.navigation.mapview.browser;
 
-import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.converter.gui.models.GoogleMapsServerModel;
 import slash.navigation.mapview.MapViewCallback;
 

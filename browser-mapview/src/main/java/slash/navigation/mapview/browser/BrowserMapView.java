@@ -30,7 +30,6 @@ import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.common.*;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.*;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
@@ -107,8 +106,7 @@ public abstract class BrowserMapView extends BaseMapView {
     private static final String BROWSER_SCALE_FACTOR_PREFERENCE = "browserScaleFactor";
 
     private PositionsModel positionsModel;
-    private PositionsSelectionModel positionsSelectionModel;
-    private CharacteristicsModel characteristicsModel;
+    private MapPreferencesModel preferencesModel;
     private List<NavigationPosition> lastSelectedPositions = new ArrayList<>();
     private int[] selectedPositionIndices = new int[0];
     private List<NavigationPosition> selectedPositions = new ArrayList<>();
@@ -123,14 +121,6 @@ public abstract class BrowserMapView extends BaseMapView {
             haveToRepaintRouteImmediately, haveToRecenterMap,
             haveToUpdateRoute, haveToReplaceRoute,
             haveToRepaintSelection, ignoreNextZoomCallback;
-
-    private BooleanModel showAllPositionsAfterLoading;
-    private BooleanModel recenterAfterZooming;
-    private BooleanModel showCoordinates;
-    private BooleanModel showWaypointDescription;
-    private ColorModel routeColorModel;
-    private ColorModel trackColorModel;
-    private UnitSystemModel unitSystemModel;
 
     private PositionsModelListener positionsModelListener = new PositionsModelListener();
     private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
@@ -148,34 +138,24 @@ public abstract class BrowserMapView extends BaseMapView {
 
     // initialization
 
+
     public void initialize(PositionsModel positionsModel,
-                           CharacteristicsModel characteristicsModel,
-                           BooleanModel showCoordinates,
-                           BooleanModel showWaypointDescription,
-                           ColorModel aRouteColorModel,
-                           ColorModel aTrackColorModel,
-                           ColorModel aWaypointColorModel,
-                           UnitSystemModel unitSystemModel,
+                           MapPreferencesModel preferencesModel,
                            MapViewCallback mapViewCallback) {
-        this.mapViewCallback = (MapViewCallbackGoogle) mapViewCallback;
         this.positionsModel = positionsModel;
-        this.characteristicsModel = characteristicsModel;
-        this.showCoordinates = showCoordinates;
-        this.showWaypointDescription = showWaypointDescription;
-        this.routeColorModel = aRouteColorModel;
-        this.trackColorModel = aTrackColorModel;
-        this.unitSystemModel = unitSystemModel;
+        this.preferencesModel = preferencesModel;
+        this.mapViewCallback = (MapViewCallbackGoogle) mapViewCallback;
 
         initializeBrowser();
 
         positionsModel.addTableModelListener(positionsModelListener);
-        characteristicsModel.addListDataListener(characteristicsModelListener);
-        showCoordinates.addChangeListener(showCoordinatesListener);
-        showWaypointDescription.addChangeListener(showWaypointDescriptionListener);
-        getFixMapModeModel().addChangeListener(repaintPositionListListener);
-        routeColorModel.addChangeListener(repaintPositionListListener);
-        trackColorModel.addChangeListener(repaintPositionListListener);
-        unitSystemModel.addChangeListener(unitSystemListener);
+        preferencesModel.getCharacteristicsModel().addListDataListener(characteristicsModelListener);
+        preferencesModel.getUnitSystemModel().addChangeListener(unitSystemListener);
+        preferencesModel.getShowCoordinatesModel().addChangeListener(showCoordinatesListener);
+        preferencesModel.getShowWaypointDescriptionModel().addChangeListener(showWaypointDescriptionListener);
+        preferencesModel.getFixMapModeModel().addChangeListener(repaintPositionListListener);
+        preferencesModel.getRouteColorModel().addChangeListener(repaintPositionListListener);
+        preferencesModel.getTrackColorModel().addChangeListener(repaintPositionListListener);
         getGoogleMapsServerModel().addChangeListener(googleMapsServerListener);
 
         positionReducer = new PositionReducer(new PositionReducer.Callback() {
@@ -198,10 +178,6 @@ public abstract class BrowserMapView extends BaseMapView {
 
     protected double getBrowserScaleFactor() {
         return (double) preferences.getInt(BROWSER_SCALE_FACTOR_PREFERENCE, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0;
-    }
-
-    protected FixMapModeModel getFixMapModeModel() {
-        return mapViewCallback.getFixMapModeModel();
     }
 
     protected GoogleMapsServerModel getGoogleMapsServerModel() {
@@ -416,7 +392,7 @@ public abstract class BrowserMapView extends BaseMapView {
 
                     setCenterOfMap(copiedPositions, recenter);
                     RouteCharacteristics characteristics = positionsModel.getRoute().getCharacteristics();
-                    List<NavigationPosition> render = positionReducer.reducePositions(copiedPositions, characteristics, showWaypointDescription.getBoolean());
+                    List<NavigationPosition> render = positionReducer.reducePositions(copiedPositions, characteristics, preferencesModel.getShowWaypointDescriptionModel().getBoolean());
                     switch (characteristics) {
                         case Route:
                             addDirectionsToMap(render);
@@ -778,13 +754,13 @@ public abstract class BrowserMapView extends BaseMapView {
     public void dispose() {
         if(positionsModel != null) {
             positionsModel.removeTableModelListener(positionsModelListener);
-            characteristicsModel.removeListDataListener(characteristicsModelListener);
-            showCoordinates.removeChangeListener(showCoordinatesListener);
-            showWaypointDescription.removeChangeListener(showWaypointDescriptionListener);
-            getFixMapModeModel().removeChangeListener(repaintPositionListListener);
-            routeColorModel.removeChangeListener(repaintPositionListListener);
-            trackColorModel.removeChangeListener(repaintPositionListListener);
-            unitSystemModel.removeChangeListener(unitSystemListener);
+            preferencesModel.getCharacteristicsModel().removeListDataListener(characteristicsModelListener);
+            preferencesModel.getUnitSystemModel().removeChangeListener(unitSystemListener);
+            preferencesModel.getShowCoordinatesModel().removeChangeListener(showCoordinatesListener);
+            preferencesModel.getShowWaypointDescriptionModel().removeChangeListener(showWaypointDescriptionListener);
+            preferencesModel.getFixMapModeModel().removeChangeListener(repaintPositionListListener);
+            preferencesModel.getRouteColorModel().removeChangeListener(repaintPositionListListener);
+            preferencesModel.getTrackColorModel().removeChangeListener(repaintPositionListListener);
             getGoogleMapsServerModel().removeChangeListener(googleMapsServerListener);
         }
 
@@ -899,11 +875,11 @@ public abstract class BrowserMapView extends BaseMapView {
     }
 
     protected void setShowCoordinates() {
-        executeScript("setShowCoordinates(" + showCoordinates.getBoolean() + ");");
+        executeScript("setShowCoordinates(" + preferencesModel.getShowCoordinatesModel().getBoolean() + ");");
     }
 
     protected void setDegreeFormat() {
-        executeScript("setDegreeFormat('" + unitSystemModel.getDegreeFormat() + "');");
+        executeScript("setDegreeFormat('" + preferencesModel.getUnitSystemModel().getDegreeFormat() + "');");
     }
 
     @SuppressWarnings({"unchecked", "Convert2Diamond"})
@@ -959,7 +935,7 @@ public abstract class BrowserMapView extends BaseMapView {
     }
 
     private boolean isFixMap(Double longitude, Double latitude) {
-        FixMapMode fixMapMode = getFixMapModeModel().getFixMapMode();
+        FixMapMode fixMapMode = preferencesModel.getFixMapModeModel().getFixMapMode();
         return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleMap() && isPositionInChina(longitude, latitude);
     }
 
@@ -1041,8 +1017,8 @@ public abstract class BrowserMapView extends BaseMapView {
         directionsPositions.addAll(positions);
         executeScript("removeOverlays();");
 
-        String color = asColor(routeColorModel.getColor());
-        float opacity = asOpacity(routeColorModel.getColor());
+        String color = asColor(preferencesModel.getRouteColorModel().getColor());
+        float opacity = asOpacity(preferencesModel.getRouteColorModel().getColor());
         int width = preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5);
         int maximumRouteSegmentLength = positionReducer.getMaximumSegmentLength(Route);
         int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
@@ -1095,8 +1071,8 @@ public abstract class BrowserMapView extends BaseMapView {
             return;
         }
 
-        String color = asColor(trackColorModel.getColor());
-        float opacity = asOpacity(trackColorModel.getColor());
+        String color = asColor(preferencesModel.getTrackColorModel().getColor());
+        float opacity = asOpacity(preferencesModel.getTrackColorModel().getColor());
         int width = preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2);
         int maximumPolylineSegmentLength = positionReducer.getMaximumSegmentLength(Track);
         int polylinesCount = ceiling(reducedPositions.size(), maximumPolylineSegmentLength, true);
@@ -1151,7 +1127,7 @@ public abstract class BrowserMapView extends BaseMapView {
                 NavigationPosition position = positions.get(i);
                 buffer.append("addMarker(new google.maps.LatLng(").append(asCoordinates(position)).append("),").
                         append("\"").append(escape(position.getDescription())).append("\",").
-                        append(showWaypointDescription.getBoolean()).append(");\n");
+                        append(preferencesModel.getShowWaypointDescriptionModel().getBoolean()).append(");\n");
             }
             executeScript(buffer.toString());
         }
@@ -1615,7 +1591,7 @@ public abstract class BrowserMapView extends BaseMapView {
 
     private void mapTypeChanged(String mapType) {
         preferences.put(MAP_TYPE_PREFERENCE, mapType);
-        if(getFixMapModeModel().getFixMapMode().equals(Automatic)) {
+        if(preferencesModel.getFixMapModeModel().getFixMapMode().equals(Automatic)) {
             invokeLater(new Runnable() {
                 public void run() {
                     update(false, false);
@@ -1684,7 +1660,7 @@ public abstract class BrowserMapView extends BaseMapView {
 
     @SuppressWarnings("unchecked")
     private BaseRoute parseRoute(List<String> parameters, NavigationPosition before, NavigationPosition after) {
-        BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(Waypoints, null, new ArrayList<NavigationPosition>());
+        BaseRoute route = new NavigatingPoiWarnerFormat().createRoute(Waypoints, null, new ArrayList<>());
         // count backwards as inserting at position 0
         CompactCalendar time = after.getTime();
         for (int i = parameters.size() - 1; i > 0; i -= 5) {

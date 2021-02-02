@@ -21,7 +21,6 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.models.FixMapModeModel;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
@@ -89,9 +88,5 @@ public abstract class MapViewCallbackImpl implements MapViewCallback {
 
     public TileServerMapManager getTileServerMapManager() {
         return RouteConverter.getInstance().getTileServerMapManager();
-    }
-
-    public FixMapModeModel getFixMapModeModel() {
-        return RouteConverter.getInstance().getFixMapModeModel();
     }
 }

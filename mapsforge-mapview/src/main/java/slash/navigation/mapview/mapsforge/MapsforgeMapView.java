@@ -58,7 +58,6 @@ import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
-import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.impl.MBTilesFileMap;
@@ -154,10 +153,7 @@ public class MapsforgeMapView extends BaseMapView {
     private static final byte MAXIMUM_ZOOM_LEVEL = 22;
 
     private PositionsModel positionsModel;
-    private CharacteristicsModel characteristicsModel;
-    private BooleanModel showCoordinates;
-    private ColorModel routeColorModel, trackColorModel, waypointColorModel;
-    private UnitSystemModel unitSystemModel;
+    private MapPreferencesModel preferencesModel;
     private MapViewCallbackOpenSource mapViewCallback;
 
     private PositionsModelListener positionsModelListener = new PositionsModelListener();
@@ -185,23 +181,12 @@ public class MapsforgeMapView extends BaseMapView {
 
     // initialization
 
-    public void initialize(final PositionsModel positionsModel,
-                           CharacteristicsModel characteristicsModel,
-                           BooleanModel showCoordinates,
-                           BooleanModel showWaypointDescription,
-                           ColorModel aRouteColorModel,
-                           ColorModel aTrackColorModel,
-                           ColorModel aWaypointColorModel,
-                           UnitSystemModel unitSystemModel,
+    public void initialize(PositionsModel positionsModel,
+                           MapPreferencesModel preferencesModel,
                            MapViewCallback mapViewCallback) {
-        this.mapViewCallback = (MapViewCallbackOpenSource) mapViewCallback;
         this.positionsModel = positionsModel;
-        this.characteristicsModel = characteristicsModel;
-        this.showCoordinates = showCoordinates;
-        this.routeColorModel = aRouteColorModel;
-        this.trackColorModel = aTrackColorModel;
-        this.waypointColorModel = aWaypointColorModel;
-        this.unitSystemModel = unitSystemModel;
+        this.preferencesModel = preferencesModel;
+        this.mapViewCallback = (MapViewCallbackOpenSource) mapViewCallback;
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             private Marker createMarker(PositionWithLayer positionWithLayer, LatLong latLong) {
@@ -297,7 +282,7 @@ public class MapsforgeMapView extends BaseMapView {
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
                 Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(asRGBA(trackColorModel));
+                paint.setColor(asRGBA(preferencesModel.getTrackColorModel()));
                 paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
                 int tileSize = getTileSize();
 
@@ -349,18 +334,18 @@ public class MapsforgeMapView extends BaseMapView {
         this.updateDecoupler = new UpdateDecoupler();
 
         positionsModel.addTableModelListener(positionsModelListener);
-        characteristicsModel.addListDataListener(characteristicsModelListener);
-        showCoordinates.addChangeListener(showCoordinatesListener);
-        getFixMapModeModel().addChangeListener(repaintPositionListListener);
-        routeColorModel.addChangeListener(repaintPositionListListener);
-        trackColorModel.addChangeListener(repaintPositionListListener);
-        waypointColorModel.addChangeListener(repaintPositionListListener);
-        unitSystemModel.addChangeListener(unitSystemListener);
-        getShowShadedHills().addChangeListener(shadedHillsListener);
+        preferencesModel.getCharacteristicsModel().addListDataListener(characteristicsModelListener);
+        preferencesModel.getUnitSystemModel().addChangeListener(unitSystemListener);
+        preferencesModel.getShowCoordinatesModel().addChangeListener(showCoordinatesListener);
+        preferencesModel.getShowShadedHills().addChangeListener(shadedHillsListener);
+        preferencesModel.getFixMapModeModel().addChangeListener(repaintPositionListListener);
+        preferencesModel.getRouteColorModel().addChangeListener(repaintPositionListListener);
+        preferencesModel.getTrackColorModel().addChangeListener(repaintPositionListListener);
+        preferencesModel.getWaypointColorModel().addChangeListener(repaintPositionListListener);
 
         initializeActions();
         initializeMapView();
-        routeRenderer = new RouteRenderer(this, this.mapViewCallback, routeColorModel, GRAPHIC_FACTORY);
+        routeRenderer = new RouteRenderer(this, this.mapViewCallback, preferencesModel.getRouteColorModel(), GRAPHIC_FACTORY);
     }
 
     private static boolean initializedActions = false;
@@ -501,6 +486,7 @@ public class MapsforgeMapView extends BaseMapView {
 
     private synchronized Bitmap createWaypointIcon() {
         if(waypointIcon == null) {
+            ColorModel waypointColorModel = preferencesModel.getWaypointColorModel();
             String color = encodeInt(waypointColorModel.getColor().getRed(), 2) +
                     encodeInt(waypointColorModel.getColor().getGreen(), 2) +
                     encodeInt(waypointColorModel.getColor().getBlue(), 2);
@@ -523,7 +509,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private void handleUnitSystem() {
-        UnitSystem unitSystem = unitSystemModel.getUnitSystem();
+        UnitSystem unitSystem = preferencesModel.getUnitSystemModel().getUnitSystem();
         switch (unitSystem) {
             case Metric:
                 mapView.getMapScaleBar().setDistanceUnitAdapter(MetricUnitAdapter.INSTANCE);
@@ -676,7 +662,7 @@ public class MapsforgeMapView extends BaseMapView {
     private void handleShadedHills() {
         hillsRenderConfig.setTileSource(null);
 
-        if (getShowShadedHills().getBoolean()) {
+        if (preferencesModel.getShowShadedHills().getBoolean()) {
             ElevationService elevationService = mapViewCallback.getElevationService();
             if (elevationService.isDownload()) {
                 File directory = elevationService.getDirectory();
@@ -721,13 +707,14 @@ public class MapsforgeMapView extends BaseMapView {
         mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().removeTableModelListener(appliedOverlayListener);
 
         positionsModel.removeTableModelListener(positionsModelListener);
-        characteristicsModel.removeListDataListener(characteristicsModelListener);
-        routeColorModel.removeChangeListener(repaintPositionListListener);
-        trackColorModel.removeChangeListener(repaintPositionListListener);
-        waypointColorModel.removeChangeListener(repaintPositionListListener);
-        unitSystemModel.removeChangeListener(unitSystemListener);
-        getFixMapModeModel().addChangeListener(repaintPositionListListener);
-        getShowShadedHills().removeChangeListener(shadedHillsListener);
+        preferencesModel.getCharacteristicsModel().removeListDataListener(characteristicsModelListener);
+        preferencesModel.getUnitSystemModel().removeChangeListener(unitSystemListener);
+        preferencesModel.getShowCoordinatesModel().removeChangeListener(showCoordinatesListener);
+        preferencesModel.getShowShadedHills().removeChangeListener(shadedHillsListener);
+        preferencesModel.getFixMapModeModel().removeChangeListener(repaintPositionListListener);
+        preferencesModel.getRouteColorModel().removeChangeListener(repaintPositionListListener);
+        preferencesModel.getTrackColorModel().removeChangeListener(repaintPositionListListener);
+        preferencesModel.getWaypointColorModel().removeChangeListener(repaintPositionListListener);
 
         long start = currentTimeMillis();
         if (routeRenderer != null)
@@ -881,20 +868,12 @@ public class MapsforgeMapView extends BaseMapView {
         return route != null && route.getPositions().size() > 0 ? new BoundingBox(route.getPositions()) : null;
     }
 
-    private FixMapModeModel getFixMapModeModel() {
-        return mapViewCallback.getFixMapModeModel();
-    }
-
-    private BooleanModel getShowShadedHills() {
-        return mapViewCallback.getShowShadedHills();
-    }
-
     private boolean isGoogleMap(LocalMap map) {
         return map.getCopyrightText().contains("Google");
     }
 
     private boolean isFixMap(Double longitude, Double latitude) {
-        FixMapMode fixMapMode = getFixMapModeModel().getFixMapMode();
+        FixMapMode fixMapMode = preferencesModel.getFixMapModeModel().getFixMapMode();
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
         return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleMap(map) && isPositionInChina(longitude, latitude);
     }
@@ -1338,7 +1317,7 @@ public class MapsforgeMapView extends BaseMapView {
 
     private class ShowCoordinatesListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
-            mapViewCoordinateDisplayer.setShowCoordinates(showCoordinates.getBoolean());
+            mapViewCoordinateDisplayer.setShowCoordinates(preferencesModel.getShowCoordinatesModel().getBoolean());
         }
     }
 
@@ -1365,7 +1344,7 @@ public class MapsforgeMapView extends BaseMapView {
 
             // if the map changes from/to Google in Automatic mode, do a recalculation
             LocalMap currentMap = getMapManager().getDisplayedMapModel().getItem();
-            if(getFixMapModeModel().getFixMapMode().equals(Automatic)) {
+            if(preferencesModel.getFixMapModeModel().getFixMapMode().equals(Automatic)) {
                 if(lastMap == null || isGoogleMap(lastMap) != isGoogleMap(currentMap))
                     updateDecoupler.replaceRoute();
             }

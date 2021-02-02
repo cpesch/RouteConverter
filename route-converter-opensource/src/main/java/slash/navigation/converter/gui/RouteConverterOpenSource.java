@@ -30,7 +30,6 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
@@ -65,11 +64,8 @@ import static slash.navigation.gui.helpers.JMenuHelper.*;
  */
 
 public class RouteConverterOpenSource extends RouteConverter {
-    private static final String SHOW_SHADED_HILLS_PREFERENCE = "showShadedHills";
-
     private HgtFilesService hgtFilesService;
     private MapsforgeMapManager mapsforgeMapManager;
-    private BooleanModel showShadedHills = new BooleanModel(SHOW_SHADED_HILLS_PREFERENCE, false);
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
@@ -109,7 +105,7 @@ public class RouteConverterOpenSource extends RouteConverter {
             JMenu overlaysMenu = createMenu("show-overlays");
             viewMenu.add(overlaysMenu, 2);
             new OverlaysMenu(overlaysMenu, getTileServerMapManager().getAvailableOverlaysModel(), getTileServerMapManager().getAppliedOverlaysModel());
-            viewMenu.add(createCheckBoxItem("show-shaded-hills", getShowShadedHills()), 3);
+            viewMenu.add(createCheckBoxItem("show-shaded-hills", getPreferencesModel().getShowShadedHills()), 3);
             viewMenu.add(new JPopupMenu.Separator(), 4);
         }
     }
@@ -120,10 +116,6 @@ public class RouteConverterOpenSource extends RouteConverter {
 
     public MapsforgeMapManager getMapsforgeMapManager() {
         return mapsforgeMapManager;
-    }
-
-    BooleanModel getShowShadedHills() {
-        return showShadedHills;
     }
 
     protected MapViewCallbackOpenSource getMapViewCallback() {

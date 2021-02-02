@@ -247,7 +247,7 @@ public class OptionsDialog extends SimpleDialog {
         ComboBoxModel<FixMapMode> fixMapModeModel = new DefaultComboBoxModel<>(new FixMapMode[]{
                 Automatic, Yes, No
         });
-        fixMapModeModel.setSelectedItem(r.getFixMapModeModel().getFixMapMode());
+        fixMapModeModel.setSelectedItem(r.getPreferencesModel().getFixMapModeModel().getFixMapMode());
         comboBoxFixMapMode.setModel(fixMapModeModel);
         comboBoxFixMapMode.setRenderer(new FixMapModeListCellRenderer());
         comboBoxFixMapMode.addItemListener(e -> {
@@ -255,7 +255,7 @@ public class OptionsDialog extends SimpleDialog {
                 return;
             }
             FixMapMode fixMapMode = (FixMapMode) e.getItem();
-            r.getFixMapModeModel().setFixMapMode(fixMapMode);
+            r.getPreferencesModel().getFixMapModeModel().setFixMapMode(fixMapMode);
         });
 
         textFieldBabelPath.getDocument().addDocumentListener(new DocumentListener() {
@@ -358,17 +358,17 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        checkBoxShowCoordinates.setSelected(r.getShowCoordinates().getBoolean());
+        checkBoxShowCoordinates.setSelected(r.getPreferencesModel().getShowCoordinatesModel().getBoolean());
         checkBoxShowCoordinates.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                r.getShowCoordinates().setBoolean(checkBoxShowCoordinates.isSelected());
+                r.getPreferencesModel().getShowCoordinatesModel().setBoolean(checkBoxShowCoordinates.isSelected());
             }
         });
 
-        checkBoxShowWaypointDescription.setSelected(r.getShowWaypointDescription().getBoolean());
+        checkBoxShowWaypointDescription.setSelected(r.getPreferencesModel().getShowWaypointDescriptionModel().getBoolean());
         checkBoxShowWaypointDescription.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
-                r.getShowWaypointDescription().setBoolean(checkBoxShowWaypointDescription.isSelected());
+                r.getPreferencesModel().getShowWaypointDescriptionModel().setBoolean(checkBoxShowWaypointDescription.isSelected());
             }
         });
         checkBoxShowWaypointDescription.setEnabled(r.isMapViewAvailable() && !r.getMapView().isDownload());
@@ -588,15 +588,15 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
 
-        colorChooserRoute.setColor(r.getRouteColorModel().getColor());
+        colorChooserRoute.setColor(r.getPreferencesModel().getRouteColorModel().getColor());
         reducePanels(colorChooserRoute);
-        colorChooserRoute.getSelectionModel().addChangeListener(e -> r.getRouteColorModel().setColor(colorChooserRoute.getColor()));
-        colorChooserTrack.setColor(r.getTrackColorModel().getColor());
+        colorChooserRoute.getSelectionModel().addChangeListener(e -> r.getPreferencesModel().getRouteColorModel().setColor(colorChooserRoute.getColor()));
+        colorChooserTrack.setColor(r.getPreferencesModel().getTrackColorModel().getColor());
         reducePanels(colorChooserTrack);
-        colorChooserTrack.getSelectionModel().addChangeListener(e -> r.getTrackColorModel().setColor(colorChooserTrack.getColor()));
-        colorChooserWaypoint.setColor(r.getWaypointColorModel().getColor());
+        colorChooserTrack.getSelectionModel().addChangeListener(e -> r.getPreferencesModel().getTrackColorModel().setColor(colorChooserTrack.getColor()));
+        colorChooserWaypoint.setColor(r.getPreferencesModel().getWaypointColorModel().getColor());
         reducePanels(colorChooserWaypoint);
-        colorChooserWaypoint.getSelectionModel().addChangeListener(e -> r.getWaypointColorModel().setColor(colorChooserWaypoint.getColor()));
+        colorChooserWaypoint.getSelectionModel().addChangeListener(e -> r.getPreferencesModel().getWaypointColorModel().setColor(colorChooserWaypoint.getColor()));
 
         setMnemonic(buttonClose, "close-mnemonic");
         buttonClose.addActionListener(new DialogAction(this) {

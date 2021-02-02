@@ -51,10 +51,6 @@ public class MapViewCallbackOpenSourceImpl extends MapViewCallbackImpl implement
         return ((RouteConverterOpenSource) Application.getInstance()).getMapsforgeMapManager();
     }
 
-    public BooleanModel getShowShadedHills() {
-        return ((RouteConverterOpenSource) Application.getInstance()).getShowShadedHills();
-    }
-
     public ElevationService getElevationService() {
         return ((RouteConverter) Application.getInstance()).getElevationServiceFacade().getElevationService();
     }

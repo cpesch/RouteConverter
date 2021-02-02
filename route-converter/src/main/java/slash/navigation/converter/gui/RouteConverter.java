@@ -153,8 +153,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String MAP_VIEW_PREFERENCE = "mapView";
     private static final String SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE = "showAllPositionsAfterLoading";
     private static final String RECENTER_AFTER_ZOOMING_PREFERENCE = "recenterAfterZooming";
-    private static final String SHOW_COORDINATES_PREFERENCE = "showCoordinates";
-    private static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
     private static final String TIME_ZONE_PREFERENCE = "timeZone";
     private static final String NUMBER_PATTERN_PREFERENCE = "numberPattern";
     private static final String NUMBERING_STRATEGY_PREFERENCE = "numberingStrategy";
@@ -190,15 +188,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
     private BooleanModel showAllPositionsAfterLoading = new BooleanModel(SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE, true);
     private BooleanModel recenterAfterZooming = new BooleanModel(RECENTER_AFTER_ZOOMING_PREFERENCE, true);
-    private BooleanModel showCoordinates = new BooleanModel(SHOW_COORDINATES_PREFERENCE, false);
-    private BooleanModel showWaypointDescription = new BooleanModel(SHOW_WAYPOINT_DESCRIPTION_PREFERENCE, false);
     private TimeZoneModel timeZoneModel = new TimeZoneModel(TIME_ZONE_PREFERENCE, TimeZone.getDefault());
     private TimeZoneModel photoTimeZoneModel = new TimeZoneModel(PHOTO_TIMEZONE_PREFERENCE, timeZoneModel.getTimeZone());
-    private FixMapModeModel fixMapModeModel = new FixMapModeModel();
-    private ColorModel routeColorModel = new ColorModel("route", "C86CB1F3"); // "6CB1F3" w 0.8 alpha
-    private ColorModel trackColorModel = new ColorModel("track", "FF0033FF"); // "0033FF" w 1.0 alpha
-    private ColorModel waypointColorModel = new ColorModel("waypoint", "FF000000"); // "000000" w 1.0 alpha
-    private UnitSystemModel unitSystemModel = new UnitSystemModel();
+    private final UnitSystemModel unitSystemModel = new UnitSystemModel();
+    private final MapPreferencesModel preferencesModel = new MapPreferencesModel(getConvertPanel().getCharacteristicsModel(), unitSystemModel);
     private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
     private TileServerMapManager tileServerMapManager;
@@ -391,15 +384,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         } else {
             getMapView().addMapViewListener(calculatedDistanceNotifier);
-            getMapView().initialize(getConvertPanel().getPositionsModel(),
-                    getConvertPanel().getCharacteristicsModel(),
-                    getShowCoordinates(),
-                    getShowWaypointDescription(),
-                    getRouteColorModel(),
-                    getTrackColorModel(),
-                    getWaypointColorModel(),
-                    getUnitSystemModel(),
-                    getMapViewCallback()
+            getMapView().initialize(getConvertPanel().getPositionsModel(), preferencesModel, getMapViewCallback()
             );
 
             @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
@@ -618,24 +603,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return routeServiceOperator;
     }
 
-    public ColorModel getRouteColorModel() {
-        return routeColorModel;
-    }
-
-    public ColorModel getTrackColorModel() {
-        return trackColorModel;
-    }
-
-    public ColorModel getWaypointColorModel() {
-        return waypointColorModel;
+    public CharacteristicsModel getCharacteristicsModel() {
+        return getConvertPanel().getCharacteristicsModel();
     }
 
     public UnitSystemModel getUnitSystemModel() {
         return unitSystemModel;
-    }
-
-    public FixMapModeModel getFixMapModeModel() { // for RouteConverterGoogle
-        return fixMapModeModel;
     }
 
     public GoogleMapsServerModel getGoogleMapsServerModel() { // for RouteConverterGoogle
@@ -856,12 +829,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return recenterAfterZooming;
     }
 
-    public BooleanModel getShowCoordinates() {
-        return showCoordinates;
-    }
-
-    public BooleanModel getShowWaypointDescription() {
-        return showWaypointDescription;
+    public MapPreferencesModel getPreferencesModel() {
+        return preferencesModel;
     }
 
     public TimeZoneModel getTimeZone() {

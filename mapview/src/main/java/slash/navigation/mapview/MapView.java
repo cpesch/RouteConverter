@@ -37,13 +37,7 @@ import java.util.List;
 
 public interface MapView extends PositionsSelectionModel {
     void initialize(PositionsModel positionsModel,
-                    CharacteristicsModel characteristicsModel,
-                    BooleanModel showCoordinates,
-                    BooleanModel showWaypointDescription, // only BrowserMapView
-                    ColorModel routeColorModel,
-                    ColorModel trackColorModel,
-                    ColorModel waypointColorModel,
-                    UnitSystemModel unitSystemModel,
+                    MapPreferencesModel preferencesModel,
                     MapViewCallback mapViewCallback);
     boolean isInitialized();
     boolean isDownload();
@@ -51,7 +45,7 @@ public interface MapView extends PositionsSelectionModel {
     void setMapsPath(String path) throws IOException;
     String getThemesPath();
     void setThemesPath(String path) throws IOException;
-    void routingPreferencesChanged();
+    void routingPreferencesChanged(); // TODO remove me
 
     Throwable getInitializationCause();
     void dispose();

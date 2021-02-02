@@ -21,7 +21,6 @@
 package slash.navigation.mapview.mapsforge;
 
 import slash.navigation.elevation.ElevationService;
-import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapViewCallback;
 
@@ -34,7 +33,6 @@ import slash.navigation.mapview.MapViewCallback;
 public interface MapViewCallbackOpenSource extends MapViewCallback {
     MapsforgeMapManager getMapsforgeMapManager();
 
-    BooleanModel getShowShadedHills();
     ElevationService getElevationService();
 
     void handleRoutingException(Throwable t);
