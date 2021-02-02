@@ -43,6 +43,9 @@ public interface MapViewCallback {
     boolean isAvoidHighways();
     boolean isAvoidTolls();
 
+    boolean isShowAllPositionsAfterLoading();
+    boolean isRecenterAfterZooming();
+
     TileServerMapManager getTileServerMapManager();
     FixMapModeModel getFixMapModeModel();
 }

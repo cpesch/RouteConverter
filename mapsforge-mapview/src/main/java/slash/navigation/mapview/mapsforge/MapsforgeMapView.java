@@ -156,8 +156,6 @@ public class MapsforgeMapView extends BaseMapView {
     private PositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
     private CharacteristicsModel characteristicsModel;
-    private BooleanModel showAllPositionsAfterLoading;
-    private BooleanModel recenterAfterZooming;
     private BooleanModel showCoordinates;
     private ColorModel routeColorModel, trackColorModel, waypointColorModel;
     private UnitSystemModel unitSystemModel;
@@ -192,20 +190,16 @@ public class MapsforgeMapView extends BaseMapView {
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
                            MapViewCallback mapViewCallback,
-                           BooleanModel showAllPositionsAfterLoading,
-                           BooleanModel recenterAfterZooming,
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,       /* ignored */
                            ColorModel aRouteColorModel,
                            ColorModel aTrackColorModel,
                            ColorModel aWaypointColorModel,
-                           UnitSystemModel unitSystemModel             /* ignored */) {
+                           UnitSystemModel unitSystemModel) {
         this.mapViewCallback = (MapViewCallbackOpenSource) mapViewCallback;
         this.positionsModel = positionsModel;
         this.positionsSelectionModel = positionsSelectionModel;
         this.characteristicsModel = characteristicsModel;
-        this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
-        this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
         this.routeColorModel = aRouteColorModel;
         this.trackColorModel = aTrackColorModel;
@@ -1034,7 +1028,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private void setCenter(LatLong center, boolean alwaysRecenter) {
-        if (alwaysRecenter || recenterAfterZooming.getBoolean() || !isVisible(center))
+        if (alwaysRecenter || mapViewCallback.isRecenterAfterZooming() || !isVisible(center))
             mapView.getModel().mapViewPosition.animateTo(center);
     }
 
@@ -1321,7 +1315,7 @@ public class MapsforgeMapView extends BaseMapView {
                         updateDecoupler.handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
 
                     // center and zoom if a file was just loaded
-                    if (allRowsChanged && showAllPositionsAfterLoading.getBoolean())
+                    if (allRowsChanged && mapViewCallback.isShowAllPositionsAfterLoading())
                         centerAndZoom(getMapBoundingBox(), getRouteBoundingBox(), true, true);
                     break;
                 default:

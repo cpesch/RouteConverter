@@ -395,8 +395,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     getConvertPanel().getPositionsSelectionModel(),
                     getConvertPanel().getCharacteristicsModel(),
                     getMapViewCallback(),
-                    getShowAllPositionsAfterLoading(),
-                    getRecenterAfterZooming(),
                     getShowCoordinates(),
                     getShowWaypointDescription(),
                     getRouteColorModel(),

@@ -124,8 +124,6 @@ public abstract class BrowserMapView extends BaseMapView {
             haveToUpdateRoute, haveToReplaceRoute,
             haveToRepaintSelection, ignoreNextZoomCallback;
 
-    private BooleanModel showAllPositionsAfterLoading;
-    private BooleanModel recenterAfterZooming;
     private BooleanModel showCoordinates;
     private BooleanModel showWaypointDescription;
     private ColorModel routeColorModel;
@@ -152,8 +150,6 @@ public abstract class BrowserMapView extends BaseMapView {
                            PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
                            MapViewCallback mapViewCallback,
-                           BooleanModel showAllPositionsAfterLoading,
-                           BooleanModel recenterAfterZooming,
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,
                            ColorModel aRouteColorModel,
@@ -164,8 +160,6 @@ public abstract class BrowserMapView extends BaseMapView {
         this.positionsModel = positionsModel;
         this.positionsSelectionModel = positionsSelectionModel;
         this.characteristicsModel = characteristicsModel;
-        this.showAllPositionsAfterLoading = showAllPositionsAfterLoading;
-        this.recenterAfterZooming = recenterAfterZooming;
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
         this.routeColorModel = aRouteColorModel;
@@ -1606,10 +1600,10 @@ public abstract class BrowserMapView extends BaseMapView {
                 ignoreNextZoomCallback = false;
             else if (// directions are automatically scaled by the Google Maps API when zooming
                     !positionsModel.getRoute().getCharacteristics().equals(Route) &&
-                            (recenterAfterZooming.getBoolean() || positionReducer.hasFilteredVisibleArea())) {
+                            (mapViewCallback.isRecenterAfterZooming() || positionReducer.hasFilteredVisibleArea())) {
                 haveToRepaintRouteImmediately = true;
                 // if enabled, recenter map to selected positions after zooming
-                if (recenterAfterZooming.getBoolean())
+                if (mapViewCallback.isRecenterAfterZooming())
                     haveToRecenterMap = true;
                 haveToRepaintSelectionImmediately = true;
                 selectionUpdateReason = "zoomed from " + lastZoom + " to " + zoom;
@@ -1873,7 +1867,7 @@ public abstract class BrowserMapView extends BaseMapView {
                                 e.getColumn() == ALL_COLUMNS))
                     return;
 
-                if (showAllPositionsAfterLoading.getBoolean())
+                if (mapViewCallback.isShowAllPositionsAfterLoading())
                     update(allRowsChanged, true);
                 else
                     updateRouteButDontRecenter();

@@ -40,10 +40,8 @@ public interface MapView extends PositionsSelectionModel {
                     PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
                     MapViewCallback mapViewCallback,
-                    BooleanModel showAllPositionsAfterLoading,
-                    BooleanModel recenterAfterZooming,
                     BooleanModel showCoordinates,
-                    BooleanModel showWaypointDescription,
+                    BooleanModel showWaypointDescription, // only BrowserMapView
                     ColorModel routeColorModel,
                     ColorModel trackColorModel,
                     ColorModel waypointColorModel,

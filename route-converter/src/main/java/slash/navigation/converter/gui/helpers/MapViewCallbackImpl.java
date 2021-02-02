@@ -75,6 +75,14 @@ public abstract class MapViewCallbackImpl implements MapViewCallback {
         return RouteConverter.getInstance().getRoutingServiceFacade().isAvoidTolls();
     }
 
+    public boolean isShowAllPositionsAfterLoading() {
+        return RouteConverter.getInstance().getShowAllPositionsAfterLoading().getBoolean();
+    }
+
+    public boolean isRecenterAfterZooming() {
+        return RouteConverter.getInstance().getRecenterAfterZooming().getBoolean();
+    }
+
     public TileServerMapManager getTileServerMapManager() {
         return RouteConverter.getInstance().getTileServerMapManager();
     }
