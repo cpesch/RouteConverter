@@ -36,7 +36,8 @@ import static slash.navigation.gui.events.IgnoreEvent.IGNORE;
  * @author Christian Pesch
  */
 
-public class CharacteristicsModel extends AbstractListModel implements ComboBoxModel {
+public class CharacteristicsModel extends AbstractListModel<RouteCharacteristics>
+        implements ComboBoxModel<RouteCharacteristics> {
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
 
     public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
@@ -48,16 +49,17 @@ public class CharacteristicsModel extends AbstractListModel implements ComboBoxM
         fireContentsChanged(this, IGNORE, IGNORE);
     }
 
-    public RouteCharacteristics getSelectedCharacteristics() {
-        return getRoute() != null ? route.getCharacteristics() : null;
-    }
-
     public int getSize() {
         return RouteCharacteristics.values().length;
     }
 
-    public Object getElementAt(int index) {
+    public RouteCharacteristics getElementAt(int index) {
         return RouteCharacteristics.values()[index];
+    }
+
+
+    public RouteCharacteristics getSelectedCharacteristics() {
+        return getRoute() != null ? route.getCharacteristics() : null;
     }
 
     public Object getSelectedItem() {

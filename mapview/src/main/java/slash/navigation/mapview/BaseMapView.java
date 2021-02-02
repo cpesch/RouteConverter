@@ -43,7 +43,7 @@ public abstract class BaseMapView implements MapView {
     protected static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
     protected static final String MOVE_COMPLETE_SELECTION_PREFERENCE = "moveCompleteSelection";
 
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     protected void fireCalculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
         Object[] listeners = listenerList.getListenerList();

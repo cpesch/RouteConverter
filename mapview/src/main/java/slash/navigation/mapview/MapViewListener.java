@@ -33,5 +33,5 @@ import java.util.Map;
 
 public interface MapViewListener extends EventListener {
     void calculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime);
-    void receivedCallback(int port);
+    void receivedCallback(int port); // only BrowserMapView
 }

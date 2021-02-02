@@ -155,8 +155,8 @@ public class ConvertPanel implements PanelInTab {
     private JLabel labelOverallAscend;
     private JLabel labelOverallDescend;
     private JTable tablePositions;
-    private JComboBox<FormatAndRoutesModel> comboBoxChoosePositionList;
-    private JComboBox<CharacteristicsModel> comboBoxChoosePositionListCharacteristics;
+    private JComboBox<FormatAndRoutesModel> comboBoxPositionLists;
+    private JComboBox<RouteCharacteristics> comboBoxRouteCharacteristics;
     private JButton buttonNewPositionList;
     private JButton buttonRenamePositionList;
     private JButton buttonDeletePositionList;
@@ -381,17 +381,16 @@ public class ConvertPanel implements PanelInTab {
         for (PositionTableColumn column : tableColumnModel.getPreparedColumns())
             handleColumnVisibilityUpdate(column);
 
-        comboBoxChoosePositionList.setModel(formatAndRoutesModel);
-        comboBoxChoosePositionList.setRenderer(new RouteListCellRenderer());
-        comboBoxChoosePositionList.addItemListener(e -> {
+        comboBoxPositionLists.setModel(formatAndRoutesModel);
+        comboBoxPositionLists.setRenderer(new RouteListCellRenderer());
+        comboBoxPositionLists.addItemListener(e -> {
             if (e.getStateChange() == SELECTED) {
                 r.getPositionAugmenter().interrupt();
                 formatAndRoutesModel.setSelectedItem(e.getItem());
             }
         });
-        //noinspection unchecked
-        comboBoxChoosePositionListCharacteristics.setModel(characteristicsModel);
-        comboBoxChoosePositionListCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
+        comboBoxRouteCharacteristics.setModel(characteristicsModel);
+        comboBoxRouteCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
 
         convertPanel.setTransferHandler(dropHandler);
 
@@ -904,7 +903,7 @@ public class ConvertPanel implements PanelInTab {
         boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
         RouteCharacteristics characteristics = characteristicsModel.getSelectedCharacteristics();
 
-        comboBoxChoosePositionList.setEnabled(existsMoreThanOneRoute);
+        comboBoxPositionLists.setEnabled(existsMoreThanOneRoute);
 
         RouteConverter r = RouteConverter.getInstance();
         ActionManager actionManager = r.getContext().getActionManager();
@@ -1138,14 +1137,14 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private void createUIComponents() {
-        comboBoxChoosePositionList = new JComboBox<FormatAndRoutesModel>() {
+        comboBoxPositionLists = new JComboBox<FormatAndRoutesModel>() {
             public Dimension getPreferredSize() {
                 Dimension preferredSize = super.getPreferredSize();
                 preferredSize.width = convertPanel.getPreferredSize().width - 300;
                 return preferredSize;
             }
         };
-        comboBoxChoosePositionList.setMinimumSize(new Dimension(-1, comboBoxChoosePositionList.getMinimumSize().height));
+        comboBoxPositionLists.setMinimumSize(new Dimension(-1, comboBoxPositionLists.getMinimumSize().height));
     }
 
     /**
@@ -1270,9 +1269,9 @@ public class ConvertPanel implements PanelInTab {
         label8.setHorizontalTextPosition(4);
         this.$$$loadLabelText$$$(label8, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "characteristics"));
         panel3.add(label8, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxChoosePositionListCharacteristics = new JComboBox();
-        panel3.add(comboBoxChoosePositionListCharacteristics, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        convertPanel.add(comboBoxChoosePositionList, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxRouteCharacteristics = new JComboBox();
+        panel3.add(comboBoxRouteCharacteristics, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        convertPanel.add(comboBoxPositionLists, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 6, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel4, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
