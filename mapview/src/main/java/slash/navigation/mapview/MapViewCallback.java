@@ -34,6 +34,7 @@ import slash.navigation.routing.TravelMode;
 public interface MapViewCallback {
     String createDescription(int index, String description);
     String createCoordinates(Double longitude, Double latitude);
+    void setSelectedPositions(int[] selectedPositions, boolean replaceSelection);
     void complementData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo);
     void startBrowser(String url);
 

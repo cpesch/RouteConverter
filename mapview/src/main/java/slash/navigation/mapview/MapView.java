@@ -37,15 +37,14 @@ import java.util.List;
 
 public interface MapView extends PositionsSelectionModel {
     void initialize(PositionsModel positionsModel,
-                    PositionsSelectionModel positionsSelectionModel,
                     CharacteristicsModel characteristicsModel,
-                    MapViewCallback mapViewCallback,
                     BooleanModel showCoordinates,
                     BooleanModel showWaypointDescription, // only BrowserMapView
                     ColorModel routeColorModel,
                     ColorModel trackColorModel,
                     ColorModel waypointColorModel,
-                    UnitSystemModel unitSystemModel);
+                    UnitSystemModel unitSystemModel,
+                    MapViewCallback mapViewCallback);
     boolean isInitialized();
     boolean isDownload();
     String getMapsPath();

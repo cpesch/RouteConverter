@@ -124,6 +124,8 @@ public abstract class BrowserMapView extends BaseMapView {
             haveToUpdateRoute, haveToReplaceRoute,
             haveToRepaintSelection, ignoreNextZoomCallback;
 
+    private BooleanModel showAllPositionsAfterLoading;
+    private BooleanModel recenterAfterZooming;
     private BooleanModel showCoordinates;
     private BooleanModel showWaypointDescription;
     private ColorModel routeColorModel;
@@ -147,18 +149,16 @@ public abstract class BrowserMapView extends BaseMapView {
     // initialization
 
     public void initialize(PositionsModel positionsModel,
-                           PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
-                           MapViewCallback mapViewCallback,
                            BooleanModel showCoordinates,
                            BooleanModel showWaypointDescription,
                            ColorModel aRouteColorModel,
                            ColorModel aTrackColorModel,
                            ColorModel aWaypointColorModel,
-                           UnitSystemModel unitSystemModel) {
+                           UnitSystemModel unitSystemModel,
+                           MapViewCallback mapViewCallback) {
         this.mapViewCallback = (MapViewCallbackGoogle) mapViewCallback;
         this.positionsModel = positionsModel;
-        this.positionsSelectionModel = positionsSelectionModel;
         this.characteristicsModel = characteristicsModel;
         this.showCoordinates = showCoordinates;
         this.showWaypointDescription = showWaypointDescription;
@@ -1717,7 +1717,7 @@ public abstract class BrowserMapView extends BaseMapView {
     private void insertPosition(int row, Double longitude, Double latitude) {
         positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
         int[] rows = new int[]{row};
-        positionsSelectionModel.setSelectedPositions(rows, true);
+        mapViewCallback.setSelectedPositions(rows, true);
         if (preferences.getBoolean(COMPLEMENT_DATA_PREFERENCE, false))
             mapViewCallback.complementData(rows, true, true, true, true, false);
     }
@@ -1796,13 +1796,13 @@ public abstract class BrowserMapView extends BaseMapView {
     private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) {
         int row = positionsModel.getClosestPosition(longitude, latitude, threshold);
         if (row != -1)
-            positionsSelectionModel.setSelectedPositions(new int[]{row}, replaceSelection);
+            mapViewCallback.setSelectedPositions(new int[]{row}, replaceSelection);
     }
 
     private void selectPositions(BoundingBox boundingBox, boolean replaceSelection) {
         int[] rows = positionsModel.getContainedPositions(boundingBox);
         if (rows.length > 0) {
-            positionsSelectionModel.setSelectedPositions(rows, replaceSelection);
+            mapViewCallback.setSelectedPositions(rows, replaceSelection);
         }
     }
 

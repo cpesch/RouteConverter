@@ -47,6 +47,10 @@ public abstract class MapViewCallbackImpl implements MapViewCallback {
         return formatLongitude(longitude) + "," + formatLatitude(latitude);
     }
 
+    public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
+        RouteConverter.getInstance().getConvertPanel().getPositionsSelectionModel().setSelectedPositions(selectedPositions, replaceSelection);
+    }
+
     public void complementData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo) {
         RouteConverter.getInstance().getPositionAugmenter().addData(rows, description, time, elevation, waitForDownload, trackUndo);
     }

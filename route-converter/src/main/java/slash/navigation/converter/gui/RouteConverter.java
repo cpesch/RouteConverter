@@ -392,15 +392,15 @@ public abstract class RouteConverter extends SingleFrameApplication {
         } else {
             getMapView().addMapViewListener(calculatedDistanceNotifier);
             getMapView().initialize(getConvertPanel().getPositionsModel(),
-                    getConvertPanel().getPositionsSelectionModel(),
                     getConvertPanel().getCharacteristicsModel(),
-                    getMapViewCallback(),
                     getShowCoordinates(),
                     getShowWaypointDescription(),
                     getRouteColorModel(),
                     getTrackColorModel(),
                     getWaypointColorModel(),
-                    getUnitSystemModel());
+                    getUnitSystemModel(),
+                    getMapViewCallback()
+            );
 
             @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
             Throwable cause = getMapView().getInitializationCause();

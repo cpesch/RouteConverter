@@ -154,7 +154,6 @@ public class MapsforgeMapView extends BaseMapView {
     private static final byte MAXIMUM_ZOOM_LEVEL = 22;
 
     private PositionsModel positionsModel;
-    private PositionsSelectionModel positionsSelectionModel;
     private CharacteristicsModel characteristicsModel;
     private BooleanModel showCoordinates;
     private ColorModel routeColorModel, trackColorModel, waypointColorModel;
@@ -187,18 +186,16 @@ public class MapsforgeMapView extends BaseMapView {
     // initialization
 
     public void initialize(final PositionsModel positionsModel,
-                           PositionsSelectionModel positionsSelectionModel,
                            CharacteristicsModel characteristicsModel,
-                           MapViewCallback mapViewCallback,
                            BooleanModel showCoordinates,
-                           BooleanModel showWaypointDescription,       /* ignored */
+                           BooleanModel showWaypointDescription,
                            ColorModel aRouteColorModel,
                            ColorModel aTrackColorModel,
                            ColorModel aWaypointColorModel,
-                           UnitSystemModel unitSystemModel) {
+                           UnitSystemModel unitSystemModel,
+                           MapViewCallback mapViewCallback) {
         this.mapViewCallback = (MapViewCallbackOpenSource) mapViewCallback;
         this.positionsModel = positionsModel;
-        this.positionsSelectionModel = positionsSelectionModel;
         this.characteristicsModel = characteristicsModel;
         this.showCoordinates = showCoordinates;
         this.routeColorModel = aRouteColorModel;
@@ -1165,7 +1162,7 @@ public class MapsforgeMapView extends BaseMapView {
         int row = positionsModel.getClosestPosition(latLong.longitude, latLong.latitude, threshold);
         if (row != -1 && !mapViewMoverAndZoomer.isMousePressedOnMarker()) {
             log.info("Selecting position at " + latLong + ", row is " + row);
-            positionsSelectionModel.setSelectedPositions(new int[]{row}, replaceSelection);
+            mapViewCallback.setSelectedPositions(new int[]{row}, replaceSelection);
         }
     }
 
@@ -1202,7 +1199,7 @@ public class MapsforgeMapView extends BaseMapView {
         private void insertPosition(int row, Double longitude, Double latitude) {
             positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
             int[] rows = new int[]{row};
-            positionsSelectionModel.setSelectedPositions(rows, true);
+            mapViewCallback.setSelectedPositions(rows, true);
             mapViewCallback.complementData(rows, true, true, true, true, false);
         }
 
