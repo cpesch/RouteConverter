@@ -47,6 +47,7 @@ import static com.intellij.uiDesigner.core.GridConstraints.*;
 import static java.awt.Desktop.getDesktop;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.gui.events.Range.asRange;
@@ -152,7 +153,7 @@ public class MapSelector {
             comboBoxZoom.setSelectedItem(zoomLevel);
         } catch (ArrayIndexOutOfBoundsException | NullPointerException e) {
             // work around exceptions deep in Swings BasicListUI on Mac OS X
-            comboBoxZoom.setSelectedIndex(zoomLevel - 1);
+            comboBoxZoom.setSelectedIndex(min(zoomLevel - 1, zoomLevelMax));
         }
     }
 
