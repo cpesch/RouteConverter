@@ -25,7 +25,6 @@ import slash.navigation.maps.tileserver.TileServer;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import java.util.List;
 
 /**
@@ -43,31 +42,36 @@ public class OverlaysMenu {
         this.menu = menu;
         this.availableOverlaysModel = availableOverlaysModel;
         this.appliedOverlaysModel = appliedOverlaysModel;
-        initializeMenu();
-    }
 
-    private void initializeMenu() {
-        populateMenu();
-
-        availableOverlaysModel.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                populateMenu();
-            }
+        availableOverlaysModel.addTableModelListener(e -> {
+            if (e.getType() != TableModelEvent.INSERT)
+                return;
+            addMenuEntry(e.getFirstRow());
         });
+
+        appliedOverlaysModel.addTableModelListener(e -> enableMenuEntries());
     }
 
-    private void populateMenu() {
-        menu.removeAll();
-
+    private void addMenuEntry(int row) {
         List<TileServer> tileServers = availableOverlaysModel.getItems();
-        for(TileServer tileServer : tileServers) {
-            JCheckBoxMenuItem item = new JCheckBoxMenuItem();
-            item.setAction(new ToggleOverlayAction(appliedOverlaysModel, tileServer));
-            item.setState(appliedOverlaysModel.contains(tileServer));
-            item.setText(tileServer.getId());
-            item.setToolTipText(tileServer.getDescription());
-            menu.add(item);
-        }
+        TileServer tileServer = tileServers.get(row);
+
+        JCheckBoxMenuItem item = new JCheckBoxMenuItem();
+        item.setAction(new ToggleOverlayAction(appliedOverlaysModel, tileServer));
+        item.setText(tileServer.getId());
+        item.setToolTipText(tileServer.getDescription());
+        menu.add(item);
+
         menu.setEnabled(tileServers.size() > 0);
+    }
+
+    private void enableMenuEntries() {
+        List<TileServer> tileServers = availableOverlaysModel.getItems();
+        for (int i = 0; i < tileServers.size(); i++) {
+            TileServer tileServer = tileServers.get(i);
+            JCheckBoxMenuItem item = (JCheckBoxMenuItem) menu.getItem(i);
+            boolean contains = appliedOverlaysModel.contains(tileServer);
+            item.setState(contains);
+        }
     }
 }
