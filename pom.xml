@@ -68,7 +68,7 @@
         <httpclient.version>4.5.13</httpclient.version>
         <jackson.version>2.12.1</jackson.version>
         <jaxb.version>2.3.1</jaxb.version>
-        <mapsforge.version>0.14.0</mapsforge.version>
+        <mapsforge.version>0.15.0</mapsforge.version>
         <poi.version>4.1.2</poi.version>
     </properties>
 

@@ -472,6 +472,8 @@ public class MapsforgeMapView extends BaseMapView {
         Parameters.MAXIMUM_BUFFER_SIZE = preferences.getInt(READ_BUFFER_SIZE_PREFERENCE, 16000000);
         // No square frame buffer since the device orientation hardly changes
         Parameters.SQUARE_FRAME_BUFFER = false;
+        // Use improved HA3 frame buffer
+        Parameters.FRAME_BUFFER_HA3 = true;
 
         float deviceScaleFactor = getDeviceScaleFactor();
         DisplayModel.setDeviceScaleFactor(deviceScaleFactor);
