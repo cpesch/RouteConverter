@@ -440,7 +440,7 @@ public class MapsforgeMapView extends BaseMapView {
                 if (!initialized) {
                     handleShadedHills();
                     handleMapAndThemeUpdate(true, true);
-                    handleOverlayInsertion(0, mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().getRowCount() - 1);
+                    handleOverlayInsert(0, mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().getRowCount() - 1);
                     initialized = true;
                 }
             }
@@ -625,7 +625,7 @@ public class MapsforgeMapView extends BaseMapView {
         layers.add(overlaysLayer);
     }
 
-    private void handleOverlayInsertion(int firstRow, int lastRow) {
+    private void handleOverlayInsert(int firstRow, int lastRow) {
         for (int i = firstRow; i < lastRow + 1; i++) {
             TileServer tileServer = mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().getItem(i);
             TileServerMapSource mapSource = new TileServerMapSource(tileServer);
@@ -638,7 +638,7 @@ public class MapsforgeMapView extends BaseMapView {
         }
     }
 
-    private void handleOverlayDeletion(int firstRow, int lastRow) {
+    private void handleOverlayDelete(int firstRow, int lastRow) {
         for (int i = lastRow; i >= firstRow; i--) {
             if (i >= overlaysLayer.layers.size())
                 continue;
@@ -1217,7 +1217,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private class ZoomAction extends FrameAction {
-        private byte zoomLevelDiff;
+        private final byte zoomLevelDiff;
 
         private ZoomAction(int zoomLevelDiff) {
             this.zoomLevelDiff = (byte) zoomLevelDiff;
@@ -1239,13 +1239,13 @@ public class MapsforgeMapView extends BaseMapView {
 
                 // select current event map updater and let him add all
                 eventMapUpdater = getEventMapUpdaterFor(positionsModel.getRoute().getCharacteristics());
-                eventMapUpdater.handleAdd(0, MapsforgeMapView.this.positionsModel.getRowCount() - 1);
+                eventMapUpdater.handleAdd(0, positionsModel.getRowCount() - 1);
             });
         }
 
         public void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
             executor.execute(() -> {
-               switch (eventType) {
+                switch (eventType) {
                     case INSERT:
                         eventMapUpdater.handleAdd(firstRow, lastRow);
                         break;
@@ -1369,10 +1369,10 @@ public class MapsforgeMapView extends BaseMapView {
         public void tableChanged(TableModelEvent e) {
             switch (e.getType()) {
                 case INSERT:
-                    handleOverlayInsertion(e.getFirstRow(), e.getLastRow());
+                    handleOverlayInsert(e.getFirstRow(), e.getLastRow());
                     break;
                 case DELETE:
-                    handleOverlayDeletion(e.getFirstRow(), e.getLastRow());
+                    handleOverlayDelete(e.getFirstRow(), e.getLastRow());
                     break;
                 case UPDATE:
                     break;
