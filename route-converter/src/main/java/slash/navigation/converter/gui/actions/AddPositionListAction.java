@@ -22,17 +22,16 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
-import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
-import java.text.MessageFormat;
 import java.util.ArrayList;
+
+import static java.text.MessageFormat.format;
 
 /**
  * {@link Action} that adds a new position list to the {@link PositionsModel}.
@@ -41,19 +40,19 @@ import java.util.ArrayList;
  */
 
 public class AddPositionListAction extends FrameAction {
-    private final ConvertPanel convertPanel;
+    private final FormatAndRoutesModel formatAndRoutesModel;
+    private final CharacteristicsModel characteristicsModel;
 
-    public AddPositionListAction(ConvertPanel convertPanel) {
-        this.convertPanel = convertPanel;
+    public AddPositionListAction(FormatAndRoutesModel formatAndRoutesModel, CharacteristicsModel characteristicsModel) {
+        this.formatAndRoutesModel = formatAndRoutesModel;
+        this.characteristicsModel = characteristicsModel;
     }
 
     @SuppressWarnings("unchecked")
     public void run() {
-        RouteConverter r = RouteConverter.getInstance();
-        FormatAndRoutesModel formatAndRoutesModel = convertPanel.getFormatAndRoutesModel();
         NavigationFormat format = formatAndRoutesModel.getFormat();
-        BaseRoute route = format.createRoute((RouteCharacteristics) r.getCharacteristicsModel().getSelectedItem(),
-                MessageFormat.format(getBundle().getString("new-positionlist-name"), formatAndRoutesModel.getSize() + 1),
+        BaseRoute route = format.createRoute(characteristicsModel.getSelectedCharacteristics(),
+                format(getBundle().getString("new-positionlist-name"), formatAndRoutesModel.getSize() + 1),
                 new ArrayList<NavigationPosition>());
         formatAndRoutesModel.addPositionList(formatAndRoutesModel.getSize(), route);
         formatAndRoutesModel.setSelectedItem(route);
