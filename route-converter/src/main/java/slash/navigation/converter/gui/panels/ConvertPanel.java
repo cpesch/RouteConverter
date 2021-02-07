@@ -1024,7 +1024,7 @@ public class ConvertPanel implements PanelInTab {
 
     private void setReadFormatFileFilters(JFileChooser chooser) {
         setFormatFileFilters(chooser, getNavigationFormatRegistry().getReadFormatsSortedByName(),
-                preferences.get(READ_FORMAT_PREFERENCE, Gpx11Format.class.getName()));
+                preferences.get(READ_FORMAT_PREFERENCE, ""));
     }
 
     private void setReadFormatFileFilterPreference(NavigationFormat selectedFormat) {
