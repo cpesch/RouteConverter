@@ -71,8 +71,8 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
         return preferences.getInt("maximumGoogleMapsUrlPositionCount", 15);
     }
 
-    public static boolean isGoogleMapsLinkUrl(URL url) {
-        String found = internalFindUrl(url.toExternalForm());
+    public boolean isParseableUrl(String url) {
+        String found = internalFindUrl(url);
         return found != null && (found.startsWith("?") || found.startsWith("/dir/"));
     }
 

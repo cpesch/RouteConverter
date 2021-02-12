@@ -59,7 +59,7 @@ public class NominatimServiceIT {
     @Test
     public void getAddressForCity() throws IOException {
         // https://nominatim.openstreetmap.org/reverse?lat=47.3&lon=9.0&format=xml
-        assertEquals("M\u00fcslieggstrasse, 8733 Eschenbach (SG), Sankt Gallen, Switzerland", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
+        assertEquals("M\u00fcslieggstrasse, 8733 Eschenbach (SG), Sankt Gallen, Schweiz/Suisse/Svizzera/Svizra", service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3)));
     }
 
     @Test
@@ -71,6 +71,6 @@ public class NominatimServiceIT {
     @Test
     public void getAddressForVillage() throws IOException {
         // https://nominatim.openstreetmap.org/reverse?&lat=51.610954&lon=10.210236&format=xml
-        assertEquals("Am Schützenplatz 1, 37434 Gieboldehausen, Niedersachsen, Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.210236, 51.610954)));
+        assertEquals("Am Schützenplatz, 37434 Gieboldehausen, Niedersachsen, Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.210236, 51.610954)));
     }
 }

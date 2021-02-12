@@ -26,7 +26,6 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
 
 import java.io.PrintWriter;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -60,11 +59,6 @@ public class KurvigerUrlFormat extends BaseUrlParsingFormat {
 
     public int getMaximumPositionCount() {
         return preferences.getInt("maximumKurvigerUrlPositionCount", 100);
-    }
-
-    public static boolean isKurvigerUrl(URL url) {
-        String found = internalFindUrl(url.toExternalForm());
-        return found != null;
     }
 
     protected List<Wgs84Position> parsePositions(Map<String, List<String>> parameters) {
@@ -108,10 +102,6 @@ public class KurvigerUrlFormat extends BaseUrlParsingFormat {
     }
 
     protected String findURL(String text) {
-        return internalFindUrl(text);
-    }
-
-    private static String internalFindUrl(String text) {
         text = replaceLineFeeds(text, "");
         Matcher urlMatcher = URL_PATTERN.matcher(text);
         if (!urlMatcher.matches())

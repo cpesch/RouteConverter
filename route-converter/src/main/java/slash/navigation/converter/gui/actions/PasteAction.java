@@ -105,7 +105,7 @@ public class PasteAction extends FrameAction {
                 BaseRoute route = result.getTheRoute();
                 paste(route.getPositions());
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             // intentionally left empty
         }
     }

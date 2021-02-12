@@ -48,7 +48,7 @@ public class PhotonServiceIT {
     @Test
     public void getAddressFor() throws IOException {
         String address1 = service.getAddressFor(new SimpleNavigationPosition(9.0, 47.3));
-        assertTrue(address1.contains("Sankt Gallen") && address1.contains("Switzerland"));
+        assertTrue(address1.contains("Sankt Gallen") && address1.contains("Suisse"));
         String address2 = service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001));
         assertTrue(address2.contains("Grafenrheinfeld") && address2.contains("Bayern") && address2.contains("Deutschland"));
         String address3 = service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428));

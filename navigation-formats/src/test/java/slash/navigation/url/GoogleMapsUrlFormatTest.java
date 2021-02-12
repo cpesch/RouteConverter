@@ -31,7 +31,6 @@ import java.util.Map;
 
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
-import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsLinkUrl;
 import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsProfileUrl;
 
 public class GoogleMapsUrlFormatTest {
@@ -64,7 +63,7 @@ public class GoogleMapsUrlFormatTest {
 
     private static final String INPUT10_NEW_GOOGLE_MAPS_2015 = "https://www.google.at/maps/dir/Sterzing,+Bozen,+Italien/Jaufenpass,+Sankt+Leonhard+in+Passeier,+Bozen,+Italien/Ofenpass,+7532+Cierfs,+Schweiz/Albulapassstrasse,+7482+Berg%C3%BCn%2FBravuogn,+Schweiz/Spl%C3%BCgenpass,+Spl%C3%BCgen,+Schweiz/Via+Roma,+53,+22023+Castiglione+CO,+Italien/@46.4115893,9.1625277,8z/data=!3m1!4b1!4m42!4m41!1m5!1m1!1s0x479d5340912b4fed:0xeccf91de29d6fcf9!2m2!1d11.4336186!2d46.8926725!1m5!1m1!1s0x4782b27a89809711:0xbfb1348a6269dc1!2m2!1d11.3214111!2d46.8395577!1m5!1m1!1s0x47831519f57d6e8b:0xa4a9db7fa9393319!2m2!1d10.2870515!2d46.6418315!1m5!1m1!1s0x47849d1f1792adb3:0x1b8f8898b9521cba!2m2!1d9.8000555!2d46.5815557!1m5!1m1!1s0x4784f6a1054aa397:0x1ffb7aed566559ff!2m2!1d9.33028!2d46.5056!1m5!1m1!1s0x478425a384f4a881:0xcec114200a27651!2m2!1d9.089271!2d45.95557!2m3!1b1!2b1!3b1!3e0";
 
-    private GoogleMapsUrlFormat format = new GoogleMapsUrlFormat();
+    private final GoogleMapsUrlFormat format = new GoogleMapsUrlFormat();
 
     @Test
     public void testFindURL() {
@@ -121,7 +120,6 @@ public class GoogleMapsUrlFormatTest {
         } else {
             Map<String, List<String>> parameters = format.parseURLParameters(url, "UTF-8");
             return format.parsePositions(parameters);
-
         }
     }
 
@@ -340,8 +338,8 @@ public class GoogleMapsUrlFormatTest {
 
     @Test
     public void testIsGoogleMapsLinkUrl() throws MalformedURLException {
-        assertTrue(isGoogleMapsLinkUrl(new URL("https://maps.google.com/maps?saddr=Hamburg&daddr=Hannover+to:M%C3%BCnchen&hl=en&ie=UTF8&sll=50.844236,10.557014&sspn=6.272277,10.777588&geocode=Fe0fMQMd0n2YACm5Exh-g2GxRzGgOtZ78j0mBA%3BFVQxHwMdqn-UACmFT0lNUQuwRzEgR6yUbawlBA%3BFRCC3gIdsqWwACnZX4yj-XWeRzF9mLF9SrgMAQ&mra=ls&t=m&z=7")));
-        assertTrue(isGoogleMapsLinkUrl(new URL("https://www.google.de/maps/dir/Hamburg/Hannover/M%C3%BCnchen/@50.8213415,8.3587982,7z/data=!3m1!4b1!4m20!4m19!1m5!1m1!1s0x47b161837e1813b9:0x4263df27bd63aa0!2m2!1d9.9936818!2d53.5510846!1m5!1m1!1s0x47b00b514d494f85:0x425ac6d94ac4720!2m2!1d9.7320104!2d52.3758916!1m5!1m1!1s0x479e75f9a38c5fd9:0x10cb84a7db1987d!2m2!1d11.5819806!2d48.1351253!3e0")));
+        assertTrue(format.isParseableUrl("https://maps.google.com/maps?saddr=Hamburg&daddr=Hannover+to:M%C3%BCnchen&hl=en&ie=UTF8&sll=50.844236,10.557014&sspn=6.272277,10.777588&geocode=Fe0fMQMd0n2YACm5Exh-g2GxRzGgOtZ78j0mBA%3BFVQxHwMdqn-UACmFT0lNUQuwRzEgR6yUbawlBA%3BFRCC3gIdsqWwACnZX4yj-XWeRzF9mLF9SrgMAQ&mra=ls&t=m&z=7"));
+        assertTrue(format.isParseableUrl("https://www.google.de/maps/dir/Hamburg/Hannover/M%C3%BCnchen/@50.8213415,8.3587982,7z/data=!3m1!4b1!4m20!4m19!1m5!1m1!1s0x47b161837e1813b9:0x4263df27bd63aa0!2m2!1d9.9936818!2d53.5510846!1m5!1m1!1s0x47b00b514d494f85:0x425ac6d94ac4720!2m2!1d9.7320104!2d52.3758916!1m5!1m1!1s0x479e75f9a38c5fd9:0x10cb84a7db1987d!2m2!1d11.5819806!2d48.1351253!3e0"));
     }
 
     @Test

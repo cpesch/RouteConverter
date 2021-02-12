@@ -46,6 +46,10 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
         return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
     }
 
+    public boolean isParseableUrl(String url) {
+        return findURL(url) != null;
+    }
+
     protected void processURL(String url, String encoding, ParserContext<Wgs84Route> context) {
         Map<String, List<String>> parameters = parseURLParameters(url, encoding);
         if (parameters == null)

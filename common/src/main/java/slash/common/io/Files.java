@@ -380,10 +380,10 @@ public class Files {
      * with the given extension(s)
      */
     public static List<File> collectFiles(File path, String... extensions) {
-        Set<String> lowercase = Arrays.stream(extensions).
+        Set<String> lowercase = extensions != null ? Arrays.stream(extensions).
                 filter(Objects::nonNull).
                 map(String::toLowerCase).
-                collect(Collectors.toSet());
+                collect(Collectors.toSet()) : null;
 
         List<File> list = new ArrayList<>(1);
         recursiveCollect(path, false, true, lowercase, list);

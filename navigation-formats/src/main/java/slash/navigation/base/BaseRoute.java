@@ -72,6 +72,7 @@ import slash.navigation.tcx.TcxRoute;
 import slash.navigation.tour.TourFormat;
 import slash.navigation.tour.TourPosition;
 import slash.navigation.tour.TourRoute;
+import slash.navigation.url.GeoHackUrlFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
 import slash.navigation.url.KurvigerUrlFormat;
 import slash.navigation.url.MotoPlanerUrlFormat;
@@ -736,6 +737,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof HaicomLoggerFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new HaicomLoggerFormat());
+    }
+
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
+    public SimpleRoute asGeoHackUrlFormat() {
+        if (getFormat() instanceof GeoHackUrlFormat)
+            return (SimpleRoute) this;
+        return asSimpleFormat(new GeoHackUrlFormat());
     }
 
     @SuppressWarnings({"UnusedDeclaration", "rawtypes"})

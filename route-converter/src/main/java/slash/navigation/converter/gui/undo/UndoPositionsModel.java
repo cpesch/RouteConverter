@@ -93,7 +93,7 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     public void edit(int rowIndex, PositionColumnValues columnToValues, boolean fireEvent, boolean trackUndo) {
-        if (rowIndex == getRowCount())
+        if (rowIndex >= getRowCount())
             return;
 
         if(trackUndo) {

@@ -33,9 +33,6 @@ import slash.navigation.nmn.NmnFormat;
 import slash.navigation.photo.PhotoFormat;
 import slash.navigation.rest.Get;
 import slash.navigation.tcx.TcxFormat;
-import slash.navigation.url.GoogleMapsUrlFormat;
-import slash.navigation.url.KurvigerUrlFormat;
-import slash.navigation.url.MotoPlanerUrlFormat;
 
 import java.io.*;
 import java.net.URISyntaxException;
@@ -56,10 +53,7 @@ import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.NavigationFormatConverter.asFormat;
 import static slash.navigation.base.NavigationFormatConverter.convertRoute;
 import static slash.navigation.base.RouteComments.*;
-import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsLinkUrl;
 import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsProfileUrl;
-import static slash.navigation.url.KurvigerUrlFormat.isKurvigerUrl;
-import static slash.navigation.url.MotoPlanerUrlFormat.isMotoPlanerUrl;
 
 /**
  * Parses byte streams with navigation information via {@link NavigationFormat} classes.
@@ -122,7 +116,6 @@ public class NavigationFormatParser {
                         firstSuccessfulFormat = format;
                 } catch (Exception e) {
                     log.severe(format("Error reading with %s: %s", format, e));
-                    e.printStackTrace();
                 }
 
                 if (context.getRoutes().size() > routeCountBefore) {
@@ -298,29 +291,27 @@ public class NavigationFormatParser {
             return null;
     }
 
+    private BaseUrlParsingFormat getUrlParsingFormat(String url) {
+        for(BaseUrlParsingFormat format : getNavigationFormatRegistry().getUrlParsingFormats()) {
+            if(format.findURL(url) != null)
+                return format;
+        }
+        return null;
+    }
+
     public ParserResult read(URL url, List<NavigationFormat> formats) throws IOException {
+        BaseUrlParsingFormat urlParsingFormat = getUrlParsingFormat(url.toExternalForm());
+        if(urlParsingFormat != null) {
+            List<NavigationFormat> readFormats = new ArrayList<>(formats);
+            readFormats.add(0, urlParsingFormat);
+            byte[] bytes = url.toExternalForm().getBytes();
+            return read(new ByteArrayInputStream(bytes), bytes.length, null, null, readFormats);
+        }
+
         if (isGoogleMapsProfileUrl(url)) {
             url = new URL(url.toExternalForm() + "&output=kml");
             formats = new ArrayList<>(formats);
             formats.add(0, new Kml22Format());
-
-        } else if (isGoogleMapsLinkUrl(url)) {
-            byte[] bytes = url.toExternalForm().getBytes();
-            List<NavigationFormat> readFormats = new ArrayList<>(formats);
-            readFormats.add(0, new GoogleMapsUrlFormat());
-            return read(new ByteArrayInputStream(bytes), bytes.length, null, null, readFormats);
-
-        } else if (isKurvigerUrl(url)) {
-            byte[] bytes = url.toExternalForm().getBytes();
-            List<NavigationFormat> readFormats = new ArrayList<>(formats);
-            readFormats.add(0, new KurvigerUrlFormat());
-            return read(new ByteArrayInputStream(bytes), bytes.length, null, null, readFormats);
-
-        } else if (isMotoPlanerUrl(url)) {
-            byte[] bytes = url.toExternalForm().getBytes();
-            List<NavigationFormat> readFormats = new ArrayList<>(formats);
-            readFormats.add(0, new MotoPlanerUrlFormat());
-            return read(new ByteArrayInputStream(bytes), bytes.length, null, null, readFormats);
         }
 
         int readBufferSize = getSize(url);
@@ -328,7 +319,7 @@ public class NavigationFormatParser {
         return read(openStream(url), readBufferSize, extractStartDate(url), extractFile(url), formats);
     }
 
-    private InputStream openStream(URL url) throws IOException {
+   private InputStream openStream(URL url) throws IOException {
         String urlString = url.toExternalForm();
         // make sure HTTPS requests use HTTP Client with it's SSL tweaks
         if (urlString.contains("https://")) {

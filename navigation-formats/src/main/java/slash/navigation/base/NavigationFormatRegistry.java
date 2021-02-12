@@ -64,10 +64,7 @@ import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
 import slash.navigation.tour.TourFormat;
-import slash.navigation.url.GoogleMapsUrlFormat;
-import slash.navigation.url.KurvigerUrlFormat;
-import slash.navigation.url.MotoPlanerUrlFormat;
-import slash.navigation.url.UrlFormat;
+import slash.navigation.url.*;
 import slash.navigation.viamichelin.ViaMichelinFormat;
 import slash.navigation.wbt.WintecWbt201Tk1Format;
 import slash.navigation.wbt.WintecWbt201Tk2Format;
@@ -92,6 +89,12 @@ public class NavigationFormatRegistry {
 
     public NavigationFormatRegistry() {
         // self-implemented formats
+        addFormat(NmnUrlFormat.class);
+        addFormat(GoogleMapsUrlFormat.class);
+        addFormat(KurvigerUrlFormat.class);
+        addFormat(MotoPlanerUrlFormat.class);
+        addFormat(GeoHackUrlFormat.class);
+        addFormat(UrlFormat.class);
         addFormat(NmeaFormat.class);
         addFormat(MTP0809Format.class);
         addFormat(MTP0607Format.class);
@@ -187,12 +190,6 @@ public class NavigationFormatRegistry {
         addFormat(HoluxM241BinaryFormat.class);
         addFormat(FlightRecorderDataFormat.class);
         addFormat(WintecWbt202TesFormat.class);
-
-        addFormat(NmnUrlFormat.class);
-        addFormat(GoogleMapsUrlFormat.class);
-        addFormat(KurvigerUrlFormat.class);
-        addFormat(MotoPlanerUrlFormat.class);
-        addFormat(UrlFormat.class);
         addFormat(CsvCommaFormat.class);
         addFormat(CsvSemicolonFormat.class);
 
@@ -276,6 +273,15 @@ public class NavigationFormatRegistry {
 
     public List<NavigationFormat> getWriteFormatsSortedByName() {
         return sortByName(filterByGarble(getWriteFormats()));
+    }
+
+    public List<BaseUrlParsingFormat> getUrlParsingFormats() {
+        List<BaseUrlParsingFormat> result = new ArrayList<>();
+        for(NavigationFormat format : getReadFormats()) {
+            if(format instanceof BaseUrlParsingFormat)
+                result.add((BaseUrlParsingFormat)format);
+        }
+        return result;
     }
 
     public List<NavigationFormat> getWriteFormatsWithPreferredFormats(List<NavigationFormat> preferredFormats) {

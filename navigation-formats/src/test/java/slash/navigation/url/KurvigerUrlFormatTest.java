@@ -33,7 +33,7 @@ import static slash.navigation.base.RouteCalculations.asWgs84Position;
 public class KurvigerUrlFormatTest {
     private static final String INPUT1 = "https://kurviger.de/?point=32.64013,-16.85148&point=32.70498,-16.8338&point=32.70624,-16.88255&point=32.66431,-16.86777&point=32.68353,-16.90509&point=32.67702,-16.94549&point=32.65959,-16.96608&point=32.74285,-17.02466&point=32.72115,-17.11077&point=32.72183,-17.15622&point=32.78202,-17.17759&point=32.86656,-17.17075&point=32.774,-16.87225&point=32.76274,-16.86161&point=32.74713,-16.82939&point=32.69222,-16.78324&point=32.64031,-16.85144";
 
-    private KurvigerUrlFormat format = new KurvigerUrlFormat();
+    private final KurvigerUrlFormat format = new KurvigerUrlFormat();
 
     @Test
     public void testFindURL() {

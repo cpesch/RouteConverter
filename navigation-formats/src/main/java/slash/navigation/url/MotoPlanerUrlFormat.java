@@ -62,11 +62,6 @@ public class MotoPlanerUrlFormat extends BaseUrlParsingFormat {
         return preferences.getInt("maximumMotoPlanerUrlPositionCount", 100);
     }
 
-    public static boolean isMotoPlanerUrl(URL url) {
-        String found = internalFindUrl(url.toExternalForm());
-        return found != null;
-    }
-
     protected List<Wgs84Position> parsePositions(Map<String, List<String>> parameters) {
         throw new UnsupportedOperationException();
     }
@@ -108,10 +103,6 @@ public class MotoPlanerUrlFormat extends BaseUrlParsingFormat {
     }
 
     protected String findURL(String text) {
-        return internalFindUrl(text);
-    }
-
-    private static String internalFindUrl(String text) {
         text = replaceLineFeeds(text, "");
         Matcher urlMatcher = URL_PATTERN.matcher(text);
         if (!urlMatcher.matches())
