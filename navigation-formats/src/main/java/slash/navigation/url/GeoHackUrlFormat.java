@@ -48,7 +48,7 @@ import static slash.navigation.common.Orientation.West;
 
 public class GeoHackUrlFormat extends BaseUrlParsingFormat {
     private static final Preferences preferences = Preferences.userNodeForPackage(GeoHackUrlFormat.class);
-    private static final Pattern URL_PATTERN = Pattern.compile(".*http[s]?://geohack.toolforge.org/.*\\?([^\\s]+).*");
+    private static final Pattern URL_PATTERN = Pattern.compile(".*http[s]?://.+\\.org/geohack.*\\?([^\\s]+).*");
     private static final Pattern PARAM_PATTERN = Pattern.compile("^(" + POSITION + ")_([N|S])_(" + POSITION + ")_([W|E]).*");
 
     public String getExtension() {

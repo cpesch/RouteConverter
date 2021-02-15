@@ -56,10 +56,10 @@ public class GeoHackUrlFormatTest {
         List<Wgs84Position> positions = parsePositions(INPUT1);
         assertNotNull(positions);
         assertEquals(1, positions.size());
-        Wgs84Position position0 = positions.get(0);
-        assertDoubleEquals(13.604166944444, position0.getLongitude());
-        assertDoubleEquals(57.265278055556, position0.getLatitude());
-        assertEquals("Scandinavian Raceway", position0.getDescription());
+        Wgs84Position position = positions.get(0);
+        assertDoubleEquals(13.604166944444, position.getLongitude());
+        assertDoubleEquals(57.265278055556, position.getLatitude());
+        assertEquals("Scandinavian Raceway", position.getDescription());
     }
 
     @Test
@@ -75,6 +75,17 @@ public class GeoHackUrlFormatTest {
         assertDoubleEquals(-56.78, position1.getLongitude());
         assertDoubleEquals(-12.34, position1.getLatitude());
         assertEquals("Position B", position1.getDescription());
+    }
+
+    @Test
+    public void testParseLegacyUrl() {
+        List<Wgs84Position> positions = parsePositions("https://tools.wmflabs.org/geohack/geohack.php?language=it&pagename=Spoleto&params=42.733333_N_12.733333_E_type:adm3rd_scale:1000000&title=Spoleto");
+        assertNotNull(positions);
+        assertEquals(1, positions.size());
+        Wgs84Position position = positions.get(0);
+        assertDoubleEquals(12.733333, position.getLongitude());
+        assertDoubleEquals(42.733333, position.getLatitude());
+        assertEquals("Spoleto", position.getDescription());
     }
 
     @Test
@@ -94,4 +105,5 @@ public class GeoHackUrlFormatTest {
         String expected = "http://geohack.toolforge.org/geohack.php?params=12.34_N_56.78_E_&pagename=Position_A&params=12.34_S_56.78_W_&pagename=Position_B";
         String actual = format.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);
-    }}
+    }
+}
