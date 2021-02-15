@@ -21,40 +21,40 @@ package slash.navigation.base;
 
 import org.junit.Test;
 import slash.navigation.babel.TomTomPoiFormat;
-import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.columbus.GarbleColumbusGpsType1Format;
 import slash.navigation.csv.CsvCommaFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
-import slash.navigation.nmea.NmeaFormat;
+import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.simple.*;
+import slash.navigation.url.GoogleMapsUrlFormat;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
 public class NavigationFormatRegistryTest {
-    private NavigationFormatRegistry registry = new NavigationFormatRegistry();
+    private final NavigationFormatRegistry registry = new NavigationFormatRegistry();
 
     @Test
     public void testGetReadFormatsSortedByExtension() {
         List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".ov2");
         assertEquals(TomTomPoiFormat.class, formats.get(0).getClass());
-        assertEquals(NmeaFormat.class, formats.get(1).getClass());
+        assertEquals(NmnUrlFormat.class, formats.get(1).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByExtensionIsCaseSensitive() {
         List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".OV2");
-        assertEquals(NmeaFormat.class, formats.get(0).getClass());
-        assertEquals(MTP0809Format.class, formats.get(1).getClass());
+        assertEquals(NmnUrlFormat.class, formats.get(0).getClass());
+        assertEquals(GoogleMapsUrlFormat.class, formats.get(1).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByNotExistingExtension() {
         List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".zzz");
-        assertEquals(NmeaFormat.class, formats.get(0).getClass());
+        assertEquals(NmnUrlFormat.class, formats.get(0).getClass());
     }
 
     @Test
@@ -71,6 +71,6 @@ public class NavigationFormatRegistryTest {
         assertEquals(CsvSemicolonFormat.class, formats.get(index++).getClass());
         assertEquals(GarbleColumbusGpsType1Format.class, formats.get(index++).getClass());
         assertEquals(GarbleHaicomLoggerFormat.class, formats.get(index++).getClass());
-        assertEquals(NmeaFormat.class, formats.get(index).getClass());
+        assertEquals(NmnUrlFormat.class, formats.get(index).getClass());
     }
 }
