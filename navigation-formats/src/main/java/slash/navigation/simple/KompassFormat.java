@@ -62,7 +62,7 @@ public class KompassFormat extends SimpleLineBasedFormat<SimpleRoute> {
 
     @SuppressWarnings("unchecked")
     public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
+        return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
     protected boolean isPosition(String line) {

@@ -31,8 +31,8 @@ import java.util.List;
  */
 
 public class Wgs84Route extends SimpleRoute<Wgs84Position, SimpleFormat> {
-    public Wgs84Route(SimpleFormat format, RouteCharacteristics characteristics, List<Wgs84Position> positions) {
-        super(format, characteristics, positions);
+    public Wgs84Route(SimpleFormat format, RouteCharacteristics characteristics, String name, List<Wgs84Position> positions) {
+        super(format, characteristics, name, positions);
     }
 
     public Wgs84Position createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {

@@ -86,7 +86,7 @@ public class NavilinkFormat extends SimpleFormat<Wgs84Route> {
 
     @SuppressWarnings("unchecked")
     public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        Wgs84Route newRoute = new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
+        Wgs84Route newRoute = new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
         newRoute.setName(name);
         return newRoute;
     }

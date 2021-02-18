@@ -155,7 +155,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         for (GoPalPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
@@ -187,7 +187,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         for (GoPalPosition position : positions) {
             gopalPositions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), gopalPositions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), gopalPositions);
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {

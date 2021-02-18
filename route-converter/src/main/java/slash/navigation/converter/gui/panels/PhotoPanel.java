@@ -121,7 +121,7 @@ public class PhotoPanel implements PanelInTab {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
-        photosModel.setRoute(new Wgs84Route(new PhotoFormat(), Waypoints, new ArrayList<Wgs84Position>()));
+        photosModel.setRoute(new Wgs84Route(new PhotoFormat(), Waypoints, null, new ArrayList<Wgs84Position>()));
         filteredPhotosModel = new FilteringPositionsModel<>(photosModel, getFilterPredicatePreference());
         tablePhotos.setModel(filteredPhotosModel);
         PhotosTableColumnModel tableColumnModel = new PhotosTableColumnModel();

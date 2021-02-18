@@ -152,7 +152,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         for (GarminFlightPlanPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
@@ -184,7 +184,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
         for (GarminFlightPlanPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {

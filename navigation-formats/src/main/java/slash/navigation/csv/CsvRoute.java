@@ -173,7 +173,7 @@ public class CsvRoute extends BaseRoute<CsvPosition, CsvFormat> {
         for (CsvPosition position : getPositions()) {
             positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), positions);
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {

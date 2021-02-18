@@ -43,7 +43,7 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
 
     @SuppressWarnings({"unchecked"})
     public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
+        return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
     public boolean isParseableUrl(String url) {

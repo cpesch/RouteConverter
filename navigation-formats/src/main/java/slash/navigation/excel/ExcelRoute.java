@@ -274,7 +274,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         for (ExcelPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
@@ -282,7 +282,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         for (ExcelPosition position : getPositions()) {
             positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), positions);
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {

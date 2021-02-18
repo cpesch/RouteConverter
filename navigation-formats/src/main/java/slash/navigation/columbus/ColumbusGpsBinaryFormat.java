@@ -85,7 +85,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
 
     @SuppressWarnings({"unchecked"})
     public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
+        return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
     public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) {
@@ -106,7 +106,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
 
             List<Wgs84Position> positions = internalRead(body);
             if (positions.size() > 0)
-                context.appendRoute(new Wgs84Route(this, Track, positions));
+                context.appendRoute(new Wgs84Route(this, Track, null, positions));
         }
     }
 

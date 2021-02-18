@@ -154,7 +154,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         for (TomTomPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
@@ -186,7 +186,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         for (TomTomPosition tomTomPosition : positions) {
             simplePositions.add(tomTomPosition.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), simplePositions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), simplePositions);
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {

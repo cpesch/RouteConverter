@@ -66,7 +66,7 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
 
     @SuppressWarnings({"unchecked"})
     public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
+        return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
     public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) {

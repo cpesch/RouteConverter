@@ -42,7 +42,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
 
     @SuppressWarnings("unchecked")
     protected R createRoute(RouteCharacteristics characteristics, List<Wgs84Position> positions) {
-        return (R)new Wgs84Route(this, characteristics, positions);
+        return (R)new Wgs84Route(this, characteristics, null, positions);
     }
 
     public void read(BufferedReader reader, String encoding, ParserContext<R> context) throws IOException {

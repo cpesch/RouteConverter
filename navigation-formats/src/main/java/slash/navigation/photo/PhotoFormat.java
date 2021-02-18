@@ -105,7 +105,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
 
     @SuppressWarnings("unchecked")
     public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
+        return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
     public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) {
@@ -147,7 +147,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
                 image = extractToTempFile(bufferedSource);
             position.setOrigin(image);
             position.setWaypointType(Photo);
-            context.appendRoute(new Wgs84Route(this, Waypoints, new ArrayList<Wgs84Position>(singletonList(position))));
+            context.appendRoute(new Wgs84Route(this, Waypoints, null, new ArrayList<Wgs84Position>(singletonList(position))));
         } catch (ImageReadException e) {
             throw new IOException("Image read error: " + e, e);
         }

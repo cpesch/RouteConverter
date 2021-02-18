@@ -173,7 +173,7 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         for (Wgs84Position position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
@@ -205,7 +205,7 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
         for (Wgs84Position Wgs84Position : this.positions) {
             positions.add(Wgs84Position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), positions);
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {

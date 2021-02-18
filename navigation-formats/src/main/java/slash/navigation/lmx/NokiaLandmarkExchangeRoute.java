@@ -165,7 +165,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
         for (Wgs84Position position : positions) {
             wgs84Positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
@@ -197,7 +197,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
         for (Wgs84Position position : positions) {
             Wgs84Positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), Wgs84Positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), Wgs84Positions);
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {

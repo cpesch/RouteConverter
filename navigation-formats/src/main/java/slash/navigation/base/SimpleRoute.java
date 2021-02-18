@@ -147,7 +147,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
         for (P position : getPositions()) {
             positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), positions);
     }
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
@@ -179,7 +179,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
         for (P position : getPositions()) {
             positions.add(position.asWgs84Position());
         }
-        return new Wgs84Route(format, getCharacteristics(), positions);
+        return new Wgs84Route(format, getCharacteristics(), getName(), positions);
     }
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
