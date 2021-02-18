@@ -244,9 +244,9 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
                     boolean center = position.getStreet() != null && position.getStreet().equals(BcrPosition.STREET_DEFINES_CENTER_NAME);
                     boolean first = index == 1;
                     boolean last = index == maxIndex;
-                    String altitutdeDescription = center || first || last ? "TOWN" : "Standort";
+                    String altitudeDescription = center || first || last ? "TOWN" : "Standort";
                     writer.println(BcrSection.STATION_PREFIX + (index++) + NAME_VALUE_SEPARATOR +
-                            altitutdeDescription + VALUE_SEPARATOR + altitude);
+                            altitudeDescription + VALUE_SEPARATOR + altitude);
 
                 }
             }
