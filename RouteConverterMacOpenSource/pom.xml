@@ -111,9 +111,9 @@
                 </executions>
                 <configuration>
                     <descriptors>
-                        <descriptor>${basedir}/src/main/assembly/macosx.xml</descriptor>
+                        <descriptor>${basedir}/src/main/assembly/macos.xml</descriptor>
                     </descriptors>
-                    <finalName>RouteConverterMacOpenSource.app</finalName>
+                    <finalName>RouteConverterMacOpenSource</finalName>
                 </configuration>
             </plugin>
         </plugins>

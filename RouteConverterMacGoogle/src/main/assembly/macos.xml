@@ -5,39 +5,40 @@
     <formats>
         <format>zip</format>
     </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
     <files>
         <file>
             <source>src/main/app-resources/Java/RouteConverterGoogle.cfg</source>
-            <outputDirectory>/Contents/Java/</outputDirectory>
+            <outputDirectory>/RouteConverter.app/Contents/Java/</outputDirectory>
             <filtered>true</filtered>
             <lineEnding>lf</lineEnding>
         </file>
         <file>
             <source>src/main/app-resources/Java/RouteConverterGoogleStart.jar</source>
-            <outputDirectory>/Contents/Java/</outputDirectory>
+            <outputDirectory>/RouteConverter.app/Contents/Java/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/MacOS/RouteConverterGoogle</source>
-            <outputDirectory>/Contents/MacOS/</outputDirectory>
+            <outputDirectory>/RouteConverter.app/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
             <source>src/main/app-resources/MacOS/libpackager.dylib</source>
-            <outputDirectory>/Contents/MacOS/</outputDirectory>
+            <outputDirectory>/RouteConverter.app/Contents/MacOS/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/Resources/RouteConverter.icns</source>
-            <outputDirectory>/Contents/Resources/</outputDirectory>
+            <outputDirectory>/RouteConverter.app/Contents/Resources/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/Info.plist</source>
-            <outputDirectory>/Contents/</outputDirectory>
+            <outputDirectory>/RouteConverter.app/Contents/</outputDirectory>
             <filtered>true</filtered>
             <lineEnding>lf</lineEnding>
         </file>
         <file>
             <source>target/RouteConverterMacGoogle.jar</source>
-            <outputDirectory>/Contents/Java/</outputDirectory>
+            <outputDirectory>/RouteConverter.app/Contents/Java/</outputDirectory>
         </file>
     </files>
 </assembly>

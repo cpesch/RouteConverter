@@ -90,9 +90,9 @@
                 </executions>
                 <configuration>
                     <descriptors>
-                        <descriptor>${basedir}/src/main/assembly/macosx.xml</descriptor>
+                        <descriptor>${basedir}/src/main/assembly/macos.xml</descriptor>
                     </descriptors>
-                    <finalName>TimeAlbumProMac.app</finalName>
+                    <finalName>TimeAlbumProMac</finalName>
                 </configuration>
             </plugin>
         </plugins>
