@@ -28,6 +28,8 @@ import slash.navigation.base.Wgs84Position;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.garmin.fit.File.ACTIVITY;
+import static com.garmin.fit.File.COURSE;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.NavigationConversion.semiCircleToDegree;
@@ -37,17 +39,22 @@ import static slash.navigation.common.NavigationConversion.semiCircleToDegree;
  *
  * @author Christian Pesch
  */
-class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, RecordMesgListener, SegmentPointMesgListener {
+class MesgParser implements CourseMesgListener, CoursePointMesgListener, FileIdMesgListener, GpsMetadataMesgListener, RecordMesgListener, SegmentPointMesgListener {
     private final List<Wgs84Position> positions = new ArrayList<>();
     private int index = 1;
+    private String name = null;
     private RouteCharacteristics characteristics = Waypoints;
 
-    public List<Wgs84Position> getPositions() {
-        return positions;
+    public String getName() {
+        return name;
     }
 
     public RouteCharacteristics getCharacteristics() {
         return characteristics;
+    }
+
+    public List<Wgs84Position> getPositions() {
+        return positions;
     }
 
     private Double asDouble(Byte aByte) {
@@ -74,6 +81,10 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
         return String.format("%s %d", mesg.getName(), index++);
     }
 
+    public void onMesg(CourseMesg mesg) {
+        name = mesg.getName();
+    }
+
     public void onMesg(CoursePointMesg mesg) {
         Wgs84Position position = new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
                 null, null, asCalendar(mesg.getTimestamp()), asDescription(mesg));
@@ -81,6 +92,13 @@ class MesgParser implements CoursePointMesgListener, GpsMetadataMesgListener, Re
         positions.add(position);
 
         characteristics = Route;
+    }
+
+    public void onMesg(FileIdMesg mesg) {
+        if(mesg.getType().equals(COURSE))
+            characteristics = Route;
+        if(mesg.getType().equals(ACTIVITY))
+            characteristics = Track;
     }
 
     public void onMesg(GpsMetadataMesg mesg) {

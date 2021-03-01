@@ -29,7 +29,10 @@ import slash.navigation.base.Wgs84Route;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.garmin.fit.File.ACTIVITY;
+import static com.garmin.fit.File.COURSE;
 import static slash.common.io.Transfer.formatFloat;
+import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.common.NavigationConversion.degreeToSemiCircle;
 
 /**
@@ -89,30 +92,55 @@ class MesgCreator {
         return mesg;
     }
 
-    public List<Mesg> createMesgs(Wgs84Route route, int startIndex, int endIndex) {
-        List<Mesg> result = new ArrayList<>();
+    private CourseMesg createCourseMesg(Wgs84Route route) {
+        CourseMesg mesg = new CourseMesg();
+        mesg.setName(route.getName());
+        return mesg;
+    }
 
+    private FileIdMesg createFileIdMesg(RouteCharacteristics characteristics, String productName) {
+        FileIdMesg mesg = new FileIdMesg();
+        mesg.setProductName(productName);
+        mesg.setTimeCreated(new DateTime(now().getTime()));
+
+        switch (characteristics) {
+            case Track:
+                mesg.setType(ACTIVITY);
+                break;
+            case Route:
+                mesg.setType(COURSE);
+                break;
+            default:
+                throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
+        }
+        return mesg;
+    }
+
+    private Mesg createPositionMesg(RouteCharacteristics characteristics, Wgs84Position position) {
+        switch (characteristics) {
+            case Track:
+                return createRecordMesg(position);
+            case Route:
+                return createCoursePointMesg(position);
+            case Waypoints:
+                return createGpsMetadataMesg(position);
+            default:
+                throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
+        }
+    }
+
+    public List<Mesg> createMesgs(Wgs84Route route, String productName, int startIndex, int endIndex) {
         RouteCharacteristics characteristics = route.getCharacteristics();
+
+        List<Mesg> result = new ArrayList<>();
+        result.add(createFileIdMesg(characteristics, productName));
+        result.add(createCourseMesg(route));
+
         List<Wgs84Position> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
-
-            switch (characteristics) {
-                case Track:
-                    RecordMesg recordMesg = createRecordMesg(position);
-                    result.add(recordMesg);
-                    break;
-                case Route:
-                    CoursePointMesg coursePointMesg = createCoursePointMesg(position);
-                    result.add(coursePointMesg);
-                    break;
-                case Waypoints:
-                    GpsMetadataMesg gpsMetadataMesg = createGpsMetadataMesg(position);
-                    result.add(gpsMetadataMesg);
-                    break;
-                default:
-                    throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
-            }
+            Mesg mesg = createPositionMesg(characteristics, position);
+            result.add(mesg);
         }
         return result;
     }

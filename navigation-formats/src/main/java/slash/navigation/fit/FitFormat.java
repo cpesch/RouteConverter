@@ -31,7 +31,6 @@ import java.util.logging.Logger;
 import static com.garmin.fit.Fit.ProtocolVersion.V2_0;
 import static java.lang.String.format;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.type.CompactCalendar.now;
 
 /**
  * Reads and writes Garmin FIT (.fit) files.
@@ -68,7 +67,7 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
 
     @SuppressWarnings({"unchecked"})
     public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new Wgs84Route(this, characteristics, (List<Wgs84Position>) positions);
+        return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
     public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) {
@@ -81,6 +80,7 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
         MesgBroadcaster broadcaster = new MesgBroadcaster(decode);
         broadcaster.addListener(new MesgLogger());
         MesgParser parser = new MesgParser();
+        broadcaster.addListener((CourseMesgListener) parser);
         broadcaster.addListener((CoursePointMesgListener) parser);
         broadcaster.addListener((GpsMetadataMesgListener) parser);
         broadcaster.addListener((RecordMesgListener) parser);
@@ -106,7 +106,7 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
 
         List<Wgs84Position> positions = parser.getPositions();
         if (positions.size() > 0)
-            context.appendRoute(new Wgs84Route(this, parser.getCharacteristics(), positions));
+            context.appendRoute(new Wgs84Route(this, parser.getCharacteristics(), parser.getName(), positions));
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
@@ -114,21 +114,12 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
         throw new UnsupportedOperationException();
     }
 
-
     public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         BufferEncoder encoder = new BufferEncoder(V2_0);
-        encoder.write(createFileIdMesg());
-        List<Mesg> mesgs = new MesgCreator().createMesgs(route, startIndex, endIndex);
+        List<Mesg> mesgs = new MesgCreator().createMesgs(route, getCreator(), startIndex, endIndex);
         encoder.write(mesgs);
         byte[] bytes = encoder.close();
         target.write(bytes);
-    }
-
-    private FileIdMesg createFileIdMesg() {
-        FileIdMesg mesg = new FileIdMesg();
-        mesg.setProductName(getCreator());
-        mesg.setTimeCreated(new DateTime(now().getTime()));
-        return mesg;
     }
 }
 
