@@ -40,6 +40,7 @@ import java.util.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Integer.min;
 import static java.lang.System.arraycopy;
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -65,9 +66,10 @@ public class OverlayPositionsModel implements PositionsModel {
         this.delegate = delegate;
         delegate.addTableModelListener(e -> {
             // clear overlay for updates on columns that have an effect on the distance
-            if (e.getColumn() == LONGITUDE_COLUMN_INDEX ||
-                    e.getColumn() == LATITUDE_COLUMN_INDEX ||
-                    e.getColumn() == ALL_COLUMNS)
+            int columnIndex = e.getColumn();
+            if (columnIndex == LONGITUDE_COLUMN_INDEX ||
+                    columnIndex == LATITUDE_COLUMN_INDEX ||
+                    columnIndex == ALL_COLUMNS)
                 clearOverlay();
         });
     }
@@ -437,8 +439,14 @@ public class OverlayPositionsModel implements PositionsModel {
                 lastIndex = index;
         }
         // send two events for the columns and filter out the second everywhere exception during the rendering of the JTable
-        fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
-        fireTableRowsUpdated(firstIndex, lastIndex, TIME_COLUMN_INDEX);
+        fireDistanceAndTimeChanged(firstIndex, lastIndex);
+    }
+
+    private void fireDistanceAndTimeChanged(int firstIndex, int lastIndex) {
+        invokeLater(() -> {
+            fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
+            fireTableRowsUpdated(firstIndex, lastIndex, TIME_COLUMN_INDEX);
+        });
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
