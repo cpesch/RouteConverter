@@ -66,7 +66,7 @@
         <brouter.version>1.6.1</brouter.version>
         <graphhopper.version>0.13.0</graphhopper.version>
         <httpclient.version>4.5.13</httpclient.version>
-        <jackson.version>2.12.1</jackson.version>
+        <jackson.version>2.12.2</jackson.version>
         <jaxb.version>2.3.1</jaxb.version>
         <mapsforge.version>0.15.0</mapsforge.version>
         <poi.version>4.1.2</poi.version>
@@ -352,13 +352,13 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.13.1</version>
+            <version>4.13.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.7.7</version>
+            <version>3.8.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -397,7 +397,7 @@
             <dependency>
                 <groupId>org.bidib.com.github.markusbernhardt</groupId>
                 <artifactId>proxy-vole</artifactId>
-                <version>1.0.10</version>
+                <version>1.0.11</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.slf4j</groupId>
