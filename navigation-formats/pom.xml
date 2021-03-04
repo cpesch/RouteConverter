@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.garmin</groupId>
             <artifactId>fit</artifactId>
-            <version>21.32.00</version>
+            <version>21.47.00</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
