@@ -636,6 +636,8 @@ public class MapsforgeMapView extends BaseMapView {
             overlay.start();
             getLayerManager().redrawLayers();
         }
+        // force immediate display of the overlay
+        mapView.getModel().mapViewPosition.moveCenter(0.0, 0.0);
     }
 
     private void handleOverlayDelete(int firstRow, int lastRow) {
