@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
@@ -69,7 +70,7 @@ public class RouteConverterOpenSource extends RouteConverter {
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
-        launch(RouteConverterOpenSource.class, new String[]{ RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
+        launch(RouteConverterOpenSource.class, asList(RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()), args);
     }
 
     public String getEdition() {

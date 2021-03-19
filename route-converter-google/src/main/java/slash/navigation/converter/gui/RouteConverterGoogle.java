@@ -32,10 +32,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.MessageFormat;
 
+import static java.util.Arrays.asList;
 import static javax.swing.JOptionPane.*;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static slash.common.io.Transfer.trim;
-import static slash.common.system.Platform.*;
+import static slash.common.system.Platform.hasJavaFX;
+import static slash.common.system.Platform.isWindows;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForGoogleAPIKey;
 
 /**
@@ -46,7 +47,7 @@ import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrows
 
 public class RouteConverterGoogle extends RouteConverter {
     public static void main(String[] args) {
-        launch(RouteConverterGoogle.class, new String[]{RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
+        launch(RouteConverterGoogle.class, asList(RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()), args);
     }
 
     public String getEdition() {

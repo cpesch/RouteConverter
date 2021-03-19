@@ -52,7 +52,6 @@ import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.rest.Credentials;
-import slash.navigation.routing.RoutingPreferencesModel;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -121,10 +120,6 @@ import static slash.navigation.gui.helpers.UIHelper.*;
 public abstract class RouteConverter extends SingleFrameApplication {
     protected static final Logger log = Logger.getLogger(RouteConverter.class.getName());
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
-
-    public static void main(String[] args) {
-        launch(RouteConverter.class, new String[]{RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
-    }
 
     public static RouteConverter getInstance() {
         return (RouteConverter) Application.getInstance();

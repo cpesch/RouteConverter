@@ -24,6 +24,8 @@ import slash.navigation.columbus.ColumbusNavigationFormatRegistry;
 import slash.navigation.converter.gui.actions.ShowAboutTimeAlbumProAction;
 import slash.navigation.gui.actions.SingletonDialogAction;
 
+import static java.util.Arrays.asList;
+
 /**
  * A graphical user interface for Columbus devices.
  *
@@ -31,10 +33,10 @@ import slash.navigation.gui.actions.SingletonDialogAction;
  */
 
 public class TimeAlbumPro extends RouteConverterGoogle {
-    private NavigationFormatRegistry navigationFormatRegistry = new ColumbusNavigationFormatRegistry();
+    private final NavigationFormatRegistry navigationFormatRegistry = new ColumbusNavigationFormatRegistry();
 
     public static void main(String[] args) {
-        launch(TimeAlbumPro.class, new String[]{RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()}, args);
+        launch(TimeAlbumPro.class, asList(RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()), args);
     }
 
     protected String getProduct() {

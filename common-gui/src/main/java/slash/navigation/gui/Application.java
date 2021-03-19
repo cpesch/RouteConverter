@@ -21,12 +21,10 @@
 package slash.navigation.gui;
 
 import slash.common.jarinjar.ClassPathExtender;
+import slash.navigation.gui.helpers.CombinedResourceBundle;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
@@ -97,27 +95,10 @@ public abstract class Application {
         Locale.setDefault(new Locale(language, country));
     }
 
-    private static ResourceBundle initializeBundles(String[] bundleNames) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, NoSuchFieldException {
-        ResourceBundle lastBundle = null;
-        for (String bundleName : bundleNames) {
-            ResourceBundle bundle = ResourceBundle.getBundle(bundleName);
-            if (lastBundle != null)
-                // this is considered an illegal access in Java 9 and later, have to look for alternatives once it's enforced
-                setParentBundle(bundle, lastBundle);
-            lastBundle = bundle;
-        }
-
-        return lastBundle;
-    }
-
-    private static void setParentBundle(ResourceBundle bundle, ResourceBundle parentBundle) throws NoSuchFieldException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
-        Field field = ResourceBundle.class.getDeclaredField("parent");
-        field.setAccessible(true);
-        ResourceBundle bundlesParentOrNull = (ResourceBundle) field.get(bundle);
-
-        Method method = ResourceBundle.class.getDeclaredMethod("setParent", ResourceBundle.class);
-        method.setAccessible(true);
-        method.invoke(bundlesParentOrNull != null ? bundlesParentOrNull : bundle, parentBundle);
+    private static ResourceBundle initializeBundles(List<String> bundleNames) {
+        CombinedResourceBundle bundle = new CombinedResourceBundle(bundleNames);
+        bundle.load();
+        return bundle;
     }
 
     private static ClassLoader extendClassPath() {
@@ -135,7 +116,7 @@ public abstract class Application {
         return extender.getClassLoader();
     }
 
-    public static <T extends Application> void launch(final Class<T> applicationClass, final String[] bundleNames, final String[] args) {
+    public static <T extends Application> void launch(final Class<T> applicationClass, final List<String> bundleNames, final String[] args) {
         final ClassLoader contextClassLoader = extendClassPath();
         if (contextClassLoader != null)
             Thread.currentThread().setContextClassLoader(contextClassLoader);
