@@ -34,6 +34,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.text.MessageFormat.format;
 import static javax.swing.JOptionPane.*;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializeFeatures;
@@ -88,7 +89,7 @@ public class UpdateChecker {
                     getStartTime());
             result.setParameters(parameters);
         } catch (Throwable t) {
-            log.severe("Cannot check for update: " + t);
+            log.severe("Cannot check for update: " + printStackTrace(t));
         }
         return result;
     }

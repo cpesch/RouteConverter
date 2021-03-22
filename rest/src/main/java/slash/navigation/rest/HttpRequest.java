@@ -72,11 +72,10 @@ public abstract class HttpRequest {
     private final HttpRequestBase method;
     private HttpResponse response;
     private HttpClientContext context;
-    private RequestConfig.Builder requestConfigBuilder;
+    private final RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
 
     HttpRequest(HttpRequestBase method) {
         this.log = Logger.getLogger(getClass().getName());
-        requestConfigBuilder = RequestConfig.custom();
         requestConfigBuilder.setConnectTimeout(15 * 1000);
         requestConfigBuilder.setSocketTimeout(90 * 1000);
         clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
