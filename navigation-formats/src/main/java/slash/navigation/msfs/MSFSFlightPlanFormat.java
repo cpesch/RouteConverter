@@ -18,14 +18,15 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.lmx;
+package slash.navigation.msfs;
 
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.lmx.binding.*;
+import slash.navigation.msfs.binding.ObjectFactory;
+import slash.navigation.msfs.binding.SimBaseDocument;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
@@ -36,23 +37,23 @@ import java.util.List;
 
 import static slash.common.io.Transfer.*;
 import static slash.navigation.common.NavigationConversion.formatDouble;
-import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.marshal;
-import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.unmarshal;
+import static slash.navigation.msfs.MSFSFlightPlanUtil.marshal;
+import static slash.navigation.msfs.MSFSFlightPlanUtil.unmarshal;
 
 /**
- * Reads and writes Nokia Landmark Exchange (.lmx) files.
+ * Reads and writes Microsoft Flight Simulator 2020 Flight Plan (.pln) files.
  *
  * @author Christian Pesch
  */
 
-public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandmarkExchangeRoute> {
+public class MSFSFlightPlanFormat extends XmlNavigationFormat<MSFSFlightPlanRoute> {
 
     public String getExtension() {
-        return ".lmx";
+        return ".pln";
     }
 
     public String getName() {
-        return "Nokia Landmark Exchange (*" + getExtension() + ")";
+        return "Microsoft Flight Simulator 2020 Flight Plan (*" + getExtension() + ")";
     }
 
     public boolean isSupportsMultipleRoutes() {
@@ -64,10 +65,11 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends NavigationPosition> NokiaLandmarkExchangeRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
-        return new NokiaLandmarkExchangeRoute(name, null, (List<Wgs84Position>) positions);
+    public <P extends NavigationPosition> MSFSFlightPlanRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+        return new MSFSFlightPlanRoute(name, null, (List<Wgs84Position>) positions);
     }
 
+    /*
     private Wgs84Position process(LandmarkType landmark) {
         CoordinatesType coordinates = landmark.getCoordinates();
         Double altitude = coordinates != null && coordinates.getAltitude() != null ?
@@ -80,37 +82,40 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
                 landmark.getName(),
                 landmark);
     }
+    */
 
-    private NokiaLandmarkExchangeRoute process(Lmx lmx) {
+    private MSFSFlightPlanRoute process(SimBaseDocument simBaseDocument) {
         List<Wgs84Position> positions = new ArrayList<>();
 
         String name = null, description = null;
-        LandmarkType aLandmark = lmx.getLandmark();
+        /*
+        LandmarkType aLandmark = simBaseDocument.getLandmark();
         if (aLandmark != null) {
             name = aLandmark.getName();
             description = aLandmark.getDescription();
             positions.add(process(aLandmark));
         }
-        LandmarkCollectionType landmarkCollection = lmx.getLandmarkCollection();
+        LandmarkCollectionType landmarkCollection = simBaseDocument.getLandmarkCollection();
         if (landmarkCollection != null) {
             name = landmarkCollection.getName();
             description = landmarkCollection.getDescription();
             for (LandmarkType landmark : landmarkCollection.getLandmark())
                 positions.add(process(landmark));
         }
-        return new NokiaLandmarkExchangeRoute(name, asDescription(description), positions, lmx);
+         */
+        return new MSFSFlightPlanRoute(name, asDescription(description), positions, simBaseDocument);
     }
 
-    private Lmx createLmx(NokiaLandmarkExchangeRoute route, int startIndex, int endIndex) {
+    private SimBaseDocument createSimBaseDocument(MSFSFlightPlanRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
-        Lmx lmx = route.getLmx();
-        if (lmx != null) {
-            if (lmx.getLandmark() != null)
-                lmx.setLandmark(null);
+        SimBaseDocument simBaseDocument = route.getSimBaseDocument();
+        if (simBaseDocument != null) {
+            // TODO null out
         } else
-            lmx = objectFactory.createLmx();
+            simBaseDocument = objectFactory.createSimBaseDocument();
 
-        LandmarkCollectionType landmarkCollectionType = lmx.getLandmarkCollection();
+        /*
+        LandmarkCollectionType landmarkCollectionType = simBaseDocument.getLandmarkCollection();
         if (landmarkCollectionType == null)
             landmarkCollectionType = objectFactory.createLandmarkCollectionType();
         landmarkCollectionType.setName(asRouteName(route.getName()));
@@ -118,11 +123,13 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
 
         List<LandmarkType> landmarkTypeList = landmarkCollectionType.getLandmark();
         landmarkTypeList.clear();
+        */
 
         List<Wgs84Position> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
 
+            /*
             LandmarkType landmarkType = position.getOrigin(LandmarkType.class);
             if (landmarkType == null)
                 landmarkType = objectFactory.createLandmarkType();
@@ -142,19 +149,20 @@ public class NokiaLandmarkExchangeFormat extends XmlNavigationFormat<NokiaLandma
             landmarkType.setCoordinates(coordinatesType);
 
             landmarkTypeList.add(landmarkType);
+             */
         }
-        lmx.setLandmarkCollection(landmarkCollectionType);
-        return lmx;
+        // simBaseDocument.setLandmarkCollection(landmarkCollectionType);
+        return simBaseDocument;
     }
 
-    public void read(InputStream source, ParserContext<NokiaLandmarkExchangeRoute> context) throws IOException {
-        Lmx lmx = unmarshal(source);
-        context.appendRoute(process(lmx));
+    public void read(InputStream source, ParserContext<MSFSFlightPlanRoute> context) throws IOException {
+        SimBaseDocument simBaseDocument = unmarshal(source);
+        context.appendRoute(process(simBaseDocument));
     }
 
-    public void write(NokiaLandmarkExchangeRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
+    public void write(MSFSFlightPlanRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
-            marshal(createLmx(route, startIndex, endIndex), target);
+            marshal(createSimBaseDocument(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IOException("Cannot marshall " + route + ": " + e, e);
         }

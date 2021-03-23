@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="SimBase.Document">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Descr"/>
+        <xs:element ref="FlightPlan.FlightPlan"/>
+      </xs:sequence>
+      <xs:attribute name="Type" use="required" type="xs:NCName"/>
+      <xs:attribute name="version" use="required"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="FlightPlan.FlightPlan">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="Title"/>
+        <xs:element ref="FPType"/>
+        <xs:element ref="RouteType"/>
+        <xs:element ref="CruisingAlt"/>
+        <xs:element ref="DepartureID"/>
+        <xs:element ref="DepartureLLA"/>
+        <xs:element ref="DestinationID"/>
+        <xs:element ref="DestinationLLA"/>
+        <xs:element ref="Descr"/>
+        <xs:element ref="DepartureName"/>
+        <xs:element ref="DestinationName"/>
+        <xs:element ref="AppVersion"/>
+        <xs:element maxOccurs="unbounded" ref="ATCWaypoint"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="Title" type="xs:string"/>
+  <xs:element name="FPType" type="xs:NCName"/>
+  <xs:element name="RouteType" type="xs:NCName"/>
+  <xs:element name="CruisingAlt" type="xs:decimal"/>
+  <xs:element name="DepartureID" type="xs:NCName"/>
+  <xs:element name="DepartureLLA" type="xs:string"/>
+  <xs:element name="DestinationID" type="xs:NCName"/>
+  <xs:element name="DestinationLLA" type="xs:string"/>
+  <xs:element name="DepartureName" type="xs:string"/>
+  <xs:element name="DestinationName" type="xs:string"/>
+  <xs:element name="AppVersion">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="AppVersionMajor"/>
+        <xs:element ref="AppVersionBuild"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="AppVersionMajor" type="xs:integer"/>
+  <xs:element name="AppVersionBuild" type="xs:integer"/>
+  <xs:element name="ATCWaypoint">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="ATCWaypointType"/>
+        <xs:element ref="WorldPosition"/>
+        <xs:element minOccurs="0" ref="ArrivalFP"/>
+        <xs:choice minOccurs="0">
+          <xs:element ref="ATCAirway"/>
+          <xs:element ref="RunwayNumberFP"/>
+        </xs:choice>
+        <xs:element ref="ICAO"/>
+      </xs:sequence>
+      <xs:attribute name="id" use="required" type="xs:NCName"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ATCWaypointType" type="xs:NCName"/>
+  <xs:element name="WorldPosition" type="xs:string"/>
+  <xs:element name="ArrivalFP" type="xs:NCName"/>
+  <xs:element name="ATCAirway" type="xs:NCName"/>
+  <xs:element name="RunwayNumberFP" type="xs:integer"/>
+  <xs:element name="ICAO">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" ref="ICAORegion"/>
+        <xs:element ref="ICAOIdent"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="ICAORegion" type="xs:NCName"/>
+  <xs:element name="ICAOIdent" type="xs:NCName"/>
+  <xs:element name="Descr" type="xs:string"/>
+</xs:schema>

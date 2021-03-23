@@ -20,7 +20,7 @@
  * /
  */
 
-package slash.navigation.lmx;
+package slash.navigation.msfs;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
@@ -45,7 +45,7 @@ import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.BaseKmlFormat;
 import slash.navigation.kml.KmlPosition;
 import slash.navigation.kml.KmlRoute;
-import slash.navigation.lmx.binding.Lmx;
+import slash.navigation.msfs.binding.SimBaseDocument;
 import slash.navigation.nmea.BaseNmeaFormat;
 import slash.navigation.nmea.NmeaPosition;
 import slash.navigation.nmea.NmeaRoute;
@@ -63,26 +63,26 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.base.RouteComments.createRouteName;
 
 /**
- * A Nokia Landmark Exchange (.lmx) route.
+ * A Microsoft Flight Simulator 2020 Flight Plan (.pln) route.
  *
  * @author Christian Pesch
  */
 
-public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLandmarkExchangeFormat> {
+public class MSFSFlightPlanRoute extends BaseRoute<Wgs84Position, MSFSFlightPlanFormat> {
     private String name;
     private List<String> description;
     private List<Wgs84Position> positions;
-    private Lmx lmx;
+    private SimBaseDocument simBaseDocument;
 
-    NokiaLandmarkExchangeRoute(String name, List<String> description, List<Wgs84Position> positions, Lmx lmx) {
-        super(new NokiaLandmarkExchangeFormat(), Waypoints);
+    MSFSFlightPlanRoute(String name, List<String> description, List<Wgs84Position> positions, SimBaseDocument simBaseDocument) {
+        super(new MSFSFlightPlanFormat(), Waypoints);
         this.name = name;
         this.description = description;
         this.positions = positions;
-        this.lmx = lmx;
+        this.simBaseDocument = simBaseDocument;
     }
 
-    public NokiaLandmarkExchangeRoute(String name, List<String> description, List<Wgs84Position> wgs84Positions) {
+    public MSFSFlightPlanRoute(String name, List<String> description, List<Wgs84Position> wgs84Positions) {
         this(name, description, wgs84Positions, null);
     }
 
@@ -98,8 +98,8 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
         return description;
     }
 
-    public Lmx getLmx() {
-        return lmx;
+    public SimBaseDocument getSimBaseDocument() {
+        return simBaseDocument;
     }
 
     public List<Wgs84Position> getPositions() {
@@ -220,7 +220,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        NokiaLandmarkExchangeRoute other = (NokiaLandmarkExchangeRoute) o;
+        MSFSFlightPlanRoute other = (MSFSFlightPlanRoute) o;
 
         return !(name != null ? !name.equals(other.name) : other.name != null) &&
                 !(positions != null ? !positions.equals(other.positions) : other.positions != null);
