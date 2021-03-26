@@ -9,6 +9,7 @@ all the programmers sending me code
 My special thanks to:
 
 Allan Nordhøy for the Norwegian translation
+Alessandro Mandelli for the Italian translation
 Andrey Denisov for the Russian translation
 Володимир Бриняк for the Ukrainian translation
 Björn Gaworski for Mac OS X fixes
