@@ -50,5 +50,5 @@ jobs:
         run: mvn --batch-mode --update-snapshots verify
       - uses: actions/upload-artifact@v2
         with:
-          name: RouteConverter Prerelease built with Java ${{ matrix.java }}
+          name: RouteConverter Windows Prerelease built with Java ${{ matrix.java }}
           path: RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.exe
