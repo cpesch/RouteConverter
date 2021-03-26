@@ -33,6 +33,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -41,6 +42,7 @@ import static java.lang.System.exit;
 import static java.net.Authenticator.RequestorType.PROXY;
 import static java.net.Proxy.NO_PROXY;
 import static java.net.Proxy.Type.DIRECT;
+import static java.util.Collections.emptyList;
 import static slash.common.helpers.ProxyHelper.setUseSystemProxies;
 
 /**
@@ -75,6 +77,11 @@ public class CheckProxy {
         String userName = line.getOptionValue(USERNAME_ARGUMENT);
         String password = line.getOptionValue(PASSWORD_ARGUMENT);
 
+        com.github.markusbernhardt.proxy.util.Logger.setBackend(new com.github.markusbernhardt.proxy.util.Logger.LogBackEnd() {
+            public void log(Class<?> clazz, com.github.markusbernhardt.proxy.util.Logger.LogLevel loglevel, String msg, Object... params) {
+                log.info(format("%s: %s: %s %s", clazz, loglevel, msg, Arrays.toString(params)));
+            }
+        });
         setUseSystemProxies();
 
         ProxySelector selector = ProxySelector.getDefault();
@@ -111,7 +118,12 @@ public class CheckProxy {
     }
 
     private List<Proxy> findProxies(URI uri) {
-        List<Proxy> proxyList = ProxySelector.getDefault().select(uri);
+        ProxySelector selector = ProxySelector.getDefault();
+        if(selector == null) {
+            log.info("Found no default proxy selector");
+            return emptyList();
+        }
+        List<Proxy> proxyList = selector.select(uri);
         for (Proxy proxy : proxyList) {
             log.info(format("%d. proxy %s", proxyList.indexOf(proxy), proxy));
         }
