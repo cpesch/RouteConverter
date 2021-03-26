@@ -59,6 +59,8 @@ import slash.navigation.kml.*;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.lmx.NokiaLandmarkExchangeRoute;
 import slash.navigation.mm.*;
+import slash.navigation.msfs.MSFSFlightPlanFormat;
+import slash.navigation.msfs.MSFSFlightPlanRoute;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
@@ -906,6 +908,18 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof MotoPlanerUrlFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new MotoPlanerUrlFormat());
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    public MSFSFlightPlanRoute asMSFSFlightPlanFormat() {
+        if (getFormat() instanceof MSFSFlightPlanFormat)
+            return (MSFSFlightPlanRoute) this;
+
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new MSFSFlightPlanRoute(getName(), getDescription(), wgs84Positions);
     }
 
     @SuppressWarnings({"UnusedDeclaration"})

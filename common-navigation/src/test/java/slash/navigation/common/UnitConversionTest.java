@@ -77,6 +77,14 @@ public class UnitConversionTest {
     }
 
     @Test
+    public void testMsfs20202Longitude() {
+        assertEquals(14.26, ddmmss2longitude("E14\u00B0 15' 36.00\""));
+        // Expected :E14° 15' 36.00"
+        // Actual   :E 14° 15' 36.000"
+        assertEquals("E 14\u00B0 15' 36.000\"", longitude2ddmmss(14.26));
+    }
+
+    @Test
     public void testDdmm2Latitude() {
         assertEquals(1.0, ddmm2latitude("N 1\u00B0 0'"));
         assertEquals(-1.0, ddmm2latitude("S 1\u00B0 0'"));

@@ -193,6 +193,31 @@ public class ReadIT {
     }
 
     @Test
+    public void testMagellanExploristFilesAreValid() throws IOException {
+        readFiles(".log");
+    }
+
+    @Test
+    public void testMagellanMapSendFilesAreValid() throws Exception {
+        readFiles(".mps");
+    }
+
+    @Test
+    public void testMagicMapsIktFilesAreValid() throws IOException {
+        readFiles(".ikt");
+    }
+
+    @Test
+    public void testMicrosoftMapPointFilesAreValid() throws IOException {
+        readFiles(".ptm");
+    }
+
+    @Test
+    public void testMSFSFlightPlanFilesAreValid() throws IOException {
+        readFiles(".pln");
+    }
+
+    @Test
     public void testNavigationPoiWarnerFilesAreValid() throws IOException {
         readFiles(".asc");
     }
@@ -211,26 +236,6 @@ public class ReadIT {
     @Test
     public void testNokiaLandmarkExchangeFilesAreValid() throws IOException {
         readFiles(".lmx");
-    }
-
-    @Test
-    public void testMagellanExploristFilesAreValid() throws IOException {
-        readFiles(".log");
-    }
-
-    @Test
-    public void testMagellanMapSendFilesAreValid() throws Exception {
-        readFiles(".mps");
-    }
-
-    @Test
-    public void testMagicMapsIktFilesAreValid() throws IOException {
-        readFiles(".ikt");
-    }
-
-    @Test
-    public void testMicrosoftMapPointFilesAreValid() throws IOException {
-        readFiles(".ptm");
     }
 
     @Test

@@ -25,18 +25,22 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.XmlNavigationFormat;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.msfs.binding.ObjectFactory;
-import slash.navigation.msfs.binding.SimBaseDocument;
+import slash.navigation.msfs.binding.*;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
-import static slash.common.io.Transfer.*;
-import static slash.navigation.common.NavigationConversion.formatDouble;
+import static java.util.Locale.US;
+import static slash.common.io.Transfer.trim;
+import static slash.navigation.common.UnitConversion.*;
 import static slash.navigation.msfs.MSFSFlightPlanUtil.marshal;
 import static slash.navigation.msfs.MSFSFlightPlanUtil.unmarshal;
 
@@ -47,6 +51,14 @@ import static slash.navigation.msfs.MSFSFlightPlanUtil.unmarshal;
  */
 
 public class MSFSFlightPlanFormat extends XmlNavigationFormat<MSFSFlightPlanRoute> {
+    private static final Logger log = Logger.getLogger(MSFSFlightPlanFormat.class.getName());
+
+    private static final DecimalFormat ELEVATION_FORMAT = new DecimalFormat("+000000.00");
+    static {
+        ELEVATION_FORMAT.setPositivePrefix("+");
+        ELEVATION_FORMAT.setNegativePrefix("-");
+        ELEVATION_FORMAT.setDecimalFormatSymbols(DecimalFormatSymbols.getInstance(US));
+    }
 
     public String getExtension() {
         return ".pln";
@@ -69,89 +81,102 @@ public class MSFSFlightPlanFormat extends XmlNavigationFormat<MSFSFlightPlanRout
         return new MSFSFlightPlanRoute(name, null, (List<Wgs84Position>) positions);
     }
 
-    /*
-    private Wgs84Position process(LandmarkType landmark) {
-        CoordinatesType coordinates = landmark.getCoordinates();
-        Double altitude = coordinates != null && coordinates.getAltitude() != null ?
-                (double) coordinates.getAltitude() : null;
-        return new Wgs84Position(coordinates != null ? coordinates.getLongitude() : null,
-                coordinates != null ? coordinates.getLatitude() : null,
-                altitude,
-                null,
-                coordinates != null ? parseXMLTime(coordinates.getTimeStamp()) : null,
-                landmark.getName(),
-                landmark);
+    Double parseElevation(String elevation) {
+        try {
+            Number number = ELEVATION_FORMAT.parse(elevation);
+            return number.doubleValue();
+        } catch (ParseException e) {
+            log.severe("Could not parse elevation '" + elevation + "'");
+        }
+        return null;
     }
-    */
+
+    private Wgs84Position process(ATCWaypoint atcWaypoint) {
+        String description = trim(atcWaypoint.getId());
+        Double latitude = null, longitude = null, elevation = null;
+
+        String worldPosition = atcWaypoint.getWorldPosition();
+        if(worldPosition != null) {
+            String[] split = worldPosition.split(",");
+            if (split.length == 3) {
+                latitude = ddmmss2latitude(split[0]);
+                longitude = ddmmss2longitude(split[1]);
+                elevation = parseElevation(split[2]);
+            }
+        }
+        return new Wgs84Position(longitude, latitude, elevation, null, null, description, atcWaypoint);
+    }
 
     private MSFSFlightPlanRoute process(SimBaseDocument simBaseDocument) {
         List<Wgs84Position> positions = new ArrayList<>();
-
         String name = null, description = null;
-        /*
-        LandmarkType aLandmark = simBaseDocument.getLandmark();
-        if (aLandmark != null) {
-            name = aLandmark.getName();
-            description = aLandmark.getDescription();
-            positions.add(process(aLandmark));
+
+        FlightPlanFlightPlan flightPlan = simBaseDocument.getFlightPlanFlightPlan();
+        if (flightPlan != null) {
+            name = flightPlan.getTitle();
+            description = flightPlan.getDescr();
+
+            List<ATCWaypoint> atcWaypoints = flightPlan.getATCWaypoint();
+            if(atcWaypoints != null) {
+                for(ATCWaypoint atcWaypoint : atcWaypoints) {
+                    positions.add(process(atcWaypoint));
+                }
+            }
         }
-        LandmarkCollectionType landmarkCollection = simBaseDocument.getLandmarkCollection();
-        if (landmarkCollection != null) {
-            name = landmarkCollection.getName();
-            description = landmarkCollection.getDescription();
-            for (LandmarkType landmark : landmarkCollection.getLandmark())
-                positions.add(process(landmark));
-        }
-         */
         return new MSFSFlightPlanRoute(name, asDescription(description), positions, simBaseDocument);
+    }
+
+    String formatElevation(Double elevation) {
+        return ELEVATION_FORMAT.format(elevation);
     }
 
     private SimBaseDocument createSimBaseDocument(MSFSFlightPlanRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         SimBaseDocument simBaseDocument = route.getSimBaseDocument();
-        if (simBaseDocument != null) {
-            // TODO null out
-        } else
+        if (simBaseDocument == null)
             simBaseDocument = objectFactory.createSimBaseDocument();
 
-        /*
-        LandmarkCollectionType landmarkCollectionType = simBaseDocument.getLandmarkCollection();
-        if (landmarkCollectionType == null)
-            landmarkCollectionType = objectFactory.createLandmarkCollectionType();
-        landmarkCollectionType.setName(asRouteName(route.getName()));
-        landmarkCollectionType.setDescription(asDescription(route.getDescription()));
+        FlightPlanFlightPlan flightPlan = simBaseDocument.getFlightPlanFlightPlan();
+        if (flightPlan == null)
+            flightPlan = objectFactory.createFlightPlanFlightPlan();
 
-        List<LandmarkType> landmarkTypeList = landmarkCollectionType.getLandmark();
-        landmarkTypeList.clear();
-        */
+        flightPlan.setTitle(asRouteName(route.getName()));
+        flightPlan.setDescr(asDescription(route.getDescription()));
+
+        Wgs84Position first = route.getPositionCount() >= startIndex ? route.getPosition(startIndex) : null;
+        Wgs84Position last = route.getPositionCount() >= endIndex ? route.getPosition(endIndex - 1) : null;
+
+        if (first != null)
+            flightPlan.setDepartureID(first.getDescription());
+        if (last != null)
+            flightPlan.setDestinationID(last.getDescription());
 
         List<Wgs84Position> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
 
-            /*
-            LandmarkType landmarkType = position.getOrigin(LandmarkType.class);
-            if (landmarkType == null)
-                landmarkType = objectFactory.createLandmarkType();
-            landmarkType.setName(position.getDescription());
+            ATCWaypoint atcWaypoint = position.getOrigin(ATCWaypoint.class);
+            if(atcWaypoint == null)
+                atcWaypoint = objectFactory.createATCWaypoint();
+            atcWaypoint.setId(position.getDescription());
 
-            CoordinatesType coordinatesType = landmarkType.getCoordinates();
-            if (coordinatesType == null)
-                coordinatesType = objectFactory.createCoordinatesType();
-            coordinatesType.setAltitude(formatFloat(position.getElevation()));
-            Double latitude = formatDouble(position.getLatitude(), 7);
-            if (latitude != null)
-                coordinatesType.setLatitude(latitude);
-            Double longitude = formatDouble(position.getLongitude(), 7);
-            if (longitude != null)
-                coordinatesType.setLongitude(longitude);
-            coordinatesType.setTimeStamp(formatXMLTime(position.getTime()));
-            landmarkType.setCoordinates(coordinatesType);
+            if(atcWaypoint.getATCWaypointType() == null)
+                atcWaypoint.setATCWaypointType("Airport");
 
-            landmarkTypeList.add(landmarkType);
-             */
+            String longitude = longitude2ddmmss(position.getLongitude());
+            String latitude = latitude2ddmmss(position.getLatitude());
+            String elevation = formatElevation(position.getElevation());
+            atcWaypoint.setWorldPosition(latitude + "," + longitude + "," + elevation);
+
+            ICAO icao = atcWaypoint.getICAO();
+            if (icao == null)
+                icao = objectFactory.createICAO();
+            icao.setICAOIdent(position.getDescription());
+            atcWaypoint.setICAO(icao);
+
+            flightPlan.getATCWaypoint().add(atcWaypoint);
         }
-        // simBaseDocument.setLandmarkCollection(landmarkCollectionType);
+        simBaseDocument.setFlightPlanFlightPlan(flightPlan);
         return simBaseDocument;
     }
 

@@ -49,6 +49,7 @@ import slash.navigation.kml.*;
 import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
+import slash.navigation.msfs.MSFSFlightPlanFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmn.*;
@@ -873,6 +874,11 @@ public class ConvertIT {
     }
 
     @Test
+    public void testConvertImageToMSFSFlightPlan() throws IOException {
+        convertRoundtrip(TEST_PATH + "from-gps.jpg", new PhotoFormat(), new MSFSFlightPlanFormat());
+    }
+
+    @Test
     public void testConvertImageToNokiaLandmarkExchange() throws IOException {
         convertRoundtrip(TEST_PATH + "from-gps.jpg", new PhotoFormat(), new NokiaLandmarkExchangeFormat());
     }
@@ -895,6 +901,12 @@ public class ConvertIT {
     @Test
     public void testConvertTomTomPoiToTomTomPoi() throws IOException {
         convertRoundtrip(TEST_PATH + "from.ov2", new TomTomPoiFormat(), new TomTomPoiFormat());
+    }
+
+    @Test
+    public void testConvertMSFSFlightPlanToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.pln", new MSFSFlightPlanFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "from.pln", new MSFSFlightPlanFormat(), new Gpx11Format());
     }
 
     @Test

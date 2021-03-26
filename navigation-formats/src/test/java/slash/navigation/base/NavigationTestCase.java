@@ -48,6 +48,7 @@ import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.*;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
+import slash.navigation.msfs.MSFSFlightPlanFormat;
 import slash.navigation.nmea.*;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
@@ -808,8 +809,8 @@ public abstract class NavigationTestCase extends TestCase {
         } else if (targetFormat instanceof AlanTrackLogFormat || targetFormat instanceof BcrFormat ||
                 targetFormat instanceof GarminMapSource5Format || targetFormat instanceof GarminPcx5Format ||
                 targetFormat instanceof GlopusFormat || targetFormat instanceof MagellanRouteFormat ||
-                targetFormat instanceof NmnFormat || targetFormat instanceof TomTomRouteFormat ||
-                targetFormat instanceof TourFormat) {
+                targetFormat instanceof MSFSFlightPlanFormat || targetFormat instanceof NmnFormat ||
+                targetFormat instanceof TomTomRouteFormat || targetFormat instanceof TourFormat) {
             assertNull(targetPosition.getTime());
         } else if (targetFormat instanceof GoPalTrackFormat) {
             assertNull(sourcePosition.getTime());

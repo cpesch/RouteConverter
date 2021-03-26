@@ -190,6 +190,7 @@ public class UnitConversion {
         return ddmmss2coordinate(latitude, South);
     }
 
+
     public static double feetToMeters(double feet) {
         return feet * METER_OF_A_FEET;
     }

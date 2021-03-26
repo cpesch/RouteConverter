@@ -53,6 +53,7 @@ import slash.navigation.lmx.NokiaLandmarkExchangeFormat;
 import slash.navigation.mm.MagicMaps2GoFormat;
 import slash.navigation.mm.MagicMapsIktFormat;
 import slash.navigation.mm.MagicMapsPthFormat;
+import slash.navigation.msfs.MSFSFlightPlanFormat;
 import slash.navigation.nmea.GarbleNmeaFormat;
 import slash.navigation.nmea.MagellanExploristFormat;
 import slash.navigation.nmea.MagellanRouteFormat;
@@ -164,6 +165,7 @@ public class NavigationFormatRegistry {
         addFormat(PhotoFormat.class);
         addFormat(MicrosoftExcel97Format.class);
         addFormat(MicrosoftExcel2008Format.class);
+        addFormat(MSFSFlightPlanFormat.class);
 
         // kind of meta-format
         addFormat(ZipFormat.class);
