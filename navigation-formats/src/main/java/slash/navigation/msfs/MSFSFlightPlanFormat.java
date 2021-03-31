@@ -127,6 +127,8 @@ public class MSFSFlightPlanFormat extends XmlNavigationFormat<MSFSFlightPlanRout
     }
 
     String formatElevation(Double elevation) {
+        if(elevation == null)
+            elevation = 0.0;
         return ELEVATION_FORMAT.format(elevation);
     }
 

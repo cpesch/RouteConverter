@@ -59,7 +59,7 @@ import slash.navigation.tcx.TcxRoute;
 import java.util.ArrayList;
 import java.util.List;
 
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteComments.createRouteName;
 
 /**
@@ -75,7 +75,7 @@ public class MSFSFlightPlanRoute extends BaseRoute<Wgs84Position, MSFSFlightPlan
     private SimBaseDocument simBaseDocument;
 
     MSFSFlightPlanRoute(String name, List<String> description, List<Wgs84Position> positions, SimBaseDocument simBaseDocument) {
-        super(new MSFSFlightPlanFormat(), Waypoints);
+        super(new MSFSFlightPlanFormat(), Track);
         this.name = name;
         this.description = description;
         this.positions = positions;
