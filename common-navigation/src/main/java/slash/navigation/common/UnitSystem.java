@@ -90,8 +90,8 @@ public enum UnitSystem {
         }
     });
 
-    private String distanceName, shortDistanceName, elevationName, speedName;
-    private UnitTransfer unitTransfer;
+    private final String distanceName, shortDistanceName, elevationName, speedName;
+    private final UnitTransfer unitTransfer;
 
     UnitSystem(String distanceName, String shortDistanceName, String elevationName, String speedName, UnitTransfer unitTransfer) {
         this.distanceName = distanceName;

@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.models;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
@@ -50,7 +51,6 @@ import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.event.TableModelEvent.*;
-import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.NavigationFormatConverter.convertPositions;
@@ -245,57 +245,64 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }
     }
 
-    private List<UnitSystem> getUnitSystems() {
-        UnitSystem preferred = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        return UnitSystem.getUnitSystemsWithPreferredUnitSystem(preferred);
+    private List<DegreeFormat> getDegreeFormats() {
+        DegreeFormat preferred = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
+        return DegreeFormat.getDegreeFormatsWithPreferredDegreeFormat(preferred);
     }
 
     private Double parseLongitude(Object objectValue, String stringValue) {
         if (objectValue == null || objectValue instanceof Double)
             return (Double) objectValue;
 
-        DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
-        switch (degreeFormat) {
-            case Degrees:
-                return parseDouble(stringValue);
-            case Degrees_Minutes:
-                return ddmm2longitude(stringValue);
-            case Degrees_Minutes_Seconds:
-                return ddmmss2longitude(stringValue);
-            default:
-                throw new IllegalArgumentException("Degree format " + degreeFormat + " does not exist");
+        for(DegreeFormat degreeFormat : getDegreeFormats()) {
+            try {
+                Double value = degreeFormat.parseLongitude(stringValue);
+                log.info(format("Parsed longitude %s with degree format %s to %s", stringValue, degreeFormat, value));
+                return value;
+            }
+            catch (Exception e) {
+                // intentionally left empty
+            }
         }
+        // this exception unsures that the editing can continue because the cell value is not cleared
+        throw new IllegalArgumentException(format("Could not parse longitude %s", stringValue));
     }
 
     private Double parseLatitude(Object objectValue, String stringValue) {
         if (objectValue == null || objectValue instanceof Double)
             return (Double) objectValue;
 
-        DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
-        switch (degreeFormat) {
-            case Degrees:
-                return parseDouble(stringValue);
-            case Degrees_Minutes:
-                return ddmm2latitude(stringValue);
-            case Degrees_Minutes_Seconds:
-                return ddmmss2latitude(stringValue);
-            default:
-                throw new IllegalArgumentException("Degree format " + degreeFormat + " does not exist");
+        for(DegreeFormat degreeFormat : getDegreeFormats()) {
+            try {
+                Double value = degreeFormat.parseLatitude(stringValue);
+                log.info(format("Parsed latitude %s with degree format %s to %s", stringValue, degreeFormat, value));
+                return value;
+            }
+            catch (Exception e) {
+                // intentionally left empty
+            }
         }
+        // this exception unsures that the editing can continue because the cell value is not cleared
+        throw new IllegalArgumentException(format("Could not parse latitude %s", stringValue));
     }
 
-    private Double parseDegrees(Object objectValue, String stringValue, String replaceAll) {
+    private List<UnitSystem> getUnitSystems() {
+        UnitSystem preferred = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        return UnitSystem.getUnitSystemsWithPreferredUnitSystem(preferred);
+    }
+
+    private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
         if (objectValue == null || objectValue instanceof Double)
             return (Double) objectValue;
         if (replaceAll != null && stringValue != null)
             stringValue = stringValue.replaceAll(replaceAll, "");
-        return parseDouble(stringValue);
+        return Transfer.parseDouble(stringValue);
     }
 
     private Double parseElevation(Object objectValue, String stringValue) {
         for(UnitSystem unitSystem : getUnitSystems()) {
             try {
-                Double value = parseDegrees(objectValue, stringValue, unitSystem.getElevationName());
+                Double value = parseDouble(objectValue, stringValue, unitSystem.getElevationName());
                 log.info(format("Parsed elevation %s with unit system %s to %s", stringValue, unitSystem, value));
                 return unitSystem.valueToDefault(value);
             }
@@ -303,13 +310,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 // intentionally left empty
             }
         }
+        // this exception unsures that the editing can continue because the cell value is not cleared
         throw new IllegalArgumentException(format("Could not parse elevation %s", stringValue));
     }
 
     private Double parseSpeed(Object objectValue, String stringValue) {
         for(UnitSystem unitSystem : getUnitSystems()) {
             try {
-                Double value = parseDegrees(objectValue, stringValue, unitSystem.getSpeedName());
+                Double value = parseDouble(objectValue, stringValue, unitSystem.getSpeedName());
                 log.info(format("Parsed speed %s with unit system %s to %s", stringValue, unitSystem, value));
                 return unitSystem.distanceToDefault(value);
             }
@@ -317,6 +325,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 // intentionally left empty
             }
         }
+        // this exception unsures that the editing can continue because the cell value is not cleared
         throw new IllegalArgumentException(format("Could not parse speed %s", stringValue));
     }
 

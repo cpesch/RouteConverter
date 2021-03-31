@@ -30,4 +30,6 @@ package slash.navigation.common;
 public interface DegreeTransfer {
     String longitudeToDegrees(Double longitude);
     String latitudeToDegrees(Double latitude);
+    Double parseLongitude(String string);
+    Double parseLatitude(String string);
 }

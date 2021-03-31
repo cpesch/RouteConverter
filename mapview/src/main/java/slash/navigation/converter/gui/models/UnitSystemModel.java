@@ -43,7 +43,7 @@ public class UnitSystemModel {
     private static final String UNIT_SYSTEM_PREFERENCE = "unitSystem";
     private static final String DEGREE_FORMAT_PREFERENCE = "degreeFormat";
 
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     public UnitSystem getUnitSystem() {
         try {

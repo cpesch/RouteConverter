@@ -22,6 +22,11 @@
 
 package slash.navigation.common;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.parseDouble;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.navigation.common.UnitConversion.*;
 
@@ -39,6 +44,12 @@ public enum DegreeFormat {
         public String latitudeToDegrees(Double latitude) {
             return longitudeToDegrees(latitude);
         }
+        public Double parseLongitude(String string) {
+            return parseDouble(string);
+        }
+        public Double parseLatitude(String string) {
+            return parseDouble(string);
+        }
     }),
 
     Degrees_Minutes(new DegreeTransfer() {
@@ -47,6 +58,20 @@ public enum DegreeFormat {
         }
         public String latitudeToDegrees(Double latitude) {
             return latitude2ddmm(latitude);
+        }
+        public Double parseLongitude(String string) {
+            Double longitude = ddmm2longitude(string);
+            // failed parsing results in a null value but the cell editing requires exceptions like for Double.parseDouble
+            if(longitude == null)
+                throw new NumberFormatException("Could not parse " + string);
+            return longitude;
+        }
+        public Double parseLatitude(String string) {
+            Double latitude = ddmm2latitude(string);
+            // failed parsing results in a null value but the cell editing requires exceptions like for Double.parseDouble
+            if(latitude == null)
+                throw new NumberFormatException("Could not parse " + string);
+            return latitude;
         }
     }),
 
@@ -57,9 +82,23 @@ public enum DegreeFormat {
         public String latitudeToDegrees(Double latitude) {
             return latitude2ddmmss(latitude);
         }
+        public Double parseLongitude(String string) {
+            Double longitude = ddmmss2longitude(string);
+            // failed parsing results in a null value but the cell editing requires exceptions like for Double.parseDouble
+            if(longitude == null)
+                throw new NumberFormatException("Could not parse " + string);
+            return longitude;
+        }
+        public Double parseLatitude(String string) {
+            Double latitude = ddmmss2latitude(string);
+            // failed parsing results in a null value but the cell editing requires exceptions like for Double.parseDouble
+            if(latitude == null)
+                throw new NumberFormatException("Could not parse " + string);
+            return latitude;
+        }
     });
 
-    private DegreeTransfer degreeTransfer;
+    private final DegreeTransfer degreeTransfer;
 
     DegreeFormat(DegreeTransfer degreeTransfer) {
         this.degreeTransfer = degreeTransfer;
@@ -71,5 +110,23 @@ public enum DegreeFormat {
 
     public String latitudeToDegrees(Double latitude) {
         return degreeTransfer.latitudeToDegrees(latitude);
+    }
+
+    public Double parseLongitude(String string) {
+        return degreeTransfer.parseLongitude(string);
+    }
+
+    public Double parseLatitude(String string) {
+        return degreeTransfer.parseLatitude(string);
+    }
+
+
+    public static List<DegreeFormat> getDegreeFormatsWithPreferredDegreeFormat(DegreeFormat preferredDegreeFormat) {
+        List<DegreeFormat> degreeFormats = new ArrayList<>(asList(DegreeFormat.values()));
+        if (preferredDegreeFormat != null) {
+            degreeFormats.remove(preferredDegreeFormat);
+            degreeFormats.add(0, preferredDegreeFormat);
+        }
+        return degreeFormats;
     }
 }
