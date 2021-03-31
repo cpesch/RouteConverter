@@ -41,8 +41,10 @@ import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.String.format;
 import static java.util.Calendar.*;
 import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
@@ -63,6 +65,8 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
  */
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
+    private static final Logger log = Logger.getLogger(PositionsModelImpl.class.getName());
+
     private BaseRoute route;
 
     public BaseRoute getRoute() {
@@ -241,6 +245,11 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }
     }
 
+    private List<UnitSystem> getUnitSystems() {
+        UnitSystem preferred = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        return UnitSystem.getUnitSystemsWithPreferredUnitSystem(preferred);
+    }
+
     private Double parseLongitude(Object objectValue, String stringValue) {
         if (objectValue == null || objectValue instanceof Double)
             return (Double) objectValue;
@@ -284,15 +293,31 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private Double parseElevation(Object objectValue, String stringValue) {
-        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        Double value = parseDegrees(objectValue, stringValue, unitSystem.getElevationName());
-        return unitSystem.valueToDefault(value);
+        for(UnitSystem unitSystem : getUnitSystems()) {
+            try {
+                Double value = parseDegrees(objectValue, stringValue, unitSystem.getElevationName());
+                log.info(format("Parsed elevation %s with unit system %s to %s", stringValue, unitSystem, value));
+                return unitSystem.valueToDefault(value);
+            }
+            catch (Exception e) {
+                // intentionally left empty
+            }
+        }
+        throw new IllegalArgumentException(format("Could not parse elevation %s", stringValue));
     }
 
     private Double parseSpeed(Object objectValue, String stringValue) {
-        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        Double value = parseDegrees(objectValue, stringValue, unitSystem.getSpeedName());
-        return unitSystem.distanceToDefault(value);
+        for(UnitSystem unitSystem : getUnitSystems()) {
+            try {
+                Double value = parseDegrees(objectValue, stringValue, unitSystem.getSpeedName());
+                log.info(format("Parsed speed %s with unit system %s to %s", stringValue, unitSystem, value));
+                return unitSystem.distanceToDefault(value);
+            }
+            catch (Exception e) {
+                // intentionally left empty
+            }
+        }
+        throw new IllegalArgumentException(format("Could not parse speed %s", stringValue));
     }
 
     private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateFormat format) {

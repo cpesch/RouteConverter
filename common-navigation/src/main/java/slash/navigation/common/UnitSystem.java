@@ -22,6 +22,11 @@
 
 package slash.navigation.common;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import static java.util.Arrays.asList;
 import static slash.navigation.common.UnitConversion.*;
 
 /**
@@ -83,7 +88,6 @@ public enum UnitSystem {
         public Double valueToDefault(Double value) {
             return value != null ? feetToMeters(value) : null;
         }
-
     });
 
     private String distanceName, shortDistanceName, elevationName, speedName;
@@ -132,5 +136,15 @@ public enum UnitSystem {
 
     public Double valueToDefault(Double value) {
         return unitTransfer.valueToDefault(value);
+    }
+
+
+    public static List<UnitSystem> getUnitSystemsWithPreferredUnitSystem(UnitSystem preferredUnitSystem) {
+        List<UnitSystem> unitSystems = new ArrayList<>(asList(UnitSystem.values()));
+        if (preferredUnitSystem != null) {
+            unitSystems.remove(preferredUnitSystem);
+            unitSystems.add(0, preferredUnitSystem);
+        }
+        return unitSystems;
     }
 }
