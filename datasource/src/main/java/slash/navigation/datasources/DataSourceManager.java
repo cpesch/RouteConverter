@@ -128,7 +128,7 @@ public class DataSourceManager {
 
     public void update(String editionId, String url, java.io.File directory) throws IOException, JAXBException {
         java.io.File file = new java.io.File(directory, editionId + DOT_XML);
-        log.info(format("Updating edition '%s' from %s to %s", editionId, url, file));
+        log.info(format("Updating edition %s from %s to %s", editionId, url, file));
         downloadEdition(editionId, url, file);
         Edition anEdition = loadEdition(file);
         if(anEdition == null)

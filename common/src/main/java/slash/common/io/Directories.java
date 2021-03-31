@@ -58,7 +58,7 @@ public class Directories {
         if (!directory.exists()) {
             if (!directory.mkdirs()) {
                 log.severe("Could not create directory " + directory);
-                throw new IllegalArgumentException(format("Cannot create directory '%s'", directory));
+                throw new IllegalArgumentException(format("Cannot create directory %s", directory));
             }
         }
         return directory;

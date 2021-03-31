@@ -82,7 +82,7 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
     }
 
     protected boolean read(InputStream source, String encoding, ParserContext<CsvRoute> context) throws IOException {
-        log.info(format("Reading CSV with column separator '%c' and encoding '%s'", getColumnSeparator(), encoding));
+        log.info(format("Reading CSV with column separator %c and encoding %s", getColumnSeparator(), encoding));
 
         try (Reader reader = new InputStreamReader(source, encoding)) {
             return read(new BufferedReader(reader), context);
