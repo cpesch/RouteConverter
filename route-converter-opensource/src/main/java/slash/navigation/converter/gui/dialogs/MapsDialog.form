@@ -3,7 +3,7 @@
   <grid id="cbd77" binding="contentPane" layout-manager="GridLayoutManager" row-count="4" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
-      <xy x="48" y="54" width="568" height="544"/>
+      <xy x="48" y="54" width="568" height="723"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -163,7 +163,7 @@
                     <properties/>
                     <border type="none"/>
                     <children>
-                      <grid id="fe9af" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+                      <grid id="fe9af" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                         <margin top="0" left="0" bottom="0" right="0"/>
                         <constraints>
                           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -182,9 +182,18 @@
                           </component>
                           <hspacer id="988c7">
                             <constraints>
-                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                              <grid row="0" column="2" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                             </constraints>
                           </hspacer>
+                          <component id="c86f" class="javax.swing.JButton" binding="buttonDeleteOfflineMap">
+                            <constraints>
+                              <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                            </constraints>
+                            <properties>
+                              <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-offline-map-action"/>
+                              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-offline-map-action-mnemonic"/>
+                            </properties>
+                          </component>
                         </children>
                       </grid>
                     </children>

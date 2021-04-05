@@ -25,6 +25,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.RouteConverterOpenSource;
+import slash.navigation.converter.gui.actions.DeleteMapsAction;
 import slash.navigation.converter.gui.actions.DisplayMapAction;
 import slash.navigation.converter.gui.actions.DownloadMapsAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
@@ -82,6 +83,7 @@ public class MapsDialog extends SimpleDialog {
     private JButton buttonDisplayOnlineMap;
     private JTable tableAvailableOfflineMaps;
     private JButton buttonDisplayOfflineMap;
+    private JButton buttonDeleteOfflineMap;
     private JTable tableDownloadableMaps;
     private JButton buttonDownload;
     private JButton buttonClose;
@@ -235,11 +237,13 @@ public class MapsDialog extends SimpleDialog {
         registerAction(buttonDisplayOnlineMap, "display-online-map");
 
         actionManager.register("display-offline-map", new DisplayMapAction(tableAvailableOfflineMaps, getMapsforgeMapManager()));
+        actionManager.register("delete-offline-map", new DeleteMapsAction(tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("download-maps", new DownloadMapsAction(tableDownloadableMaps, getMapsforgeMapManager(),
                 checkBoxDownloadRoutingData, checkBoxDownloadElevationData));
         new AvailableOfflineMapsTablePopupMenu(tableAvailableOfflineMaps).createPopupMenu();
         new DownloadableMapsTablePopupMenu(tableDownloadableMaps).createPopupMenu();
         registerAction(buttonDisplayOfflineMap, "display-offline-map");
+        registerAction(buttonDeleteOfflineMap, "delete-offline-map");
         registerAction(buttonDownload, "download-maps");
 
         buttonClose.addActionListener(new DialogAction(this) {
@@ -380,14 +384,18 @@ public class MapsDialog extends SimpleDialog {
         panel8.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel7.add(panel8, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final JPanel panel9 = new JPanel();
-        panel9.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel9.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel8.add(panel9, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonDisplayOfflineMap = new JButton();
         this.$$$loadButtonText$$$(buttonDisplayOfflineMap, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "display-offline-map-action"));
         buttonDisplayOfflineMap.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "display-offline-map-action-tooltip"));
         panel9.add(buttonDisplayOfflineMap, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer3 = new Spacer();
-        panel9.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel9.add(spacer3, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        buttonDeleteOfflineMap = new JButton();
+        this.$$$loadButtonText$$$(buttonDeleteOfflineMap, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-offline-map-action"));
+        buttonDeleteOfflineMap.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-offline-map-action-mnemonic"));
+        panel9.add(buttonDeleteOfflineMap, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel10 = new JPanel();
         panel10.setLayout(new GridLayoutManager(1, 1, new Insets(10, 0, 0, 0), -1, -1));
         panel7.add(panel10, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

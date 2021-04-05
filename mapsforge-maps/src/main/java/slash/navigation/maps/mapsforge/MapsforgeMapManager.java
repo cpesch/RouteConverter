@@ -296,4 +296,17 @@ public class MapsforgeMapManager {
         dataSourceManager.getDownloadManager().waitForCompletion(downloads);
     }
 
+    public void delete(List<? extends LocalMap> maps) {
+        File mapsDirectory = getMapsDirectory();
+
+        for (final LocalMap map : maps) {
+            File file = new File(mapsDirectory, map.getUrl());
+
+            invokeInAwtEventQueue(() ->
+            {
+                availableOfflineMapsModel.removeItem(map);
+            });
+        }
+
+    }
 }
