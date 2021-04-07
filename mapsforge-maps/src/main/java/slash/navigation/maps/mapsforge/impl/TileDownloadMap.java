@@ -24,6 +24,7 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapType;
 
+import java.io.IOException;
 import java.util.prefs.Preferences;
 
 import static java.lang.Byte.toUnsignedInt;
@@ -84,6 +85,10 @@ public class TileDownloadMap extends LocaleResourceImpl implements LocalMap {
 
     public AbstractTileSource getTileSource() {
         return tileSource;
+    }
+
+    public void delete() throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     public String toString() {

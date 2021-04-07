@@ -25,6 +25,7 @@ import slash.navigation.maps.mapsforge.MapType;
 import slash.navigation.maps.mapsforge.mbtiles.MBTilesFile;
 
 import java.io.File;
+import java.io.IOException;
 
 import static slash.navigation.maps.mapsforge.MapType.MBTiles;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
@@ -72,5 +73,10 @@ public class MBTilesFileMap extends LocaleResourceImpl implements LocalMap {
 
     public BoundingBox getBoundingBox() {
         return toBoundingBox(getMBTilesFile().getBoundingBox());
+    }
+
+    public void delete() throws IOException {
+        if(!file.delete())
+            throw new IOException("Cannot delete " + file);
     }
 }

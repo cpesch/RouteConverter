@@ -25,6 +25,7 @@ import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapType;
 
 import java.io.File;
+import java.io.IOException;
 
 import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
@@ -79,5 +80,10 @@ public class MapsforgeFileMap extends LocaleResourceImpl implements LocalMap {
 
     public BoundingBox getBoundingBox() {
         return toBoundingBox(getMapFile().boundingBox());
+    }
+
+    public void delete() throws IOException {
+        if(!file.delete())
+            throw new IOException("Cannot delete " + file);
     }
 }

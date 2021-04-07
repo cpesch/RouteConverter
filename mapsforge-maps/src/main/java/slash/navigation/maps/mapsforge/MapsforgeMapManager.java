@@ -296,17 +296,11 @@ public class MapsforgeMapManager {
         dataSourceManager.getDownloadManager().waitForCompletion(downloads);
     }
 
-    public void delete(List<? extends LocalMap> maps) {
-        File mapsDirectory = getMapsDirectory();
-
+    public void delete(List<? extends LocalMap> maps) throws IOException {
         for (final LocalMap map : maps) {
-            File file = new File(mapsDirectory, map.getUrl());
+            map.delete();
 
-            invokeInAwtEventQueue(() ->
-            {
-                availableOfflineMapsModel.removeItem(map);
-            });
+            invokeInAwtEventQueue(() -> availableOfflineMapsModel.removeItem(map));
         }
-
     }
 }

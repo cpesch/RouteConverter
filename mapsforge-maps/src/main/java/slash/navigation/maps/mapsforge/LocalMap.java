@@ -21,6 +21,8 @@ package slash.navigation.maps.mapsforge;
 
 import slash.navigation.common.BoundingBox;
 
+import java.io.IOException;
+
 /**
  * Represents a locally stored mapsforge map.
  *
@@ -34,4 +36,5 @@ public interface LocalMap extends LocalResource {
     Integer getZoomLevelMax();
     BoundingBox getBoundingBox();
     String getCopyrightText();
+    void delete() throws IOException;
 }
