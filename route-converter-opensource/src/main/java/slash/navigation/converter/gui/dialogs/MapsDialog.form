@@ -191,7 +191,7 @@
                             </constraints>
                             <properties>
                               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-offline-maps-action"/>
-                              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-offline-maps-action-mnemonic"/>
+                              <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-offline-maps-action-tooltip"/>
                             </properties>
                           </component>
                         </children>
