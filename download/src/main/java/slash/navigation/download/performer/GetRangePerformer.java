@@ -43,7 +43,7 @@ import static slash.common.type.CompactCalendar.fromMillis;
  */
 public class GetRangePerformer implements ActionPerformer {
     private static final Logger log = getLogger(GetRangePerformer.class.getName());
-    private static final long RANGE_END_INDEX = 16 * 1024L;
+    private static final long RANGE_END_INDEX = 16 * 1024L -1;
 
     private DownloadExecutor downloadExecutor;
 
