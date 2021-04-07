@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.helpers;
+package slash.navigation.gui.helpers;
 
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;

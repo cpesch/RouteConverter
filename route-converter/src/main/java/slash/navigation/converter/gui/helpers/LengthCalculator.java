@@ -27,6 +27,7 @@ import slash.navigation.common.DistanceAndTimeAggregator;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.gui.helpers.AbstractListDataListener;
 
 import javax.swing.event.ListDataEvent;
 import java.util.List;

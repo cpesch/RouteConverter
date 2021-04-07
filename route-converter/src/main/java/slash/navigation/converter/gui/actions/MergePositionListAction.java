@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.helpers.AbstractListDataListener;
+import slash.navigation.gui.helpers.AbstractListDataListener;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.panels.ConvertPanel;

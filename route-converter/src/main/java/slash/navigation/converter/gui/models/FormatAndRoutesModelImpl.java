@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.*;
-import slash.navigation.converter.gui.helpers.AbstractListDataListener;
+import slash.navigation.gui.helpers.AbstractListDataListener;
 
 import javax.swing.*;
 import javax.swing.event.*;
