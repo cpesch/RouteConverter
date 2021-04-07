@@ -74,6 +74,7 @@ public class MapsforgeMapManager {
     private static final String APPLIED_THEME_PREFERENCE = "appliedTheme";
     private static final String DEFAULT_URL = "http://wiki.openstreetmap.org/wiki/Default";
     private static final String OSMARENDER_URL = "http://wiki.openstreetmap.org/wiki/Osmarender";
+    private static final OpenStreetMap OPEN_STREET_MAP = new OpenStreetMap();
 
     private final DataSourceManager dataSourceManager;
     private final ItemTableModel<TileDownloadMap> availableOnlineMapsModel = new TileMapTableModel();
@@ -192,7 +193,7 @@ public class MapsforgeMapManager {
     }
 
     private void initializeOpenStreetMap() {
-        availableOnlineMapsModel.addOrUpdateItem(new OpenStreetMap());
+        availableOnlineMapsModel.addOrUpdateItem(OPEN_STREET_MAP);
     }
 
     private void initializeBuiltinThemes() {
@@ -297,10 +298,16 @@ public class MapsforgeMapManager {
     }
 
     public void delete(List<? extends LocalMap> maps) throws IOException {
+        LocalMap displayed = displayedMapModel.getItem();
+
         for (final LocalMap map : maps) {
             map.delete();
 
             invokeInAwtEventQueue(() -> availableOfflineMapsModel.removeItem(map));
+        }
+
+        if (!availableOfflineMapsModel.contains(displayed)) {
+            invokeInAwtEventQueue(() -> displayedMapModel.setItem(OPEN_STREET_MAP));
         }
     }
 }
