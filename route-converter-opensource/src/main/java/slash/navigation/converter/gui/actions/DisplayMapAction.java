@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
@@ -37,11 +37,12 @@ import static java.text.MessageFormat.format;
  * @author Christian Pesch
  */
 
-public class DisplayMapAction extends FrameAction {
+public class DisplayMapAction extends DialogAction {
     private final JTable table;
     private final MapsforgeMapManager mapManager;
 
-    public DisplayMapAction(JTable table, MapsforgeMapManager mapManager) {
+    public DisplayMapAction(JDialog dialog, JTable table, MapsforgeMapManager mapManager) {
+        super(dialog);
         this.table = table;
         this.mapManager = mapManager;
     }

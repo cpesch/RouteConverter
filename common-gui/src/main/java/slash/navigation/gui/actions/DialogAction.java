@@ -35,8 +35,8 @@ import static slash.navigation.gui.helpers.WindowHelper.handleThrowable;
  * @author Christian Pesch
  */
 
-public abstract class DialogAction implements ActionListener {
-    private JDialog dialog;
+public abstract class DialogAction extends AbstractAction implements ActionListener {
+    private final JDialog dialog;
 
     protected DialogAction(JDialog dialog) {
         this.dialog = dialog;

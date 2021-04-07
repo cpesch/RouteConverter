@@ -130,9 +130,9 @@ public class DownloadsDialog extends SimpleDialog {
         tableDownloads.setRowHeight(getDefaultRowHeight());
 
         final ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.register("restart-download", new RestartDownloadsAction(tableDownloads, r.getDownloadManager()));
-        actionManager.register("stop-download", new StopDownloadsAction(tableDownloads, r.getDownloadManager()));
-        actionManager.register("remove-download", new RemoveDownloadsAction(tableDownloads, r.getDownloadManager()));
+        actionManager.register("restart-download", new RestartDownloadsAction(this, tableDownloads, r.getDownloadManager()));
+        actionManager.register("stop-download", new StopDownloadsAction(this, tableDownloads, r.getDownloadManager()));
+        actionManager.register("remove-download", new RemoveDownloadsAction(this, tableDownloads, r.getDownloadManager()));
 
         new DownloadsTablePopupMenu(tableDownloads).createPopupMenu();
         registerAction(buttonRestart, "restart-download");

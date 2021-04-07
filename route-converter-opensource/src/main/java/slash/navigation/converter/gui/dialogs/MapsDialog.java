@@ -70,6 +70,8 @@ import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
+import static slash.navigation.maps.mapsforge.models.TileMapTableModel.ACTIVE_COLUMN;
+import static slash.navigation.maps.mapsforge.models.TileMapTableModel.DESCRIPTION_COLUMN;
 
 /**
  * Dialog to show available and downloadable maps of the program.
@@ -113,12 +115,12 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<>(tableAvailableOnlineMaps.getModel());
         sorterAvailableMaps.setSortsOnUpdates(true);
-        sorterAvailableMaps.setComparator(TileMapTableModel.DESCRIPTION_COLUMN, new Comparator<TileDownloadMap>() {
+        sorterAvailableMaps.setComparator(DESCRIPTION_COLUMN, new Comparator<TileDownloadMap>() {
             public int compare(TileDownloadMap m1, TileDownloadMap m2) {
                 return m1.getDescription().compareToIgnoreCase(m2.getDescription());
             }
         });
-        sorterAvailableMaps.setComparator(TileMapTableModel.ACTIVE_COLUMN, new Comparator<Boolean>() {
+        sorterAvailableMaps.setComparator(ACTIVE_COLUMN, new Comparator<Boolean>() {
             public int compare(Boolean b1, Boolean b2) {
                 return b1.compareTo(b2);
             }
@@ -232,18 +234,18 @@ public class MapsDialog extends SimpleDialog {
         updateLabel();
 
         final ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.register("display-online-map", new DisplayMapAction(tableAvailableOnlineMaps, getMapsforgeMapManager()));
+        actionManager.register("display-online-map", new DisplayMapAction(this, tableAvailableOnlineMaps, getMapsforgeMapManager()));
         new AvailableOnlineMapsTablePopupMenu(tableAvailableOnlineMaps).createPopupMenu();
         registerAction(buttonDisplayOnlineMap, "display-online-map");
 
-        actionManager.register("display-offline-map", new DisplayMapAction(tableAvailableOfflineMaps, getMapsforgeMapManager()));
-        actionManager.register("delete-offline-map", new DeleteMapsAction(tableAvailableOfflineMaps, getMapsforgeMapManager()));
-        actionManager.register("download-maps", new DownloadMapsAction(tableDownloadableMaps, getMapsforgeMapManager(),
+        actionManager.register("display-offline-map", new DisplayMapAction(this, tableAvailableOfflineMaps, getMapsforgeMapManager()));
+        actionManager.register("delete-offline-maps", new DeleteMapsAction(this, tableAvailableOfflineMaps, getMapsforgeMapManager()));
+        actionManager.register("download-maps", new DownloadMapsAction(this, tableDownloadableMaps, getMapsforgeMapManager(),
                 checkBoxDownloadRoutingData, checkBoxDownloadElevationData));
         new AvailableOfflineMapsTablePopupMenu(tableAvailableOfflineMaps).createPopupMenu();
         new DownloadableMapsTablePopupMenu(tableDownloadableMaps).createPopupMenu();
         registerAction(buttonDisplayOfflineMap, "display-offline-map");
-        registerAction(buttonDeleteOfflineMap, "delete-offline-map");
+        registerAction(buttonDeleteOfflineMap, "delete-offline-maps");
         registerAction(buttonDownload, "download-maps");
 
         buttonClose.addActionListener(new DialogAction(this) {
@@ -393,8 +395,8 @@ public class MapsDialog extends SimpleDialog {
         final Spacer spacer3 = new Spacer();
         panel9.add(spacer3, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         buttonDeleteOfflineMap = new JButton();
-        this.$$$loadButtonText$$$(buttonDeleteOfflineMap, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-offline-map-action"));
-        buttonDeleteOfflineMap.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-offline-map-action-mnemonic"));
+        this.$$$loadButtonText$$$(buttonDeleteOfflineMap, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-offline-maps-action"));
+        buttonDeleteOfflineMap.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-offline-maps-action-mnemonic"));
         panel9.add(buttonDeleteOfflineMap, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel10 = new JPanel();
         panel10.setLayout(new GridLayoutManager(1, 1, new Insets(10, 0, 0, 0), -1, -1));

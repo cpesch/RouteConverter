@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -37,11 +38,12 @@ import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPositio
  * @author Christian Pesch
  */
 
-public class StopDownloadsAction extends FrameAction {
+public class StopDownloadsAction extends DialogAction {
     private final JTable table;
     private final DownloadManager downloadManager;
 
-    public StopDownloadsAction(JTable table, DownloadManager downloadManager) {
+    public StopDownloadsAction(JDialog dialog, JTable table, DownloadManager downloadManager) {
+        super(dialog);
         this.table = table;
         this.downloadManager = downloadManager;
     }

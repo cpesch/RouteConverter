@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
-import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.RemoteMap;
@@ -46,7 +46,7 @@ import static slash.common.io.Files.asDialogString;
  * @author Christian Pesch
  */
 
-public class DownloadMapsAction extends FrameAction {
+public class DownloadMapsAction extends DialogAction {
     private static ExecutorService executor = newCachedThreadPool();
 
     private final JTable table;
@@ -54,8 +54,9 @@ public class DownloadMapsAction extends FrameAction {
     private final JCheckBox checkBoxDownloadRoutingData;
     private final JCheckBox checkBoxDownloadElevationData;
 
-    public DownloadMapsAction(JTable table, MapsforgeMapManager mapManager,
+    public DownloadMapsAction(JDialog dialog, JTable table, MapsforgeMapManager mapManager,
                               JCheckBox checkBoxDownloadRoutingData, JCheckBox checkBoxDownloadElevationData) {
+        super(dialog);
         this.table = table;
         this.mapManager = mapManager;
         this.checkBoxDownloadRoutingData = checkBoxDownloadRoutingData;
@@ -102,12 +103,7 @@ public class DownloadMapsAction extends FrameAction {
 
                     mapManager.scanMaps();
                 } catch (final Exception e) {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            JFrame frame = r.getFrame();
-                            showMessageDialog(frame, format(RouteConverter.getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
-                        }
-                    });
+                    invokeLater(() -> showMessageDialog(getDialog(), format(RouteConverter.getBundle().getString("scan-error"), e), getDialog().getTitle(), ERROR_MESSAGE));
                 }
             }
         });

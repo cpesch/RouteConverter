@@ -146,8 +146,8 @@ public class ThemesDialog extends SimpleDialog {
         tableDownloadableThemes.setRowSorter(sorterResources);
 
         final ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.register("apply-theme", new ApplyThemeAction(tableAvailableThemes, getMapsforgeMapManager()));
-        actionManager.register("download-themes", new DownloadThemesAction(tableDownloadableThemes, getMapsforgeMapManager()));
+        actionManager.register("apply-theme", new ApplyThemeAction(this, tableAvailableThemes, getMapsforgeMapManager()));
+        actionManager.register("download-themes", new DownloadThemesAction(this, tableDownloadableThemes, getMapsforgeMapManager()));
 
         new AvailableThemesTablePopupMenu(tableAvailableThemes).createPopupMenu();
         new DownloadableThemesTablePopupMenu(tableDownloadableThemes).createPopupMenu();

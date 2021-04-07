@@ -20,33 +20,31 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.common.BoundingBox;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.gui.Application;
-import slash.navigation.gui.actions.FrameAction;
-import slash.navigation.gui.notifications.NotificationManager;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
-import slash.navigation.maps.mapsforge.RemoteMap;
 
 import javax.swing.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
+import static javax.swing.JOptionPane.*;
+import static javax.swing.SwingUtilities.invokeLater;
 
 /**
- * {@link Action} that displays a {@link LocalMap} from the {@link MapsforgeMapManager}.
+ * {@link Action} that deletes {@link LocalMap}s.
  *
  * @author Christian Pesch
  */
 
-public class DeleteMapsAction extends FrameAction {
+public class DeleteMapsAction extends DialogAction {
     private final JTable table;
     private final MapsforgeMapManager mapManager;
 
-    public DeleteMapsAction(JTable table, MapsforgeMapManager mapManager) {
+    public DeleteMapsAction(JDialog dialog, JTable table, MapsforgeMapManager mapManager) {
+        super(dialog);
         this.table = table;
         this.mapManager = mapManager;
     }
@@ -55,11 +53,29 @@ public class DeleteMapsAction extends FrameAction {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length == 0)
             return;
-        final List<LocalMap> selectedMaps = new ArrayList<>();
-        for (int selectedRow : selectedRows) {
-            LocalMap map = mapManager.getAvailableMapsModel().getItem(table.convertRowIndexToModel(selectedRow));
+
+        List<LocalMap> selectedMaps = new ArrayList<>();
+        StringBuilder mapNames = new StringBuilder();
+        for (int i = 0; i < selectedRows.length; i++) {
+            LocalMap map = mapManager.getAvailableMapsModel().getItem(table.convertRowIndexToModel(selectedRows[i]));
             selectedMaps.add(map);
+
+            mapNames.append(map.getUrl());
+            if (i < selectedRows.length - 1)
+                mapNames.append(", ");
         }
-        mapManager.delete(selectedMaps);
+
+        int confirm = showConfirmDialog(getDialog(), format(RouteConverter.getBundle().getString("confirm-delete-maps"), mapNames),
+                getDialog().getTitle(), YES_NO_OPTION);
+        if (confirm != YES_OPTION)
+            return;
+
+        try {
+            mapManager.delete(selectedMaps);
+        } catch (Exception e) {
+            invokeLater(() -> {
+                showMessageDialog(getDialog(), format(RouteConverter.getBundle().getString("cannot-delete-maps"), e), getDialog().getTitle(), ERROR_MESSAGE);
+            });
+        }
     }
 }

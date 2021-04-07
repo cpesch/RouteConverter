@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
@@ -46,13 +47,14 @@ import static slash.common.io.Files.asDialogString;
  * @author Christian Pesch
  */
 
-public class DownloadThemesAction extends FrameAction {
+public class DownloadThemesAction extends DialogAction {
     private static ExecutorService executor = newCachedThreadPool();
 
     private final JTable table;
     private final MapsforgeMapManager mapManager;
 
-    public DownloadThemesAction(JTable table, MapsforgeMapManager mapManager) {
+    public DownloadThemesAction(JDialog dialog, JTable table, MapsforgeMapManager mapManager) {
+        super(dialog);
         this.table = table;
         this.mapManager = mapManager;
     }
