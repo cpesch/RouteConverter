@@ -75,7 +75,15 @@ public class MBTilesFileMap extends LocaleResourceImpl implements LocalMap {
         return toBoundingBox(getMBTilesFile().getBoundingBox());
     }
 
+    public synchronized void close() {
+        if(mbTilesFile != null) {
+            mbTilesFile.close();
+            mbTilesFile = null;
+        }
+    }
+
     public void delete() throws IOException {
+        close();
         if(!file.delete())
             throw new IOException("Cannot delete " + file);
     }

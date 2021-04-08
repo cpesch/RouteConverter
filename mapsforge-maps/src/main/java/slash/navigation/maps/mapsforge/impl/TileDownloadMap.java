@@ -87,6 +87,10 @@ public class TileDownloadMap extends LocaleResourceImpl implements LocalMap {
         return tileSource;
     }
 
+    public void close() {
+        // nothing to do
+    }
+
     public void delete() throws IOException {
         throw new UnsupportedOperationException();
     }

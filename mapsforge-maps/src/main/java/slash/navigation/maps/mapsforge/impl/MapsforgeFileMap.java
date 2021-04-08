@@ -63,13 +63,6 @@ public class MapsforgeFileMap extends LocaleResourceImpl implements LocalMap {
         return mapFile;
     }
 
-    public synchronized void destroy() {
-        if(mapFile != null) {
-            mapFile.destroy();
-            mapFile = null;
-        }
-    }
-
     public Integer getZoomLevelMin() {
         return null;
     }
@@ -82,7 +75,15 @@ public class MapsforgeFileMap extends LocaleResourceImpl implements LocalMap {
         return toBoundingBox(getMapFile().boundingBox());
     }
 
+    public synchronized void close() {
+        if(mapFile != null) {
+            mapFile.destroy();
+            mapFile = null;
+        }
+    }
+
     public void delete() throws IOException {
+        close();
         if(!file.delete())
             throw new IOException("Cannot delete " + file);
     }

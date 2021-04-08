@@ -36,5 +36,6 @@ public interface LocalMap extends LocalResource {
     Integer getZoomLevelMax();
     BoundingBox getBoundingBox();
     String getCopyrightText();
+    void close();
     void delete() throws IOException;
 }
