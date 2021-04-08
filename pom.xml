@@ -451,6 +451,7 @@
         <module>route-converter-build</module>
         <module>route-converter-license</module>
         <module>route-converter-cmdline</module>
+        <module>RouteConverterBundle</module>
         <module>RouteConverterCmdLine</module>
         <module>route-converter</module>
         <module>route-converter-google</module>

@@ -1,0 +1,32 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>RouteConverterBundle</artifactId>
+    <packaging>jar</packaging>
+    <name>RouteConverter OpenSource Edition bundled with JRE</name>
+    <parent>
+        <groupId>slash.navigation</groupId>
+        <artifactId>route-converter-build</artifactId>
+        <version>2.30-SNAPSHOT</version>
+        <relativePath>../route-converter-build/pom.xml</relativePath>
+    </parent>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>${basedir}/../RouteConverterWindowsOpenSource/target</directory>
+                <targetPath>${basedir}/target</targetPath>
+                <includes>
+                    <include>RouteConverterWindowsOpenSource.jar</include>
+                </includes>
+            </resource>
+        </resources>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>RouteConverterWindowsOpenSource</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+</project>
