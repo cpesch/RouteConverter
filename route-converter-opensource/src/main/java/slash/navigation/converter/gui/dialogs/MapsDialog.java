@@ -172,7 +172,7 @@ public class MapsDialog extends SimpleDialog {
                     return;
                 int row = tableAvailableOfflineMaps.convertRowIndexToView(selectedRow);
                 LocalMap map = getMapsforgeMapManager().getAvailableOfflineMapsModel().getItem(row);
-                r.showMapBorder(map.getType().equals(Mapsforge) ? map.getBoundingBox() : null);
+                r.showMapBorder(map.getBoundingBox());
             }
         });
 
