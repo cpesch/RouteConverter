@@ -26,6 +26,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.TableModel;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import static javax.swing.event.ListDataEvent.*;
@@ -49,10 +50,8 @@ public class TableModelToComboBoxModelAdapter<E extends Item> implements ComboBo
         // since DefaultComboBoxModel communicates changes of the selected item like this
         selectedDelegate.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
-                synchronized (TableModelToComboBoxModelAdapter.this) {
-                    for (ListDataListener listener : listToTableListener.keySet())
-                        listener.contentsChanged(new ListDataEvent(this, CONTENTS_CHANGED, -1, -1));
-                }
+                for (ListDataListener listener : new HashSet<>(listToTableListener.keySet()))
+                    listener.contentsChanged(new ListDataEvent(this, CONTENTS_CHANGED, -1, -1));
             }
         });
     }
@@ -66,14 +65,14 @@ public class TableModelToComboBoxModelAdapter<E extends Item> implements ComboBo
         return (E) modelDelegate.getValueAt(index, -1);
     }
 
-    public synchronized void addListDataListener(ListDataListener listener) {
+    public void addListDataListener(ListDataListener listener) {
         TableModelToListDataListenerAdapter adapter = new TableModelToListDataListenerAdapter(listener);
         listToTableListener.put(listener, adapter);
         modelDelegate.addTableModelListener(adapter);
     }
 
-    public synchronized void removeListDataListener(ListDataListener listener) {
-        TableModelListener adapter = listToTableListener.get(listener);
+    public void removeListDataListener(ListDataListener listener) {
+        TableModelListener adapter = listToTableListener.remove(listener);
         if (adapter != null)
             modelDelegate.removeTableModelListener(adapter);
     }
