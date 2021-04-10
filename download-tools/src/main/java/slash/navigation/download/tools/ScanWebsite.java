@@ -65,6 +65,7 @@ public class ScanWebsite extends BaseDownloadTool {
     private static final Logger log = Logger.getLogger(ScanWebsite.class.getName());
     private static final String BASE_URL_ARGUMENT = "baseUrl";
     private static final String TYPE_ARGUMENT = "type";
+    private static final String LEVEL_ARGUMENT = "level";
     private static final String EXTENSION_ARGUMENT = "extension";
     private static final String INCLUDE_ARGUMENT = "include";
     private static final String EXCLUDE_ARGUMENT = "exclude";
@@ -72,14 +73,16 @@ public class ScanWebsite extends BaseDownloadTool {
     private String baseUrl;
     private DownloadableType type;
     private Set<String> extensions, includes, excludes;
-    private int addCount, removeCount;
+    private int level = 10, addCount, removeCount;
 
     private String appendURIs(String uri, String anchor) {
         int index = uri.lastIndexOf('/');
         return index != -1 ? uri.substring(0, index + 1) + anchor : anchor;
     }
 
-    private void recursiveCollect(String uri, Set<String> uris, Set<String> visitedUris) throws IOException {
+    private void recursiveCollect(String uri, Set<String> uris, Set<String> visitedUris, int currentLevel) throws IOException {
+        if (currentLevel > level)
+            return;
         if (visitedUris.contains(uri))
             return;
         visitedUris.add(uri);
@@ -103,13 +106,13 @@ public class ScanWebsite extends BaseDownloadTool {
                 continue;
             // create the anchor relative to the current uri
             String nextUri = appendURIs(uri, anchor);
-            recursiveCollect(nextUri, uris, visitedUris);
+            recursiveCollect(nextUri, uris, visitedUris, currentLevel + 1);
         }
     }
 
     private List<String> collectUris() throws IOException {
         Set<String> uris = new HashSet<>();
-        recursiveCollect("", uris, new HashSet<String>());
+        recursiveCollect("", uris, new HashSet<>(), 0);
 
         String[] sortedUris = uris.toArray(new String[0]);
         sort(sortedUris);
@@ -252,6 +255,9 @@ public class ScanWebsite extends BaseDownloadTool {
         baseUrl = line.getOptionValue(BASE_URL_ARGUMENT);
         if (baseUrl == null)
             baseUrl = getUrl();
+        String levelArgument = line.getOptionValue(LEVEL_ARGUMENT);
+        if(levelArgument != null)
+            level = Integer.parseInt(levelArgument);
         String[] extensionArguments = line.getOptionValues(EXTENSION_ARGUMENT);
         extensions = extensionArguments != null ? new HashSet<>(asList(extensionArguments)) : null;
         String[] includeArguments = line.getOptionValues(INCLUDE_ARGUMENT);
@@ -269,25 +275,27 @@ public class ScanWebsite extends BaseDownloadTool {
     private CommandLine parseCommandLine(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
-        options.addOption(Option.builder().argName(ID_ARGUMENT).hasArgs().required().longOpt("id").
+        options.addOption(Option.builder().argName(ID_ARGUMENT).hasArgs().required().longOpt(ID_ARGUMENT).
                 desc("ID of the data source").build());
-        options.addOption(Option.builder().argName(URL_ARGUMENT).numberOfArgs(1).required().longOpt("url").
+        options.addOption(Option.builder().argName(URL_ARGUMENT).numberOfArgs(1).required().longOpt(URL_ARGUMENT).
                 desc("URL to scan for resources").build());
-        options.addOption(Option.builder().argName(BASE_URL_ARGUMENT).numberOfArgs(1).longOpt("baseUrl").
+        options.addOption(Option.builder().argName(BASE_URL_ARGUMENT).numberOfArgs(1).longOpt(BASE_URL_ARGUMENT).
                 desc("URL to use as a base for resources").build());
-        options.addOption(Option.builder().argName(EXTENSION_ARGUMENT).hasArgs().longOpt("extension").
+        options.addOption(Option.builder().argName(LEVEL_ARGUMENT).numberOfArgs(1).longOpt(LEVEL_ARGUMENT).
+                desc("Maximum recursion depth").build());
+        options.addOption(Option.builder().argName(EXTENSION_ARGUMENT).hasArgs().longOpt(EXTENSION_ARGUMENT).
                 desc("Extensions to scan for").build());
-        options.addOption(Option.builder().argName(INCLUDE_ARGUMENT).hasArgs().longOpt("include").
+        options.addOption(Option.builder().argName(INCLUDE_ARGUMENT).hasArgs().longOpt(INCLUDE_ARGUMENT).
                 desc("Regex for resources to include").build());
-        options.addOption(Option.builder().argName(EXCLUDE_ARGUMENT).hasArgs().longOpt("exclude").
+        options.addOption(Option.builder().argName(EXCLUDE_ARGUMENT).hasArgs().longOpt(EXCLUDE_ARGUMENT).
                 desc("Regex for resources to exclude").build());
-        options.addOption(Option.builder().argName(TYPE_ARGUMENT).numberOfArgs(1).longOpt("type").
+        options.addOption(Option.builder().argName(TYPE_ARGUMENT).numberOfArgs(1).longOpt(TYPE_ARGUMENT).
                 desc("Type of the resources").build());
-        options.addOption(Option.builder().argName(DATASOURCES_SERVER_ARGUMENT).numberOfArgs(1).longOpt("server").
+        options.addOption(Option.builder().argName(DATASOURCES_SERVER_ARGUMENT).numberOfArgs(1).longOpt(DATASOURCES_SERVER_ARGUMENT).
                 desc("Data sources server").build());
-        options.addOption(Option.builder().argName(DATASOURCES_USERNAME_ARGUMENT).numberOfArgs(1).longOpt("username").
+        options.addOption(Option.builder().argName(DATASOURCES_USERNAME_ARGUMENT).numberOfArgs(1).longOpt(DATASOURCES_USERNAME_ARGUMENT).
                 desc("Data sources server user name").build());
-        options.addOption(Option.builder().argName(DATASOURCES_PASSWORD_ARGUMENT).numberOfArgs(1).longOpt("password").
+        options.addOption(Option.builder().argName(DATASOURCES_PASSWORD_ARGUMENT).numberOfArgs(1).longOpt(DATASOURCES_PASSWORD_ARGUMENT).
                 desc("Data sources server password").build());
         try {
             return parser.parse(options, args);
