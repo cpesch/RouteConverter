@@ -6,7 +6,9 @@ SilentInstall silent
 RequestExecutionLevel user
 ShowInstDetails hide
 
-OutFile "RouteConverterBundle.exe"
+!define JRE "jre-11.0.10"
+OutFile "target\RouteConverterBundle.exe"
+
 Icon "RouteConverter.ico"
 VIProductVersion 2.29.0.00000
 VIAddVersionKey ProductName "RouteConverter"
@@ -16,8 +18,6 @@ VIAddVersionKey FileVersion 2.29.0.00000
 VIAddVersionKey ProductVersion "2.29 / OpenJRE 14.0.2 (x64)"
 VIAddVersionKey InternalName "RouteConverter"
 VIAddVersionKey OriginalFilename "RouteConverter.exe"
-
-!define JRE "jre-11.0.10"
 
 Section
   SetOverwrite off
