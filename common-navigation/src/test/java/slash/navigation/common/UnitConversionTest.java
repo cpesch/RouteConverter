@@ -24,6 +24,7 @@ package slash.navigation.common;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertNull;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.assertEquals;
 import static slash.navigation.common.Orientation.*;
@@ -70,10 +71,12 @@ public class UnitConversionTest {
 
     @Test
     public void testDdmm2Longitude() {
-        assertEquals(0.0, ddmm2longitude("  E  0  \u00B0  0  '  "));
+        assertEquals(1.0, ddmm2longitude("E1\u00B00'"));
+        assertEquals(10.1666667, ddmm2longitude("  E 0010  \u00B0  0010  \"  "));
         assertEquals(1.0, ddmm2longitude("E 1\u00B0 0'"));
         assertEquals(-1.0, ddmm2longitude("W 1\u00B0 0'"));
         assertEquals(9.0557233, ddmm2longitude("E 9\u00B0 3.3434'"));
+        assertNull(ddmm2longitude("E 9\u00B0 3.3434"));
     }
 
     @Test
@@ -86,7 +89,8 @@ public class UnitConversionTest {
 
     @Test
     public void testDdmm2Latitude() {
-        assertEquals(1.0, ddmm2latitude("N 1\u00B0 0'"));
+        assertEquals(1.0, ddmm2latitude("N1\u00B00'"));
+        assertEquals(10.0, ddmm2latitude(" N 010 \u00B0 000 \" "));
         assertEquals(-1.0, ddmm2latitude("S 1\u00B0 0'"));
         assertEquals(48.6239566, ddmm2latitude("N 48\u00B0 37.437395'"));
     }

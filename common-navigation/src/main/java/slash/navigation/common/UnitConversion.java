@@ -104,7 +104,7 @@ public class UnitConversion {
     private static final Pattern DDMM_TO_COORDINATE = Pattern.
             compile("\\s*(\\w)\\s*" +
                     "([\\d\\.]*)\\s*\u00B0\\s*" +
-                    "([\\d\\.]*)\\s*'\\s*");
+                    "([\\d\\.]*)\\s*['|\"]\\s*");
 
     private static Double ddmm2coordinate(String coordinateAsDdmm, Orientation negative) {
         if(coordinateAsDdmm != null) {
@@ -128,7 +128,7 @@ public class UnitConversion {
         return ddmm2coordinate(longitude, West);
     }
 
-    public static double ddmm2latitude(String latitude) {
+    public static Double ddmm2latitude(String latitude) {
         return ddmm2coordinate(latitude, South);
     }
 
