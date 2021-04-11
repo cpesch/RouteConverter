@@ -33,7 +33,6 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 import java.net.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -77,11 +76,6 @@ public class CheckProxy {
         String userName = line.getOptionValue(USERNAME_ARGUMENT);
         String password = line.getOptionValue(PASSWORD_ARGUMENT);
 
-        com.github.markusbernhardt.proxy.util.Logger.setBackend(new com.github.markusbernhardt.proxy.util.Logger.LogBackEnd() {
-            public void log(Class<?> clazz, com.github.markusbernhardt.proxy.util.Logger.LogLevel loglevel, String msg, Object... params) {
-                log.info(format("%s: %s: %s %s", clazz, loglevel, msg, Arrays.toString(params)));
-            }
-        });
         setUseSystemProxies();
 
         ProxySelector selector = ProxySelector.getDefault();

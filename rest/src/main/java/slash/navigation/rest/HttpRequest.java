@@ -19,7 +19,6 @@
 */
 package slash.navigation.rest;
 
-import com.github.markusbernhardt.proxy.ProxySearch;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
@@ -136,12 +135,6 @@ public abstract class HttpRequest {
 
     protected boolean throwsSocketExceptionIfUnAuthorized() {
         return false;
-    }
-
-    static {
-        ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
-        ProxySelector proxySelector = proxySearch.getProxySelector();
-        ProxySelector.setDefault(proxySelector);
     }
 
     private Proxy findHTTPProxy(URI uri) {

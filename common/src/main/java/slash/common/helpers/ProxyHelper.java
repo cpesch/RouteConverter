@@ -20,8 +20,10 @@
 package slash.common.helpers;
 
 import com.github.markusbernhardt.proxy.ProxySearch;
+import com.github.markusbernhardt.proxy.util.Logger;
 
 import java.net.ProxySelector;
+import java.util.logging.Level;
 
 /**
  * Helper from HTTP proxying
@@ -30,8 +32,32 @@ import java.net.ProxySelector;
  */
 
 public class ProxyHelper {
+    private static final java.util.logging.Logger log = java.util.logging.Logger.getLogger(ProxyHelper.class.getName());
+
     public static void setUseSystemProxies() {
         System.setProperty("java.net.useSystemProxies", "true");
+
+        Logger.setBackend(new Logger.LogBackEnd() {
+            private Level mapLogLevel(Logger.LogLevel loglevel) {
+                switch (loglevel) {
+                    case ERROR:
+                        return Level.SEVERE;
+                    case WARNING:
+                        return Level.WARNING;
+                    case INFO:
+                        return Level.INFO;
+                    case TRACE:
+                        return Level.FINER;
+                    case DEBUG:
+                        return Level.FINE;
+                }
+                return null;
+            }
+
+            public void log(Class<?> clazz, Logger.LogLevel loglevel, String msg, Object... params) {
+                log.logp(mapLogLevel(loglevel), clazz.getName(), "", msg, params);
+            }
+        });
 
         ProxySearch proxySearch = ProxySearch.getDefaultProxySearch();
         ProxySelector proxySelector = proxySearch.getProxySelector();

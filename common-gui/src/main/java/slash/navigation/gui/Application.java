@@ -127,7 +127,8 @@ public abstract class Application {
                     Thread.currentThread().setContextClassLoader(contextClassLoader);
 
                 setLookAndFeel();
-                setUseSystemProxies();
+                /* disabled due to endless loops: https://github.com/akuhtz/proxy-vole/issues/27
+                setUseSystemProxies(); */
                 initializeLocale(userNodeForPackage(applicationClass));
                 ResourceBundle bundle = initializeBundles(bundleNames);
 

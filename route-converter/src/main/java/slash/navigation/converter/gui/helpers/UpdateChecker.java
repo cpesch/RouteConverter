@@ -53,7 +53,7 @@ public class UpdateChecker {
     private static final Logger log = Logger.getLogger(UpdateChecker.class.getName());
     private static final String START_COUNT_PREFERENCE = "startCount";
     private static final String START_TIME_PREFERENCE = "startTime";
-    private RouteFeedback routeFeedback;
+    private final RouteFeedback routeFeedback;
 
     static {
         getPreferences().putInt(START_COUNT_PREFERENCE, getStartCount() + 1);
