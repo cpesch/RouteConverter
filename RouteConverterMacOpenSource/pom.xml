@@ -88,7 +88,7 @@
                                 <artifactItem>
                                     <groupId>org.openjdk.java</groupId>
                                     <artifactId>jlink-routeconverter-opensource</artifactId>
-                                    <version>14-jpackage-8</version>
+                                    <version>11.0.10</version>
                                     <type>zip</type>
                                     <classifier>osx</classifier>
                                     <outputDirectory>${project.basedir}/target/Runtime</outputDirectory>
