@@ -36,12 +36,11 @@ import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-import static java.util.Arrays.sort;
 import static slash.common.io.Transfer.encodeUri;
 import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.googlemaps.GoogleMapsServer.getGoogleMapsServer;
@@ -123,17 +122,18 @@ public class GoogleService implements ElevationService, GeocodingService {
 
     private String extractClosestLocation(List<GeocodeResponse.Result> results,
                                           final double longitude, final double latitude) {
-        GeocodeResponse.Result[] resultsArray = results.toArray(new GeocodeResponse.Result[0]);
-        sort(resultsArray, new Comparator<GeocodeResponse.Result>() {
-            public int compare(GeocodeResponse.Result p1, GeocodeResponse.Result p2) {
-                GeocodeResponse.Result.Geometry.Location l1 = p1.getGeometry().getLocation();
-                GeocodeResponse.Result.Geometry.Location l2 = p2.getGeometry().getLocation();
-                double distance1 = calculateBearing(longitude, latitude, l1.getLng().doubleValue(), l1.getLat().doubleValue()).getDistance();
-                double distance2 = calculateBearing(longitude, latitude, l2.getLng().doubleValue(), l2.getLat().doubleValue()).getDistance();
-                return (int) (distance1 - distance2);
-            }
-        });
-        return resultsArray.length > 0 ? resultsArray[0].getFormattedAddress() : null;
+        List<String> locations = results.stream()
+                .filter(r -> r.getType().stream().noneMatch(t -> t.equals("plus_code")))
+                .sorted((p1, p2) -> {
+                    GeocodeResponse.Result.Geometry.Location l1 = p1.getGeometry().getLocation();
+                    GeocodeResponse.Result.Geometry.Location l2 = p2.getGeometry().getLocation();
+                    double distance1 = calculateBearing(longitude, latitude, l1.getLng().doubleValue(), l1.getLat().doubleValue()).getDistance();
+                    double distance2 = calculateBearing(longitude, latitude, l2.getLng().doubleValue(), l2.getLat().doubleValue()).getDistance();
+                    return (int) (distance1 - distance2);
+                })
+                .map(GeocodeResponse.Result::getFormattedAddress)
+                .collect(Collectors.toList());
+        return locations.size() > 0 ? locations.get(0) : null;
     }
 
     public List<NavigationPosition> getPositionsFor(String address) throws IOException {
