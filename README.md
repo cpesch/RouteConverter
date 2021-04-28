@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/cpesch/RouteConverter.svg?branch=master)](https://travis-ci.org/cpesch/RouteConverter)
+[![Build Status](https://travis-ci.com/cpesch/RouteConverter.svg?branch=master)](https://travis-ci.com/cpesch/RouteConverter)
 <a href="https://hosted.weblate.org/engage/routeconverter/?utm_source=widget">
 <img src="https://hosted.weblate.org/widgets/routeconverter/-/svg-badge.svg" alt="Translation status" />
 </a>
