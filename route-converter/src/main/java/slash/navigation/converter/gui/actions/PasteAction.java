@@ -36,8 +36,11 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
+import static java.util.logging.Logger.getLogger;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.navigation.base.NavigationFormatConverter.convertPositions;
 import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
 import static slash.navigation.converter.gui.dnd.PositionSelection.STRING_FLAVOR;
@@ -50,6 +53,8 @@ import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPositio
  */
 
 public class PasteAction extends FrameAction {
+    private static final Logger log = getLogger(PasteAction.class.getName());
+
     private final JTable table;
     private final PositionsModel positionsModel;
     private final ClipboardInteractor clipboardInteractor;
@@ -106,7 +111,7 @@ public class PasteAction extends FrameAction {
                 paste(route.getPositions());
             }
         } catch (Exception e) {
-            // intentionally left empty
+            log.severe("Cannot paste " + string + ": " + getLocalizedMessage(e));
         }
     }
 }
