@@ -110,8 +110,6 @@ class MesgCreator {
             case Route:
                 mesg.setType(COURSE);
                 break;
-            default:
-                throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
         }
         return mesg;
     }

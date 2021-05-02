@@ -30,6 +30,7 @@ import java.util.List;
 
 import static com.garmin.fit.File.ACTIVITY;
 import static com.garmin.fit.File.COURSE;
+import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.NavigationConversion.semiCircleToDegree;
@@ -47,6 +48,10 @@ class MesgParser implements CourseMesgListener, CoursePointMesgListener, FileIdM
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public RouteCharacteristics getCharacteristics() {
@@ -82,7 +87,9 @@ class MesgParser implements CourseMesgListener, CoursePointMesgListener, FileIdM
     }
 
     public void onMesg(CourseMesg mesg) {
-        name = mesg.getName();
+        String name = trim(mesg.getName());
+        if(name != null)
+            setName(name);
     }
 
     public void onMesg(CoursePointMesg mesg) {

@@ -80,6 +80,7 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
         MesgBroadcaster broadcaster = new MesgBroadcaster(decode);
         broadcaster.addListener(new MesgLogger());
         MesgParser parser = new MesgParser();
+        parser.setName(context.getFile().getName());
         broadcaster.addListener((CourseMesgListener) parser);
         broadcaster.addListener((CoursePointMesgListener) parser);
         broadcaster.addListener((GpsMetadataMesgListener) parser);
