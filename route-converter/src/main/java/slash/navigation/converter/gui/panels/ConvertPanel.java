@@ -932,15 +932,10 @@ public class ConvertPanel implements PanelInTab {
         boolean existsASelectedPosition = selectedRows.length > 0;
         boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
         boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;
+        boolean lastRowNotSelected = existsASelectedPosition && selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
         boolean existsAPosition = positionsModel.getRowCount() > 0;
         boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
         boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
-
-        buttonMovePositionToTop.setEnabled(firstRowNotSelected);
-        buttonMovePositionUp.setEnabled(firstRowNotSelected);
-        boolean lastRowNotSelected = existsASelectedPosition && selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
-        buttonMovePositionDown.setEnabled(lastRowNotSelected);
-        buttonMovePositionToBottom.setEnabled(lastRowNotSelected);
 
         RouteConverter r = RouteConverter.getInstance();
         ActionManager actionManager = r.getContext().getActionManager();
@@ -951,10 +946,10 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("select-all", existsAPosition && !allPositionsSelected);
         actionManager.enable("clear-selection", existsASelectedPosition);
         findMenu(r.getFrame().getJMenuBar(), "position", "complete").setEnabled(existsASelectedPosition);
-        actionManager.enable("top", existsASelectedPosition && existsMoreThanOnePosition);
-        actionManager.enable("up", existsASelectedPosition && existsMoreThanOnePosition);
-        actionManager.enable("down", existsASelectedPosition && existsMoreThanOnePosition);
-        actionManager.enable("bottom", existsASelectedPosition && existsMoreThanOnePosition);
+        actionManager.enable("top", firstRowNotSelected);
+        actionManager.enable("up", firstRowNotSelected);
+        actionManager.enable("down", lastRowNotSelected);
+        actionManager.enable("bottom", lastRowNotSelected);
         actionManager.enable("add-coordinates", existsASelectedPosition);
         actionManager.enable("add-elevation", existsASelectedPosition);
         actionManager.enable("add-address", existsASelectedPosition);

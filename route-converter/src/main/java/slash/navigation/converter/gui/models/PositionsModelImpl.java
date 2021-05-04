@@ -54,7 +54,6 @@ import static javax.swing.event.TableModelEvent.*;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.NavigationFormatConverter.convertPositions;
-import static slash.navigation.common.UnitConversion.*;
 import static slash.navigation.converter.gui.helpers.PositionHelper.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 
@@ -492,6 +491,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         Arrays.sort(rowIndices);
 
         for (int row : rowIndices) {
+            // protect against IndexArrayOutOfBoundsException
+            if(row - delta < 0)
+                continue;
+
             getRoute().move(row, row - delta);
             fireTableRowsUpdated(row - delta, row);
         }
@@ -501,6 +504,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         int[] reverted = Range.revert(rowIndices);
 
         for (int row : reverted) {
+            // protect against IndexArrayOutOfBoundsException
+            if(row + delta >= getRowCount())
+                continue;
+
             getRoute().move(row, row + delta);
             fireTableRowsUpdated(row, row + delta);
         }
