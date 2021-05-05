@@ -218,8 +218,6 @@ public class MapsforgeMapView extends BaseMapView {
         });
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
-            private final List<PairWithLayer> pairs = new ArrayList<>();
-
             public void add(List<PairWithLayer> pairWithLayers) {
                 internalAdd(pairWithLayers);
             }
@@ -232,21 +230,15 @@ public class MapsforgeMapView extends BaseMapView {
 
             public void remove(List<PairWithLayer> pairWithLayers) {
                 internalRemove(pairWithLayers);
-                fireDistanceAndTime();
+                fireDistanceAndTime(pairWithLayers);
                 selectionUpdater.removedPositions(toPositions2(pairWithLayers));
             }
 
             private void internalAdd(List<PairWithLayer> pairWithLayers) {
-                pairs.addAll(pairWithLayers);
-                routeRenderer.renderRoute(pairWithLayers, this::fireDistanceAndTime);
+                routeRenderer.renderRoute(pairWithLayers, () -> fireDistanceAndTime(pairWithLayers));
             }
 
             private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                // speed optimization for large numbers of pairWithLayers
-                if (pairs.size() == pairWithLayers.size())
-                    pairs.clear();
-                else
-                    pairs.removeAll(pairWithLayers);
                 for (PairWithLayer pairWithLayer : pairWithLayers)
                     pairWithLayer.setDistanceAndTime(null);
 
@@ -254,13 +246,12 @@ public class MapsforgeMapView extends BaseMapView {
                 removeLayers(remove);
             }
 
-            private void fireDistanceAndTime() {
-                Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairs.size());
-                for (int i = 0; i < pairs.size(); i++) {
-                    PairWithLayer pairWithLayer = pairs.get(i);
-                    indexToDistanceAndTime.put(i + 1, pairWithLayer.getDistanceAndTime());
+            private void fireDistanceAndTime(List<PairWithLayer> pairWithLayers) {
+                Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairWithLayers.size());
+                for (PairWithLayer pairWithLayer : pairWithLayers) {
+                    indexToDistanceAndTime.put(pairWithLayer.getRow(), pairWithLayer.getDistanceAndTime());
                 }
-                fireCalculatedDistances(DistanceAndTimeAggregator.add(indexToDistanceAndTime));
+                fireCalculatedDistances(indexToDistanceAndTime);
             }
         });
 

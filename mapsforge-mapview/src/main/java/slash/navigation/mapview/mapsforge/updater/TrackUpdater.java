@@ -56,7 +56,7 @@ public class TrackUpdater implements EventMapUpdater {
 
         List<PairWithLayer> added = new ArrayList<>();
         for (int i = beforeFirstRow; i < afterLastRow; i++) {
-            PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(i), positionsModel.getPosition(i + 1));
+            PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(i), positionsModel.getPosition(i + 1), i);
             pairWithLayers.add(i, pairWithLayer);
             added.add(pairWithLayer);
         }
@@ -74,7 +74,7 @@ public class TrackUpdater implements EventMapUpdater {
 
         List<PairWithLayer> updated = new ArrayList<>();
         for (int i = beforeFirstRow; i < afterLastRow; i++) {
-            PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(i), positionsModel.getPosition(i + 1));
+            PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(i), positionsModel.getPosition(i + 1), i);
             pairWithLayer.setLayer(pairWithLayers.get(i).getLayer());
             pairWithLayers.set(i, pairWithLayer);
             updated.add(pairWithLayers.get(i));
@@ -90,7 +90,7 @@ public class TrackUpdater implements EventMapUpdater {
 
         List<PairWithLayer> added = new ArrayList<>();
         if (beforeFirstRow < firstRow && validLastRow == lastRow) {
-            PairWithLayer pairWithLayer = new PairWithLayer(pairWithLayers.get(beforeFirstRow).getFirst(), pairWithLayers.get(validLastRow).getSecond());
+            PairWithLayer pairWithLayer = new PairWithLayer(pairWithLayers.get(beforeFirstRow).getFirst(), pairWithLayers.get(validLastRow).getSecond(), beforeFirstRow);
             added.add(pairWithLayer);
         }
 

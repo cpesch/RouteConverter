@@ -34,12 +34,14 @@ import java.util.Objects;
 public class PairWithLayer implements ObjectWithLayer {
     private final NavigationPosition first;
     private final NavigationPosition second;
+    private final int row;
     private Layer layer;
     private DistanceAndTime distanceAndTime;
 
-    public PairWithLayer(NavigationPosition first, NavigationPosition second) {
+    public PairWithLayer(NavigationPosition first, NavigationPosition second, int row) {
         this.first = first;
         this.second = second;
+        this.row = row;
     }
 
     public NavigationPosition getFirst() {
@@ -48,6 +50,10 @@ public class PairWithLayer implements ObjectWithLayer {
 
     public NavigationPosition getSecond() {
         return second;
+    }
+
+    public int getRow() {
+        return row;
     }
 
     public boolean hasCoordinates() {
@@ -83,6 +89,7 @@ public class PairWithLayer implements ObjectWithLayer {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "@" + hashCode() + "[first=" + getFirst() + ", second=" + getSecond() + ", layer=" + getLayer() + ", distanceAndTime=" + getDistanceAndTime() + "]";
+        return getClass().getSimpleName() + "[first=" + getFirst() + ", second=" + getSecond() +
+                ", row=" + getRow() + ", layer=" + getLayer() + ", distanceAndTime=" + getDistanceAndTime() + "]";
     }
 }
