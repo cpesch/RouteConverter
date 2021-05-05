@@ -413,11 +413,7 @@ public class PositionAugmenter {
     }
 
     int findPredecessorWithTime(PositionsModel positionsModel, int index) {
-        while (index >= 0) {
-            // avoid exceptions due to parallel deletions
-            if(index > positionsModel.getRowCount() - 1)
-                continue;
-
+        while (index >= 0 && index < positionsModel.getRowCount()) {
             NavigationPosition position = positionsModel.getPosition(index);
             if (position.hasTime())
                 return index;
