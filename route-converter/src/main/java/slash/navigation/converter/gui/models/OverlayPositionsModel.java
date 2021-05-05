@@ -428,8 +428,8 @@ public class OverlayPositionsModel implements PositionsModel {
         return timesFromStart != null ? fromMillis(timesFromStart[0]) : null;
     }
 
-    public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToRoutedDistanceAndTime) {
-        this.indexToRouteDistanceAndTime.putAll(indexToRoutedDistanceAndTime);
+    public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+        this.indexToRouteDistanceAndTime.putAll(indexToDistanceAndTime);
         int firstIndex = getRowCount() - 1;
         int lastIndex = 0;
         for (Integer index : this.indexToRouteDistanceAndTime.keySet()) {
