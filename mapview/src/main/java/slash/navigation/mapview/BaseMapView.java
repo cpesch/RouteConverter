@@ -20,11 +20,6 @@
 
 package slash.navigation.mapview;
 
-import slash.navigation.common.DistanceAndTime;
-
-import javax.swing.event.EventListenerList;
-import java.util.Map;
-
 /**
  * The base of all {@link MapView} implementations.
  *
@@ -42,32 +37,4 @@ public abstract class BaseMapView implements MapView {
     protected static final String CLEAN_TIME_ON_MOVE_PREFERENCE = "cleanTimeOnMove";
     protected static final String COMPLEMENT_TIME_ON_MOVE_PREFERENCE = "complementTimeOnMove";
     protected static final String MOVE_COMPLETE_SELECTION_PREFERENCE = "moveCompleteSelection";
-
-    private final EventListenerList listenerList = new EventListenerList();
-
-    protected void fireCalculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == MapViewListener.class) {
-                ((MapViewListener) listeners[i + 1]).calculatedDistances(indexToDistanceAndTime);
-            }
-        }
-    }
-
-    protected void fireReceivedCallback(int port) {
-        Object[] listeners = listenerList.getListenerList();
-        for (int i = listeners.length - 2; i >= 0; i -= 2) {
-            if (listeners[i] == MapViewListener.class) {
-                ((MapViewListener) listeners[i + 1]).receivedCallback(port);
-            }
-        }
-    }
-
-    public void addMapViewListener(MapViewListener l) {
-        listenerList.add(MapViewListener.class, l);
-    }
-
-    public void removeMapViewListener(MapViewListener l) {
-        listenerList.remove(MapViewListener.class, l);
-    }
 }

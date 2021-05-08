@@ -17,23 +17,16 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+package slash.navigation.common;
 
-package slash.navigation.mapview;
-
-import slash.navigation.common.DistanceAndTime;
-
-import java.util.Map;
+import java.util.EventListener;
 
 /**
- * A {@link MapViewListener} that does nothing.
+ * Interface for events from a {@link DistanceAndTimeAggregator}
  *
  * @author Christian Pesch
  */
 
-public abstract class AbstractMapViewListener implements MapViewListener {
-    public void calculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-    }
-
-    public void receivedCallback(int port) {
-    }
+public interface DistancesAndTimesAggregatorListener extends EventListener {
+    void distancesAndTimesChanged(int firstIndex, int lastIndex);
 }

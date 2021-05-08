@@ -249,9 +249,9 @@ public class MapsforgeMapView extends BaseMapView {
             private void fireDistanceAndTime(List<PairWithLayer> pairWithLayers) {
                 Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairWithLayers.size());
                 for (PairWithLayer pairWithLayer : pairWithLayers) {
-                    indexToDistanceAndTime.put(pairWithLayer.getRow(), pairWithLayer.getDistanceAndTime());
+                    indexToDistanceAndTime.put(pairWithLayer.getRow() + 1, pairWithLayer.getDistanceAndTime());
                 }
-                fireCalculatedDistances(indexToDistanceAndTime);
+                mapViewCallback.getDistanceAndTimeAggregator().calculatedDistancesAndTimes(indexToDistanceAndTime);
             }
         });
 
@@ -1073,10 +1073,13 @@ public class MapsforgeMapView extends BaseMapView {
         boolean cleanTime = preferences.getBoolean(CLEAN_TIME_ON_MOVE_PREFERENCE, false);
         boolean complementTime = preferences.getBoolean(COMPLEMENT_TIME_ON_MOVE_PREFERENCE, true);
 
-        int minimum = row;
+        int firstIndex = MAX_VALUE;
+        int lastIndex = 0;
         for (int index : selectionUpdater.getIndices()) {
-            if (index < minimum)
-                minimum = index;
+            if (index < firstIndex)
+                firstIndex = index;
+            if (index > lastIndex)
+                lastIndex = index;
 
             NavigationPosition position = positionsModel.getPosition(index);
             if (position == null)
@@ -1102,10 +1105,7 @@ public class MapsforgeMapView extends BaseMapView {
                 mapViewCallback.complementData(new int[]{index}, false, complementTime, complementElevation, true, false);
         }
 
-        // updating all rows behind the modified is quite expensive, but necessary due to the distance
-        // calculation - if that didn't exist the single update of row would be sufficient
-        int size = positionsModel.getRoute().getPositions().size() - 1;
-        positionsModel.fireTableRowsUpdated(minimum, size, ALL_COLUMNS);
+        positionsModel.fireTableRowsUpdated(firstIndex, lastIndex, ALL_COLUMNS);
     }
 
     public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {

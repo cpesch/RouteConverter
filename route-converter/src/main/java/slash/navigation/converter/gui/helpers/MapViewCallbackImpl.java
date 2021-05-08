@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.common.DistanceAndTimeAggregator;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.mapview.MapView;
@@ -88,5 +89,9 @@ public abstract class MapViewCallbackImpl implements MapViewCallback {
 
     public TileServerMapManager getTileServerMapManager() {
         return RouteConverter.getInstance().getTileServerMapManager();
+    }
+
+    public DistanceAndTimeAggregator getDistanceAndTimeAggregator() {
+        return RouteConverter.getInstance().getDistanceAndTimeAggregator();
     }
 }

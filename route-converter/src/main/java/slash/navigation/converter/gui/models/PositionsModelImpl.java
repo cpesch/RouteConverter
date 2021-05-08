@@ -24,10 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.DegreeFormat;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.UnitSystem;
+import slash.navigation.common.*;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.PositionHelper;
 import slash.navigation.gui.events.ContinousRange;
@@ -133,6 +130,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         for (int i = firstIndex; i < lastIndex; i++)
             result.add(getPosition(i));
         return result;
+    }
+
+    public DistanceAndTimeAggregator getDistanceAndTimeAggregator() {
+      throw new UnsupportedOperationException();
     }
 
     public double[] getDistancesFromStart(int startIndex, int endIndex) {

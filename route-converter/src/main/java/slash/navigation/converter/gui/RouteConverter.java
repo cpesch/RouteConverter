@@ -48,7 +48,6 @@ import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.*;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.tileserver.TileServerMapManager;
-import slash.navigation.mapview.AbstractMapViewListener;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.rest.Credentials;
@@ -192,6 +191,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private ProfileModeModel profileModeModel = new ProfileModeModel();
     private TileServerMapManager tileServerMapManager;
+    private DistanceAndTimeAggregator distanceAndTimeAggregator = new DistanceAndTimeAggregator();
 
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, profileSplitPane;
@@ -207,7 +207,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(MAX_VALUE, 300), 0, true);
 
     private LazyTabInitializer tabInitializer;
-    private CalculatedDistanceNotifier calculatedDistanceNotifier = new CalculatedDistanceNotifier();
 
     // application lifecycle callbacks
 
@@ -370,7 +369,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
         setMapViewPreference(mapViewImplementation);
 
         if (isMapViewAvailable()) {
-            mapView.removeMapViewListener(calculatedDistanceNotifier);
             mapPanel.removeAll();
             mapView.dispose();
         }
@@ -381,9 +379,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     printStackTrace(new UnsupportedOperationException()).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
 
         } else {
-            getMapView().addMapViewListener(calculatedDistanceNotifier);
-            getMapView().initialize(getConvertPanel().getPositionsModel(), mapPreferencesModel, getMapViewCallback()
-            );
+            getMapView().initialize(getConvertPanel().getPositionsModel(), mapPreferencesModel, getMapViewCallback());
 
             @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
             Throwable cause = getMapView().getInitializationCause();
@@ -751,6 +747,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public RoutingServiceFacade getRoutingServiceFacade() {
         return routingServiceFacade;
+    }
+
+    public DistanceAndTimeAggregator getDistanceAndTimeAggregator() {
+        return distanceAndTimeAggregator;
     }
 
     public DataSourceManager getDataSourceManager() {
@@ -1164,12 +1164,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
             actionManager.enable("maximize-map", location < frame.getHeight() - 10);
             actionManager.enable("maximize-positionlist", location < frame.getHeight() - 10);
             actionManager.enable("show-profile", location > frame.getHeight() - 80);
-        }
-    }
-
-    private class CalculatedDistanceNotifier extends AbstractMapViewListener {
-        public void calculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-            getConvertPanel().calculatedDistanceFromRouting(indexToDistanceAndTime);
         }
     }
 

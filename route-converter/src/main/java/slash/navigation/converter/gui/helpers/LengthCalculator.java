@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.DistanceAndTimeAggregator;
+import slash.navigation.common.DistancesAndTimesAggregatorListener;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -71,7 +72,7 @@ public class LengthCalculator {
         return positionsModel.getRoute().getCharacteristics();
     }
 
-    public void initialize(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
+    public void initialize(PositionsModel positionsModel, CharacteristicsModel characteristicsModel, DistanceAndTimeAggregator distanceAndTimeAggregator) {
         this.positionsModel = positionsModel;
 
         positionsModel.addTableModelListener(e -> {
@@ -96,6 +97,13 @@ public class LengthCalculator {
                 calculateDistance();
             }
         });
+
+        distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener(new DistancesAndTimesAggregatorListener() {
+            public void distancesAndTimesChanged(int firstIndex, int lastIndex) {
+                DistanceAndTime total = distanceAndTimeAggregator.getTotalDistanceAndTime();
+                fireCalculatedDistance(total);
+            }
+        });
     }
 
     private PositionsModel getPositionsModel() {
@@ -113,11 +121,6 @@ public class LengthCalculator {
             listener.calculatedDistanceAndTime(distanceAndTime);
         }
     }
-
-    public void calculateDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        fireCalculatedDistance(DistanceAndTimeAggregator.max(indexToDistanceAndTime));
-    }
-
 
     private void calculateDistance() {
         if (getCharacteristics().equals(Waypoints)) {

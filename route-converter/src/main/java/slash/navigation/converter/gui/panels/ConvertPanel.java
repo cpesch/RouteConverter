@@ -25,7 +25,6 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.*;
-import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
@@ -77,8 +76,10 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.*;
+import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -138,8 +139,8 @@ public class ConvertPanel implements PanelInTab {
 
     private static final int ROW_HEIGHT_FOR_PHOTO_COLUMN = 200;
 
-    private UrlDocument urlModel = new UrlDocument();
-    private RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
+    private final UrlDocument urlModel = new UrlDocument();
+    private final RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
     private RecentFormatsModel recentFormatsModel;
     private FormatAndRoutesModel formatAndRoutesModel;
     private OverlayPositionsModel positionsModel;
@@ -182,7 +183,7 @@ public class ConvertPanel implements PanelInTab {
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.addChangeListener(e -> handleUndoUpdate());
 
-        positionsModel = new OverlayPositionsModel(new UndoPositionsModel(undoManager), r.getCharacteristicsModel());
+        positionsModel = new OverlayPositionsModel(new UndoPositionsModel(undoManager), r.getCharacteristicsModel(), r.getDistanceAndTimeAggregator());
         formatAndRoutesModel = new UndoFormatAndRoutesModel(undoManager, new FormatAndRoutesModelImpl(positionsModel, r.getCharacteristicsModel()));
         positionsSelectionModel = (selectedPositions, replaceSelection) -> {
             if (replaceSelection) {
@@ -208,7 +209,7 @@ public class ConvertPanel implements PanelInTab {
         };
 
         lengthCalculator = new LengthCalculator();
-        lengthCalculator.initialize(positionsModel, r.getCharacteristicsModel());
+        lengthCalculator.initialize(positionsModel, r.getCharacteristicsModel(), r.getDistanceAndTimeAggregator());
 
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
@@ -400,11 +401,6 @@ public class ConvertPanel implements PanelInTab {
 
     private int getDefaultRowHeight() {
         return calculateRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null));
-    }
-
-    public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        lengthCalculator.calculateDistanceFromRouting(indexToDistanceAndTime);
-        positionsModel.calculatedDistanceFromRouting(indexToDistanceAndTime);
     }
 
     public void dispose() {

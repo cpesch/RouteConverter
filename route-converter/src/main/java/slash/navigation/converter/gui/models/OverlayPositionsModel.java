@@ -24,9 +24,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.Wgs84Position;
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.DistanceAndTime;
-import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.*;
 
 import javax.swing.*;
 import javax.swing.event.ListDataEvent;
@@ -45,7 +43,6 @@ import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.common.DistanceAndTime.ZERO;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.ImageHelper.resize;
 
@@ -57,8 +54,8 @@ import static slash.navigation.gui.helpers.ImageHelper.resize;
 public class OverlayPositionsModel implements PositionsModel {
     private static final int IMAGE_HEIGHT_FOR_IMAGE_COLUMN = 200;
     private final PositionsModel delegate;
+    private DistanceAndTimeAggregator distanceAndTimeAggregator;
     private final Map<Integer, ImageAndFile> indexToImageAndFile = new HashMap<>();
-    private final Map<Integer, DistanceAndTime> indexToRouteDistanceAndTime = new HashMap<>();
     private double[] trackDistancesFromStart;
     private long[] trackTimesFromStart;
 
@@ -74,8 +71,10 @@ public class OverlayPositionsModel implements PositionsModel {
         });
     }
 
-    public OverlayPositionsModel(PositionsModel delegate, CharacteristicsModel characteristicsModel) {
+    public OverlayPositionsModel(PositionsModel delegate, CharacteristicsModel characteristicsModel,
+                                 DistanceAndTimeAggregator distanceAndTimeAggregator) {
         this(delegate);
+        this.distanceAndTimeAggregator = distanceAndTimeAggregator;
 
         characteristicsModel.addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
@@ -84,20 +83,29 @@ public class OverlayPositionsModel implements PositionsModel {
             public void intervalRemoved(ListDataEvent e) {
             }
 
+            // TODO move to DistanceAndTimeAggregator?
             public void contentsChanged(ListDataEvent e) {
                 // clear overlay when route characteristics is changed
                 clearOverlay();
 
-                // when switching to/from Waypoints fire an event so that the distance and time  column get updated
+                // when switching to/from Waypoints fire an event so that the distance and time column get updated
                 if (getRowCount() > 0) {
                     fireTableRowsUpdated(0, MAX_VALUE, DISTANCE_COLUMN_INDEX);
                 }
             }
         });
+
+        distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener(new DistancesAndTimesAggregatorListener() {
+            public void distancesAndTimesChanged(int firstIndex, int lastIndex) {
+                // TODO send two events for the columns and filter out the second everywhere exception during the rendering of the JTable
+                fireDistanceAndTimeChanged(firstIndex, getRowCount() - 1);
+            }
+        });
     }
 
     private void clearOverlay() {
-        indexToRouteDistanceAndTime.clear();
+        // TODO forward to DistanceAndTimeAggregator?
+        // indexToRouteDistanceAndTime.clear();
         trackDistancesFromStart = null;
         trackTimesFromStart = null;
         indexToImageAndFile.clear();
@@ -171,6 +179,9 @@ public class OverlayPositionsModel implements PositionsModel {
         return delegate.getPositions(firstIndex, lastIndex);
     }
 
+    public DistanceAndTimeAggregator getDistanceAndTimeAggregator() {
+        return distanceAndTimeAggregator;
+    }
 
     public double[] getDistancesFromStart(int startIndex, int endIndex) {
         if (getRoute().getCharacteristics().equals(Track)) {
@@ -196,7 +207,7 @@ public class OverlayPositionsModel implements PositionsModel {
         int index = 0;
         double distance = 0.0;
         while (index <= endIndex) {
-            DistanceAndTime distanceAndTime = indexToRouteDistanceAndTime.get(index);
+            DistanceAndTime distanceAndTime = distanceAndTimeAggregator.getAbsoluteDistancesAndTimes().get(index);
             if (distanceAndTime != null && distanceAndTime.getDistance() != null)
                 distance = distanceAndTime.getDistance();
             if (index >= startIndex)
@@ -223,7 +234,7 @@ public class OverlayPositionsModel implements PositionsModel {
         Arrays.sort(indices);
 
         for (int i = 0; i < indices.length; i++) {
-            DistanceAndTime distanceAndTime = indexToRouteDistanceAndTime.get(indices[i]);
+            DistanceAndTime distanceAndTime = distanceAndTimeAggregator.getAbsoluteDistancesAndTimes().get(indices[i]);
             if (distanceAndTime != null && distanceAndTime.getDistance() != null)
                 result[i] = distanceAndTime.getDistance();
         }
@@ -257,7 +268,7 @@ public class OverlayPositionsModel implements PositionsModel {
         int index = 0;
         long time = 0;
         while (index <= endIndex) {
-            DistanceAndTime distanceAndTime = indexToRouteDistanceAndTime.get(index);
+            DistanceAndTime distanceAndTime = distanceAndTimeAggregator.getAbsoluteDistancesAndTimes().get(index);
             if (distanceAndTime != null && distanceAndTime.getTimeInMillis() != null)
                 time = distanceAndTime.getTimeInMillis();
             if (index >= startIndex)
@@ -283,7 +294,7 @@ public class OverlayPositionsModel implements PositionsModel {
         Arrays.sort(indices);
 
         for (int i = 0; i < indices.length; i++) {
-            DistanceAndTime distanceAndTime = indexToRouteDistanceAndTime.get(indices[i]);
+            DistanceAndTime distanceAndTime = distanceAndTimeAggregator.getAbsoluteDistancesAndTimes().get(indices[i]);
             if (distanceAndTime != null && distanceAndTime.getTimeInMillis() != null)
                 result[i] = distanceAndTime.getTimeInMillis();
         }
@@ -409,16 +420,9 @@ public class OverlayPositionsModel implements PositionsModel {
         }
 
         if (getRoute().getCharacteristics().equals(Route)) {
-            // difference of first row is null, for second row the first is 0.0 but not in the data
-            DistanceAndTime previous = rowIndex > 1 ? indexToRouteDistanceAndTime.get(rowIndex - 1) :
-                    rowIndex == 1 ? ZERO : null;
-            DistanceAndTime current = indexToRouteDistanceAndTime.get(rowIndex);
-            if (previous != null && current != null) {
-                Double d1 = previous.getDistance();
-                Double d2 = current.getDistance();
-                if (d1 != null && d2 != null)
-                    return d2 - d1;
-            }
+            DistanceAndTime distanceAndTime = distanceAndTimeAggregator.getRelativeDistancesAndTimes().get(rowIndex);
+            if(distanceAndTime != null)
+                return distanceAndTime.getDistance();
         }
         return null;
     }
@@ -428,23 +432,10 @@ public class OverlayPositionsModel implements PositionsModel {
         return timesFromStart != null ? fromMillis(timesFromStart[0]) : null;
     }
 
-    public void calculatedDistanceFromRouting(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        this.indexToRouteDistanceAndTime.putAll(indexToDistanceAndTime);
-        int firstIndex = getRowCount() - 1;
-        int lastIndex = 0;
-        for (Integer index : this.indexToRouteDistanceAndTime.keySet()) {
-            if (index < firstIndex)
-                firstIndex = index;
-            else if (index > lastIndex)
-                lastIndex = index;
-        }
-        // send two events for the columns and filter out the second everywhere exception during the rendering of the JTable
-        fireDistanceAndTimeChanged(firstIndex, lastIndex);
-    }
-
     private void fireDistanceAndTimeChanged(int firstIndex, int lastIndex) {
         invokeLater(() -> {
             fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
+            fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_DIFFERENCE_COLUMN_INDEX);
             fireTableRowsUpdated(firstIndex, lastIndex, TIME_COLUMN_INDEX);
         });
     }

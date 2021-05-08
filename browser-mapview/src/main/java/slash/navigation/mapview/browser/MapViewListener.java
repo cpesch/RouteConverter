@@ -18,12 +18,11 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.mapview;
+package slash.navigation.mapview.browser;
 
-import slash.navigation.common.DistanceAndTime;
+import slash.navigation.mapview.MapView;
 
 import java.util.EventListener;
-import java.util.Map;
 
 /**
  * Interface for events from a {@link MapView}
@@ -32,6 +31,5 @@ import java.util.Map;
  */
 
 public interface MapViewListener extends EventListener {
-    void calculatedDistances(Map<Integer, DistanceAndTime> indexToDistanceAndTime);
-    void receivedCallback(int port); // only BrowserMapView
+    void receivedCallback(int port);
 }

@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.models;
 
+import slash.navigation.common.DistanceAndTimeAggregator;
 import slash.navigation.gui.models.FilterPredicate;
 import slash.navigation.gui.models.FilteringTableModel;
 import slash.common.type.CompactCalendar;
@@ -68,6 +69,10 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
     }
 
     public List<NavigationPosition> getPositions(int firstIndex, int lastIndex) {
+        throw new UnsupportedOperationException();
+    }
+
+    public DistanceAndTimeAggregator getDistanceAndTimeAggregator() {
         throw new UnsupportedOperationException();
     }
 

@@ -31,7 +31,9 @@ import slash.navigation.common.*;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.gui.Application;
 import slash.navigation.maps.tileserver.TileServer;
-import slash.navigation.mapview.*;
+import slash.navigation.mapview.BaseMapView;
+import slash.navigation.mapview.MapView;
+import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.nmn.NavigatingPoiWarnerFormat;
 
 import javax.swing.event.*;
@@ -576,7 +578,7 @@ public abstract class BrowserMapView extends BaseMapView {
         final Boolean[] receivedCallback = new Boolean[1];
         receivedCallback[0] = false;
 
-        final MapViewListener callbackWaiter = new AbstractMapViewListener() {
+        final MapViewListener callbackWaiter = new MapViewListener() {
             public void receivedCallback(int port) {
                 synchronized (receivedCallback) {
                     receivedCallback[0] = true;
@@ -1813,11 +1815,9 @@ public abstract class BrowserMapView extends BaseMapView {
                     // find successor of start position from directions for first DistanceAndTime
                     NavigationPosition position = directionsPositions.get(generationIndex + i + 1);
                     int index = positionsModel.getIndex(position);
-                    indexToDistanceAndTime.put(index, distanceAndTimes.get(i));
+                    indexToDistanceAndTime.put(index + 1, distanceAndTimes.get(i));
                 }
-
-                Map<Integer, DistanceAndTime> result = DistanceAndTimeAggregator.add(indexToDistanceAndTime);
-                fireCalculatedDistances(result);
+                mapViewCallback.getDistanceAndTimeAggregator().calculatedDistancesAndTimes(indexToDistanceAndTime);
             }
         });
     }
@@ -1915,4 +1915,25 @@ public abstract class BrowserMapView extends BaseMapView {
             setDegreeFormat();
         }
     }
+
+
+    private final EventListenerList listenerList = new EventListenerList();
+
+    private void fireReceivedCallback(int port) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == MapViewListener.class) {
+                ((MapViewListener) listeners[i + 1]).receivedCallback(port);
+            }
+        }
+    }
+
+    private void addMapViewListener(MapViewListener l) {
+        listenerList.add(MapViewListener.class, l);
+    }
+
+    private void removeMapViewListener(MapViewListener l) {
+        listenerList.remove(MapViewListener.class, l);
+    }
+
 }

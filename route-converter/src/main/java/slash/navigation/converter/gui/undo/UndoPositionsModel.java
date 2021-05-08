@@ -25,6 +25,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTimeAggregator;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -150,6 +151,10 @@ public class UndoPositionsModel implements PositionsModel {
 
     public List<NavigationPosition> getPositions(int firstIndex, int lastIndex) {
         return delegate.getPositions(firstIndex, lastIndex);
+    }
+
+    public DistanceAndTimeAggregator getDistanceAndTimeAggregator() {
+        return delegate.getDistanceAndTimeAggregator();
     }
 
     public double[] getDistancesFromStart(int startIndex, int endIndex) {

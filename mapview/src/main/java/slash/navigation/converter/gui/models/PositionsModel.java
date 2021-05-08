@@ -25,6 +25,7 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTimeAggregator;
 import slash.navigation.common.NavigationPosition;
 
 import javax.swing.table.TableModel;
@@ -47,6 +48,7 @@ public interface PositionsModel extends TableModel {
     List<NavigationPosition> getPositions(int[] rowIndices);
     List<NavigationPosition> getPositions(int firstIndex, int lastIndex);
 
+    DistanceAndTimeAggregator getDistanceAndTimeAggregator();
     double[] getDistancesFromStart(int startIndex, int endIndex);
     double[] getDistancesFromStart(int[] indices);
     long[] getTimesFromStart(int startIndex, int endIndex);

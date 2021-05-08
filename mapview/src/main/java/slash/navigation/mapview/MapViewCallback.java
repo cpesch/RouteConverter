@@ -20,6 +20,7 @@
 
 package slash.navigation.mapview;
 
+import slash.navigation.common.DistanceAndTimeAggregator;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
@@ -47,4 +48,5 @@ public interface MapViewCallback {
     boolean isRecenterAfterZooming();
 
     TileServerMapManager getTileServerMapManager();
+    DistanceAndTimeAggregator getDistanceAndTimeAggregator();
 }

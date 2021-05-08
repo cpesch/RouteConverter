@@ -1,12 +1,11 @@
 package slash.navigation.common;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import javax.swing.event.EventListenerList;
 import java.util.Map;
+import java.util.TreeMap;
 
-import static java.util.Collections.sort;
 import static slash.common.io.Transfer.isEmpty;
+import static slash.navigation.common.DistanceAndTime.ZERO;
 
 /**
  * Aggregates {@link DistanceAndTime}s
@@ -15,32 +14,40 @@ import static slash.common.io.Transfer.isEmpty;
  */
 
 public class DistanceAndTimeAggregator {
-    public static DistanceAndTime max(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        double maxDistance = 0;
-        long maxTime = 0;
-        for (DistanceAndTime distanceAndTime : indexToDistanceAndTime.values()) {
-            if(distanceAndTime == null)
-                continue;
+    private final Map<Integer, DistanceAndTime> relativeDistancesAndTimes = new TreeMap<>();
+    private final Map<Integer, DistanceAndTime> absoluteDistancesAndTimes = new TreeMap<>();
+    private final EventListenerList listenerList = new EventListenerList();
 
-            Double distance = distanceAndTime.getDistance();
-            if (!isEmpty(distance) && distance > maxDistance)
-                maxDistance = distance;
-
-            Long time = distanceAndTime.getTimeInMillis();
-            if (!isEmpty(time) && time > maxTime)
-                maxTime = time;
-        }
-        return new DistanceAndTime(maxDistance, maxTime);
+    public DistanceAndTimeAggregator() {
+        relativeDistancesAndTimes.put(0, ZERO);
+        absoluteDistancesAndTimes.put(0, ZERO);
     }
 
-    public static Map<Integer, DistanceAndTime> add(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        Map<Integer, DistanceAndTime> result = new HashMap<>(indexToDistanceAndTime.size());
-        double aggregatedDistance = 0.0;
-        long aggregatedTime = 0L;
-        List<Integer> indices = new ArrayList<>(indexToDistanceAndTime.keySet());
-        sort(indices);
-        for(Integer index : indices) {
-            DistanceAndTime distanceAndTime = indexToDistanceAndTime.get(index);
+    public void calculatedDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+        this.relativeDistancesAndTimes.putAll(indexToDistanceAndTime);
+
+        int firstIndex = Integer.MAX_VALUE;
+        int lastIndex = 0;
+        for (Integer index : indexToDistanceAndTime.keySet()) {
+            if (index < firstIndex)
+                firstIndex = index;
+            if (index > lastIndex)
+                lastIndex = index;
+        }
+
+        updateAbsoluteDistancesAndTimes(firstIndex);
+
+        fireDistancesAndTimesChanged(firstIndex, lastIndex);
+    }
+
+    private void updateAbsoluteDistancesAndTimes(int startIndex) {
+        DistanceAndTime firstPosition = absoluteDistancesAndTimes.get(startIndex - 1);
+        int endIndex = relativeDistancesAndTimes.keySet().size();
+
+        double aggregatedDistance = firstPosition.getDistance();
+        long aggregatedTime = firstPosition.getTimeInMillis();
+        for(int index = startIndex; index < endIndex; index++) {
+            DistanceAndTime distanceAndTime = relativeDistancesAndTimes.get(index);
             if(distanceAndTime != null) {
                 Double distance = distanceAndTime.getDistance();
                 if (!isEmpty(distance))
@@ -49,8 +56,32 @@ public class DistanceAndTimeAggregator {
                 if (!isEmpty(time))
                     aggregatedTime += time;
             }
-            result.put(index, new DistanceAndTime(aggregatedDistance, aggregatedTime));
+            absoluteDistancesAndTimes.put(index, new DistanceAndTime(aggregatedDistance, aggregatedTime));
         }
-        return result;
+    }
+
+    public Map<Integer, DistanceAndTime> getAbsoluteDistancesAndTimes() {
+        return absoluteDistancesAndTimes;
+    }
+
+    public Map<Integer, DistanceAndTime> getRelativeDistancesAndTimes() {
+        return relativeDistancesAndTimes;
+    }
+
+    public DistanceAndTime getTotalDistanceAndTime() {
+        return absoluteDistancesAndTimes.get(absoluteDistancesAndTimes.size() - 1);
+    }
+
+    private void fireDistancesAndTimesChanged(int firstIndex, int lastIndex) {
+        Object[] listeners = listenerList.getListenerList();
+        for (int i = listeners.length - 2; i >= 0; i -= 2) {
+            if (listeners[i] == DistancesAndTimesAggregatorListener.class) {
+                ((DistancesAndTimesAggregatorListener) listeners[i + 1]).distancesAndTimesChanged(firstIndex, lastIndex);
+            }
+        }
+    }
+
+    public void addDistancesAndTimesAggregatorListener(DistancesAndTimesAggregatorListener l) {
+        listenerList.add(DistancesAndTimesAggregatorListener.class, l);
     }
 }
