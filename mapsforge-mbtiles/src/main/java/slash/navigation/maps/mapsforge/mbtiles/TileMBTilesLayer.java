@@ -1,10 +1,7 @@
 package slash.navigation.maps.mapsforge.mbtiles;
 
-import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.TileBitmap;
-import org.mapsforge.core.model.BoundingBox;
-import org.mapsforge.core.model.Point;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.TileLayer;
 import org.mapsforge.map.layer.cache.TileCache;
@@ -22,18 +19,6 @@ public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer
         this.databaseRenderer = new DatabaseRenderer(file, graphicFactory);
     }
 
-    @Override
-    public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
-        /* TODO zoom level from file?
-        if (zoomLevel < this.tileSource.getZoomLevelMin() || zoomLevel > this.tileSource.getZoomLevelMax()) {
-            return;
-        }
-        */
-
-        super.draw(boundingBox, zoomLevel, canvas, topLeftPoint);
-    }
-
-    @Override
     public synchronized void setDisplayModel(DisplayModel displayModel) {
         super.setDisplayModel(displayModel);
         if (displayModel != null) {
@@ -49,7 +34,6 @@ public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer
         }
     }
 
-    @Override
     protected RendererJob createJob(Tile tile) {
         return new RendererJob(tile, databaseRenderer, this.isTransparent);
     }
@@ -71,12 +55,10 @@ public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer
      * @param tile   A tile.
      * @param bitmap The bitmap for {@code tile} currently held in the layer's cache.
      */
-    @Override
     protected boolean isTileStale(Tile tile, TileBitmap bitmap) {
         return this.databaseRenderer.getDataTimestamp(tile) > bitmap.getTimestamp();
     }
 
-    @Override
     protected void onAdd() {
         this.mapWorkerPool.start();
         if (tileCache != null) {
@@ -86,7 +68,6 @@ public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer
         super.onAdd();
     }
 
-    @Override
     protected void onRemove() {
         this.mapWorkerPool.stop();
         if (tileCache != null) {
@@ -96,7 +77,6 @@ public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer
         super.onRemove();
     }
 
-    @Override
     public void onChange() {
         this.requestRedraw();
     }

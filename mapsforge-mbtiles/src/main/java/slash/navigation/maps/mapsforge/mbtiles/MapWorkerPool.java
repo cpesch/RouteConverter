@@ -41,7 +41,6 @@ class MapWorkerPool implements Runnable {
         this.isRunning = false;
     }
 
-    @Override
     public void run() {
         try {
             while (!inShutdown) {
@@ -116,7 +115,6 @@ class MapWorkerPool implements Runnable {
             this.rendererJob = rendererJob;
         }
 
-        @Override
         public void run() {
             TileBitmap bitmap = null;
             try {

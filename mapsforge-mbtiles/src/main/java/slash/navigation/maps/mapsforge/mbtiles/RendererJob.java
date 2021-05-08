@@ -17,7 +17,6 @@ public class RendererJob extends Job {
         return databaseRenderer;
     }
 
-    @Override
     public boolean equals(Object obj) {
         if (this == obj) {
             return true;
@@ -33,7 +32,6 @@ public class RendererJob extends Job {
         return true;
     }
 
-    @Override
     public int hashCode() {
         return this.hashCodeValue;
     }
