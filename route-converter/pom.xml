@@ -106,7 +106,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>route</artifactId>
+            <artifactId>route-catalog</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
