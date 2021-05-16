@@ -4,6 +4,7 @@ import javax.swing.event.EventListenerList;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static java.lang.Math.max;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.common.DistanceAndTime.ZERO;
 
@@ -23,21 +24,52 @@ public class DistanceAndTimeAggregator {
         absoluteDistancesAndTimes.put(0, ZERO);
     }
 
-    public void calculatedDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        this.relativeDistancesAndTimes.putAll(indexToDistanceAndTime);
+    public void addDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+        FirstAndLastIndex firstAndLastIndex = calculateFirstAndLastIndex(indexToDistanceAndTime);
+        if(firstAndLastIndex == null)
+            return;
 
-        int firstIndex = Integer.MAX_VALUE;
-        int lastIndex = 0;
-        for (Integer index : indexToDistanceAndTime.keySet()) {
-            if (index < firstIndex)
-                firstIndex = index;
-            if (index > lastIndex)
-                lastIndex = index;
+        int diff = firstAndLastIndex.lastIndex -firstAndLastIndex.firstIndex + 1;
+        for (int i = relativeDistancesAndTimes.size() - 1; i >= firstAndLastIndex.lastIndex; i--) {
+            DistanceAndTime move = relativeDistancesAndTimes.get(i);
+            int moveIndex = i + diff;
+            relativeDistancesAndTimes.put(moveIndex, new DistanceAndTime(move.getDistance(), move.getTimeInMillis()));
+            absoluteDistancesAndTimes.remove(i);
+        }
+        relativeDistancesAndTimes.putAll(indexToDistanceAndTime);
+        updateAbsoluteDistancesAndTimes(firstAndLastIndex.firstIndex);
+        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, firstAndLastIndex.lastIndex);
+    }
+
+    public void updateDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+        FirstAndLastIndex firstAndLastIndex = calculateFirstAndLastIndex(indexToDistanceAndTime);
+        if(firstAndLastIndex == null)
+            return;
+
+        relativeDistancesAndTimes.putAll(indexToDistanceAndTime);
+        updateAbsoluteDistancesAndTimes(firstAndLastIndex.firstIndex);
+        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, firstAndLastIndex.lastIndex);
+    }
+
+    public void removeDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+        FirstAndLastIndex firstAndLastIndex = calculateFirstAndLastIndex(indexToDistanceAndTime);
+        if(firstAndLastIndex == null)
+            return;
+
+        int sizeBeforeRemoval = relativeDistancesAndTimes.size();
+        for (int i = firstAndLastIndex.firstIndex; i <= firstAndLastIndex.lastIndex; i++) {
+            relativeDistancesAndTimes.remove(i);
+            absoluteDistancesAndTimes.remove(i);
+        }
+        for (int i = firstAndLastIndex.lastIndex + 1; i < sizeBeforeRemoval; i++) {
+            DistanceAndTime move = relativeDistancesAndTimes.remove(i);
+            int moveIndex = firstAndLastIndex.firstIndex + i - (firstAndLastIndex.lastIndex + 1);
+            relativeDistancesAndTimes.put(moveIndex, new DistanceAndTime(move.getDistance(), move.getTimeInMillis()));
+            absoluteDistancesAndTimes.remove(i);
         }
 
-        updateAbsoluteDistancesAndTimes(firstIndex);
-
-        fireDistancesAndTimesChanged(firstIndex, lastIndex);
+        updateAbsoluteDistancesAndTimes(firstAndLastIndex.firstIndex);
+        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, max(relativeDistancesAndTimes.size() - 1, firstAndLastIndex.firstIndex));
     }
 
     private void updateAbsoluteDistancesAndTimes(int startIndex) {
@@ -46,18 +78,38 @@ public class DistanceAndTimeAggregator {
 
         double aggregatedDistance = firstPosition.getDistance();
         long aggregatedTime = firstPosition.getTimeInMillis();
-        for(int index = startIndex; index < endIndex; index++) {
+        for (int index = startIndex; index < endIndex; index++) {
             DistanceAndTime distanceAndTime = relativeDistancesAndTimes.get(index);
-            if(distanceAndTime != null) {
-                Double distance = distanceAndTime.getDistance();
-                if (!isEmpty(distance))
-                    aggregatedDistance += distance;
-                Long time = distanceAndTime.getTimeInMillis();
-                if (!isEmpty(time))
-                    aggregatedTime += time;
-            }
+            Double distance = distanceAndTime.getDistance();
+            if (!isEmpty(distance))
+                aggregatedDistance += distance;
+            Long time = distanceAndTime.getTimeInMillis();
+            if (!isEmpty(time))
+                aggregatedTime += time;
             absoluteDistancesAndTimes.put(index, new DistanceAndTime(aggregatedDistance, aggregatedTime));
         }
+    }
+
+    private static class FirstAndLastIndex {
+        public int firstIndex;
+        public int lastIndex;
+
+        public FirstAndLastIndex(int firstIndex, int lastIndex) {
+            this.firstIndex = firstIndex;
+            this.lastIndex = lastIndex;
+        }
+    }
+
+    private FirstAndLastIndex calculateFirstAndLastIndex(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+        int firstIndex = Integer.MAX_VALUE;
+        int lastIndex = 0;
+        for (Integer index : indexToDistanceAndTime.keySet()) {
+            if (index < firstIndex)
+                firstIndex = index;
+            if (index > lastIndex)
+                lastIndex = index;
+        }
+        return firstIndex != Integer.MAX_VALUE ? new FirstAndLastIndex(firstIndex, lastIndex): null;
     }
 
     public Map<Integer, DistanceAndTime> getAbsoluteDistancesAndTimes() {

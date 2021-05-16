@@ -1805,6 +1805,7 @@ public abstract class BrowserMapView extends BaseMapView {
 
     private void resetDirections() {
         directionsPositions.clear();
+        mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(indexToDistanceAndTime);
         indexToDistanceAndTime.clear();
     }
 
@@ -1817,7 +1818,7 @@ public abstract class BrowserMapView extends BaseMapView {
                     int index = positionsModel.getIndex(position);
                     indexToDistanceAndTime.put(index + 1, distanceAndTimes.get(i));
                 }
-                mapViewCallback.getDistanceAndTimeAggregator().calculatedDistancesAndTimes(indexToDistanceAndTime);
+                mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(indexToDistanceAndTime);
             }
         });
     }

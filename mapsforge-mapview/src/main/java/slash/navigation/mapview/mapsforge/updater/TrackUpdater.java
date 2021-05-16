@@ -101,10 +101,10 @@ public class TrackUpdater implements EventMapUpdater {
         for (PairWithLayer pairWithLayer : added)
             pairWithLayers.add(beforeFirstRow, pairWithLayer);
 
-        if (!added.isEmpty())
-            trackOperation.add(added);
         if (!removed.isEmpty())
             trackOperation.remove(removed);
+        if (!added.isEmpty())
+            trackOperation.add(added);
     }
 
     /*for tests*/synchronized List<PairWithLayer> getPairWithLayers() {

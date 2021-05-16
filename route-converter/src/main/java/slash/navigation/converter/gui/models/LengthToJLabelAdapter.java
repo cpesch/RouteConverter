@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.DistanceAndTime;
-import slash.navigation.converter.gui.helpers.LengthCalculator;
+import slash.navigation.common.DistanceAndTimeAggregator;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
@@ -48,14 +48,15 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
     private final JLabel labelLength;
     private final JLabel labelDuration;
 
-    public LengthToJLabelAdapter(PositionsModel positionsModel,
-                                 LengthCalculator lengthCalculator,
+    public LengthToJLabelAdapter(PositionsModel positionsModel, DistanceAndTimeAggregator distanceAndTimeAggregator,
                                  JLabel labelLength, JLabel labelDuration) {
         super(positionsModel);
         this.labelLength = labelLength;
         this.labelDuration = labelDuration;
 
-        lengthCalculator.addLengthCalculatorListener(distanceAndTime -> invokeLater(() -> updateLabel(distanceAndTime)));
+        distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener((firstIndex, lastIndex) -> {
+            invokeLater(() -> updateLabel(distanceAndTimeAggregator.getTotalDistanceAndTime()));
+        });
     }
 
     protected String getDelegateValue() {

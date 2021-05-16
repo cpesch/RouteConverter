@@ -214,7 +214,7 @@ public class ConvertPanel implements PanelInTab {
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
         new PositionsCountToJLabelAdapter(positionsModel, labelPositions);
-        new LengthToJLabelAdapter(positionsModel, lengthCalculator, labelLength, labelDuration);
+        new LengthToJLabelAdapter(positionsModel, r.getDistanceAndTimeAggregator(), labelLength, labelDuration);
         new ElevationToJLabelAdapter(positionsModel, labelOverallAscend, labelOverallDescend);
 
         formatAndRoutesModel.addListDataListener(new AbstractListDataListener() {

@@ -20,15 +20,13 @@
 package slash.navigation.mapview.mapsforge.helpers;
 
 import org.mapsforge.map.layer.Layer;
+import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.mapview.mapsforge.updater.ObjectWithLayer;
 import slash.navigation.mapview.mapsforge.updater.PairWithLayer;
 import slash.navigation.mapview.mapsforge.updater.PositionWithLayer;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -58,5 +56,13 @@ public class WithLayerHelper {
         return withLayers.stream().
                 map(ObjectWithLayer::getLayer).
                 collect(Collectors.toList());
+    }
+
+    public static Map<Integer, DistanceAndTime> toDistanceAndTimes(List<PairWithLayer> pairWithLayers) {
+        Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairWithLayers.size());
+        for (PairWithLayer pairWithLayer : pairWithLayers) {
+            indexToDistanceAndTime.put(pairWithLayer.getRow() + 1, pairWithLayer.getDistanceAndTime());
+        }
+        return indexToDistanceAndTime;
     }
 }

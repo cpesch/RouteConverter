@@ -219,39 +219,19 @@ public class MapsforgeMapView extends BaseMapView {
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
             public void add(List<PairWithLayer> pairWithLayers) {
-                internalAdd(pairWithLayers);
+                routeRenderer.renderRoute(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().addDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void update(List<PairWithLayer> pairWithLayers) {
-                internalRemove(pairWithLayers);
-                internalAdd(pairWithLayers);
+                removeLayers(toLayers(pairWithLayers));
+                routeRenderer.renderRoute(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
                 selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
-                internalRemove(pairWithLayers);
-                fireDistanceAndTime(pairWithLayers);
+                removeLayers(toLayers(pairWithLayers));
+                mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
                 selectionUpdater.removedPositions(toPositions2(pairWithLayers));
-            }
-
-            private void internalAdd(List<PairWithLayer> pairWithLayers) {
-                routeRenderer.renderRoute(pairWithLayers, () -> fireDistanceAndTime(pairWithLayers));
-            }
-
-            private void internalRemove(List<PairWithLayer> pairWithLayers) {
-                for (PairWithLayer pairWithLayer : pairWithLayers)
-                    pairWithLayer.setDistanceAndTime(null);
-
-                List<Layer> remove = toLayers(pairWithLayers);
-                removeLayers(remove);
-            }
-
-            private void fireDistanceAndTime(List<PairWithLayer> pairWithLayers) {
-                Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairWithLayers.size());
-                for (PairWithLayer pairWithLayer : pairWithLayers) {
-                    indexToDistanceAndTime.put(pairWithLayer.getRow() + 1, pairWithLayer.getDistanceAndTime());
-                }
-                mapViewCallback.getDistanceAndTimeAggregator().calculatedDistancesAndTimes(indexToDistanceAndTime);
             }
         });
 

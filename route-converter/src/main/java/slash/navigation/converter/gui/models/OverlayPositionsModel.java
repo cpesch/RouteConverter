@@ -97,15 +97,12 @@ public class OverlayPositionsModel implements PositionsModel {
 
         distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener(new DistancesAndTimesAggregatorListener() {
             public void distancesAndTimesChanged(int firstIndex, int lastIndex) {
-                // TODO send two events for the columns and filter out the second everywhere exception during the rendering of the JTable
                 fireDistanceAndTimeChanged(firstIndex, getRowCount() - 1);
             }
         });
     }
 
     private void clearOverlay() {
-        // TODO forward to DistanceAndTimeAggregator?
-        // indexToRouteDistanceAndTime.clear();
         trackDistancesFromStart = null;
         trackTimesFromStart = null;
         indexToImageAndFile.clear();
@@ -434,6 +431,7 @@ public class OverlayPositionsModel implements PositionsModel {
 
     private void fireDistanceAndTimeChanged(int firstIndex, int lastIndex) {
         invokeLater(() -> {
+            // send three events for the columns and filter out the second everywhere exception during the rendering of the JTable
             fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
             fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_DIFFERENCE_COLUMN_INDEX);
             fireTableRowsUpdated(firstIndex, lastIndex, TIME_COLUMN_INDEX);

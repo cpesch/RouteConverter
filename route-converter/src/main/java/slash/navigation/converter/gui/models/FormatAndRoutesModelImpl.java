@@ -54,7 +54,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
                 if (isFirstToLastRow(e))
                     return;
                 // ignore distance and time column updates from the overlay position model
-                if (e.getColumn() == DISTANCE_COLUMN_INDEX || e.getColumn() == TIME_COLUMN_INDEX)
+                if (e.getColumn() == DISTANCE_COLUMN_INDEX || e.getColumn() == DISTANCE_DIFFERENCE_COLUMN_INDEX || e.getColumn() == TIME_COLUMN_INDEX)
                     return;
                 setModified(true);
             }
