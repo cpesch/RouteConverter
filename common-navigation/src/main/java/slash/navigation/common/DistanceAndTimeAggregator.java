@@ -4,7 +4,6 @@ import javax.swing.event.EventListenerList;
 import java.util.Map;
 import java.util.TreeMap;
 
-import static java.lang.Math.max;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.common.DistanceAndTime.ZERO;
 
@@ -29,12 +28,11 @@ public class DistanceAndTimeAggregator {
         if(firstAndLastIndex == null)
             return;
 
-        int diff = firstAndLastIndex.lastIndex -firstAndLastIndex.firstIndex + 1;
-        for (int i = relativeDistancesAndTimes.size() - 1; i >= firstAndLastIndex.lastIndex; i--) {
+        int diff = firstAndLastIndex.lastIndex - firstAndLastIndex.firstIndex + 1;
+        for (int i = relativeDistancesAndTimes.size() - 1; i >= firstAndLastIndex.lastIndex - 1; i--) {
             DistanceAndTime move = relativeDistancesAndTimes.get(i);
             int moveIndex = i + diff;
             relativeDistancesAndTimes.put(moveIndex, new DistanceAndTime(move.getDistance(), move.getTimeInMillis()));
-            absoluteDistancesAndTimes.remove(i);
         }
         relativeDistancesAndTimes.putAll(indexToDistanceAndTime);
         updateAbsoluteDistancesAndTimes(firstAndLastIndex.firstIndex);
@@ -69,7 +67,7 @@ public class DistanceAndTimeAggregator {
         }
 
         updateAbsoluteDistancesAndTimes(firstAndLastIndex.firstIndex);
-        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, max(relativeDistancesAndTimes.size() - 1, firstAndLastIndex.firstIndex));
+        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, firstAndLastIndex.lastIndex);
     }
 
     private void updateAbsoluteDistancesAndTimes(int startIndex) {

@@ -432,9 +432,10 @@ public class OverlayPositionsModel implements PositionsModel {
     private void fireDistanceAndTimeChanged(int firstIndex, int lastIndex) {
         invokeLater(() -> {
             // send three events for the columns and filter out the second everywhere exception during the rendering of the JTable
-            fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
+            // since the distance and time columns sum up the values their lastIndex is always MAX_VALUE
+            fireTableRowsUpdated(firstIndex, MAX_VALUE, DISTANCE_COLUMN_INDEX);
             fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_DIFFERENCE_COLUMN_INDEX);
-            fireTableRowsUpdated(firstIndex, lastIndex, TIME_COLUMN_INDEX);
+            fireTableRowsUpdated(firstIndex, MAX_VALUE, TIME_COLUMN_INDEX);
         });
     }
 

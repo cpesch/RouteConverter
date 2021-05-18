@@ -84,14 +84,14 @@ public class DistanceAndTimeAggregatorTest {
 
         aggregator.removeDistancesAndTimes(populateAt(2, -1));
         assertEquals(populate(0, 5, 15, 20), aggregator.getRelativeDistancesAndTimes());
-        verify(listener, times(1)).distancesAndTimesChanged(2, 3);
+        verify(listener, times(1)).distancesAndTimesChanged(2, 2);
+
+        aggregator.removeDistancesAndTimes(populateAt(3, -1));
+        assertEquals(populate(0, 5, 15), aggregator.getRelativeDistancesAndTimes());
+        verify(listener, times(1)).distancesAndTimesChanged(3, 3);
 
         aggregator.removeDistancesAndTimes(populateAt(1, -1));
-        assertEquals(populate(0, 15, 20), aggregator.getRelativeDistancesAndTimes());
-        verify(listener, times(1)).distancesAndTimesChanged(1, 2);
-
-        aggregator.removeDistancesAndTimes(populateAt(2, -1));
         assertEquals(populate(0, 15), aggregator.getRelativeDistancesAndTimes());
-        verify(listener, times(1)).distancesAndTimesChanged(2, 2);
+        verify(listener, times(1)).distancesAndTimesChanged(1, 1);
     }
 }
