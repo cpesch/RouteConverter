@@ -4,6 +4,7 @@ import javax.swing.event.EventListenerList;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static java.lang.Integer.MAX_VALUE;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.common.DistanceAndTime.ZERO;
 
@@ -19,11 +20,17 @@ public class DistanceAndTimeAggregator {
     private final EventListenerList listenerList = new EventListenerList();
 
     public DistanceAndTimeAggregator() {
+        initialize();
+    }
+
+    private void initialize() {
+        relativeDistancesAndTimes.clear();
         relativeDistancesAndTimes.put(0, ZERO);
+        absoluteDistancesAndTimes.clear();
         absoluteDistancesAndTimes.put(0, ZERO);
     }
 
-    public void addDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+    public synchronized void addDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
         FirstAndLastIndex firstAndLastIndex = calculateFirstAndLastIndex(indexToDistanceAndTime);
         if(firstAndLastIndex == null)
             return;
@@ -39,7 +46,7 @@ public class DistanceAndTimeAggregator {
         fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, firstAndLastIndex.lastIndex);
     }
 
-    public void updateDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+    public synchronized void updateDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
         FirstAndLastIndex firstAndLastIndex = calculateFirstAndLastIndex(indexToDistanceAndTime);
         if(firstAndLastIndex == null)
             return;
@@ -49,7 +56,7 @@ public class DistanceAndTimeAggregator {
         fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, firstAndLastIndex.lastIndex);
     }
 
-    public void removeDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
+    public synchronized void removeDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
         FirstAndLastIndex firstAndLastIndex = calculateFirstAndLastIndex(indexToDistanceAndTime);
         if(firstAndLastIndex == null)
             return;
@@ -68,6 +75,11 @@ public class DistanceAndTimeAggregator {
 
         updateAbsoluteDistancesAndTimes(firstAndLastIndex.firstIndex);
         fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, firstAndLastIndex.lastIndex);
+    }
+
+    public synchronized void clearDistancesAndTimes() {
+        initialize();
+        fireDistancesAndTimesChanged(0, MAX_VALUE);
     }
 
     private void updateAbsoluteDistancesAndTimes(int startIndex) {
@@ -99,7 +111,7 @@ public class DistanceAndTimeAggregator {
     }
 
     private FirstAndLastIndex calculateFirstAndLastIndex(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
-        int firstIndex = Integer.MAX_VALUE;
+        int firstIndex = MAX_VALUE;
         int lastIndex = 0;
         for (Integer index : indexToDistanceAndTime.keySet()) {
             if (index < firstIndex)
@@ -107,7 +119,7 @@ public class DistanceAndTimeAggregator {
             if (index > lastIndex)
                 lastIndex = index;
         }
-        return firstIndex != Integer.MAX_VALUE ? new FirstAndLastIndex(firstIndex, lastIndex): null;
+        return firstIndex != MAX_VALUE ? new FirstAndLastIndex(firstIndex, lastIndex): null;
     }
 
     public Map<Integer, DistanceAndTime> getAbsoluteDistancesAndTimes() {

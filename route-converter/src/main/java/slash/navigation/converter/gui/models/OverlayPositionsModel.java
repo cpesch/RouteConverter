@@ -36,14 +36,12 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Integer.min;
-import static java.lang.System.arraycopy;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.type.CompactCalendar.fromMillis;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
 import static slash.navigation.gui.helpers.ImageHelper.resize;
 
 /**
@@ -56,8 +54,6 @@ public class OverlayPositionsModel implements PositionsModel {
     private final PositionsModel delegate;
     private DistanceAndTimeAggregator distanceAndTimeAggregator;
     private final Map<Integer, ImageAndFile> indexToImageAndFile = new HashMap<>();
-    private double[] trackDistancesFromStart;
-    private long[] trackTimesFromStart;
 
     public OverlayPositionsModel(PositionsModel delegate) {
         this.delegate = delegate;
@@ -83,15 +79,12 @@ public class OverlayPositionsModel implements PositionsModel {
             public void intervalRemoved(ListDataEvent e) {
             }
 
-            // TODO move to DistanceAndTimeAggregator?
             public void contentsChanged(ListDataEvent e) {
-                // clear overlay when route characteristics is changed
+                // ignore events following setRoute()
+                if (isIgnoreEvent(e))
+                    return;
+                // clear ImageAndFile cache when route characteristics is changed
                 clearOverlay();
-
-                // when switching to/from Waypoints fire an event so that the distance and time column get updated
-                if (getRowCount() > 0) {
-                    fireTableRowsUpdated(0, MAX_VALUE, DISTANCE_COLUMN_INDEX);
-                }
             }
         });
 
@@ -103,8 +96,6 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     private void clearOverlay() {
-        trackDistancesFromStart = null;
-        trackTimesFromStart = null;
         indexToImageAndFile.clear();
     }
 
@@ -181,25 +172,9 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     public double[] getDistancesFromStart(int startIndex, int endIndex) {
-        if (getRoute().getCharacteristics().equals(Track)) {
-            return getTrackDistancesFromStart(startIndex, endIndex);
-        } else if (getRoute().getCharacteristics().equals(Route)) {
-            return getRouteDistancesFromStart(startIndex, endIndex);
-        }
-        return null;
-    }
+        if (getRoute().getCharacteristics().equals(Waypoints))
+            return null;
 
-    private double[] getTrackDistancesFromStart(int startIndex, int endIndex) {
-        if (trackDistancesFromStart == null)
-            trackDistancesFromStart = getRoute().getDistancesFromStart(0, getRoute().getPositionCount() - 1);
-
-        double[] result = new double[endIndex - startIndex + 1];
-        // min() is used to avoid exceptions due to parallel insertions
-        arraycopy(trackDistancesFromStart, startIndex, result, 0, min(result.length, trackDistancesFromStart.length - startIndex));
-        return result;
-    }
-
-    private double[] getRouteDistancesFromStart(int startIndex, int endIndex) {
         double[] result = new double[endIndex - startIndex + 1];
         int index = 0;
         double distance = 0.0;
@@ -214,19 +189,10 @@ public class OverlayPositionsModel implements PositionsModel {
         return result;
     }
 
-
     public double[] getDistancesFromStart(int[] indices) {
-        if (getRoute().getCharacteristics().equals(Track)) {
-            return getRoute().getDistancesFromStart(indices);
-        }
+        if (getRoute().getCharacteristics().equals(Waypoints))
+            return null;
 
-        if (getRoute().getCharacteristics().equals(Route)) {
-            return getRouteDistancesFromStart(indices);
-        }
-        return null;
-    }
-
-    private double[] getRouteDistancesFromStart(int[] indices) {
         double[] result = new double[indices.length];
         Arrays.sort(indices);
 
@@ -238,29 +204,10 @@ public class OverlayPositionsModel implements PositionsModel {
         return result;
     }
 
-
     public long[] getTimesFromStart(int startIndex, int endIndex) {
-        if (getRoute().getCharacteristics().equals(Track)) {
-            return getTrackTimesFromStart(startIndex, endIndex);
-        }
+        if (getRoute().getCharacteristics().equals(Waypoints))
+            return null;
 
-        if (getRoute().getCharacteristics().equals(Route)) {
-            return getRouteTimesFromStart(startIndex, endIndex);
-        }
-        return null;
-    }
-
-    private long[] getTrackTimesFromStart(int startIndex, int endIndex) {
-        if (trackTimesFromStart == null) {
-            trackTimesFromStart = getRoute().getTimesFromStart(0, getRoute().getPositionCount() - 1);
-        }
-
-        long[] result = new long[endIndex - startIndex + 1];
-        arraycopy(trackTimesFromStart, startIndex, result, 0, result.length);
-        return result;
-    }
-
-    private long[] getRouteTimesFromStart(int startIndex, int endIndex) {
         long[] result = new long[endIndex - startIndex + 1];
         int index = 0;
         long time = 0;
@@ -276,17 +223,9 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     public long[] getTimesFromStart(int[] indices) {
-        if (getRoute().getCharacteristics().equals(Track)) {
-            return getRoute().getTimesFromStart(indices);
-        }
+        if (getRoute().getCharacteristics().equals(Waypoints))
+            return null;
 
-        if (getRoute().getCharacteristics().equals(Route)) {
-            return getRouteTimesFromStart(indices);
-        }
-        return null;
-    }
-
-    private long[] getRouteTimesFromStart(int[] indices) {
         long[] result = new long[indices.length];
         Arrays.sort(indices);
 

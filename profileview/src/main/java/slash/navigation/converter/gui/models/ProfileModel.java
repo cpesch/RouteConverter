@@ -28,7 +28,6 @@ import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.profileview.XAxisMode;
 import slash.navigation.converter.gui.profileview.YAxisMode;
 
-import static java.lang.Math.round;
 import static java.lang.String.format;
 import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;

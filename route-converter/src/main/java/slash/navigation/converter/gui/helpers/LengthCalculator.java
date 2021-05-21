@@ -20,33 +20,25 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.common.type.CompactCalendar;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.DistanceAndTimeAggregator;
-import slash.navigation.common.DistancesAndTimesAggregatorListener;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.CharacteristicsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.helpers.AbstractListDataListener;
 
 import javax.swing.event.ListDataEvent;
-import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
-import static java.lang.Math.max;
 import static java.lang.System.currentTimeMillis;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.helpers.ThreadHelper.safeJoin;
-import static slash.common.io.Transfer.isEmpty;
-import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
-import static slash.navigation.common.DistanceAndTime.ZERO;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
+import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
@@ -60,9 +52,10 @@ public class LengthCalculator {
     private static final Logger log = Logger.getLogger(LengthCalculator.class.getName());
 
     private PositionsModel positionsModel;
+    private DistanceAndTimeAggregator distanceAndTimeAggregator;
     private Thread lengthCalculator;
     private final Object notificationMutex = new Object();
-    private boolean running = true, recalculate;
+    private boolean running = true, clear, recalculate;
 
     public LengthCalculator() {
         initialize();
@@ -74,6 +67,7 @@ public class LengthCalculator {
 
     public void initialize(PositionsModel positionsModel, CharacteristicsModel characteristicsModel, DistanceAndTimeAggregator distanceAndTimeAggregator) {
         this.positionsModel = positionsModel;
+        this.distanceAndTimeAggregator = distanceAndTimeAggregator;
 
         positionsModel.addTableModelListener(e -> {
             // ignored updates on columns not relevant for length calculation
@@ -83,9 +77,11 @@ public class LengthCalculator {
                             e.getColumn() == LATITUDE_COLUMN_INDEX ||
                             e.getColumn() == ALL_COLUMNS))
                 return;
+            // ignore distance and time column updates from the DistanceAndTimeAggregator
+            if (e.getColumn() == DISTANCE_COLUMN_INDEX || e.getColumn() == DISTANCE_DIFFERENCE_COLUMN_INDEX || e.getColumn() == TIME_COLUMN_INDEX)
+                return;
             if (getPositionsModel().isContinousRange())
                 return;
-
             calculateDistance();
         });
 
@@ -97,80 +93,35 @@ public class LengthCalculator {
                 calculateDistance();
             }
         });
-
-        distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener(new DistancesAndTimesAggregatorListener() {
-            public void distancesAndTimesChanged(int firstIndex, int lastIndex) {
-                DistanceAndTime total = distanceAndTimeAggregator.getTotalDistanceAndTime();
-                fireCalculatedDistance(total);
-            }
-        });
     }
 
     private PositionsModel getPositionsModel() {
         return positionsModel;
     }
 
-    private final List<LengthCalculatorListener> lengthCalculatorListeners = new CopyOnWriteArrayList<>();
-
-    public void addLengthCalculatorListener(LengthCalculatorListener listener) {
-        lengthCalculatorListeners.add(listener);
-    }
-
-    private void fireCalculatedDistance(DistanceAndTime distanceAndTime) {
-        for (LengthCalculatorListener listener : lengthCalculatorListeners) {
-            listener.calculatedDistanceAndTime(distanceAndTime);
-        }
-    }
-
     private void calculateDistance() {
-        if (getCharacteristics().equals(Waypoints)) {
-            fireCalculatedDistance(ZERO);
-            return;
-        }
-        if (getCharacteristics().equals(Route))
-            return;
-
         synchronized (notificationMutex) {
-            recalculate = true;
+            this.clear = true;
+            this.recalculate = getCharacteristics().equals(Track);
             notificationMutex.notifyAll();
         }
     }
 
-    private void recalculateDistance() {
-        fireCalculatedDistance(ZERO);
+    private void clearDistance() {
+        distanceAndTimeAggregator.clearDistancesAndTimes();
+    }
 
-        double aggregatedDistance = 0.0;
-        long aggregatedTime = 0;
-        CompactCalendar minimumTime = null, maximumTime = null;
+    private void addDistance() {
+        Map<Integer,DistanceAndTime> result = new HashMap<>();
         NavigationPosition previous = null;
         for (int i = 0; i < positionsModel.getRowCount(); i++) {
             NavigationPosition next = positionsModel.getPosition(i);
             if (previous != null) {
-                Double distance = previous.calculateDistance(next);
-                if (!isEmpty(distance))
-                    aggregatedDistance += distance;
-                Long time = previous.calculateTime(next);
-                if (time != null && time > 0)
-                    aggregatedTime += time;
+                result.put(i, new DistanceAndTime(previous.calculateDistance(next), previous.calculateTime(next)));
             }
-
-            CompactCalendar time = next.getTime();
-            if (time != null) {
-                if (minimumTime == null || time.before(minimumTime))
-                    minimumTime = time;
-                if (maximumTime == null || time.after(maximumTime))
-                    maximumTime = time;
-            }
-
-            if (i > 0 && i % 100 == 0)
-                fireCalculatedDistance(new DistanceAndTime(aggregatedDistance, aggregatedTime > 0 ? aggregatedTime : 0));
-
             previous = next;
         }
-
-        long summedUp = aggregatedTime > 0 ? aggregatedTime : 0;
-        long maxMinusMin = minimumTime != null ? (maximumTime.getTimeInMillis() - minimumTime.getTimeInMillis()) : 0;
-        fireCalculatedDistance(new DistanceAndTime(aggregatedDistance, max(maxMinusMin, summedUp)));
+        distanceAndTimeAggregator.addDistancesAndTimes(result);
     }
 
     private void initialize() {
@@ -185,11 +136,15 @@ public class LengthCalculator {
 
                     if (!running)
                         return;
-                    if (!recalculate)
-                        continue;
+
+                    if (clear)
+                        clearDistance();
+                    clear = false;
+
+                    if (recalculate)
+                        addDistance();
                     recalculate = false;
                 }
-                recalculateDistance();
             }
         }, "LengthCalculator");
         lengthCalculator.start();
