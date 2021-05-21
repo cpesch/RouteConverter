@@ -24,7 +24,7 @@
     <repositories>
         <repository>
             <id>routeconverter-thirdparty</id>
-            <url>http://subversion.routeconverter.com/public/RouteThirdParty</url>
+            <url>https://subversion.routeconverter.com/public/RouteThirdParty</url>
         </repository>
         <repository>
             <id>jcenter-repository</id>
@@ -35,7 +35,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>routeconverter-thirdparty</id>
-            <url>http://subversion.routeconverter.com/public/RouteThirdParty</url>
+            <url>https://subversion.routeconverter.com/public/RouteThirdParty</url>
         </pluginRepository>
     </pluginRepositories>
 
