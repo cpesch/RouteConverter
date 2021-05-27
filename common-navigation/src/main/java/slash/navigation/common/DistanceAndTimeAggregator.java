@@ -84,6 +84,8 @@ public class DistanceAndTimeAggregator {
 
     private void updateAbsoluteDistancesAndTimes(int startIndex) {
         DistanceAndTime firstPosition = absoluteDistancesAndTimes.get(startIndex - 1);
+        if(firstPosition == null)
+            return;
         int endIndex = relativeDistancesAndTimes.keySet().size();
 
         double aggregatedDistance = firstPosition.getDistance();
