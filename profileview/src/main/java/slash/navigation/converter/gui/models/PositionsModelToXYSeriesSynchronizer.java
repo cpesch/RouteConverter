@@ -37,8 +37,8 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
  */
 
 public abstract class PositionsModelToXYSeriesSynchronizer {
-    private PositionsModel positions;
-    private PatchedXYSeries series;
+    private final PositionsModel positions;
+    private final PatchedXYSeries series;
 
     protected PositionsModelToXYSeriesSynchronizer(PositionsModel positions, PatchedXYSeries series) {
         this.positions = positions;
@@ -67,9 +67,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
                         handleUpdate(e);
                         break;
                     case DELETE:
-                        if (getPositions().isContinousRange())
-                            return;
-                        handleRemove(e.getFirstRow(), e.getLastRow());
+                         handleRemove(e.getFirstRow(), e.getLastRow());
                         break;
                     default:
                         throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
@@ -132,6 +130,8 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
     }
 
     protected void handleRemove(int firstRow, int lastRow) {
+        if (getPositions().isContinousRange())
+            return;
         series.delete(firstRow, lastRow);
     }
 }
