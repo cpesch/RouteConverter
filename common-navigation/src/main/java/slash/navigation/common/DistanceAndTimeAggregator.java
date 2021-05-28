@@ -92,6 +92,8 @@ public class DistanceAndTimeAggregator {
         long aggregatedTime = firstPosition.getTimeInMillis();
         for (int index = startIndex; index < endIndex; index++) {
             DistanceAndTime distanceAndTime = relativeDistancesAndTimes.get(index);
+            if(distanceAndTime == null)
+                continue;
             Double distance = distanceAndTime.getDistance();
             if (!isEmpty(distance))
                 aggregatedDistance += distance;
