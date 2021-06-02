@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.Math.max;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -91,7 +92,7 @@ public class OverlayPositionsModel implements PositionsModel {
 
         distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener(new DistancesAndTimesAggregatorListener() {
             public void distancesAndTimesChanged(int firstIndex, int lastIndex) {
-                fireDistanceAndTimeChanged(firstIndex, getRowCount() - 1);
+                fireDistanceAndTimeChanged(firstIndex, max(firstIndex, getRowCount() - 1));
             }
         });
     }
@@ -310,19 +311,19 @@ public class OverlayPositionsModel implements PositionsModel {
             case PHOTO_COLUMN_INDEX:
                 return getImageAndFile(rowIndex);
             case DISTANCE_COLUMN_INDEX:
-                return getDistance(rowIndex);
+                return !getRoute().getCharacteristics().equals(Waypoints) ? getDistance(rowIndex) : null;
             case DISTANCE_DIFFERENCE_COLUMN_INDEX:
-                return getDistanceDifference(rowIndex);
+                return !getRoute().getCharacteristics().equals(Waypoints) ? getDistanceDifference(rowIndex) : null;
             case TIME_COLUMN_INDEX:
                 if (getRoute().getCharacteristics().equals(Route))
                     return getTime(rowIndex);
                 break;
             case ELEVATION_ASCEND_COLUMN_INDEX:
-                return getRoute().getElevationAscend(0, rowIndex);
+                return !getRoute().getCharacteristics().equals(Waypoints) ? getRoute().getElevationAscend(0, rowIndex) : null;
             case ELEVATION_DESCEND_COLUMN_INDEX:
-                return getRoute().getElevationDescend(0, rowIndex);
+                return !getRoute().getCharacteristics().equals(Waypoints) ? getRoute().getElevationDescend(0, rowIndex) : null;
             case ELEVATION_DIFFERENCE_COLUMN_INDEX:
-                return getRoute().getElevationDifference(rowIndex);
+                return !getRoute().getCharacteristics().equals(Waypoints) ? getRoute().getElevationDifference(rowIndex) : null;
         }
         return delegate.getValueAt(rowIndex, columnIndex);
     }
@@ -370,19 +371,12 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     private void fireDistanceAndTimeChanged(int firstIndex, int lastIndex) {
-        /* TODO disabled
         invokeLater(() -> {
-            // send three events for the columns and filter out the second everywhere exception during the rendering of the JTable
-            // since the distance and time columns sum up the values their lastIndex is always MAX_VALUE
             fireTableRowsUpdated(firstIndex, MAX_VALUE, DISTANCE_COLUMN_INDEX);
-            fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_DIFFERENCE_COLUMN_INDEX);
-            fireTableRowsUpdated(firstIndex, MAX_VALUE, TIME_COLUMN_INDEX);
         });
-        */
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
-        System.out.println("fireTableRowsUpdated firstIndex="+firstIndex+" lastIndex="+lastIndex+" columnIndex="+columnIndex);
         delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
 }

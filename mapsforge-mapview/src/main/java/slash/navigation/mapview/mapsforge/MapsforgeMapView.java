@@ -103,6 +103,7 @@ import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
@@ -227,13 +228,11 @@ public class MapsforgeMapView extends BaseMapView {
             public void update(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
                 routeRenderer.renderRoute(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
-                // TODO disabled selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
-                // TODO disabled selectionUpdater.removedPositions(toPositions2(pairWithLayers));
             }
         });
 
@@ -245,13 +244,11 @@ public class MapsforgeMapView extends BaseMapView {
             public void update(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
                 trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
-                // TODO disabled selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
-                // TODO disabled selectionUpdater.removedPositions(toPositions2(pairWithLayers));
             }
         });
 
@@ -277,13 +274,10 @@ public class MapsforgeMapView extends BaseMapView {
                 List<Layer> remove = toLayers(positionWithLayers);
                 removeLayers(remove);
                 add(positionWithLayers);
-                // TODO disabled selectionUpdater.updatedPositions(toPositions(positionWithLayers));
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                List<NavigationPosition> removed = toPositions(positionWithLayers);
                 removeObjectWithLayers(positionWithLayers);
-                // TODO disabled selectionUpdater.removedPositions(removed);
             }
         });
 
@@ -1269,7 +1263,11 @@ public class MapsforgeMapView extends BaseMapView {
             // ignore events following setRoute()
             if (isIgnoreEvent(e))
                 return;
-            updateDecoupler.replaceRoute();
+            // move behind OverlayPositionsModel calling DistanceAndTimeAggregator#clearDistancesAndTimes
+            // which would clear the already calculated track data
+            invokeLater(() -> {
+                updateDecoupler.replaceRoute();
+            });
         }
     }
 

@@ -27,15 +27,10 @@ import slash.navigation.common.DistanceAndTimeAggregator;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 
-import static javax.swing.SwingUtilities.invokeLater;
-import static javax.swing.event.TableModelEvent.UPDATE;
 import static slash.common.io.Transfer.formatDuration;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.DistanceAndTime.ZERO;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatDistance;
-import static slash.navigation.converter.gui.models.PositionColumns.LATITUDE_COLUMN_INDEX;
-import static slash.navigation.converter.gui.models.PositionColumns.LONGITUDE_COLUMN_INDEX;
-import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
  * A bidirectional adapter that extracts the route length and duration
@@ -55,11 +50,6 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         this.distanceAndTimeAggregator = distanceAndTimeAggregator;
         this.labelLength = labelLength;
         this.labelDuration = labelDuration;
-
-        /* TODO check if listening to PositionsModel would be enough
-        distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener((firstIndex, lastIndex) -> {
-            invokeLater(() -> updateLabel(distanceAndTimeAggregator.getTotalDistanceAndTime()));
-        }); */
     }
 
     protected String getDelegateValue() {
@@ -72,19 +62,12 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
     }
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
-        // ignored updates on columns not displayed
-        if (e.getType() == UPDATE &&
-                !isFirstToLastRow(e) &&
-                !(e.getColumn() == LONGITUDE_COLUMN_INDEX || e.getColumn() == LATITUDE_COLUMN_INDEX))
-            return;
-        if (getDelegate().isContinousRange())
-            return;
-
         @SuppressWarnings("rawtypes")
         BaseRoute route = getDelegate().getRoute();
-        if (route != null && route.getCharacteristics() == Waypoints) {
+        if (route != null && !route.getCharacteristics().equals(Waypoints)) {
+            updateLabel(distanceAndTimeAggregator.getTotalDistanceAndTime());
+        } else {
             updateLabel(ZERO);
-        } else
-            invokeLater(() -> updateLabel(distanceAndTimeAggregator.getTotalDistanceAndTime()));
+        }
     }
 }

@@ -555,6 +555,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
+        System.out.println("  fireTableRowsUpdated firstIndex="+firstIndex+" lastIndex="+lastIndex+" columnIndex="+columnIndex); // TODO
         fireTableChanged(new TableModelEvent(this, firstIndex, lastIndex, columnIndex, UPDATE));
     }
 }

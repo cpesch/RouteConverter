@@ -34,7 +34,7 @@ public class TrackRenderer {
         this.graphicFactory = graphicFactory;
     }
 
-    public void renderTrack(List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
+    public synchronized void renderTrack(List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
         try {
             drawTrack(pairWithLayers);
         }
