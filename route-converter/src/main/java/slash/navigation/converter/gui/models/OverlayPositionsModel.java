@@ -83,8 +83,9 @@ public class OverlayPositionsModel implements PositionsModel {
                 // ignore events following setRoute()
                 if (isIgnoreEvent(e))
                     return;
-                // clear ImageAndFile cache when route characteristics is changed
+                // clear ImageAndFile and DistanceAndTimeAggregator caches when route characteristics is changed
                 clearOverlay();
+                distanceAndTimeAggregator.clearDistancesAndTimes();
             }
         });
 
@@ -369,6 +370,7 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     private void fireDistanceAndTimeChanged(int firstIndex, int lastIndex) {
+        /* TODO disabled
         invokeLater(() -> {
             // send three events for the columns and filter out the second everywhere exception during the rendering of the JTable
             // since the distance and time columns sum up the values their lastIndex is always MAX_VALUE
@@ -376,9 +378,11 @@ public class OverlayPositionsModel implements PositionsModel {
             fireTableRowsUpdated(firstIndex, lastIndex, DISTANCE_DIFFERENCE_COLUMN_INDEX);
             fireTableRowsUpdated(firstIndex, MAX_VALUE, TIME_COLUMN_INDEX);
         });
+        */
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
+        System.out.println("fireTableRowsUpdated firstIndex="+firstIndex+" lastIndex="+lastIndex+" columnIndex="+columnIndex);
         delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
 }

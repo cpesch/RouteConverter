@@ -49,7 +49,7 @@ import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 import static slash.navigation.routing.RoutingResult.Validity.*;
 
 /**
- * Renders a {@link List} of {@link PairWithLayer} for the {@link MapsforgeMapView}.
+ * Renders a route for a {@link List} of {@link PairWithLayer} for the {@link MapsforgeMapView}.
  *
  * @author Christian Pesch
  */
@@ -62,10 +62,10 @@ public class RouteRenderer {
     private final Object notificationMutex = new Object();
     private boolean drawingRoute, drawingBeeline;
 
-    private MapsforgeMapView mapView;
-    private MapViewCallbackOpenSource mapViewCallback;
-    private ColorModel routeColorModel;
-    private GraphicFactory graphicFactory;
+    private final MapsforgeMapView mapView;
+    private final MapViewCallbackOpenSource mapViewCallback;
+    private final ColorModel routeColorModel;
+    private final GraphicFactory graphicFactory;
 
     public RouteRenderer(MapsforgeMapView mapView, MapViewCallbackOpenSource mapViewCallback, ColorModel routeColorModel,
                          GraphicFactory graphicFactory) {
@@ -174,12 +174,12 @@ public class RouteRenderer {
             future.process();
     }
 
-    private void drawBeeline(List<PairWithLayer> pairsWithLayer) {
+    private void drawBeeline(List<PairWithLayer> pairWithLayers) {
         synchronized (notificationMutex) {
             drawingBeeline = true;
         }
         try {
-            for (PairWithLayer pairWithLayer : pairsWithLayer) {
+            for (PairWithLayer pairWithLayer : pairWithLayers) {
                 if (!pairWithLayer.hasCoordinates())
                     continue;
 

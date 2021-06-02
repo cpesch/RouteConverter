@@ -145,7 +145,6 @@ public class ConvertPanel implements PanelInTab {
     private FormatAndRoutesModel formatAndRoutesModel;
     private OverlayPositionsModel positionsModel;
     private PositionsSelectionModel positionsSelectionModel;
-    private LengthCalculator lengthCalculator;
     private PositionsTableHeaderMenu tableHeaderMenu;
 
     private JPanel convertPanel;
@@ -207,9 +206,6 @@ public class ConvertPanel implements PanelInTab {
                 }
             }).performMonotonicallyIncreasing(maximumRangeLength);
         };
-
-        lengthCalculator = new LengthCalculator();
-        lengthCalculator.initialize(positionsModel, r.getCharacteristicsModel(), r.getDistanceAndTimeAggregator());
 
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
         new PositionListsToJLabelAdapter(formatAndRoutesModel, labelPositionLists);
@@ -401,10 +397,6 @@ public class ConvertPanel implements PanelInTab {
 
     private int getDefaultRowHeight() {
         return calculateRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null));
-    }
-
-    public void dispose() {
-        lengthCalculator.dispose();
     }
 
     private void prepareForNewPositionList() {

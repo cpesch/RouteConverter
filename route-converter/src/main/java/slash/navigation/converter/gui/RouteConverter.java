@@ -450,7 +450,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     protected void shutdown() {
         if (isMapViewAvailable())
             getMapView().dispose();
-        getConvertPanel().dispose();
         if (positionAugmenter != null)
             positionAugmenter.dispose();
         if (audioPlayer != null)

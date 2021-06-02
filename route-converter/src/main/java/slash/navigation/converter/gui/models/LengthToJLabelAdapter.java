@@ -45,18 +45,21 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
  */
 
 public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
+    private final DistanceAndTimeAggregator distanceAndTimeAggregator;
     private final JLabel labelLength;
     private final JLabel labelDuration;
 
     public LengthToJLabelAdapter(PositionsModel positionsModel, DistanceAndTimeAggregator distanceAndTimeAggregator,
                                  JLabel labelLength, JLabel labelDuration) {
         super(positionsModel);
+        this.distanceAndTimeAggregator = distanceAndTimeAggregator;
         this.labelLength = labelLength;
         this.labelDuration = labelDuration;
 
+        /* TODO check if listening to PositionsModel would be enough
         distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener((firstIndex, lastIndex) -> {
             invokeLater(() -> updateLabel(distanceAndTimeAggregator.getTotalDistanceAndTime()));
-        });
+        }); */
     }
 
     protected String getDelegateValue() {
@@ -81,6 +84,7 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
         BaseRoute route = getDelegate().getRoute();
         if (route != null && route.getCharacteristics() == Waypoints) {
             updateLabel(ZERO);
-        }
+        } else
+            invokeLater(() -> updateLabel(distanceAndTimeAggregator.getTotalDistanceAndTime()));
     }
 }

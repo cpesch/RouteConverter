@@ -52,7 +52,10 @@ import slash.common.io.TokenResolver;
 import slash.common.io.Transfer;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.common.*;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
@@ -72,10 +75,10 @@ import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
 import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
 import slash.navigation.mapview.mapsforge.helpers.MapViewResizer;
-import slash.navigation.mapview.mapsforge.lines.Line;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
 import slash.navigation.mapview.mapsforge.renderer.RouteRenderer;
+import slash.navigation.mapview.mapsforge.renderer.TrackRenderer;
 import slash.navigation.mapview.mapsforge.updater.*;
 
 import javax.swing.*;
@@ -123,10 +126,8 @@ import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
-import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asAlpha;
-import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 import static slash.navigation.mapview.mapsforge.helpers.SVGHelper.getResourceBitmap;
 import static slash.navigation.mapview.mapsforge.helpers.WithLayerHelper.*;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
@@ -178,6 +179,7 @@ public class MapsforgeMapView extends BaseMapView {
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private RouteRenderer routeRenderer;
+    private TrackRenderer trackRenderer;
     private UpdateDecoupler updateDecoupler;
 
     // initialization
@@ -225,49 +227,31 @@ public class MapsforgeMapView extends BaseMapView {
             public void update(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
                 routeRenderer.renderRoute(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
-                selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
+                // TODO disabled selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
-                selectionUpdater.removedPositions(toPositions2(pairWithLayers));
+                // TODO disabled selectionUpdater.removedPositions(toPositions2(pairWithLayers));
             }
         });
 
         this.trackUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
             public void add(List<PairWithLayer> pairWithLayers) {
-                internalAdd(pairWithLayers);
+                trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().addDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void update(List<PairWithLayer> pairWithLayers) {
-                List<Layer> remove = toLayers(pairWithLayers);
-                removeLayers(remove);
-                internalAdd(pairWithLayers);
-                selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
+                removeLayers(toLayers(pairWithLayers));
+                trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
+                // TODO disabled selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
-                removeObjectWithLayers(pairWithLayers);
-                selectionUpdater.removedPositions(toPositions2(pairWithLayers));
-            }
-
-            private void internalAdd(List<PairWithLayer> pairWithLayers) {
-                Paint paint = GRAPHIC_FACTORY.createPaint();
-                paint.setColor(asRGBA(preferencesModel.getTrackColorModel()));
-                paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
-                int tileSize = getTileSize();
-
-                List<PairWithLayer> withLayers = new ArrayList<>();
-                for (PairWithLayer pair : pairWithLayers) {
-                    if (!pair.hasCoordinates())
-                        continue;
-
-                    Line line = new Line(asLatLong(pair.getFirst()), asLatLong(pair.getSecond()), paint, tileSize);
-                    pair.setLayer(line);
-                    withLayers.add(pair);
-                }
-                addLayers(withLayers);
+                removeLayers(toLayers(pairWithLayers));
+                mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
+                // TODO disabled selectionUpdater.removedPositions(toPositions2(pairWithLayers));
             }
         });
 
@@ -293,13 +277,13 @@ public class MapsforgeMapView extends BaseMapView {
                 List<Layer> remove = toLayers(positionWithLayers);
                 removeLayers(remove);
                 add(positionWithLayers);
-                selectionUpdater.updatedPositions(toPositions(positionWithLayers));
+                // TODO disabled selectionUpdater.updatedPositions(toPositions(positionWithLayers));
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
                 List<NavigationPosition> removed = toPositions(positionWithLayers);
                 removeObjectWithLayers(positionWithLayers);
-                selectionUpdater.removedPositions(removed);
+                // TODO disabled selectionUpdater.removedPositions(removed);
             }
         });
 
@@ -319,6 +303,7 @@ public class MapsforgeMapView extends BaseMapView {
         initializeActions();
         initializeMapView();
         routeRenderer = new RouteRenderer(this, this.mapViewCallback, preferencesModel.getRouteColorModel(), GRAPHIC_FACTORY);
+        trackRenderer = new TrackRenderer(this, preferencesModel.getTrackColorModel(), GRAPHIC_FACTORY);
     }
 
     private static boolean initializedActions = false;

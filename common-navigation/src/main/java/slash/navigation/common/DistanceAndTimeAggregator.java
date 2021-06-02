@@ -34,6 +34,7 @@ public class DistanceAndTimeAggregator {
         FirstAndLastIndex firstAndLastIndex = calculateFirstAndLastIndex(indexToDistanceAndTime);
         if(firstAndLastIndex == null)
             return;
+        System.out.println("addDistancesAndTimes firstIndex=" + firstAndLastIndex.firstIndex + " lastIndex=" + firstAndLastIndex.lastIndex); // TODO
 
         int diff = firstAndLastIndex.lastIndex - firstAndLastIndex.firstIndex + 1;
         for (int i = relativeDistancesAndTimes.size() - 1; i >= firstAndLastIndex.lastIndex - 1; i--) {
@@ -50,6 +51,7 @@ public class DistanceAndTimeAggregator {
         FirstAndLastIndex firstAndLastIndex = calculateFirstAndLastIndex(indexToDistanceAndTime);
         if(firstAndLastIndex == null)
             return;
+        System.out.println("updateDistancesAndTimes firstIndex=" + firstAndLastIndex.firstIndex + " lastIndex=" + firstAndLastIndex.lastIndex); // TODO
 
         relativeDistancesAndTimes.putAll(indexToDistanceAndTime);
         updateAbsoluteDistancesAndTimes(firstAndLastIndex.firstIndex);
@@ -60,6 +62,7 @@ public class DistanceAndTimeAggregator {
         FirstAndLastIndex firstAndLastIndex = calculateFirstAndLastIndex(indexToDistanceAndTime);
         if(firstAndLastIndex == null)
             return;
+        System.out.println("removeDistancesAndTimes firstIndex=" + firstAndLastIndex.firstIndex + " lastIndex=" + firstAndLastIndex.lastIndex); // TODO
 
         int sizeBeforeRemoval = relativeDistancesAndTimes.size();
         for (int i = firstAndLastIndex.firstIndex; i <= firstAndLastIndex.lastIndex; i++) {
