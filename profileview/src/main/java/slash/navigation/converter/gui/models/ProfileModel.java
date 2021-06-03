@@ -48,6 +48,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         this.unitSystem = unitSystem;
         this.xAxisMode = xAxisMode;
         this.yAxisMode = yAxisMode;
+        initialize();
     }
 
     protected void handleAdd(int firstRow, int lastRow) {

@@ -43,7 +43,6 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
     protected PositionsModelToXYSeriesSynchronizer(PositionsModel positions, PatchedXYSeries series) {
         this.positions = positions;
         this.series = series;
-        initialize();
     }
 
     protected PositionsModel getPositions() {
@@ -54,7 +53,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
         return series;
     }
 
-    private void initialize() {
+    protected void initialize() {
         handleAdd(0, positions.getRowCount() - 1);
 
         positions.addTableModelListener(new TableModelListener() {
