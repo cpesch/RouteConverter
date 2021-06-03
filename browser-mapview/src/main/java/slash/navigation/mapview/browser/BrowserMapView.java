@@ -1092,6 +1092,24 @@ public abstract class BrowserMapView extends BaseMapView {
         addWaypointIconsToMap(allPositions);
 
         removeDirections();
+
+        mapViewCallback.getDistanceAndTimeAggregator().clearDistancesAndTimes();
+        mapViewCallback.getDistanceAndTimeAggregator().addDistancesAndTimes(calculateDistanceAndTime(allPositions));
+    }
+
+    private Map<Integer, DistanceAndTime> calculateDistanceAndTime(List<NavigationPosition> positions) {
+        Map<Integer, DistanceAndTime> result = new HashMap<>();
+        NavigationPosition previous = null;
+        for (int i = 0; i < positions.size(); i++) {
+            NavigationPosition next = positions.get(i);
+            if (previous != null) {
+                Double distance = previous.calculateDistance(next);
+                Long time = previous.calculateTime(next);
+                result.put(i, new DistanceAndTime(distance, time));
+            }
+            previous = next;
+        }
+        return result;
     }
 
     private void addWaypointIconsToMap(List<NavigationPosition> positions) {
@@ -1801,24 +1819,23 @@ public abstract class BrowserMapView extends BaseMapView {
 
     private int generationId;
     private List<NavigationPosition> directionsPositions = new ArrayList<>();
-    private Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>();
 
     private void resetDirections() {
         directionsPositions.clear();
-        mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(indexToDistanceAndTime);
-        indexToDistanceAndTime.clear();
+        mapViewCallback.getDistanceAndTimeAggregator().clearDistancesAndTimes();
     }
 
     private void directionsLoadCallback(final int generationIndex, final List<DistanceAndTime> distanceAndTimes) {
         executor.execute(new Runnable() {
             public void run() {
+                Map<Integer, DistanceAndTime> result = new HashMap<>();
                 for (int i = 0; i < distanceAndTimes.size(); i++) {
                     // find successor of start position from directions for first DistanceAndTime
                     NavigationPosition position = directionsPositions.get(generationIndex + i + 1);
                     int index = positionsModel.getIndex(position);
-                    indexToDistanceAndTime.put(index + 1, distanceAndTimes.get(i));
+                    result.put(index, distanceAndTimes.get(i));
                 }
-                mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(indexToDistanceAndTime);
+                mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(result);
             }
         });
     }

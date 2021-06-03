@@ -81,6 +81,7 @@ public class DistanceAndTimeAggregator {
     }
 
     public synchronized void clearDistancesAndTimes() {
+        System.out.println("clearDistancesAndTimes"); // TODO
         initialize();
         fireDistancesAndTimesChanged(0, MAX_VALUE);
     }
