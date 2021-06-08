@@ -211,11 +211,13 @@ public class MapsforgeMapView extends BaseMapView {
                     center = latLong;
                 }
                 addLayers(withLayers);
+                System.out.println("SelectionUpdater#add " + positionWithLayers); // TODO
                 if (center != null)
                     setCenter(center, false);
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
+                System.out.println("SelectionUpdater#remove " + positionWithLayers); // TODO
                 removeObjectWithLayers(positionWithLayers);
             }
         });

@@ -92,7 +92,9 @@ public class OverlayPositionsModel implements PositionsModel {
 
         distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener(new DistancesAndTimesAggregatorListener() {
             public void distancesAndTimesChanged(int firstIndex, int lastIndex) {
-                fireDistanceAndTimeChanged(firstIndex, max(firstIndex, getRowCount() - 1));
+                    invokeLater(() -> {
+                        fireTableRowsUpdated(firstIndex, MAX_VALUE, DISTANCE_COLUMN_INDEX);
+                    });
             }
         });
     }
@@ -137,10 +139,6 @@ public class OverlayPositionsModel implements PositionsModel {
 
     public void removeTableModelListener(TableModelListener l) {
         delegate.removeTableModelListener(l);
-    }
-
-    public boolean isContinousRange() {
-        return delegate.isContinousRange();
     }
 
     // PositionsModel
@@ -370,10 +368,8 @@ public class OverlayPositionsModel implements PositionsModel {
         return timesFromStart != null ? fromMillis(timesFromStart[0]) : null;
     }
 
-    private void fireDistanceAndTimeChanged(int firstIndex, int lastIndex) {
-        invokeLater(() -> {
-            fireTableRowsUpdated(firstIndex, MAX_VALUE, DISTANCE_COLUMN_INDEX);
-        });
+    public boolean isContinousRange() {
+        return delegate.isContinousRange();
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
