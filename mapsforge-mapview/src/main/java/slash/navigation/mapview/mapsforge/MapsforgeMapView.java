@@ -198,6 +198,7 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             public void add(List<PositionWithLayer> positionWithLayers) {
+                System.out.println("SelectionUpdater#add " + positionWithLayers); // TODO
                 LatLong center = null;
                 List<PositionWithLayer> withLayers = new ArrayList<>();
                 for (final PositionWithLayer positionWithLayer : positionWithLayers) {
@@ -211,7 +212,6 @@ public class MapsforgeMapView extends BaseMapView {
                     center = latLong;
                 }
                 addLayers(withLayers);
-                System.out.println("SelectionUpdater#add " + positionWithLayers); // TODO
                 if (center != null)
                     setCenter(center, false);
             }
@@ -229,7 +229,10 @@ public class MapsforgeMapView extends BaseMapView {
 
             public void update(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
-                routeRenderer.renderRoute(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
+                routeRenderer.renderRoute(pairWithLayers, () -> {
+                    selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
+                    mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
+                });
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
@@ -245,7 +248,10 @@ public class MapsforgeMapView extends BaseMapView {
 
             public void update(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
-                trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
+                trackRenderer.renderTrack(pairWithLayers, () -> {
+                    selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
+                    mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
+                });
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
@@ -272,10 +278,11 @@ public class MapsforgeMapView extends BaseMapView {
                 addLayers(withLayers);
             }
 
-            public void update(final List<PositionWithLayer> positionWithLayers) {
+            public void update(List<PositionWithLayer> positionWithLayers) {
                 List<Layer> remove = toLayers(positionWithLayers);
                 removeLayers(remove);
                 add(positionWithLayers);
+                selectionUpdater.updatedPositions(toPositions(positionWithLayers));
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
@@ -1066,6 +1073,7 @@ public class MapsforgeMapView extends BaseMapView {
                 mapViewCallback.complementData(new int[]{index}, false, complementTime, complementElevation, true, false);
         }
 
+        // one big large update event at the end
         positionsModel.fireTableRowsUpdated(firstIndex, lastIndex, ALL_COLUMNS);
     }
 
