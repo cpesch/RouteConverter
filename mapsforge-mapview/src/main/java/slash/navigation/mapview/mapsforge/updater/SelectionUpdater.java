@@ -66,7 +66,9 @@ public class SelectionUpdater {
                 added.add(positionWithLayer);
             }
         }
-        applyDelta(removed, added);
+        // only apply changes to avoid "Cannot add/remove layer" since position and layer are identical
+        if (!removed.equals(added))
+            applyDelta(removed, added);
     }
 
     public synchronized void removedPositions(List<NavigationPosition> positions) {
@@ -80,7 +82,13 @@ public class SelectionUpdater {
     }
 
     private void replaceSelection(int[] selectedPositions) {
-        applyDelta(positionWithLayers, asPositionWithLayers(selectedPositions));
+        List<PositionWithLayer> removed = new ArrayList<>();
+        for (PositionWithLayer positionWithLayer : positionWithLayers) {
+            PositionWithLayer toRemove = new PositionWithLayer(positionWithLayer.getPosition());
+            toRemove.setLayer(positionWithLayer.getLayer());
+            removed.add(positionWithLayer);
+        }
+        applyDelta(removed, asPositionWithLayers(selectedPositions));
     }
 
     private void updateSelection(int[] selectedPositions) {
@@ -96,7 +104,6 @@ public class SelectionUpdater {
             if (!selected.contains(positionWithLayer))
                 removed.add(positionWithLayer);
         }
-
         applyDelta(removed, added);
     }
 
