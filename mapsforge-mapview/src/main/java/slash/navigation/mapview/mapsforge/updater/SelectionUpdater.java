@@ -54,41 +54,8 @@ public class SelectionUpdater {
         }
     }
 
-    public synchronized void updatedPositions(List<NavigationPosition> positions) {
-        List<PositionWithLayer> removed = new ArrayList<>();
-        List<PositionWithLayer> added = new ArrayList<>();
-        for (PositionWithLayer positionWithLayer : positionWithLayers) {
-            NavigationPosition position = positionWithLayer.getPosition();
-            if (positions.contains(position)) {
-                PositionWithLayer toRemove = new PositionWithLayer(positionWithLayer.getPosition());
-                toRemove.setLayer(positionWithLayer.getLayer());
-                removed.add(toRemove);
-                added.add(positionWithLayer);
-            }
-        }
-        // only apply changes to avoid "Cannot add/remove layer" since position and layer are identical
-        if (!removed.equals(added))
-            applyDelta(removed, added);
-    }
-
-    public synchronized void removedPositions(List<NavigationPosition> positions) {
-        List<PositionWithLayer> removed = new ArrayList<>();
-        for (PositionWithLayer positionWithLayer : positionWithLayers) {
-            NavigationPosition position = positionWithLayer.getPosition();
-            if (positions.contains(position) && positionsModel.getIndex(position) == -1)
-                removed.add(positionWithLayer);
-        }
-        applyDelta(removed, emptyList());
-    }
-
     private void replaceSelection(int[] selectedPositions) {
-        List<PositionWithLayer> removed = new ArrayList<>();
-        for (PositionWithLayer positionWithLayer : positionWithLayers) {
-            PositionWithLayer toRemove = new PositionWithLayer(positionWithLayer.getPosition());
-            toRemove.setLayer(positionWithLayer.getLayer());
-            removed.add(positionWithLayer);
-        }
-        applyDelta(removed, asPositionWithLayers(selectedPositions));
+        applyDelta(positionWithLayers, asPositionWithLayers(selectedPositions));
     }
 
     private void updateSelection(int[] selectedPositions) {
@@ -111,7 +78,7 @@ public class SelectionUpdater {
         if (!removed.isEmpty()) {
             selectionOperation.remove(removed);
             // optimize special case when the selection is completely removed due to deletion of all selected positions
-            if(removed == positionWithLayers)
+            if(removed.equals(positionWithLayers))
                 positionWithLayers.clear();
             else
                 positionWithLayers.removeAll(removed);

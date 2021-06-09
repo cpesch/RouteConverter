@@ -139,7 +139,8 @@ public class DistanceAndTimeAggregator {
     }
 
     public DistanceAndTime getTotalDistanceAndTime() {
-        return absoluteDistancesAndTimes.get(absoluteDistancesAndTimes.size() - 1);
+        DistanceAndTime total = absoluteDistancesAndTimes.get(absoluteDistancesAndTimes.size() - 1);
+        return total != null ? total : ZERO;
     }
 
     private void fireDistancesAndTimesChanged(int firstIndex, int lastIndex) {

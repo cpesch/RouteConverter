@@ -35,11 +35,11 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 public class SelectionUpdaterTest {
-    private NavigationPosition p1 = new SimpleNavigationPosition(1.0, 0.0);
-    private NavigationPosition p2 = new SimpleNavigationPosition(2.0, 0.0);
+    private final NavigationPosition p1 = new SimpleNavigationPosition(1.0, 0.0);
+    private final NavigationPosition p2 = new SimpleNavigationPosition(2.0, 0.0);
 
-    private PositionWithLayer w1 = new PositionWithLayer(p1);
-    private PositionWithLayer w2 = new PositionWithLayer(p2);
+    private final PositionWithLayer w1 = new PositionWithLayer(p1);
+    private final PositionWithLayer w2 = new PositionWithLayer(p2);
 
     @Test
     public void testNavigationPositionEqualsAndHashCode() {
@@ -122,48 +122,5 @@ public class SelectionUpdaterTest {
         assertEquals(asList(w1, w2), selectionUpdater.getPositionWithLayers());
         verify(selectionOperation, times(2)).add(asList(w1, w2));
         verify(selectionOperation, times(1)).remove(asList(w1, w2));
-    }
-
-    @Test
-    public void testUpdatedPosition() {
-        PositionsModel positionsModel = mock(PositionsModel.class);
-        when(positionsModel.getPosition(1)).thenReturn(p1);
-        when(positionsModel.getPosition(2)).thenReturn(p2);
-        when(positionsModel.getRowCount()).thenReturn(3);
-        SelectionOperation selectionOperation = mock(SelectionOperation.class);
-
-        SelectionUpdater selectionUpdater = new SelectionUpdater(positionsModel, selectionOperation);
-        selectionUpdater.setSelectedPositions(new int[]{1, 2}, false);
-
-        assertEquals(asList(w1, w2), selectionUpdater.getPositionWithLayers());
-        verify(selectionOperation, times(1)).add(asList(w1, w2));
-        verify(selectionOperation, never()).remove(new ArrayList<PositionWithLayer>());
-
-        selectionUpdater.updatedPositions(singletonList(p1));
-
-        assertEquals(asList(w2, w1), selectionUpdater.getPositionWithLayers());
-        verify(selectionOperation, times(1)).add(singletonList(w1));
-        verify(selectionOperation, times(1)).remove(singletonList(w1));
-    }
-    @Test
-    public void testRemovedPosition() {
-        PositionsModel positionsModel = mock(PositionsModel.class);
-        when(positionsModel.getPosition(1)).thenReturn(p1);
-        when(positionsModel.getPosition(2)).thenReturn(p2);
-        when(positionsModel.getRowCount()).thenReturn(3);
-        when(positionsModel.getIndex(p1)).thenReturn(-1);
-        SelectionOperation selectionOperation = mock(SelectionOperation.class);
-
-        SelectionUpdater selectionUpdater = new SelectionUpdater(positionsModel, selectionOperation);
-        selectionUpdater.setSelectedPositions(new int[]{1, 2}, false);
-
-        assertEquals(asList(w1, w2), selectionUpdater.getPositionWithLayers());
-        verify(selectionOperation, times(1)).add(asList(w1, w2));
-        verify(selectionOperation, never()).remove(new ArrayList<PositionWithLayer>());
-
-        selectionUpdater.removedPositions(singletonList(p1));
-
-        assertEquals(singletonList(w2), selectionUpdater.getPositionWithLayers());
-        verify(selectionOperation, times(1)).remove(singletonList(w1));
     }
 }

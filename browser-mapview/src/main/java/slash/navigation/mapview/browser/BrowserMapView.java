@@ -1785,6 +1785,12 @@ public abstract class BrowserMapView extends BaseMapView {
             selectionUpdateReason = "move position";
         }
         positionsModel.fireTableRowsUpdated(minimum, size, ALL_COLUMNS);
+
+        invokeLater(new Runnable() {
+            public void run() {
+                setSelectedPositions(selectedPositionIndices, true);
+            }
+        });
     }
 
     private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) {

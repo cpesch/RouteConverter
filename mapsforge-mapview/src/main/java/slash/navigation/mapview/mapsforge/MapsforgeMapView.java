@@ -229,10 +229,7 @@ public class MapsforgeMapView extends BaseMapView {
 
             public void update(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
-                routeRenderer.renderRoute(pairWithLayers, () -> {
-                    selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
-                    mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
-                });
+                routeRenderer.renderRoute(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
@@ -248,10 +245,7 @@ public class MapsforgeMapView extends BaseMapView {
 
             public void update(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
-                trackRenderer.renderTrack(pairWithLayers, () -> {
-                    selectionUpdater.updatedPositions(toPositions2(pairWithLayers));
-                    mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
-                });
+                trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
@@ -282,7 +276,6 @@ public class MapsforgeMapView extends BaseMapView {
                 List<Layer> remove = toLayers(positionWithLayers);
                 removeLayers(remove);
                 add(positionWithLayers);
-                selectionUpdater.updatedPositions(toPositions(positionWithLayers));
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
@@ -1075,6 +1068,12 @@ public class MapsforgeMapView extends BaseMapView {
 
         // one big large update event at the end
         positionsModel.fireTableRowsUpdated(firstIndex, lastIndex, ALL_COLUMNS);
+
+        invokeLater(new Runnable() {
+            public void run() {
+                setSelectedPositions(selectionUpdater.getIndices(), true);
+            }
+        });
     }
 
     public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
