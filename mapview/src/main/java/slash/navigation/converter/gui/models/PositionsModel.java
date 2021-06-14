@@ -79,4 +79,5 @@ public interface PositionsModel extends TableModel {
 
     boolean isContinousRange();
     void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex);
+    void fireTableRowsUpdatedInContinousRange(int firstIndex, int lastIndex, int columnIndex);
 }

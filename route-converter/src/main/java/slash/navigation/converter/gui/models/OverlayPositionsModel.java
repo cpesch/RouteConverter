@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.util.*;
 
 import static java.lang.Integer.MAX_VALUE;
-import static java.lang.Math.max;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -92,9 +91,9 @@ public class OverlayPositionsModel implements PositionsModel {
 
         distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener(new DistancesAndTimesAggregatorListener() {
             public void distancesAndTimesChanged(int firstIndex, int lastIndex) {
-                    invokeLater(() -> {
-                        fireTableRowsUpdated(firstIndex, MAX_VALUE, DISTANCE_COLUMN_INDEX);
-                    });
+                invokeLater(() -> {
+                    fireTableRowsUpdatedInContinousRange(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
+                });
             }
         });
     }
@@ -374,5 +373,9 @@ public class OverlayPositionsModel implements PositionsModel {
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
         delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
+    }
+
+    public void fireTableRowsUpdatedInContinousRange(int firstIndex, int lastIndex, int columnIndex) {
+        delegate.fireTableRowsUpdatedInContinousRange(firstIndex, lastIndex, columnIndex);
     }
 }

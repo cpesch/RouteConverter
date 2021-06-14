@@ -127,6 +127,10 @@ public class UndoPositionsModel implements PositionsModel {
         delegate.fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
 
+    public void fireTableRowsUpdatedInContinousRange(int firstIndex, int lastIndex, int columnIndex) {
+        delegate.fireTableRowsUpdatedInContinousRange(firstIndex, lastIndex, columnIndex);
+    }
+
     // PositionsModel
 
     public BaseRoute getRoute() {

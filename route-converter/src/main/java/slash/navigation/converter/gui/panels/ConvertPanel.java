@@ -54,8 +54,6 @@ import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.gui.helpers.AbstractListDataListener;
 import slash.navigation.gui.helpers.JTableHelper;
-import slash.navigation.gui.undo.RedoAction;
-import slash.navigation.gui.undo.UndoAction;
 import slash.navigation.gui.undo.UndoManager;
 import slash.navigation.msfs.MSFSFlightPlanFormat;
 import slash.navigation.nmn.Nmn7Format;
@@ -311,8 +309,8 @@ public class ConvertPanel implements PanelInTab {
         ClipboardInteractor clipboardInteractor = new ClipboardInteractor();
         clipboardInteractor.watchClipboard();
 
-        actionManager.register("undo", new UndoAction());
-        actionManager.register("redo", new RedoAction());
+        actionManager.register("undo", new UndoAction(this));
+        actionManager.register("redo", new RedoAction(this));
         actionManager.register("copy", new CopyAction(getPositionsView(), positionsModel, clipboardInteractor));
         actionManager.register("cut", new CutAction(getPositionsView(), positionsModel, clipboardInteractor));
         actionManager.register("new-position", new AddPositionAction(getPositionsView(), positionsModel, getPositionsSelectionModel()));

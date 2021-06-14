@@ -21,12 +21,13 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.base.BaseRoute;
-import slash.navigation.base.RouteCharacteristics;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 
+import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatElevation;
+import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
 
 /**
  * A bidirectional adapter that extracts the elevation ascend and descend
@@ -61,9 +62,13 @@ public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
     }
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
+        // ignored updates on columns not relevant for elevation
+        if (getDelegate().isContinousRange() && e.getColumn() == DISTANCE_COLUMN_INDEX)
+            return;
+
         @SuppressWarnings("rawtypes")
         BaseRoute route = getDelegate().getRoute();
-        if (route != null && !route.getCharacteristics().equals(RouteCharacteristics.Waypoints)) {
+        if (route != null && !route.getCharacteristics().equals(Waypoints)) {
             updateLabel(route.getElevationAscend(0, route.getPositionCount() - 1),
                     route.getElevationDescend(0, route.getPositionCount() - 1));
         } else {

@@ -82,16 +82,15 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
     }
 
     private void handleUpdate(TableModelEvent e) {
-        if (getPositions().isContinousRange())
-            return;
         int columnIndex = e.getColumn();
-        if (isFirstToLastRow(e)) {
+        if (getPositions().isContinousRange()) {
+            if (columnIndex == DISTANCE_COLUMN_INDEX) {
+                // handle distance and time column updates from the overlay position model
+                handleFullUpdate();
+            }
+        } else if (isFirstToLastRow(e)) {
             // do a full update for routes to avoid IndexOutOfBoundsException from the depths of XYSeries
             handleFullUpdate();
-        } else if (columnIndex == DISTANCE_COLUMN_INDEX || columnIndex == DISTANCE_DIFFERENCE_COLUMN_INDEX || columnIndex == TIME_COLUMN_INDEX) {
-            // handle distance and time column updates from the overlay position model - but only once
-            if(columnIndex == DISTANCE_COLUMN_INDEX)
-                handleFullUpdate();
         } else {
             int firstRow = e.getFirstRow();
             int lastRow = e.getLastRow();

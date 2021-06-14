@@ -544,6 +544,16 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return currentEvent instanceof ContinousRangeTableModelEvent;
     }
 
+    public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
+        System.out.println("  fireTableRowsUpdated firstIndex="+firstIndex+" lastIndex="+lastIndex+" columnIndex="+columnIndex); // TODO
+        fireTableChanged(new TableModelEvent(this, firstIndex, lastIndex, columnIndex, UPDATE));
+    }
+
+    public void fireTableRowsUpdatedInContinousRange(int firstIndex, int lastIndex, int columnIndex) {
+        System.out.println("  fireTableRowsUpdatedInContinousRange firstIndex="+firstIndex+" lastIndex="+lastIndex+" columnIndex="+columnIndex); // TODO
+        fireTableChanged(new ContinousRangeTableModelEvent(this, firstIndex, lastIndex, columnIndex, UPDATE));
+    }
+
     public void fireTableRowsDeletedInContinousRange(int firstRow, int lastRow) {
         fireTableChanged(new ContinousRangeTableModelEvent(this, firstRow, lastRow, ALL_COLUMNS, DELETE));
     }
@@ -553,9 +563,5 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             super(source, firstRow, lastRow, column, type);
         }
     }
-
-    public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
-        System.out.println("  fireTableRowsUpdated firstIndex="+firstIndex+" lastIndex="+lastIndex+" columnIndex="+columnIndex); // TODO
-        fireTableChanged(new TableModelEvent(this, firstIndex, lastIndex, columnIndex, UPDATE));
-    }
 }
+

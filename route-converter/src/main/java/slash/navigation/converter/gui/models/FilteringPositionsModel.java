@@ -167,4 +167,8 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
         getDelegate().fireTableRowsUpdated(firstIndex, lastIndex, columnIndex);
     }
+
+    public void fireTableRowsUpdatedInContinousRange(int firstIndex, int lastIndex, int columnIndex) {
+        getDelegate().fireTableRowsUpdatedInContinousRange(firstIndex, lastIndex, columnIndex);
+    }
 }
