@@ -46,7 +46,6 @@ public class SelectionUpdater {
     }
 
     public synchronized void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
-        System.out.println("setSelectedPositions " + selectedPositions.length + " replace=" + replaceSelection); //TODO
         if (replaceSelection) {
             replaceSelection(selectedPositions);
         } else {

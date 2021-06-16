@@ -198,7 +198,6 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             public void add(List<PositionWithLayer> positionWithLayers) {
-                System.out.println("SelectionUpdater#add " + positionWithLayers); // TODO
                 LatLong center = null;
                 List<PositionWithLayer> withLayers = new ArrayList<>();
                 for (final PositionWithLayer positionWithLayer : positionWithLayers) {
@@ -217,7 +216,6 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                System.out.println("SelectionUpdater#remove " + positionWithLayers); // TODO
                 removeObjectWithLayers(positionWithLayers);
             }
         });
