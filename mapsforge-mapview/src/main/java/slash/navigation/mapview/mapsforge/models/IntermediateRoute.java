@@ -20,6 +20,7 @@
 package slash.navigation.mapview.mapsforge.models;
 
 import org.mapsforge.core.model.LatLong;
+import slash.navigation.common.NavigationPosition;
 
 import java.util.List;
 
@@ -29,16 +30,16 @@ import java.util.List;
  * @author Christian Pesch
  */
 public class IntermediateRoute {
-    private List<LatLong> latLongs;
-    private boolean valid;
+    private final List<NavigationPosition> positions;
+    private final boolean valid;
 
-    public IntermediateRoute(List<LatLong> latLongs, boolean valid) {
-        this.latLongs = latLongs;
+    public IntermediateRoute(List<NavigationPosition> positions, boolean valid) {
+        this.positions = positions;
         this.valid = valid;
     }
 
-    public List<LatLong> getLatLongs() {
-        return latLongs;
+    public List<NavigationPosition> getPositions() {
+        return positions;
     }
 
     public boolean isValid() {

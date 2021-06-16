@@ -21,7 +21,6 @@ package slash.navigation.mapview.mapsforge.renderer;
 
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
-import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
@@ -232,7 +231,7 @@ public class RouteRenderer {
             mapView.removeLayer(layer);
             pairWithLayer.setLayer(null);
 
-            Polyline polyline = new Polyline(intermediateRoute.getLatLongs(), intermediateRoute.isValid() ? paint : ROUTE_NOT_VALID_PAINT, mapView.getTileSize());
+            Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.getPositions()), intermediateRoute.isValid() ? paint : ROUTE_NOT_VALID_PAINT, mapView.getTileSize());
             pairWithLayer.setLayer(polyline);
             mapView.addLayer(polyline);
         }
@@ -243,17 +242,16 @@ public class RouteRenderer {
     }
 
     private IntermediateRoute calculateRoute(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {
-        List<LatLong> latLongs = new ArrayList<>();
-        latLongs.add(mapView.asLatLong(pairWithLayer.getFirst()));
+        List<NavigationPosition> positions = new ArrayList<>();
+        positions.add(pairWithLayer.getFirst());
 
         RoutingResult result = calculateResult(routingService, future, pairWithLayer);
         if (result.getValidity().equals(Valid)) {
-            // TODO could extract elevation from RoutingResult and set it on first/second if there is no elevation
-            latLongs.addAll(mapView.asLatLong(result.getPositions()));
+            positions.addAll(result.getPositions());
+            pairWithLayer.setDistanceAndTime(result.getDistanceAndTime());
         }
-        pairWithLayer.setDistanceAndTime(result.getDistanceAndTime());
-        latLongs.add(mapView.asLatLong(pairWithLayer.getSecond()));
-        return new IntermediateRoute(latLongs, result.getValidity().equals(Valid));
+        positions.add(pairWithLayer.getSecond());
+        return new IntermediateRoute(positions, result.getValidity().equals(Valid));
     }
 
     private RoutingResult calculateResult(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {
