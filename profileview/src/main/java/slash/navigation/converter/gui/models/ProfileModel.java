@@ -29,6 +29,7 @@ import slash.navigation.converter.gui.profileview.XAxisMode;
 import slash.navigation.converter.gui.profileview.YAxisMode;
 
 import static java.lang.String.format;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
 
@@ -96,7 +97,9 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
                 double[] distances = getPositions().getDistancesFromStart(firstRow, lastRow);
                 if(distances != null) {
                     for (int i = firstRow; i < lastRow + 1; i++) {
-                        getSeries().add(formatDistance(distances[i - firstRow]), formatYValue(getPositions().getPosition(i)), false);
+                        Double distance = formatDistance(distances[i - firstRow]);
+                        if (!isEmpty(distance))
+                            getSeries().add(distance, formatYValue(getPositions().getPosition(i)), false);
                     }
                 }
             } else {
@@ -127,7 +130,7 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         }
     }
 
-    public double formatDistance(double distance) {
+    public Double formatDistance(Double distance) {
         return unitSystem.distanceToUnit(distance);
     }
 
