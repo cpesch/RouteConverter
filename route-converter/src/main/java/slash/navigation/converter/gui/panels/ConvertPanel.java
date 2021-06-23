@@ -888,23 +888,25 @@ public class ConvertPanel implements PanelInTab {
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsAPosition = positionsModel.getRowCount() > 0;
         boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
-
-        comboBoxPositionLists.setEnabled(existsMoreThanOneRoute);
-
         RouteConverter r = RouteConverter.getInstance();
         ActionManager actionManager = r.getContext().getActionManager();
-        actionManager.enable("insert-positions", existsMoreThanOnePosition);
-        actionManager.enable("delete-positions", existsMoreThanOnePosition);
+
+        // depending on the existence of routes
+        comboBoxPositionLists.setEnabled(existsMoreThanOneRoute);
         actionManager.enable("new-positionlist", supportsMultipleRoutes);
         actionManager.enable("rename-positionlist", existsARoute);
+        actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
+
+        // depending on the existence of positions
+        tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
+        actionManager.enable("insert-positions", existsMoreThanOnePosition);
+        actionManager.enable("delete-positions", existsMoreThanOnePosition);
+        actionManager.enable("revert-positions", existsMoreThanOnePosition);
         RouteCharacteristics characteristics = r.getCharacteristicsModel().getSelectedCharacteristics();
         actionManager.enable("convert-route-to-track", existsAPosition && characteristics.equals(Route));
         actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));
-        actionManager.enable("delete-positionlist", existsMoreThanOneRoute);
-        actionManager.enable("split-positionlist", supportsMultipleRoutes && existsARoute && existsMoreThanOnePosition);
-        tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
         actionManager.enable("complete-flight-plan", existsAPosition && format instanceof GarminFlightPlanFormat);
-        actionManager.enable("print-map", r.isMapViewAvailable() && r.getMapView().isSupportsPrinting() && existsAPosition);
+        actionManager.enable("print-map", existsAPosition && r.isMapViewAvailable() && r.getMapView().isSupportsPrinting());
         actionManager.enable("print-profile", existsAPosition);
     }
 
@@ -915,16 +917,17 @@ public class ConvertPanel implements PanelInTab {
         if (tablePositions.getRowCount() == 0)
             selectedRows = new int[0];
 
+        boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
+        boolean existsAPosition = positionsModel.getRowCount() > 0;
+        boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
         boolean existsASelectedPosition = selectedRows.length > 0;
         boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
         boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;
         boolean lastRowNotSelected = existsASelectedPosition && selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
-        boolean existsAPosition = positionsModel.getRowCount() > 0;
-        boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
-        boolean supportsMultipleRoutes = formatAndRoutesModel.getFormat() instanceof MultipleRoutesFormat;
-
         RouteConverter r = RouteConverter.getInstance();
         ActionManager actionManager = r.getContext().getActionManager();
+
+        // depending on selections
         actionManager.enable("cut", existsASelectedPosition);
         actionManager.enable("copy", existsASelectedPosition);
         actionManager.enable("delete-position", existsASelectedPosition);
@@ -942,12 +945,17 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("add-speed", existsASelectedPosition);
         actionManager.enable("add-time", existsASelectedPosition);
         actionManager.enable("add-number", existsASelectedPosition);
-        actionManager.enable("split-positionlist", supportsMultipleRoutes && existsASelectedPosition);
+        actionManager.enable("split-positionlist", existsASelectedPosition && supportsMultipleRoutes);
+
+        // depending on the existence of positions
+        tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
         actionManager.enable("insert-positions", existsAPosition);
         actionManager.enable("delete-positions", existsAPosition);
         actionManager.enable("revert-positions", existsMoreThanOnePosition);
-        tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
-        actionManager.enable("print-map", r.isMapViewAvailable() && r.getMapView().isSupportsPrinting() && existsAPosition);
+        RouteCharacteristics characteristics = r.getCharacteristicsModel().getSelectedCharacteristics();
+        actionManager.enable("convert-route-to-track", existsAPosition && characteristics.equals(Route));
+        actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));
+        actionManager.enable("print-map", existsAPosition && r.isMapViewAvailable() && r.getMapView().isSupportsPrinting());
         actionManager.enable("print-profile", existsAPosition);
 
         if (r.isConvertPanelSelected())
