@@ -257,7 +257,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         for(DegreeFormat degreeFormat : getDegreeFormats()) {
             try {
                 Double value = degreeFormat.parseLongitude(stringValue);
-                log.info(format("Parsed longitude %s with degree format %s to %s", stringValue, degreeFormat, value));
+                log.fine(format("Parsed longitude %s with degree format %s to %s", stringValue, degreeFormat, value));
                 return value;
             }
             catch (Exception e) {
@@ -275,7 +275,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         for(DegreeFormat degreeFormat : getDegreeFormats()) {
             try {
                 Double value = degreeFormat.parseLatitude(stringValue);
-                log.info(format("Parsed latitude %s with degree format %s to %s", stringValue, degreeFormat, value));
+                log.fine(format("Parsed latitude %s with degree format %s to %s", stringValue, degreeFormat, value));
                 return value;
             }
             catch (Exception e) {
@@ -303,7 +303,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         for(UnitSystem unitSystem : getUnitSystems()) {
             try {
                 Double value = parseDouble(objectValue, stringValue, unitSystem.getElevationName());
-                log.info(format("Parsed elevation %s with unit system %s to %s", stringValue, unitSystem, value));
+                log.fine(format("Parsed elevation %s with unit system %s to %s", stringValue, unitSystem, value));
                 return unitSystem.valueToDefault(value);
             }
             catch (Exception e) {
@@ -318,7 +318,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         for(UnitSystem unitSystem : getUnitSystems()) {
             try {
                 Double value = parseDouble(objectValue, stringValue, unitSystem.getSpeedName());
-                log.info(format("Parsed speed %s with unit system %s to %s", stringValue, unitSystem, value));
+                log.fine(format("Parsed speed %s with unit system %s to %s", stringValue, unitSystem, value));
                 return unitSystem.distanceToDefault(value);
             }
             catch (Exception e) {
