@@ -249,7 +249,7 @@ public class BRouter extends BaseRoutingService {
     }
 
     private long getTime(OsmTrack track) {
-        float s = track.nodes.size() < 2 ? 0 : track.nodes.get( track.nodes.size()-1 ).getTime() - track.nodes.get( 0 ).getTime();
+        float s = track.nodes.size() < 2 ? 0 : track.nodes.get(track.nodes.size() - 1).getTime() - track.nodes.get(0).getTime();
         return (long)(s + 0.5) * 1000;
     }
 
