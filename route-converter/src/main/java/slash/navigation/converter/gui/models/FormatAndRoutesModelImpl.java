@@ -53,8 +53,8 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
                 // ignore events following setSelectedRoute()
                 if (isFirstToLastRow(e))
                     return;
-                // ignore distance and time column updates from the OverlayPositionsModel
-                if (positionsModel.isContinousRange() && e.getColumn() == DISTANCE_COLUMN_INDEX)
+                // ignore distance and time column updates from the OverlayPositionsModel not relevant for modification state
+                if (positionsModel.isContinousRange() && (e.getColumn() == DISTANCE_COLUMN_INDEX || e.getColumn() == TIME_COLUMN_INDEX))
                     return;
                 setModified(true);
             }

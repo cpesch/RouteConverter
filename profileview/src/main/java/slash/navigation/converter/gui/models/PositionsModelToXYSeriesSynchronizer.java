@@ -84,8 +84,8 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
     private void handleUpdate(TableModelEvent e) {
         int columnIndex = e.getColumn();
         if (getPositions().isContinousRange()) {
+            // handle distance and time column updates from the overlay position model - only once
             if (columnIndex == DISTANCE_COLUMN_INDEX) {
-                // handle distance and time column updates from the overlay position model
                 handleFullUpdate();
             }
         } else if (isFirstToLastRow(e)) {

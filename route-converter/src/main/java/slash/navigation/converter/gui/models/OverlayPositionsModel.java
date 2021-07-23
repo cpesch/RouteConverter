@@ -92,7 +92,9 @@ public class OverlayPositionsModel implements PositionsModel {
         distanceAndTimeAggregator.addDistancesAndTimesAggregatorListener(new DistancesAndTimesAggregatorListener() {
             public void distancesAndTimesChanged(int firstIndex, int lastIndex) {
                 invokeLater(() -> {
+                    // make JTable rerender the distance and time column cells
                     fireTableRowsUpdatedInContinousRange(firstIndex, lastIndex, DISTANCE_COLUMN_INDEX);
+                    fireTableRowsUpdatedInContinousRange(firstIndex, lastIndex, TIME_COLUMN_INDEX);
                 });
             }
         });

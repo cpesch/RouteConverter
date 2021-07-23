@@ -28,6 +28,7 @@ import javax.swing.event.TableModelEvent;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatElevation;
 import static slash.navigation.converter.gui.models.PositionColumns.DISTANCE_COLUMN_INDEX;
+import static slash.navigation.converter.gui.models.PositionColumns.TIME_COLUMN_INDEX;
 
 /**
  * A bidirectional adapter that extracts the elevation ascend and descend
@@ -63,7 +64,7 @@ public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
         // ignored updates on columns not relevant for elevation
-        if (getDelegate().isContinousRange() && e.getColumn() == DISTANCE_COLUMN_INDEX)
+        if (getDelegate().isContinousRange() && (e.getColumn() == DISTANCE_COLUMN_INDEX || e.getColumn() == TIME_COLUMN_INDEX))
             return;
 
         @SuppressWarnings("rawtypes")
