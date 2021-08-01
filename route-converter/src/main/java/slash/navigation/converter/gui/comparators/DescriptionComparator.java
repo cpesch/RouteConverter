@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.comparators;
 
 import slash.navigation.common.NavigationPosition;
 
-import java.text.Collator;
 import java.util.Comparator;
 
 /**
@@ -32,7 +31,14 @@ import java.util.Comparator;
  */
 
 public class DescriptionComparator implements Comparator<NavigationPosition> {
+    private static final Comparator<String> NULL_SAFE_STRING_COMPARATOR = Comparator
+            .nullsFirst(String::compareToIgnoreCase);
+
+    private static final Comparator<NavigationPosition> DESCRIPTION_COMPARATOR = Comparator
+            .comparing(NavigationPosition::getDescription, NULL_SAFE_STRING_COMPARATOR)
+            .thenComparing(NavigationPosition::getDescription, NULL_SAFE_STRING_COMPARATOR);
+
     public int compare(NavigationPosition p1, NavigationPosition p2) {
-        return Collator.getInstance().compare(p1.getDescription(), p2.getDescription());
+        return DESCRIPTION_COMPARATOR.compare(p1, p2);
     }
 }
