@@ -24,6 +24,7 @@ import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 
@@ -60,18 +61,14 @@ public class WindowHelper {
         final long limitAfter = limitBefore * 2;
         log.severe(String.format("Out of memory with %d maximum memory: %s", limitBefore, e));
 
-        invokeLater(new Runnable() {
-            public void run() {
-                showMessageDialog(getFrame(),
-                        MessageFormat.format(Application.getInstance().getContext().getBundle().
-                                getString("out-of-memory-error"), limitBefore, limitAfter),
-                        getFrame().getTitle(), ERROR_MESSAGE);
-            }
-        });
+        invokeLater(() -> showMessageDialog(getFrame(),
+                MessageFormat.format(Application.getInstance().getContext().getBundle().
+                        getString("out-of-memory-error"), limitBefore, limitAfter),
+                getFrame().getTitle(), ERROR_MESSAGE));
     }
 
-    public static void handleThrowable(Class clazz, Throwable throwable) {
-        log.severe(format("Unhandled throwable in action %s: %s, %s", clazz.getSimpleName(), throwable, printStackTrace(throwable)));
+    public static void handleThrowable(Class clazz, ActionEvent e, Throwable throwable) {
+        log.severe(format("Unhandled throwable in action %s from event %s: %s, %s", clazz.getName(), e, throwable, printStackTrace(throwable)));
         showMessageDialog(getFrame(),
                 MessageFormat.format(Application.getInstance().getContext().getBundle().
                         getString("unhandled-throwable-error"), clazz.getSimpleName(), getLocalizedMessage(throwable), printStackTrace(throwable)),

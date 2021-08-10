@@ -52,7 +52,7 @@ public abstract class FrameAction extends AbstractAction implements ActionListen
         } catch (OutOfMemoryError ooem) {
             handleOutOfMemoryError(ooem);
         } catch(Throwable t) {
-            handleThrowable(getClass(), t);
+            handleThrowable(getClass(), e, t);
         } finally {
             stopWaitCursor(getFrame().getRootPane());
         }

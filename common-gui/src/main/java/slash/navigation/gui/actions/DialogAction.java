@@ -53,7 +53,7 @@ public abstract class DialogAction extends AbstractAction implements ActionListe
         } catch (OutOfMemoryError ooem) {
             handleOutOfMemoryError(ooem);
         } catch(Throwable t) {
-            handleThrowable(getClass(), t);
+            handleThrowable(getClass(), e, t);
         } finally {
             stopWaitCursor(getDialog().getRootPane());
         }
