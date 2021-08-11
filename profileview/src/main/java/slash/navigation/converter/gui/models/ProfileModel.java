@@ -28,6 +28,7 @@ import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.profileview.XAxisMode;
 import slash.navigation.converter.gui.profileview.YAxisMode;
 
+import static java.lang.Math.min;
 import static java.lang.String.format;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
@@ -98,7 +99,8 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
                 if(distances != null) {
                     for (int i = firstRow; i < lastRow + 1; i++) {
                         Double distance = formatDistance(distances[i - firstRow]);
-                        if (!isEmpty(distance))
+                        // don't use isEmpty() since the first distance is always zero
+                        if (distance != null)
                             getSeries().add(distance, formatYValue(getPositions().getPosition(i)), false);
                     }
                 }
