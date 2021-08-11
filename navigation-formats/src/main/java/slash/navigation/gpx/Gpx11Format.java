@@ -74,6 +74,20 @@ public class Gpx11Format extends GpxFormat {
         process(gpxType, context);
     }
 
+    private boolean containsRoutePointExtension(RteType rteType) {
+        for (WptType wptType : rteType.getRtept()) {
+            ExtensionsType extensions = wptType.getExtensions();
+            if (extensions != null && extensions.getAny().size() > 0) {
+                Object any = extensions.getAny().get(0);
+                if (any instanceof JAXBElement) {
+                    Object anyValue = ((JAXBElement) any).getValue();
+                    return anyValue instanceof RoutePointExtensionT;
+                }
+            }
+        }
+        return false;
+    }
+
     private List<GpxRoute> extractRoutes(GpxType gpxType) {
         List<GpxRoute> result = new ArrayList<>();
 
@@ -82,12 +96,11 @@ public class Gpx11Format extends GpxFormat {
             String desc = rteType.getDesc();
             List<String> descriptions = asDescription(desc);
             List<GpxPosition> positions = extractRoute(rteType);
-            result.add(new GpxRoute(this, Route, name, descriptions, positions, gpxType, rteType));
+            result.add(new GpxRoute(this, Route, name, descriptions, positions, gpxType, rteType/*, rteType.getRtept().get(0)*/));
 
-            // Garmin Extensions v3
-            if (rteType.getExtensions() != null && rteType.getExtensions().getAny().size() > 0) {
-                List<GpxPosition> extendedPositions = extractRouteWithGarminExtensions(rteType);
-                result.add(new GpxRoute(this, Track, name, descriptions, extendedPositions, gpxType, rteType));
+            if (containsRoutePointExtension(rteType)) {
+                List<GpxPosition> extendedPositions = extractRouteWithRoutePointExtension(rteType);
+                result.add(new GpxRoute(this, Track, name, descriptions, extendedPositions, gpxType, rteType/*, rteType.getRtept().get(0)*/));
             }
         }
 
@@ -110,7 +123,7 @@ public class Gpx11Format extends GpxFormat {
             String desc = trkType.getDesc();
             List<String> descriptions = asDescription(desc);
             List<GpxPosition> positions = extractTrack(trkType);
-            result.add(new GpxRoute(this, Track, name, descriptions, positions, gpxType, trkType));
+            result.add(new GpxRoute(this, Track, name, descriptions, positions, gpxType, trkType, trkType.getTrkseg().get(0)));
         }
 
         return result;
@@ -126,7 +139,7 @@ public class Gpx11Format extends GpxFormat {
         return positions;
     }
 
-    private List<GpxPosition> extractRouteWithGarminExtensions(RteType rteType) {
+    private List<GpxPosition> extractRouteWithRoutePointExtension(RteType rteType) {
         List<GpxPosition> positions = new ArrayList<>();
         if (rteType != null) {
             for (WptType wptType : rteType.getRtept()) {
@@ -299,17 +312,16 @@ public class Gpx11Format extends GpxFormat {
 
     private List<RteType> createRoute(GpxRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
+        List<RteType> rteTypes = new ArrayList<>();
         RteType rteType = route.getOrigin(RteType.class);
-        if (rteType != null)
-            rteType.getRtept().clear();
-        else
+        if (rteType == null)
             rteType = objectFactory.createRteType();
         if (isWriteMetaData()) {
             rteType.setName(asRouteName(route.getName()));
             rteType.setDesc(asDescription(route.getDescription()));
         }
-        List<RteType> rteTypes = new ArrayList<>();
         rteTypes.add(rteType);
+
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
@@ -334,9 +346,7 @@ public class Gpx11Format extends GpxFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         List<TrkType> trkTypes = new ArrayList<>();
         TrkType trkType = route.getOrigin(TrkType.class);
-        if (trkType != null)
-            trkType.getTrkseg().clear();
-        else
+        if (trkType == null)
             trkType = objectFactory.createTrkType();
         if (isWriteMetaData()) {
             trkType.setName(asRouteName(route.getName()));
@@ -344,7 +354,15 @@ public class Gpx11Format extends GpxFormat {
             clearDistance(trkType);
         }
         trkTypes.add(trkType);
-        TrksegType trksegType = objectFactory.createTrksegType();
+
+        TrksegType trksegType = route.getOrigin(TrksegType.class);
+        if (trksegType != null)
+            trksegType.getTrkpt().clear();
+        else {
+            trksegType = objectFactory.createTrksegType();
+            trkType.getTrkseg().add(trksegType);
+        }
+
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
@@ -352,7 +370,6 @@ public class Gpx11Format extends GpxFormat {
             if (wptType != null)
                 trksegType.getTrkpt().add(wptType);
         }
-        trkType.getTrkseg().add(trksegType);
         return trkTypes;
     }
 
