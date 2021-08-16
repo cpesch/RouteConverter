@@ -91,7 +91,7 @@ public class DownloadsDialog extends SimpleDialog {
                 column.setPreferredWidth(width);
                 column.setMaxWidth(width);
             } else if (i == STATE_COLUMN) {
-                int width = getMaxWidth("Downloading (1000 kByte)", 2);
+                int width = getMaxWidth("Downloading", 2);
                 column.setPreferredWidth(width);
                 column.setMaxWidth(width);
             }
