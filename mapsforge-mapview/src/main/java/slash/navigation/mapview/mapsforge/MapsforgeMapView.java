@@ -350,9 +350,19 @@ public class MapsforgeMapView extends BaseMapView {
         }, getKeyStroke(VK_PLUS, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
         mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
             public void run() {
+                actionManager.run("zoom-in");
+            }
+        }, getKeyStroke(VK_ADD, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
+        mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
+            public void run() {
                 actionManager.run("zoom-out");
             }
         }, getKeyStroke(VK_MINUS, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
+        mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
+            public void run() {
+                actionManager.run("zoom-out");
+            }
+        }, getKeyStroke(VK_SUBTRACT, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
         mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
             public void run() {
                 mapViewMoverAndZoomer.animateCenter(SCROLL_DIFF_IN_PIXEL, 0);
