@@ -145,19 +145,23 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     public void zoomToMousePosition(byte zoomLevelDiff) {
         if (zoomLevelDiff == 0 || lastMousePressPoint == null)
             return;
-        zoomToMousePosition(zoomLevelDiff, lastMousePressPoint.x, lastMousePressPoint.y);
+        LatLong latLong = projection.fromPixels(lastMousePressPoint.x, lastMousePressPoint.y);
+        mapView.getModel().mapViewPosition.setPivot(latLong);
+        zoomToPoint(zoomLevelDiff, new org.mapsforge.core.model.Point(lastMousePressPoint.x, lastMousePressPoint.y));
     }
 
-    private void zoomToMousePosition(byte zoomLevelDiff, int mouseX, int mouseY) {
-        LatLong mouse = projection.fromPixels(mouseX, mouseY);
-        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
-        mapViewPosition.setPivot(mouse);
+    public void zoomToPosition(byte zoomLevelDiff, LatLong latLong) {
+        mapView.getModel().mapViewPosition.setPivot(latLong);
+        zoomToPoint(zoomLevelDiff, projection.toPixels(latLong));
+    }
 
+    private void zoomToPoint(byte zoomLevelDiff, org.mapsforge.core.model.Point point) {
+        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         if (mapViewPosition.getZoomLevel() + zoomLevelDiff <= mapViewPosition.getZoomLevelMax() &&
                 mapViewPosition.getZoomLevel() + zoomLevelDiff >= mapViewPosition.getZoomLevelMin()) {
             Dimension dimension = mapView.getDimension();
-            int horizontalDiff = (int) ((dimension.width / 2 - mouseX) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
-            int verticalDiff = (int) ((dimension.height / 2 - mouseY) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
+            int horizontalDiff = (int) ((dimension.width / 2 - point.x) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
+            int verticalDiff = (int) ((dimension.height / 2 - point.y) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
             mapViewPosition.moveCenterAndZoom(horizontalDiff, verticalDiff, zoomLevelDiff);
         }
     }

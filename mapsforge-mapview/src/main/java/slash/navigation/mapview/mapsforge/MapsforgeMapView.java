@@ -71,10 +71,7 @@ import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.BaseMapView;
 import slash.navigation.mapview.MapViewCallback;
-import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
-import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
-import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
-import slash.navigation.mapview.mapsforge.helpers.MapViewResizer;
+import slash.navigation.mapview.mapsforge.helpers.*;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
 import slash.navigation.mapview.mapsforge.renderer.RouteRenderer;
@@ -1193,7 +1190,12 @@ public class MapsforgeMapView extends BaseMapView {
         }
 
         public void run() {
-            mapViewMoverAndZoomer.zoomToMousePosition(zoomLevelDiff);
+            if (mapViewCallback.isRecenterAfterZooming()) {
+                List<NavigationPosition> selectedPositions = toPositions(selectionUpdater.getPositionWithLayers());
+                BoundingBox boundingBox = new BoundingBox(selectedPositions);
+                mapViewMoverAndZoomer.zoomToPosition(zoomLevelDiff, asLatLong(boundingBox.getCenter()));
+            } else
+                mapViewMoverAndZoomer.zoomToMousePosition(zoomLevelDiff);
         }
     }
 
