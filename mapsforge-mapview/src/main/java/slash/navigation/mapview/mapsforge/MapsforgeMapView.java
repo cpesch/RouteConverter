@@ -1192,8 +1192,8 @@ public class MapsforgeMapView extends BaseMapView {
         public void run() {
             if (mapViewCallback.isRecenterAfterZooming()) {
                 List<NavigationPosition> selectedPositions = toPositions(selectionUpdater.getPositionWithLayers());
-                BoundingBox boundingBox = new BoundingBox(selectedPositions);
-                mapViewMoverAndZoomer.zoomToPosition(zoomLevelDiff, asLatLong(boundingBox.getCenter()));
+                NavigationPosition center = selectedPositions.size() > 0 ? new BoundingBox(selectedPositions).getCenter() : getCenter();
+                mapViewMoverAndZoomer.zoomToPosition(zoomLevelDiff, asLatLong(center));
             } else
                 mapViewMoverAndZoomer.zoomToMousePosition(zoomLevelDiff);
         }
