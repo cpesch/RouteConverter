@@ -352,7 +352,7 @@ public class GpxReadWriteRoundtripIT {
 
                 GpxRoute sourceTrack = (GpxRoute) source.getAllRoutes().get(1);
                 assertNotNull(sourceTrack.getOrigins());
-                assertEquals(2, sourceTrack.getOrigins().size());
+                assertEquals(3, sourceTrack.getOrigins().size());
                 checkUnprocessed(sourceTrack.getOrigin(GpxType.class));
                 checkUnprocessed(sourceTrack.getOrigin(TrkType.class));
 
@@ -408,7 +408,7 @@ public class GpxReadWriteRoundtripIT {
 
                 GpxRoute targetTrack = (GpxRoute) target.getAllRoutes().get(1);
                 assertNotNull(targetTrack.getOrigins());
-                assertEquals(2, targetTrack.getOrigins().size());
+                assertEquals(3, targetTrack.getOrigins().size());
                 checkUnprocessed(targetTrack.getOrigin(GpxType.class));
                 checkUnprocessed(targetTrack.getOrigin(TrkType.class));
                 GpxPosition targetTrackPoint1 = targetTrack.getPosition(0);

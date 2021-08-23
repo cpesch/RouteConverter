@@ -363,10 +363,9 @@ public class Gpx11Format extends GpxFormat {
         TrksegType trksegType = route.getOrigin(TrksegType.class);
         if (trksegType != null)
             trksegType.getTrkpt().clear();
-        else {
+        else
             trksegType = objectFactory.createTrksegType();
-            trkType.getTrkseg().add(trksegType);
-        }
+        trkType.getTrkseg().add(trksegType);
 
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {

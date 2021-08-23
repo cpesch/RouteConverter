@@ -35,11 +35,9 @@ public class PhotonServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
-                new SimpleNavigationPosition(10.1994416, 50.0002652, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
-                new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
-                new SimpleNavigationPosition(10.1999752, 49.9999416, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bavaria, Germany (highway)"),
-                new SimpleNavigationPosition(10.200785058788268, 50.0012567, null, "Pfarrheim, 97506 Grafenrheinfeld, Bavaria, Germany (building)"),
-                new SimpleNavigationPosition(10.2004901, 50.0014652, null, "Kindertagesst\u00e4tte St. Joseph, 97506 Grafenrheinfeld, Bavaria, Germany (amenity)")
+                new SimpleNavigationPosition(10.1997965, 50.0003397, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bayern, Deutschland (highway)"),
+                new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bayern, Deutschland (highway)"),
+                new SimpleNavigationPosition(10.1999752, 49.9999416, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bayern, Deutschland (highway)")
         );
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
@@ -52,7 +50,7 @@ public class PhotonServiceIT {
         String address2 = service.getAddressFor(new SimpleNavigationPosition(10.2, 50.001));
         assertTrue(address2.contains("Grafenrheinfeld") && address2.contains("Bayern") && address2.contains("Deutschland"));
         String address3 = service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428));
-        assertTrue(address3.contains("Garmisch-Partenkirchen") && address3.contains("Bayern") && address3.contains("Deutschland"));
+        assertTrue(address3.contains("Hoher Gaif") && address3.contains("Deutschland"));
         assertEquals("Soul Buoy", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         String pole1 = service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0));

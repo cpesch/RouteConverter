@@ -60,7 +60,7 @@ public class PhotonService implements GeocodingService {
     }
 
     private String getPhotonUrl() {
-        return preferences.get(PHOTON_URL_PREFERENCE, "http://photon.komoot.de");
+        return preferences.get(PHOTON_URL_PREFERENCE, "http://photon.komoot.io");
     }
 
     private String execute(String uri) throws IOException {
