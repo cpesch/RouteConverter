@@ -39,7 +39,7 @@ public class ColorModel {
     private static final Preferences preferences = Preferences.userNodeForPackage(ColorModel.class);
     private static final String COLOR_SUFFIX = "-color";
 
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
     private final String preferencesPrefix;
     private final String defaultValue;
 
