@@ -314,8 +314,11 @@ public class Gpx11Format extends GpxFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         List<RteType> rteTypes = new ArrayList<>();
         RteType rteType = route.getOrigin(RteType.class);
-        if (rteType == null)
+        if (rteType != null)
+            rteType.getRtept().clear();
+        else
             rteType = objectFactory.createRteType();
+
         if (isWriteMetaData()) {
             rteType.setName(asRouteName(route.getName()));
             rteType.setDesc(asDescription(route.getDescription()));
@@ -346,7 +349,9 @@ public class Gpx11Format extends GpxFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         List<TrkType> trkTypes = new ArrayList<>();
         TrkType trkType = route.getOrigin(TrkType.class);
-        if (trkType == null)
+        if (trkType != null)
+            trkType.getTrkseg().clear();
+        else
             trkType = objectFactory.createTrkType();
         if (isWriteMetaData()) {
             trkType.setName(asRouteName(route.getName()));
