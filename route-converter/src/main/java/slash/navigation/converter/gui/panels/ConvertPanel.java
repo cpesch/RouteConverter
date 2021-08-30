@@ -248,6 +248,11 @@ public class ConvertPanel implements PanelInTab {
         tableColumnModel.addChangeListener(e -> handleColumnVisibilityUpdate((PositionTableColumn) e.getSource()));
         tablePositions.registerKeyboardAction(new FrameAction() {
             public void run() {
+                r.getContext().getActionManager().run("new-position");
+            }
+        }, getKeyStroke(VK_ENTER, CTRL_DOWN_MASK), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
+        tablePositions.registerKeyboardAction(new FrameAction() {
+            public void run() {
                 r.getContext().getActionManager().run("delete");
             }
         }, getKeyStroke(VK_DELETE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
@@ -390,7 +395,7 @@ public class ConvertPanel implements PanelInTab {
         convertPanel.setTransferHandler(dropHandler);
 
         // make sure that Insert works directly after the program start on an empty position list
-        invokeLater(() -> convertPanel.requestFocus());
+        invokeLater(() -> tablePositions.requestFocus());
     }
 
     private int getDefaultRowHeight() {
