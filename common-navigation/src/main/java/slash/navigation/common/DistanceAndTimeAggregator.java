@@ -43,7 +43,13 @@ public class DistanceAndTimeAggregator {
         }
         relativeDistancesAndTimes.putAll(indexToDistanceAndTime);
         updateAbsoluteDistancesAndTimes(firstAndLastIndex.firstIndex);
-        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, firstAndLastIndex.lastIndex);
+        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, getLastIndexForEvents());
+    }
+
+    // everything after lastIndex must be updated, too, for distance and time
+    // avoiding to use Integer.MAX_VALUE since JTable clears the selection
+    private int getLastIndexForEvents() {
+        return absoluteDistancesAndTimes.size() - 1;
     }
 
     public synchronized void updateDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
@@ -53,7 +59,7 @@ public class DistanceAndTimeAggregator {
 
         relativeDistancesAndTimes.putAll(indexToDistanceAndTime);
         updateAbsoluteDistancesAndTimes(firstAndLastIndex.firstIndex);
-        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, firstAndLastIndex.lastIndex);
+        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, getLastIndexForEvents());
     }
 
     public synchronized void removeDistancesAndTimes(Map<Integer, DistanceAndTime> indexToDistanceAndTime) {
@@ -74,7 +80,7 @@ public class DistanceAndTimeAggregator {
         }
 
         updateAbsoluteDistancesAndTimes(firstAndLastIndex.firstIndex);
-        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, firstAndLastIndex.lastIndex);
+        fireDistancesAndTimesChanged(firstAndLastIndex.firstIndex, getLastIndexForEvents());
     }
 
     public synchronized void clearDistancesAndTimes() {
