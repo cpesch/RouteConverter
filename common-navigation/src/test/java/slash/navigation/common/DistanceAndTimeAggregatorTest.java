@@ -39,11 +39,11 @@ public class DistanceAndTimeAggregatorTest {
 
         aggregator.addDistancesAndTimes(populateAt(2, 30));
         assertEquals(populate(0, 5, 30, 10, 15), aggregator.getRelativeDistancesAndTimes());
-        verify(listener, times(1)).distancesAndTimesChanged(2, 2);
+        verify(listener, times(1)).distancesAndTimesChanged(2, 4);
 
         aggregator.addDistancesAndTimes(populateAt(1, 40));
         assertEquals(populate(0, 40, 5, 30, 10, 15), aggregator.getRelativeDistancesAndTimes());
-        verify(listener, times(1)).distancesAndTimesChanged(1, 1);
+        verify(listener, times(1)).distancesAndTimesChanged(1, 5);
 
         aggregator.addDistancesAndTimes(populateAt(6, 50));
         assertEquals(populate(0, 40, 5, 30, 10, 15, 50), aggregator.getRelativeDistancesAndTimes());
@@ -61,11 +61,11 @@ public class DistanceAndTimeAggregatorTest {
 
         aggregator.updateDistancesAndTimes(populateAt(2, 30));
         assertEquals(populate(0, 5, 30, 15), aggregator.getRelativeDistancesAndTimes());
-        verify(listener, times(1)).distancesAndTimesChanged(2, 2);
+        verify(listener, times(1)).distancesAndTimesChanged(2, 3);
 
         aggregator.updateDistancesAndTimes(populateAt(1, 40));
         assertEquals(populate(0, 40, 30, 15), aggregator.getRelativeDistancesAndTimes());
-        verify(listener, times(1)).distancesAndTimesChanged(1, 1);
+        verify(listener, times(2)).distancesAndTimesChanged(1, 3);
 
         aggregator.updateDistancesAndTimes(populateAt(3, 50));
         assertEquals(populate(0, 40, 30, 50), aggregator.getRelativeDistancesAndTimes());
@@ -84,11 +84,11 @@ public class DistanceAndTimeAggregatorTest {
 
         aggregator.removeDistancesAndTimes(populateAt(2, -1));
         assertEquals(populate(0, 5, 15, 20), aggregator.getRelativeDistancesAndTimes());
-        verify(listener, times(1)).distancesAndTimesChanged(2, 2);
+        verify(listener, times(1)).distancesAndTimesChanged(2, 3);
 
         aggregator.removeDistancesAndTimes(populateAt(3, -1));
         assertEquals(populate(0, 5, 15), aggregator.getRelativeDistancesAndTimes());
-        verify(listener, times(1)).distancesAndTimesChanged(3, 3);
+        verify(listener, times(1)).distancesAndTimesChanged(3, 2);
 
         aggregator.removeDistancesAndTimes(populateAt(1, -1));
         assertEquals(populate(0, 15), aggregator.getRelativeDistancesAndTimes());
