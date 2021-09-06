@@ -182,27 +182,29 @@ public class ConvertPanel implements PanelInTab {
 
         positionsModel = new OverlayPositionsModel(new UndoPositionsModel(undoManager), r.getCharacteristicsModel(), r.getDistanceAndTimeAggregator());
         formatAndRoutesModel = new UndoFormatAndRoutesModel(undoManager, new FormatAndRoutesModelImpl(positionsModel, r.getCharacteristicsModel()));
-        positionsSelectionModel = (selectedPositions, replaceSelection) -> {
-            if (replaceSelection) {
-                ListSelectionModel selectionModel = tablePositions.getSelectionModel();
-                selectionModel.clearSelection();
-            }
-
-            int maximumRangeLength = selectedPositions.length > 19 ? selectedPositions.length / 100 : selectedPositions.length;
-            new ContinousRange(selectedPositions, new RangeOperation() {
-                public void performOnIndex(int index) {
-                }
-
-                public void performOnRange(int firstIndex, int lastIndex) {
+        positionsSelectionModel = new PositionsSelectionModel() {
+            public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
+                if (replaceSelection) {
                     ListSelectionModel selectionModel = tablePositions.getSelectionModel();
-                    selectionModel.addSelectionInterval(firstIndex, lastIndex);
-                    scrollToPosition(tablePositions, firstIndex);
+                    selectionModel.clearSelection();
                 }
 
-                public boolean isInterrupted() {
-                    return false;
-                }
-            }).performMonotonicallyIncreasing(maximumRangeLength);
+                int maximumRangeLength = selectedPositions.length > 19 ? selectedPositions.length / 100 : selectedPositions.length;
+                new ContinousRange(selectedPositions, new RangeOperation() {
+                    public void performOnIndex(int index) {
+                    }
+
+                    public void performOnRange(int firstIndex, int lastIndex) {
+                        ListSelectionModel selectionModel = tablePositions.getSelectionModel();
+                        selectionModel.addSelectionInterval(firstIndex, lastIndex);
+                        scrollToPosition(tablePositions, firstIndex);
+                    }
+
+                    public boolean isInterrupted() {
+                        return false;
+                    }
+                }).performMonotonicallyIncreasing(maximumRangeLength);
+            }
         };
 
         new FormatToJLabelAdapter(formatAndRoutesModel, labelFormat);
