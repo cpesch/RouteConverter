@@ -253,7 +253,8 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <version>2.0.0</version>
+                    <!-- Don't update to 2.0.0 until https://github.com/mojohaus/license-maven-plugin/issues/358 is fixed -->
+                    <version>1.20</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -393,6 +394,8 @@
                     <excludePackageNames>
                         slash.common.filtering*:slash.common.helpers*:slash.navigation.brouter*:slash.navigation.catalog*:slash.navigation.completer*:slash.navigation.converter*:slash.navigation.datasources*:slash.navigation.download*:slash.navigation.elevation*:slash.navigation.feedback*:slash.navigation.geocoding*:slash.navigation.geonames*:slash.navigation.googlemaps*:slash.navigation.gpx.*:slash.navigation.graphhopper*:slash.navigation.gui*:slash.navigation.hgt*:slash.navigation.map*:slash.navigation.nominatim*:slash.navigation.photon*:slash.navigation.rest*:slash.navigation.routes*:slash.navigation.routing*:*binding*:oasis.*:org.*
                     </excludePackageNames>
+                    <doclint>none</doclint>
+                    <failOnError>false</failOnError>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -438,6 +441,9 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
+                <configuration>
+                    <failOnError>false</failOnError>
+                </configuration>
                 <reportSets>
                     <reportSet>
                         <reports>
@@ -446,16 +452,15 @@
                     </reportSet>
                 </reportSets>
             </plugin>
-            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
                 <configuration>
                     <threshold>Normal</threshold>
                     <effort>Default</effort>
+                    <failOnError>false</failOnError>
                 </configuration>
             </plugin>
-            -->
         </plugins>
     </reporting>
 
