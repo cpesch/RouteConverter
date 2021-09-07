@@ -34,6 +34,8 @@ bin\xjc -cp lib\jaxb-impl.jar -verbose -d c:\Development\RouteConverter\tileserv
 
 Java 8 on Mac
 
+xjc -verbose -d datasource/src/main/java -p slash.navigation.datasources.binding datasource/src/main/doc/datasource-catalog.xsd
 xjc -verbose -d kml/src/main/java -p slash.navigation.kml.binding21 kml/src/main/doc/kml21.xsd
 xjc -verbose -d navigation-formats/src/main/java -p slash.navigation.msfs.binding navigation-formats/src/main/doc/msfs/pln.xsd
 xjc -verbose -d nominatim/src/main/java -p slash.navigation.nominatim.reverse nominatim/src/main/doc/reverse.xsd
+

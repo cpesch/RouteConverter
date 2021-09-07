@@ -34,7 +34,7 @@ import static org.mapsforge.core.util.MercatorProjection.*;
 /**
  * A line spanning across several {@link LatLong}s on {@link MapsforgeMapView}
  *
- * @author Christian Pesch, inspired by Vass Gábor https://groups.google.com/forum/#!msg/mapsforge-dev/9svKL86y4aM/WdIay38iNeEJ
+ * @author Christian Pesch, inspired by Vass Gabor https://groups.google.com/forum/#!msg/mapsforge-dev/9svKL86y4aM/WdIay38iNeEJ
  */
 
 public class Polyline extends Layer {

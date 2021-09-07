@@ -47,7 +47,7 @@ public class PositionsTableColumnModel extends AbstractTableColumnModel {
         predefineColumn(DATE_COLUMN_INDEX, "date", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new DateColumnTableCellEditor(), headerRenderer);
         predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleTimeFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer);
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);
-        predefineColumn(TEMPERATURE_COLUMN_INDEX, "temperature", getMaxWidth("100°C", 5), false, new TemperatureColumnTableCellEditor(), headerRenderer);
+        predefineColumn(TEMPERATURE_COLUMN_INDEX, "temperature", getMaxWidth("100\u00B0C", 5), false, new TemperatureColumnTableCellEditor(), headerRenderer);
         predefineColumn(PRESSURE_COLUMN_INDEX, "pressure", getMaxWidth("1150 hPa", 5), false, new PressureColumnTableCellEditor(), headerRenderer);
         predefineColumn(HEART_BEAT_COLUMN_INDEX, "heartbeat", getMaxWidth("180 bpm", 5), false, new HeartBeatColumnTableCellEditor(), headerRenderer);
         predefineColumn(DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
