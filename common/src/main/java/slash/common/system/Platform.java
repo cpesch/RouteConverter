@@ -64,6 +64,10 @@ public class Platform {
         return isJavaLaterThan(System.getProperty("java.version"), 9);
     }
 
+    public static boolean isJava15OrLater() {
+        return isJavaLaterThan(System.getProperty("java.version"), 15);
+    }
+
     public static String getJava() {
         return System.getProperty("java.vendor") + " Java " + System.getProperty("java.version") + " (" + getBits() + "-bit)";
     }
