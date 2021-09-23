@@ -77,11 +77,13 @@ public class Gpx11Format extends GpxFormat {
     private boolean containsRoutePointExtension(RteType rteType) {
         for (WptType wptType : rteType.getRtept()) {
             ExtensionsType extensions = wptType.getExtensions();
-            if (extensions != null && extensions.getAny().size() > 0) {
-                Object any = extensions.getAny().get(0);
-                if (any instanceof JAXBElement) {
-                    Object anyValue = ((JAXBElement) any).getValue();
-                    return anyValue instanceof RoutePointExtensionT;
+            if (extensions != null) {
+                for (Object any : extensions.getAny()) {
+                    if (any instanceof JAXBElement) {
+                        Object anyValue = ((JAXBElement) any).getValue();
+                        if(anyValue instanceof RoutePointExtensionT)
+                            return true;
+                    }
                 }
             }
         }
