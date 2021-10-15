@@ -11,8 +11,10 @@ git:
 branches:
   only:
     - master
-after_success:
- - bash <(curl -s https://codecov.io/bash)
+after_success: |
+  curl -Os https://uploader.codecov.io/latest/linux/codecov &&
+  chmod +x codecov &&
+  ./codecov -t ${CODECOV_TOKEN}
 notifications:
   email:
   - support@routeconverter.com
