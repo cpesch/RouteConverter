@@ -44,6 +44,9 @@ public class RouteModelHelper {
         List<RouteModel> routeModels = new ArrayList<>();
         for (int selectedRow : selectedRows) {
             int row = table.convertRowIndexToView(selectedRow);
+            if(table.getModel().getRowCount() <= row)
+                continue;
+
             Object value = table.getModel().getValueAt(row, 1);
             if (value instanceof RouteModel)
                 routeModels.add((RouteModel) value);
