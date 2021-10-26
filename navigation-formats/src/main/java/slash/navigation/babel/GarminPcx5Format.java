@@ -69,6 +69,6 @@ public class GarminPcx5Format extends BabelFormat {
                     (isEmpty(position.getLongitude()) && isEmpty(position.getLatitude())))
                 count++;
         }
-        return count != positions.size();
+        return count == positions.size();
     }
 }
