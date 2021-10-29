@@ -53,7 +53,7 @@ public class ElevationServiceFacade {
             elevationServices.set(elevationServices.indexOf(previous), elevationService);
         } else {
             elevationServices.add(elevationService);
-            log.info(format("Added elevation service '%s'", elevationService.getName()));
+            log.fine(format("Added elevation service '%s'", elevationService.getName()));
         }
     }
 

@@ -49,7 +49,7 @@ public class RoutingServiceFacade {
     public void addRoutingService(RoutingService routingService) {
         routingPreferencesModel.addRoutingService(routingService);
         routingService.addRoutingServiceListener(new RoutingServiceEventForwarder());
-        log.info(format("Added routing service '%s'", routingService.getName()));
+        log.fine(format("Added routing service '%s'", routingService.getName()));
     }
 
     public void setPreferredRoutingService(RoutingService preferredRoutingService) {
