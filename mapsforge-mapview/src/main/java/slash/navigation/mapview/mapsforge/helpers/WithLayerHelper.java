@@ -59,7 +59,7 @@ public class WithLayerHelper {
     }
 
     public static Map<Integer, DistanceAndTime> toDistanceAndTimes(List<PairWithLayer> pairWithLayers) {
-        Map<Integer, DistanceAndTime> indexToDistanceAndTime = new HashMap<>(pairWithLayers.size());
+        Map<Integer, DistanceAndTime> indexToDistanceAndTime = new TreeMap<>();
         for (PairWithLayer pairWithLayer : pairWithLayers) {
             indexToDistanceAndTime.put(pairWithLayer.getRow() + 1, pairWithLayer.getDistanceAndTime());
         }

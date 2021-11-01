@@ -95,8 +95,11 @@ public class TrackUpdater implements EventMapUpdater {
         }
 
         List<PairWithLayer> removed = new ArrayList<>();
-        for (int i = validLastRow; i >= beforeFirstRow; i--)
-            removed.add(pairWithLayers.remove(i));
+        for (int i = validLastRow; i >= beforeFirstRow; i--) {
+            PairWithLayer remove = pairWithLayers.remove(i);
+            remove.setRow(i);
+            removed.add(remove);
+        }
 
         for (PairWithLayer pairWithLayer : added)
             pairWithLayers.add(beforeFirstRow, pairWithLayer);
