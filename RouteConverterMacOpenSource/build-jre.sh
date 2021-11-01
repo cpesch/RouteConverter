@@ -1,6 +1,7 @@
 #!/bin/sh
 
-JDK=jdk-11.0.10.jdk
+VERSION=11.0.12
+JDK=jdk-$VERSION.jdk
 JRE=Runtime/Contents/Home
 
 echo Cleaning
@@ -17,6 +18,6 @@ rm -f $JRE/conf/security/policy/README.txt
 rm -f $JRE/lib/server/Xusage.txt
 
 echo Zipping
-zip -9 -r jlink-routeconverter-opensource-$JDK-osx.zip Runtime
+zip -9 -r jlink-routeconverter-opensource-$VERSION-osx.zip Runtime
 
 echo Ready
