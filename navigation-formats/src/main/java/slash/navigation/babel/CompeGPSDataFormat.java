@@ -56,7 +56,7 @@ public abstract class CompeGPSDataFormat extends BabelFormat {
             if (isEmpty(position.getLongitude()) && isEmpty(position.getLatitude()))
                 count++;
         }
-        return count == positions.size();
+        return count != positions.size();
     }
 
     protected abstract RouteCharacteristics getRouteCharacteristics();

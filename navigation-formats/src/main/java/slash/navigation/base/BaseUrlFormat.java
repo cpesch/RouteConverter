@@ -24,6 +24,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static java.lang.String.format;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 
 /**
@@ -51,8 +52,9 @@ public abstract class BaseUrlFormat extends SimpleFormat<Wgs84Route> {
         }
 
         String url = findURL(buffer.toString());
-        if (url != null)
-            processURL(url, encoding, context);
+        if (url == null)
+            throw new IOException(format("Cannot find %s URL in %s", getName(), context.getFile()));
+        processURL(url, encoding, context);
     }
 
     protected abstract String findURL(String text);

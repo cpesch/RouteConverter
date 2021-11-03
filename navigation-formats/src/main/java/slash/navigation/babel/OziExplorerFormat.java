@@ -72,7 +72,7 @@ public abstract class OziExplorerFormat extends BabelFormat implements MultipleR
                     isEmpty(position.getElevation()))
                 count++;
         }
-        return count == positions.size();
+        return count != positions.size();
     }
 
     protected abstract RouteCharacteristics getRouteCharacteristics();

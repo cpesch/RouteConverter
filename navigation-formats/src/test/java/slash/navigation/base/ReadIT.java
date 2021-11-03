@@ -36,6 +36,7 @@ import java.util.Set;
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertNotEquals;
 import static slash.common.TestCase.assertEquals;
 import static slash.common.io.Files.collectFiles;
@@ -43,8 +44,8 @@ import static slash.common.io.Files.getExtension;
 import static slash.navigation.base.NavigationTestCase.*;
 
 public class ReadIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
-    private static Set<String> comments = new HashSet<>();
+    private final NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+    private static final Set<String> comments = new HashSet<>();
 
     protected interface TestFileCallback {
         void test(File file) throws IOException;
@@ -59,7 +60,7 @@ public class ReadIT {
             callback.test(file);
     }
 
-    private static final List NO_NAME_DEFINED = asList("alanwpr.gpx", "bcr_with_gpsbabel.gpx",
+    private static final List<String> NO_NAME_DEFINED = asList("alanwpr.gpx", "bcr_with_gpsbabel.gpx",
             "bcr_with_nhtoptrans.gpx", "expertgps.gpx", "Erzgebirge.gpx", "fells_loop.gpx",
             "garmin_symbols.gpx", "holux.gpx", "large10.gpx", "tm20070607.gpx");
 
@@ -395,15 +396,15 @@ public class ReadIT {
 
 
     private void dontReadFiles(String path, TestFileCallback callback) throws IOException {
-        List<File> files = collectFiles(new File(path), null);
+        List<File> files = collectFiles(singletonList(new File(path)));
         for (File file : files)
             if (!file.getPath().contains(".svn"))
                 callback.test(file);
     }
 
-    public static final String UNRECOGNIZED_PATH = ROUTE_PATH + "unrecognized\\";
-    public static final String FALSE_DETECTS_PATH = ROUTE_PATH + "falsedetects\\";
-    public static final String FALSE_XCSVS_PATH = ROUTE_PATH + "falsexcsvs\\";
+    public static final String UNRECOGNIZED_PATH = ROUTE_PATH + "unrecognized";
+    public static final String FALSE_DETECTS_PATH = ROUTE_PATH + "falsedetects";
+    public static final String FALSE_XCSVS_PATH = ROUTE_PATH + "falsexcsvs";
 
     @Test
     public void testDontReadUnrecognizedFiles() throws IOException {

@@ -84,6 +84,8 @@ public abstract class KmzFormat extends BaseKmlFormat {
                 zip.closeEntry();
             }
         }
+        if(context.getFormats().size() == 0)
+            throw new IOException(format("Cannot find %s format in %s", getName(), context.getFile()));
     }
 
     private void writeIntermediate(OutputStream target, byte[] bytes) throws IOException {

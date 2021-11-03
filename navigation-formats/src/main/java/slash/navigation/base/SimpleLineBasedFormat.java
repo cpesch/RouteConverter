@@ -72,7 +72,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
     }
 
     protected int getGarbleCount() {
-        return 0;
+        return 1;
     }
 
     protected RouteCharacteristics getRouteCharacteristics() {
