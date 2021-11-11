@@ -146,6 +146,10 @@
                         <source>${java.version}</source>
                         <target>${java.version}</target>
                         <encoding>Cp1252</encoding>
+                    	<fork>true</fork>
+                    	<useIncrementalCompilation>true</useIncrementalCompilation>
+
+
                     </configuration>
                 </plugin>
                 <plugin>
