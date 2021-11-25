@@ -1,9 +1,8 @@
-1. Download Java 14 for Windows from 
-   https://download.java.net/openjdk/jdk14/ri/openjdk-14+36_windows-x64_bin.zip
-   https://adoptopenjdk.net/releases.html
+1. Download and extract Java 11 OpenJDK for Windows ZIP from
+   https://github.com/ojdkbuild/ojdkbuild/releases/tag/java-11-openjdk-11.0.13.8-1
    
 2. Analyze module dependencies
-   jdk-14\bin\jdeps -s RouteConverterWindowsOpenSource.jar
+   jdk-11.0.13.8-1\bin\jdeps -s target\RouteConverterWindowsOpenSource.jar
 
 3. Build custom JRE 
    build-jre.bat

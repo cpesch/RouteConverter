@@ -8,7 +8,7 @@ echo Cleaning
 rm -rf $JRE
 
 echo Building
-/Library/Java/JavaVirtualMachines/$JDK/Contents/Home/bin/jlink --module-path "%JDK%/jmods" --add-modules java.base,java.compiler,jdk.crypto.ec,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.unsupported --output $JRE --strip-debug --compress 2 --no-header-files --no-man-pages
+/Library/Java/JavaVirtualMachines/$JDK/Contents/Home/bin/jlink --module-path "%JDK%/jmods" --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.unsupported --output $JRE --strip-debug --compress 2 --no-header-files --no-man-pages
 
 echo Reducing
 rm -rf $JRE/legal

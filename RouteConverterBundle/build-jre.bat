@@ -1,13 +1,13 @@
 @echo off
 
-set JDK=jdk-11.0.10+9
-set JRE=jre-11.0.10
+set JDK=jdk-11.0.13.8-1
+set JRE=jre-11.0.13.8-1
 
 echo Cleaning
 rmdir /s /q %JRE%
 
 echo Building
-%JDK%\bin\jlink --module-path "%JDK%\jmods" --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.unsupported --output %JRE% --strip-debug --compress 2 --no-header-files --no-man-pages
+%JDK%\bin\jlink --module-path "%JDK%\jmods" --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.unsupported --output %JRE% --strip-debug --compress 2 --no-header-files --no-man-pages
 
 echo Reducing
 rmdir /s /q %JRE%\legal
