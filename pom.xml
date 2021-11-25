@@ -70,7 +70,7 @@
         <brouter.version>1.6.1</brouter.version>
         <graphhopper.version>0.13.0</graphhopper.version>
         <httpclient.version>4.5.13</httpclient.version>
-        <jackson.version>2.12.3</jackson.version>
+        <jackson.version>2.13.0</jackson.version>
         <jaxb.version>2.3.1</jaxb.version>
         <mapsforge.version>0.16.0</mapsforge.version>
         <poi.version>4.1.2</poi.version>
@@ -531,7 +531,7 @@
             <dependency>
                 <groupId>org.bidib.com.github.markusbernhardt</groupId>
                 <artifactId>proxy-vole</artifactId>
-                <version>1.0.15</version>
+                <version>1.0.16</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.slf4j</groupId>
