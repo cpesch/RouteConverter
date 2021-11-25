@@ -34,7 +34,7 @@ import java.util.Objects;
 public class PairWithLayer implements ObjectWithLayer {
     private final NavigationPosition first;
     private final NavigationPosition second;
-    private final int row;
+    private int row;
     private Layer layer;
     private DistanceAndTime distanceAndTime;
 
@@ -54,6 +54,10 @@ public class PairWithLayer implements ObjectWithLayer {
 
     public int getRow() {
         return row;
+    }
+
+    public void setRow(int row) {
+        this.row = row;
     }
 
     public boolean hasCoordinates() {
