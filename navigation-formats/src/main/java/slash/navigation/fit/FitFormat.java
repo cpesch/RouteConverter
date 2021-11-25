@@ -87,11 +87,11 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
         broadcaster.addListener((RecordMesgListener) parser);
         broadcaster.addListener((SegmentPointMesgListener) parser);
 
+        // +1 since Decoder is reading until the buffer is completely processed plus one to allow for #reset()
         source.mark(source.available() + 1);
         if (!decode.checkFileIntegrity(source))
             throw new IllegalArgumentException(format("FIT integrity check failed: %s", context.getFile()));
 
-        // +1 since Decoder is reading until the buffer is completely processed plus one to allow for #reset()
         source.reset();
         try {
             decode.read(source, broadcaster);
