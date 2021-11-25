@@ -121,7 +121,7 @@ public class RouteCalculations {
         if (isEmpty(distanceToSuccessor))
             return null;
 
-        Double distanceRatio = distanceToPredecessor / (distanceToPredecessor + distanceToSuccessor);
+        double distanceRatio = distanceToPredecessor / (distanceToPredecessor + distanceToSuccessor);
 
         long time = (long) (predecessor.getTime().getTimeInMillis() + (double) timeDelta * distanceRatio);
         return fromMillis(time);

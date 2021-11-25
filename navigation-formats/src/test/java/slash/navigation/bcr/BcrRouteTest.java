@@ -22,7 +22,6 @@ package slash.navigation.bcr;
 
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
-import slash.navigation.gpx.GpxPosition;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -39,7 +38,7 @@ public class BcrRouteTest {
     private BcrPosition c = new BcrPosition(3, 2, 0, "c");
     private BcrPosition d = new BcrPosition(1, 3, 0, "d");
     private BcrPosition e = new BcrPosition(1, 1, 0, "e");
-    private GpxPosition zero = new GpxPosition(null, null, null, null, null, null);
+    private BcrPosition zero = new BcrPosition(null, null, null, null, null, null);
 
     private void initialize() {
         List<BcrPosition> positions = route.getPositions();
@@ -431,6 +430,27 @@ public class BcrRouteTest {
         assertIntArrayEquals(new int[]{1}, in2mDistance);
         int[] in5mDistance = route.getPositionsWithinDistanceToPredecessor(5.0);
         assertIntArrayEquals(new int[]{1, 2, 3}, in5mDistance);
+    }
+
+    @Test
+    public void testPositionsWithinDistanceToPredecessorWithNoCoordinates() {
+        List<BcrPosition> positions = route.getPositions();
+        positions.clear();
+        positions.add(zero);
+        positions.add(a);
+        positions.add(b);
+        positions.add(zero);
+        positions.add(c);
+        positions.add(d);
+        positions.add(e);
+        positions.add(zero);
+        assertPositions(zero, a, b, zero, c, d, e, zero);
+        int[] in1mDistance = route.getPositionsWithinDistanceToPredecessor(1.0);
+        assertIntArrayEquals(new int[0], in1mDistance);
+        int[] in2mDistance = route.getPositionsWithinDistanceToPredecessor(2.0);
+        assertIntArrayEquals(new int[]{2}, in2mDistance);
+        int[] in5mDistance = route.getPositionsWithinDistanceToPredecessor(5.0);
+        assertIntArrayEquals(new int[]{2, 4, 5, 6}, in5mDistance);
     }
 
     @Test

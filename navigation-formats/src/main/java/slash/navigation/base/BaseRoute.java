@@ -228,10 +228,16 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         List<Integer> result = new ArrayList<>();
         for (int i = 1; i < positions.size() - 1; i++) {
             P next = positions.get(i);
-            if (!next.hasCoordinates() || toDouble(next.calculateDistance(previous)) <= distance)
-                result.add(i);
-            else
+            if(!previous.hasCoordinates()) {
                 previous = next;
+            } else {
+                if (next.hasCoordinates()) {
+                    if (toDouble(next.calculateDistance(previous)) <= distance)
+                        result.add(i);
+                    else
+                        previous = next;
+                }
+            }
         }
         return toArray(result);
     }
