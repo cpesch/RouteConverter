@@ -215,11 +215,15 @@ public class UnitConversion {
         return kiloMeter / KILOMETER_OF_A_STATUTE_MILE;
     }
 
-    public static double msToKmh(double metersPerSecond) {
+    public static Double msToKmh(Double metersPerSecond) {
+        if (metersPerSecond == null)
+            return null;
         return metersPerSecond * SECONDS_OF_AN_HOUR / METERS_OF_A_KILOMETER;
     }
 
-    public static double kmhToMs(double kiloMetersPerHour) {
+    public static Double kmhToMs(Double kiloMetersPerHour) {
+        if (kiloMetersPerHour == null)
+            return null;
         return kiloMetersPerHour * METERS_OF_A_KILOMETER / SECONDS_OF_AN_HOUR;
     }
 }

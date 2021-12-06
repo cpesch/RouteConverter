@@ -40,6 +40,7 @@ import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.NavigationConversion.*;
 import static slash.navigation.common.UnitConversion.kmhToMs;
+import static slash.navigation.common.UnitConversion.msToKmh;
 import static slash.navigation.gpx.GpxUtil.marshal10;
 import static slash.navigation.gpx.GpxUtil.unmarshal10;
 
@@ -161,7 +162,7 @@ public class Gpx10Format extends GpxFormat {
         Double result = formatDouble(speed);
         // everything is converted from m/s to Km/h except for the exceptional case
         if(!hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond)
-            result = asKmh(result);
+            result = msToKmh(result);
         if (result == null)
             result = parseSpeed(description);
         return result;

@@ -34,9 +34,9 @@ import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.common.NavigationConversion.*;
+import static slash.navigation.common.UnitConversion.kmhToMs;
+import static slash.navigation.common.UnitConversion.msToKmh;
 import static slash.navigation.gpx.GpxExtensionType.*;
-import static slash.navigation.gpx.GpxFormat.asKmh;
-import static slash.navigation.gpx.GpxFormat.asMs;
 
 /**
  * Represents a temperature, heading or speed extension to a {@link GpxPosition}
@@ -155,13 +155,13 @@ public class GpxPositionExtension {
                     Object anyValue = ((JAXBElement) any).getValue();
                     if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
                         slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
-                        result = asKmh(trackPoint.getSpeed());
+                        result = msToKmh(trackPoint.getSpeed());
                     }
 
                 } else if (any instanceof Element) {
                     Element element = (Element) any;
                     if ("speed".equalsIgnoreCase(element.getLocalName()))
-                        result = asKmh(parseDouble(element.getTextContent()));
+                        result = msToKmh(parseDouble(element.getTextContent()));
                 }
 
                 if(result != null)
@@ -183,14 +183,14 @@ public class GpxPositionExtension {
                 Object anyValue = ((JAXBElement) any).getValue();
                 if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
                     slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
-                    trackPoint.setSpeed(formatSpeedAsDouble(asMs(speed)));
+                    trackPoint.setSpeed(formatSpeedAsDouble(kmhToMs(speed)));
                     foundSpeed = true;
                 }
 
             } else if (any instanceof Element) {
                 Element element = (Element) any;
                 if ("speed".equalsIgnoreCase(element.getLocalName())) {
-                    element.setTextContent(formatSpeedAsString(asMs(speed)));
+                    element.setTextContent(formatSpeedAsString(kmhToMs(speed)));
                     foundSpeed = true;
                 }
             }
@@ -200,7 +200,7 @@ public class GpxPositionExtension {
         if (!foundSpeed) {
             slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
             slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-            trackPointExtensionT.setSpeed(formatSpeedAsDouble(asMs(speed)));
+            trackPointExtensionT.setSpeed(formatSpeedAsDouble(kmhToMs(speed)));
             anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
         }
     }

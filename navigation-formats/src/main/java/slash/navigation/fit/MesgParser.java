@@ -34,6 +34,7 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.common.NavigationConversion.semiCircleToDegree;
+import static slash.navigation.common.UnitConversion.msToKmh;
 
 /**
  * Parses some {@link Mesg} messages and transforms them to {@link Wgs84Position}s.
@@ -110,11 +111,9 @@ class MesgParser implements CourseMesgListener, CoursePointMesgListener, FileIdM
 
     public void onMesg(GpsMetadataMesg mesg) {
         CompactCalendar time = asCalendar(mesg.getUtcTimestamp() != null ? mesg.getUtcTimestamp() : mesg.getTimestamp());
-        Float speed = mesg.getEnhancedSpeed() != null ? mesg.getEnhancedSpeed() :
-                mesg.getNumVelocity() > 0 ? mesg.getVelocity(0) : null;
 
         Wgs84Position position = new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
-                asDouble(mesg.getEnhancedAltitude()), asDouble(speed), time, asDescription(mesg));
+                asDouble(mesg.getEnhancedAltitude()), msToKmh(asDouble(mesg.getEnhancedSpeed())), time, asDescription(mesg));
         position.setHeading(asDouble(mesg.getHeading()));
         position.setOrigin(mesg);
         positions.add(position);
@@ -125,7 +124,7 @@ class MesgParser implements CourseMesgListener, CoursePointMesgListener, FileIdM
         Float speed = mesg.getEnhancedSpeed() != null ? mesg.getEnhancedSpeed() : mesg.getSpeed();
 
         Wgs84Position position = new Wgs84Position(semiCircleToDegree(mesg.getPositionLong()), semiCircleToDegree(mesg.getPositionLat()),
-                asDouble(elevation), asDouble(speed), asCalendar(mesg.getTimestamp()), asDescription(mesg));
+                asDouble(elevation), msToKmh(asDouble(speed)), asCalendar(mesg.getTimestamp()), asDescription(mesg));
         position.setPressure(asDouble(mesg.getAbsolutePressure()));
         position.setTemperature(asDouble(mesg.getTemperature()));
         position.setHeartBeat(mesg.getHeartRate());

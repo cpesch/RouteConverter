@@ -34,6 +34,7 @@ import static com.garmin.fit.File.COURSE;
 import static slash.common.io.Transfer.formatFloat;
 import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.common.NavigationConversion.degreeToSemiCircle;
+import static slash.navigation.common.UnitConversion.kmhToMs;
 
 /**
  * Creates {@link Mesg} messages from {@link Wgs84Position}s.
@@ -61,7 +62,7 @@ class MesgCreator {
         if (time != null)
             mesg.setTimestamp(new DateTime(time.getTime()));
         mesg.setAltitude(formatFloat(position.getElevation()));
-        mesg.setSpeed(formatFloat(position.getSpeed()));
+        mesg.setSpeed(formatFloat(kmhToMs(position.getSpeed())));
         mesg.setAbsolutePressure(asLong(position.getPressure()));
         mesg.setTemperature(asByte(position.getTemperature()));
         mesg.setHeartRate(position.getHeartBeat());
@@ -88,7 +89,7 @@ class MesgCreator {
         if (time != null)
             mesg.setTimestamp(new DateTime(time.getTime()));
         mesg.setHeading(formatFloat(position.getHeading()));
-        mesg.setVelocity(0, formatFloat(position.getSpeed()));
+        mesg.setEnhancedSpeed(formatFloat(kmhToMs(position.getSpeed())));
         return mesg;
     }
 
