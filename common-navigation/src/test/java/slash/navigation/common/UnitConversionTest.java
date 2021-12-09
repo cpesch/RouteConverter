@@ -76,6 +76,10 @@ public class UnitConversionTest {
         assertEquals(1.0, ddmm2longitude("E 1\u00B0 0'"));
         assertEquals(-1.0, ddmm2longitude("W 1\u00B0 0'"));
         assertEquals(9.0557233, ddmm2longitude("E 9\u00B0 3.3434'"));
+        assertEquals(9.0557233, ddmm2longitude("E 9\u00B0 3.3434'"));
+        assertEquals(9.0557233, ddmm2longitude("E 9\u00B0 3.3434\u2018"));
+        assertEquals(9.0557233, ddmm2longitude("E 9\u00B0 3,3434\u2018"));
+        assertNull(ddmm2longitude("E 9.1\u00B0 3.3434'"));
         assertNull(ddmm2longitude("E 9\u00B0 3.3434"));
     }
 
@@ -93,6 +97,8 @@ public class UnitConversionTest {
         assertEquals(10.0, ddmm2latitude(" N 010 \u00B0 000 \" "));
         assertEquals(-1.0, ddmm2latitude("S 1\u00B0 0'"));
         assertEquals(48.6239566, ddmm2latitude("N 48\u00B0 37.437395'"));
+        assertEquals(48.6239566, ddmm2latitude("N 48\u00B0 37.437395\u2018"));
+        assertEquals(48.6239566, ddmm2latitude("N 48\u00B0 37,437395\u2018"));
     }
 
     @Test
@@ -109,6 +115,10 @@ public class UnitConversionTest {
         assertEquals(1.0, ddmmss2longitude("E 1\u00B0 0' 0\""));
         assertEquals(-1.0, ddmmss2longitude("W 1\u00B0 0' 0\""));
         assertEquals(9.0557233, ddmmss2longitude("E 9\u00B0 3' 20.604\""));
+        assertEquals(9.0557233, ddmmss2longitude("E 9\u00B0 3\u2018 20.604\""));
+        assertEquals(9.0557233, ddmmss2longitude("E 9\u00B0 3' 20.604\""));
+        assertNull(ddmmss2longitude("E 9.1\u00B0 3' 20.604\""));
+        assertNull(ddmmss2longitude("E 9\u00B0 3.1' 20.604\""));
     }
 
     @Test
@@ -117,5 +127,7 @@ public class UnitConversionTest {
         assertEquals(1.0, ddmmss2latitude("N 1\u00B0 0' 0\""));
         assertEquals(-1.0, ddmmss2latitude("S 1\u00B0 0' 0\""));
         assertEquals(48.6239566, ddmmss2latitude("N 48\u00B0 37' 26.2438\""));
+        assertEquals(48.6239566, ddmmss2latitude("N 48\u00B0 37\u2018 26.2438\""));
+        assertEquals(48.6239566, ddmmss2latitude("N 48\u00B0 37\u2018 26,2438\""));
     }
 }

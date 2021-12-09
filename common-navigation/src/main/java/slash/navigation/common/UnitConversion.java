@@ -103,8 +103,8 @@ public class UnitConversion {
 
     private static final Pattern DDMM_TO_COORDINATE = Pattern.
             compile("\\s*(\\w)\\s*" +
-                    "([\\d\\.]*)\\s*\u00B0\\s*" +
-                    "([\\d\\.]*)\\s*['|\"]\\s*");
+                    "([\\d]*)\\s*\u00B0\\s*" +
+                    "([\\d.,]*)\\s*['\"\u2018]\\s*");
 
     private static Double ddmm2coordinate(String coordinateAsDdmm, Orientation negative) {
         if(coordinateAsDdmm != null) {
@@ -159,9 +159,9 @@ public class UnitConversion {
 
     private static final Pattern DDMMSS_TO_COORDINATE = Pattern.
             compile("\\s*(\\w)\\s*" +
-                    "([\\d\\.]*)\\s*\u00B0\\s*" +
-                    "([\\d\\.]*)\\s*'\\s*" +
-                    "([\\d\\.]*)\\s*\"\\s*");
+                    "([\\d]*)\\s*\u00B0\\s*" +
+                    "([\\d]*)\\s*['\u2018]\\s*" +
+                    "([\\d.,]*)\\s*\"\\s*");
 
     private static Double ddmmss2coordinate(String coordinateAsDdmmss, Orientation negative) {
         if(coordinateAsDdmmss != null) {
