@@ -46,9 +46,9 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.ResourceBundle;
 
-import static java.awt.event.KeyEvent.VK_ENTER;
-import static java.awt.event.KeyEvent.VK_ESCAPE;
+import static java.awt.event.KeyEvent.*;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
@@ -121,6 +121,16 @@ public class FindPlaceDialog extends SimpleDialog {
                 }
             }
         });
+        listResult.registerKeyboardAction(new DialogAction(this) {
+            public void run() {
+                insertPosition();
+            }
+        }, getKeyStroke(VK_PLUS, 0), WHEN_IN_FOCUSED_WINDOW);
+        listResult.registerKeyboardAction(new DialogAction(this) {
+            public void run() {
+                insertPosition();
+            }
+        }, getKeyStroke(VK_ADD, 0), WHEN_IN_FOCUSED_WINDOW);
 
         handleSearchUpdate();
     }
@@ -134,11 +144,10 @@ public class FindPlaceDialog extends SimpleDialog {
         }
     }
 
-    @SuppressWarnings("unchecked")
     private void searchPositions() throws IOException, ServiceUnavailableException {
         RouteConverter r = RouteConverter.getInstance();
 
-        DefaultListModel listModel = new DefaultListModel();
+        DefaultListModel<NavigationPosition> listModel = new DefaultListModel<>();
         listResult.setModel(listModel);
         String address = textFieldSearch.getText();
 
@@ -221,7 +230,7 @@ public class FindPlaceDialog extends SimpleDialog {
         textFieldSearch = new JTextField();
         panel2.add(textFieldSearch, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         buttonSearchPositions = new JButton();
-        this.$$$loadButtonText$$$(buttonSearchPositions, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "search-position"));
+                        this.$$$loadButtonText$$$(buttonSearchPositions, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "search-position"));
         panel2.add(buttonSearchPositions, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
@@ -237,6 +246,7 @@ public class FindPlaceDialog extends SimpleDialog {
         final JScrollPane scrollPane1 = new JScrollPane();
         panel4.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         listResult = new JList();
+        listResult.setMinimumSize(new Dimension(300, 0));
         scrollPane1.setViewportView(listResult);
     }
 
