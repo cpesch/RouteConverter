@@ -191,7 +191,7 @@ public class MapsforgeMapView extends BaseMapView {
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             private Marker createMarker(PositionWithLayer positionWithLayer, LatLong latLong) {
-                return new DraggableMarker(MapsforgeMapView.this, positionWithLayer, latLong, markerIcon, 0, -27);
+                return new DraggableMarker(MapsforgeMapView.this, positionWithLayer, latLong, markerIcon, 12, -24);
             }
 
             public void add(List<PositionWithLayer> positionWithLayers) {
@@ -329,7 +329,7 @@ public class MapsforgeMapView extends BaseMapView {
         handleUnitSystem();
 
         try {
-            markerIcon = GRAPHIC_FACTORY.createTileBitmap(MapsforgeMapView.class.getResourceAsStream("marker.png"), -1, false);
+            markerIcon = GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream("marker.svg"), 1.0f, 64, 54, 100, 12345678);
         } catch (IOException e) {
             log.severe("Cannot create marker and waypoint icon: " + e);
         }
