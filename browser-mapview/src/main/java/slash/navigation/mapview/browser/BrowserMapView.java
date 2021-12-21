@@ -891,6 +891,10 @@ public abstract class BrowserMapView extends BaseMapView {
         throw new UnsupportedOperationException();
     }
 
+    public void showPositionMagnifier(List<NavigationPosition> positions) {
+        // not supported for BrowserMapView
+    }
+
     public NavigationPosition getCenter() {
         if (isInitialized())
             return getCurrentMapCenter();

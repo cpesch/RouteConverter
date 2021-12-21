@@ -845,6 +845,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
     }
 
+    public void showPositionMagnifier(List<NavigationPosition> positions) {
+        if (isMapViewAvailable()) {
+            getMapView().showPositionMagnifier(positions);
+        }
+    }
+
     public List<MapViewImplementation> getAvailableMapViews() {
         return singletonList(JavaFX8);
     }

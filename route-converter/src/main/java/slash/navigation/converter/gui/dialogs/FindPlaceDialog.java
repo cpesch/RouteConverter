@@ -28,7 +28,7 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.renderer.GoogleMapsPositionListCellRenderer;
+import slash.navigation.converter.gui.renderer.NavigationPositionListCellRenderer;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
@@ -106,7 +106,9 @@ public class FindPlaceDialog extends SimpleDialog {
             }
         }, getKeyStroke(VK_ENTER, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        listResult.setCellRenderer(new GoogleMapsPositionListCellRenderer());
+        listResult.setCellRenderer(new NavigationPositionListCellRenderer());
+        listResult.setSelectionForeground(new Color(232, 232, 232));
+        listResult.setSelectionBackground(new Color(0, 9 * 16 + 9, 255));
         listResult.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
                 handleSearchUpdate();
@@ -126,6 +128,10 @@ public class FindPlaceDialog extends SimpleDialog {
     private void handleSearchUpdate() {
         boolean existsSelectedResult = listResult.getSelectedIndices().length > 0;
         buttonInsertPosition.setEnabled(existsSelectedResult);
+        if (existsSelectedResult) {
+            List<NavigationPosition> selectedValues = listResult.getSelectedValuesList();
+            RouteConverter.getInstance().showPositionMagnifier(selectedValues);
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -169,12 +175,19 @@ public class FindPlaceDialog extends SimpleDialog {
         }
     }
 
+    public void setVisible(boolean visible) {
+        super.setVisible(visible);
+        if (visible)
+            handleSearchUpdate();
+    }
+
     private void savePreferences() {
         RouteConverter r = RouteConverter.getInstance();
         r.setFindPlacePreference(textFieldSearch.getText());
     }
 
     private void close() {
+        RouteConverter.getInstance().showPositionMagnifier(null);
         savePreferences();
         dispose();
     }

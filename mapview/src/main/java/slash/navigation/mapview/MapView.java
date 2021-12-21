@@ -54,6 +54,7 @@ public interface MapView extends PositionsSelectionModel {
     void resize(); // only BrowserMapView
     void showAllPositions();
     void showMapBorder(BoundingBox mapBoundingBox); // only MapsforgeMapView
+    void showPositionMagnifier(List<NavigationPosition> positions);
 
     NavigationPosition getCenter();
 

@@ -88,6 +88,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.awt.event.KeyEvent.*;
@@ -170,14 +171,15 @@ public class MapsforgeMapView extends BaseMapView {
     private AwtGraphicMapView mapView;
     private MapViewMoverAndZoomer mapViewMoverAndZoomer;
     private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
-    private static Bitmap markerIcon;
+    private BorderPainter borderPainter = new BorderPainter();
+    private MagnifierPainter magnifierPainter = new MagnifierPainter();
+    private RouteRenderer routeRenderer;
+    private TrackRenderer trackRenderer;
     private GroupLayer overlaysLayer = new GroupLayer();
     private TileRendererLayer backgroundLayer;
     private HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
-    private RouteRenderer routeRenderer;
-    private TrackRenderer trackRenderer;
     private UpdateDecoupler updateDecoupler;
 
     // initialization
@@ -190,6 +192,15 @@ public class MapsforgeMapView extends BaseMapView {
         this.mapViewCallback = (MapViewCallbackOpenSource) mapViewCallback;
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
+            private Bitmap markerIcon;
+            {
+                try {
+                    markerIcon = GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream("marker.svg"), 1.0f, 64, 54, 100, 1234567890);
+                } catch (IOException e) {
+                    log.severe("Cannot create marker icon: " + e);
+                }
+            }
+
             private Marker createMarker(PositionWithLayer positionWithLayer, LatLong latLong) {
                 return new DraggableMarker(MapsforgeMapView.this, positionWithLayer, latLong, markerIcon, 12, -24);
             }
@@ -327,12 +338,6 @@ public class MapsforgeMapView extends BaseMapView {
     private void initializeMapView() {
         mapView = createMapView();
         handleUnitSystem();
-
-        try {
-            markerIcon = GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream("marker.svg"), 1.0f, 64, 54, 100, 12345678);
-        } catch (IOException e) {
-            log.severe("Cannot create marker and waypoint icon: " + e);
-        }
 
         mapSelector = new MapSelector(getMapManager(), mapView);
         mapViewMoverAndZoomer = new MapViewMoverAndZoomer(mapView, getLayerManager());
@@ -716,44 +721,23 @@ public class MapsforgeMapView extends BaseMapView {
         }
     }
 
-    private Polyline mapBorder, routeBorder;
-
     public void showMapBorder(BoundingBox mapBoundingBox) {
-        if (mapBorder != null) {
-            removeLayer(mapBorder);
-            mapBorder = null;
-        }
-        if (routeBorder != null) {
-            removeLayer(routeBorder);
-            routeBorder = null;
-        }
-
-        if (mapBoundingBox != null) {
-            mapBorder = drawBorder(mapBoundingBox);
-
-            BoundingBox routeBoundingBox = getRouteBoundingBox();
-            if (routeBoundingBox != null)
-                routeBorder = drawBorder(routeBoundingBox);
-
-            centerAndZoom(mapBoundingBox, routeBoundingBox, true, true);
-        }
+        borderPainter.showMapBorder(mapBoundingBox);
     }
 
-    private Polyline drawBorder(BoundingBox boundingBox) {
-        Paint paint = GRAPHIC_FACTORY.createPaint();
-        paint.setColor(BLUE);
-        paint.setStrokeWidth(3);
-        paint.setDashPathEffect(new float[]{3, 12});
-        Polyline polyline = new Polyline(asLatLong(boundingBox), paint, getTileSize());
-        addLayer(polyline);
-        return polyline;
+    public void showPositionMagnifier(List<NavigationPosition> positions) {
+        magnifierPainter.showPositionMagnifier(positions);
     }
 
     public void addLayer(final Layer layer) {
+        addLayersList(singletonList(layer));
+    }
+
+    public void addLayersList(final List<Layer> layers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
-                if (!getLayerManager().getLayers().addAll(singleton(layer)))
-                    log.warning("Cannot add layer " + layer);
+                if (!getLayerManager().getLayers().addAll(layers))
+                    log.warning("Cannot add layers " + layers);
             }
         });
     }
@@ -1196,6 +1180,70 @@ public class MapsforgeMapView extends BaseMapView {
                 mapViewMoverAndZoomer.zoomToPosition(zoomLevelDiff, asLatLong(center));
             } else
                 mapViewMoverAndZoomer.zoomToMousePosition(zoomLevelDiff);
+        }
+    }
+
+    private class BorderPainter {
+        private Polyline mapBorder, routeBorder;
+
+        private Polyline drawBorder(BoundingBox boundingBox) {
+            Paint paint = GRAPHIC_FACTORY.createPaint();
+            paint.setColor(BLUE);
+            paint.setStrokeWidth(3);
+            paint.setDashPathEffect(new float[]{3, 12});
+            Polyline polyline = new Polyline(asLatLong(boundingBox), paint, getTileSize());
+            addLayer(polyline);
+            return polyline;
+        }
+
+        public void showMapBorder(BoundingBox mapBoundingBox) {
+            if (mapBorder != null) {
+                removeLayer(mapBorder);
+                mapBorder = null;
+            }
+            if (routeBorder != null) {
+                removeLayer(routeBorder);
+                routeBorder = null;
+            }
+
+            if (mapBoundingBox != null) {
+                mapBorder = drawBorder(mapBoundingBox);
+
+                BoundingBox routeBoundingBox = getRouteBoundingBox();
+                if (routeBoundingBox != null)
+                    routeBorder = drawBorder(routeBoundingBox);
+
+                centerAndZoom(mapBoundingBox, routeBoundingBox, true, true);
+            }
+        }
+    }
+
+    private class MagnifierPainter {
+        private Bitmap magnifierIcon;
+        {
+            try {
+                magnifierIcon = GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream("magnifier.svg"), 1.0f, 57, 56, 100, 1234567891);
+            } catch (IOException e) {
+                log.severe("Cannot create magnifier icon: " + e);
+            }
+        }
+        private final List<Layer> markers = new ArrayList<>();
+
+        public void showPositionMagnifier(List<NavigationPosition> positions) {
+            if(!markers.isEmpty()) {
+                removeLayers(markers);
+                markers.clear();
+            }
+
+            if(positions != null && !positions.isEmpty()) {
+                List<Layer> icons = positions.stream()
+                        .map(position -> new Marker(asLatLong(position), magnifierIcon, 0, 14))
+                        .collect(Collectors.toList());
+                addLayersList(icons);
+                markers.addAll(icons);
+
+                setCenter(new BoundingBox(positions).getCenter(), true);
+            }
         }
     }
 
