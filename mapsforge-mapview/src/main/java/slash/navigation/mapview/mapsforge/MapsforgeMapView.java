@@ -97,7 +97,6 @@ import static java.lang.Math.max;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
-import static java.util.Collections.singleton;
 import static java.util.Collections.singletonList;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
@@ -202,7 +201,7 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             private Marker createMarker(PositionWithLayer positionWithLayer, LatLong latLong) {
-                return new DraggableMarker(MapsforgeMapView.this, positionWithLayer, latLong, markerIcon, 12, -24);
+                return new DraggableMarker(MapsforgeMapView.this, positionWithLayer, latLong, markerIcon, 13, -23);
             }
 
             public void add(List<PositionWithLayer> positionWithLayers) {
@@ -218,7 +217,7 @@ public class MapsforgeMapView extends BaseMapView {
                     withLayers.add(positionWithLayer);
                     center = latLong;
                 }
-                addLayers(withLayers);
+                addObjectsWithLayer(withLayers);
                 if (center != null)
                     setCenter(center, false);
             }
@@ -275,7 +274,7 @@ public class MapsforgeMapView extends BaseMapView {
                     positionWithLayer.setLayer(marker);
                     withLayers.add(positionWithLayer);
                 }
-                addLayers(withLayers);
+                addObjectsWithLayer(withLayers);
             }
 
             public void update(List<PositionWithLayer> positionWithLayers) {
@@ -729,20 +728,22 @@ public class MapsforgeMapView extends BaseMapView {
         magnifierPainter.showPositionMagnifier(positions);
     }
 
-    public void addLayer(final Layer layer) {
-        addLayersList(singletonList(layer));
+    public void addLayer(Layer layer) {
+        addLayers(singletonList(layer));
     }
 
-    public void addLayersList(final List<Layer> layers) {
+    public void addLayers(final List<Layer> layers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
-                if (!getLayerManager().getLayers().addAll(layers))
+                getLayerManager().pause();
+                if (!getLayerManager().getLayers().addAll(layers, true))
                     log.warning("Cannot add layers " + layers);
+                getLayerManager().proceed();
             }
         });
     }
 
-    public void addLayers(final List<? extends ObjectWithLayer> withLayers) {
+    public void addObjectsWithLayer(final List<? extends ObjectWithLayer> withLayers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 List<Layer> layers = new ArrayList<>();
@@ -755,8 +756,7 @@ public class MapsforgeMapView extends BaseMapView {
                         log.warning("Could not find layer to add for " + withLayer);
                 }
 
-                if (!getLayerManager().getLayers().addAll(layers, true))
-                    log.warning("Cannot add layers " + layers);
+                addLayers(layers);
             }
         });
     }
@@ -768,8 +768,10 @@ public class MapsforgeMapView extends BaseMapView {
     private void removeLayers(final List<Layer> layers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
+                getLayerManager().pause();
                 if (!getLayerManager().getLayers().removeAll(layers, true))
                     log.warning("Cannot remove layers " + layers);
+                getLayerManager().proceed();
             }
         });
     }
@@ -788,8 +790,7 @@ public class MapsforgeMapView extends BaseMapView {
                     withLayer.setLayer(null);
                 }
 
-                if (!getLayerManager().getLayers().removeAll(layers, true))
-                    log.warning("Cannot remove layers " + layers);
+                removeLayers(layers);
             }
         });
     }
@@ -1237,9 +1238,9 @@ public class MapsforgeMapView extends BaseMapView {
 
             if(positions != null && !positions.isEmpty()) {
                 List<Layer> icons = positions.stream()
-                        .map(position -> new Marker(asLatLong(position), magnifierIcon, 0, 14))
+                        .map(position -> new Marker(asLatLong(position), magnifierIcon, -9, 13))
                         .collect(Collectors.toList());
-                addLayersList(icons);
+                addLayers(icons);
                 markers.addAll(icons);
 
                 setCenter(new BoundingBox(positions).getCenter(), true);
