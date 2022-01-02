@@ -458,6 +458,7 @@ public class MapsforgeMapView extends BaseMapView {
             String opacity = Transfer.formatDoubleAsString(new Float(asAlpha(waypointColorModel)).doubleValue(), 2);
 
             InputStream inputStream = MapsforgeMapView.class.getResourceAsStream("waypoint.svg");
+            assert inputStream != null;
             Reader reader = new TokenReplacingReader(new InputStreamReader(inputStream), new TokenResolver() {
                 public String resolveToken(String tokenName) {
                     if (tokenName.equals("color"))
@@ -530,7 +531,7 @@ public class MapsforgeMapView extends BaseMapView {
         }
     }
 
-    private java.util.Map<LocalMap, Layer> mapsToLayers = new HashMap<>();
+    private final Map<LocalMap, Layer> mapsToLayers = new HashMap<>();
 
     private void handleMapAndThemeUpdate(boolean centerAndZoom, boolean alwaysRecenter) {
         Layers layers = getLayerManager().getLayers();
@@ -552,6 +553,7 @@ public class MapsforgeMapView extends BaseMapView {
             remove.onDestroy();
 
             if (remove instanceof TileLayer)
+                //noinspection rawtypes
                 ((TileLayer) remove).getTileCache().destroy();
         }
         mapsToLayers.clear();
@@ -1059,11 +1061,7 @@ public class MapsforgeMapView extends BaseMapView {
         // one big large update event at the end
         positionsModel.fireTableRowsUpdated(firstIndex, lastIndex, ALL_COLUMNS);
 
-        invokeLater(new Runnable() {
-            public void run() {
-                setSelectedPositions(selectionUpdater.getIndices(), true);
-            }
-        });
+        invokeLater(() -> setSelectedPositions(selectionUpdater.getIndices(), true));
     }
 
     public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
@@ -1238,7 +1236,7 @@ public class MapsforgeMapView extends BaseMapView {
 
             if(positions != null && !positions.isEmpty()) {
                 List<Layer> icons = positions.stream()
-                        .map(position -> new Marker(asLatLong(position), magnifierIcon, -9, 13))
+                        .map(position -> new Marker(asLatLong(position), magnifierIcon, -10, 13))
                         .collect(Collectors.toList());
                 addLayers(icons);
                 markers.addAll(icons);
@@ -1333,9 +1331,7 @@ public class MapsforgeMapView extends BaseMapView {
                 return;
             // move behind OverlayPositionsModel calling DistanceAndTimeAggregator#clearDistancesAndTimes
             // which would clear the already calculated track data
-            invokeLater(() -> {
-                updateDecoupler.replaceRoute();
-            });
+            invokeLater(() -> updateDecoupler.replaceRoute());
         }
     }
 
