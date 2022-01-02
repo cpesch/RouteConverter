@@ -25,10 +25,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.File;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -47,12 +44,12 @@ import static slash.navigation.graphhopper.PbfUtil.existsGraphDirectory;
 
 public class DownloadableFinder {
     private static final Logger log = Logger.getLogger(DownloadableFinder.class.getName());
-    private final DataSource dataSource;
+    private final List<DataSource> dataSources;
     private final java.io.File directory;
     private boolean wroteMessageAboutMissingBoundingBox = false;
 
-    public DownloadableFinder(DataSource dataSource, java.io.File directory) {
-        this.dataSource = dataSource;
+    public DownloadableFinder(List<DataSource> dataSources, java.io.File directory) {
+        this.dataSources = dataSources;
         this.directory = directory;
     }
 
@@ -69,11 +66,10 @@ public class DownloadableFinder {
     }
 
     private boolean fileMatchesMapDescriptor(File file, MapDescriptor mapDescriptor) {
-        /* try to find europe/germany from europe/germany.map and europe/germany.zip
+        // try to find europe/germany from europe/germany.map and europe/germany.zip
         if(mapDescriptor.getIdentifier() != null &&
                 removeExtension(file.getUri()).equals(removeExtension(mapDescriptor.getIdentifier())))
             return true;
-        */
 
         BoundingBox fileBoundingBox = file.getBoundingBox();
         if (fileBoundingBox == null) {
@@ -89,17 +85,18 @@ public class DownloadableFinder {
 
     private List<DownloadableDescriptor> getDownloadDescriptorsFor(MapDescriptor mapDescriptor) {
         List<DownloadableDescriptor> descriptors = new ArrayList<>();
-        for (File file : dataSource.getFiles()) {
-            if(!fileMatchesMapDescriptor(file, mapDescriptor))
-                continue;
+        for(DataSource dataSource : dataSources.stream().filter(Objects::nonNull).collect(toList())) {
+            for (File file : dataSource.getFiles()) {
+                if(!fileMatchesMapDescriptor(file, mapDescriptor))
+                    continue;
 
-            Double distance = calculateBearing(file.getBoundingBox().getCenter().getLongitude(), file.getBoundingBox().getCenter().getLatitude(),
-                    mapDescriptor.getBoundingBox().getCenter().getLongitude(), mapDescriptor.getBoundingBox().getCenter().getLatitude()).getDistance();
-            boolean existsFile = existsFile(file);
-            boolean existsGraphDirectory = existsGraph(file);
-            descriptors.add(new DownloadableDescriptor(file, distance, file.getBoundingBox(), existsFile, existsGraphDirectory));
+                Double distance = calculateBearing(file.getBoundingBox().getCenter().getLongitude(), file.getBoundingBox().getCenter().getLatitude(),
+                        mapDescriptor.getBoundingBox().getCenter().getLongitude(), mapDescriptor.getBoundingBox().getCenter().getLatitude()).getDistance();
+                boolean existsFile = existsFile(file);
+                boolean existsGraphDirectory = existsGraph(file);
+                descriptors.add(new DownloadableDescriptor(file, distance, file.getBoundingBox(), existsFile, existsGraphDirectory));
+            }
         }
-
         return descriptors.stream()
                 .filter(DownloadableDescriptor::hasValidBoundingBox)
                 .sorted()

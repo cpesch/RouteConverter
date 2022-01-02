@@ -184,7 +184,9 @@ public class RouteConverterOpenSource extends RouteConverter {
         DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
         if (graphhopper != null) {
             GraphHopper hopper = getRoutingServiceFacade().getRoutingService(GraphHopper.class);
-            hopper.setDataSource(graphhopper);
+            hopper.setDataSources(graphhopper,
+                    getDataSourceManager().getDataSourceService().getDataSourceById("kurviger-graphs"),
+                    getDataSourceManager().getDataSourceService().getDataSourceById("mapsforge-graphs"));
         }
     }
 

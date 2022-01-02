@@ -71,7 +71,7 @@ public class GraphHopper extends BaseRoutingService {
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("bike"), CAR, new TravelMode("foot"));
 
     private final DownloadManager downloadManager;
-    private DataSource dataSource;
+    private List<DataSource> dataSources;
 
     private DownloadableFinder finder;
     private com.graphhopper.GraphHopper hopper;
@@ -113,12 +113,12 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     private synchronized DataSource getDataSource() {
-        return dataSource;
+        return dataSources.get(0);
     }
 
-    public synchronized void setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-        finder = new DownloadableFinder(dataSource, getDirectory());
+    public synchronized void setDataSources(DataSource... dataSourcesList) {
+        this.dataSources = asList(dataSourcesList);
+        finder = new DownloadableFinder(dataSources, getDirectory());
     }
 
     public boolean isDownload() {
@@ -416,7 +416,7 @@ public class GraphHopper extends BaseRoutingService {
     private Download download(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, Action.valueOf(dataSource.getAction()),
+        return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, Action.valueOf(getDataSource().getAction()),
                 new FileAndChecksum(createFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 
