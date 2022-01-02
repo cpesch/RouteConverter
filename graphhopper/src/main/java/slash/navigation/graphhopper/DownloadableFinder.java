@@ -20,15 +20,21 @@
 package slash.navigation.graphhopper;
 
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.File;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static slash.common.io.Files.removeExtension;
 import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.graphhopper.PbfUtil.existsGraphDirectory;
 
@@ -62,25 +68,36 @@ public class DownloadableFinder {
         return file != null && existsGraphDirectory(toFile(file));
     }
 
-    private List<DownloadableDescriptor> getDownloadDescriptorsFor(BoundingBox routeBoundingBox) {
+    private boolean fileMatchesMapDescriptor(File file, MapDescriptor mapDescriptor) {
+        /* try to find europe/germany from europe/germany.map and europe/germany.zip
+        if(mapDescriptor.getIdentifier() != null &&
+                removeExtension(file.getUri()).equals(removeExtension(mapDescriptor.getIdentifier())))
+            return true;
+        */
+
+        BoundingBox fileBoundingBox = file.getBoundingBox();
+        if (fileBoundingBox == null) {
+            if (!wroteMessageAboutMissingBoundingBox) {
+                log.fine(format("File %s doesn't have a bounding box. Ignoring it.", file));
+                wroteMessageAboutMissingBoundingBox = true;
+            }
+            return false;
+        }
+
+        return fileBoundingBox.contains(mapDescriptor.getBoundingBox());
+    }
+
+    private List<DownloadableDescriptor> getDownloadDescriptorsFor(MapDescriptor mapDescriptor) {
         List<DownloadableDescriptor> descriptors = new ArrayList<>();
         for (File file : dataSource.getFiles()) {
-            BoundingBox fileBoundingBox = file.getBoundingBox();
-            if (fileBoundingBox == null) {
-                if (!wroteMessageAboutMissingBoundingBox) {
-                    log.fine(format("File %s doesn't have a bounding box. Ignoring it.", file));
-                    wroteMessageAboutMissingBoundingBox = true;
-                }
-                continue;
-            }
-            if (!fileBoundingBox.contains(routeBoundingBox))
+            if(!fileMatchesMapDescriptor(file, mapDescriptor))
                 continue;
 
-            Double distance = calculateBearing(fileBoundingBox.getCenter().getLongitude(), fileBoundingBox.getCenter().getLatitude(),
-                    routeBoundingBox.getCenter().getLongitude(), routeBoundingBox.getCenter().getLatitude()).getDistance();
+            Double distance = calculateBearing(file.getBoundingBox().getCenter().getLongitude(), file.getBoundingBox().getCenter().getLatitude(),
+                    mapDescriptor.getBoundingBox().getCenter().getLongitude(), mapDescriptor.getBoundingBox().getCenter().getLatitude()).getDistance();
             boolean existsFile = existsFile(file);
             boolean existsGraphDirectory = existsGraph(file);
-            descriptors.add(new DownloadableDescriptor(file, distance, fileBoundingBox, existsFile, existsGraphDirectory));
+            descriptors.add(new DownloadableDescriptor(file, distance, file.getBoundingBox(), existsFile, existsGraphDirectory));
         }
 
         return descriptors.stream()
@@ -104,19 +121,19 @@ public class DownloadableFinder {
         return result;
     }
 
-    List<Downloadable> getDownloadablesFor(BoundingBox boundingBox) {
-        List<DownloadableDescriptor> descriptors = getDownloadDescriptorsFor(boundingBox);
+    List<Downloadable> getDownloadablesFor(MapDescriptor mapDescriptor) {
+        List<DownloadableDescriptor> descriptors = getDownloadDescriptorsFor(mapDescriptor);
         List<Downloadable> result = asDownloadables(descriptors);
-        log.info(format("Found %d downloadables for bounding box %s: %s", result.size(), boundingBox, result));
+        log.info(format("Found %d downloadables for map descriptor %s: %s", result.size(), mapDescriptor, result));
         return result;
     }
 
-    public List<Downloadable> getDownloadablesFor(Collection<BoundingBox> boundingBoxes) {
-        Set<DownloadableDescriptor> descriptors = new HashSet<>();
-        for (BoundingBox boundingBox : boundingBoxes)
-            descriptors.addAll(getDownloadDescriptorsFor(boundingBox));
+    public List<Downloadable> getDownloadablesFor(Collection<MapDescriptor> mapDescriptors) {
+        Set<DownloadableDescriptor> descriptors = mapDescriptors.stream()
+                .flatMap(mapDescriptor -> getDownloadDescriptorsFor(mapDescriptor).stream())
+                .collect(toSet());
         List<Downloadable> result = asDownloadables(descriptors);
-        log.info(format("Found %d downloadables for %d bounding boxes: %s", result.size(), boundingBoxes.size(), result));
+        log.info(format("Found %d downloadables for %d map descriptors: %s", result.size(), mapDescriptors.size(), result));
         return result;
     }
 

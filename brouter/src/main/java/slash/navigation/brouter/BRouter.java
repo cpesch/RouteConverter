@@ -34,10 +34,13 @@ import java.io.File;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.getExtension;
@@ -293,8 +296,11 @@ public class BRouter extends BaseRoutingService {
     }
 
 
-    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> downloadables = getDownloadablesFor(boundingBoxes);
+    public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
+        Collection<Downloadable> downloadables = getDownloadablesFor(mapDescriptors.stream()
+                .map(MapDescriptor::getBoundingBox)
+                .collect(Collectors.toList())
+        );
         long notExists = 0L;
         for (Downloadable downloadable : downloadables) {
             Long contentLength = downloadable.getLatestChecksum().getContentLength();
@@ -330,10 +336,9 @@ public class BRouter extends BaseRoutingService {
     }
 
     private Collection<Downloadable> getDownloadablesFor(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> result = new HashSet<>();
-        for (BoundingBox boundingBox : boundingBoxes)
-            result.addAll(getDownloadablesFor(boundingBox));
-        return result;
+        return boundingBoxes.stream()
+                .flatMap(boundingBox -> getDownloadablesFor(boundingBox).stream())
+                .collect(toSet());
     }
 
     private Download downloadSegment(Downloadable downloadable) {
@@ -343,8 +348,11 @@ public class BRouter extends BaseRoutingService {
                 new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 
-    public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> downloadables = getDownloadablesFor(boundingBoxes);
+    public void downloadRoutingData(List<MapDescriptor> mapDescriptors) {
+        Collection<Downloadable> downloadables = getDownloadablesFor(mapDescriptors.stream()
+                .map(MapDescriptor::getBoundingBox)
+                .collect(toList())
+        );
         for (Downloadable downloadable : downloadables) {
             downloadSegment(downloadable);
         }

@@ -19,8 +19,8 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.mapview.MapView;
@@ -100,11 +100,11 @@ public class GoogleDirections extends BaseRoutingService {
         throw new UnsupportedOperationException();
     }
 
-    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+    public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
     }
 
-    public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
+    public void downloadRoutingData(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
     }
 

@@ -22,16 +22,13 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.common.BoundingBox;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.RouteConverterOpenSource;
 import slash.navigation.converter.gui.actions.DeleteMapsAction;
 import slash.navigation.converter.gui.actions.DisplayMapAction;
 import slash.navigation.converter.gui.actions.DownloadMapsAction;
-import slash.navigation.converter.gui.helpers.AutomaticElevationService;
-import slash.navigation.converter.gui.helpers.AvailableOfflineMapsTablePopupMenu;
-import slash.navigation.converter.gui.helpers.AvailableOnlineMapsTablePopupMenu;
-import slash.navigation.converter.gui.helpers.DownloadableMapsTablePopupMenu;
+import slash.navigation.converter.gui.helpers.*;
 import slash.navigation.converter.gui.renderer.LocalMapTableCellRenderer;
 import slash.navigation.converter.gui.renderer.RemoteMapTableCellRenderer;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
@@ -45,12 +42,9 @@ import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.RemoteMap;
 import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
-import slash.navigation.maps.mapsforge.models.TileMapTableModel;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
@@ -271,26 +265,24 @@ public class MapsDialog extends SimpleDialog {
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private List<BoundingBox> getSelectedBoundingBoxes() {
-        List<BoundingBox> result = new ArrayList<>();
+    private List<MapDescriptor> getSelectedMaps() {
+        List<MapDescriptor> result = new ArrayList<>();
         int[] selectedRows = tableDownloadableMaps.getSelectedRows();
         for (int selectedRow : selectedRows) {
             int row = tableDownloadableMaps.convertRowIndexToModel(selectedRow);
             RemoteMap map = getMapsforgeMapManager().getDownloadableMapsModel().getItem(row);
-            BoundingBox boundingBox = map.getBoundingBox();
-            if (boundingBox != null)
-                result.add(boundingBox);
+            result.add(new RemoteMapDescriptor(map));
         }
         return result;
     }
 
     private void updateLabel() {
         RouteConverter r = RouteConverter.getInstance();
-        List<BoundingBox> selectedBoundingBoxes = getSelectedBoundingBoxes();
+        List<MapDescriptor> selectedMaps = getSelectedMaps();
 
         RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
         long routingServiceDownloadSize = routingService.isDownload() ?
-                routingService.calculateRemainingDownloadSize(selectedBoundingBoxes) : 0;
+                routingService.calculateRemainingDownloadSize(selectedMaps) : 0;
         checkBoxDownloadRoutingData.setEnabled(routingServiceDownloadSize > 0);
         checkBoxDownloadRoutingData.setSelected(checkBoxDownloadRoutingData.isEnabled());
         checkBoxDownloadRoutingData.setText(format(RouteConverter.getBundle().getString("download-routing-data"),
@@ -298,7 +290,7 @@ public class MapsDialog extends SimpleDialog {
 
         ElevationService elevationService = r.getElevationServiceFacade().getElevationService();
         long elevationServiceDownloadSize = elevationService.isDownload() ?
-                elevationService.calculateRemainingDownloadSize(selectedBoundingBoxes) : 0;
+                elevationService.calculateRemainingDownloadSize(selectedMaps) : 0;
         checkBoxDownloadElevationData.setEnabled(elevationServiceDownloadSize > 0);
         checkBoxDownloadElevationData.setSelected(checkBoxDownloadElevationData.isEnabled());
         String elevationServiceName = elevationService instanceof AutomaticElevationService ?
@@ -522,5 +514,4 @@ public class MapsDialog extends SimpleDialog {
     public JComponent $$$getRootComponent$$$() {
         return contentPane;
     }
-
 }

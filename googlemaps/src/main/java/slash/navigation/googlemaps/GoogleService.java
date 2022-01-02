@@ -21,10 +21,7 @@
 package slash.navigation.googlemaps;
 
 import slash.common.helpers.APIKeyRegistry;
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.common.*;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
@@ -213,11 +210,11 @@ public class GoogleService implements ElevationService, GeocodingService {
         throw new UnsupportedOperationException();
     }
 
-    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+    public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
     }
 
-    public void downloadElevationData(List<BoundingBox> boundingBoxes) {
+    public void downloadElevationData(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
     }
 }

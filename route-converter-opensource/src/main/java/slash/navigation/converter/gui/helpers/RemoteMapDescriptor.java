@@ -17,33 +17,30 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+package slash.navigation.converter.gui.helpers;
 
-package slash.navigation.elevation;
-
-import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.MapDescriptor;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
+import slash.navigation.maps.mapsforge.RemoteMap;
 
 /**
- * Interface for a service that looks up the elevation for a given position.
+ * Converts {@link RemoteMap} into a {@link MapDescriptor}.
  *
  * @author Christian Pesch
  */
 
-public interface ElevationService {
-    String getName();
-    boolean isDownload();
-    boolean isOverQueryLimit();
-    String getPath();
-    void setPath(String path);
-    File getDirectory();
+public class RemoteMapDescriptor implements MapDescriptor {
+    private final RemoteMap map;
 
-    Double getElevationFor(double longitude, double latitude) throws IOException;
+    public RemoteMapDescriptor(RemoteMap map) {
+        this.map = map;
+    }
 
-    void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload);
-    long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors);
-    void downloadElevationData(List<MapDescriptor> mapDescriptors);
+    public String getIdentifier() {
+        return map.getDescription();
+    }
+
+    public BoundingBox getBoundingBox() {
+        return map.getBoundingBox();
+    }
 }

@@ -20,10 +20,7 @@
 
 package slash.navigation.routing;
 
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.DistanceAndTime;
-import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.*;
 
 import java.util.List;
 
@@ -98,11 +95,11 @@ public class Beeline extends BaseRoutingService {
         throw new UnsupportedOperationException();
     }
 
-    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+    public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
     }
 
-    public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
+    public void downloadRoutingData(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
     }
 }

@@ -332,14 +332,22 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        Set<BoundingBox> boundingBoxes = new HashSet<>();
+        Set<MapDescriptor> mapDescriptors = new HashSet<>();
         for (int i = 0; i < longitudeAndLatitudes.size() - 1; i += 2) {
             LongitudeAndLatitude l1 = longitudeAndLatitudes.get(i);
             LongitudeAndLatitude l2 = longitudeAndLatitudes.get(i + 1);
-            boundingBoxes.add(createBoundingBox(asList(l1, l2)));
+            mapDescriptors.add(new MapDescriptor() {
+                public String getIdentifier() {
+                    return null;
+                }
+
+                public BoundingBox getBoundingBox() {
+                    return createBoundingBox(asList(l1, l2));
+                }
+            });
         }
 
-        Collection<Downloadable> downloadables = finder.getDownloadablesFor(boundingBoxes);
+        Collection<Downloadable> downloadables = finder.getDownloadablesFor(mapDescriptors);
         return new DownloadFutureImpl(downloadables);
     }
 
@@ -412,8 +420,8 @@ public class GraphHopper extends BaseRoutingService {
                 new FileAndChecksum(createFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
     }
 
-    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> downloadables = finder.getDownloadablesFor(boundingBoxes);
+    public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
+        Collection<Downloadable> downloadables = finder.getDownloadablesFor(mapDescriptors);
         long notExists = 0L;
         for (Downloadable downloadable : downloadables) {
             Long contentLength = downloadable.getLatestChecksum().getContentLength();
@@ -427,8 +435,8 @@ public class GraphHopper extends BaseRoutingService {
         return notExists;
     }
 
-    public void downloadRoutingData(List<BoundingBox> boundingBoxes) {
-        Collection<Downloadable> downloadables = finder.getDownloadablesFor(boundingBoxes);
+    public void downloadRoutingData(List<MapDescriptor> mapDescriptors) {
+        Collection<Downloadable> downloadables = finder.getDownloadablesFor(mapDescriptors);
         for (Downloadable downloadable : downloadables) {
             download(downloadable);
         }

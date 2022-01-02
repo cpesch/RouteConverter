@@ -21,7 +21,9 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.helpers.RemoteMapDescriptor;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.gui.notifications.NotificationManager;
@@ -32,9 +34,11 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newCachedThreadPool;
+import static java.util.stream.Collectors.toList;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -79,15 +83,10 @@ public class DownloadMapsAction extends DialogAction {
             return;
         final List<RemoteMap> selectedMaps = new ArrayList<>();
         List<String> selectedMapsNames = new ArrayList<>();
-        final List<BoundingBox> selectedBoundingBoxes = new ArrayList<>();
         for (int selectedRow : selectedRows) {
             RemoteMap map = mapManager.getDownloadableMapsModel().getItem(table.convertRowIndexToModel(selectedRow));
             selectedMaps.add(map);
             selectedMapsNames.add(map.getUrl());
-            BoundingBox boundingBox = map.getBoundingBox();
-            if (boundingBox != null)
-                selectedBoundingBoxes.add(boundingBox);
-
         }
         getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), asDialogString(selectedMapsNames, true)), getAction());
 
@@ -96,10 +95,13 @@ public class DownloadMapsAction extends DialogAction {
                 try {
                     mapManager.queueForDownload(selectedMaps);
 
+                    List<MapDescriptor> mapDescriptors = selectedMaps.stream()
+                            .map(RemoteMapDescriptor::new)
+                            .collect(toList());
                     if (checkBoxDownloadRoutingData.isSelected())
-                        r.getRoutingServiceFacade().getRoutingService().downloadRoutingData(selectedBoundingBoxes);
+                        r.getRoutingServiceFacade().getRoutingService().downloadRoutingData(mapDescriptors);
                     if (checkBoxDownloadElevationData.isSelected())
-                        r.getElevationServiceFacade().getElevationService().downloadElevationData(selectedBoundingBoxes);
+                        r.getElevationServiceFacade().getElevationService().downloadElevationData(mapDescriptors);
 
                     mapManager.scanMaps();
                 } catch (final Exception e) {

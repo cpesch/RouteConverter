@@ -21,6 +21,7 @@ package slash.navigation.hgt;
 
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.datasources.Fragment;
@@ -34,8 +35,10 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.*;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
+import static java.util.stream.Collectors.toList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.removeExtension;
@@ -156,7 +159,7 @@ public class HgtFiles implements ElevationService {
 
     private Download download(Downloadable downloadable) {
         List<FileAndChecksum> fragments = new ArrayList<>();
-        for (Fragment otherFragments : downloadable.getFragments()) {
+        for (Fragment<Downloadable> otherFragments : downloadable.getFragments()) {
             String key = otherFragments.getKey();
             // ignore fragment keys without extension which are reported by old RouteConverter releases
             if (key.endsWith(DOT_HGT))
@@ -203,8 +206,11 @@ public class HgtFiles implements ElevationService {
         return result;
     }
 
-    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
-        Collection<Fragment<Downloadable>> fragments = getDownloadablesFor(boundingBoxes);
+    public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
+        Collection<Fragment<Downloadable>> fragments = getDownloadablesFor(mapDescriptors.stream()
+                .map(MapDescriptor::getBoundingBox)
+                .collect(toList())
+        );
 
         Collection<Downloadable> downloadables = new HashSet<>();
         for (Fragment<Downloadable> fragment : fragments) {
@@ -224,8 +230,11 @@ public class HgtFiles implements ElevationService {
         return notExists;
     }
 
-    public void downloadElevationData(List<BoundingBox> boundingBoxes) {
-        Collection<Fragment<Downloadable>> fragments = getDownloadablesFor(boundingBoxes);
+    public void downloadElevationData(List<MapDescriptor> mapDescriptors) {
+        Collection<Fragment<Downloadable>> fragments = getDownloadablesFor(mapDescriptors.stream()
+                .map(MapDescriptor::getBoundingBox)
+                .collect(toList())
+        );
         for (Downloadable downloadable : asDownloadableSet(fragments)) {
             download(downloadable);
         }

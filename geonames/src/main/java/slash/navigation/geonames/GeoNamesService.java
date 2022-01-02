@@ -21,8 +21,8 @@
 package slash.navigation.geonames;
 
 import slash.common.helpers.APIKeyRegistry;
-import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.elevation.ElevationService;
 import slash.navigation.geocoding.GeocodingService;
@@ -206,11 +206,11 @@ public class GeoNamesService implements ElevationService, GeocodingService {
         throw new UnsupportedOperationException();
     }
 
-    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+    public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
     }
 
-    public void downloadElevationData(List<BoundingBox> boundingBoxes) {
+    public void downloadElevationData(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
     }
 }

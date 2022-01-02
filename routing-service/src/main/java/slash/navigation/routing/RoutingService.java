@@ -20,8 +20,8 @@
 
 package slash.navigation.routing;
 
-import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 
 import java.util.List;
@@ -48,8 +48,8 @@ public interface RoutingService {
     RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode);
 
     DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
-    long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes);
-    void downloadRoutingData(List<BoundingBox> boundingBoxes);
+    long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors);
+    void downloadRoutingData(List<MapDescriptor> mapDescriptors);
 
     void addRoutingServiceListener(RoutingServiceListener routingServiceListener);
 }

@@ -23,6 +23,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 
@@ -75,7 +76,7 @@ public class DownloadableFinderIT {
         when(dataSource.getFiles()).thenReturn(singletonList(small));
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
 
-        Collection<Downloadable> downloadables = finder.getDownloadablesFor(singletonList(new BoundingBox(0.1, 0.1, -0.1, -0.1)));
+        Collection<Downloadable> downloadables = finder.getDownloadablesFor(singletonList(new MapDescriptorImpl(null,0.1, 0.1, -0.1, -0.1)));
         assertEquals(singletonList(SMALL_URI), extractUris(new ArrayList<>(downloadables)));
     }
 
@@ -94,7 +95,7 @@ public class DownloadableFinderIT {
         when(dataSource.getFiles()).thenReturn(asList(large, medium, small));
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
 
-        List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
+        List<Downloadable> downloadables = finder.getDownloadablesFor(new MapDescriptorImpl(null,0.1, 0.1, -0.1, -0.1));
         assertEquals(asList(SMALL_URI, MEDIUM_URI, LARGE_URI), extractUris(downloadables));
     }
 
@@ -114,7 +115,7 @@ public class DownloadableFinderIT {
         assertTrue(new File(temporaryDirectory, LARGE_URI).createNewFile());
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
 
-        List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.1, 0.1, -0.1, -0.1));
+        List<Downloadable> downloadables = finder.getDownloadablesFor(new MapDescriptorImpl(null, 0.1, 0.1, -0.1, -0.1));
         assertEquals(asList(LARGE_URI, SMALL_URI, MEDIUM_URI), extractUris(downloadables));
     }
 
@@ -131,7 +132,26 @@ public class DownloadableFinderIT {
         assertTrue(new File(temporaryDirectory, SMALL_URI).createNewFile());
         finder = new DownloadableFinder(dataSource, temporaryDirectory);
 
-        List<Downloadable> downloadables = finder.getDownloadablesFor(new BoundingBox(0.2, 0.2, -0.2, -0.2));
+        List<Downloadable> downloadables = finder.getDownloadablesFor(new MapDescriptorImpl(null,0.2, 0.2, -0.2, -0.2));
         assertEquals(singletonList(MEDIUM_URI), extractUris(downloadables));
+    }
+
+    private static class MapDescriptorImpl implements MapDescriptor {
+        private String identifier;
+        private BoundingBox boundingBox;
+
+        public MapDescriptorImpl(String identifier, Double longitudeNorthEast, Double latitudeNorthEast,
+                                 Double longitudeSouthWest, Double latitudeSouthWest) {
+            this.identifier = identifier;
+            this.boundingBox = new BoundingBox(longitudeNorthEast, latitudeNorthEast, longitudeSouthWest, latitudeSouthWest);
+        }
+
+        public String getIdentifier() {
+            return identifier;
+        }
+
+        public BoundingBox getBoundingBox() {
+            return boundingBox;
+        }
     }
 }

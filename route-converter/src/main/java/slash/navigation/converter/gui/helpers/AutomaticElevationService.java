@@ -19,8 +19,8 @@
 */
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.elevation.ElevationService;
 
 import java.io.File;
@@ -126,15 +126,15 @@ public class AutomaticElevationService implements ElevationService {
             service.downloadElevationDataFor(longitudeAndLatitudes, waitForDownload);
     }
 
-    public long calculateRemainingDownloadSize(List<BoundingBox> boundingBoxes) {
+    public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
         ElevationService service = elevationServiceFacade.findElevationService(getPreferredDownloadName());
-        return service != null ? service.calculateRemainingDownloadSize(boundingBoxes) : 0L;
+        return service != null ? service.calculateRemainingDownloadSize(mapDescriptors) : 0L;
     }
 
-    public void downloadElevationData(List<BoundingBox> boundingBoxes) {
+    public void downloadElevationData(List<MapDescriptor> mapDescriptors) {
         ElevationService service = elevationServiceFacade.findElevationService(getPreferredDownloadName());
         if (service != null)
-            service.downloadElevationData(boundingBoxes);
+            service.downloadElevationData(mapDescriptors);
     }
 
     private static class ElevationServicePriorityComparator implements Comparator<ElevationService> {
