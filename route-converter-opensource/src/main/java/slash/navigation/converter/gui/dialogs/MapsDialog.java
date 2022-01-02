@@ -49,6 +49,8 @@ import slash.navigation.maps.mapsforge.models.TileMapTableModel;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
@@ -231,6 +233,7 @@ public class MapsDialog extends SimpleDialog {
             }
         });
 
+        r.getRoutingServiceFacade().getRoutingPreferencesModel().addChangeListener(e -> updateLabel());
         updateLabel();
 
         final ActionManager actionManager = r.getContext().getActionManager();
