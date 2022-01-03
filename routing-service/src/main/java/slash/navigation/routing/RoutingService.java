@@ -47,7 +47,7 @@ public interface RoutingService {
 
     RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode);
 
-    DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes);
+    DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes);
     long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors);
     void downloadRoutingData(List<MapDescriptor> mapDescriptors);
 

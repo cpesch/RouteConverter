@@ -68,13 +68,14 @@ public class DownloadableFinderIT {
     }
 
     @Test
-    public void testSelectTheBoundingBox() {
+    public void testSelectByBoundingBox() {
         DataSource dataSource = mock(DataSource.class);
         slash.navigation.datasources.File small = mock(slash.navigation.datasources.File.class);
         when(small.getBoundingBox()).thenReturn(new BoundingBox(0.4, 0.2, -0.2, -0.2));
         when(small.getUri()).thenReturn(SMALL_URI);
         when(dataSource.getFiles()).thenReturn(singletonList(small));
-        finder = new DownloadableFinder(singletonList(dataSource), temporaryDirectory);
+        when(dataSource.getDirectory()).thenReturn(temporaryDirectory.getAbsolutePath());
+        finder = new DownloadableFinder(singletonList(dataSource));
 
         Collection<Downloadable> downloadables = finder.getDownloadablesFor(singletonList(new MapDescriptorImpl(null,0.1, 0.1, -0.1, -0.1)));
         assertEquals(singletonList(SMALL_URI), extractUris(new ArrayList<>(downloadables)));
@@ -93,7 +94,8 @@ public class DownloadableFinderIT {
         when(large.getBoundingBox()).thenReturn(new BoundingBox(2.0, 2.0, -2.0, -2.0));
         when(large.getUri()).thenReturn(LARGE_URI);
         when(dataSource.getFiles()).thenReturn(asList(large, medium, small));
-        finder = new DownloadableFinder(singletonList(dataSource), temporaryDirectory);
+        when(dataSource.getDirectory()).thenReturn(temporaryDirectory.getAbsolutePath());
+        finder = new DownloadableFinder(singletonList(dataSource));
 
         List<Downloadable> downloadables = finder.getDownloadablesFor(new MapDescriptorImpl(null,0.1, 0.1, -0.1, -0.1));
         assertEquals(asList(SMALL_URI, MEDIUM_URI, LARGE_URI), extractUris(downloadables));
@@ -112,8 +114,9 @@ public class DownloadableFinderIT {
         when(large.getBoundingBox()).thenReturn(new BoundingBox(3.0, 3.0, -2.0, -2.0));
         when(large.getUri()).thenReturn(LARGE_URI);
         when(dataSource.getFiles()).thenReturn(asList(medium, small, large));
+        when(dataSource.getDirectory()).thenReturn(temporaryDirectory.getAbsolutePath());
         assertTrue(new File(temporaryDirectory, LARGE_URI).createNewFile());
-        finder = new DownloadableFinder(singletonList(dataSource), temporaryDirectory);
+        finder = new DownloadableFinder(singletonList(dataSource));
 
         List<Downloadable> downloadables = finder.getDownloadablesFor(new MapDescriptorImpl(null, 0.1, 0.1, -0.1, -0.1));
         assertEquals(asList(LARGE_URI, SMALL_URI, MEDIUM_URI), extractUris(downloadables));
@@ -129,11 +132,26 @@ public class DownloadableFinderIT {
         when(medium.getBoundingBox()).thenReturn(new BoundingBox(1.0, 1.0, -1.0, -1.0));
         when(medium.getUri()).thenReturn(MEDIUM_URI);
         when(dataSource.getFiles()).thenReturn(asList(medium, small));
+        when(dataSource.getDirectory()).thenReturn(temporaryDirectory.getAbsolutePath());
         assertTrue(new File(temporaryDirectory, SMALL_URI).createNewFile());
-        finder = new DownloadableFinder(singletonList(dataSource), temporaryDirectory);
+        finder = new DownloadableFinder(singletonList(dataSource));
 
         List<Downloadable> downloadables = finder.getDownloadablesFor(new MapDescriptorImpl(null,0.2, 0.2, -0.2, -0.2));
         assertEquals(singletonList(MEDIUM_URI), extractUris(downloadables));
+    }
+
+    @Test
+    public void testSelectByMapIdentifier() {
+        DataSource dataSource = mock(DataSource.class);
+        slash.navigation.datasources.File small = mock(slash.navigation.datasources.File.class);
+        when(small.getBoundingBox()).thenReturn(null);
+        when(small.getUri()).thenReturn(SMALL_URI + ".map");
+        when(dataSource.getFiles()).thenReturn(singletonList(small));
+        when(dataSource.getDirectory()).thenReturn(temporaryDirectory.getAbsolutePath());
+        finder = new DownloadableFinder(singletonList(dataSource));
+
+        Collection<Downloadable> downloadables = finder.getDownloadablesFor(singletonList(new MapDescriptorImpl(SMALL_URI + ".zip",0.1, 0.1, -0.1, -0.1)));
+        assertEquals(singletonList(SMALL_URI + ".map"), extractUris(new ArrayList<>(downloadables)));
     }
 
     private static class MapDescriptorImpl implements MapDescriptor {

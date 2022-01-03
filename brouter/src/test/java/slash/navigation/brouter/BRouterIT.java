@@ -78,7 +78,7 @@ public class BRouterIT {
 
         router = new BRouter(new DownloadManager(createTempFile("queueFile", ".xml")));
         router.setProfilesAndSegments(profiles, brouterSegments);
-        DownloadFuture future = router.downloadRoutingDataFor(singletonList(new LongitudeAndLatitude(10.18587, 53.40451)));
+        DownloadFuture future = router.downloadRoutingDataFor(null, singletonList(new LongitudeAndLatitude(10.18587, 53.40451)));
         if (future.isRequiresDownload())
             future.download();
     }

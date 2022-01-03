@@ -43,4 +43,8 @@ public class RemoteMapDescriptor implements MapDescriptor {
     public BoundingBox getBoundingBox() {
         return map.getBoundingBox();
     }
+
+    public String toString() {
+        return getClass().getSimpleName() + "[identifier=" + getIdentifier() + ", boundingBox=" + getBoundingBox() + "]";
+    }
 }

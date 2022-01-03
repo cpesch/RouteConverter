@@ -96,7 +96,7 @@ public class GoogleDirections extends BaseRoutingService {
         throw new UnsupportedOperationException();
     }
 
-    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+    public DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes) {
         throw new UnsupportedOperationException();
     }
 

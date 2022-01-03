@@ -229,12 +229,14 @@ public class MapsforgeMapView extends BaseMapView {
 
         this.routeUpdater = new TrackUpdater(positionsModel, new TrackOperation() {
             public void add(List<PairWithLayer> pairWithLayers) {
-                routeRenderer.renderRoute(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().addDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
+                routeRenderer.renderRoute(getMapIdentifier(), pairWithLayers,
+                        () -> mapViewCallback.getDistanceAndTimeAggregator().addDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void update(List<PairWithLayer> pairWithLayers) {
                 removeLayers(toLayers(pairWithLayers));
-                routeRenderer.renderRoute(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
+                routeRenderer.renderRoute(getMapIdentifier(), pairWithLayers,
+                        () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
@@ -664,6 +666,10 @@ public class MapsforgeMapView extends BaseMapView {
 
     public boolean isDownload() {
         return true;
+    }
+
+    public String getMapIdentifier() {
+        return getMapManager().getDisplayedMapModel().getItem().getDescription();
     }
 
     public Throwable getInitializationCause() {

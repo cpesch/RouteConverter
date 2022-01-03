@@ -91,7 +91,7 @@ public class Beeline extends BaseRoutingService {
         return getRouteBetween(from, to);
     }
 
-    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+    public DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes) {
         throw new UnsupportedOperationException();
     }
 

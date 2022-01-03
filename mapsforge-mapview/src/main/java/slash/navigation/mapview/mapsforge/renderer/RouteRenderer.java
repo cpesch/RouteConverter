@@ -91,13 +91,13 @@ public class RouteRenderer {
         }
     }
 
-    public synchronized void renderRoute(final List<PairWithLayer> pairWithLayers, final Runnable invokeAfterRenderingRunnable) {
+    public synchronized void renderRoute(String mapIdentifier, List<PairWithLayer> pairWithLayers, Runnable invokeAfterRenderingRunnable) {
         synchronized (notificationMutex) {
             drawingRoute = true;
         }
 
         try {
-            internalRenderRoute(pairWithLayers, invokeAfterRenderingRunnable);
+            internalRenderRoute(mapIdentifier, pairWithLayers, invokeAfterRenderingRunnable);
         } catch (Throwable t) {
             mapViewCallback.handleRoutingException(t);
         } finally {
@@ -107,7 +107,7 @@ public class RouteRenderer {
         }
     }
 
-    private void internalRenderRoute(List<PairWithLayer> pairWithLayers, Runnable invokeAfterRenderingRunnable) {
+    private void internalRenderRoute(String mapIdentifier, List<PairWithLayer> pairWithLayers, Runnable invokeAfterRenderingRunnable) {
         drawBeeline(pairWithLayers);
         synchronized (notificationMutex) {
             if(!drawingRoute)
@@ -128,7 +128,7 @@ public class RouteRenderer {
         }
 
         try {
-            drawRoute(pairWithLayers);
+            drawRoute(mapIdentifier, pairWithLayers);
         }
         finally {
             invokeAfterRenderingRunnable.run();
@@ -213,13 +213,13 @@ public class RouteRenderer {
         return result;
     }
 
-    private void drawRoute(List<PairWithLayer> pairWithLayers) {
+    private void drawRoute(String mapIdentifier, List<PairWithLayer> pairWithLayers) {
         Paint paint = graphicFactory.createPaint();
         paint.setColor(asRGBA(routeColorModel));
         paint.setStrokeWidth(getRouteLineWidth());
         RoutingService routingService = mapViewCallback.getRoutingService();
 
-        DownloadFuture future = routingService.isDownload() ? routingService.downloadRoutingDataFor(asLongitudeAndLatitude(pairWithLayers)) : null;
+        DownloadFuture future = routingService.isDownload() ? routingService.downloadRoutingDataFor(mapIdentifier, asLongitudeAndLatitude(pairWithLayers)) : null;
         for (PairWithLayer pairWithLayer : pairWithLayers) {
             if (!pairWithLayer.hasCoordinates())
                 continue;

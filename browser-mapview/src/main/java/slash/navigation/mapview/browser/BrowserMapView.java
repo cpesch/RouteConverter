@@ -297,6 +297,10 @@ public abstract class BrowserMapView extends BaseMapView {
         return false;
     }
 
+    public String getMapIdentifier() {
+        return getMapType();
+    }
+
     public String getMapsPath() {
         throw new UnsupportedOperationException();
     }

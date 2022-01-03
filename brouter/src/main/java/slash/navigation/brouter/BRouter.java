@@ -367,7 +367,7 @@ public class BRouter extends BaseRoutingService {
             downloadManager.waitForCompletion(downloads);
     }
 
-    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+    public DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes) {
         Collection<String> uris = new HashSet<>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
             uris.addAll(createFileKeys(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));

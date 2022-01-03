@@ -29,6 +29,7 @@ import java.util.logging.Logger;
 import java.util.zip.InflaterInputStream;
 
 import static java.lang.String.format;
+import static slash.common.io.Files.removeExtension;
 
 /**
  * Provides PBF functionality.
@@ -48,6 +49,7 @@ public class PbfUtil {
         String name = file.getName().replace(DOT_PBF, "").replace(DOT_OSM, "");
         if(removeLatest)
             name = name.replaceAll(LATEST, "");
+        name = removeExtension(name);
         return new java.io.File(file.getParent(), name);
     }
 

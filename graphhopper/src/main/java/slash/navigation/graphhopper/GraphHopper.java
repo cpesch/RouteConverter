@@ -52,7 +52,9 @@ import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.asDialogString;
+import static slash.common.io.Files.removeExtension;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.download.Action.Extract;
 import static slash.navigation.graphhopper.PbfUtil.lookupGraphDirectory;
 import static slash.navigation.routing.RoutingResult.Validity.*;
 
@@ -109,16 +111,12 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public synchronized boolean isInitialized() {
-        return getDataSource() != null;
-    }
-
-    private synchronized DataSource getDataSource() {
-        return dataSources.get(0);
+        return dataSources != null;
     }
 
     public synchronized void setDataSources(DataSource... dataSourcesList) {
         this.dataSources = asList(dataSourcesList);
-        finder = new DownloadableFinder(dataSources, getDirectory());
+        finder = new DownloadableFinder(dataSources);
     }
 
     public boolean isDownload() {
@@ -168,20 +166,24 @@ public class GraphHopper extends BaseRoutingService {
         preferences.put(DIRECTORY_PREFERENCE, path);
     }
 
-    private String getBaseUrl() {
-        return preferences.get(BASE_URL_PREFERENCE, getDataSource().getBaseUrl());
+    private String getBaseUrl(DataSource dataSource) {
+        return preferences.get(BASE_URL_PREFERENCE + dataSource.getName(), dataSource.getBaseUrl());
     }
 
-    private java.io.File getDirectory() {
+    private java.io.File getDirectory(DataSource dataSource) {
         String directoryName = getPath();
         java.io.File f = new java.io.File(directoryName);
         if (!f.exists())
-            directoryName = getApplicationDirectory(getDataSource().getDirectory()).getAbsolutePath();
+            directoryName = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
         return ensureDirectory(directoryName);
     }
 
-    private java.io.File createFile(String key) {
-        return new java.io.File(getDirectory(), key);
+    private java.io.File createFile(Downloadable downloadable) {
+        return new java.io.File(getDirectory(downloadable.getDataSource()), downloadable.getUri());
+    }
+
+    private java.io.File createDirectory(Downloadable downloadable) {
+        return ensureDirectory(new java.io.File(getDirectory(downloadable.getDataSource()), removeExtension(downloadable.getUri())).getParentFile());
     }
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
@@ -331,14 +333,14 @@ public class GraphHopper extends BaseRoutingService {
         return result;
     }
 
-    public DownloadFuture downloadRoutingDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+    public DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes) {
         Set<MapDescriptor> mapDescriptors = new HashSet<>();
         for (int i = 0; i < longitudeAndLatitudes.size() - 1; i += 2) {
             LongitudeAndLatitude l1 = longitudeAndLatitudes.get(i);
             LongitudeAndLatitude l2 = longitudeAndLatitudes.get(i + 1);
             mapDescriptors.add(new MapDescriptor() {
                 public String getIdentifier() {
-                    return null;
+                    return mapIdentifier;
                 }
 
                 public BoundingBox getBoundingBox() {
@@ -396,7 +398,7 @@ public class GraphHopper extends BaseRoutingService {
                 return;
 
             this.next = downloadables.remove(0);
-            setOsmPbfFile(createFile(next.getUri()));
+            setOsmPbfFile(createFile(next));
         }
     }
 
@@ -415,30 +417,36 @@ public class GraphHopper extends BaseRoutingService {
 
     private Download download(Downloadable downloadable) {
         String uri = downloadable.getUri();
-        String url = getBaseUrl() + uri;
-        return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, Action.valueOf(getDataSource().getAction()),
-                new FileAndChecksum(createFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+        String url = getBaseUrl(downloadable.getDataSource()) + uri;
+        Action action = Action.valueOf(downloadable.getDataSource().getAction());
+        File file = action.equals(Extract) ? createDirectory(downloadable) : createFile(downloadable);
+        return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, action,
+                new FileAndChecksum(file, downloadable.getLatestChecksum()), null);
     }
 
     public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
         Collection<Downloadable> downloadables = finder.getDownloadablesFor(mapDescriptors);
         long notExists = 0L;
         for (Downloadable downloadable : downloadables) {
-            Long contentLength = downloadable.getLatestChecksum().getContentLength();
+            Long contentLength = downloadable.getLatestChecksum() != null ? downloadable.getLatestChecksum().getContentLength() : null;
             if (contentLength == null)
                 continue;
 
-            java.io.File file = createFile(downloadable.getUri());
-            if (!file.exists())
+            java.io.File file = createFile(downloadable);
+            if (!file.exists()) {
                 notExists += contentLength;
+                break;
+            }
         }
         return notExists;
     }
 
     public void downloadRoutingData(List<MapDescriptor> mapDescriptors) {
-        Collection<Downloadable> downloadables = finder.getDownloadablesFor(mapDescriptors);
+        List<Downloadable> downloadables = finder.getDownloadablesFor(mapDescriptors);
         for (Downloadable downloadable : downloadables) {
             download(downloadable);
+            // avoid multiple downloads when kurviger, mapsforge graphs and geofabrik PBFs are returned
+            break;
         }
     }
 }

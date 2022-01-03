@@ -41,9 +41,10 @@ public interface MapView extends PositionsSelectionModel {
                     MapViewCallback mapViewCallback);
     boolean isInitialized();
     boolean isDownload();
-    String getMapsPath();
+    String getMapIdentifier();
+    String getMapsPath(); // only MapsforgeMapView
     void setMapsPath(String path) throws IOException;
-    String getThemesPath();
+    String getThemesPath(); // only MapsforgeMapView
     void setThemesPath(String path) throws IOException;
 
     Throwable getInitializationCause();

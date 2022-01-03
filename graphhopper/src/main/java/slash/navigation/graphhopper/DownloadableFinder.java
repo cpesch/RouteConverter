@@ -45,32 +45,40 @@ import static slash.navigation.graphhopper.PbfUtil.existsGraphDirectory;
 public class DownloadableFinder {
     private static final Logger log = Logger.getLogger(DownloadableFinder.class.getName());
     private final List<DataSource> dataSources;
-    private final java.io.File directory;
     private boolean wroteMessageAboutMissingBoundingBox = false;
 
-    public DownloadableFinder(List<DataSource> dataSources, java.io.File directory) {
+    public DownloadableFinder(List<DataSource> dataSources) {
         this.dataSources = dataSources;
-        this.directory = directory;
     }
 
-    private java.io.File toFile(File file) {
+    private java.io.File toFile(String directory, File file) {
         return new java.io.File(directory, file.getUri());
     }
 
-    private boolean existsFile(File file) {
-        return file != null && toFile(file).exists();
+    private boolean existsFile(String directory, File file) {
+        return file != null && toFile(directory, file).exists();
     }
 
-    private boolean existsGraph(File file) {
-        return file != null && existsGraphDirectory(toFile(file));
+    private boolean existsGraph(String directory, File file) {
+        return file != null && existsGraphDirectory(toFile(directory, file));
     }
 
-    private boolean fileMatchesMapDescriptor(File file, MapDescriptor mapDescriptor) {
+    private String removeMapDirectoryPrefix(String identifier) {
+        // mapIdentifier from MapsforgeMapView have maps subdirectory as a prefix
+        if (identifier.startsWith("kurviger/"))
+            identifier = identifier.substring("kurviger/".length());
+        if (identifier.startsWith("mapsforge/"))
+            identifier = identifier.substring("mapsforge/".length());
+        return identifier;
+    }
+
+    private boolean matchesIdentifier(File file, MapDescriptor mapDescriptor) {
         // try to find europe/germany from europe/germany.map and europe/germany.zip
-        if(mapDescriptor.getIdentifier() != null &&
-                removeExtension(file.getUri()).equals(removeExtension(mapDescriptor.getIdentifier())))
-            return true;
+        return mapDescriptor.getIdentifier() != null &&
+                removeExtension(file.getUri()).equals(removeExtension(removeMapDirectoryPrefix(mapDescriptor.getIdentifier())));
+    }
 
+    private boolean matchesBoundingBox(File file, MapDescriptor mapDescriptor) {
         BoundingBox fileBoundingBox = file.getBoundingBox();
         if (fileBoundingBox == null) {
             if (!wroteMessageAboutMissingBoundingBox) {
@@ -79,7 +87,6 @@ public class DownloadableFinder {
             }
             return false;
         }
-
         return fileBoundingBox.contains(mapDescriptor.getBoundingBox());
     }
 
@@ -87,13 +94,17 @@ public class DownloadableFinder {
         List<DownloadableDescriptor> descriptors = new ArrayList<>();
         for(DataSource dataSource : dataSources.stream().filter(Objects::nonNull).collect(toList())) {
             for (File file : dataSource.getFiles()) {
-                if(!fileMatchesMapDescriptor(file, mapDescriptor))
+                boolean matchesIdentifier = matchesIdentifier(file, mapDescriptor);
+                boolean matchesBoundingBox = matchesBoundingBox(file, mapDescriptor);
+                if(!matchesBoundingBox && !matchesIdentifier)
                     continue;
 
-                Double distance = calculateBearing(file.getBoundingBox().getCenter().getLongitude(), file.getBoundingBox().getCenter().getLatitude(),
-                        mapDescriptor.getBoundingBox().getCenter().getLongitude(), mapDescriptor.getBoundingBox().getCenter().getLatitude()).getDistance();
-                boolean existsFile = existsFile(file);
-                boolean existsGraphDirectory = existsGraph(file);
+                Double distance = file.getBoundingBox() != null && mapDescriptor.getBoundingBox() != null ?
+                    calculateBearing(file.getBoundingBox().getCenter().getLongitude(), file.getBoundingBox().getCenter().getLatitude(),
+                        mapDescriptor.getBoundingBox().getCenter().getLongitude(), mapDescriptor.getBoundingBox().getCenter().getLatitude()).getDistance()
+                        : 0.0;
+                boolean existsFile = existsFile(dataSource.getDirectory(), file);
+                boolean existsGraphDirectory = existsGraph(dataSource.getDirectory(), file);
                 descriptors.add(new DownloadableDescriptor(file, distance, file.getBoundingBox(), existsFile, existsGraphDirectory));
             }
         }
@@ -130,7 +141,7 @@ public class DownloadableFinder {
                 .flatMap(mapDescriptor -> getDownloadDescriptorsFor(mapDescriptor).stream())
                 .collect(toSet());
         List<Downloadable> result = asDownloadables(descriptors);
-        log.info(format("Found %d downloadables for %d map descriptors: %s", result.size(), mapDescriptors.size(), result));
+        log.info(format("Found %d downloadables: %s for %d map descriptors: %s", result.size(), result, mapDescriptors.size(), mapDescriptors));
         return result;
     }
 
@@ -158,8 +169,9 @@ public class DownloadableFinder {
             /* basically it's a good idea to choose the Downloadable with the smallest enclosing bounding box
                unfortunately, files like https://download.geofabrik.de/north-america/us/alaska-latest.osm.pbf
                claim too large bounding boxes */
-            return !(fileBoundingBox.getNorthEast().getLongitude() >= 179.9999 ||
-                    fileBoundingBox.getSouthWest().getLongitude() <= -179.9999);
+            return fileBoundingBox == null ||
+                    !(fileBoundingBox.getNorthEast().getLongitude() >= 179.9999 ||
+                            fileBoundingBox.getSouthWest().getLongitude() <= -179.9999);
         }
 
         private boolean existsFileOrGraphDirectory() {

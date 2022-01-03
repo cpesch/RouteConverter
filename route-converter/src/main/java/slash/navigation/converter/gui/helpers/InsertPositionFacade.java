@@ -109,7 +109,7 @@ public class InsertPositionFacade {
             for (NavigationPosition position : selectedPositions) {
                 longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
             }
-            future = routingService.downloadRoutingDataFor(longitudeAndLatitudes);
+            future = routingService.downloadRoutingDataFor(r.getMapView().getMapIdentifier(), longitudeAndLatitudes);
         }
 
         TravelMode travelMode = r.getRoutingServiceFacade().getRoutingPreferencesModel().getTravelMode();
