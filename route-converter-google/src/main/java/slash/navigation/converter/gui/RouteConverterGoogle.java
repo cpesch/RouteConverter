@@ -124,6 +124,9 @@ public class RouteConverterGoogle extends RouteConverter {
     protected void scanLocalMapsAndThemes() {
     }
 
+    protected void installBackgroundMap() {
+    }
+
     protected void scanRemoteMapsAndThemes() {
     }
 }

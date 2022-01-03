@@ -1289,6 +1289,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         new Thread(() -> {
             scanLocalMapsAndThemes();
+            scanRemoteMapsAndThemes();
+            installBackgroundMap();
 
             try {
                 getDataSourceManager().update(getEditionId(), getApiUrl(), getDataSourcesDirectory());
@@ -1326,7 +1328,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     protected abstract void scanLocalMapsAndThemes();
-
+    protected abstract void installBackgroundMap();
     protected abstract void scanRemoteMapsAndThemes();
 
     private void scanForFilesMissingInQueue() {

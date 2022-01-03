@@ -181,12 +181,12 @@ public class RouteConverterOpenSource extends RouteConverter {
             router.setProfilesAndSegments(brouterProfiles, brouterSegments);
         }
 
+        DataSource kurviger = getDataSourceManager().getDataSourceService().getDataSourceById("kurviger-graphs");
+        DataSource mapsforge = getDataSourceManager().getDataSourceService().getDataSourceById("mapsforge-graphs");
         DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
-        if (graphhopper != null) {
+        if (graphhopper != null || kurviger != null || mapsforge != null) {
             GraphHopper hopper = getRoutingServiceFacade().getRoutingService(GraphHopper.class);
-            hopper.setDataSources(graphhopper,
-                    getDataSourceManager().getDataSourceService().getDataSourceById("kurviger-graphs"),
-                    getDataSourceManager().getDataSourceService().getDataSourceById("mapsforge-graphs"));
+            hopper.setDataSources(kurviger, mapsforge, graphhopper);
         }
     }
 
@@ -222,16 +222,22 @@ public class RouteConverterOpenSource extends RouteConverter {
         }, "DirectoryScanner").start();
     }
 
-    protected void scanRemoteMapsAndThemes() {
-        getMapsforgeMapManager().scanDatasources();
-
+    protected void installBackgroundMap() {
         final File file = new File(getApplicationDirectory("maps/routeconverter"), "world.map");
         getDownloadManager().executeDownload("RouteConverter Background Map", "https://static.routeconverter.com/maps/world.map", Copy, file,
-                () -> invokeLater(() -> {
-                    MapView mapView = getMapView();
-                    if (mapView instanceof MapsforgeMapView)
-                        ((MapsforgeMapView) mapView).setBackgroundMap(file);
-                }));
+                new Runnable() {
+                    public void run() {
+                        invokeLater(() -> {
+                            MapView mapView = getMapView();
+                            if (mapView instanceof MapsforgeMapView)
+                                ((MapsforgeMapView) mapView).setBackgroundMap(file);
+                        });
+                    }
+                });
+    }
+
+    protected void scanRemoteMapsAndThemes() {
+        getMapsforgeMapManager().scanDatasources();
     }
 
     protected void shutdown() {
