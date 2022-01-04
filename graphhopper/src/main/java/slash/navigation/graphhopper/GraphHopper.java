@@ -342,9 +342,11 @@ public class GraphHopper extends BaseRoutingService {
                 public String getIdentifier() {
                     return mapIdentifier;
                 }
-
                 public BoundingBox getBoundingBox() {
                     return createBoundingBox(asList(l1, l2));
+                }
+                public String toString() {
+                    return "MapDescriptor[identifier=" + getIdentifier() + ", boundingBox=" + getBoundingBox() + "]";
                 }
             });
         }
