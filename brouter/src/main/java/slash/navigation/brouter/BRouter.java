@@ -161,7 +161,7 @@ public class BRouter extends BaseRoutingService {
     }
 
     private java.io.File getSegmentsDirectory() {
-        return getDirectory(getSegments(), "segments4");
+        return getDirectory(getSegments(), "segments");
     }
 
     private java.io.File createSegmentFile(String key) {
