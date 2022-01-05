@@ -215,7 +215,7 @@ public class MapsforgeMapManager {
     }
 
     public synchronized void scanMaps() throws IOException {
-        invokeInAwtEventQueue(() -> availableOfflineMapsModel.clear());
+        invokeInAwtEventQueue(availableOfflineMapsModel::clear);
 
         long start = currentTimeMillis();
 
@@ -230,10 +230,7 @@ public class MapsforgeMapManager {
             LocalMap map = getExtension(file).equals(DOT_MAP) ?
                     new MapsforgeFileMap(removePrefix(mapsDirectory, file), file.toURI().toString(), file, extractMapProvider(file), retrieveCopyrightText("OpenStreetMap")) :
                     new MBTilesFileMap(removePrefix(mapsDirectory, file), file.toURI().toString(), file, extractMapProvider(file), retrieveCopyrightText("OpenStreetMap"));
-            invokeInAwtEventQueue(() ->
-            {
-                availableOfflineMapsModel.addOrUpdateItem(map);
-            });
+            invokeInAwtEventQueue(() -> availableOfflineMapsModel.addOrUpdateItem(map));
         }
 
         long end = currentTimeMillis();
