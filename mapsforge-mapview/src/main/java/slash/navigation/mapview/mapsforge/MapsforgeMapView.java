@@ -1218,7 +1218,8 @@ public class MapsforgeMapView extends BaseMapView {
                 if (routeBoundingBox != null)
                     routeBorder = drawBorder(routeBoundingBox);
 
-                centerAndZoom(mapBoundingBox, routeBoundingBox, true, true);
+                boolean zoomToMap = routeBoundingBox == null || mapBoundingBox.contains(routeBoundingBox);
+                centerAndZoom(mapBoundingBox, zoomToMap ? mapBoundingBox : routeBoundingBox, true, true);
             }
         }
     }
