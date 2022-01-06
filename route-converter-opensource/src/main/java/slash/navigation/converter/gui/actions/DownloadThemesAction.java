@@ -88,7 +88,7 @@ public class DownloadThemesAction extends DialogAction {
                     mapManager.queueForDownload(selectedThemes);
 
                     mapManager.scanThemes();
-                } catch (final IOException e) {
+                } catch (IOException e) {
                     invokeLater(new Runnable() {
                         public void run() {
                             JFrame frame = r.getFrame();

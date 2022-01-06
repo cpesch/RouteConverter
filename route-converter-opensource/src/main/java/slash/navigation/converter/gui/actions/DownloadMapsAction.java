@@ -104,7 +104,7 @@ public class DownloadMapsAction extends DialogAction {
                         r.getElevationServiceFacade().getElevationService().downloadElevationData(mapDescriptors);
 
                     mapManager.scanMaps();
-                } catch (final Exception e) {
+                } catch (Exception e) {
                     invokeLater(() -> showMessageDialog(getDialog(), format(RouteConverter.getBundle().getString("scan-error"), e), getDialog().getTitle(), ERROR_MESSAGE));
                 }
             }
