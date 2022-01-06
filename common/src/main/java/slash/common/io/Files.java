@@ -275,6 +275,24 @@ public class Files {
         return files;
     }
 
+    public static void checkFile(File file) throws FileNotFoundException {
+        if (!file.exists())
+            throw new FileNotFoundException("file does not exist: " + file.getAbsolutePath());
+        else if (!file.isFile())
+            throw new FileNotFoundException("not a file: " + file.getAbsolutePath());
+        else if (!file.canRead())
+            throw new FileNotFoundException("cannot read file: " + file.getAbsolutePath());
+    }
+
+    public static void checkDirectory(File directory) throws FileNotFoundException {
+        if (!directory.exists())
+            throw new FileNotFoundException("directory does not exist: " + directory.getAbsolutePath());
+        else if (!directory.isDirectory())
+            throw new FileNotFoundException("not a directory: " + directory.getAbsolutePath());
+        else if (!directory.canRead())
+            throw new FileNotFoundException("cannot read directory: " + directory.getAbsolutePath());
+    }
+
     public static void writePartialFile(InputStream inputStream, long fileSize, File file) throws IOException {
         RandomAccessFile raf = new RandomAccessFile(file, "rw");
 

@@ -37,7 +37,6 @@ import slash.navigation.maps.mapsforge.models.TileMapTableModel;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -197,15 +196,6 @@ public class MapsforgeMapManager {
     private void initializeBuiltinThemes() {
         availableThemesModel.addOrUpdateItem(new VectorTheme("OpenStreetMap Default", DEFAULT_URL, DEFAULT));
         availableThemesModel.addOrUpdateItem(new VectorTheme("OpenStreetMap Osmarender", OSMARENDER_URL, OSMARENDER));
-    }
-
-    private void checkFile(File file) throws FileNotFoundException {
-        if (!file.exists())
-            throw new FileNotFoundException("file does not exist: " + file.getAbsolutePath());
-        else if (!file.isFile())
-            throw new FileNotFoundException("not a file: " + file.getAbsolutePath());
-        else if (!file.canRead())
-            throw new FileNotFoundException("cannot read file: " + file.getAbsolutePath());
     }
 
     private String extractMapProvider(File mapFile) {
