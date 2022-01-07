@@ -91,11 +91,11 @@ public class Validator {
         if (calculatedChecksums)
             return;
 
-        download.getFile().setActualChecksum(createChecksum(getFileTarget()));
+        download.getFile().setActualChecksum(createChecksum(getFileTarget(), true));
         List<FileAndChecksum> fragments = download.getFragments();
         if (fragments != null)
             for (FileAndChecksum fragment : fragments)
-                fragment.setActualChecksum(createChecksum(fragment.getFile()));
+                fragment.setActualChecksum(createChecksum(fragment.getFile(), true));
 
         calculatedChecksums = true;
     }

@@ -73,9 +73,10 @@ public class Checksum {
         return latest;
     }
 
-    public static Checksum createChecksum(File file) throws IOException {
+    public static Checksum createChecksum(File file, boolean generateFileChecksum) throws IOException {
         return file != null && file.exists() ?
-                new Checksum(fromMillis(roundMillisecondsToSecondPrecision(file.lastModified())), file.length(), generateChecksum(file)) : null;
+                new Checksum(fromMillis(roundMillisecondsToSecondPrecision(file.lastModified())), file.length(),
+                        generateFileChecksum ? generateChecksum(file) : null) : null;
     }
 
     public boolean equals(Object o) {
