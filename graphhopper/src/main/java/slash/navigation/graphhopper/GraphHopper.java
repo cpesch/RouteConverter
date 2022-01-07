@@ -242,11 +242,12 @@ public class GraphHopper extends BaseRoutingService {
 
     private File getGraphDirectory() {
         File file = getOsmPbfFile();
-        return lookupGraphDirectory(file);
+        return file != null ? lookupGraphDirectory(file) : null;
     }
 
     private boolean existsGraphDirectory() {
-        return PbfUtil.createPropertiesFile(getGraphDirectory()).exists();
+        File graphDirectory = getGraphDirectory();
+        return graphDirectory != null && PbfUtil.createPropertiesFile(graphDirectory).exists();
     }
 
     synchronized void initializeHopper() {
@@ -258,7 +259,7 @@ public class GraphHopper extends BaseRoutingService {
         if (hopper != null) {
             // avoid close() and importOrLoad() if the osmPbfFile stayed the same
             String location = hopper.getGraphHopperLocation();
-            if (location != null && location.equals(graphDirectory.getAbsolutePath()))
+            if (location != null && graphDirectory != null && location.equals(graphDirectory.getAbsolutePath()))
                 return;
 
             hopper.close();
@@ -369,11 +370,12 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         public boolean isRequiresDownload() {
-            boolean requiresDownload = !existsGraphDirectory() && !existsOsmPbfFile();
+            boolean requiresDownload = !existsOsmPbfFile() && !existsGraphDirectory();
             if (requiresDownload)
                 log.fine("requiresDownload=" + requiresDownload +
                         " existsGraphDirectory()=" + existsGraphDirectory() + " getGraphDirectory()=" + getGraphDirectory() +
-                        " existsOsmPbfFile()=" + existsOsmPbfFile() + " getOsmPbfFile()=" + getOsmPbfFile());
+                        " existsOsmPbfFile()=" + existsOsmPbfFile() + " getOsmPbfFile()=" + getOsmPbfFile() +
+                        " graphDescriptors=" + graphDescriptors);
             return requiresDownload;
         }
 

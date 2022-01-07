@@ -26,19 +26,19 @@ class GraphDescriptor {
     }
 
     private String removeMapDirectoryPrefix(String identifier) {
-        // mapIdentifier from MapsforgeMapView have maps subdirectory as a prefix
-        if (identifier.startsWith("kurviger/"))
-            identifier = identifier.substring("kurviger/".length());
-        if (identifier.startsWith("mapsforge/"))
-            identifier = identifier.substring("mapsforge/".length());
-        return identifier;
+        int index = identifier.indexOf('/');
+        return index != -1 ? identifier.substring(index + 1) : identifier;
+    }
+
+    private boolean matchesIdentifier(String identifier) {
+        return remoteFile != null && removeExtension(remoteFile.getUri()).equals(identifier) ||
+                localFile != null && lookupGraphDirectory(localFile).getAbsolutePath().endsWith(identifier);
     }
 
     private boolean matchesIdentifier(MapDescriptor mapDescriptor) {
-        String identifier = removeExtension(removeMapDirectoryPrefix(mapDescriptor.getIdentifier()));
-        // try to find europe/germany from europe/germany.map and europe/germany.zip
-        return remoteFile != null && removeExtension(remoteFile.getUri()).equals(identifier) ||
-                localFile != null && lookupGraphDirectory(localFile).getAbsolutePath().endsWith(identifier);
+        String identifier = removeExtension(mapDescriptor.getIdentifier());
+        // try to find europe/germany from europe/germany.map, mapsforge/europe/germany.map and europe/germany.zip
+        return matchesIdentifier(identifier) || matchesIdentifier(removeMapDirectoryPrefix(identifier));
     }
 
     private boolean matchesBoundingBox(MapDescriptor mapDescriptor) {

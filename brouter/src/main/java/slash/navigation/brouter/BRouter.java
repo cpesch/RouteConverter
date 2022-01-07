@@ -429,6 +429,7 @@ public class BRouter extends BaseRoutingService {
         public void download() {
             fireDownloading();
             downloadAndWait(segments);
+            segments.clear();
         }
 
         public boolean isRequiresProcessing() {
