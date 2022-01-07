@@ -160,8 +160,8 @@ public class Files {
     }
 
     public static int compare(File f1, File f2) {
-        String s1 = f1.getAbsolutePath().replaceAll(separator, "/");
-        String s2 = f2.getAbsolutePath().replaceAll(separator, "/");
+        String s1 = f1.getAbsolutePath().replace("\\", "/");
+        String s2 = f2.getAbsolutePath().replace("\\", "/");
         return s1.compareTo(s2);
     }
 
