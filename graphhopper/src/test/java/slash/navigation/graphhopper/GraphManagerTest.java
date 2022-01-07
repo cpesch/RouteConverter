@@ -1,5 +1,7 @@
 package slash.navigation.graphhopper;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.datasources.DataSource;
@@ -18,24 +20,39 @@ import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.removeExtension;
 
 public class GraphManagerTest {
+    private File croatia, france, franceProperties, germany, germanyGraphDirectory, hamburg;
+
+    @Before
+    public void setUp() throws Exception {
+        java.io.File directory = getTemporaryDirectory();
+        croatia = File.createTempFile("croatia", ".pbf", directory);
+        france = File.createTempFile("france", ".pbf", directory);
+        franceProperties = new File(ensureDirectory(removeExtension(france.getAbsolutePath())), PbfUtil.PROPERTIES);
+        assertTrue(franceProperties.createNewFile());
+        germany = File.createTempFile("germany", ".pbf", directory);
+        germanyGraphDirectory = ensureDirectory(new File(directory, "germany"));
+        hamburg = File.createTempFile("hamburg", ".pbf", germanyGraphDirectory);
+    }
+
+    @After
+    public void tearDown() {
+        assertTrue(croatia.delete());
+        assertTrue(france.delete());
+        assertTrue(franceProperties.delete());
+        assertTrue(franceProperties.getParentFile().delete());
+        assertTrue(germany.delete());
+        assertTrue(hamburg.delete());
+        assertTrue(germanyGraphDirectory.delete());
+    }
 
     @Test
     public void testLocalOrder() throws IOException {
-        java.io.File directory = getTemporaryDirectory();
-        File croatia = File.createTempFile("croatia", ".pbf", directory);
-        File france = File.createTempFile("france", ".pbf", directory);
-        File franceProperties = new File(ensureDirectory(removeExtension(france.getAbsolutePath())), PbfUtil.PROPERTIES);
-        assertTrue(franceProperties.createNewFile());
-        File germany = File.createTempFile("germany", ".pbf", directory);
-        File graphDirectory = ensureDirectory(new File(directory, "germany"));
-        File hamburg = File.createTempFile("hamburg", ".pbf", graphDirectory);
-
         GraphManager graphManager = new GraphManager(singletonList(mock(DataSource.class))) {
             List<File> collectPbfFiles() {
                 return asList(hamburg, germany, croatia, france);
             }
             List<File> collectGraphDirectories() {
-                return singletonList(graphDirectory);
+                return singletonList(germanyGraphDirectory);
             }
         };
 
@@ -47,7 +64,7 @@ public class GraphManagerTest {
         assertFalse(descriptors.get(1).hasGraphDirectory());
         assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, hamburg, null), descriptors.get(2));
         assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, germany, null), descriptors.get(3));
-        assertEquals(new GraphDescriptor(GraphManager.GraphType.Directory, graphDirectory, null), descriptors.get(4));
+        assertEquals(new GraphDescriptor(GraphManager.GraphType.Directory, germanyGraphDirectory, null), descriptors.get(4));
     }
 
     @Test
