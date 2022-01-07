@@ -175,7 +175,7 @@ public class RouteConverterOpenSource extends RouteConverter {
 
     private void configureRoutingServices() {
         DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
-        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
+        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments-4");
         if (brouterProfiles != null && brouterSegments != null) {
             BRouter router = getRoutingServiceFacade().getRoutingService(BRouter.class);
             router.setProfilesAndSegments(brouterProfiles, brouterSegments);
@@ -186,7 +186,11 @@ public class RouteConverterOpenSource extends RouteConverter {
         DataSource graphhopper = getDataSourceManager().getDataSourceService().getDataSourceById("graphhopper");
         if (graphhopper != null || kurviger != null || mapsforge != null) {
             GraphHopper hopper = getRoutingServiceFacade().getRoutingService(GraphHopper.class);
-            hopper.setDataSources(kurviger, mapsforge, graphhopper);
+            try {
+                hopper.setDataSources(kurviger, mapsforge, graphhopper);
+            } catch (Exception e) {
+                invokeLater(() -> showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE));
+            }
         }
     }
 
@@ -209,7 +213,7 @@ public class RouteConverterOpenSource extends RouteConverter {
 
                 getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"),
                         Application.getInstance().getContext().getActionManager().get("show-maps"));
-            } catch (final IOException e) {
+            } catch (IOException e) {
                 invokeLater(() -> showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE));
             }
 

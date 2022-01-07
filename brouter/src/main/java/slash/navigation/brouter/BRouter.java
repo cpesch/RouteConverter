@@ -144,16 +144,16 @@ public class BRouter extends BaseRoutingService {
         return preferences.get(SEGMENTS_BASE_URL_PREFERENCE, getSegments().getBaseUrl());
     }
 
-    private java.io.File getDirectory(DataSource dataSource, String directoryName) {
-        String path = getPath() + "/" + directoryName;
+    private java.io.File getDirectory(DataSource dataSource) {
+        String path = getPath() + "/" + dataSource.getDirectory();
         java.io.File f = new java.io.File(path);
         if (!f.exists())
-            directoryName = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
-        return ensureDirectory(directoryName);
+            path = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
+        return ensureDirectory(path);
     }
 
     private java.io.File getProfilesDirectory() {
-        return getDirectory(getProfiles(), "profiles");
+        return getDirectory(getProfiles());
     }
 
     private java.io.File createProfileFile(String key) {
@@ -161,7 +161,7 @@ public class BRouter extends BaseRoutingService {
     }
 
     private java.io.File getSegmentsDirectory() {
-        return getDirectory(getSegments(), "segments4");
+        return getDirectory(getSegments());
     }
 
     private java.io.File createSegmentFile(String key) {
