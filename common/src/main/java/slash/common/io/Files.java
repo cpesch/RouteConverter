@@ -31,6 +31,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.io.File.separator;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
@@ -114,12 +115,6 @@ public class Files {
         return path;
     }
 
-    public static File absolutize(File file) {
-        if (!file.isAbsolute())
-            file = new File(file.getAbsolutePath());
-        return file;
-    }
-
     public static String createReadablePath(File file) {
         String path = file.getAbsolutePath();
         try {
@@ -163,6 +158,13 @@ public class Files {
     public static String lastPathFragment(String path, int maximumLength) {
         return lastPathFragment(path, maximumLength, false);
     }
+
+    public static int compare(File f1, File f2) {
+        String s1 = f1.getAbsolutePath().replaceAll(separator, "/");
+        String s2 = f2.getAbsolutePath().replaceAll(separator, "/");
+        return s1.compareTo(s2);
+    }
+
 
     public static File toFile(URL url) {
         if ("file".equals(url.getProtocol())) {
@@ -212,11 +214,6 @@ public class Files {
         return result;
     }
 
-    public static String createGoPalFileName(String fileName) {
-        fileName = fileName.toUpperCase();
-        fileName = fileName.replaceAll("[^\\w.]", " ");
-        return fileName;
-    }
 
     public static String calculateConvertFileName(File file, String extension, int fileNameLength) {
         String name = file.getName();
@@ -420,6 +417,12 @@ public class Files {
             }
         }
         return result;
+    }
+
+    public static File absolutize(File file) {
+        if (!file.isAbsolute())
+            file = new File(file.getAbsolutePath());
+        return file;
     }
 
     public static File findExistingPath(File path) {

@@ -58,6 +58,12 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPalRoute> {
         return new GoPalRoute(this, name, (List<GoPalPosition>) positions);
     }
 
+    public static String createGoPalFileName(String fileName) {
+        fileName = fileName.toUpperCase();
+        fileName = fileName.replaceAll("[^\\w.]", " ");
+        return fileName;
+    }
+
     private GoPalRoute process(Tour tour) {
         List<GoPalPosition> positions = new ArrayList<>();
         for (Tour.Dest dest : tour.getDest()) {

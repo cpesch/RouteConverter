@@ -154,13 +154,7 @@ public class FilesTest {
         }
     }
 
-    @Test
-    public void testCreateGoPalFileName() {
-        assertEquals("EIFELSTERN AACHEN", createGoPalFileName("Eifelstern-Aachen"));
-        assertEquals("EIFELSTERN.XML", createGoPalFileName("Eifelstern.xml"));
-    }
-
-    @Test
+   @Test
     public void testShortenPath() {
         assertEquals("C:\\Documents and Settings\\RouteConverter...\\ShortenPath.java",
                 shortenPath("C:\\Documents and Settings\\RouteConverter\\My Documents\\RouteConverter\\Sources\\Tests\\ShortenPath.java", 60));

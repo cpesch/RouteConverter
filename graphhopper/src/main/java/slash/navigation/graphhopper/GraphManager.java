@@ -104,9 +104,9 @@ public class GraphManager {
         }
 
         List<java.io.File> directories = collectGraphDirectories();
-        for (java.io.File dir : directories) {
-            checkDirectory(dir);
-            localGraphDescriptors.add(new GraphDescriptor(GraphType.Directory, dir, null));
+        for (java.io.File directory : directories) {
+            checkDirectory(directory);
+            localGraphDescriptors.add(new GraphDescriptor(GraphType.Directory, directory, null));
         }
 
         /*  Sort
@@ -115,7 +115,7 @@ public class GraphManager {
             3. then file name by length and alphabet
          */
         localGraphDescriptors.sort(new Comparator<GraphDescriptor>() {
-            public int compare(GraphDescriptor g1, GraphDescriptor g2) {
+          public int compare(GraphDescriptor g1, GraphDescriptor g2) {
                 int order = Integer.compare(g2.getGraphType().order, g1.getGraphType().order);
                 if(order != 0)
                     return order;
