@@ -56,6 +56,8 @@ public class GraphManagerTest {
             }
         };
 
+        System.out.println("local graph descriptors: " + graphManager.getLocalGraphDescriptors());
+
         List<GraphDescriptor> descriptors = graphManager.getLocalGraphDescriptors();
         assertEquals(5, descriptors.size());
         assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, france, null), descriptors.get(0));
