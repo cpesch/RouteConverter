@@ -42,7 +42,7 @@ public class PbfUtil {
     public static final String DOT_OSM = ".osm";
     public static final String DOT_PBF = ".pbf";
     private static final String LATEST = "-latest";
-    private static final String PROPERTIES = "properties";
+    public static final String PROPERTIES = "properties";
     private static final double LONGITUDE_LATITUDE_RESOLUTION = 1000.0 * 1000.0 * 1000.0;
 
     private static File createGraphDirectory(java.io.File file, boolean removeLatest) {

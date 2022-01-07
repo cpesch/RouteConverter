@@ -94,6 +94,11 @@ public class BoundingBox {
         return new SimpleNavigationPosition(southWest.getLongitude(), northEast.getLatitude());
     }
 
+    public double getSquareSize() {
+        return (getSouthWest().getLongitude() - getNorthEast().getLongitude()) *
+                (getSouthWest().getLatitude() - getNorthEast().getLatitude());
+    }
+
     public boolean contains(NavigationPosition position) {
         boolean result = position.getLongitude() >= southWest.getLongitude();
         result = result && (position.getLongitude() <= northEast.getLongitude());

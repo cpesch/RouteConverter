@@ -163,7 +163,7 @@ public class RouteRenderer {
     }
 
     private void waitForDownload(DownloadFuture future) {
-        if (future == null)
+        if (future == null || !future.hasNextDownload())
             return;
 
         if (future.isRequiresDownload())

@@ -67,13 +67,12 @@ import static slash.navigation.routing.RoutingResult.Validity.*;
 public class GraphHopper extends BaseRoutingService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GraphHopper.class);
     private static final Logger log = Logger.getLogger(GraphHopper.class.getName());
-    private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String BASE_URL_PREFERENCE = "baseUrl";
     private static final TravelMode CAR = new TravelMode("car");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("bike"), CAR, new TravelMode("foot"));
 
     private final DownloadManager downloadManager;
-    private List<DataSource> dataSources;
+    private GraphManager graphManager;
 
     private DownloadableFinder finder;
     private com.graphhopper.GraphHopper hopper;
@@ -111,12 +110,12 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public synchronized boolean isInitialized() {
-        return dataSources != null;
+        return graphManager != null;
     }
 
-    public synchronized void setDataSources(DataSource... dataSourcesList) {
-        this.dataSources = asList(dataSourcesList);
-        finder = new DownloadableFinder(dataSources);
+    public synchronized void setDataSources(DataSource... dataSourcesList) throws IOException {
+        this.graphManager = new GraphManager(asList(dataSourcesList));
+        this.finder = new DownloadableFinder(graphManager);
     }
 
     public boolean isDownload() {
@@ -159,11 +158,11 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public String getPath() {
-        return preferences.get(DIRECTORY_PREFERENCE, "");
+        return graphManager.getPath();
     }
 
     public void setPath(String path) {
-        preferences.put(DIRECTORY_PREFERENCE, path);
+        graphManager.setPath(path);
     }
 
     private String getBaseUrl(DataSource dataSource) {
@@ -180,6 +179,11 @@ public class GraphHopper extends BaseRoutingService {
 
     private java.io.File createFile(Downloadable downloadable) {
         return new java.io.File(getDirectory(downloadable.getDataSource()), downloadable.getUri());
+    }
+
+    private java.io.File createFile(GraphDescriptor graphDescriptor) {
+        return graphDescriptor.getLocalFile() != null ? graphDescriptor.getLocalFile() :
+                new java.io.File(getDirectory(graphDescriptor.getRemoteFile().getDataSource()), graphDescriptor.getRemoteFile().getUri());
     }
 
     private java.io.File createDirectory(Downloadable downloadable) {
@@ -219,7 +223,7 @@ public class GraphHopper extends BaseRoutingService {
             counter.stop();
 
             long end = currentTimeMillis();
-            log.info(format("Routing from %s to %s took %d milliseconds", from, to, end - start));
+            log.info(format("Routing from %s to %s with %s took %d milliseconds", from, to, getOsmPbfFile(), end - start));
         }
     }
 
@@ -351,16 +355,16 @@ public class GraphHopper extends BaseRoutingService {
             });
         }
 
-        Collection<Downloadable> downloadables = finder.getDownloadablesFor(mapDescriptors);
-        return new DownloadFutureImpl(downloadables);
+        List<GraphDescriptor> graphDescriptors = finder.getGraphDescriptorsFor(mapDescriptors);
+        return new DownloadFutureImpl(graphDescriptors);
     }
 
     private class DownloadFutureImpl implements DownloadFuture {
-        private final List<Downloadable> downloadables;
-        private Downloadable next;
+        private final List<GraphDescriptor> graphDescriptors;
+        private GraphDescriptor next;
 
-        DownloadFutureImpl(Collection<Downloadable> downloadables) {
-            this.downloadables = new ArrayList<>(downloadables);
+        DownloadFutureImpl(Collection<GraphDescriptor> graphDescriptors) {
+            this.graphDescriptors = new ArrayList<>(graphDescriptors);
             nextDownload();
         }
 
@@ -392,14 +396,15 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         public boolean hasNextDownload() {
-            return !downloadables.isEmpty();
+            return !graphDescriptors.isEmpty();
         }
 
         public void nextDownload() {
             if (!hasNextDownload())
                 return;
 
-            this.next = downloadables.remove(0);
+            this.next = graphDescriptors.remove(0);
+            download();
             setOsmPbfFile(createFile(next));
         }
     }
@@ -412,9 +417,19 @@ public class GraphHopper extends BaseRoutingService {
         return new BoundingBox(positions);
     }
 
-    private void downloadAndWait(Downloadable downloadable) {
-        Download download = download(downloadable);
-        downloadManager.waitForCompletion(singletonList(download));
+    private void downloadAndWait(GraphDescriptor graphDescriptor) {
+        Downloadable downloadable = graphDescriptor.getRemoteFile();
+        if(downloadable != null) {
+            Download download = download(downloadable);
+            downloadManager.waitForCompletion(singletonList(download));
+        }
+    }
+
+    private void download(GraphDescriptor graphDescriptor) {
+        Downloadable downloadable = graphDescriptor.getRemoteFile();
+        if(downloadable != null) {
+            download(downloadable);
+        }
     }
 
     private Download download(Downloadable downloadable) {
@@ -427,9 +442,13 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
-        Collection<Downloadable> downloadables = finder.getDownloadablesFor(mapDescriptors);
+        List<GraphDescriptor> graphDescriptors = finder.getGraphDescriptorsFor(mapDescriptors);
         long notExists = 0L;
-        for (Downloadable downloadable : downloadables) {
+        for (GraphDescriptor graphDescriptor : graphDescriptors) {
+            Downloadable downloadable = graphDescriptor.getRemoteFile();
+            if(downloadable == null)
+                continue;
+
             Long contentLength = downloadable.getLatestChecksum() != null ? downloadable.getLatestChecksum().getContentLength() : null;
             if (contentLength == null)
                 continue;
@@ -444,9 +463,9 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public void downloadRoutingData(List<MapDescriptor> mapDescriptors) {
-        List<Downloadable> downloadables = finder.getDownloadablesFor(mapDescriptors);
-        for (Downloadable downloadable : downloadables) {
-            download(downloadable);
+        List<GraphDescriptor> graphDescriptors = finder.getGraphDescriptorsFor(mapDescriptors);
+        for (GraphDescriptor graphDescriptor : graphDescriptors) {
+            download(graphDescriptor);
             // avoid multiple downloads when kurviger, mapsforge graphs and geofabrik PBFs are returned
             break;
         }
