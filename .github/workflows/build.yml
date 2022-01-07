@@ -1,4 +1,4 @@
-name: Java CI
+name: RouteConverter CI
 
 on: [push]
 
@@ -7,8 +7,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 8 ]
-    name: Java ${{ matrix.java }} build
+        java: [ 8, 9, 10, 11, 12, 13, 14, 15, 16 ]
+    name: Java ${{ matrix.java }} compatibility
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK ${{ matrix.java }}
@@ -31,7 +31,7 @@ jobs:
     strategy:
       matrix:
         java: [ 8 ]
-    name: Java ${{ matrix.java }} build
+    name: Java ${{ matrix.java }} on Windows
     steps:
       - uses: actions/checkout@v2
       - name: Set up JDK ${{ matrix.java }}

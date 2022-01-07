@@ -19,11 +19,11 @@
 */
 package slash.navigation.graphhopper;
 
+import slash.common.io.Files;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.File;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -88,7 +88,7 @@ public class GraphManager {
     }
 
     List<java.io.File> collectGraphDirectories() throws IOException {
-        return Files.walk(Paths.get(getDirectory().getPath()))
+        return java.nio.file.Files.walk(Paths.get(getDirectory().getPath()))
                 .filter(f -> isRegularFile(f) && f.getFileName().startsWith(PROPERTIES))
                 .map(f -> f.getParent().toFile())
                 .collect(toList());
@@ -125,7 +125,7 @@ public class GraphManager {
                 if(!g1.hasGraphDirectory() && g2.hasGraphDirectory())
                     return 1;
 
-                return g1.getLocalFile().compareTo(g2.getLocalFile());
+                return Files.compare(g1.getLocalFile(), g2.getLocalFile());
             }
         });
 
