@@ -31,7 +31,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.io.File.separator;
+import static java.io.File.separatorChar;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
@@ -160,8 +160,8 @@ public class Files {
     }
 
     public static int compare(File f1, File f2) {
-        String s1 = f1.getAbsolutePath().replace("\\", "/");
-        String s2 = f2.getAbsolutePath().replace("\\", "/");
+        String s1 = f1.getAbsolutePath().replace(separatorChar, '/');
+        String s2 = f2.getAbsolutePath().replace(separatorChar, '/');
         return s1.compareTo(s2);
     }
 
