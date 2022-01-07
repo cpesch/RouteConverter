@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
+import static java.io.File.separator;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
@@ -144,7 +145,7 @@ public class BRouter extends BaseRoutingService {
     }
 
     private java.io.File getDirectory(DataSource dataSource) {
-        String path = getPath() + "/" + dataSource.getDirectory();
+        String path = getPath() + separator + dataSource.getDirectory();
         java.io.File f = new java.io.File(path);
         if (!f.exists())
             path = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();

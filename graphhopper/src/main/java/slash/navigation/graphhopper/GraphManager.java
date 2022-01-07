@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static java.io.File.separator;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.file.Files.isRegularFile;
@@ -78,7 +79,7 @@ public class GraphManager {
     }
 
     private java.io.File getDirectory() {
-        String path = getPath() + "/graphhopper";
+        String path = getPath() + separator + "graphhopper";
         return ensureDirectory(getApplicationDirectory(path).getAbsolutePath());
     }
 
