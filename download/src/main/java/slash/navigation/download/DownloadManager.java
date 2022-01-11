@@ -139,6 +139,8 @@ public class DownloadManager {
         }
 
         pool.purge();
+
+        saveQueue();
     }
 
     public void removeDownloads(List<Download> downloads) {
@@ -148,6 +150,8 @@ public class DownloadManager {
             log.info("Removing download " + download);
             model.removeDownload(download);
         }
+
+        saveQueue();
     }
 
     public void saveQueue() {
