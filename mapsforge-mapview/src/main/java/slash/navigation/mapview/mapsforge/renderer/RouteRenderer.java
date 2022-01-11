@@ -263,15 +263,23 @@ public class RouteRenderer {
                     return new RoutingResult(null, null, Invalid);
             }
 
-            result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
-            if (result.getValidity().equals(PointNotFound)) {
-                if(routingService.isDownload()) {
-                    if (future.hasNextDownload()) {
-                        log.warning(format("Point not found when routing from %s to %s, trying next download", pairWithLayer.getFirst(), pairWithLayer.getSecond()));
-                        future.nextDownload();
-                        result = null;
+            try {
+                result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
+                if (result.getValidity().equals(PointNotFound)) {
+
+                    // special treatment for GraphHopper: try the next download
+                    if (routingService.isDownload()) {
+                        if (future.isRequiresDownload()) {
+                            log.warning(format("Point not found when routing from %s to %s, trying next download", pairWithLayer.getFirst(), pairWithLayer.getSecond()));
+                            result = null;
+                        }
                     }
                 }
+            }
+            catch (IllegalStateException e) {
+                // special treatment for GraphHopper: could not initialize due to missing graph directory
+                log.warning(format("Cannot route from %s to %s: %s", pairWithLayer.getFirst(), pairWithLayer.getSecond(), e.getLocalizedMessage()));
+                return new RoutingResult(null, null, Invalid);
             }
         }
         return result;

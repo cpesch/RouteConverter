@@ -49,6 +49,7 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static javax.swing.JOptionPane.*;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.asDialogString;
@@ -366,7 +367,7 @@ public class GraphHopper extends BaseRoutingService {
 
         DownloadFutureImpl(Collection<GraphDescriptor> graphDescriptors) {
             this.graphDescriptors = new ArrayList<>(graphDescriptors);
-            nextDownload();
+            this.next = !graphDescriptors.isEmpty() ? this.graphDescriptors.remove(0) : null;
         }
 
         public boolean isRequiresDownload() {
@@ -376,12 +377,32 @@ public class GraphHopper extends BaseRoutingService {
                         " existsGraphDirectory()=" + existsGraphDirectory() + " getGraphDirectory()=" + getGraphDirectory() +
                         " existsOsmPbfFile()=" + existsOsmPbfFile() + " getOsmPbfFile()=" + getOsmPbfFile() +
                         " graphDescriptors=" + graphDescriptors);
-            return requiresDownload;
+            return requiresDownload && confirmDownload();
+        }
+
+        private boolean confirmDownload() {
+            slash.navigation.datasources.File file = next.getRemoteFile();
+            if(file == null)
+                return true;
+
+            Long size = file.getLatestChecksum() != null ? file.getLatestChecksum().getContentLength() : null;
+            int confirm = showConfirmDialog(null,
+                    "Do you want to download the routing data\n" +
+                            file.getUri() + "\n" +
+                            "with a size of " + (size != null ? size / (1024*1024) : "a large number of ") + " MBytes?",
+                    "GraphHopper", YES_NO_OPTION);
+            if(confirm == YES_OPTION)
+                return true;
+            this.next = !graphDescriptors.isEmpty() ? graphDescriptors.remove(0) : null;
+            if(next == null)
+                return false;
+            return confirmDownload();
         }
 
         public void download() {
             fireDownloading();
             downloadAndWait(next);
+            setOsmPbfFile(createFile(next));
         }
 
         public boolean isRequiresProcessing() {
@@ -395,19 +416,6 @@ public class GraphHopper extends BaseRoutingService {
 
         public void process() {
             initializeHopper();
-        }
-
-        public boolean hasNextDownload() {
-            return !graphDescriptors.isEmpty();
-        }
-
-        public void nextDownload() {
-            if (!hasNextDownload())
-                return;
-
-            this.next = graphDescriptors.remove(0);
-            download();
-            setOsmPbfFile(createFile(next));
         }
     }
 
