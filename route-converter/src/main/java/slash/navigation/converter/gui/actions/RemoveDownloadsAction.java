@@ -53,8 +53,6 @@ public class RemoveDownloadsAction extends DialogAction {
         if(downloads.size() == 0)
             return;
 
-        int[] selectedRows = table.getSelectedRows();
-
         downloadManager.removeDownloads(downloads);
     }
 }
