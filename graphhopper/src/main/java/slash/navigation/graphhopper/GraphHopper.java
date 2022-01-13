@@ -209,12 +209,13 @@ public class GraphHopper extends BaseRoutingService {
             request.setVehicle(travelMode.getName().toUpperCase());
             GHResponse response = hopper.route(request);
             if (response.hasErrors()) {
+                String errors = asDialogString(response.getErrors(), false);
+                log.severe(format("Error while routing between %s and %s: %s", from, to, errors));
+
                 boolean pointNotFound = response.getErrors().size() > 0 && response.getErrors().get(0) instanceof PointNotFoundException;
                 if (pointNotFound)
                     return new RoutingResult(null, null, PointNotFound);
 
-                String errors = asDialogString(response.getErrors(), false);
-                log.severe(format("Error while routing between %s and %s: %s", from, to, errors));
                 throw new RuntimeException(errors);
             }
             PathWrapper best = response.getBest();
