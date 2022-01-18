@@ -39,7 +39,7 @@ import static slash.navigation.nmn.NavigonCruiserUtil.marshal;
 import static slash.navigation.nmn.NavigonCruiserUtil.unmarshal;
 
 /**
- * Reads and writes NavigonCruiser (.cruiser) files.
+ * Reads and writes Navigon Cruiser (.cruiser) files.
  *
  * @author Christian Pesch
  */
