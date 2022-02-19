@@ -28,7 +28,9 @@ import slash.navigation.routing.*;
 import slash.navigation.routing.RoutingResult.Validity;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
@@ -40,6 +42,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
+import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.getExtension;
@@ -89,6 +92,15 @@ public class BRouter extends BaseRoutingService {
     public synchronized void setProfilesAndSegments(DataSource profiles, DataSource segments) {
         this.profiles = profiles;
         this.segments = segments;
+
+        File storageConfig = new File(getSegmentsDirectory(), "storageconfig.txt");
+        try {
+            PrintWriter writer = new PrintWriter(storageConfig);
+            writer.println("secondary_segment_dir=" + getSegmentsDirectory().getPath());
+            writer.close();
+        } catch (FileNotFoundException e) {
+            log.severe(format("Error while writing storage config: %s", getLocalizedMessage(e)));
+        }
     }
 
     public boolean isDownload() {
