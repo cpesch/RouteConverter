@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION=11.0.12
+VERSION=11.0.13
 JDK=jdk-$VERSION.jdk
 JRE=Runtime/Contents/Home
 
