@@ -20,9 +20,7 @@
 package slash.navigation.download.performer;
 
 import slash.navigation.download.Action;
-import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
-import slash.navigation.download.actions.Validator;
 import slash.navigation.download.executor.DownloadExecutor;
 import slash.navigation.rest.Head;
 
@@ -31,7 +29,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
-import static slash.common.type.CompactCalendar.fromMillis;
+import static slash.navigation.download.performer.GetPerformer.updateDownload;
 
 /**
  * What the {@link DownloadExecutor} performs for {@link Action#Head}.
@@ -58,28 +56,14 @@ public class HeadPerformer implements ActionPerformer {
         log.info(format("HEAD for %s returned with status code %s and body %s", getDownload().getUrl(), request.getStatusCode(), body));
 
         if (request.isNotModified()) {
-            ensureChecksum(request);
+            updateDownload(getDownload(), request);
             downloadExecutor.notModified();
 
         } else if (request.isSuccessful()) {
-            getDownload().setETag(request.getETag());
-            ensureChecksum(request);
+            updateDownload(getDownload(), request);
             downloadExecutor.succeeded();
 
         } else
             downloadExecutor.downloadFailed();
-    }
-
-    private void ensureChecksum(Head request) throws IOException {
-        if (getDownload().getFile().getFile().exists()) {
-            Validator validator = new Validator(getDownload());
-            validator.calculateChecksums();
-
-        } else
-            getDownload().getFile().setActualChecksum(extractChecksum(request));
-    }
-
-    private Checksum extractChecksum(Head request) throws IOException {
-        return new Checksum(request.getLastModified() != null ? fromMillis(request.getLastModified()) : null, request.getContentLength(), null);
     }
 }

@@ -20,7 +20,6 @@
 package slash.navigation.download.performer;
 
 import slash.navigation.download.Action;
-import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.executor.DownloadExecutor;
 import slash.navigation.rest.Get;
@@ -36,7 +35,7 @@ import static slash.common.io.Files.setLastModified;
 import static slash.common.io.Files.writePartialFile;
 import static slash.common.io.InputOutput.closeQuietly;
 import static slash.common.io.InputOutput.copyAndClose;
-import static slash.common.type.CompactCalendar.fromMillis;
+import static slash.navigation.download.performer.GetPerformer.updateDownload;
 
 /**
  * What the {@link DownloadExecutor} performs for {@link Action#GetRange}.
@@ -74,18 +73,14 @@ public class GetRangePerformer implements ActionPerformer {
         request.release();
 
         if (request.isNotModified()) {
+            updateDownload(getDownload(), request);
             downloadExecutor.notModified();
 
         } else if (request.isSuccessful()) {
-            getDownload().setETag(request.getETag());
-            getDownload().getFile().setActualChecksum(extractChecksum(request));
+            updateDownload(getDownload(), request);
             downloadExecutor.succeeded();
 
         } else
             downloadExecutor.downloadFailed();
-    }
-
-    private Checksum extractChecksum(Get request) throws IOException {
-        return new Checksum(request.getLastModified() != null ? fromMillis(request.getLastModified()) : null, request.getContentLength(), null);
     }
 }

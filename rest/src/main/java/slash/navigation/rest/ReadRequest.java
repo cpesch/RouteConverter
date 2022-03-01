@@ -36,7 +36,7 @@ import static slash.navigation.rest.RFC2616.parseDate;
  * @author Christian Pesch
  */
 
-abstract class ReadRequest extends HttpRequest {
+public abstract class ReadRequest extends HttpRequest {
     public ReadRequest(HttpRequestBase method) {
         super(method);
     }

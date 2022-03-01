@@ -28,6 +28,7 @@ import slash.navigation.download.actions.Validator;
 import slash.navigation.download.executor.DownloadExecutor;
 import slash.navigation.download.executor.ModelUpdater;
 import slash.navigation.rest.Get;
+import slash.navigation.rest.ReadRequest;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -39,6 +40,7 @@ import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.setLastModified;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.navigation.download.State.*;
 
 /**
@@ -76,17 +78,17 @@ public class GetPerformer implements ActionPerformer {
         Long contentLength = getDownload().getFile().getExpectedChecksum() != null ? getDownload().getFile().getExpectedChecksum().getContentLength() : null;
         log.info(format("Resuming bytes %d-%d from %s", fileSize, contentLength, getDownload().getUrl()));
 
-        Get get = new Get(getDownload().getUrl());
-        get.setRange(fileSize, contentLength);
+        Get request = new Get(getDownload().getUrl());
+        request.setRange(fileSize, contentLength);
 
-        InputStream inputStream = get.executeAsStream();
-        log.info(format("Resume from %s returned with status code %s", getDownload().getUrl(), get.getStatusCode()));
-        if (get.isPartialContent()) {
-            getModelUpdater().expectingBytes(contentLength != null ? contentLength : get.getContentLength() != null ? get.getContentLength() : 0);
+        InputStream inputStream = request.executeAsStream();
+        log.info(format("Resume from %s returned with status code %s", getDownload().getUrl(), request.getStatusCode()));
+        if (request.isPartialContent()) {
+            getModelUpdater().expectingBytes(contentLength != null ? contentLength : request.getContentLength() != null ? request.getContentLength() : 0);
             new Copier(getModelUpdater()).copyAndClose(inputStream, new FileOutputStream(getDownload().getTempFile(), true), fileSize, contentLength);
-            return new Result(true);
+            return new Result(request, true);
         }
-        return new Result(false);
+        return new Result(request, false);
     }
 
     private Result download() throws IOException {
@@ -95,42 +97,44 @@ public class GetPerformer implements ActionPerformer {
         Long contentLength = getDownload().getFile().getExpectedChecksum() != null ? getDownload().getFile().getExpectedChecksum().getContentLength() : null;
         log.info(format("Downloading %d bytes from %s with ETag %s", contentLength, getDownload().getUrl(), getDownload().getETag()));
 
-        Get get = new Get(getDownload().getUrl());
-        get.setSocketTimeout(SOCKET_TIMEOUT);
+        Get request = new Get(getDownload().getUrl());
+        request.setSocketTimeout(SOCKET_TIMEOUT);
         if (new Validator(getDownload()).isExistsTargets() && getDownload().getETag() != null)
-            get.setIfNoneMatch(getDownload().getETag());
+            request.setIfNoneMatch(getDownload().getETag());
 
-        InputStream inputStream = get.executeAsStream();
-        log.info(format("Download from %s returned with status code %s and content length %d", getDownload().getUrl(), get.getStatusCode(), get.getContentLength()));
-        if (get.isSuccessful() && inputStream != null) {
+        InputStream inputStream = request.executeAsStream();
+        log.info(format("Download from %s returned with status code %s and content length %d", getDownload().getUrl(), request.getStatusCode(), request.getContentLength()));
+        if (request.isSuccessful() && inputStream != null) {
             if(contentLength == null)
-                contentLength = get.getContentLength();
+                contentLength = request.getContentLength();
             if (contentLength != null)
                 getModelUpdater().expectingBytes(contentLength);
             new Copier(getModelUpdater()).copyAndClose(inputStream, new FileOutputStream(getDownload().getTempFile()), 0, contentLength);
-            getDownload().setETag(get.getETag());
-            return new Result(true, get.getLastModified());
+            return new Result(request, true, request.getLastModified());
         }
-        return new Result(get.isSuccessful(), get.isNotModified());
+        return new Result(request, request.isSuccessful(), request.isNotModified());
     }
 
     public void run() throws IOException {
-        Result result = new Result(false);
+        Result result = new Result(null, false);
         if (canResume())
             result = resume();
         if (!result.success)
             result = download();
 
         if (result.notModified) {
+            updateDownload(getDownload(),  result.request);
             downloadExecutor.notModified();
 
         } else if (result.success) {
+            updateDownload(getDownload(),  result.request);
+
             if(!getDownload().getTempFile().exists())
                 downloadExecutor.downloadFailed();
 
-            if (postProcess(result.lastModified))
+            if (postProcess(result.lastModified)) {
                 downloadExecutor.succeeded();
-            else
+            } else
                 downloadExecutor.postProcessFailed();
 
         } else
@@ -206,24 +210,39 @@ public class GetPerformer implements ActionPerformer {
         return true;
     }
 
+    private static Checksum extractChecksum(ReadRequest request) throws IOException {
+        return new Checksum(request.getLastModified() != null ? fromMillis(request.getLastModified()) : null, request.getContentLength(), null);
+    }
+
+    static void updateDownload(Download download, ReadRequest request) throws IOException {
+        download.setETag(request.getETag());
+        if (download.getFile().getFile().exists()) {
+            Validator validator = new Validator(download);
+            validator.calculateChecksums();
+        } else
+            download.getFile().setActualChecksum(extractChecksum(request));
+    }
+
     private static class Result {
+        public final Get request;
         public final boolean success;
         public final boolean notModified;
         public final Long lastModified;
 
-        public Result(boolean success) {
-            this(success, null);
+        public Result(Get request, boolean success) {
+            this(request, success, null);
         }
 
-        public Result(boolean success, Long lastModified) {
-            this(success, false, lastModified);
+        public Result(Get request, boolean success, Long lastModified) {
+            this(request, success, false, lastModified);
         }
 
-        private Result(boolean success, boolean notModified) {
-            this(success, notModified, null);
+        private Result(Get request, boolean success, boolean notModified) {
+            this(request, success, notModified, null);
         }
 
-        private Result(boolean success, boolean notModified, Long lastModified) {
+        private Result(Get request, boolean success, boolean notModified, Long lastModified) {
+            this.request = request;
             this.success = success;
             this.notModified = notModified;
             this.lastModified = lastModified;
