@@ -64,6 +64,7 @@ import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.*;
+import java.util.logging.Logger;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
@@ -95,6 +96,7 @@ import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
  */
 
 public class OptionsDialog extends SimpleDialog {
+    private static final Logger log = Logger.getLogger(OptionsDialog.class.getName());
     private JPanel contentPane;
     private JTabbedPane tabbedPane1;
     private JComboBox<Locale> comboBoxLocale;
@@ -187,6 +189,7 @@ public class OptionsDialog extends SimpleDialog {
                     try {
                         service.setMapsPath(textFieldMapsPath.getText());
                     } catch (IOException e) {
+                        log.warning("Could not set MapView maps path: " + e);
                         r.getContext().getNotificationManager().showNotification(MessageFormat.format(
                                 getBundle().getString("scan-error"), getLocalizedMessage(e)), null);
                     }
@@ -212,6 +215,7 @@ public class OptionsDialog extends SimpleDialog {
                     try {
                         service.setThemesPath(textFieldThemesPath.getText());
                     } catch (IOException e) {
+                        log.warning("Could not set MapView themes path: " + e);
                         r.getContext().getNotificationManager().showNotification(MessageFormat.format(
                                 getBundle().getString("scan-error"), getLocalizedMessage(e)), null);
                     }

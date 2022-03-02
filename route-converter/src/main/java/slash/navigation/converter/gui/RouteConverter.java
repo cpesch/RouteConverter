@@ -1347,7 +1347,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         try {
             getDownloadManager().scanForOutdatedFilesInQueue();
         } catch (IOException e) {
-            log.warning("Could not scan for outdates files in queue: " + e);
+            log.warning("Could not scan for outdated files in queue: " + e);
             getContext().getNotificationManager().showNotification(MessageFormat.format(
                     getBundle().getString("scan-error"), getLocalizedMessage(e)), null);
         }

@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.DialogAction;
-import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.RemoteTheme;
@@ -33,6 +32,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
+import java.util.logging.Logger;
 
 import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newCachedThreadPool;
@@ -48,6 +48,7 @@ import static slash.common.io.Files.asDialogString;
  */
 
 public class DownloadThemesAction extends DialogAction {
+    private static final Logger log = Logger.getLogger(DownloadThemesAction.class.getName());
     private static ExecutorService executor = newCachedThreadPool();
 
     private final JTable table;
@@ -91,8 +92,8 @@ public class DownloadThemesAction extends DialogAction {
                 } catch (IOException e) {
                     invokeLater(new Runnable() {
                         public void run() {
-                            JFrame frame = r.getFrame();
-                            showMessageDialog(frame, format(RouteConverter.getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
+                            log.warning("Could not download maps: " + e);
+                            showMessageDialog(r.getFrame(), format(RouteConverter.getBundle().getString("scan-error"), e), r.getFrame().getTitle(), ERROR_MESSAGE);
                         }
                     });
                 }

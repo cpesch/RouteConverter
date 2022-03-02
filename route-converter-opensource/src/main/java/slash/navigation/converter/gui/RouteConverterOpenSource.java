@@ -189,7 +189,10 @@ public class RouteConverterOpenSource extends RouteConverter {
             try {
                 hopper.setDataSources(kurviger, mapsforge, graphhopper);
             } catch (Exception e) {
-                invokeLater(() -> showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE));
+                invokeLater(() -> {
+                    log.warning("Could not set GraphHopper data source: " + e);
+                    showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
+                });
             }
         }
     }
@@ -214,7 +217,10 @@ public class RouteConverterOpenSource extends RouteConverter {
                 getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"),
                         Application.getInstance().getContext().getActionManager().get("show-maps"));
             } catch (IOException e) {
-                invokeLater(() -> showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE));
+                invokeLater(() -> {
+                    log.warning("Could not scan local maps and themes: " + e);
+                    showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
+                });
             }
 
             LocalMap mapAfterScan = getMapsforgeMapManager().getDisplayedMapModel().getItem();
@@ -229,15 +235,11 @@ public class RouteConverterOpenSource extends RouteConverter {
     protected void installBackgroundMap() {
         final File file = new File(getApplicationDirectory("maps/routeconverter"), "world.map");
         getDownloadManager().executeDownload("RouteConverter Background Map", "https://static.routeconverter.com/maps/world.map", Copy, file,
-                new Runnable() {
-                    public void run() {
-                        invokeLater(() -> {
-                            MapView mapView = getMapView();
-                            if (mapView instanceof MapsforgeMapView)
-                                ((MapsforgeMapView) mapView).setBackgroundMap(file);
-                        });
-                    }
-                });
+                () -> invokeLater(() -> {
+                    MapView mapView = getMapView();
+                    if (mapView instanceof MapsforgeMapView)
+                        ((MapsforgeMapView) mapView).setBackgroundMap(file);
+                }));
     }
 
     protected void scanRemoteMapsAndThemes() {

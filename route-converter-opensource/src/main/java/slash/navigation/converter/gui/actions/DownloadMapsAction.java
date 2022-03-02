@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.common.BoundingBox;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.RemoteMapDescriptor;
@@ -34,7 +33,7 @@ import javax.swing.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.stream.Collectors;
+import java.util.logging.Logger;
 
 import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newCachedThreadPool;
@@ -51,6 +50,7 @@ import static slash.common.io.Files.asDialogString;
  */
 
 public class DownloadMapsAction extends DialogAction {
+    private static final Logger log = Logger.getLogger(DownloadMapsAction.class.getName());
     private static ExecutorService executor = newCachedThreadPool();
 
     private final JTable table;
@@ -105,7 +105,10 @@ public class DownloadMapsAction extends DialogAction {
 
                     mapManager.scanMaps();
                 } catch (Exception e) {
-                    invokeLater(() -> showMessageDialog(getDialog(), format(RouteConverter.getBundle().getString("scan-error"), e), getDialog().getTitle(), ERROR_MESSAGE));
+                    invokeLater(() -> {
+                        log.warning("Could not download maps: " + e);
+                        showMessageDialog(getDialog(), format(RouteConverter.getBundle().getString("scan-error"), e), getDialog().getTitle(), ERROR_MESSAGE);
+                    });
                 }
             }
         });
