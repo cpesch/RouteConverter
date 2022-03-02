@@ -165,23 +165,28 @@ public class GraphManager {
             3. when bounding box missing: by uri alphabetically
         */
         public int compare(GraphDescriptor g1, GraphDescriptor g2) {
+            int result = internalCompare(g1, g2);
+            System.out.println("result: " + result + " g1: " + g1.getRemoteFile() + " g2: " +g2.getRemoteFile());
+            return result;
+        }
+
+        private int internalCompare(GraphDescriptor g1, GraphDescriptor g2) {
             int order = Integer.compare(g1.getGraphType().order, g2.getGraphType().order);
             if(order != 0)
                 return order;
 
             if (g1.getBoundingBox() == null && g2.getBoundingBox() != null)
-                return 1;
+                return 10;
             if (g1.getBoundingBox() != null && g2.getBoundingBox() == null)
-                return -1;
+                return -10;
             if (g1.getBoundingBox() == null && g2.getBoundingBox() == null)
                 return g1.getRemoteFile().getUri().compareTo(g2.getRemoteFile().getUri());
 
             if (g1.getBoundingBox().contains(g2.getBoundingBox()))
-                return 1;
-            else if (g2.getBoundingBox().contains(g1.getBoundingBox()))
-                return -1;
-            else
-                return (int)(g2.getBoundingBox().getSquareSize() - g1.getBoundingBox().getSquareSize());
+                return 20;
+            if (g2.getBoundingBox().contains(g1.getBoundingBox()))
+                return -20;
+            return 0; // (int) (g1.getBoundingBox().getSquareSize() - g2.getBoundingBox().getSquareSize());
         }
     }
 }

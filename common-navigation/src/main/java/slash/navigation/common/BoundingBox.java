@@ -25,6 +25,7 @@ import slash.common.type.CompactCalendar;
 
 import java.util.List;
 
+import static java.lang.Math.abs;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
@@ -95,8 +96,8 @@ public class BoundingBox {
     }
 
     public double getSquareSize() {
-        return (getSouthWest().getLongitude() - getNorthEast().getLongitude()) *
-                (getSouthWest().getLatitude() - getNorthEast().getLatitude());
+        return (getNorthEast().getLongitude() - getSouthWest().getLongitude()) *
+                (getNorthEast().getLatitude() - getSouthWest().getLatitude());
     }
 
     public boolean contains(NavigationPosition position) {
