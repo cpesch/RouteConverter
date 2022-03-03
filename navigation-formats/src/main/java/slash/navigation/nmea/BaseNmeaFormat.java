@@ -134,7 +134,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
                     }
                 }
             } else {
-                log.info(format("Found garbage for format %s: %s", getName(), line));
+                log.warning(format("Found garbage for format %s: %s", getName(), line));
 
                 // exception for Mobile Navigator 6: accept that the first line may be garbled
                 if (lineCount++ > getGarbleCount())

@@ -110,7 +110,7 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
             while (iterator.hasNext()) {
                 LinkedHashMap<String, String> rowAsMap = iterator.next();
                 if (containsGarbage(rowAsMap)) {
-                    log.warning(format("Found garbage in '%s'", rowAsMap));
+                    log.warning(format("Found garbage for format %s: %s", getName(), rowAsMap));
                     return false;
                 }
                 CsvPosition position = new CsvPosition(rowAsMap);
