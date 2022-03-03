@@ -166,7 +166,7 @@ public class GraphManager {
         */
         public int compare(GraphDescriptor g1, GraphDescriptor g2) {
             int result = internalCompare(g1, g2);
-            System.out.println("result: " + result + " g1: " + g1.getRemoteFile() + " g2: " +g2.getRemoteFile());
+            // System.out.println("result: " + result + " g1: " + g1.getRemoteFile() + " g2: " +g2.getRemoteFile());
             return result;
         }
 
