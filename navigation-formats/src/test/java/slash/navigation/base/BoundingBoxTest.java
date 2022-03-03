@@ -24,8 +24,8 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static slash.common.TestCase.assertDoubleEquals;
 
 public class BoundingBoxTest {
     public static NavigationPosition asPosition(double longitude, double latitude) {
@@ -60,5 +60,12 @@ public class BoundingBoxTest {
     @Test
     public void testNotContainsBoundingBox() {
         assertFalse(new BoundingBox(0.1, 0.1, -0.1, -0.1).contains(new BoundingBox(0.2, 0.0, 0.0, 0.0)));
+    }
+
+    @Test
+    public void testGetSquareSize() {
+        assertDoubleEquals(16, new BoundingBox(2.0, 2.0, -2.0, -2.0).getSquareSize());
+        assertDoubleEquals(16, new BoundingBox(-2.0, -2.0, -6.0, -6.0).getSquareSize());
+        assertDoubleEquals(16, new BoundingBox(6.0, 6.0, 2.0, 2.0).getSquareSize());
     }
 }

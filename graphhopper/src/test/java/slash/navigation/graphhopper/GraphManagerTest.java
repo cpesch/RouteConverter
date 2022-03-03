@@ -73,37 +73,48 @@ public class GraphManagerTest {
     public void testRemoteOrder() throws IOException {
         slash.navigation.datasources.File croatia = mock(slash.navigation.datasources.File.class);
         when(croatia.getUri()).thenReturn("croatia.pbf");
-        slash.navigation.datasources.File france = mock(slash.navigation.datasources.File.class);
+        when(croatia.toString()).thenReturn("croatia.pbf");
 
+        slash.navigation.datasources.File austria = mock(slash.navigation.datasources.File.class);
+        when(austria.getUri()).thenReturn("austria.pbf");
+        when(austria.toString()).thenReturn("austria.pbf");
+
+        slash.navigation.datasources.File france = mock(slash.navigation.datasources.File.class);
         when(france.getUri()).thenReturn("france.pbf");
+        when(france.toString()).thenReturn("france.pbf");
         when(france.getBoundingBox()).thenReturn(new BoundingBox(1.0, 1.0, -1.0, -1.0));
+
         slash.navigation.datasources.File paris = mock(slash.navigation.datasources.File.class);
         when(paris.getUri()).thenReturn("paris.pbf");
+        when(paris.toString()).thenReturn("paris.pbf");
         when(paris.getBoundingBox()).thenReturn(new BoundingBox(0.2, 0.2, -0.2, -0.2));
         assertTrue(france.getBoundingBox().contains(paris.getBoundingBox()));
         assertFalse(paris.getBoundingBox().contains(france.getBoundingBox()));
 
         slash.navigation.datasources.File germany = mock(slash.navigation.datasources.File.class);
         when(germany.getUri()).thenReturn("germany.pbf");
-        when(germany.getBoundingBox()).thenReturn(new BoundingBox(10.0, 10.0, 7.0, 7.0));
+        when(germany.toString()).thenReturn("germany.pbf");
+        when(germany.getBoundingBox()).thenReturn(new BoundingBox(20.0, 20.0, 5.0, 5.0));
         assertFalse(france.getBoundingBox().contains(germany.getBoundingBox()));
         assertFalse(germany.getBoundingBox().contains(france.getBoundingBox()));
         assertFalse(germany.getBoundingBox().contains(paris.getBoundingBox()));
 
         slash.navigation.datasources.File zip = mock(slash.navigation.datasources.File.class);
         when(zip.getUri()).thenReturn("croatia.zip");
+        when(zip.toString()).thenReturn("croatia.zip");
 
         DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getFiles()).thenReturn(asList(croatia, france, germany, paris, zip));
+        when(dataSource.getFiles()).thenReturn(asList(austria, croatia, france, germany, paris, zip));
 
         GraphManager graphManager = new GraphManager(singletonList(dataSource));
 
         List<GraphDescriptor> descriptors = graphManager.getRemoteGraphDescriptors();
-        assertEquals(5, descriptors.size());
+        assertEquals(6, descriptors.size());
         assertEquals(new GraphDescriptor(GraphManager.GraphType.ZIP, null, zip), descriptors.get(0));
-        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, germany), descriptors.get(1));
-        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, paris), descriptors.get(2));
-        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, france), descriptors.get(3));
-        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, croatia), descriptors.get(4));
+        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, france), descriptors.get(1));
+        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, germany), descriptors.get(2));
+        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, paris), descriptors.get(3));
+        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, austria), descriptors.get(4));
+        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, croatia), descriptors.get(5));
     }
 }
