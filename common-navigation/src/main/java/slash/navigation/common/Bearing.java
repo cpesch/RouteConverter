@@ -19,7 +19,6 @@
  * along with this library; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
-
 package slash.navigation.common;
 
 import static java.lang.Math.*;
@@ -39,17 +38,17 @@ public class Bearing {
     /**
      * the azimuth, degrees, 0 = north, clockwise positive
      */
-    private double azimuth;
+    private final double azimuth;
 
     /**
      * the back azimuth, degrees, 0 = north, clockwise positive
      */
-    private double backazimuth;
+    private final double backAzimuth;
 
     /**
      * separation in meters
      */
-    private double distance;
+    private final double distance;
 
     /**
      * Earth radius in meters
@@ -81,9 +80,9 @@ public class Bearing {
      */
     private static final double deg = toDegrees(1.0);
 
-    public Bearing(double azimuth, double backazimuth, double distance) {
+    public Bearing(double azimuth, double backAzimuth, double distance) {
         this.azimuth = azimuth;
-        this.backazimuth = backazimuth;
+        this.backAzimuth = backAzimuth;
         this.distance = distance;
     }
 
@@ -102,7 +101,7 @@ public class Bearing {
      * @return back azimuth in degrees
      */
     public double getBackAzimuth() {
-        return backazimuth;
+        return backAzimuth;
     }
 
     /**
@@ -169,10 +168,6 @@ public class Bearing {
         // BAZ is backward azimuth from point 2 to 1;
         // S is distance in meters.
         //
-        // Conversion to JAVA from FORTRAN was made with as few changes as possible
-        // to avoid errors made while recasting form, and to facilitate any future
-        // comparisons between the original code and the altered version in Java.
-        //
         // IMPLICIT REAL*8 (A-H,O-Z)
         // COMMON/CONST/PI,RAD
         // COMMON/ELIPSOID/EARTH_RADIUS,F
@@ -230,8 +225,8 @@ public class Bearing {
         if (azimuth < 0.0) {
             azimuth += 360.0;  // reset azs from -180 to 180 to 0 to 360
         }
-        double backazimuth = BAZ * deg;  // radians to degrees; already in 0 to 360 range
-        return new Bearing(azimuth, backazimuth, roundMeterToMillimeterPrecision(S));
+        double backAzimuth = BAZ * deg;  // radians to degrees; already in 0 to 360 range
+        return new Bearing(azimuth, backAzimuth, roundMeterToMillimeterPrecision(S));
     }
 }
 
