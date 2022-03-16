@@ -80,8 +80,7 @@ import static java.lang.Math.abs;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static java.util.Locale.GERMANY;
-import static java.util.Locale.US;
+import static java.util.Locale.*;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.JOptionPane.*;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
@@ -267,7 +266,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private List<String> getLanguagesWithActiveTranslators() {
-        List<Locale> localesOfActiveTranslators = asList(CATALAN, DENMARK, GERMANY, SERBIA, US);
+        List<Locale> localesOfActiveTranslators = asList(CATALAN, CROATIA, DENMARK, GERMANY, ITALY, NEDERLANDS, PORTUGAL, SPAIN, US);
         List<String> results = new ArrayList<>();
         for (Locale locale : localesOfActiveTranslators) {
             results.add(locale.getLanguage());
