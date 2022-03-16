@@ -260,10 +260,10 @@ public abstract class RouteComments {
     private static final String DOUBLE = "[-\\d\\.]+";
     private static final String TRIPMASTER_REASONS = "Dur. " + TIME + "|Dauer " + TIME + "|" +
             "Abstand \\d+|Dist. \\d+|Distanz \\d+|Km " + DOUBLE + "|" +
-            "Course \\d+|Cape \\d+|Kurs \\d+|Richtung \\d+|" +
+            "Course \\d+|Cape \\d+|Kurs \\d+|Richtung \\d+|Direction \\d+|" +
             "Waypoint|Wpt|Punkt|Pause";
 
-    private static final Pattern TRIPMASTER_HEADING_PATTERN = Pattern.compile("(Course|Cape|Kurs|Richtung) (\\d+)");
+    private static final Pattern TRIPMASTER_HEADING_PATTERN = Pattern.compile("(Course|Cape|Kurs|Richtung|Direction) (\\d+)");
     private static final Pattern TRIPMASTER_14_PATTERN = Pattern.compile("(" + TRIPMASTER_REASONS + ") - (" + TIME + ") - (" + DOUBLE + ") m - (.+)");
     private static final Pattern TRIPMASTER_18_SHORT_STARTEND_PATTERN = Pattern.compile(
             "(Start|Ende|Finish) : ((.+) - )?(.+) - (.+) - (" + DOUBLE + ") m - (" + DOUBLE + ") (K|k)m");

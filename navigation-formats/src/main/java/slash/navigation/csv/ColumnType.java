@@ -34,7 +34,7 @@ enum ColumnType {
     Longitude("L\u00e4nge", "L\u00e4ngengrad"),
     Elevation("H\u00f6he", "Altitude"),
     Speed("Geschwindigkeit"),
-    Heading("Richtung", "Kurs", "Heading", "Course"),
+    Heading("Richtung", "Kurs", "Heading", "Course", "Direction"),
     Pressure("Druck", "Pressure"),
     Temperature("Temperatur", "Temperature"),
     Heartbeat("Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
@@ -42,7 +42,7 @@ enum ColumnType {
     Description("Beschreibung", "Comment", "Kommentar"),
     Unsupported();
 
-    private List<String> alternativeNames;
+    private final List<String> alternativeNames;
 
     ColumnType(String... alternativeNames) {
         this.alternativeNames = asList(alternativeNames);

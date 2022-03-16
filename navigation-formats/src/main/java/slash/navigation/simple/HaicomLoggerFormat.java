@@ -143,8 +143,11 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
             if("W".equals(westOrEast) && longitude != null)
                 longitude = -longitude;
             String altitude = matcher.group(7);
+            String heading = matcher.group(8);
             String speed = matcher.group(9);
-            return new Wgs84Position(longitude, latitude, parseDouble(altitude), parseDouble(speed), parseDateAndTime(date, time), null);
+            Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(altitude), parseDouble(speed), parseDateAndTime(date, time), null);
+            position.setHeading(parseDouble(heading));
+            return position;
         }
 
         throw new IllegalArgumentException("'" + line + "' does not match");

@@ -38,7 +38,7 @@ enum ColumnType {
     Longitude(NUMERIC, "L\u00e4nge", "L\u00e4ngengrad"),
     Elevation(NUMERIC, "H\u00f6he", "Altitude"),
     Speed(NUMERIC, "Geschwindigkeit"),
-    Heading(NUMERIC, "Richtung", "Kurs", "Heading", "Course"),
+    Heading(NUMERIC, "Richtung", "Kurs", "Heading", "Course", "Direction"),
     Pressure(NUMERIC, "Druck", "Pressure"),
     Temperature(NUMERIC, "Temperatur", "Temperature"),
     Heartbeat(NUMERIC, "Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
@@ -46,8 +46,8 @@ enum ColumnType {
     Description(STRING, "Beschreibung", "Comment", "Kommentar"),
     Unsupported(STRING);
 
-    private CellType cellType;
-    private List<String> alternativeNames;
+    private final CellType cellType;
+    private final List<String> alternativeNames;
 
     ColumnType(CellType cellType, String... alternativeNames) {
         this.cellType = cellType;
