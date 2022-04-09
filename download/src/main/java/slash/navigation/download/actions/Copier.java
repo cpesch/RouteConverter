@@ -23,7 +23,6 @@ import java.io.*;
 
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
-import static slash.common.io.InputOutput.closeQuietly;
 
 /**
  * Copies an {@link InputStream} to an {@link OutputStream} and notifies about it.
@@ -45,16 +44,9 @@ public class Copier {
     }
 
     public long copyAndClose(InputStream input, OutputStream output, long startByte, Long expectingBytes) throws IOException {
-        BufferedInputStream bis = new BufferedInputStream(input);
-        BufferedOutputStream bos = new BufferedOutputStream(output);
-        try {
+        try (BufferedInputStream bis = new BufferedInputStream(input);
+             BufferedOutputStream bos = new BufferedOutputStream(output)) {
             return copy(bis, bos, startByte, expectingBytes);
-        } finally {
-            try {
-                closeQuietly(bis);
-            } finally {
-                closeQuietly(bos);
-            }
         }
     }
 

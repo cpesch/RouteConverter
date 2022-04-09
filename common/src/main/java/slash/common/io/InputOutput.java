@@ -34,32 +34,15 @@ import static org.apache.commons.io.IOUtils.copyLarge;
 public class InputOutput {
     public static final int DEFAULT_BUFFER_SIZE = 4 * 1024;
 
-    public static void closeQuietly(Closeable closeable) {
-        try {
-            if (closeable != null) {
-                closeable.close();
-            }
-        } catch (IOException e) {
-            // intentionally ignored
-        }
-    }
-
-
-    public static void copyAndClose(InputStream input, OutputStream output) throws IOException {
-        try {
-            copyLarge(input, output, new byte[DEFAULT_BUFFER_SIZE]);
-        } finally {
-            closeQuietly(input);
-            closeQuietly(output);
+    public static void copyAndClose(InputStream inputStream, OutputStream outputStream) throws IOException {
+        try (InputStream i = inputStream; OutputStream o = outputStream){
+            copyLarge(i, o, new byte[DEFAULT_BUFFER_SIZE]);
         }
     }
 
     public static void copyAndClose(Reader reader, Writer writer) throws IOException {
-        try {
-            copyLarge(reader, writer, new char[DEFAULT_BUFFER_SIZE]);
-        } finally {
-            closeQuietly(reader);
-            closeQuietly(writer);
+        try (Reader r = reader; Writer w = writer){
+            copyLarge(r, w, new char[DEFAULT_BUFFER_SIZE]);
         }
     }
 

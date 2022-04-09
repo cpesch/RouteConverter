@@ -35,8 +35,6 @@ import java.io.InputStream;
 import java.security.*;
 import java.security.cert.CertificateException;
 
-import static slash.common.io.InputOutput.closeQuietly;
-
 /**
  * A factory to create a {@link HttpClientConnectionManager} that supports the letsencrypt root certificate.
  * <p>
@@ -80,11 +78,8 @@ public class SSLConnectionManagerFactory {
 
     private KeyStore getKeyStore() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
         KeyStore keyStore = KeyStore.getInstance("JKS");
-        InputStream inputStream = getClass().getResourceAsStream("letsencrypt.truststore");
-        try {
+        try (InputStream inputStream = getClass().getResourceAsStream("letsencrypt.truststore")) {
             keyStore.load(inputStream, "letsencrypt".toCharArray());
-        } finally {
-            closeQuietly(inputStream);
         }
         return keyStore;
     }

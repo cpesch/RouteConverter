@@ -33,7 +33,6 @@ import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
 import static slash.common.io.Files.setLastModified;
 import static slash.common.io.Files.writePartialFile;
-import static slash.common.io.InputOutput.closeQuietly;
 import static slash.common.io.InputOutput.copyAndClose;
 import static slash.navigation.download.performer.GetPerformer.updateDownload;
 
@@ -60,14 +59,14 @@ public class GetRangePerformer implements ActionPerformer {
         if (getDownload().getETag() != null)
             request.setIfNoneMatch(getDownload().getETag());
 
-        InputStream inputStream = request.executeAsStream();
         log.info(format("GET 0-%d for %s returned with status code %s and content length %d", RANGE_END_INDEX, getDownload().getUrl(), request.getStatusCode(), request.getContentLength()));
         if (request.isPartialContent()) {
-            writePartialFile(inputStream, getDownload().getFile().getExpectedChecksum().getContentLength(), getDownload().getFile().getFile());
-            closeQuietly(inputStream);
+            try(InputStream inputStream = request.executeAsStream()) {
+                writePartialFile(inputStream, getDownload().getFile().getExpectedChecksum().getContentLength(), getDownload().getFile().getFile());
+            }
         } else if (request.isOk()){
             // HTTP Range not supported
-            copyAndClose(inputStream, new FileOutputStream(getDownload().getFile().getFile()));
+            copyAndClose(request.executeAsStream(), new FileOutputStream(getDownload().getFile().getFile()));
             setLastModified(getDownload().getFile().getFile(), request.getLastModified());
         }
         request.release();

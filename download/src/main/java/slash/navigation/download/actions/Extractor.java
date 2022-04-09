@@ -35,7 +35,6 @@ import static java.util.logging.Logger.getLogger;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.lastPathFragment;
 import static slash.common.io.Files.setLastModified;
-import static slash.common.io.InputOutput.closeQuietly;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
@@ -72,10 +71,10 @@ public class Extractor {
                     handleDirectory(directory, entry);
 
                     log.info(format("Extracting from %s to %s", tempFile, extracted));
-                    FileOutputStream output = new FileOutputStream(extracted);
-                    new Copier(listener).copy(zipInputStream, output, 0, entry.getSize());
                     // do not close zip input stream
-                    closeQuietly(output);
+                    try (FileOutputStream output = new FileOutputStream(extracted)) {
+                        new Copier(listener).copy(zipInputStream, output, 0, entry.getSize());
+                    }
                     setLastModified(extracted, fromMillis(entry.getTime()));
 
                     zipInputStream.closeEntry();
