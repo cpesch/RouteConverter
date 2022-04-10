@@ -194,14 +194,14 @@ public class MapsforgeMapView extends BaseMapView {
             private Bitmap markerIcon;
             {
                 try {
-                    markerIcon = GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream("marker.svg"), 1.0f, 64, 54, 100, 1234567890);
+                    markerIcon = GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream("marker.svg"), 1.0f, 32, 54, 100, 1234567892);
                 } catch (IOException e) {
                     log.severe("Cannot create marker icon: " + e);
                 }
             }
 
             private Marker createMarker(PositionWithLayer positionWithLayer, LatLong latLong) {
-                return new DraggableMarker(MapsforgeMapView.this, positionWithLayer, latLong, markerIcon, 13, -23);
+                return new DraggableMarker(MapsforgeMapView.this, positionWithLayer, latLong, markerIcon, 0, -25);
             }
 
             public void add(List<PositionWithLayer> positionWithLayers) {
