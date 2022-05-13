@@ -35,6 +35,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 
+import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.lang.Thread.sleep;
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static slash.navigation.gui.helpers.UIHelper.*;
@@ -104,18 +105,20 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     private MarkerAndDelta getMarkerFor(MouseEvent e) {
-        LatLong tapLatLong = projection.fromPixels(e.getX(), e.getY());
-        org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(e.getX(), e.getY());
+        if((e.getModifiersEx() & CTRL_DOWN_MASK) != CTRL_DOWN_MASK) {
+            LatLong tapLatLong = projection.fromPixels(e.getX(), e.getY());
+            org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(e.getX(), e.getY());
 
-        Layers layers = layerManager.getLayers();
-        for (int i = layers.size() - 1; i >= 0; --i) {
-            Layer layer = layers.get(i);
-            if (!(layer instanceof Marker))
-                continue;
+            Layers layers = layerManager.getLayers();
+            for (int i = layers.size() - 1; i >= 0; --i) {
+                Layer layer = layers.get(i);
+                if (!(layer instanceof Marker))
+                    continue;
 
-            org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
-            if (layer.onTap(tapLatLong, layerXY, tapXY)) {
-                return new MarkerAndDelta((DraggableMarker) layer, layerXY.x - tapXY.x, layerXY.y - tapXY.y);
+                org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
+                if (layer.onTap(tapLatLong, layerXY, tapXY)) {
+                    return new MarkerAndDelta((DraggableMarker) layer, layerXY.x - tapXY.x, layerXY.y - tapXY.y);
+                }
             }
         }
         return null;
