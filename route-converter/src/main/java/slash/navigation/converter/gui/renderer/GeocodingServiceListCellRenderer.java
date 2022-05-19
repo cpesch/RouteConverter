@@ -22,11 +22,15 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import java.awt.Component;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
 import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.gui.Application;
-
-import javax.swing.*;
-import java.awt.*;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 /**
  * Renders the {@link GeocodingService} labels of the geocoding service combo box.
@@ -34,8 +38,12 @@ import java.awt.*;
  * @author Christian Pesch
  */
 
-public class GeocodingServiceListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+public class GeocodingServiceListCellRenderer extends BackendListCellRenderer {
+    public GeocodingServiceListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         GeocodingService service = (GeocodingService) value;
 

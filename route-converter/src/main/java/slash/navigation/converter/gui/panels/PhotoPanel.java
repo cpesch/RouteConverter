@@ -180,7 +180,7 @@ public class PhotoPanel implements PanelInTab {
 
         comboBoxFilterPhotoPredicate.setModel(FILTER_PREDICATE_MODEL);
         comboBoxFilterPhotoPredicate.setSelectedItem(getFilterPredicatePreference());
-        comboBoxFilterPhotoPredicate.setRenderer(new FilterPredicateListCellRenderer());
+        comboBoxFilterPhotoPredicate.setRenderer(new FilterPredicateListCellRenderer(comboBoxFilterPhotoPredicate.getRenderer()));
         comboBoxFilterPhotoPredicate.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
@@ -197,7 +197,7 @@ public class PhotoPanel implements PanelInTab {
         ComboBoxModel<TimeZoneAndId> timeZoneModel = new DefaultComboBoxModel<>(timeZoneAndIds.getTimeZones());
         timeZoneModel.setSelectedItem(timeZoneAndIds.getTimeZoneAndIdFor(r.getPhotoTimeZone().getTimeZone()));
         comboBoxPhotoTimeZone.setModel(timeZoneModel);
-        comboBoxPhotoTimeZone.setRenderer(new TimeZoneAndIdListCellRenderer());
+        comboBoxPhotoTimeZone.setRenderer(new TimeZoneAndIdListCellRenderer(comboBoxPhotoTimeZone.getRenderer()));
         comboBoxPhotoTimeZone.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED)
@@ -218,7 +218,7 @@ public class PhotoPanel implements PanelInTab {
         });
         tagStrategyModel.setSelectedItem(r.getTagStrategyPreference());
         comboBoxTagStrategy.setModel(tagStrategyModel);
-        comboBoxTagStrategy.setRenderer(new TagStrategyListCellRenderer());
+        comboBoxTagStrategy.setRenderer(new TagStrategyListCellRenderer(comboBoxTagStrategy.getRenderer()));
         comboBoxTagStrategy.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {

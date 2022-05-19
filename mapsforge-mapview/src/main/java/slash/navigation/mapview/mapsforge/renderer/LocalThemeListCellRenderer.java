@@ -19,12 +19,17 @@
 */
 package slash.navigation.mapview.mapsforge.renderer;
 
+import java.awt.Component;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JSeparator;
+import javax.swing.ListCellRenderer;
+
 import slash.navigation.gui.Application;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.impl.VectorTheme;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
  * Renders the {@link LocalTheme} labels of the map and theme selector combo box.
@@ -32,10 +37,14 @@ import java.awt.*;
  * @author Christian Pesch
  */
 
-public class LocalThemeListCellRenderer extends DefaultListCellRenderer {
-    public static final LocalTheme SEPARATOR_TO_DOWNLOAD_THEME = new VectorTheme(null, null, null);
+public class LocalThemeListCellRenderer extends BackendListCellRenderer {
+	public static final LocalTheme SEPARATOR_TO_DOWNLOAD_THEME = new VectorTheme(null, null, null);
     public static final LocalTheme DOWNLOAD_THEME = new VectorTheme(null, null, null);
     private static final JSeparator SEPARATOR = new JSeparator();
+
+    public LocalThemeListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
 
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         if (SEPARATOR_TO_DOWNLOAD_THEME.equals(value))

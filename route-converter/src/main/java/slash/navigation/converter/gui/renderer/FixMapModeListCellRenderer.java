@@ -20,12 +20,16 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import java.awt.Component;
+import java.util.MissingResourceException;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.FixMapMode;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.MissingResourceException;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 /**
  * Renders the {@link FixMapMode} labels of the fix map combo box.
@@ -33,8 +37,12 @@ import java.util.MissingResourceException;
  * @author Christian Pesch
  */
 
-public class FixMapModeListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+public class FixMapModeListCellRenderer extends BackendListCellRenderer {
+    public FixMapModeListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         FixMapMode fixMapMode = (FixMapMode) value;
         String text;

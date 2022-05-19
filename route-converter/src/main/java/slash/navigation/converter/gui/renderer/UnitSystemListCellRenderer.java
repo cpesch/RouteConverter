@@ -22,12 +22,16 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import java.awt.Component;
+import java.util.MissingResourceException;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.MissingResourceException;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 /**
  * Renders the {@link UnitSystem} labels of the unit system combo box.
@@ -35,8 +39,12 @@ import java.util.MissingResourceException;
  * @author Christian Pesch
  */
 
-public class UnitSystemListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+public class UnitSystemListCellRenderer extends BackendListCellRenderer {
+    public UnitSystemListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         UnitSystem unitSystem = (UnitSystem) value;
         String text;

@@ -20,12 +20,16 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import java.awt.Component;
+import java.util.MissingResourceException;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
 import slash.navigation.common.NumberingStrategy;
 import slash.navigation.converter.gui.RouteConverter;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.MissingResourceException;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 /**
  * Renders the {@link NumberingStrategy} labels of the options dialog combo box.
@@ -33,9 +37,14 @@ import java.util.MissingResourceException;
  * @author Christian Pesch
  */
 
-public class NumberingStrategyListCellRenderer extends DefaultListCellRenderer {
+public class NumberingStrategyListCellRenderer extends BackendListCellRenderer {
 
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public NumberingStrategyListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+		// TODO Auto-generated constructor stub
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         NumberingStrategy numberingStrategy = (NumberingStrategy) value;
         String text;

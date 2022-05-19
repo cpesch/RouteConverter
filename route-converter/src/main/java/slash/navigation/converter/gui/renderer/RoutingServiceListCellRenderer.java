@@ -22,11 +22,15 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.gui.Application;
-import slash.navigation.routing.RoutingService;
+import java.awt.Component;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
+import slash.navigation.gui.Application;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
+import slash.navigation.routing.RoutingService;
 
 /**
  * Renders the {@link RoutingService} labels of the routing service combo box.
@@ -34,8 +38,12 @@ import java.awt.*;
  * @author Christian Pesch
  */
 
-public class RoutingServiceListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+public class RoutingServiceListCellRenderer extends BackendListCellRenderer {
+    public RoutingServiceListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         RoutingService service = (RoutingService) value;
         String text = service.getName();

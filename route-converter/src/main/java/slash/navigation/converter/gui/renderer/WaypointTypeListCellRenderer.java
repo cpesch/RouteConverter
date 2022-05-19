@@ -20,12 +20,16 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import java.awt.Component;
+import java.util.MissingResourceException;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
 import slash.navigation.base.WaypointType;
 import slash.navigation.converter.gui.RouteConverter;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.MissingResourceException;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 /**
  * Renders the {@link WaypointType} labels of the complete flight plan waypoint type combo box.
@@ -33,8 +37,12 @@ import java.util.MissingResourceException;
  * @author Christian Pesch
  */
 
-public class WaypointTypeListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+public class WaypointTypeListCellRenderer extends BackendListCellRenderer {
+    public WaypointTypeListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         WaypointType waypointType = (WaypointType) value;
         String text = "?";

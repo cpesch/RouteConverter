@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.fpl.CountryCode;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,8 +35,12 @@ import static slash.navigation.fpl.CountryCode.None;
  * @author Christian Pesch
  */
 
-public class CountryCodeListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+public class CountryCodeListCellRenderer extends BackendListCellRenderer {
+    public CountryCodeListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         CountryCode countryCode = (CountryCode) value;
         String text;

@@ -118,7 +118,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
             }
         });
 
-        comboBoxCountryCode.setRenderer(new CountryCodeListCellRenderer());
+        comboBoxCountryCode.setRenderer(new CountryCodeListCellRenderer(comboBoxCountryCode.getRenderer()));
         comboBoxCountryCode.setModel(new DefaultComboBoxModel<>(CountryCode.values()));
         comboBoxCountryCode.addItemListener(e -> {
             if (e.getStateChange() != SELECTED)
@@ -127,7 +127,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
             getPosition().setCountryCode(countryCode);
             validateModel();
         });
-        comboBoxWaypointType.setRenderer(new WaypointTypeListCellRenderer());
+        comboBoxWaypointType.setRenderer(new WaypointTypeListCellRenderer(comboBoxWaypointType.getRenderer()));
         comboBoxWaypointType.setModel(new DefaultComboBoxModel<>(new WaypointType[]{
                 Airport, Intersection, NonDirectionalBeacon, UserWaypoint, VHFOmnidirectionalRadioRange
         }));

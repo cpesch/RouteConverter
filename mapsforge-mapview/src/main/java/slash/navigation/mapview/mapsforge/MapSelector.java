@@ -99,7 +99,7 @@ public class MapSelector {
                 asList(SEPARATOR_TO_DOWNLOAD_MAP, DOWNLOAD_MAP))
         );
         comboBoxMap.setPrototypeDisplayValue(new MapsforgeFileMap("Map", "http://mal.url", null, null, null));
-        comboBoxMap.setRenderer(new LocalMapListCellRenderer());
+        comboBoxMap.setRenderer(new LocalMapListCellRenderer(comboBoxMap.getRenderer()));
         comboBoxMap.addItemListener(e -> {
             if (e.getStateChange() != SELECTED) {
                 return;
@@ -115,7 +115,7 @@ public class MapSelector {
                 asList(SEPARATOR_TO_DOWNLOAD_THEME, DOWNLOAD_THEME))
         );
         comboBoxTheme.setPrototypeDisplayValue(mapManager.getAvailableThemesModel().getItem(0));
-        comboBoxTheme.setRenderer(new LocalThemeListCellRenderer());
+        comboBoxTheme.setRenderer(new LocalThemeListCellRenderer(comboBoxTheme.getRenderer()));
         LocalMap selectedItem = (LocalMap) comboBoxMap.getSelectedItem();
         comboBoxTheme.setEnabled(selectedItem != null && selectedItem.getType().isThemed());
 

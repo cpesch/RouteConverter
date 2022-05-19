@@ -385,7 +385,7 @@ public class ConvertPanel implements PanelInTab {
             handleColumnVisibilityUpdate(column);
 
         comboBoxPositionLists.setModel(formatAndRoutesModel);
-        comboBoxPositionLists.setRenderer(new RouteListCellRenderer());
+        comboBoxPositionLists.setRenderer(new RouteListCellRenderer(comboBoxPositionLists.getRenderer()));
         comboBoxPositionLists.addItemListener(e -> {
             if (e.getStateChange() == SELECTED) {
                 r.getPositionAugmenter().interrupt();
@@ -393,7 +393,7 @@ public class ConvertPanel implements PanelInTab {
             }
         });
         comboBoxRouteCharacteristics.setModel(r.getCharacteristicsModel());
-        comboBoxRouteCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer());
+        comboBoxRouteCharacteristics.setRenderer(new RouteCharacteristicsListCellRenderer(comboBoxRouteCharacteristics.getRenderer()));
 
         convertPanel.setTransferHandler(dropHandler);
 

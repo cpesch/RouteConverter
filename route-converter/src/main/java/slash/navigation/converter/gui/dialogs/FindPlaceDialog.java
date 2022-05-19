@@ -106,7 +106,7 @@ public class FindPlaceDialog extends SimpleDialog {
             }
         }, getKeyStroke(VK_ENTER, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        listResult.setCellRenderer(new NavigationPositionListCellRenderer());
+        listResult.setCellRenderer(new NavigationPositionListCellRenderer(listResult.getCellRenderer()));
         listResult.setSelectionForeground(new Color(232, 232, 232));
         listResult.setSelectionBackground(new Color(0, 9 * 16 + 9, 255));
         listResult.addListSelectionListener(new ListSelectionListener() {

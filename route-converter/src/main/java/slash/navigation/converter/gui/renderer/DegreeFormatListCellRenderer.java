@@ -24,6 +24,7 @@ package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.common.DegreeFormat;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,8 +36,12 @@ import java.util.MissingResourceException;
  * @author Christian Pesch
  */
 
-public class DegreeFormatListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+public class DegreeFormatListCellRenderer extends BackendListCellRenderer {
+    public DegreeFormatListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         DegreeFormat degreeFormat = (DegreeFormat) value;
         String text;

@@ -20,12 +20,16 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import java.awt.Component;
+import java.util.MissingResourceException;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.TagStrategy;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.MissingResourceException;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 /**
  * Renders the {@link TagStrategy} labels of the photo panel combo box.
@@ -33,9 +37,13 @@ import java.util.MissingResourceException;
  * @author Christian Pesch
  */
 
-public class TagStrategyListCellRenderer extends DefaultListCellRenderer {
+public class TagStrategyListCellRenderer extends BackendListCellRenderer {
 
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public TagStrategyListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         TagStrategy tagStrategy = (TagStrategy) value;
         String text;

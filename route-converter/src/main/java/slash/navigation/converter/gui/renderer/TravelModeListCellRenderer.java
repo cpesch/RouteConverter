@@ -20,12 +20,16 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.routing.TravelMode;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
 import java.util.MissingResourceException;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
+import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
+import slash.navigation.routing.TravelMode;
 
 /**
  * Renders the {@link TravelMode} labels of the route travel mode combo box.
@@ -33,8 +37,12 @@ import java.util.MissingResourceException;
  * @author Christian Pesch
  */
 
-public class TravelModeListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+public class TravelModeListCellRenderer extends BackendListCellRenderer {
+    public TravelModeListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         TravelMode travelMode = (TravelMode) value;
         String text;

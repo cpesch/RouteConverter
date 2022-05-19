@@ -158,7 +158,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         localeModel.setSelectedItem(Application.getInstance().getLocale());
         comboBoxLocale.setModel(localeModel);
-        comboBoxLocale.setRenderer(new LocaleListCellRenderer());
+        comboBoxLocale.setRenderer(new LocaleListCellRenderer(comboBoxLocale.getRenderer()));
         comboBoxLocale.addItemListener(e -> {
             if (e.getStateChange() != SELECTED) {
                 return;
@@ -172,7 +172,7 @@ public class OptionsDialog extends SimpleDialog {
                 new DefaultComboBoxModel<>(mapViews.toArray(new MapViewImplementation[0]));
         mapViewModel.setSelectedItem(r.getMapViewPreference());
         comboBoxMapService.setModel(mapViewModel);
-        comboBoxMapService.setRenderer(new MapViewListCellRenderer());
+        comboBoxMapService.setRenderer(new MapViewListCellRenderer(comboBoxMapService.getRenderer()));
         comboBoxMapService.addItemListener(e -> {
             if (e.getStateChange() != SELECTED) {
                 return;
@@ -240,7 +240,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         googleMapsServerModel.setSelectedItem(r.getGoogleMapsServerModel().getGoogleMapsServer());
         comboBoxGoogleMapsServer.setModel(googleMapsServerModel);
-        comboBoxGoogleMapsServer.setRenderer(new GoogleMapsServerListCellRenderer());
+        comboBoxGoogleMapsServer.setRenderer(new GoogleMapsServerListCellRenderer(comboBoxGoogleMapsServer.getRenderer()));
         comboBoxGoogleMapsServer.addItemListener(e -> {
             if (e.getStateChange() != SELECTED) {
                 return;
@@ -254,7 +254,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         fixMapModeModel.setSelectedItem(r.getMapPreferencesModel().getFixMapModeModel().getFixMapMode());
         comboBoxFixMapMode.setModel(fixMapModeModel);
-        comboBoxFixMapMode.setRenderer(new FixMapModeListCellRenderer());
+        comboBoxFixMapMode.setRenderer(new FixMapModeListCellRenderer(comboBoxFixMapMode.getRenderer()));
         comboBoxFixMapMode.addItemListener(e -> {
             if (e.getStateChange() != SELECTED) {
                 return;
@@ -384,7 +384,7 @@ public class OptionsDialog extends SimpleDialog {
         }
         routingServiceModel.setSelectedItem(r.getRoutingServiceFacade().getRoutingService());
         comboBoxRoutingService.setModel(routingServiceModel);
-        comboBoxRoutingService.setRenderer(new RoutingServiceListCellRenderer());
+        comboBoxRoutingService.setRenderer(new RoutingServiceListCellRenderer(comboBoxRoutingService.getRenderer()));
         comboBoxRoutingService.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
@@ -419,7 +419,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         handleRoutingServiceUpdate();
 
-        comboboxTravelMode.setRenderer(new TravelModeListCellRenderer());
+        comboboxTravelMode.setRenderer(new TravelModeListCellRenderer(comboboxTravelMode.getRenderer()));
         comboboxTravelMode.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
@@ -450,7 +450,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         numberPatternModel.setSelectedItem(r.getNumberPatternPreference());
         comboboxNumberPattern.setModel(numberPatternModel);
-        comboboxNumberPattern.setRenderer(new NumberPatternListCellRenderer());
+        comboboxNumberPattern.setRenderer(new NumberPatternListCellRenderer(comboboxNumberPattern.getRenderer()));
         comboboxNumberPattern.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
@@ -466,7 +466,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         numberingStrategyModel.setSelectedItem(r.getNumberingStrategyPreference());
         comboBoxNumberingStrategy.setModel(numberingStrategyModel);
-        comboBoxNumberingStrategy.setRenderer(new NumberingStrategyListCellRenderer());
+        comboBoxNumberingStrategy.setRenderer(new NumberingStrategyListCellRenderer(comboBoxNumberingStrategy.getRenderer()));
         comboBoxNumberingStrategy.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
@@ -483,7 +483,7 @@ public class OptionsDialog extends SimpleDialog {
         }
         elevationServiceModel.setSelectedItem(r.getElevationServiceFacade().getElevationService());
         comboBoxElevationService.setModel(elevationServiceModel);
-        comboBoxElevationService.setRenderer(new ElevationServiceListCellRenderer());
+        comboBoxElevationService.setRenderer(new ElevationServiceListCellRenderer(comboBoxElevationService.getRenderer()));
         comboBoxElevationService.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
@@ -524,7 +524,7 @@ public class OptionsDialog extends SimpleDialog {
         }
         geocodingServiceModel.setSelectedItem(r.getGeocodingServiceFacade().getGeocodingService());
         comboBoxGeocodingService.setModel(geocodingServiceModel);
-        comboBoxGeocodingService.setRenderer(new GeocodingServiceListCellRenderer());
+        comboBoxGeocodingService.setRenderer(new GeocodingServiceListCellRenderer(comboBoxGeocodingService.getRenderer()));
         comboBoxGeocodingService.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
@@ -540,7 +540,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         unitSystemModel.setSelectedItem(r.getUnitSystemModel().getUnitSystem());
         comboBoxUnitSystem.setModel(unitSystemModel);
-        comboBoxUnitSystem.setRenderer(new UnitSystemListCellRenderer());
+        comboBoxUnitSystem.setRenderer(new UnitSystemListCellRenderer(comboBoxUnitSystem.getRenderer()));
         comboBoxUnitSystem.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
@@ -556,7 +556,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         degreeFormatModel.setSelectedItem(r.getUnitSystemModel().getDegreeFormat());
         comboBoxDegreeFormat.setModel(degreeFormatModel);
-        comboBoxDegreeFormat.setRenderer(new DegreeFormatListCellRenderer());
+        comboBoxDegreeFormat.setRenderer(new DegreeFormatListCellRenderer(comboBoxDegreeFormat.getRenderer()));
         comboBoxDegreeFormat.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {
@@ -571,7 +571,7 @@ public class OptionsDialog extends SimpleDialog {
         ComboBoxModel<TimeZoneAndId> timeZoneModel = new DefaultComboBoxModel<>(timeZoneAndIds.getTimeZones());
         timeZoneModel.setSelectedItem(timeZoneAndIds.getTimeZoneAndIdFor(r.getTimeZone().getTimeZone()));
         comboBoxTimeZone.setModel(timeZoneModel);
-        comboBoxTimeZone.setRenderer(new TimeZoneAndIdListCellRenderer());
+        comboBoxTimeZone.setRenderer(new TimeZoneAndIdListCellRenderer(comboBoxTimeZone.getRenderer()));
         comboBoxTimeZone.addItemListener(new ItemListener() {
             public void itemStateChanged(ItemEvent e) {
                 if (e.getStateChange() != SELECTED) {

@@ -20,10 +20,14 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.googlemaps.GoogleMapsServer;
+import java.awt.Component;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
+import slash.navigation.googlemaps.GoogleMapsServer;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 /**
  * Renders the {@link GoogleMapsServer} labels of the map server combo box.
@@ -31,8 +35,12 @@ import java.awt.*;
  * @author Christian Pesch
  */
 
-public class GoogleMapsServerListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+public class GoogleMapsServerListCellRenderer extends BackendListCellRenderer {
+    public GoogleMapsServerListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         GoogleMapsServer googleMapsServer = (GoogleMapsServer) value;
 

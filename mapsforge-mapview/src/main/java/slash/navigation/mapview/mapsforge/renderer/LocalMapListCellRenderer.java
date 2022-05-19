@@ -20,6 +20,7 @@
 package slash.navigation.mapview.mapsforge.renderer;
 
 import slash.navigation.gui.Application;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
 
@@ -32,11 +33,15 @@ import java.awt.*;
  * @author Christian Pesch
  */
 
-public class LocalMapListCellRenderer extends DefaultListCellRenderer {
-    public static final LocalMap SEPARATOR_TO_DOWNLOAD_MAP = new MapsforgeFileMap(null, null, null, null, null);
+public class LocalMapListCellRenderer extends BackendListCellRenderer {
+	public static final LocalMap SEPARATOR_TO_DOWNLOAD_MAP = new MapsforgeFileMap(null, null, null, null, null);
     public static final LocalMap DOWNLOAD_MAP = new MapsforgeFileMap(null, null, null, null, null);
     private static final JSeparator SEPARATOR = new JSeparator();
 
+    public LocalMapListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+    
     public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         if (SEPARATOR_TO_DOWNLOAD_MAP.equals(value))
             return SEPARATOR;

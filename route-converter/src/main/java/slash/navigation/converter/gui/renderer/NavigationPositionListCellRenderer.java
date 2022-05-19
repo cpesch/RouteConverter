@@ -20,10 +20,14 @@
 
 package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.common.NavigationPosition;
+import java.awt.Component;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 /**
  * Renders the position labels of the position list.
@@ -31,8 +35,12 @@ import java.awt.*;
  * @author Christian Pesch
  */
 
-public class NavigationPositionListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+public class NavigationPositionListCellRenderer extends BackendListCellRenderer {
+    public NavigationPositionListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         NavigationPosition position = (NavigationPosition) value;
         label.setText(position.getDescription() + " @ " + position.getLongitude() + "," + position.getLatitude());

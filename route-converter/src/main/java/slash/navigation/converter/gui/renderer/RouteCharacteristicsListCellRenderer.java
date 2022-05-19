@@ -20,12 +20,16 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import java.awt.Component;
+import java.util.MissingResourceException;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.ListCellRenderer;
+
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.converter.gui.RouteConverter;
-
-import javax.swing.*;
-import java.awt.*;
-import java.util.MissingResourceException;
+import slash.navigation.gui.renderer.BackendListCellRenderer;
 
 /**
  * Renders the route characteristic labels of the type combo box.
@@ -33,9 +37,13 @@ import java.util.MissingResourceException;
  * @author Christian Pesch
  */
 
-public class RouteCharacteristicsListCellRenderer extends DefaultListCellRenderer {
+public class RouteCharacteristicsListCellRenderer extends BackendListCellRenderer {
 
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public RouteCharacteristicsListCellRenderer(ListCellRenderer backend) {
+		super(backend);
+	}
+
+	public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         RouteCharacteristics characteristics = (RouteCharacteristics) value;
         String text = "?";
