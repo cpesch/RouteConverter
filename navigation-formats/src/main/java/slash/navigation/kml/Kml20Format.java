@@ -20,20 +20,6 @@
 
 package slash.navigation.kml;
 
-import slash.common.type.CompactCalendar;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.common.NavigationPosition;
-import slash.navigation.kml.binding20.*;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.ISO8601.formatDate;
@@ -43,6 +29,34 @@ import static slash.navigation.common.PositionParser.parsePosition;
 import static slash.navigation.common.PositionParser.parsePositions;
 import static slash.navigation.kml.KmlUtil.marshal20;
 import static slash.navigation.kml.KmlUtil.unmarshal20;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+
+import slash.common.type.CompactCalendar;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.kml.binding20.Document;
+import slash.navigation.kml.binding20.Folder;
+import slash.navigation.kml.binding20.GeometryCollection;
+import slash.navigation.kml.binding20.Kml;
+import slash.navigation.kml.binding20.LineString;
+import slash.navigation.kml.binding20.LineStyle;
+import slash.navigation.kml.binding20.MultiGeometry;
+import slash.navigation.kml.binding20.NetworkLink;
+import slash.navigation.kml.binding20.ObjectFactory;
+import slash.navigation.kml.binding20.Placemark;
+import slash.navigation.kml.binding20.Point;
+import slash.navigation.kml.binding20.Style;
+import slash.navigation.kml.binding20.TimeInstant;
+import slash.navigation.kml.binding20.TimePeriod;
 
 /**
  * Reads and writes Google Earth 3 (.kml) files.
@@ -193,7 +207,7 @@ public class Kml20Format extends KmlFormat {
                 waypoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
-                String routeName = concatPath(name, asName(placemarkName));
+                String routeName = fixName(concatPath(name, asName(placemarkName)), TRACK);
                 List<String> routeDescription = extractDescriptionList(placemark.getDescriptionOrNameOrSnippet());
                 if (routeDescription == null)
                     routeDescription = description;
@@ -203,7 +217,7 @@ public class Kml20Format extends KmlFormat {
         }
         if (waypoints.size() != 0) {
             RouteCharacteristics characteristics = parseCharacteristics(name, Waypoints);
-            context.prependRoute(new KmlRoute(this, characteristics, name, description, waypoints));
+            context.prependRoute(new KmlRoute(this, characteristics, fixName(name, WAYPOINTS), description, waypoints));
         }
     }
 

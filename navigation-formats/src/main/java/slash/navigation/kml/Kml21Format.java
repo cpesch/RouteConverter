@@ -20,19 +20,6 @@
 
 package slash.navigation.kml;
 
-import slash.common.type.CompactCalendar;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.RouteCharacteristics;
-import slash.navigation.kml.binding21.*;
-
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
 import static java.lang.Boolean.TRUE;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.ISO8601.formatDate;
@@ -40,6 +27,37 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.kml.KmlUtil.marshal21;
 import static slash.navigation.kml.KmlUtil.unmarshal21;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+
+import slash.common.type.CompactCalendar;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.kml.binding21.ContainerType;
+import slash.navigation.kml.binding21.DocumentType;
+import slash.navigation.kml.binding21.FeatureType;
+import slash.navigation.kml.binding21.FolderType;
+import slash.navigation.kml.binding21.GeometryType;
+import slash.navigation.kml.binding21.KmlType;
+import slash.navigation.kml.binding21.LineStringType;
+import slash.navigation.kml.binding21.LineStyleType;
+import slash.navigation.kml.binding21.LinkType;
+import slash.navigation.kml.binding21.MultiGeometryType;
+import slash.navigation.kml.binding21.NetworkLinkType;
+import slash.navigation.kml.binding21.ObjectFactory;
+import slash.navigation.kml.binding21.PlacemarkType;
+import slash.navigation.kml.binding21.PointType;
+import slash.navigation.kml.binding21.StyleType;
+import slash.navigation.kml.binding21.TimePrimitiveType;
+import slash.navigation.kml.binding21.TimeSpanType;
+import slash.navigation.kml.binding21.TimeStampType;
 
 /**
  * Reads and writes Google Earth 4 (.kml) files.
@@ -138,7 +156,7 @@ public class Kml21Format extends KmlFormat {
                 waypoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
-                String routeName = concatPath(name, asName(placemarkName));
+                String routeName = fixName(concatPath(name, asName(placemarkName)), TRACK);
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
                 RouteCharacteristics characteristics = parseCharacteristics(routeName, Track);
                 context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
@@ -146,7 +164,7 @@ public class Kml21Format extends KmlFormat {
         }
         if (waypoints.size() > 0) {
             RouteCharacteristics characteristics = parseCharacteristics(name, Waypoints);
-            context.prependRoute(new KmlRoute(this, characteristics, name, asDescription(description), waypoints));
+            context.prependRoute(new KmlRoute(this, characteristics, fixName(name, WAYPOINTS), asDescription(description), waypoints));
         }
     }
 
