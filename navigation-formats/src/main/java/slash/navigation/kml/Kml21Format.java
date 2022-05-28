@@ -138,7 +138,7 @@ public class Kml21Format extends KmlFormat {
                 waypoints.add(wayPoint);
             } else {
                 // each placemark with more than one position is one track
-                String routeName = concatPath(name, asName(placemarkName));
+                String routeName = fixName(concatPath(name, asName(placemarkName)), TRACK);
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
                 RouteCharacteristics characteristics = parseCharacteristics(routeName, Track);
                 context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
@@ -146,7 +146,7 @@ public class Kml21Format extends KmlFormat {
         }
         if (waypoints.size() > 0) {
             RouteCharacteristics characteristics = parseCharacteristics(name, Waypoints);
-            context.prependRoute(new KmlRoute(this, characteristics, name, asDescription(description), waypoints));
+            context.prependRoute(new KmlRoute(this, characteristics, fixName(name, WAYPOINTS), asDescription(description), waypoints));
         }
     }
 

@@ -301,4 +301,12 @@ public abstract class KmlFormat extends BaseKmlFormat {
     protected boolean isWriteDesc() {
         return preferences.getBoolean("writeDesc", true);
     }
+    
+    protected String fixName(String name, String type) {
+    	if (name != null && name.startsWith("/"+type+":")) {
+    		name = name.substring(name.indexOf(":")+1).trim();
+    	}
+
+    	return name;
+    }
 }
