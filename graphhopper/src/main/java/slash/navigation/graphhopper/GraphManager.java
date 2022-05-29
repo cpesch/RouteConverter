@@ -32,10 +32,10 @@ import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.io.File.separator;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.file.Files.isRegularFile;
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -57,9 +57,9 @@ public class GraphManager {
     private final List<GraphDescriptor> localGraphDescriptors = new ArrayList<>();
     private final List<GraphDescriptor> remoteGraphDescriptors = new ArrayList<>();
 
-    public GraphManager(List<DataSource> dataSources) throws IOException {
-        scanLocalGraphs();
-        scanRemoteGraphs(dataSources);
+    public GraphManager(DataSource kurviger, DataSource mapsforge, DataSource graphHopper) throws IOException {
+        scanLocalGraphs(kurviger, mapsforge, graphHopper);
+        scanRemoteGraphs(asList(kurviger, mapsforge, graphHopper));
     }
 
     public List<GraphDescriptor> getLocalGraphDescriptors() {
@@ -78,32 +78,37 @@ public class GraphManager {
         preferences.put(DIRECTORY_PREFERENCE, path);
     }
 
-    private java.io.File getDirectory() {
-        String path = getPath() + separator + "graphhopper";
-        return ensureDirectory(getApplicationDirectory(path).getAbsolutePath());
+    java.io.File getDirectory(DataSource dataSource) {
+        String directoryName = getPath();
+        java.io.File f = new java.io.File(directoryName);
+        if (!f.exists())
+            directoryName = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
+        return ensureDirectory(directoryName);
     }
 
-    List<java.io.File> collectPbfFiles() {
-        return collectFiles(getDirectory(), DOT_PBF);
+    List<java.io.File> collectPbfFiles(DataSource dataSource) {
+        return collectFiles(getDirectory(dataSource), DOT_PBF);
     }
 
-    List<java.io.File> collectGraphDirectories() throws IOException {
-        return java.nio.file.Files.walk(Paths.get(getDirectory().getPath()))
+    List<java.io.File> collectGraphDirectories(DataSource dataSource) throws IOException {
+        return java.nio.file.Files.walk(Paths.get(getDirectory(dataSource).getPath()))
                 .filter(f -> isRegularFile(f) && f.getFileName().startsWith(PROPERTIES))
                 .map(f -> f.getParent().toFile())
                 .collect(toList());
     }
 
-    private void scanLocalGraphs() throws IOException {
+    private void scanLocalGraphs(DataSource kurviger, DataSource mapsforge, DataSource graphHopper) throws IOException {
         long start = currentTimeMillis();
 
-        List<java.io.File> files = collectPbfFiles();
+        List<java.io.File> files = collectPbfFiles(graphHopper);
         for (java.io.File file : files) {
             checkFile(file);
             localGraphDescriptors.add(new GraphDescriptor(GraphType.PBF, file, null));
         }
 
-        List<java.io.File> directories = collectGraphDirectories();
+        List<java.io.File> directories = new ArrayList<>();
+        directories.addAll(collectGraphDirectories(kurviger));
+        directories.addAll(collectGraphDirectories(mapsforge));
         for (java.io.File directory : directories) {
             checkDirectory(directory);
             localGraphDescriptors.add(new GraphDescriptor(GraphType.Directory, directory, null));
@@ -130,8 +135,8 @@ public class GraphManager {
         });
 
         long end = currentTimeMillis();
-        log.info(format("Collected %d local graph files %s from %s in %d milliseconds",
-                files.size(), asDialogString(files, false), getDirectory(), (end - start)));
+        log.info(format("Collected %d local graph files %s in %d milliseconds",
+                files.size(), asDialogString(files, false), (end - start)));
     }
 
     private void scanRemoteGraphs(List<DataSource> dataSources) {

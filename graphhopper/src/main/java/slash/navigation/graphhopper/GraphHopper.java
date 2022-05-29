@@ -114,8 +114,8 @@ public class GraphHopper extends BaseRoutingService {
         return graphManager != null;
     }
 
-    public synchronized void setDataSources(DataSource... dataSourcesList) throws IOException {
-        this.graphManager = new GraphManager(asList(dataSourcesList));
+    public synchronized void setDataSources(DataSource kurviger, DataSource mapsforge, DataSource graphHopper) throws IOException {
+        this.graphManager = new GraphManager(kurviger, mapsforge, graphHopper);
         this.finder = new DownloadableFinder(graphManager);
     }
 
@@ -171,11 +171,7 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     private java.io.File getDirectory(DataSource dataSource) {
-        String directoryName = getPath();
-        java.io.File f = new java.io.File(directoryName);
-        if (!f.exists())
-            directoryName = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
-        return ensureDirectory(directoryName);
+        return graphManager.getDirectory(dataSource);
     }
 
     private java.io.File createFile(Downloadable downloadable) {

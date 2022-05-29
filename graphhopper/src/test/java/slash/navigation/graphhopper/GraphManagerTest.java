@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -47,12 +48,13 @@ public class GraphManagerTest {
 
     @Test
     public void testLocalOrder() throws IOException {
-        GraphManager graphManager = new GraphManager(singletonList(mock(DataSource.class))) {
-            List<File> collectPbfFiles() {
+        DataSource kurviger = mock(DataSource.class);
+        GraphManager graphManager = new GraphManager(mock(DataSource.class), kurviger, mock(DataSource.class)) {
+            List<File> collectPbfFiles(DataSource dataSource) {
                 return asList(hamburg, germany, croatia, france);
             }
-            List<File> collectGraphDirectories() {
-                return singletonList(germanyGraphDirectory);
+            List<File> collectGraphDirectories(DataSource dataSource) {
+                return dataSource == kurviger ? singletonList(germanyGraphDirectory) : emptyList();
             }
         };
 
@@ -106,7 +108,7 @@ public class GraphManagerTest {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getFiles()).thenReturn(asList(austria, croatia, france, germany, paris, zip));
 
-        GraphManager graphManager = new GraphManager(singletonList(dataSource));
+        GraphManager graphManager = new GraphManager(mock(DataSource.class), mock(DataSource.class), dataSource);
 
         List<GraphDescriptor> descriptors = graphManager.getRemoteGraphDescriptors();
         assertEquals(6, descriptors.size());
