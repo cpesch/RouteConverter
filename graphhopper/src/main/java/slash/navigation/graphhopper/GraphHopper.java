@@ -51,7 +51,6 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.*;
 import static slash.common.io.Directories.ensureDirectory;
-import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.asDialogString;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.Transfer.trim;

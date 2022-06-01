@@ -25,10 +25,7 @@ import slash.navigation.datasources.File;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -36,6 +33,7 @@ import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.nio.file.Files.isRegularFile;
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -100,15 +98,20 @@ public class GraphManager {
     private void scanLocalGraphs(DataSource kurviger, DataSource mapsforge, DataSource graphHopper) throws IOException {
         long start = currentTimeMillis();
 
-        List<java.io.File> files = collectPbfFiles(graphHopper);
-        for (java.io.File file : files) {
-            checkFile(file);
-            localGraphDescriptors.add(new GraphDescriptor(GraphType.PBF, file, null));
+        List<java.io.File> files = emptyList();
+        if(graphHopper != null) {
+            files = collectPbfFiles(graphHopper);
+            for (java.io.File file : files) {
+                checkFile(file);
+                localGraphDescriptors.add(new GraphDescriptor(GraphType.PBF, file, null));
+            }
         }
 
         List<java.io.File> directories = new ArrayList<>();
-        directories.addAll(collectGraphDirectories(kurviger));
-        directories.addAll(collectGraphDirectories(mapsforge));
+        if(kurviger != null)
+            directories.addAll(collectGraphDirectories(kurviger));
+        if(mapsforge != null)
+            directories.addAll(collectGraphDirectories(mapsforge));
         for (java.io.File directory : directories) {
             checkDirectory(directory);
             localGraphDescriptors.add(new GraphDescriptor(GraphType.Directory, directory, null));
