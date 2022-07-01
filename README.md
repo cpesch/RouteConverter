@@ -35,7 +35,7 @@ How to develop for RouteConverter
 
 2. Clone RouteConverter from github:
    
-       git clone git://github.com/cpesch/RouteConverter.git
+       git clone git@github.com:cpesch/RouteConverter.git
 
 3. Open RouteConverter sources in an Integrated Development Environment (IDE)
 
