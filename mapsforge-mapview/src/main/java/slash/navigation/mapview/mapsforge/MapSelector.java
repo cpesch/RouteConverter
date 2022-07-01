@@ -23,7 +23,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import org.mapsforge.map.model.IMapViewPosition;
 import slash.navigation.gui.Application;
-import slash.navigation.maps.item.ItemWideComboBox;
+import slash.navigation.maps.item.ItemComboBox;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
@@ -167,7 +167,7 @@ public class MapSelector {
     }
 
     private void createUIComponents() {
-        comboBoxMap = new ItemWideComboBox<LocalMap>() {
+        comboBoxMap = new ItemComboBox<LocalMap>() {
             public void setSelectedItem(Object anObject) {
                 if (DOWNLOAD_MAP.equals(anObject)) {
                     Application.getInstance().getContext().getActionManager().run("show-maps");
@@ -176,7 +176,7 @@ public class MapSelector {
                 super.setSelectedItem(anObject);
             }
         };
-        comboBoxTheme = new ItemWideComboBox<LocalTheme>() {
+        comboBoxTheme = new ItemComboBox<LocalTheme>() {
             public void setSelectedItem(Object anObject) {
                 if (DOWNLOAD_THEME.equals(anObject)) {
                     Application.getInstance().getContext().getActionManager().run("show-themes");
