@@ -337,35 +337,37 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private void openMapAndProfileView() {
-        try {
-            getDownloadManager().removeDownload(getApiUrl() + V1 + "tileservers/" + FORMAT_XML);
-            getDownloadManager().removeDownload(getApiUrl() + V1 + "tileservers-offline/" + FORMAT_XML);
-            getDownloadManager().removeDownload(getApiUrl() + V1 + "datasources/openandromaps-themes/" + FORMAT_XML);
+        new Thread(() -> {
+            try {
+                getDownloadManager().removeDownload(getApiUrl() + V1 + "tileservers/" + FORMAT_XML);
+                getDownloadManager().removeDownload(getApiUrl() + V1 + "tileservers-offline/" + FORMAT_XML);
+                getDownloadManager().removeDownload(getApiUrl() + V1 + "datasources/openandromaps-themes/" + FORMAT_XML);
 
-            File mapServers = new File(getApplicationDirectory("tileservers"), "mapservers.xml");
-            getDownloadManager().executeDownload("RouteConverter Map Servers", getApiUrl() + V1 + "mapservers/" + FORMAT_XML, Copy, mapServers, () -> {
+                File mapServers = new File(getApplicationDirectory("tileservers"), "mapservers.xml");
+                getDownloadManager().executeDownload("RouteConverter Map Servers", getApiUrl() + V1 + "mapservers/" + FORMAT_XML, Copy, mapServers, () -> {
 
-                File overlayServers = new File(getApplicationDirectory("tileservers"), "overlayservers.xml");
-                getDownloadManager().executeDownload("RouteConverter Overlay Servers", getApiUrl() + V1 + "overlayservers/" + FORMAT_XML, Copy, overlayServers, () -> {
+                    File overlayServers = new File(getApplicationDirectory("tileservers"), "overlayservers.xml");
+                    getDownloadManager().executeDownload("RouteConverter Overlay Servers", getApiUrl() + V1 + "overlayservers/" + FORMAT_XML, Copy, overlayServers, () -> {
 
-                    getTileServerMapManager().scanTileServers();
-
-                    invokeLater(() -> {
-                        setMapView(getMapViewPreference());
-
-                        invokeLater(() -> {
-                            openProfileView();
-
-                            adjustDividersForScreenMovement();
-                            invokeLater(this::initializeDividerListeners);
-                        });
+                        getTileServerMapManager().scanTileServers();
                     });
                 });
+            } catch (Exception e) {
+                log.warning("Could not download tile servers: " + e);
+                e.printStackTrace();
+            }
+        }, "DownloadTileServerList").start();
+
+        invokeLater(() -> {
+            setMapView(getMapViewPreference());
+
+            invokeLater(() -> {
+                openProfileView();
+
+                adjustDividersForScreenMovement();
+                invokeLater(this::initializeDividerListeners);
             });
-        } catch (Exception e) {
-            log.warning("Could not download tile servers: " + e);
-            e.printStackTrace();
-        }
+        });
     }
 
     public synchronized void setMapView(MapViewImplementation mapViewImplementation) {
