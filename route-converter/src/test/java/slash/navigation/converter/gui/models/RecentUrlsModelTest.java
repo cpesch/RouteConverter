@@ -40,7 +40,7 @@ import static slash.common.io.Files.toFile;
 
 public class RecentUrlsModelTest {
     private static final int LIMIT = 10;
-    private RecentUrlsModel model = new RecentUrlsModel(Preferences.userRoot());
+    private final RecentUrlsModel model = new RecentUrlsModel(Preferences.userRoot());
 
     @Before
     public void setUp() {
