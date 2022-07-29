@@ -251,13 +251,15 @@ public class Kml20Format extends KmlFormat {
         return result;
     }
 
-    private Folder createWayPoints(KmlRoute route) {
+    private Folder createWayPoints(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         Folder folder = objectFactory.createFolder();
         List<Object> folderList = folder.getDocumentOrFolderOrGroundOverlay();
         folderList.add(objectFactory.createName(WAYPOINTS));
         folderList.add(objectFactory.createDescription(asDescription(route.getDescription())));
-        for (KmlPosition position : route.getPositions()) {
+        List<KmlPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            KmlPosition position = positions.get(i);
             Placemark placemark = objectFactory.createPlacemark();
             folderList.add(placemark);
             List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
@@ -273,7 +275,7 @@ public class Kml20Format extends KmlFormat {
         return folder;
     }
 
-    private Placemark createRoute(KmlRoute route) {
+    private Placemark createRoute(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         Placemark placemark = objectFactory.createPlacemark();
         List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
@@ -285,14 +287,16 @@ public class Kml20Format extends KmlFormat {
         LineString lineString = objectFactory.createLineString();
         multiGeometry.getExtrudeOrTessellateOrAltitudeMode().add(lineString);
         StringBuilder coordinates = new StringBuilder();
-        for (KmlPosition position : route.getPositions()) {
+        List<KmlPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            KmlPosition position = positions.get(i);
             coordinates.append(createCoordinates(position, false)).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
         return placemark;
     }
 
-    private Placemark createTrack(KmlRoute route) {
+    private Placemark createTrack(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         Placemark placemark = objectFactory.createPlacemark();
         List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
@@ -302,7 +306,9 @@ public class Kml20Format extends KmlFormat {
         LineString lineString = objectFactory.createLineString();
         placemarkList.add(lineString);
         StringBuilder coordinates = new StringBuilder();
-        for (KmlPosition position : route.getPositions()) {
+        List<KmlPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            KmlPosition position = positions.get(i);
             coordinates.append(createCoordinates(position, false)).append(" ");
         }
         lineString.setCoordinates(coordinates.toString());
@@ -320,7 +326,7 @@ public class Kml20Format extends KmlFormat {
         return style;
     }
 
-    private Kml createKml(KmlRoute route) {
+    private Kml createKml(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         Kml kml = objectFactory.createKml();
         Folder root = objectFactory.createFolder();
@@ -333,8 +339,8 @@ public class Kml20Format extends KmlFormat {
         rootList.add(createLineStyle(ROUTE_LINE_STYLE, getLineWidth(), getRouteLineColor()));
         rootList.add(createLineStyle(TRACK_LINE_STYLE, getLineWidth(), getTrackLineColor()));
 
-        rootList.add(createWayPoints(route));
-        rootList.add(createTrack(route));
+        rootList.add(createWayPoints(route, startIndex, endIndex));
+        rootList.add(createTrack(route, startIndex, endIndex));
         return kml;
     }
 
@@ -352,13 +358,13 @@ public class Kml20Format extends KmlFormat {
         for (KmlRoute route : routes) {
             switch (route.getCharacteristics()) {
                 case Waypoints:
-                    rootList.add(createWayPoints(route));
+                    rootList.add(createWayPoints(route, 0, route.getPositionCount()));
                     break;
                 case Route:
-                    rootList.add(createRoute(route));
+                    rootList.add(createRoute(route, 0, route.getPositionCount()));
                     break;
                 case Track:
-                    rootList.add(createTrack(route));
+                    rootList.add(createTrack(route, 0, route.getPositionCount()));
                     break;
                 default:
                     throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
@@ -369,7 +375,7 @@ public class Kml20Format extends KmlFormat {
 
     public void write(KmlRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
         try {
-            marshal20(createKml(route), target);
+            marshal20(createKml(route, startIndex, endIndex), target);
         } catch (JAXBException e) {
             throw new IOException("Cannot marshall " + route + ": " + e, e);
         }

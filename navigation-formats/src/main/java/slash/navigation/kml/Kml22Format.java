@@ -313,11 +313,11 @@ public class Kml22Format extends KmlFormat {
         return result;
     }
 
-    private PlacemarkType createRoute(KmlRoute route) {
+    private PlacemarkType createRoute(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
         // deactivated to preserve route name in folder name
-        // placemarkType.setName(ROUTE);
+        // placemarkType.setName(asName(route.getName()));
         // placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + ROUTE_LINE_STYLE);
         MultiGeometryType multiGeometryType = objectFactory.createMultiGeometryType();
@@ -325,7 +325,9 @@ public class Kml22Format extends KmlFormat {
         LineStringType lineStringType = objectFactory.createLineStringType();
         multiGeometryType.getAbstractGeometryGroup().add(objectFactory.createLineString(lineStringType));
         List<String> coordinates = lineStringType.getCoordinates();
-        for (KmlPosition position : route.getPositions()) {
+        List<KmlPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++) {
+            KmlPosition position = positions.get(i);
             coordinates.add(createCoordinates(position, false));
         }
         return placemarkType;
@@ -335,7 +337,7 @@ public class Kml22Format extends KmlFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
         // deactivated to preserve track name in folder name
-        // placemarkType.setName(TRACK);
+        // placemarkType.setName(asName(route.getName()));
         // placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);
         // create gx:Track if there are at least two positions with a time stamp
@@ -683,7 +685,7 @@ public class Kml22Format extends KmlFormat {
                     routeFolder.setName(createPlacemarkName(ROUTE, route));
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(routeFolder));
 
-                    PlacemarkType routePlacemarks = createRoute(route);
+                    PlacemarkType routePlacemarks = createRoute(route, 0, route.getPositionCount());
                     routeFolder.getAbstractFeatureGroup().add(objectFactory.createPlacemark(routePlacemarks));
                     if (isWriteMarks())
                         routeFolder.getAbstractFeatureGroup().add(objectFactory.createFolder(createMarks(route, 0, route.getPositionCount())));
