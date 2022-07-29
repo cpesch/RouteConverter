@@ -226,7 +226,7 @@ public class Kml21Format extends KmlFormat {
     private PlacemarkType createRoute(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        placemarkType.setName(createPlacemarkName(ROUTE, route));
+        placemarkType.setName(createFolderName(ROUTE, route));
         placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + ROUTE_LINE_STYLE);
         MultiGeometryType multiGeometryType = objectFactory.createMultiGeometryType();
@@ -245,7 +245,7 @@ public class Kml21Format extends KmlFormat {
     private PlacemarkType createTrack(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        placemarkType.setName(createPlacemarkName(TRACK, route));
+        placemarkType.setName(createFolderName(TRACK, route));
         placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);
         LineStringType lineStringType = objectFactory.createLineStringType();

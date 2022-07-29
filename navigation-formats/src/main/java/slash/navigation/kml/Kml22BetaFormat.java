@@ -237,7 +237,7 @@ public class Kml22BetaFormat extends KmlFormat {
     private PlacemarkType createRoute(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        placemarkType.setNameElement(createPlacemarkName(ROUTE, route));
+        placemarkType.setNameElement(createFolderName(ROUTE, route));
         placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + ROUTE_LINE_STYLE);
         MultiGeometryType multiGeometryType = objectFactory.createMultiGeometryType();
@@ -256,7 +256,7 @@ public class Kml22BetaFormat extends KmlFormat {
     private PlacemarkType createTrack(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        placemarkType.setNameElement(createPlacemarkName(TRACK, route));
+        placemarkType.setNameElement(createFolderName(TRACK, route));
         placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);
         LineStringType lineStringType = objectFactory.createLineStringType();

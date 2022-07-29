@@ -279,7 +279,7 @@ public class Kml20Format extends KmlFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         Placemark placemark = objectFactory.createPlacemark();
         List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
-        placemarkList.add(objectFactory.createName(createPlacemarkName(ROUTE, route)));
+        placemarkList.add(objectFactory.createName(createFolderName(ROUTE, route)));
         placemarkList.add(objectFactory.createDescription(asDescription(route.getDescription())));
         placemarkList.add(objectFactory.createStyleUrl("#" + ROUTE_LINE_STYLE));
         MultiGeometry multiGeometry = objectFactory.createMultiGeometry();
@@ -300,7 +300,7 @@ public class Kml20Format extends KmlFormat {
         ObjectFactory objectFactory = new ObjectFactory();
         Placemark placemark = objectFactory.createPlacemark();
         List<Object> placemarkList = placemark.getDescriptionOrNameOrSnippet();
-        placemarkList.add(objectFactory.createName(createPlacemarkName(TRACK, route)));
+        placemarkList.add(objectFactory.createName(createFolderName(TRACK, route)));
         placemarkList.add(objectFactory.createDescription(asDescription(route.getDescription())));
         placemarkList.add(objectFactory.createStyleUrl("#" + TRACK_LINE_STYLE));
         LineString lineString = objectFactory.createLineString();

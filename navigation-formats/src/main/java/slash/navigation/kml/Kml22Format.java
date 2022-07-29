@@ -110,7 +110,7 @@ public class Kml22Format extends KmlFormat {
             for (KmlPosition position : positions) {
                 enrichPosition(position, extractTime(placemarkType.getAbstractTimePrimitiveGroup()), placemarkName, placemarkType.getDescription(), context.getStartDate());
             }
-            context.appendRoute(new KmlRoute(this, Waypoints, placemarkName, null, positions));
+            context.appendRoute(new KmlRoute(this, Waypoints, placemarkName, asDescription(placemarkType.getDescription()), positions));
         }
 
         if (feature instanceof TourType) {
@@ -121,7 +121,7 @@ public class Kml22Format extends KmlFormat {
             for (KmlPosition position : positions) {
                 enrichPosition(position, extractTime(tourType.getAbstractTimePrimitiveGroup()), tourName, tourType.getDescription(), context.getStartDate());
             }
-            context.appendRoute(new KmlRoute(this, Track, tourName, null, positions));
+            context.appendRoute(new KmlRoute(this, Track, tourName, asDescription(tourType.getDescription()), positions));
         }
     }
 
@@ -135,7 +135,7 @@ public class Kml22Format extends KmlFormat {
         List<JAXBElement<FolderType>> folders = find(features, "Folder", FolderType.class);
         for (JAXBElement<FolderType> folder : folders) {
             FolderType folderTypeValue = folder.getValue();
-            String folderName = trim(folderTypeValue.getName());
+            String folderName = parseFolderName(trim(folderTypeValue.getName()));
             // ignore speed and marks folders
             if (folderName == null || (!folderName.equals(SPEED) && !folderName.equals(MARKS)))
                 extractTracks(concatPath(name, folderName), description, folderTypeValue.getAbstractFeatureGroup(), context);
@@ -183,7 +183,7 @@ public class Kml22Format extends KmlFormat {
                 // each placemark with more than one position is one track
                 String routeName = concatPath(name, asName(placemarkName));
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
-                RouteCharacteristics characteristics = parseCharacteristics(routeName, placemarkTypeValue.getStyleUrl(), Track);
+                RouteCharacteristics characteristics = parseCharacteristics(placemarkName, placemarkTypeValue.getStyleUrl(), Track);
                 context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
@@ -672,7 +672,7 @@ public class Kml22Format extends KmlFormat {
             switch (route.getCharacteristics()) {
                 case Waypoints:
                     FolderType wayPointsFolder = objectFactory.createFolderType();
-                    wayPointsFolder.setName(createPlacemarkName(WAYPOINTS, route));
+                    wayPointsFolder.setName(createFolderName(WAYPOINTS, route));
                     wayPointsFolder.setDescription(asDescription(route.getDescription()));
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(wayPointsFolder));
 
@@ -682,7 +682,7 @@ public class Kml22Format extends KmlFormat {
                     break;
                 case Route:
                     FolderType routeFolder = objectFactory.createFolderType();
-                    routeFolder.setName(createPlacemarkName(ROUTE, route));
+                    routeFolder.setName(createFolderName(ROUTE, route));
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(routeFolder));
 
                     PlacemarkType routePlacemarks = createRoute(route, 0, route.getPositionCount());
@@ -692,7 +692,7 @@ public class Kml22Format extends KmlFormat {
                     break;
                 case Track:
                     FolderType trackFolder = objectFactory.createFolderType();
-                    trackFolder.setName(createPlacemarkName(TRACK, route));
+                    trackFolder.setName(createFolderName(TRACK, route));
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(trackFolder));
 
                     PlacemarkType track = createTrack(route, 0, route.getPositionCount());

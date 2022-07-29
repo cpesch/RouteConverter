@@ -105,7 +105,18 @@ public abstract class KmlFormat extends BaseKmlFormat {
         return name;
     }
 
-    protected String createPlacemarkName(String prefix, KmlRoute route) {
+    private String removePrefix(String name, String prefix) {
+        return name != null && name.startsWith(prefix) ? name.substring(prefix.length()) : name;
+    }
+    protected String parseFolderName(String folderName) {
+        folderName = removePrefix(folderName, WAYPOINTS);
+        folderName = removePrefix(folderName, ROUTE);
+        folderName = removePrefix(folderName, TRACK);
+        folderName = removePrefix(folderName, ": ");
+        return folderName;
+    }
+
+    protected String createFolderName(String prefix, KmlRoute route) {
         // some kind of crude workaround since the route carries the name of the
         // plus and divided by a slash the route of the track
         String name = route.getName();
