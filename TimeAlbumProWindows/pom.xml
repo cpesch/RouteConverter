@@ -103,6 +103,8 @@
                            </classPath>
                            <jre>
                                <minVersion>8</minVersion>
+                               <maxVersion>14</maxVersion>
+                               <jdkPreference>preferJre</jdkPreference>
                                <maxHeapSize>1024</maxHeapSize>
                            </jre>
                            <versionInfo>
