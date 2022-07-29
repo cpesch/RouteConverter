@@ -57,6 +57,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
     static final String MARKS = "Marks [Km]";
     static final String ROUTE_LINE_STYLE = "routeStyle";
     static final String TRACK_LINE_STYLE = "trackStyle";
+    static final String WAYPOINT_STYLE = "waypointStyle";
 
     public String getExtension() {
         return ".kml";
@@ -126,7 +127,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 formatElevationAsString(position.getElevation());
     }
 
-    protected RouteCharacteristics parseCharacteristics(String nameToParse, RouteCharacteristics fallback) {
+    protected RouteCharacteristics parseCharacteristics(String nameToParse, String styleUrl, RouteCharacteristics fallback) {
         RouteCharacteristics result = fallback;
         if (nameToParse != null) {
             int slashIndex = nameToParse.lastIndexOf('/');
@@ -137,6 +138,20 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 result = Route;
             else if (folder.startsWith("Track") || folder.startsWith("Path") || nameToParse.contains("Track"))
                 result = Track;
+        }
+        if (styleUrl != null && styleUrl.startsWith("#")) {
+            styleUrl = styleUrl.substring(1);
+            switch (styleUrl) {
+                case WAYPOINT_STYLE:
+                    result = Waypoints;
+                    break;
+                case ROUTE_LINE_STYLE:
+                    result = Route;
+                    break;
+                case TRACK_LINE_STYLE:
+                    result = Track;
+                    break;
+            }
         }
         return result;
     }

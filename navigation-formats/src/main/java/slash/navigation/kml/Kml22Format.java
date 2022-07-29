@@ -183,12 +183,12 @@ public class Kml22Format extends KmlFormat {
                 // each placemark with more than one position is one track
                 String routeName = concatPath(name, asName(placemarkName));
                 List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
-                RouteCharacteristics characteristics = parseCharacteristics(routeName, Track);
+                RouteCharacteristics characteristics = parseCharacteristics(routeName, placemarkTypeValue.getStyleUrl(), Track);
                 context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
         if (waypoints.size() > 0) {
-            RouteCharacteristics characteristics = parseCharacteristics(name, Waypoints);
+            RouteCharacteristics characteristics = parseCharacteristics(name, null, Waypoints);
             context.prependRoute(new KmlRoute(this, characteristics, name, asDescription(description), waypoints));
         }
     }
@@ -298,6 +298,7 @@ public class Kml22Format extends KmlFormat {
             KmlPosition position = positions.get(i);
             PlacemarkType placemarkType = objectFactory.createPlacemarkType();
             result.add(placemarkType);
+            placemarkType.setStyleUrl("#" + WAYPOINT_STYLE);
             placemarkType.setName(asName(isWriteName() ? position.getDescription() : null));
             placemarkType.setDescription(asDesc(isWriteDesc() ? position.getDescription() : null));
             if (position.hasTime()) {
@@ -333,7 +334,7 @@ public class Kml22Format extends KmlFormat {
     private PlacemarkType createTrack(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         PlacemarkType placemarkType = objectFactory.createPlacemarkType();
-        // deactivated to preserve route name in folder name
+        // deactivated to preserve track name in folder name
         // placemarkType.setName(TRACK);
         // placemarkType.setDescription(asDescription(route.getDescription()));
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);

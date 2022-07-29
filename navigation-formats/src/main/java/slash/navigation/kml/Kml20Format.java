@@ -164,6 +164,11 @@ public class Kml20Format extends KmlFormat {
         return networkLinks;
     }
 
+    private String findStyleUrl(List<Object> elements) {
+        JAXBElement name = findElement(elements, "styleUrl");
+        return name != null ? (String) name.getValue() : null;
+    }
+
     private void extractTracks(String name, List<String> description, List<Object> elements, ParserContext<KmlRoute> context) throws IOException {
         List<Placemark> placemarks = findPlacemarks(elements);
         extractWayPointsAndTracksFromPlacemarks(name, description, placemarks, context);
@@ -197,12 +202,12 @@ public class Kml20Format extends KmlFormat {
                 List<String> routeDescription = extractDescriptionList(placemark.getDescriptionOrNameOrSnippet());
                 if (routeDescription == null)
                     routeDescription = description;
-                RouteCharacteristics characteristics = parseCharacteristics(routeName, Track);
+                RouteCharacteristics characteristics = parseCharacteristics(routeName, findStyleUrl(placemark.getDescriptionOrNameOrSnippet()), Track);
                 context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
         if (waypoints.size() != 0) {
-            RouteCharacteristics characteristics = parseCharacteristics(name, Waypoints);
+            RouteCharacteristics characteristics = parseCharacteristics(name, null, Waypoints);
             context.prependRoute(new KmlRoute(this, characteristics, name, description, waypoints));
         }
     }
