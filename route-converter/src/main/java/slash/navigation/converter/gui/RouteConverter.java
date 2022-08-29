@@ -396,6 +396,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
             }
         }
+        mapPanel.setTransferHandler(new PanelDropHandler());
         mapPanel.revalidate();
     }
 
