@@ -45,6 +45,7 @@ import java.util.prefs.Preferences;
 
 import static java.text.MessageFormat.format;
 import static java.text.NumberFormat.getIntegerInstance;
+import static java.text.NumberFormat.getNumberInstance;
 import static org.jfree.chart.axis.NumberAxis.createIntegerTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 import static org.jfree.chart.ui.Layer.FOREGROUND;
@@ -188,7 +189,7 @@ public class ProfileView implements PositionsSelectionModel {
         plot.getDomainAxis().setLabel(format(getBundle().getString(xAxisKey), xAxisUnit));
 
         chartPanel.setToolTipGenerator(new StandardXYToolTipGenerator(
-                "{2} " + yAxisUnit + " @ {1} " + xAxisUnit, getIntegerInstance(), getIntegerInstance()) {
+                "{2} " + yAxisUnit + " @ {1} " + xAxisUnit, getNumberInstance(), getIntegerInstance()) {
             public String generateLabelString(XYDataset dataset, int series, int item) {
                 return super.generateLabelString(dataset, series, item).replaceAll("null", "?");
             }
