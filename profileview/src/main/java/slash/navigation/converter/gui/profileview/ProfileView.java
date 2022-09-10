@@ -47,6 +47,7 @@ import static java.text.MessageFormat.format;
 import static java.text.NumberFormat.getIntegerInstance;
 import static java.text.NumberFormat.getNumberInstance;
 import static org.jfree.chart.axis.NumberAxis.createIntegerTickUnits;
+import static org.jfree.chart.axis.NumberAxis.createStandardTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 import static org.jfree.chart.ui.Layer.FOREGROUND;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
@@ -130,7 +131,7 @@ public class ProfileView implements PositionsSelectionModel {
         rangeAxis.setLabelFont(font);
 
         NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
-        domainAxis.setStandardTickUnits(createIntegerTickUnits());
+        domainAxis.setStandardTickUnits(createStandardTickUnits());
         domainAxis.setLowerMargin(0.0);
         domainAxis.setUpperMargin(0.0);
         domainAxis.setLabelFont(font);
