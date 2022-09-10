@@ -10,12 +10,12 @@ ShowInstDetails hide
 OutFile "target\RouteConverterBundle.exe"
 
 Icon "RouteConverter.ico"
-VIProductVersion 2.31.2.00000
+VIProductVersion 2.32.0.00000
 VIAddVersionKey ProductName "RouteConverter"
 VIAddVersionKey LegalCopyright "Copyright (c) 2008-2022 Christian Pesch"
 VIAddVersionKey FileDescription "RouteConverter for Windows Offline Vector Map Ed."
-VIAddVersionKey FileVersion 2.31.2.00000
-VIAddVersionKey ProductVersion "2.31 / OpenJRE 11.0.14 (x64)"
+VIAddVersionKey FileVersion 2.32.0.00000
+VIAddVersionKey ProductVersion "2.32 / OpenJRE 11.0.14 (x64)"
 VIAddVersionKey InternalName "RouteConverter"
 VIAddVersionKey OriginalFilename "RouteConverter.exe"
 
