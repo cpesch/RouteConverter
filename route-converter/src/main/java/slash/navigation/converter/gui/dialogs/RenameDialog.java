@@ -75,7 +75,6 @@ public class RenameDialog extends SimpleDialog {
                 } else {
                     labelResult.setText("");
                 }
-                pack();
             }
         });
         textFieldName.setText(routeName);
@@ -133,6 +132,7 @@ public class RenameDialog extends SimpleDialog {
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setMinimumSize(new Dimension(354, 144));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
