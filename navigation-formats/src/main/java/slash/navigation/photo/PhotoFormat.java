@@ -30,8 +30,7 @@ import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
 import org.apache.commons.imaging.formats.tiff.TiffDirectory;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata.Directory;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational;
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
 import slash.common.type.CompactCalendar;
@@ -242,13 +241,30 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
         }
     }
 
+    private byte getFieldValue(TiffDirectory directory, TagInfoByte byteOrShort) {
+        try {
+            return directory.getFieldValue(byteOrShort);
+        } catch (ImageReadException e) {
+            log.fine("Could not parse " + byteOrShort + ": " + getLocalizedMessage(e));
+        }
+
+        TagInfoShort tagInfoShort = new TagInfoShort(byteOrShort.name, byteOrShort.tag, byteOrShort.directoryType);
+        try {
+            short fieldValue = directory.getFieldValue(tagInfoShort);
+            return (byte) fieldValue;
+        } catch (ImageReadException e) {
+            log.fine("Could not parse " + tagInfoShort + ": " + getLocalizedMessage(e));
+            return 0;
+        }
+    }
+
     private Double parseAltitude(TiffDirectory directory) throws ImageReadException {
         RationalNumber altitudeNumber = getFieldValue(directory, GPS_TAG_GPS_ALTITUDE);
         if (altitudeNumber == null)
             return null;
 
         double altitude = altitudeNumber.doubleValue();
-        Byte altitudeRef = directory.getFieldValue(GPS_TAG_GPS_ALTITUDE_REF);
+        byte altitudeRef = getFieldValue(directory, GPS_TAG_GPS_ALTITUDE_REF);
         return altitudeRef == 1 ? -altitude : altitude;
     }
 
