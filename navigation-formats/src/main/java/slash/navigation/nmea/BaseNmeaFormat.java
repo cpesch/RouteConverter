@@ -120,13 +120,15 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             if (isValidLine(line)) {
                 if (isPosition(line)) {
                     NmeaPosition position = parsePosition(line);
+
+                    // remember the latest valid start date to set it on positions without one
                     boolean validStartDate = isValidStartDate(position.getTime());
                     if (validStartDate)
                         startDate = position.getTime();
                     else
                         position.setStartDate(startDate);
 
-                    if (haveDifferentLongitudeAndLatitude(previous, position) || haveDifferentTime(previous, position) && !validStartDate) {
+                    if (haveDifferentLongitudeAndLatitude(previous, position) || haveDifferentTime(previous, position) /*&& !validStartDate*/) {
                         positions.add(position);
                         previous = position;
                     } else if (previous != null) {
