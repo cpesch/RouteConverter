@@ -138,15 +138,7 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
                     }
                 }
             });
-
-            // allow to compile code with Java 7; with Java 8 this would simply be
-            // webView.getEngine().setUserAgent(USER_AGENT);
-            try {
-                Method method = WebEngine.class.getDeclaredMethod("setUserAgent", String.class);
-                method.invoke(webView.getEngine(), USER_AGENT);
-            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                // intentionally do nothing
-            }
+            webView.getEngine().setUserAgent(USER_AGENT);
             return webView;
         } catch (Throwable t) {
             log.severe("Cannot create WebView: " + t);
