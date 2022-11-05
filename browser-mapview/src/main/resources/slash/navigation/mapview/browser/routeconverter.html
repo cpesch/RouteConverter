@@ -658,7 +658,7 @@ ${menuItems}
            });
 
            var shiftKey = false, altKey = false, ctrlKey = false;
-           google.maps.event.addDomListener(document, "mousedown", function (event) {
+           google.maps.event.addListener(document, "mousedown", function (event) {
              shiftKey = event.shiftKey; altKey = event.altKey; ctrlKey = event.ctrlKey;
            });
            google.maps.event.addListener(map, "click", function(event) {
