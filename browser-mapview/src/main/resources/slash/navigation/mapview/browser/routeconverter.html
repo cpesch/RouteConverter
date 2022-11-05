@@ -202,7 +202,7 @@
 
    function insertAllWaypoints(directionsRequest, index) {
        directionsService.route(directionsRequest, function(result, status) {
-           if (status == google.maps.DirectionsStatus.OK) {
+           if (status === google.maps.DirectionsStatus.OK) {
                for (var i = 0; i < result.routes.length; i++) {
                    var legs = result.routes[i].legs;
                    var waypoints = [];
@@ -233,7 +233,7 @@
 
    function removeTags(string) {
        string = string.replace(/&(lt|gt);/g, function (strMatch, p1) {
-           return (p1 == "lt") ? "<" : ">";
+           return (p1 === "lt") ? "<" : ">";
        });
        string = string.replace(/<div[^>]*>/g, ", ");
        string = string.replace(/<[^>]+>/g, " ");
@@ -248,7 +248,7 @@
 
    function insertOnlyTurnpoints(directionsRequest, index) {
        directionsService.route(directionsRequest, function(result, status) {
-           if (status == google.maps.DirectionsStatus.OK) {
+           if (status === google.maps.DirectionsStatus.OK) {
                for (var i = 0; i < result.routes.length; i++) {
                    var legs = result.routes[i].legs;
                    var turnpoints = [];
@@ -265,7 +265,7 @@
                    callJavaWithPost("Insert-Only-Turnpoints: " + index + "/" + turnpoints.join("/") + "\n\n");
                }
 
-           } else if (status == google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
+           } else if (status === google.maps.DirectionsStatus.OVER_QUERY_LIMIT) {
                callJavaWithUri("over-query-limit");
 
            } else {
