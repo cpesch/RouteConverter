@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static java.io.File.createTempFile;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;

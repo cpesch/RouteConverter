@@ -69,11 +69,12 @@
         <alephformatter.version>0.1.1</alephformatter.version>
         <brouter.version>1.6.1</brouter.version>
         <graphhopper.version>0.13.0</graphhopper.version>
-        <httpclient.version>4.5.13</httpclient.version>
-        <jackson.version>2.13.4</jackson.version>
+        <httpclient.version>4.5.14</httpclient.version>
+        <jackson.version>2.14.1</jackson.version>
         <jaxb.version>2.3.1</jaxb.version>
         <mapsforge.version>0.18.0</mapsforge.version>
         <poi.version>4.1.2</poi.version>
+        <slf4j.version>2.0.6</slf4j.version>
     </properties>
 
     <profiles>
@@ -474,7 +475,7 @@
         <dependency>
             <groupId>com.jcabi</groupId>
             <artifactId>jcabi-matchers</artifactId>
-            <version>1.5.3</version>
+            <version>1.6.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -486,7 +487,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>3.11.2</version>
+            <version>4.10.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
@@ -531,7 +532,7 @@
             <dependency>
                 <groupId>org.bidib.com.github.markusbernhardt</groupId>
                 <artifactId>proxy-vole</artifactId>
-                <version>1.0.16</version>
+                <version>1.0.18</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.slf4j</groupId>
@@ -542,12 +543,12 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>1.7.30</version>
+                <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-jdk14</artifactId>
-                <version>1.7.30</version>
+                <version>${slf4j.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
