@@ -47,6 +47,7 @@ public class RecentUrlsModelTest {
     public void setUp() {
         tempFiles = new ArrayList<>();
         model.removeAllUrls();
+        assertEquals(0, model.getUrls().size());
     }
 
     @After
@@ -56,6 +57,7 @@ public class RecentUrlsModelTest {
                 assertTrue(file.delete());
         tempFiles.clear();
         model.removeAllUrls();
+        assertEquals(0, model.getUrls().size());
     }
 
     private File createTempFile(String prefix, String suffix) throws IOException {
@@ -111,6 +113,7 @@ public class RecentUrlsModelTest {
 
     @Test
     public void testLimit() throws IOException {
+        assertEquals(0, model.getUrls().size());
         List<URL> collected = new ArrayList<>();
         for (int i = 0; i < 2 * LIMIT; i++) {
             File tempFile = createTempFile("recent-" + i + "-", ".url");

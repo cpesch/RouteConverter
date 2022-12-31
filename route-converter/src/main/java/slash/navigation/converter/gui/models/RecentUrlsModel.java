@@ -48,7 +48,7 @@ public class RecentUrlsModel {
     private static final char FIRST_CHAR = 'a';
 
     private final Preferences preferences;
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     public RecentUrlsModel() {
         this(Preferences.userNodeForPackage(RecentUrlsModel.class));
@@ -122,9 +122,10 @@ public class RecentUrlsModel {
     }
 
     public void removeAllUrls() {
+        // put() since remove() leads to sporadic errors on my Mac
         for (char c = FIRST_CHAR; c < FIRST_CHAR + getMaximumCount(); c++)
-            preferences.remove(RECENT_URL_PREFERENCE + c);
-        preferences.remove(RECENT_URLS_PREFERENCE);
+            preferences.put(RECENT_URL_PREFERENCE + c, "");
+        preferences.put(RECENT_URLS_PREFERENCE, "");
     }
 
     protected void fireChanged() {
