@@ -26,6 +26,7 @@ import java.io.InputStream;
 
 import static java.lang.String.format;
 import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.navigation.base.NavigationFormatParser.TOTAL_BUFFER_SIZE;
 
 /**
  * The base of all URL based navigation formats.
@@ -34,8 +35,6 @@ import static slash.common.io.Transfer.UTF8_ENCODING;
  */
 
 public abstract class BaseUrlFormat extends SimpleFormat<Wgs84Route> {
-    private static final int READ_BUFFER_SIZE = 1024 * 1024;
-
     public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         // used to be a UTF-8 then ISO-8859-1 fallback style
         read(source, UTF8_ENCODING, context);
@@ -44,7 +43,8 @@ public abstract class BaseUrlFormat extends SimpleFormat<Wgs84Route> {
     public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         StringBuilder buffer = new StringBuilder();
 
-        while (buffer.length() < READ_BUFFER_SIZE) {
+        // need to find the URL below NavigationFormatParsers mark() limit
+        while (buffer.length() < TOTAL_BUFFER_SIZE) {
             String line = reader.readLine();
             if (line == null)
                 break;

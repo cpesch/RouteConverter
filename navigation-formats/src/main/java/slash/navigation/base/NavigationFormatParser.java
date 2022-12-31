@@ -63,7 +63,8 @@ import static slash.navigation.url.GoogleMapsUrlFormat.isGoogleMapsProfileUrl;
 
 public class NavigationFormatParser {
     private static final Logger log = Logger.getLogger(NavigationFormatParser.class.getName());
-    private static final int READ_BUFFER_SIZE = 1024 * 1024;
+    public static final int TOTAL_BUFFER_SIZE = 1024 * 1024;
+    private static final int CHUNK_BUFFER_SIZE = 8 * 1024;
     private final NavigationFormatRegistry navigationFormatRegistry;
     private final List<NavigationFormatParserListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -126,7 +127,7 @@ public class NavigationFormatParser {
                 try {
                     buffer.reset();
                 } catch (IOException e) {
-                    log.severe("Cannot reset() stream to mark()");
+                    log.severe("Cannot reset() stream to mark(): " + e.getLocalizedMessage());
                     break;
                 }
             }
@@ -217,8 +218,9 @@ public class NavigationFormatParser {
             URL url = new URL(urlString);
             int readBufferSize = getSize(url);
             log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-            NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(openStream(url)));
-            buffer.mark(readBufferSize + 1);
+            NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(openStream(url), CHUNK_BUFFER_SIZE));
+            // make sure not to read a byte after the limit
+            buffer.mark(readBufferSize + CHUNK_BUFFER_SIZE * 2);
             try {
                 CompactCalendar startDate = extractStartDate(url);
                 internalSetStartDate(startDate);
@@ -232,8 +234,9 @@ public class NavigationFormatParser {
     private ParserResult read(InputStream source, int readBufferSize, CompactCalendar startDate, File file,
                               List<NavigationFormat> formats) throws IOException {
         log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source));
-        buffer.mark(readBufferSize + 1);
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, CHUNK_BUFFER_SIZE));
+        // make sure not to read a byte after the limit
+        buffer.mark(readBufferSize + CHUNK_BUFFER_SIZE * 2);
         try {
             ParserContext<BaseRoute> context = new InternalParserContext<>(file, startDate);
             internalRead(buffer, formats, context);
@@ -252,7 +255,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(InputStream source, List<NavigationFormat> formats) throws IOException {
-        return read(source, READ_BUFFER_SIZE, null, null, formats);
+        return read(source, TOTAL_BUFFER_SIZE, null, null, formats);
     }
 
     private int getSize(URL url) throws IOException {
@@ -260,7 +263,7 @@ public class NavigationFormatParser {
             if (url.getProtocol().equals("file"))
                 return (int) new File(url.toURI()).length();
             else
-                return READ_BUFFER_SIZE;
+                return TOTAL_BUFFER_SIZE;
         } catch (URISyntaxException e) {
             throw new IOException("Cannot determine file from URL: " + e);
         }
