@@ -76,6 +76,13 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
         return trim(description);
     }
 
+    protected String asName(String description, String defaultValue) {
+        String result = asName(description);
+        if (result == null)
+            result = trim(defaultValue);
+        return result;
+    }
+
     public static String asDesc(String description) {
         if (description == null)
             return null;

@@ -273,7 +273,7 @@ public class Gpx11Format extends GpxFormat {
         wptType.setLon(longitude);
         wptType.setEle(isWriteElevation() ? formatElevation(position.getElevation()) : null);
         wptType.setTime(isWriteTime() ? formatXMLTime(position.getTime()) : null);
-        wptType.setName(isWriteName() ? asName(position.getDescription()) : null);
+        wptType.setName(isWriteName() ? asName(position.getDescription(), wptType.getName()) : null);
         wptType.setDesc(isWriteName() ? asDesc(position.getDescription(), wptType.getDesc()) : null);
         wptType.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatBigDecimal(position.getHdop(), 6) : null);
         wptType.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatBigDecimal(position.getPdop(), 6) : null);

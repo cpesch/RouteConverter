@@ -205,7 +205,7 @@ public class Gpx10Format extends GpxFormat {
                 wpt.setCmt(formatSpeedDescription(wpt.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
                 wpt.setCmt(addHeading(wpt.getCmt(), position.getHeading()));
-            wpt.setName(isWriteName() ? splitNameAndDesc ? asName(position.getDescription()) : trim(position.getDescription()) : null);
+            wpt.setName(isWriteName() ? splitNameAndDesc ? asName(position.getDescription(), wpt.getName()) : trim(position.getDescription()) : null);
             wpt.setDesc(isWriteName() && splitNameAndDesc ? asDesc(position.getDescription(), wpt.getDesc()) : null);
             wpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatAccuracy(position.getHdop()) : null);
             wpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatAccuracy(position.getPdop()) : null);
@@ -251,7 +251,7 @@ public class Gpx10Format extends GpxFormat {
                 rtept.setCmt(formatSpeedDescription(rtept.getCmt(), position.getSpeed()));
             if (isWriteHeading() && reuseReadObjectsForWriting)
                 rtept.setCmt(addHeading(rtept.getCmt(), position.getHeading()));
-            rtept.setName(isWriteName() ? splitNameAndDesc ? asName(position.getDescription()) : trim(position.getDescription()) : null);
+            rtept.setName(isWriteName() ? splitNameAndDesc ? asName(position.getDescription(), rtept.getName()) : trim(position.getDescription()) : null);
             rtept.setDesc(isWriteName() && splitNameAndDesc ? asDesc(position.getDescription(), rtept.getDesc()) : null);
             rtept.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatAccuracy(position.getHdop()) : null);
             rtept.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatAccuracy(position.getPdop()) : null);
@@ -295,7 +295,7 @@ public class Gpx10Format extends GpxFormat {
             trkpt.setCourse(isWriteHeading() ? formatHeading(position.getHeading()) : null);
             trkpt.setSpeed(isWriteSpeed() && position.getSpeed() != null ?
                     formatSpeed(kmhToMs(position.getSpeed())) : null);
-            trkpt.setName(isWriteName() ? splitNameAndDesc ? asName(position.getDescription()) : trim(position.getDescription()) : null);
+            trkpt.setName(isWriteName() ? splitNameAndDesc ? asName(position.getDescription(), trkpt.getName()) : trim(position.getDescription()) : null);
             trkpt.setDesc(isWriteName() && splitNameAndDesc ? asDesc(position.getDescription(), trkpt.getDesc()) : null);
             trkpt.setHdop(isWriteAccuracy() && position.getHdop() != null ? formatAccuracy(position.getHdop()) : null);
             trkpt.setPdop(isWriteAccuracy() && position.getPdop() != null ? formatAccuracy(position.getPdop()) : null);

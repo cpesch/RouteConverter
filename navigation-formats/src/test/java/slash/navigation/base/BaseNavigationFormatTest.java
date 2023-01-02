@@ -24,23 +24,28 @@ import org.junit.Test;
 import slash.navigation.gpx.Gpx10Format;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class BaseNavigationFormatTest {
     Gpx10Format format = new Gpx10Format();
 
-    private void check(String name, String desc, String expectedDescription, String expectedName, String expectedDesc, String expectedDesc2) {
+    private void check(String name, String desc, String expectedDescription,
+                       String expectedName, String expectedName2,
+                       String expectedDesc, String expectedDesc2) {
         String description = format.asDescription(name, desc);
         assertEquals(expectedDescription, description);
-        String actualName = format.asName(description);
+        String actualName = BaseNavigationFormat.asName(description);
         assertEquals(expectedName, actualName);
+        String actualName2 = format.asName(description, desc);
+        assertEquals(expectedName2, actualName2);
         String actualDesc = format.asDesc(description, desc);
         assertEquals(expectedDesc, actualDesc);
-        String actualDesc2 = format.asDesc(description);
+        String actualDesc2 = BaseNavigationFormat.asDesc(description);
         assertEquals(expectedDesc2, actualDesc2);
     }
 
     private void check(String name, String desc, String expectedDescription, String expectedName, String expectedDesc) {
-        check(name, desc, expectedDescription, expectedName, expectedDesc, expectedDesc);
+        check(name, desc, expectedDescription, expectedName, expectedName, expectedDesc, expectedDesc);
     }
 
     private void check(String name, String desc, String expectedDescription) {
@@ -54,12 +59,8 @@ public class BaseNavigationFormatTest {
 
     @Test
     public void nameRoundtrip() {
+        check(null, null, null);
         check("name", null, "name");
-    }
-
-    @Test
-    public void descRoundtrip() {
-        check(null, "description", "description", "description", "description", null);
     }
 
     @Test
@@ -68,8 +69,18 @@ public class BaseNavigationFormatTest {
     }
 
     @Test
+    public void descRoundtrip() {
+        check(null, "description", "description", "description", "description", "description", null);
+    }
+
+    @Test
+    public void descWithSemicolonRoundtrip() {
+        check(null, "name; description", "name; description", "name", "description");
+    }
+
+    @Test
     public void nameWithoutSemicolonAndDescription() {
         assertEquals("desc", format.asDesc("name", "desc"));
-        assertEquals(null, format.asDesc("name"));
+        assertNull(BaseNavigationFormat.asDesc("name"));
     }
 }
