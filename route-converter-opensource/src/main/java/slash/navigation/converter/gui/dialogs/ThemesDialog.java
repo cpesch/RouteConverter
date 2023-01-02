@@ -241,7 +241,7 @@ public class ThemesDialog extends SimpleDialog {
         final JScrollPane scrollPane2 = new JScrollPane();
         contentPane.add(scrollPane2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableDownloadableThemes = new JTable();
-        tableDownloadableThemes.setPreferredScrollableViewportSize(new Dimension(400, 200));
+        tableDownloadableThemes.setPreferredScrollableViewportSize(new Dimension(500, 200));
         tableDownloadableThemes.setShowHorizontalLines(false);
         tableDownloadableThemes.setShowVerticalLines(false);
         scrollPane2.setViewportView(tableDownloadableThemes);

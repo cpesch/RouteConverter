@@ -191,6 +191,7 @@ public class DownloadsDialog extends SimpleDialog {
         final JScrollPane scrollPane1 = new JScrollPane();
         contentPane.add(scrollPane1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableDownloads = new JTable();
+        tableDownloads.setPreferredScrollableViewportSize(new Dimension(550, 400));
         tableDownloads.setShowHorizontalLines(false);
         tableDownloads.setShowVerticalLines(false);
         scrollPane1.setViewportView(tableDownloads);

@@ -26,6 +26,7 @@
           <component id="1f7cf" class="javax.swing.JTable" binding="tableDownloads">
             <constraints/>
             <properties>
+              <preferredScrollableViewportSize width="550" height="400"/>
               <showHorizontalLines value="false"/>
               <showVerticalLines value="false"/>
             </properties>

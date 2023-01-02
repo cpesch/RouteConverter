@@ -127,7 +127,7 @@
           <component id="d074c" class="javax.swing.JTable" binding="tableDownloadableThemes">
             <constraints/>
             <properties>
-              <preferredScrollableViewportSize width="400" height="200"/>
+              <preferredScrollableViewportSize width="500" height="200"/>
               <showHorizontalLines value="false"/>
               <showVerticalLines value="false"/>
             </properties>
