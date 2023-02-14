@@ -45,7 +45,9 @@ public abstract class SimpleDialog extends JDialog {
         setName(name);
     }
 
-    public void restoreLocation() {
+    public void showWithPreferences() {
+        pack();
+
         Rectangle bounds = getOwner().getGraphicsConfiguration().getBounds();
         Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(getOwner().getGraphicsConfiguration());
 
@@ -70,6 +72,8 @@ public abstract class SimpleDialog extends JDialog {
         else
             setLocationRelativeTo(getOwner());
         log.info("Dialog " + getName() + " location is " + getLocation());
+
+        setVisible(true);
     }
 
     private int getPreferencesX() {

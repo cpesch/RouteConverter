@@ -361,9 +361,7 @@ public class BrowsePanel implements PanelInTab {
 
     private void showAddFileToCatalog(CategoryTreeNode categoryTreeNode, String description, Double length, File file) {
         AddFileDialog addFileDialog = new AddFileDialog(catalogModel, categoryTreeNode, description, length, file);
-        addFileDialog.pack();
-        addFileDialog.restoreLocation();
-        addFileDialog.setVisible(true);
+        addFileDialog.showWithPreferences();
     }
 
     private void addFileToCatalog(CategoryTreeNode categoryTreeNode, File file) {
@@ -415,9 +413,7 @@ public class BrowsePanel implements PanelInTab {
 
     private void showAddUrlToCatalog(CategoryTreeNode categoryTreeNode, String description, String url) {
         AddUrlDialog addUrlDialog = new AddUrlDialog(catalogModel, categoryTreeNode, description, url);
-        addUrlDialog.pack();
-        addUrlDialog.restoreLocation();
-        addUrlDialog.setVisible(true);
+        addUrlDialog.showWithPreferences();
     }
 
     private void addUrlToCatalog(CategoryTreeNode category, String url) {

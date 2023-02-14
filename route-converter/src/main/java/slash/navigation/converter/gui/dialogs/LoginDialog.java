@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.JOptionPane.*;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Transfer.trim;
@@ -64,13 +65,11 @@ public class LoginDialog extends SimpleDialog {
     private JPanel contentPane;
     private JTabbedPane tabbedPane;
 
-    private JLabel labelLoginResult;
     private JTextField textFieldLogin;
     private JPasswordField passwordLogin;
     private JButton buttonLogin;
     private JButton buttonCancel;
 
-    private JLabel labelRegisterResult;
     private JTextField textFieldName;
     private JTextField textFieldFirstName;
     private JTextField textFieldLastName;
@@ -167,85 +166,90 @@ public class LoginDialog extends SimpleDialog {
     }
 
     private void login() {
+        JFrame frame = RouteConverter.getInstance().getFrame();
+
         String userName = trim(textFieldLogin.getText());
         if (userName == null) {
-            labelLoginResult.setText(RouteConverter.getBundle().getString("login-no-username-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-no-username-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
             return;
         }
         String password = trim(new String(passwordLogin.getPassword()));
         if (password == null) {
-            labelLoginResult.setText(RouteConverter.getBundle().getString("login-no-password-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-no-password-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
             return;
         }
 
         login(userName, password);
+
         successful = true;
         dispose();
     }
 
     private void register() {
+        JFrame frame = RouteConverter.getInstance().getFrame();
+
         String userName = trim(textFieldName.getText());
         if (userName == null || userName.length() < 4) {
-            labelRegisterResult.setText(RouteConverter.getBundle().getString("register-username-too-short-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-username-too-short-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
             return;
         }
         String firstName = trim(textFieldFirstName.getText());
         if (firstName == null || firstName.length() < 3) {
-            labelRegisterResult.setText(RouteConverter.getBundle().getString("register-first-name-too-short-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-first-name-too-short-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
             return;
         }
         String lastName = trim(textFieldLastName.getText());
         if (lastName == null || lastName.length() < 3) {
-            labelRegisterResult.setText(RouteConverter.getBundle().getString("register-last-name-too-short-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-last-name-too-short-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
             return;
         }
 
         String email = trim(textFieldEMail.getText());
         if (email == null || !email.contains("@") || !email.contains(".")) {
-            labelRegisterResult.setText(RouteConverter.getBundle().getString("register-email-invalid-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-email-invalid-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
             return;
         }
 
         String password = trim(new String(passwordRegister.getPassword()));
         if (password == null || password.length() < 4) {
-            labelRegisterResult.setText(RouteConverter.getBundle().getString("register-password-too-short-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-password-too-short-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
             return;
         }
         String repeat = trim(new String(passwordRepeat.getPassword()));
         if (!password.equals(repeat)) {
-            labelRegisterResult.setText(RouteConverter.getBundle().getString("register-password-do-not-match-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-password-do-not-match-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
             return;
         }
 
         if (!checkBoxAcceptTerms.isSelected()) {
-            labelRegisterResult.setText(RouteConverter.getBundle().getString("register-terms-not-accepted-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-terms-not-accepted-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
             return;
         }
 
         try {
             register(userName, password, firstName, lastName, email);
-            labelRegisterResult.setText(RouteConverter.getBundle().getString("register-success"));
-            pack();
             login(userName, password);
+
             successful = true;
             dispose();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-success")),
+                    frame.getTitle(), INFORMATION_MESSAGE);
         } catch (DuplicateNameException e) {
-            labelRegisterResult.setText(RouteConverter.getBundle().getString("register-username-exists-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-username-exists-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
         } catch (Throwable t) {
             log.severe("Could not register: " + t);
-            labelRegisterResult.setText(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"),
-                    t.getClass().getSimpleName(), getLocalizedMessage(t)));
-            pack();
+            showMessageDialog(frame, new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"),
+                    t.getClass().getSimpleName(), getLocalizedMessage(t))), frame.getTitle(), ERROR_MESSAGE);
         }
     }
 
@@ -273,7 +277,7 @@ public class LoginDialog extends SimpleDialog {
         tabbedPane = new JTabbedPane();
         contentPane.add(tabbedPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(300, 290), null, 0, false));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(6, 2, new Insets(10, 10, 10, 10), -1, -1));
+        panel1.setLayout(new GridLayoutManager(5, 2, new Insets(10, 10, 10, 10), -1, -1));
         tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "login"), panel1);
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "username-colon"));
@@ -288,7 +292,7 @@ public class LoginDialog extends SimpleDialog {
         panel1.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel2, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel1.add(panel2, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonLogin = new JButton();
         this.$$$loadButtonText$$$(buttonLogin, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "login"));
         panel2.add(buttonLogin, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -300,13 +304,10 @@ public class LoginDialog extends SimpleDialog {
         final JLabel label3 = new JLabel();
         this.$$$loadLabelText$$$(label3, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "please-login"));
         panel1.add(label3, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelLoginResult = new JLabel();
-        labelLoginResult.setText("");
-        panel1.add(labelLoginResult, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel1.add(spacer2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(11, 2, new Insets(10, 10, 10, 10), -1, -1));
+        panel3.setLayout(new GridLayoutManager(10, 2, new Insets(10, 10, 10, 10), -1, -1));
         tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "register"), panel3);
         final JLabel label4 = new JLabel();
         this.$$$loadLabelText$$$(label4, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "username-colon"));
@@ -330,7 +331,7 @@ public class LoginDialog extends SimpleDialog {
         panel3.add(passwordRepeat, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
-        panel3.add(panel4, new GridConstraints(10, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(panel4, new GridConstraints(9, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRegister = new JButton();
         this.$$$loadButtonText$$$(buttonRegister, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "register"));
         panel4.add(buttonRegister, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -342,9 +343,6 @@ public class LoginDialog extends SimpleDialog {
         final JLabel label8 = new JLabel();
         this.$$$loadLabelText$$$(label8, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "please-register"));
         panel3.add(label8, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelRegisterResult = new JLabel();
-        labelRegisterResult.setText("");
-        panel3.add(labelRegisterResult, new GridConstraints(9, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label9 = new JLabel();
         this.$$$loadLabelText$$$(label9, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "first-name-colon"));
         panel3.add(label9, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));

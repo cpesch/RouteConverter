@@ -61,9 +61,7 @@ public class RouteServiceOperator {
 
     public boolean showLogin() {
         LoginDialog loginDialog = new LoginDialog(routeFeedback);
-        loginDialog.pack();
-        loginDialog.restoreLocation();
-        loginDialog.setVisible(true);
+        loginDialog.showWithPreferences();
         return loginDialog.isSuccessful();
     }
 

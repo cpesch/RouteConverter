@@ -32,8 +32,6 @@ import slash.navigation.gui.actions.FrameAction;
 public class SendErrorReportAction extends FrameAction {
     public void run() {
         SendErrorReportDialog dialog = new SendErrorReportDialog();
-        dialog.pack();
-        dialog.restoreLocation();
-        dialog.setVisible(true);
+        dialog.showWithPreferences();
     }
 }

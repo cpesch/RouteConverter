@@ -36,8 +36,6 @@ public class CompleteFlightPlanAction extends FrameAction {
         RouteConverter r = RouteConverter.getInstance();
         GarminFlightPlanRoute route = (GarminFlightPlanRoute) r.getConvertPanel().getPositionsModel().getRoute();
         CompleteFlightPlanDialog dialog = new CompleteFlightPlanDialog(route);
-        dialog.pack();
-        dialog.restoreLocation();
-        dialog.setVisible(true);
+        dialog.showWithPreferences();
     }
 }

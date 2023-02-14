@@ -41,6 +41,7 @@ import java.util.ResourceBundle;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.text.MessageFormat.format;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
+import static javax.swing.JOptionPane.*;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Files.createReadablePath;
 import static slash.common.io.Transfer.formatDoubleAsString;
@@ -66,7 +67,6 @@ public class AddFileDialog extends SimpleDialog {
     private JPanel panelRemoteCategory;
     private JButton buttonAdd;
     private JButton buttonCancel;
-    private JLabel labelResult;
 
     public AddFileDialog(CatalogModel catalogModel, CategoryTreeNode categoryTreeNode,
                          String description, Double length, File file) {
@@ -114,18 +114,20 @@ public class AddFileDialog extends SimpleDialog {
     }
 
     private void addFile() {
+        JFrame frame = RouteConverter.getInstance().getFrame();
+
         String description = textFieldDescription.getText();
         if (trim(description) == null) {
-            labelResult.setText(RouteConverter.getBundle().getString("add-route-no-description-error"));
-            pack();
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("add-route-no-description-error")),
+                    frame.getTitle(), ERROR_MESSAGE);
             return;
         }
 
         catalogModel.addRoute(category, description, file, null, new AddRouteCallback());
 
-        labelResult.setText(RouteConverter.getBundle().getString("add-route-by-file-success"));
-        pack();
         dispose();
+        showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("add-route-by-file-success")),
+                frame.getTitle(), INFORMATION_MESSAGE);
     }
 
     private void cancel() {
@@ -148,10 +150,10 @@ public class AddFileDialog extends SimpleDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(4, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(3, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
+        contentPane.add(panel1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -209,9 +211,6 @@ public class AddFileDialog extends SimpleDialog {
         labelLabel = new JLabel();
         labelLabel.setText("");
         contentPane.add(labelLabel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelResult = new JLabel();
-        labelResult.setText("");
-        contentPane.add(labelResult, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;

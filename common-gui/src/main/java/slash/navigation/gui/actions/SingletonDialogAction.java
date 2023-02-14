@@ -36,8 +36,7 @@ public abstract class SingletonDialogAction extends FrameAction {
     public void run() {
         if (dialog == null) {
             dialog = createDialog();
-            dialog.pack();
-            dialog.restoreLocation();
+            dialog.showWithPreferences();
         }
 
         if (!dialog.isVisible()) {

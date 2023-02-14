@@ -697,9 +697,7 @@ public class ConvertPanel implements PanelInTab {
             int reducedPositionCount = route.getPositionCount() / order;
 
             MaximumPositionCountDialog dialog = new MaximumPositionCountDialog(file, route.getPositionCount(), fileCount, reducedPositionCount, format);
-            dialog.pack();
-            dialog.restoreLocation();
-            dialog.setVisible(true);
+            dialog.showWithPreferences();
 
             switch (dialog.getResult()) {
                 case Split:
@@ -808,9 +806,7 @@ public class ConvertPanel implements PanelInTab {
 
     private void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
         CompleteFlightPlanDialog dialog = new CompleteFlightPlanDialog(garminFlightPlanRoute);
-        dialog.pack();
-        dialog.restoreLocation();
-        dialog.setVisible(true);
+        dialog.showWithPreferences();
     }
 
     public void saveFile() {

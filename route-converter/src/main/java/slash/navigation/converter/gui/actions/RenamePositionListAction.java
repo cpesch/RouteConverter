@@ -42,8 +42,6 @@ public class RenamePositionListAction extends FrameAction {
     public void run() {
         RenameDialog dialog = new RenameDialog(formatAndRoutesModel.getSelectedRoute().getName(),
                 formatAndRoutesModel.getFormat());
-        dialog.pack();
-        dialog.restoreLocation();
-        dialog.setVisible(true);
+        dialog.showWithPreferences();
     }
 }
