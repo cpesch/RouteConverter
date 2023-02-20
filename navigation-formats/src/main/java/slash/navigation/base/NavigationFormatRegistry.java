@@ -89,7 +89,7 @@ public class NavigationFormatRegistry {
     private final List<Class<? extends NavigationFormat>> formats = new ArrayList<>();
 
     public NavigationFormatRegistry() {
-        // self-implemented formats
+        // native formats
         addFormat(NmnUrlFormat.class);
         addFormat(GoogleMapsUrlFormat.class);
         addFormat(KurvigerUrlFormat.class);
@@ -165,6 +165,7 @@ public class NavigationFormatRegistry {
         addFormat(PhotoFormat.class);
         addFormat(MicrosoftExcel97Format.class);
         addFormat(MicrosoftExcel2008Format.class);
+        addFormat(FitFormat.class);
         addFormat(MSFSFlightPlanFormat.class);
 
         // kind of meta-format
@@ -184,7 +185,6 @@ public class NavigationFormatRegistry {
         addFormat(CompeGPSDataRouteFormat.class);
         addFormat(CompeGPSDataTrackFormat.class);
         addFormat(CompeGPSDataWaypointFormat.class);
-        addFormat(FitFormat.class);
         addFormat(GarminPcx5Format.class);
         addFormat(GeoCachingFormat.class);
         addFormat(GoPalTrackFormat.class);
@@ -192,6 +192,8 @@ public class NavigationFormatRegistry {
         addFormat(HoluxM241BinaryFormat.class);
         addFormat(FlightRecorderDataFormat.class);
         addFormat(WintecWbt202TesFormat.class);
+
+        // greedy native formats
         addFormat(CsvCommaFormat.class);
         addFormat(CsvSemicolonFormat.class);
 
@@ -209,7 +211,7 @@ public class NavigationFormatRegistry {
         addFormat(GarbleKml22Format.class);
         addFormat(GarbleNavilinkFormat.class);
 
-        // greedy BabelFormats
+        // greedy GPSBabel-formats
         addFormat(GarminPoiFormat.class);
         addFormat(Igo8TrackFormat.class);
         addFormat(GarminPoiDbFormat.class);
