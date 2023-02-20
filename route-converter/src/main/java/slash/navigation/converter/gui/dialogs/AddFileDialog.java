@@ -126,8 +126,7 @@ public class AddFileDialog extends SimpleDialog {
         catalogModel.addRoute(category, description, file, null, new AddRouteCallback());
 
         dispose();
-        showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("add-route-by-file-success")),
-                frame.getTitle(), INFORMATION_MESSAGE);
+        RouteConverter.getInstance().getContext().getNotificationManager().showNotification(RouteConverter.getBundle().getString("add-route-by-file-success"), null);
     }
 
     private void cancel() {

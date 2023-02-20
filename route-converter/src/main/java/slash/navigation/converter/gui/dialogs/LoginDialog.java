@@ -185,6 +185,8 @@ public class LoginDialog extends SimpleDialog {
 
         successful = true;
         dispose();
+        showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-success")),
+                frame.getTitle(), INFORMATION_MESSAGE);
     }
 
     private void register() {

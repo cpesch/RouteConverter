@@ -123,8 +123,7 @@ public class AddUrlDialog extends SimpleDialog {
         catalogModel.addRoute(category, description, null, url, new AddRouteCallback());
 
         dispose();
-        showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("add-route-by-url-success")),
-                frame.getTitle(), INFORMATION_MESSAGE);
+        RouteConverter.getInstance().getContext().getNotificationManager().showNotification(RouteConverter.getBundle().getString("add-route-by-url-success"), null);
     }
 
     private void cancel() {
