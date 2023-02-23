@@ -70,33 +70,31 @@ public class AudioPlayer {
             }
         };
 
-        worker = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    synchronized (notificationMutex) {
-                        try {
-                            notificationMutex.wait(1000);
-                        } catch (InterruptedException e) {
-                            // ignore this
-                        }
-
-                        if (!running)
-                            return;
-                        if (playing)
-                            continue;
-                    }
-
-                    File file = null;
+        worker = new Thread(() -> {
+            while (true) {
+                synchronized (notificationMutex) {
                     try {
-                        file = queue.poll();
-                        if (file != null)
-                            playNext(file);
-                    } catch (Exception e) {
-                        log.severe(format("Cannot play audio file %s: %s", file, getLocalizedMessage(e)));
-                        showMessageDialog(frame,
-                                MessageFormat.format(Application.getInstance().getContext().getBundle().getString("cannot-play-voice"), file, e), frame.getTitle(),
-                                ERROR_MESSAGE);
+                        notificationMutex.wait(1000);
+                    } catch (InterruptedException e) {
+                        // ignore this
                     }
+
+                    if (!running)
+                        return;
+                    if (playing)
+                        continue;
+                }
+
+                File file = null;
+                try {
+                    file = queue.poll();
+                    if (file != null)
+                        playNext(file);
+                } catch (Exception e) {
+                    log.severe(format("Cannot play audio file %s: %s", file, getLocalizedMessage(e)));
+                    showMessageDialog(frame,
+                            MessageFormat.format(Application.getInstance().getContext().getBundle().getString("cannot-play-voice"), file, e), frame.getTitle(),
+                            ERROR_MESSAGE);
                 }
             }
         }, "AudioPlayer");

@@ -137,47 +137,43 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
     }
 
     private Thread observeProcess(final Process process, final int commandExecutionTimeout) {
-        return new Thread(new Runnable() {
-            public void run() {
-                try {
-                    sleep(commandExecutionTimeout);
-                } catch (InterruptedException e) {
-                    // intentionally left empty
-                }
-                try {
-                    int exitValue = process.exitValue();
-                    log.fine("gpsbabel process terminated with exit value " + exitValue);
-                } catch (IllegalThreadStateException itse) {
-                    log.warning("gpsbabel process for format " + getFormatName() + " didn't terminate after " + commandExecutionTimeout + "ms; destroying it");
-                    process.destroy();
-                }
+        return new Thread(() -> {
+            try {
+                sleep(commandExecutionTimeout);
+            } catch (InterruptedException e) {
+                // intentionally left empty
+            }
+            try {
+                int exitValue = process.exitValue();
+                log.fine("gpsbabel process terminated with exit value " + exitValue);
+            } catch (IllegalThreadStateException itse) {
+                log.warning("gpsbabel process for format " + getFormatName() + " didn't terminate after " + commandExecutionTimeout + "ms; destroying it");
+                process.destroy();
             }
         }, "BabelObserver");
     }
 
     private void pumpStream(final InputStream input, final OutputStream output, final String streamName, final boolean closeOutput) {
-        new Thread(new Runnable() {
-            public void run() {
+        new Thread(() -> {
+            try {
                 try {
-                    try {
-                        byte buffer[] = new byte[DEFAULT_BUFFER_SIZE];
-                        int count = 0;
-                        while (count >= 0) {
-                            count = input.read(buffer);
-                            if (count > 0) {
-                                output.write(buffer, 0, count);
-                                String output = new String(buffer).trim();
-                                log.fine("Read " + count + " bytes of " + streamName + " from gpsbabel process: '" + output + "'");
-                            }
+                    byte buffer[] = new byte[DEFAULT_BUFFER_SIZE];
+                    int count = 0;
+                    while (count >= 0) {
+                        count = input.read(buffer);
+                        if (count > 0) {
+                            output.write(buffer, 0, count);
+                            String output1 = new String(buffer).trim();
+                            log.fine("Read " + count + " bytes of " + streamName + " from gpsbabel process: '" + output1 + "'");
                         }
-                    } finally {
-                        input.close();
-                        if (closeOutput)
-                            output.close();
                     }
-                } catch (IOException e) {
-                    log.fine("Could not pump " + streamName + " of gpsbabel process: " + e);
+                } finally {
+                    input.close();
+                    if (closeOutput)
+                        output.close();
                 }
+            } catch (IOException e) {
+                log.fine("Could not pump " + streamName + " of gpsbabel process: " + e);
             }
         }, "BabelStreamPumper-" + streamName).start();
     }

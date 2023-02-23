@@ -82,42 +82,36 @@ public class RouteServiceOperator {
     }
 
     public void executeOperation(final Operation operation) {
-        new Thread(new Runnable() {
-            public void run() {
-                invokeLater(new Runnable() {
-                    public void run() {
-                        startWaitCursor(frame.getRootPane());
-                    }
-                });
+        new Thread(() -> {
+            invokeLater(() -> startWaitCursor(frame.getRootPane()));
 
-                while (true) {
+            while (true) {
+                try {
                     try {
-                        try {
-                            operation.run();
-                        } catch (UnAuthorizedException uae) {
-                            final boolean[] showedLogin = new boolean[1];
-                            showedLogin[0] = false;
+                        operation.run();
+                    } catch (UnAuthorizedException uae) {
+                        final boolean[] showedLogin = new boolean[1];
+                        showedLogin[0] = false;
 
-                            invokeAndWait(new Runnable() {
-                                public void run() {
-                                    showedLogin[0] = showLogin();
-                                }
-                            });
-
-                            if (showedLogin[0])
-                                continue;
-                        }
-                    } catch (Throwable t) {
-                        handleServiceError(t);
-                    } finally {
-                        invokeLater(new Runnable() {
+                        invokeAndWait(new Runnable() {
                             public void run() {
-                                stopWaitCursor(frame.getRootPane());
+                                showedLogin[0] = showLogin();
                             }
                         });
+
+                        if (showedLogin[0])
+                            continue;
                     }
-                    break;
+                } catch (Throwable t) {
+                    handleServiceError(t);
+                } finally {
+                    invokeLater(new Runnable() {
+                        public void run() {
+                            stopWaitCursor(frame.getRootPane());
+                        }
+                    });
                 }
+                break;
             }
         }, operation.getName()).start();
     }

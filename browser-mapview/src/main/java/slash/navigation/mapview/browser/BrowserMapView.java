@@ -333,138 +333,132 @@ public abstract class BrowserMapView extends BaseMapView {
             }
         });
 
-        positionListUpdater = new Thread(new Runnable() {
-            @SuppressWarnings("unchecked")
-            public void run() {
-                long lastTime = 0;
-                boolean recenter;
-                while (true) {
-                    List<NavigationPosition> copiedPositions;
-                    synchronized (notificationMutex) {
-                        try {
-                            notificationMutex.wait(1000);
-                        } catch (InterruptedException e) {
-                            // ignore this
-                        }
-
-                        if (!running)
-                            return;
-                        if (!hasPositions())
-                            continue;
-                        if (!isVisible())
-                            continue;
-
-                        /*
-                           Update conditions:
-
-                           - new route was loaded
-                             - clear cache
-                             - center map
-                             - set zoom level according to route bounds
-                             - repaint immediately
-                           - user has moved position
-                             - clear cache
-                             - stay on current zoom level
-                             - center map to position
-                             - repaint
-                           - user has removed position
-                             - clear cache
-                             - stay on current zoom level
-                             - repaint
-                           - user has zoomed map
-                             - repaint if zooming into the map as it reveals more details
-                           - user has moved map
-                             - repaint if moved
-                         */
-                        long currentTime = currentTimeMillis();
-                        if (haveToRepaintRouteImmediately ||
-                                haveToReplaceRoute ||
-                                (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
-                            log.info("Woke up to update route: " + routeUpdateReason +
-                                    " haveToUpdateRoute:" + haveToUpdateRoute +
-                                    " haveToReplaceRoute:" + haveToReplaceRoute +
-                                    " haveToRepaintRouteImmediately:" + haveToRepaintRouteImmediately);
-                            copiedPositions = new ArrayList<>(positionsModel.getRoute().getPositions());
-                            recenter = haveToReplaceRoute;
-                            haveToUpdateRoute = false;
-                            haveToReplaceRoute = false;
-                            haveToRepaintRouteImmediately = false;
-                        } else
-                            continue;
+        positionListUpdater = new Thread(() -> {
+            long lastTime = 0;
+            boolean recenter;
+            while (true) {
+                List<NavigationPosition> copiedPositions;
+                synchronized (notificationMutex) {
+                    try {
+                        notificationMutex.wait(1000);
+                    } catch (InterruptedException e) {
+                        // ignore this
                     }
 
-                    setCenterOfMap(copiedPositions, recenter);
-                    RouteCharacteristics characteristics = positionsModel.getRoute().getCharacteristics();
-                    List<NavigationPosition> render = positionReducer.reducePositions(copiedPositions, characteristics, preferencesModel.getShowWaypointDescriptionModel().getBoolean());
-                    switch (characteristics) {
-                        case Route:
-                            addDirectionsToMap(render);
-                            break;
-                        case Track:
-                            addPolylinesToMap(render, copiedPositions);
-                            break;
-                        case Waypoints:
-                            addMarkersToMap(render);
-                            break;
-                        default:
-                            throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
-                    }
-                    log.info("Position list updated for " + render.size() + " positions of type " + characteristics +
-                            ", reason: " + routeUpdateReason + ", recentering: " + recenter);
-                    lastTime = currentTimeMillis();
+                    if (!running)
+                        return;
+                    if (!hasPositions())
+                        continue;
+                    if (!isVisible())
+                        continue;
+
+                    /*
+                       Update conditions:
+
+                       - new route was loaded
+                         - clear cache
+                         - center map
+                         - set zoom level according to route bounds
+                         - repaint immediately
+                       - user has moved position
+                         - clear cache
+                         - stay on current zoom level
+                         - center map to position
+                         - repaint
+                       - user has removed position
+                         - clear cache
+                         - stay on current zoom level
+                         - repaint
+                       - user has zoomed map
+                         - repaint if zooming into the map as it reveals more details
+                       - user has moved map
+                         - repaint if moved
+                     */
+                    long currentTime = currentTimeMillis();
+                    if (haveToRepaintRouteImmediately ||
+                            haveToReplaceRoute ||
+                            (haveToUpdateRoute && (currentTime - lastTime > 5 * 1000))) {
+                        log.info("Woke up to update route: " + routeUpdateReason +
+                                " haveToUpdateRoute:" + haveToUpdateRoute +
+                                " haveToReplaceRoute:" + haveToReplaceRoute +
+                                " haveToRepaintRouteImmediately:" + haveToRepaintRouteImmediately);
+                        copiedPositions = new ArrayList<>(positionsModel.getRoute().getPositions());
+                        recenter = haveToReplaceRoute;
+                        haveToUpdateRoute = false;
+                        haveToReplaceRoute = false;
+                        haveToRepaintRouteImmediately = false;
+                    } else
+                        continue;
                 }
+
+                setCenterOfMap(copiedPositions, recenter);
+                RouteCharacteristics characteristics = positionsModel.getRoute().getCharacteristics();
+                List<NavigationPosition> render = positionReducer.reducePositions(copiedPositions, characteristics, preferencesModel.getShowWaypointDescriptionModel().getBoolean());
+                switch (characteristics) {
+                    case Route:
+                        addDirectionsToMap(render);
+                        break;
+                    case Track:
+                        addPolylinesToMap(render, copiedPositions);
+                        break;
+                    case Waypoints:
+                        addMarkersToMap(render);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
+                }
+                log.info("Position list updated for " + render.size() + " positions of type " + characteristics +
+                        ", reason: " + routeUpdateReason + ", recentering: " + recenter);
+                lastTime = currentTimeMillis();
             }
         }, "MapViewPositionListUpdater");
         positionListUpdater.start();
 
-        selectionUpdater = new Thread(new Runnable() {
-            @SuppressWarnings("unchecked")
-            public void run() {
-                long lastTime = 0;
-                while (true) {
-                    int[] copiedSelectedPositionIndices;
-                    List<NavigationPosition> copiedPositions;
-                    boolean recenter;
-                    synchronized (notificationMutex) {
-                        try {
-                            notificationMutex.wait(250);
-                        } catch (InterruptedException e) {
-                            // ignore this
-                        }
-
-                        if (!running)
-                            return;
-                        if (!hasPositions())
-                            continue;
-                        if (!isVisible())
-                            continue;
-
-                        long currentTime = currentTimeMillis();
-                        if (haveToRecenterMap || haveToRepaintSelectionImmediately ||
-                                (haveToRepaintSelection && (currentTime - lastTime > 500))) {
-                            log.fine("Woke up to update selected positions: " + selectionUpdateReason +
-                                    " haveToRepaintSelection: " + haveToRepaintSelection +
-                                    " haveToRepaintSelectionImmediately: " + haveToRepaintSelectionImmediately +
-                                    " haveToRecenterMap: " + haveToRecenterMap);
-                            recenter = haveToRecenterMap;
-                            haveToRecenterMap = false;
-                            haveToRepaintSelectionImmediately = false;
-                            haveToRepaintSelection = false;
-                            copiedSelectedPositionIndices = new int[selectedPositionIndices.length];
-                            System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositionIndices, 0, copiedSelectedPositionIndices.length);
-                            copiedPositions = new ArrayList<>(positionsModel.getRoute().getPositions());
-                        } else
-                            continue;
+        selectionUpdater = new Thread(() -> {
+            long lastTime = 0;
+            while (true) {
+                int[] copiedSelectedPositionIndices;
+                List<NavigationPosition> copiedPositions;
+                boolean recenter;
+                synchronized (notificationMutex) {
+                    try {
+                        notificationMutex.wait(250);
+                    } catch (InterruptedException e) {
+                        // ignore this
                     }
 
-                    List<NavigationPosition> render = new ArrayList<>(positionReducer.reduceSelectedPositions(copiedPositions, copiedSelectedPositionIndices));
-                    render.addAll(selectedPositions);
-                    NavigationPosition centerPosition = render.size() > 0 ? new BoundingBox(render).getCenter() : null;
-                    selectPositions(render, recenter ? centerPosition : null);
-                    log.info("Selected positions updated for " + render.size() + " positions, reason: " +
-                            selectionUpdateReason + ", recentering: " + recenter + " to: " + centerPosition);
-                    lastTime = currentTimeMillis();
+                    if (!running)
+                        return;
+                    if (!hasPositions())
+                        continue;
+                    if (!isVisible())
+                        continue;
+
+                    long currentTime = currentTimeMillis();
+                    if (haveToRecenterMap || haveToRepaintSelectionImmediately ||
+                            (haveToRepaintSelection && (currentTime - lastTime > 500))) {
+                        log.fine("Woke up to update selected positions: " + selectionUpdateReason +
+                                " haveToRepaintSelection: " + haveToRepaintSelection +
+                                " haveToRepaintSelectionImmediately: " + haveToRepaintSelectionImmediately +
+                                " haveToRecenterMap: " + haveToRecenterMap);
+                        recenter = haveToRecenterMap;
+                        haveToRecenterMap = false;
+                        haveToRepaintSelectionImmediately = false;
+                        haveToRepaintSelection = false;
+                        copiedSelectedPositionIndices = new int[selectedPositionIndices.length];
+                        System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositionIndices, 0, copiedSelectedPositionIndices.length);
+                        copiedPositions = new ArrayList<>(positionsModel.getRoute().getPositions());
+                    } else
+                        continue;
                 }
+
+                List<NavigationPosition> render = new ArrayList<>(positionReducer.reduceSelectedPositions(copiedPositions, copiedSelectedPositionIndices));
+                render.addAll(selectedPositions);
+                NavigationPosition centerPosition = render.size() > 0 ? new BoundingBox(render).getCenter() : null;
+                selectPositions(render, recenter ? centerPosition : null);
+                log.info("Selected positions updated for " + render.size() + " positions, reason: " +
+                        selectionUpdateReason + ", recentering: " + recenter + " to: " + centerPosition);
+                lastTime = currentTimeMillis();
             }
         }, "MapViewSelectionUpdater");
         selectionUpdater.start();
@@ -524,28 +518,26 @@ public abstract class BrowserMapView extends BaseMapView {
     }
 
     protected void initializeCallbackPoller() {
-        callbackPoller = new Thread(new Runnable() {
-            public void run() {
-                while (true) {
-                    synchronized (notificationMutex) {
-                        if (!running) {
-                            return;
-                        }
+        callbackPoller = new Thread(() -> {
+            while (true) {
+                synchronized (notificationMutex) {
+                    if (!running) {
+                        return;
                     }
+                }
 
-                    String callbacks = trim(getCallbacks());
-                    if (callbacks != null) {
-                        String[] lines = callbacks.split("--");
-                        for (String line : lines) {
-                            processCallback(line);
-                        }
+                String callbacks = trim(getCallbacks());
+                if (callbacks != null) {
+                    String[] lines = callbacks.split("--");
+                    for (String line : lines) {
+                        processCallback(line);
                     }
+                }
 
-                    try {
-                        sleep(250);
-                    } catch (InterruptedException e) {
-                        // intentionally left empty
-                    }
+                try {
+                    sleep(250);
+                } catch (InterruptedException e) {
+                    // intentionally left empty
                 }
             }
         }, "MapViewCallbackPoller");
@@ -720,19 +712,17 @@ public abstract class BrowserMapView extends BaseMapView {
         if (!isInitialized() || !getComponent().isShowing())
             return;
 
-        new Thread(new Runnable() {
-            public void run() {
-                synchronized (notificationMutex) {
-                    // if map is not visible remember to update and resize it again
-                    // once the map becomes visible again
-                    if (!isVisible()) {
-                        hasBeenResizedToInvisible = true;
-                    } else if (hasBeenResizedToInvisible) {
-                        hasBeenResizedToInvisible = false;
-                        update(true, false);
-                    }
-                    resizeMap();
+        new Thread(() -> {
+            synchronized (notificationMutex) {
+                // if map is not visible remember to update and resize it again
+                // once the map becomes visible again
+                if (!isVisible()) {
+                    hasBeenResizedToInvisible = true;
+                } else if (hasBeenResizedToInvisible) {
+                    hasBeenResizedToInvisible = false;
+                    update(true, false);
                 }
+                resizeMap();
             }
         }, "BrowserResizer").start();
     }
