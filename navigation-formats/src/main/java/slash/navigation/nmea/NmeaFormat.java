@@ -400,6 +400,12 @@ public class NmeaFormat extends BaseNmeaFormat {
         String altitude = formatAltitude(position.getElevation());
         String speedKnots = position.getSpeed() != null ? formatSpeed(kiloMeterToNauticMiles(position.getSpeed())) : "";
 
+        // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,A*76
+        String rmc = "GPRMC" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR + latitude + SEPARATOR +
+                northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR + speedKnots + SEPARATOR + SEPARATOR +
+                date + SEPARATOR + SEPARATOR + "A";
+        writeSentence(writer, rmc);
+
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
         if(time.length() > 0 || altitude.length() > 0 || satellites.length() > 0) {
             String gga = "GPGGA" + SEPARATOR + time + SEPARATOR + latitude + SEPARATOR + northOrSouth + SEPARATOR +
@@ -414,12 +420,6 @@ public class NmeaFormat extends BaseNmeaFormat {
                     westOrEast + SEPARATOR + description;
             writeSentence(writer, wpl);
         }
-
-        // $GPRMC,180114,A,4808.9490,N,00928.9610,E,000.0,000.0,160607,,A*76
-        String rmc = "GPRMC" + SEPARATOR + time + SEPARATOR + "A" + SEPARATOR + latitude + SEPARATOR +
-                northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR + speedKnots + SEPARATOR + SEPARATOR +
-                date + SEPARATOR + SEPARATOR + "A";
-        writeSentence(writer, rmc);
 
         if(position.hasTime()) {
             // $GPZDA,032910,07,08,2004,00,00*48

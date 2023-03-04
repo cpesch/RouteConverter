@@ -33,7 +33,7 @@ import static org.junit.Assert.assertNull;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Kml22FormatTest {
-    private Kml22Format format = new Kml22Format();
+    private final Kml22Format format = new Kml22Format();
 
     @Test
     public void testAsPositions() {

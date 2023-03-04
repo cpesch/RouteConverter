@@ -300,10 +300,8 @@ public abstract class KmlFormat extends BaseKmlFormat {
     protected String concatPath(String path, String fragment) {
         path = trim(path);
         fragment = trim(fragment);
-        String result = path != null ? path : "";
-        if (fragment != null)
-            result = result + "/" + fragment;
-        return result;
+        return (path != null ? path : "") +
+                (fragment != null ? (path != null ? "/" : "") + fragment : "");
     }
 
     protected float getLineWidth() {
