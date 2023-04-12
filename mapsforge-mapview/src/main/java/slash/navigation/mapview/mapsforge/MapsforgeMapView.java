@@ -843,8 +843,8 @@ public class MapsforgeMapView extends BaseMapView {
         double latitude = position.getLatitude() != null ? position.getLatitude() : 0.0;
         if (isFixMap(longitude, latitude)) {
             double[] delta = delta(latitude, longitude);
-            longitude += delta[1];
-            latitude += delta[0];
+            longitude -= delta[1];
+            latitude -= delta[0];
         }
         return new LatLong(latitude, longitude);
     }
