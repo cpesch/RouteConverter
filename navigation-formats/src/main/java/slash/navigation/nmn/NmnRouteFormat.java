@@ -166,7 +166,9 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             byte[] text = new byte[count];
             for (int i = 0; i < text.length; i++)
                 text[i] = byteBuffer.get();
-            return toMixedCase(new String(text, StandardCharsets.UTF_8));
+            String result = new String(text, StandardCharsets.UTF_8);
+            log.info("getText " + count + " returns " + result);
+            return toMixedCase(result);
         }
         return "";
     }
@@ -227,7 +229,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             // 8 Byte 0. unknown
             fileContent.position(fileContent.position() + 8);
             // 4 Byte: length + text
-            getText(fileContent);
+            String description = getText(fileContent);
             // 4 Byte: unknown
             fileContent.getInt();
             // 4 Byte: number of following data points (1, 2, 4)
@@ -238,25 +240,25 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
             if (fileContent.position() < positionEndPosition)
                 fileContent.getInt();
 
-            Wgs84Position position = null;
+            Wgs84Position position = new Wgs84Position(null, null, null, null, null, description);
             int countBlock = 0;
             while (fileContent.position() < positionEndPosition) {
                 int blockType = fileContent.getInt();
                 if (blockType == 1) {
-                    position = readBlocktype_01(fileContent, position);
+                    readBlocktype_01(fileContent, position);
                     countBlock++;
                 } else if (blockType == 2) {
-                    position = readBlocktype_02(fileContent, position, countBlock++);
+                    readBlocktype_02(fileContent, position, countBlock++);
                     // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
                     if (countBlock > 2)
                         fileContent.position(positionEndPosition);
                 } else if (blockType == 4) {
-                    position = readBlocktype_04(fileContent, position, countBlock++);
+                    readBlocktype_04(fileContent, position, countBlock++);
                     // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
                     if (countBlock > 2)
                         fileContent.position(positionEndPosition);
                 } else if (blockType == 0) {
-                    position = readBlocktype_00(fileContent, position, countBlock++);
+                    readBlocktype_00(fileContent, position, countBlock++);
                     // nur die ersten beiden Blöcke lesen. Danach kommt nur noch Bundesland, Land und Unbekanntes
                     if (countBlock > 2)
                         fileContent.position(positionEndPosition);
@@ -269,7 +271,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         }
     }
 
-    private Wgs84Position readBlocktype_00(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
+    private void readBlocktype_00(ByteBuffer byteBuffer, Wgs84Position position, int segmentCount) throws EOFException {
         /*
          4 byte in 00 00 00 00
          8 byte int Länge. diese 8 bytes nicht mitzählen
@@ -277,7 +279,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
          n byte Text
          8 byte breite double
          8 byte länge double
-         4 byte int anzahl der noch folgenden Beschreibungen?
+         4 byte int Anzahl der noch folgenden Beschreibungen?
          wiederholungen bis zum Ende - 12
           4 byte int typ
           4 byte int textlänge
@@ -285,33 +287,25 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
          */
         long blockLength = byteBuffer.getLong();
         if ((byteBuffer.remaining() == 0) || (blockLength == 0))
-            return positionPoint;
+            return;
         int startPosition = byteBuffer.position();
-        String waypointDescription = getText(byteBuffer);
 
-        double longitude = 0;
-        double latitude = 0;
+        String waypointDescription = getText(byteBuffer);
+        position.setDescription(position.getDescription() + " " + waypointDescription);
+
         if (byteBuffer.position() < startPosition + blockLength - 8) {
-            longitude = byteBuffer.getDouble();
-            latitude = byteBuffer.getDouble();
+            double longitude = byteBuffer.getDouble();
+            position.setLongitude(longitude);
+
+            double latitude = byteBuffer.getDouble();
+            position.setLatitude(latitude);
         }
 
         //go to end of point. we have all needed data (text, position)
         byteBuffer.position((int) (startPosition + blockLength));
-
-        Wgs84Position resultPoint;
-        if (positionPoint == null) {
-            resultPoint = asWgs84Position(longitude, latitude, waypointDescription);
-        } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getDescription()))) {
-            resultPoint = positionPoint;
-            resultPoint.setDescription(waypointDescription + ' ' + resultPoint.getDescription());
-        } else
-            resultPoint = positionPoint;
-
-        return resultPoint;
     }
 
-    private Wgs84Position readBlocktype_01(ByteBuffer byteBuffer, Wgs84Position positionPoint) throws EOFException {
+    private void readBlocktype_01(ByteBuffer byteBuffer, Wgs84Position position) throws EOFException {
         /*
          4 byte int 01 00 00 00
          8 byte int Länge. diese 8 bytes nicht mitzählen
@@ -325,22 +319,23 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
          */
         long blockLength = byteBuffer.getLong();
         int startPosition = byteBuffer.position();
+
         String waypointDescription = getText(byteBuffer);
-        double longitude = 0, latitude = 0;
+        position.setDescription(position.getDescription() + " " + waypointDescription);
+
         if (byteBuffer.position() < startPosition + blockLength - 8) {
-            longitude = byteBuffer.getDouble();
-            latitude = byteBuffer.getDouble();
+            double longitude = byteBuffer.getDouble();
+            position.setLongitude(longitude);
+
+            double latitude = byteBuffer.getDouble();
+            position.setLatitude(latitude);
         }
 
         // skip the unknown bytes
         byteBuffer.position((int) (startPosition + blockLength));
-
-        if (positionPoint == null)
-            return asWgs84Position(longitude, latitude, waypointDescription);
-        return positionPoint;
     }
 
-    private Wgs84Position readBlocktype_02(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
+    private void readBlocktype_02(ByteBuffer byteBuffer, Wgs84Position position, int segmentCount) throws EOFException {
         /*
         4 byte int 01 00 00 00
         8 byte int Länge. diese 8 bytes nicht mitzählen
@@ -360,30 +355,26 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         */
         long blockLength = byteBuffer.getLong();
         int startPosition = byteBuffer.position();
+
         String waypointDescription = getText(byteBuffer);
+        position.setDescription(position.getDescription() + " " + waypointDescription);
+
         //unknown 4 bytes
         byteBuffer.getInt();
-        double longitude = 0, latitude = 0;
+
         if (byteBuffer.position() < startPosition + blockLength - 8) {
-            longitude = byteBuffer.getDouble();
-            latitude = byteBuffer.getDouble();
+            double longitude = byteBuffer.getDouble();
+            position.setLongitude(longitude);
+
+            double latitude = byteBuffer.getDouble();
+            position.setLatitude(latitude);
         }
 
         // skip the additional information like city, zip
         byteBuffer.position((int) (startPosition + blockLength));
-
-        Wgs84Position resultPoint;
-        if (positionPoint == null) {
-            resultPoint = asWgs84Position(longitude, latitude, waypointDescription);
-        } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getDescription()))) {
-            resultPoint = positionPoint;
-            resultPoint.setDescription(waypointDescription + ' ' + resultPoint.getDescription());
-        } else
-            resultPoint = positionPoint;
-        return resultPoint;
     }
 
-    private Wgs84Position readBlocktype_04(ByteBuffer byteBuffer, Wgs84Position positionPoint, int segmentCount) throws EOFException {
+    private void readBlocktype_04(ByteBuffer byteBuffer, Wgs84Position position, int segmentCount) throws EOFException {
         /*
         4 byte int 04 00 00 00
         8 byte int als Länge diese nicht mitzählen
@@ -405,13 +396,14 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                   5 byte text
             0x2: 8 byte ?
             0x7:
-            0x9: 4 byte Textlänge
-               n byte Text
+            0x9:
+               4 byte Textlänge
+               n byte District/Stadtteil
             0x8: 4 byte Textlänge
                n byte Text
-            0x32: es folgt
+            0x32:
                4 byte Textlänge
-               n byte PLZ
+               n byte Postalcode/PLZ
             0x3C: es folgt
                4 byte Textlänge
                n byte Text
@@ -426,18 +418,21 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         long blockLength = byteBuffer.getLong();
         int startPosition = byteBuffer.position();
         int firstTextLen = byteBuffer.getInt();
+
         String waypointDescription = getText(byteBuffer, firstTextLen);
+        position.setDescription(position.getDescription() + " " + waypointDescription);
 
         // unknown 4 byte
         if (byteBuffer.position() < startPosition + blockLength - 8) {
             byteBuffer.getInt(); // 0 or 1
         }
 
-        double longitude = 0;
-        double latitude = 0;
         if (byteBuffer.position() < startPosition + blockLength - 8) {
-            longitude = byteBuffer.getDouble();
-            latitude = byteBuffer.getDouble();
+            double longitude = byteBuffer.getDouble();
+            position.setLongitude(longitude);
+
+            double latitude = byteBuffer.getDouble();
+            position.setLatitude(latitude);
 
             // unknown 4 byte
             byteBuffer.getInt();
@@ -466,10 +461,12 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                     getText(byteBuffer);
                     break;
                 case 0x9:
-                    getText(byteBuffer);
+                    String district = getText(byteBuffer);
+                    position.setDescription(position.getDescription() + " " + district);
                     break;
                 case 0x32: //=50
-                    getText(byteBuffer); //PLZ
+                    String postalCode = getText(byteBuffer);
+                    position.setDescription(position.getDescription() + " " + postalCode);
                     break;
                 case 0x3C: //=60
                     getText(byteBuffer);
@@ -491,17 +488,6 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         //Ende gehen?
         if (byteBuffer.position() > startPosition + blockLength)
             byteBuffer.position((int) (startPosition + blockLength));
-
-        Wgs84Position resultPoint;
-        if (positionPoint == null) {
-            resultPoint = asWgs84Position(longitude, latitude, waypointDescription);
-        } else if ((segmentCount == 1) && (!waypointDescription.equals(positionPoint.getDescription()))) {
-            resultPoint = positionPoint;
-            resultPoint.setDescription(waypointDescription + ' ' + resultPoint.getDescription());
-        } else
-            resultPoint = positionPoint;
-
-        return resultPoint;
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) {
@@ -509,7 +495,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
     }
 
     private byte[] encodePoint(Wgs84Position position, int positionNo, String mapName) {
-        // Die Route besteht aus einem Punkt der mehrere weitere Unterpunktbeschreibungen hat.
+        // Die Route besteht aus einem Punkt, der mehrere weitere Unterpunktbeschreibungen hat.
         // Im Navigongerät werden dort weitere Informationen wie übergeorgnete Stadt, Land, usw-
         // gespeichert. Diese Informationen liegen nicht vor und werden daher auch nicht
         // geschrieben.
@@ -613,7 +599,6 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
 
         // 4 Byte always 0
         byteArrayOutputStream.write(new byte[]{0, 0, 0, 0});
-        
         
         // 4 Byte Textlength Date - fix length
         byteArrayOutputStream.write(new byte[]{0x12, 0, 0, 0});
