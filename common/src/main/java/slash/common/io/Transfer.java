@@ -238,6 +238,10 @@ public class Transfer {
     }
 
     public static Double parseDouble(String string) {
+        return parseDouble(string, true);
+    }
+
+    public static Double parseDouble(String string, boolean throwNumberFormatException) {
         String trimmed = trim(string);
         if (trimmed != null) {
             trimmed = trimmed.replaceAll(",", ".");
@@ -246,10 +250,11 @@ public class Transfer {
             } catch (NumberFormatException e) {
                 if (trimmed.equals("\u221e"))
                     return POSITIVE_INFINITY;
-                throw e;
+                if (throwNumberFormatException)
+                    throw e;
             }
-        } else
-            return null;
+        }
+        return null;
     }
 
     public static String formatDuration(long milliseconds) {

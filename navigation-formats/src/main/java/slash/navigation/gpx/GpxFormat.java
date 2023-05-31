@@ -70,13 +70,13 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         if (description != null) {
             Matcher tripMasterMatcher = TRIPMASTER_SPEED_PATTERN.matcher(description);
             if (tripMasterMatcher.matches())
-                return parseDouble(tripMasterMatcher.group(1));
+                return parseDouble(tripMasterMatcher.group(1), false);
             Matcher qstartzMatcher = QSTARTZ_SPEED_PATTERN.matcher(description);
             if (qstartzMatcher.matches())
-                return parseDouble(qstartzMatcher.group(1));
+                return parseDouble(qstartzMatcher.group(1), false);
             Matcher sportsTrackerMatcher = SPORTSTRACKER_SPEED_PATTERN.matcher(description);
             if (sportsTrackerMatcher.matches())
-                return parseDouble(sportsTrackerMatcher.group(1));
+                return parseDouble(sportsTrackerMatcher.group(1), false);
         }
         return null;
     }
@@ -85,7 +85,7 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         if (description != null) {
             Matcher qstartzPattern = QSTARTZ_SPEED_PATTERN.matcher(description);
             if (qstartzPattern.matches())
-                return parseDouble(qstartzPattern.group(3));
+                return parseDouble(qstartzPattern.group(3), false);
         }
         return null;
     }
