@@ -32,6 +32,7 @@ import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
+import org.mapsforge.map.layer.hills.DemFolderFS;
 import org.mapsforge.map.layer.hills.DiffuseLightShadingAlgorithm;
 import org.mapsforge.map.layer.hills.HillsRenderConfig;
 import org.mapsforge.map.layer.hills.MemoryCachingHgtReaderTileSource;
@@ -603,6 +604,7 @@ public class MapsforgeMapView extends BaseMapView {
         }
         // force immediate display of the overlay
         mapView.getModel().mapViewPosition.moveCenter(0.0, 0.0);
+        mapView.repaint();
     }
 
     private void handleOverlayDelete(int firstRow, int lastRow) {
@@ -638,7 +640,8 @@ public class MapsforgeMapView extends BaseMapView {
             if (elevationService.isDownload()) {
                 File directory = elevationService.getDirectory();
                 if (directory != null && directory.exists()) {
-                    MemoryCachingHgtReaderTileSource tileSource = new MemoryCachingHgtReaderTileSource(directory, new DiffuseLightShadingAlgorithm(), GRAPHIC_FACTORY);
+                    MemoryCachingHgtReaderTileSource tileSource = new MemoryCachingHgtReaderTileSource(
+                            new DemFolderFS(directory), new DiffuseLightShadingAlgorithm(), GRAPHIC_FACTORY);
                     tileSource.setEnableInterpolationOverlap(true);
                     hillsRenderConfig.setTileSource(tileSource);
                     hillsRenderConfig.indexOnThread();
