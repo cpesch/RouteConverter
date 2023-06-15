@@ -26,6 +26,7 @@ import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.gui.models.IntegerModel;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.mapview.mapsforge.lines.Line;
@@ -39,11 +40,9 @@ import slash.navigation.routing.RoutingService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
-import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 import static slash.navigation.routing.RoutingResult.Validity.*;
 
@@ -54,9 +53,7 @@ import static slash.navigation.routing.RoutingResult.Validity.*;
  */
 
 public class RouteRenderer {
-    private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
     private static final Logger log = Logger.getLogger(RouteRenderer.class.getName());
-    private Paint ROUTE_NOT_VALID_PAINT, ROUTE_DOWNLOADING_PAINT;
 
     private final Object notificationMutex = new Object();
     private boolean drawingRoute, drawingBeeline;
@@ -64,25 +61,16 @@ public class RouteRenderer {
     private final MapsforgeMapView mapView;
     private final MapViewCallbackOpenSource mapViewCallback;
     private final ColorModel routeColorModel;
+    private final IntegerModel routeLineWidthModel;
     private final GraphicFactory graphicFactory;
 
     public RouteRenderer(MapsforgeMapView mapView, MapViewCallbackOpenSource mapViewCallback, ColorModel routeColorModel,
-                         GraphicFactory graphicFactory) {
+                         IntegerModel routeLineWidthModel, GraphicFactory graphicFactory) {
         this.mapView = mapView;
         this.mapViewCallback = mapViewCallback;
         this.routeColorModel = routeColorModel;
+        this.routeLineWidthModel = routeLineWidthModel;
         this.graphicFactory = graphicFactory;
-        initialize();
-    }
-
-    private void initialize() {
-        ROUTE_NOT_VALID_PAINT = graphicFactory.createPaint();
-        ROUTE_NOT_VALID_PAINT.setColor(0xFFFF0000);
-        ROUTE_NOT_VALID_PAINT.setStrokeWidth(getRouteLineWidth());
-        ROUTE_DOWNLOADING_PAINT = graphicFactory.createPaint();
-        ROUTE_DOWNLOADING_PAINT.setColor(0x993379FF);
-        ROUTE_DOWNLOADING_PAINT.setStrokeWidth(getRouteLineWidth());
-        ROUTE_DOWNLOADING_PAINT.setDashPathEffect(new float[]{3, 12});
     }
 
     public void dispose() {
@@ -182,7 +170,7 @@ public class RouteRenderer {
                 if (!pairWithLayer.hasCoordinates())
                     continue;
 
-                Line line = new Line(mapView.asLatLong(pairWithLayer.getFirst()), mapView.asLatLong(pairWithLayer.getSecond()), ROUTE_DOWNLOADING_PAINT, mapView.getTileSize());
+                Line line = new Line(mapView.asLatLong(pairWithLayer.getFirst()), mapView.asLatLong(pairWithLayer.getSecond()), getRouteDownloadingPaint(), mapView.getTileSize());
                 pairWithLayer.setLayer(line);
                 mapView.addLayer(line);
 
@@ -231,14 +219,29 @@ public class RouteRenderer {
             mapView.removeLayer(layer);
             pairWithLayer.setLayer(null);
 
-            Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.getPositions()), intermediateRoute.isValid() ? paint : ROUTE_NOT_VALID_PAINT, mapView.getTileSize());
+            Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.getPositions()), intermediateRoute.isValid() ? paint : getRouteNotValidPaint(), mapView.getTileSize());
             pairWithLayer.setLayer(polyline);
             mapView.addLayer(polyline);
         }
     }
 
     private int getRouteLineWidth() {
-        return preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 4);
+        return routeLineWidthModel.getInteger();
+    }
+
+    private Paint getRouteDownloadingPaint() {
+        Paint paint = graphicFactory.createPaint();
+        paint.setColor(0x993379FF);
+        paint.setStrokeWidth(getRouteLineWidth());
+        paint.setDashPathEffect(new float[]{3, 12});
+        return paint;
+    }
+
+    private Paint getRouteNotValidPaint() {
+        Paint paint = graphicFactory.createPaint();
+        paint.setColor(0xFFFF0000);
+        paint.setStrokeWidth(getRouteLineWidth());
+        return paint;
     }
 
     private IntermediateRoute calculateRoute(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {

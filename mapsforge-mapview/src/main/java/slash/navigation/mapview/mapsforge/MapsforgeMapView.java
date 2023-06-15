@@ -301,13 +301,17 @@ public class MapsforgeMapView extends BaseMapView {
         preferencesModel.getShowShadedHills().addChangeListener(shadedHillsListener);
         preferencesModel.getFixMapModeModel().addChangeListener(repaintPositionListListener);
         preferencesModel.getRouteColorModel().addChangeListener(repaintPositionListListener);
+        preferencesModel.getRouteLineWidthModel().addChangeListener(repaintPositionListListener);
         preferencesModel.getTrackColorModel().addChangeListener(repaintPositionListListener);
+        preferencesModel.getTrackLineWidthModel().addChangeListener(repaintPositionListListener);
         preferencesModel.getWaypointColorModel().addChangeListener(repaintPositionListListener);
 
         initializeActions();
         initializeMapView();
-        routeRenderer = new RouteRenderer(this, this.mapViewCallback, preferencesModel.getRouteColorModel(), GRAPHIC_FACTORY);
-        trackRenderer = new TrackRenderer(this, preferencesModel.getTrackColorModel(), GRAPHIC_FACTORY);
+        routeRenderer = new RouteRenderer(this, this.mapViewCallback, preferencesModel.getRouteColorModel(),
+                preferencesModel.getRouteLineWidthModel(), GRAPHIC_FACTORY);
+        trackRenderer = new TrackRenderer(this, preferencesModel.getTrackColorModel(),
+                preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
     }
 
     private static boolean initializedActions = false;
@@ -692,7 +696,9 @@ public class MapsforgeMapView extends BaseMapView {
         preferencesModel.getShowShadedHills().removeChangeListener(shadedHillsListener);
         preferencesModel.getFixMapModeModel().removeChangeListener(repaintPositionListListener);
         preferencesModel.getRouteColorModel().removeChangeListener(repaintPositionListListener);
+        preferencesModel.getRouteLineWidthModel().removeChangeListener(repaintPositionListListener);
         preferencesModel.getTrackColorModel().removeChangeListener(repaintPositionListListener);
+        preferencesModel.getTrackLineWidthModel().removeChangeListener(repaintPositionListListener);
         preferencesModel.getWaypointColorModel().removeChangeListener(repaintPositionListListener);
 
         long start = currentTimeMillis();

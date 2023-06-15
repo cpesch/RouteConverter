@@ -4,15 +4,14 @@ import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.gui.models.IntegerModel;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.mapview.mapsforge.lines.Line;
 import slash.navigation.mapview.mapsforge.updater.PairWithLayer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.prefs.Preferences;
 
-import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 
 /**
@@ -22,15 +21,16 @@ import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
  */
 
 public class TrackRenderer {
-    private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
-
     private final MapsforgeMapView mapView;
     private final ColorModel trackColorModel;
+    private final IntegerModel trackLineWidthModel;
     private final GraphicFactory graphicFactory;
 
-    public TrackRenderer(MapsforgeMapView mapView, ColorModel trackColorModel, GraphicFactory graphicFactory) {
+    public TrackRenderer(MapsforgeMapView mapView, ColorModel trackColorModel, IntegerModel trackLineWidthModel,
+                         GraphicFactory graphicFactory) {
         this.mapView = mapView;
         this.trackColorModel = trackColorModel;
+        this.trackLineWidthModel = trackLineWidthModel;
         this.graphicFactory = graphicFactory;
     }
 
@@ -46,7 +46,7 @@ public class TrackRenderer {
     private void drawTrack(List<PairWithLayer> pairWithLayers) {
         Paint paint = graphicFactory.createPaint();
         paint.setColor(asRGBA(trackColorModel));
-        paint.setStrokeWidth(preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2));
+        paint.setStrokeWidth(trackLineWidthModel.getInteger());
         int tileSize = mapView.getTileSize();
 
         List<PairWithLayer> withLayers = new ArrayList<>();

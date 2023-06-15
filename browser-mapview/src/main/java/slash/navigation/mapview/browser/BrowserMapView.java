@@ -87,8 +87,6 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
-import static slash.navigation.mapview.MapViewConstants.ROUTE_LINE_WIDTH_PREFERENCE;
-import static slash.navigation.mapview.MapViewConstants.TRACK_LINE_WIDTH_PREFERENCE;
 import static slash.navigation.mapview.browser.helpers.ColorHelper.asColor;
 import static slash.navigation.mapview.browser.helpers.ColorHelper.asOpacity;
 
@@ -159,7 +157,9 @@ public abstract class BrowserMapView extends BaseMapView {
         preferencesModel.getShowWaypointDescriptionModel().addChangeListener(showWaypointDescriptionListener);
         preferencesModel.getFixMapModeModel().addChangeListener(repaintPositionListListener);
         preferencesModel.getRouteColorModel().addChangeListener(repaintPositionListListener);
+        preferencesModel.getRouteLineWidthModel().addChangeListener(repaintPositionListListener);
         preferencesModel.getTrackColorModel().addChangeListener(repaintPositionListListener);
+        preferencesModel.getTrackLineWidthModel().addChangeListener(repaintPositionListListener);
         getGoogleMapsServerModel().addChangeListener(googleMapsServerListener);
 
         positionReducer = new PositionReducer(new PositionReducer.Callback() {
@@ -754,7 +754,9 @@ public abstract class BrowserMapView extends BaseMapView {
             preferencesModel.getShowWaypointDescriptionModel().removeChangeListener(showWaypointDescriptionListener);
             preferencesModel.getFixMapModeModel().removeChangeListener(repaintPositionListListener);
             preferencesModel.getRouteColorModel().removeChangeListener(repaintPositionListListener);
+            preferencesModel.getRouteLineWidthModel().removeChangeListener(repaintPositionListListener);
             preferencesModel.getTrackColorModel().removeChangeListener(repaintPositionListListener);
+            preferencesModel.getTrackLineWidthModel().removeChangeListener(repaintPositionListListener);
             getGoogleMapsServerModel().removeChangeListener(googleMapsServerListener);
         }
 
@@ -1017,7 +1019,7 @@ public abstract class BrowserMapView extends BaseMapView {
 
         String color = asColor(preferencesModel.getRouteColorModel().getColor());
         float opacity = asOpacity(preferencesModel.getRouteColorModel().getColor());
-        int width = preferences.getInt(ROUTE_LINE_WIDTH_PREFERENCE, 5);
+        int width = preferencesModel.getRouteLineWidthModel().getInteger();
         int maximumRouteSegmentLength = positionReducer.getMaximumSegmentLength(Route);
         int directionsCount = ceiling(positions.size(), maximumRouteSegmentLength, false);
         for (int j = 0; j < directionsCount; j++) {
@@ -1071,7 +1073,7 @@ public abstract class BrowserMapView extends BaseMapView {
 
         String color = asColor(preferencesModel.getTrackColorModel().getColor());
         float opacity = asOpacity(preferencesModel.getTrackColorModel().getColor());
-        int width = preferences.getInt(TRACK_LINE_WIDTH_PREFERENCE, 2);
+        int width = preferencesModel.getTrackLineWidthModel().getInteger();
         int maximumPolylineSegmentLength = positionReducer.getMaximumSegmentLength(Track);
         int polylinesCount = ceiling(reducedPositions.size(), maximumPolylineSegmentLength, true);
         for (int j = 0; j < polylinesCount; j++) {
@@ -1263,17 +1265,15 @@ public abstract class BrowserMapView extends BaseMapView {
             int row = positions.indexOf(before) + 1;
             insertPositions(row, route);
         }
-        invokeLater(new Runnable() {
-            public void run() {
-                int row;
-                synchronized (notificationMutex) {
-                    row = positions.indexOf(before) + 1;
-                }
-
-                int[] rows = asRange(row, row + route.getPositions().size() - 1);
-                if (preferences.getBoolean(COMPLEMENT_DATA_PREFERENCE, false))
-                    mapViewCallback.complementData(rows, true, true, true, false, false);
+        invokeLater(() -> {
+            int row;
+            synchronized (notificationMutex) {
+                row = positions.indexOf(before) + 1;
             }
+
+            int[] rows = asRange(row, row + route.getPositions().size() - 1);
+            if (preferences.getBoolean(COMPLEMENT_DATA_PREFERENCE, false))
+                mapViewCallback.complementData(rows, true, true, true, false, false);
         });
     }
 

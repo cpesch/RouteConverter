@@ -30,30 +30,30 @@ import static java.util.prefs.Preferences.MAX_KEY_LENGTH;
 import static slash.common.io.Transfer.trim;
 
 /**
- * A model for a {@link Boolean}.
+ * A model for a {@link Integer}.
  *
  * @author Christian Pesch
  */
 
-public class BooleanModel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(BooleanModel.class);
+public class IntegerModel {
+    private static final Preferences preferences = Preferences.userNodeForPackage(IntegerModel.class);
 
     private final String preferencesName;
-    private final boolean defaultValue;
+    private final Integer defaultValue;
 
     private final EventListenerList listenerList = new EventListenerList();
 
-    public BooleanModel(String preferencesName, boolean defaultValue) {
+    public IntegerModel(String preferencesName, Integer defaultValue) {
         this.preferencesName = preferencesName;
         this.defaultValue = defaultValue;
     }
 
-    public boolean getBoolean() {
-        return preferences.getBoolean(preferencesName, defaultValue);
+    public Integer getInteger() {
+        return preferences.getInt(preferencesName, defaultValue);
     }
 
-    public void setBoolean(boolean booleanValue) {
-        preferences.putBoolean(trim(preferencesName, MAX_KEY_LENGTH), booleanValue);
+    public void setInteger(Integer integerValue) {
+        preferences.putInt(trim(preferencesName, MAX_KEY_LENGTH), integerValue);
         fireChanged();
     }
 
