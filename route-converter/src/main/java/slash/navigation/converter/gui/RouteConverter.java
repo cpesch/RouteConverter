@@ -169,8 +169,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String ADD_AUDIO_PREFERENCE = "addAudio";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
 
-    private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.31"; // versioned preference
-    public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck-2.31";
+    private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.33"; // versioned preference
+    public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck-2.33";
 
     private NavigationFormatRegistry navigationFormatRegistry = new NavigationFormatRegistry();
     private RouteServiceOperator routeServiceOperator;
