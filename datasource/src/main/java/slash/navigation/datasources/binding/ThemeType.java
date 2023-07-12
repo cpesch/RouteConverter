@@ -24,13 +24,13 @@ import javax.xml.bind.annotation.XmlType;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="themeType">
- *   &lt;complexContent>
- *     &lt;extension base="{http://api.routeconverter.com/v1/schemas/datasource-catalog}downloadableType">
- *       &lt;attribute name="imageUrl" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/extension>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="themeType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;extension base="{http://api.routeconverter.com/v1/schemas/datasource-catalog}downloadableType"&gt;
+ *       &lt;attribute name="imageUrl" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *     &lt;/extension&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 

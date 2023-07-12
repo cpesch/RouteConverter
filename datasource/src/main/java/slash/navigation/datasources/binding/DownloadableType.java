@@ -23,17 +23,17 @@ import java.util.List;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="downloadableType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="checksum" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}checksumType" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="fragment" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}fragmentType" maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="uri" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="downloadableType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="checksum" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}checksumType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="fragment" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}fragmentType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="uri" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -70,8 +70,8 @@ public class DownloadableType {
      *    getChecksum().add(newItem);
      * </pre>
      * 
-     * 
-     * <p>
+     *
+     * @return
      * Objects of the following type(s) are allowed in the list
      * {@link ChecksumType }
      * 
@@ -99,8 +99,8 @@ public class DownloadableType {
      *    getFragment().add(newItem);
      * </pre>
      * 
-     * 
-     * <p>
+     *
+     * @return
      * Objects of the following type(s) are allowed in the list
      * {@link FragmentType }
      * 

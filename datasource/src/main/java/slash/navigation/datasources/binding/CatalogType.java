@@ -26,16 +26,16 @@ import java.util.List;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="catalogType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="edition" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}editionType" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="datasource" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}datasourceType" maxOccurs="unbounded"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="catalogType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="edition" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}editionType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="datasource" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}datasourceType" maxOccurs="unbounded"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -66,12 +66,10 @@ public class CatalogType {
      *    getEdition().add(newItem);
      * </pre>
      * 
-     * 
-     * <p>
+     *
+     * @return
      * Objects of the following type(s) are allowed in the list
      * {@link EditionType }
-     * 
-     * 
      */
     public List<EditionType> getEdition() {
         if (edition == null) {
@@ -95,12 +93,10 @@ public class CatalogType {
      *    getDatasource().add(newItem);
      * </pre>
      * 
-     * 
-     * <p>
+     *
+     * @return
      * Objects of the following type(s) are allowed in the list
      * {@link DatasourceType }
-     * 
-     * 
      */
     public List<DatasourceType> getDatasource() {
         if (datasource == null) {

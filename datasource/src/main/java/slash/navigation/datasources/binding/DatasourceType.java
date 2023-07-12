@@ -26,23 +26,23 @@ import java.util.List;
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="datasourceType">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="file" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}fileType" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="map" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}mapType" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="theme" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}themeType" maxOccurs="unbounded" minOccurs="0"/>
- *       &lt;/sequence>
- *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="href" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="baseUrl" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="directory" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="action" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}actionType" />
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="datasourceType"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="file" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}fileType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="map" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}mapType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *         &lt;element name="theme" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}themeType" maxOccurs="unbounded" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *       &lt;attribute name="id" use="required" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="href" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="baseUrl" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="directory" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
+ *       &lt;attribute name="action" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}actionType" /&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -86,12 +86,10 @@ public class DatasourceType {
      *    getFile().add(newItem);
      * </pre>
      * 
-     * 
-     * <p>
+     *
+     * @return
      * Objects of the following type(s) are allowed in the list
      * {@link FileType }
-     * 
-     * 
      */
     public List<FileType> getFile() {
         if (file == null) {
@@ -115,8 +113,8 @@ public class DatasourceType {
      *    getMap().add(newItem);
      * </pre>
      * 
-     * 
-     * <p>
+     *
+     * @return
      * Objects of the following type(s) are allowed in the list
      * {@link MapType }
      * 
@@ -144,8 +142,8 @@ public class DatasourceType {
      *    getTheme().add(newItem);
      * </pre>
      * 
-     * 
-     * <p>
+     *
+     * @return
      * Objects of the following type(s) are allowed in the list
      * {@link ThemeType }
      * 
