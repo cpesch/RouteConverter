@@ -31,12 +31,14 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import static java.io.File.separator;
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.IOUtils.copyLarge;
 import static slash.common.io.Files.recursiveDelete;
 import static slash.common.io.Files.removeExtension;
@@ -149,7 +151,7 @@ public class LocalCategory implements Category {
 
     public Route createRoute(String description, String url) throws IOException {
         File destination = new File(directory, encodeFileName(description));
-        try (PrintWriter writer = new PrintWriter(destination, UTF8_ENCODING)) {
+        try (PrintWriter writer = new PrintWriter(destination, UTF_8)) {
             writer.println("[InternetShortcut]");
             writer.println("URL=" + url);
         }

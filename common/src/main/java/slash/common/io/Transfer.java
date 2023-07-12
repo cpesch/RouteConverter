@@ -41,6 +41,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
 import static java.lang.Double.isNaN;
 import static java.lang.Integer.toHexString;
 import static java.lang.Math.*;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
 import static java.util.Calendar.*;
@@ -343,12 +344,7 @@ public class Transfer {
     }
 
     public static String encodeUri(String uri) {
-        try {
-            return URLEncoder.encode(uri, UTF8_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            log.severe("Cannot encode uri " + uri + ": " + e);
-            return uri;
-        }
+        return URLEncoder.encode(uri, UTF_8);
     }
 
     public static String encodeUmlauts(String string) {
@@ -366,12 +362,7 @@ public class Transfer {
     }
 
     public static String decodeUri(String uri) {
-        try {
-            return URLDecoder.decode(uri, UTF8_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            log.severe("Cannot decode uri " + uri + ": " + e);
-            return uri;
-        }
+        return URLDecoder.decode(uri, UTF_8);
     }
 
     private static final char URI_ESCAPE_CHAR = '%';

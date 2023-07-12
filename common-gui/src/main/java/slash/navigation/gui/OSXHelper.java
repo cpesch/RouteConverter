@@ -28,7 +28,6 @@ import java.lang.reflect.Proxy;
 import java.util.logging.Logger;
 
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.system.Platform.isJava9OrLater;
 
 /**
  * Sets the dock icon for Mac OS X for RouteConverter.
@@ -82,7 +81,7 @@ public class OSXHelper {
         private static void createProxy(OSXHandler adapter, String handlerClassName, String setMethodName) {
             try {
                 initializeApplicationObject();
-                Class<?> handlerClass = Class.forName((isJava9OrLater() ? "java.awt.desktop." : "com.apple.eawt.") + handlerClassName);
+                Class<?> handlerClass = Class.forName("java.awt.desktop." + handlerClassName);
                 Method setHandlerMethod = application.getClass().getDeclaredMethod(setMethodName, handlerClass);
                 Object osxAdapterProxy = Proxy.newProxyInstance(OSXHandler.class.getClassLoader(), new Class<?>[]{handlerClass}, adapter);
                 setHandlerMethod.invoke(application, osxAdapterProxy);

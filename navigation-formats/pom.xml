@@ -132,7 +132,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml-schemas</artifactId>
-            <version>${poi.version}</version>
+            <version>4.1.2</version>
             <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
@@ -144,7 +144,7 @@
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
-            <version>3.1.0</version>
+            <version>5.1.1</version>
             <classifier>stripped</classifier>
         </dependency>
     </dependencies>

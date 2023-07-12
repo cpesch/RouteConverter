@@ -27,11 +27,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.sun</groupId>
-            <artifactId>javafx</artifactId>
-            <version>jdk8</version>
-            <classifier>stripped</classifier>
-            <scope>provided</scope>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-swing</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-web</artifactId>
         </dependency>
     </dependencies>
 </project>

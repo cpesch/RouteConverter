@@ -220,24 +220,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     protected void checkJavaPrequisites() {
         String currentVersion = System.getProperty("java.version");
-        if (!isCurrentAtLeastMinimumVersion(currentVersion, "1.7.0_40")) {
-            showMessageDialog(null, "Java " + currentVersion + " does not support JavaFX. Please install Java 8 or 10.", "RouteConverter", ERROR_MESSAGE);
-            System.exit(7);
-        }
-
-        if (!isCurrentAtLeastMinimumVersion(currentVersion, "1.8.0")) {
-            showMessageDialog(null, "Java " + currentVersion + " is too old for FIT and EclipseLink. Please install Java 8 or 11.", "RouteConverter", ERROR_MESSAGE);
+        if (!isCurrentAtLeastMinimumVersion(currentVersion, "17")) {
+            showMessageDialog(null, "Java " + currentVersion + " is too old for JavaFX 20. Please install Java 17 or later.", "RouteConverter", ERROR_MESSAGE);
             System.exit(8);
-        }
-
-        if (isWindows() && (currentVersion.equals("1.8.0_161") || currentVersion.equals("1.8.0_162") || currentVersion.equals("1.8.0_171") || currentVersion.equals("1.8.0_172"))) {
-            showMessageDialog(null, "Java " + currentVersion + " contains a fatal bug in JavaFX on Windows. Please install Java 8 Update 181 or Java 11.", "RouteConverter", ERROR_MESSAGE);
-            System.exit(9);
-        }
-
-        if (isJava15OrLater()) {
-            showMessageDialog(null, "Java " + currentVersion + " contains breaking changes. Please install Java 8 or 11.", "RouteConverter", ERROR_MESSAGE);
-            System.exit(10);
         }
     }
 
@@ -1123,7 +1108,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             this.location = newValue;
             getMapView().resize();
             preferences.putInt(MAP_DIVIDER_LOCATION_PREFERENCE, newValue);
-            double newRatio = new Integer(newValue).doubleValue() / contentPane.getWidth();
+            double newRatio = Integer.valueOf(newValue).doubleValue() / contentPane.getWidth();
             preferences.putDouble(MAP_DIVIDER_RATIO_PREFERENCE, newRatio);
             log.fine("Changed map divider to " + newValue + " and ratio " + newRatio);
             enableActions();

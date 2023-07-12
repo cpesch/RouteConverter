@@ -63,7 +63,8 @@
         <skip.integration.tests>true</skip.integration.tests>
         <itCoverageAgent />
 
-        <java.version>1.8</java.version>
+        <java.version>17</java.version>
+        <javafx.version>20.0.1</javafx.version>
         <maven.version>[3.5.4,)</maven.version>
 
         <alephformatter.version>0.1.1</alephformatter.version>
@@ -75,7 +76,7 @@
         <jaxb-api.version>2.3.1</jaxb-api.version>
         <jaxb-impl.version>2.3.1</jaxb-impl.version>
         <mapsforge.version>0.19.0</mapsforge.version>
-        <poi.version>4.1.2</poi.version>
+        <poi.version>5.2.3</poi.version>
         <slf4j.version>2.0.7</slf4j.version>
     </properties>
 
@@ -400,6 +401,7 @@
                     </excludePackageNames>
                     <doclint>none</doclint>
                     <failOnError>false</failOnError>
+                    <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -531,6 +533,16 @@
                 <artifactId>commons-logging</artifactId>
                 <version>1.2</version>
                 <classifier>stripped</classifier>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-swing</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-web</artifactId>
+                <version>${javafx.version}</version>
             </dependency>
             <dependency>
                 <groupId>javax.help</groupId>

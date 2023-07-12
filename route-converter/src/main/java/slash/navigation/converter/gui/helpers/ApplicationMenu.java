@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.system.Platform.isJava9OrLater;
 import static slash.navigation.gui.OSXHelper.OSXHandler.*;
 
 /**
@@ -78,7 +77,7 @@ public class ApplicationMenu {
 
     @SuppressWarnings("unchecked")
     private List<File> extractFiles(EventObject eventObject) throws Exception {
-        Class<?> eventClass = Class.forName((isJava9OrLater() ? "java.awt.desktop." : "com.apple.eawt.AppEvent.") + "OpenFilesEvent");
+        Class<?> eventClass = Class.forName("java.awt.desktop." + "OpenFilesEvent");
         Method getFilesMethod = eventClass.getMethod("getFiles");
         Object result = getFilesMethod.invoke(eventObject);
         return (List<File>)result;

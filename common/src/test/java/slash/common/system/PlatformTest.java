@@ -77,20 +77,4 @@ public class PlatformTest {
         assertTrue(isJavaLaterThan("15", 15));
         assertTrue(isJavaLaterThan("16", 15));
     }
-
-    @Test
-    public void testHasJavaFX() {
-        assertFalse(hasJavaFX("Oracle", "1.7.0"));
-        assertTrue(hasJavaFX("Oracle", "1.8.0"));
-        assertFalse(hasJavaFX("OpenJDK", "1.8.0"));
-        assertTrue(hasJavaFX("Oracle", "9"));
-        assertFalse(hasJavaFX("OpenJDK", "9"));
-        assertTrue(hasJavaFX("Oracle", "10"));
-        assertFalse(hasJavaFX("OpenJDK", "10"));
-        assertTrue(hasJavaFX("Oracle", "10.0.1"));
-        assertFalse(hasJavaFX("OpenJDK", "10.0.1"));
-        assertFalse(hasJavaFX("Oracle", "11"));
-        assertFalse(hasJavaFX("Oracle", "11.0.1"));
-        assertFalse(hasJavaFX("Oracle", "12"));
-    }
 }

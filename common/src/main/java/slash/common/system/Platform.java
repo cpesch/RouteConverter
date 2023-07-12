@@ -45,27 +45,9 @@ public class Platform {
                 System.getProperty("os.arch");
     }
 
-    static boolean hasJavaFX(String vendor, String javaVersion) {
-        return vendor.contains("Oracle") &&
-                javaVersion.compareTo("1.7.0_40") >= 0 &&
-                !isJavaLaterThan(javaVersion, 11);
-    }
-
-    public static boolean hasJavaFX() {
-       return hasJavaFX(System.getProperty("java.vendor"), System.getProperty("java.version"));
-    }
-
     static boolean isJavaLaterThan(String javaVersion, int version) {
         String versionString = version < 9 ? "1." + version : Integer.toString(version);
         return new Version(javaVersion).isLaterOrSameVersionThan(new Version(versionString));
-    }
-
-    public static boolean isJava9OrLater() {
-        return isJavaLaterThan(System.getProperty("java.version"), 9);
-    }
-
-    public static boolean isJava15OrLater() {
-        return isJavaLaterThan(System.getProperty("java.version"), 15);
     }
 
     public static String getJava() {

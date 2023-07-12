@@ -32,14 +32,12 @@ import static java.text.DateFormat.*;
 import static java.util.Locale.GERMAN;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.calendar;
-import static slash.common.system.Platform.isJava9OrLater;
 import static slash.common.type.CompactCalendar.fromDate;
 
 public class PositionHelperTest {
 
     private String asDefaultLocaleTime(String germanString) throws ParseException {
-        if(isJava9OrLater())
-            germanString = germanString.replace(" ", ", ");
+        germanString = germanString.replace(" ", ", ");
         DateFormat germanFormat = getDateTimeInstance(SHORT, MEDIUM, GERMAN);
         Date date = germanFormat.parse(germanString);
         DateFormat defaultFormat = getDateTimeInstance(SHORT, MEDIUM);

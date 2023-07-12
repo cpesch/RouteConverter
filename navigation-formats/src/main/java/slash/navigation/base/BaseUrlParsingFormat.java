@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.net.URLEncoder.encode;
-import static slash.common.io.Transfer.UTF8_ENCODING;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static slash.navigation.base.RouteCharacteristics.Route;
 
 /**
@@ -143,22 +143,14 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
     protected String decodeDescription(String description) {
         if (description == null)
             return "";
-        try {
-            return URLDecoder.decode(description, UTF8_ENCODING);
-        } catch (UnsupportedEncodingException e) {
-            return description;
-        }
+        return URLDecoder.decode(description, UTF_8);
     }
 
     protected String encodeDescription(String description) {
         if (description == null)
             return "";
-        try {
-            description = encode(description, UTF8_ENCODING);
-            description = description.replace("%2C", ",");
-            return description;
-        } catch (UnsupportedEncodingException e) {
-            return description;
-        }
+        description = encode(description, UTF_8);
+        description = description.replace("%2C", ",");
+        return description;
     }
 }

@@ -27,7 +27,7 @@ import java.net.URL;
 import java.net.URLConnection;
 
 import static java.net.URLDecoder.decode;
-import static slash.common.io.Transfer.UTF8_ENCODING;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * An {@link URLConnection} that reads URLs from the classpath.
@@ -46,7 +46,7 @@ class ClassPathURLConnection extends URLConnection {
     }
 
     public InputStream getInputStream() throws IOException {
-        String file = decode(url.getFile(), UTF8_ENCODING);
+        String file = decode(url.getFile(), UTF_8);
         InputStream result = classLoader.getResourceAsStream(file);
         if (result == null) {
             throw new MalformedURLException("Could not open InputStream for URL '" + url + "'");
