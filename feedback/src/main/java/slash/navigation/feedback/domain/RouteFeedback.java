@@ -124,7 +124,7 @@ public class RouteFeedback {
     }
 
     public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,
-                                 String javaVersion, String javaBits,
+                                 String javaVersion, String javaBits, String javaFxVersion,
                                  String osName, String osVersion, String osArch,
                                  long startTime) throws IOException {
         log.fine("Checking for update for version " + routeConverterVersion);
@@ -132,6 +132,7 @@ public class RouteFeedback {
         request.addString("id", valueOf(startTime));
         request.addString("javaBits", javaBits);
         request.addString("javaVersion", javaVersion);
+        request.addString("javaFxVersion", javaFxVersion);
         request.addString("locale", getDefault().getLanguage());
         request.addString("osArch", osArch);
         request.addString("osName", osName);
@@ -151,7 +152,7 @@ public class RouteFeedback {
         return false;
     }
 
-    private Set<FileAndChecksum> findFile(Fragment fragment, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksumMap) throws IOException {
+    private Set<FileAndChecksum> findFile(Fragment<Downloadable> fragment, java.util.Map<FileAndChecksum, List<FileAndChecksum>> fileAndChecksumMap) throws IOException {
         Set<FileAndChecksum> result = new HashSet<>();
         for (List<FileAndChecksum> fileAndChecksums : fileAndChecksumMap.values()) {
             for (FileAndChecksum fileAndChecksum : fileAndChecksums) {
@@ -169,7 +170,7 @@ public class RouteFeedback {
             return null;
 
         List<FragmentType> fragmentTypes = new ArrayList<>();
-        for (Fragment fragment : fragments)
+        for (Fragment<Downloadable> fragment : fragments)
             fragmentTypes.add(createFragmentType(fragment, findFile(fragment, fileAndChecksums)));
         return fragmentTypes;
     }

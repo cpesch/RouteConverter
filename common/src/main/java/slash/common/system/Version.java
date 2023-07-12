@@ -66,8 +66,6 @@ public class Version {
     }
 
     public boolean isLaterVersionThan(Version other) {
-        if(other.getVersion().equals("14-jpackage"))
-            return false;
         return compareVersion(removeSnapshot(version), removeSnapshot(other.getVersion())) > 0;
     }
 
@@ -82,7 +80,7 @@ public class Version {
     }
 
     /**
-     * Compares two version strings.
+     * Compares two version strings.<p>
      *
      * Use this instead of String.compareTo() for a non-lexicographical
      * comparison that works for version strings. e.g. "1.10".compareTo("1.6").
@@ -114,7 +112,7 @@ public class Version {
 
     public String getVersion() {
         if (version != null) {
-            if (version.contains("-SNAPSHOT") || version.endsWith("-jpackage"))
+            if (version.contains("-SNAPSHOT"))
                 return version;
             int index = version.indexOf('-');
             if (index != -1)

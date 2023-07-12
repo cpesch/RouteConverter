@@ -23,6 +23,7 @@ package slash.common.io;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.IOUtils.copyLarge;
 
 /**
@@ -53,6 +54,6 @@ public class InputOutput {
     }
 
     public static String readFileToString(File file) throws IOException {
-        return new String(readBytes(new FileInputStream(file)), StandardCharsets.UTF_8);
+        return new String(readBytes(new FileInputStream(file)), UTF_8);
     }
 }
