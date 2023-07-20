@@ -73,13 +73,13 @@ public class Externalization {
     }
 
     public static File extractFile(String fileName, String targetInfix, TokenResolver tokenResolver) throws IOException {
-        InputStream in = Externalization.class.getClassLoader().getResourceAsStream(fileName);
-        if (in == null)
+        InputStream inputStream = Externalization.class.getClassLoader().getResourceAsStream(fileName);
+        if (inputStream == null)
             return null;
 
         File target = getTempFile(fileName.replace(".", "_" + targetInfix + "."));
         log.info("Extracting " + fileName + " to " + target);
-        Reader reader = new TokenReplacingReader(new InputStreamReader(in), tokenResolver);
+        Reader reader = new TokenReplacingReader(new InputStreamReader(inputStream), tokenResolver);
         FileWriter writer = new FileWriter(target);
         copyAndClose(reader, writer);
         return target;
