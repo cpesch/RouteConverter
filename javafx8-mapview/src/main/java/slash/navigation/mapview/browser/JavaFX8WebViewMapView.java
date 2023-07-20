@@ -35,8 +35,6 @@ import javafx.util.Callback;
 import slash.navigation.common.NavigationPosition;
 
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Logger;
@@ -60,6 +58,7 @@ import static slash.navigation.rest.HttpRequest.USER_AGENT;
 
 public class JavaFX8WebViewMapView extends BrowserMapView {
     private static final Logger log = Logger.getLogger(JavaFX8WebViewMapView.class.getName());
+    private static final boolean DEBUG = preferences.getBoolean(DEBUG_PREFERENCE, false);
 
     private JFXPanel panel;
     private WebView webView;
@@ -93,11 +92,13 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
             Group group = new Group();
             group.getChildren().add(webView);
             panel.setScene(new Scene(group));
+            /* TODO this avoids rendering the tiles
             panel.addComponentListener(new ComponentAdapter() {
                 public void componentResized(ComponentEvent e) {
                     setWebViewSizeToPanelSize();
                 }
             });
+            */
             webView.getEngine().setCreatePopupHandler(new Callback<PopupFeatures, WebEngine>() {
                 public WebEngine call(PopupFeatures config) {
                     // grab the last hyperlink that has :hover pseudoclass
@@ -125,6 +126,14 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
                 private int startCount;
 
                 public void changed(ObservableValue<? extends State> observableValue, State oldState, State newState) {
+                    /* TODO this debugging doesn't seem to work
+                    if (newState == SUCCEEDED) {
+                        JSObject window = (JSObject) webView.getEngine().executeScript("window");
+                        JavaBridge javaBridge = new JavaBridge();
+                        window.setMember("console", javaBridge); // "console" object is now known to JavaScript
+                    }
+                    */
+
                     log.info("WebView changed observableValue " + observableValue + " oldState " + oldState + " newState " + newState + " thread " + Thread.currentThread());
                     if (newState == SUCCEEDED) {
                         // get out of the listener callback
@@ -133,6 +142,9 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
                 }
             });
             webView.getEngine().setUserAgent(USER_AGENT);
+            webView.getEngine().setOnAlert(e -> log.info("Alert: " + e.getData()));
+            webView.getEngine().setOnError(e -> log.severe("Error: " + e.getMessage()));
+            webView.getEngine().setJavaScriptEnabled(true);
             return webView;
         } catch (Throwable t) {
             log.severe("Cannot create WebView: " + t);
@@ -141,12 +153,15 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
         }
     }
 
-    /*
-    protected void runBrowserInteractionCallbacksAndTests(long start) {
-        executeScript("if (!document.getElementById('FirebugLite')){E = document['createElement' + 'NS'] && document.documentElement.namespaceURI;E = E ? document['createElement' + 'NS'](E, 'script') : document['createElement']('script');E['setAttribute']('id', 'FirebugLite');E['setAttribute']('src', 'https://getfirebug.com/' + 'firebug-lite.js' + '#startOpened');E['setAttribute']('FirebugLite', '4');(document['getElementsByTagName']('head')[0] || document['getElementsByTagName']('body')[0]).appendChild(E);E = new Image;E['setAttribute']('src', 'https://getfirebug.com/' + '#startOpened');}");
-        super.runBrowserInteractionCallbacksAndTests(start);
+    public class JavaBridge {
+        public void log(String text) {
+            System.out.println(text);
+        }
+
+        public void error(String text) {
+            System.err.println(text);
+        }
     }
-    */
 
     private boolean loadWebPage() {
         try {
@@ -270,8 +285,7 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
         if (webView == null || script.length() == 0)
             return;
 
-        boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
-        if (debug)
+        if (DEBUG)
             log.info("Before executeScript " + script);
         if (!isFxApplicationThread()) {
             runLater(new Runnable() {
@@ -302,7 +316,6 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
         if (script.length() == 0)
             return null;
 
-        final boolean debug = preferences.getBoolean(DEBUG_PREFERENCE, false);
         final boolean pollingCallback = !script.contains("getCallbacks");
         final Object[] result = new Object[1];
 
@@ -319,7 +332,7 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
                         log.info("Exception during runLater executeScript with result of " + script + ": " + t);
                     }
 
-                    if (debug && pollingCallback) {
+                    if (DEBUG && pollingCallback) {
                         log.info("After runLater, executeScript with result " + r);
                     }
 
@@ -348,7 +361,7 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
                 log.info("Exception during executeScript with result of " + script + ": " + t);
             }
 
-            if (debug && pollingCallback) {
+            if (DEBUG && pollingCallback) {
                 log.info("After executeScript with result " + result[0]);
             }
         }

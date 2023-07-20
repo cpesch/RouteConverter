@@ -22,6 +22,8 @@ package slash.navigation.mapview.browser;
 
 import net.andreinc.aleph.AlephFormatter;
 import slash.common.helpers.APIKeyRegistry;
+import slash.common.io.Externalization;
+import slash.common.io.InputOutput;
 import slash.common.io.TokenResolver;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
@@ -122,14 +124,14 @@ public abstract class BrowserMapView extends BaseMapView {
             haveToUpdateRoute, haveToReplaceRoute,
             haveToRepaintSelection, ignoreNextZoomCallback;
 
-    private PositionsModelListener positionsModelListener = new PositionsModelListener();
-    private RoutingPreferencesListener routingPreferencesListener = new RoutingPreferencesListener();
-    private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
-    private UnitSystemListener unitSystemListener = new UnitSystemListener();
-    private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
-    private ShowWaypointDescriptionListener showWaypointDescriptionListener = new ShowWaypointDescriptionListener();
-    private RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
-    private GoogleMapsServerListener googleMapsServerListener = new GoogleMapsServerListener();
+    private final PositionsModelListener positionsModelListener = new PositionsModelListener();
+    private final RoutingPreferencesListener routingPreferencesListener = new RoutingPreferencesListener();
+    private final CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
+    private final UnitSystemListener unitSystemListener = new UnitSystemListener();
+    private final ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
+    private final ShowWaypointDescriptionListener showWaypointDescriptionListener = new ShowWaypointDescriptionListener();
+    private final RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
+    private final GoogleMapsServerListener googleMapsServerListener = new GoogleMapsServerListener();
 
     private String routeUpdateReason = "?", selectionUpdateReason = "?";
     MapViewCallbackGoogle mapViewCallback;
@@ -147,6 +149,7 @@ public abstract class BrowserMapView extends BaseMapView {
         this.preferencesModel = preferencesModel;
         this.mapViewCallback = (MapViewCallbackGoogle) mapViewCallback;
 
+        initializeCallbackListener();
         initializeBrowser();
 
         positionsModel.addTableModelListener(positionsModelListener);
@@ -197,6 +200,8 @@ public abstract class BrowserMapView extends BaseMapView {
         final String country = Locale.getDefault().getCountry().toLowerCase();
         File html = extractFile(RESOURCES_PACKAGE + "routeconverter.html", country, new TokenResolver() {
             public String resolveToken(String tokenName) {
+                if (tokenName.equals("port"))
+                    return String.valueOf(getCallbackPort());
                 if (tokenName.equals("language"))
                     return language;
                 if (tokenName.equals("country"))
@@ -213,6 +218,8 @@ public abstract class BrowserMapView extends BaseMapView {
                     return registerMaps(mapViewCallback.getTileServerMapManager().getAvailableMapsModel().getItems());
                 if (tokenName.equals("menuItems"))
                     return registerMenuItems();
+                if (tokenName.equals("c"))
+                    return "${c}";
                 return tokenName;
             }
         });
@@ -259,7 +266,6 @@ public abstract class BrowserMapView extends BaseMapView {
         log.fine("Starting browser interaction, callbacks and tests after " + (end - start) + " ms");
         initializeAfterLoading();
         initializeBrowserInteraction();
-        initializeCallbackListener();
         checkLocalhostResolution();
         checkCallback();
         setDegreeFormat();
@@ -1317,7 +1323,8 @@ public abstract class BrowserMapView extends BaseMapView {
 
     private void processStream(Socket socket) throws IOException {
         List<String> lines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024)) {
+        try (socket; BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()), 64 * 1024);
+             OutputStream outputStream = socket.getOutputStream()) {
             boolean processingPost = false, processingBody = false;
             while (true) {
                 try {
@@ -1338,22 +1345,28 @@ public abstract class BrowserMapView extends BaseMapView {
                 }
             }
 
-            try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()))) {
-                writer.write("HTTP/1.1 200 OK\n");
-                writer.write("Content-Type: text/plain\n");
+            StringBuilder buffer = new StringBuilder();
+            for (String line : lines) {
+                buffer.append("  ").append(line).append("\n");
             }
+            log.fine("Processing callback @" + currentTimeMillis() + " from port " + socket.getPort() + ": \n" + buffer.toString());
+
+            if (!isAuthenticated(lines)) {
+                writeStatus("401 Unauthorized", outputStream);
+                return;
+            }
+
+            if (processLines(lines, socket.getPort()))
+                writeStatus("200 OK", outputStream);
+            else
+                processDownload(lines, outputStream);
         }
+    }
 
-        StringBuilder buffer = new StringBuilder();
-        for (String line : lines) {
-            buffer.append("  ").append(line).append("\n");
-        }
-        log.fine("Processing callback @" + currentTimeMillis() + " from port " + socket.getPort() + ": \n" + buffer.toString());
-
-        if (!isAuthenticated(lines))
-            return;
-
-        processLines(lines, socket.getPort());
+    private static void writeStatus(String status, OutputStream outputStream) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        writer.write("HTTP/1.1 " + status + "\n");
+        writer.write("Content-Type: text/plain\n");
     }
 
     private boolean isAuthenticated(List<String> lines) {
@@ -1381,7 +1394,7 @@ public abstract class BrowserMapView extends BaseMapView {
     private static final Pattern CALLBACK_REQUEST_PATTERN = Pattern.compile("^(GET|OPTIONS|POST) /(\\d+)/(.*) HTTP.+$");
     private int lastCallbackNumber = -1;
 
-    void processLines(List<String> lines, int port) {
+    boolean processLines(List<String> lines, int port) {
         boolean hasValidCallbackNumber = false;
         for (String line : lines) {
             Matcher matcher = CALLBACK_REQUEST_PATTERN.matcher(line);
@@ -1389,7 +1402,7 @@ public abstract class BrowserMapView extends BaseMapView {
                 int callbackNumber = parseInt(matcher.group(2));
                 if (lastCallbackNumber >= callbackNumber) {
                     log.info("Ignoring callback number: " + callbackNumber + " last callback number is: " + lastCallbackNumber + " port is: " + port);
-                    break;
+                    return true;
                 }
                 lastCallbackNumber = callbackNumber;
                 hasValidCallbackNumber = true;
@@ -1397,16 +1410,50 @@ public abstract class BrowserMapView extends BaseMapView {
                 String callback = matcher.group(3);
                 if (processCallback(callback)) {
                     log.info("Processed " + matcher.group(1) + " callback " + callback + " with number: " + callbackNumber + " from port: " + port);
-                    break;
+                    return true;
                 }
             }
 
             // process body of POST requests
             if (hasValidCallbackNumber && processCallback(line)) {
                 log.info("Processed POST callback " + line + " with number: " + lastCallbackNumber + " from port: " + port);
-                break;
+                return true;
             }
         }
+        return false;
+    }
+
+    private static final Pattern DOWNLOAD_REQUEST_PATTERN = Pattern.compile("^GET /(.+) HTTP.+$");
+
+    boolean processDownload(List<String> lines, OutputStream outputStream) throws IOException {
+        for (String line : lines) {
+            Matcher matcher = DOWNLOAD_REQUEST_PATTERN.matcher(line);
+            if (matcher.matches()) {
+                String uri = matcher.group(1);
+
+                InputStream inputStream = Externalization.class.getClassLoader().getResourceAsStream(RESOURCES_PACKAGE + uri);
+                if (inputStream == null) {
+                    writeStatus("404 Not Found", outputStream);
+                    return false;
+                }
+
+                String mimeType = uri.endsWith("css") ? "text/css" : "text/javascript";
+                byte[] bytes = InputOutput.readBytes(inputStream);
+
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+                writer.write("HTTP/1.1 200 OK\n");
+                writer.write("Content-Type: " + mimeType + "\n");
+                writer.write("Access-Control-Allow-Origin: *\n");
+                writer.write("Content-Length: " + bytes.length + "\n");
+                writer.write("\n");
+                writer.flush();
+
+                outputStream.write(bytes);
+                outputStream.flush();
+                return true;
+            }
+        }
+        return false;
     }
 
     private static final Pattern ADD_POSITION_PATTERN = Pattern.compile("^add-position/(.*)/(.*)$");

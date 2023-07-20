@@ -34,5 +34,12 @@
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-web</artifactId>
         </dependency>
+        <!-- TODO couldn't get this to run
+        <dependency>
+            <groupId>com.vladsch.javafx-webview-debugger</groupId>
+            <artifactId>webview-debug-sample</artifactId>
+            <version>0.7.8</version>
+        </dependency>
+        -->
     </dependencies>
 </project>

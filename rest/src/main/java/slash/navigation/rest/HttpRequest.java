@@ -64,7 +64,7 @@ import static slash.common.io.InputOutput.readBytes;
 
 public abstract class HttpRequest {
     public static final String APPLICATION_JSON = "application/json";
-    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.181 Safari/537.36";
+    public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36";
 
     private final Logger log;
     private final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
