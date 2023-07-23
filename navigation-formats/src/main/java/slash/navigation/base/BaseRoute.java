@@ -257,13 +257,14 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public int getClosestPosition(double longitude, double latitude, double threshold) {
+        SimpleNavigationPosition reference = new SimpleNavigationPosition(longitude, latitude);
         int closestIndex = -1;
         double closestDistance = MAX_VALUE;
 
         List<P> positions = getPositions();
         for (int i = 0; i < positions.size(); ++i) {
             P position = positions.get(i);
-            Double distance = position.calculateDistance(new SimpleNavigationPosition(longitude, latitude));
+            Double distance = position.calculateDistance(reference);
             if (distance != null && distance < closestDistance && distance <= threshold) {
                 closestDistance = distance;
                 closestIndex = i;
