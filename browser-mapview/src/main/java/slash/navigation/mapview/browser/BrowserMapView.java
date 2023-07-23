@@ -401,17 +401,9 @@ public abstract class BrowserMapView extends BaseMapView {
                 RouteCharacteristics characteristics = positionsModel.getRoute().getCharacteristics();
                 List<NavigationPosition> render = positionReducer.reducePositions(copiedPositions, characteristics, preferencesModel.getShowWaypointDescriptionModel().getBoolean());
                 switch (characteristics) {
-                    case Route:
-                        addDirectionsToMap(render);
-                        break;
-                    case Track:
-                        addPolylinesToMap(render, copiedPositions);
-                        break;
-                    case Waypoints:
-                        addMarkersToMap(render);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
+                    case Route -> addDirectionsToMap(render);
+                    case Track -> addPolylinesToMap(render, copiedPositions);
+                    case Waypoints -> addMarkersToMap(render);
                 }
                 log.info("Position list updated for " + render.size() + " positions of type " + characteristics +
                         ", reason: " + routeUpdateReason + ", recentering: " + recenter);

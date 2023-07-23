@@ -307,22 +307,28 @@ public class OverlayPositionsModel implements PositionsModel {
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
-            case PHOTO_COLUMN_INDEX:
+            case PHOTO_COLUMN_INDEX -> {
                 return getImageAndFile(rowIndex);
-            case DISTANCE_COLUMN_INDEX:
+            }
+            case DISTANCE_COLUMN_INDEX -> {
                 return !getRoute().getCharacteristics().equals(Waypoints) ? getDistance(rowIndex) : null;
-            case DISTANCE_DIFFERENCE_COLUMN_INDEX:
+            }
+            case DISTANCE_DIFFERENCE_COLUMN_INDEX -> {
                 return !getRoute().getCharacteristics().equals(Waypoints) ? getDistanceDifference(rowIndex) : null;
-            case TIME_COLUMN_INDEX:
+            }
+            case TIME_COLUMN_INDEX -> {
                 if (getRoute().getCharacteristics().equals(Route))
                     return getTime(rowIndex);
-                break;
-            case ELEVATION_ASCEND_COLUMN_INDEX:
+            }
+            case ELEVATION_ASCEND_COLUMN_INDEX -> {
                 return !getRoute().getCharacteristics().equals(Waypoints) ? getRoute().getElevationAscend(0, rowIndex) : null;
-            case ELEVATION_DESCEND_COLUMN_INDEX:
+            }
+            case ELEVATION_DESCEND_COLUMN_INDEX -> {
                 return !getRoute().getCharacteristics().equals(Waypoints) ? getRoute().getElevationDescend(0, rowIndex) : null;
-            case ELEVATION_DIFFERENCE_COLUMN_INDEX:
+            }
+            case ELEVATION_DIFFERENCE_COLUMN_INDEX -> {
                 return !getRoute().getCharacteristics().equals(Waypoints) ? getRoute().getElevationDifference(rowIndex) : null;
+            }
         }
         return delegate.getValueAt(rowIndex, columnIndex);
     }

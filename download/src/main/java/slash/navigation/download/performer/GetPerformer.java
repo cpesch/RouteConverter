@@ -160,17 +160,9 @@ public class GetPerformer implements ActionPerformer {
     private void bringToTarget(Long lastModified) throws IOException {
         Action action = getDownload().getAction();
         switch (action) {
-            case Copy:
-                copy(lastModified);
-                break;
-            case Flatten:
-                flatten(lastModified);
-                break;
-            case Extract:
-                extract(lastModified);
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported Action " + action);
+            case Copy -> copy(lastModified);
+            case Flatten -> flatten(lastModified);
+            case Extract -> extract(lastModified);
         }
     }
 

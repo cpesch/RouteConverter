@@ -441,18 +441,12 @@ public class Gpx11Format extends GpxFormat {
         GpxRoute routeForMetadata = null;
         for (GpxRoute route : routes) {
             switch (route.getCharacteristics()) {
-                case Waypoints:
+                case Waypoints -> {
                     routeForMetadata = route;
                     gpxType.getWpt().addAll(createWayPoints(route, 0, route.getPositionCount()));
-                    break;
-                case Route:
-                    gpxType.getRte().addAll(createRoute(route, 0, route.getPositionCount()));
-                    break;
-                case Track:
-                    gpxType.getTrk().addAll(createTrack(route, 0, route.getPositionCount()));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
+                }
+                case Route -> gpxType.getRte().addAll(createRoute(route, 0, route.getPositionCount()));
+                case Track -> gpxType.getTrk().addAll(createTrack(route, 0, route.getPositionCount()));
             }
         }
 

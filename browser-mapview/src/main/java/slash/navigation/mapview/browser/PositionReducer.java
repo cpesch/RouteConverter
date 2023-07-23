@@ -134,29 +134,19 @@ class PositionReducer {
     }
 
     int getMaximumSegmentLength(RouteCharacteristics characteristics) {
-        switch (characteristics) {
-            case Route:
-                return preferences.getInt("maximumRouteSegmentLength", 24);
-            case Track:
-                return preferences.getInt("maximumTrackSegmentLength", 40);
-            case Waypoints:
-                return preferences.getInt("maximumWaypointSegmentLength", 15);
-            default:
-                throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
-        }
+        return switch (characteristics) {
+            case Route -> preferences.getInt("maximumRouteSegmentLength", 24);
+            case Track -> preferences.getInt("maximumTrackSegmentLength", 40);
+            case Waypoints -> preferences.getInt("maximumWaypointSegmentLength", 15);
+        };
     }
 
     private int getMaximumPositionCount(RouteCharacteristics characteristics, boolean showWaypointDescription) {
-        switch (characteristics) {
-            case Route:
-                return preferences.getInt("maximumRoutePositionCount", 30 * getMaximumSegmentLength(characteristics));
-            case Track:
-                return preferences.getInt("maximumTrackPositionCount", 50 * getMaximumSegmentLength(characteristics));
-            case Waypoints:
-                return preferences.getInt("maximumWaypointPositionCount", (showWaypointDescription ? 5 : 50) * getMaximumSegmentLength(characteristics));
-            default:
-                throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
-        }
+        return switch (characteristics) {
+            case Route -> preferences.getInt("maximumRoutePositionCount", 30 * getMaximumSegmentLength(characteristics));
+            case Track -> preferences.getInt("maximumTrackPositionCount", 50 * getMaximumSegmentLength(characteristics));
+            case Waypoints -> preferences.getInt("maximumWaypointPositionCount", (showWaypointDescription ? 5 : 50) * getMaximumSegmentLength(characteristics));
+        };
     }
 
     List<NavigationPosition> filterVisiblePositions(List<NavigationPosition> positions, int zoom) {

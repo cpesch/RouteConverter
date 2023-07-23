@@ -38,12 +38,12 @@ public class LocalThemeTableCellRenderer extends AlternatingColorTableCellRender
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         LocalTheme theme = (LocalTheme) value;
         switch (columnIndex) {
-            case DESCRIPTION_COLUMN:
+            case DESCRIPTION_COLUMN -> {
                 label.setText(theme.getDescription());
                 label.setToolTipText(theme.getUrl());
-                break;
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+            }
+            default ->
+                    throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
         return label;
     }

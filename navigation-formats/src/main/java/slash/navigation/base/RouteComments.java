@@ -155,18 +155,12 @@ public abstract class RouteComments {
     }
 
     public static String formatNumberedPosition(NumberPattern numberPattern, String number, String description) {
-        switch (numberPattern) {
-            case Description_Only:
-                return description;
-            case Number_Only:
-                return number;
-            case Number_Directly_Followed_By_Description:
-                return description != null ? number + description : number;
-            case Number_Space_Then_Description:
-                return description != null ? number + " " + description : number;
-            default:
-                throw new IllegalArgumentException("Number pattern " + numberPattern + " is not supported");
-        }
+        return switch (numberPattern) {
+            case Description_Only -> description;
+            case Number_Only -> number;
+            case Number_Directly_Followed_By_Description -> description != null ? number + description : number;
+            case Number_Space_Then_Description -> description != null ? number + " " + description : number;
+        };
     }
 
     @SuppressWarnings("unchecked")

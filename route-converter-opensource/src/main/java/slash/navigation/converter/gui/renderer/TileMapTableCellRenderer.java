@@ -37,14 +37,12 @@ public class TileMapTableCellRenderer extends AlternatingColorTableCellRenderer 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         switch (columnIndex) {
-            case DESCRIPTION_COLUMN:
+            case DESCRIPTION_COLUMN -> {
                 TileDownloadMap map = (TileDownloadMap) value;
                 JLabel label = (JLabel) component;
                 label.setText(map.getDescription());
                 label.setToolTipText(map.getUrl());
-                break;
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+            }
         }
         return component;
     }

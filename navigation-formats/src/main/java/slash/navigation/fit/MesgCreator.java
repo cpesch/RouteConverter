@@ -105,27 +105,18 @@ class MesgCreator {
         mesg.setTimeCreated(new DateTime(now().getTime()));
 
         switch (characteristics) {
-            case Track:
-                mesg.setType(ACTIVITY);
-                break;
-            case Route:
-                mesg.setType(COURSE);
-                break;
+            case Track -> mesg.setType(ACTIVITY);
+            case Route -> mesg.setType(COURSE);
         }
         return mesg;
     }
 
     private Mesg createPositionMesg(RouteCharacteristics characteristics, Wgs84Position position) {
-        switch (characteristics) {
-            case Track:
-                return createRecordMesg(position);
-            case Route:
-                return createCoursePointMesg(position);
-            case Waypoints:
-                return createGpsMetadataMesg(position);
-            default:
-                throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
-        }
+        return switch (characteristics) {
+            case Track -> createRecordMesg(position);
+            case Route -> createCoursePointMesg(position);
+            case Waypoints -> createGpsMetadataMesg(position);
+        };
     }
 
     public List<Mesg> createMesgs(Wgs84Route route, String productName, int startIndex, int endIndex) {

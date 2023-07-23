@@ -122,20 +122,18 @@ public class ScanWebsite extends BaseDownloadTool {
     private Set<String> collectURIs(DataSource source) {
         Set<String> result = new HashSet<>();
         switch (type) {
-            case File:
+            case File -> {
                 for (File file : source.getFiles())
                     result.add(file.getUri());
-                break;
-
-            case Map:
+            }
+            case Map -> {
                 for (Map map : source.getMaps())
                     result.add(map.getUri());
-                break;
-
-            case Theme:
+            }
+            case Theme -> {
                 for (Theme theme : source.getThemes())
                     result.add(theme.getUri());
-                break;
+            }
         }
         return result;
     }
@@ -171,20 +169,18 @@ public class ScanWebsite extends BaseDownloadTool {
 
         for (String uri : uris) {
             switch (type) {
-                case File:
+                case File -> {
                     FileType fileType = createFileType(uri, null, null);
                     datasourceType.getFile().add(fileType);
-                    break;
-
-                case Map:
+                }
+                case Map -> {
                     MapType mapType = createMapType(uri, null, null);
                     datasourceType.getMap().add(mapType);
-                    break;
-
-                case Theme:
+                }
+                case Theme -> {
                     ThemeType themeType = createThemeType(uri, null, null);
                     datasourceType.getTheme().add(themeType);
-                    break;
+                }
             }
         }
 

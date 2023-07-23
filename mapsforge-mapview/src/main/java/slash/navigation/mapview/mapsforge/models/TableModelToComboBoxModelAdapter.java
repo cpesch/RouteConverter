@@ -95,17 +95,12 @@ public class TableModelToComboBoxModelAdapter<E extends Item> implements ComboBo
 
         public void tableChanged(TableModelEvent e) {
             switch (e.getType()) {
-                case INSERT:
-                    delegate.intervalAdded(new ListDataEvent(this, INTERVAL_ADDED, e.getFirstRow(), e.getLastRow()));
-                    break;
-                case DELETE:
-                    delegate.intervalRemoved(new ListDataEvent(this, INTERVAL_REMOVED, e.getFirstRow(), e.getLastRow()));
-                    break;
-                case UPDATE:
-                    delegate.contentsChanged(new ListDataEvent(this, CONTENTS_CHANGED, e.getFirstRow(), e.getLastRow()));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Event " + e + " cannot be handled");
+                case INSERT ->
+                        delegate.intervalAdded(new ListDataEvent(this, INTERVAL_ADDED, e.getFirstRow(), e.getLastRow()));
+                case DELETE ->
+                        delegate.intervalRemoved(new ListDataEvent(this, INTERVAL_REMOVED, e.getFirstRow(), e.getLastRow()));
+                case UPDATE ->
+                        delegate.contentsChanged(new ListDataEvent(this, CONTENTS_CHANGED, e.getFirstRow(), e.getLastRow()));
             }
         }
     }

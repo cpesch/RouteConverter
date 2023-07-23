@@ -357,17 +357,9 @@ public class Kml20Format extends KmlFormat {
 
         for (KmlRoute route : routes) {
             switch (route.getCharacteristics()) {
-                case Waypoints:
-                    rootList.add(createWayPoints(route, 0, route.getPositionCount()));
-                    break;
-                case Route:
-                    rootList.add(createRoute(route, 0, route.getPositionCount()));
-                    break;
-                case Track:
-                    rootList.add(createTrack(route, 0, route.getPositionCount()));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
+                case Waypoints -> rootList.add(createWayPoints(route, 0, route.getPositionCount()));
+                case Route -> rootList.add(createRoute(route, 0, route.getPositionCount()));
+                case Track -> rootList.add(createTrack(route, 0, route.getPositionCount()));
             }
         }
         return kml;

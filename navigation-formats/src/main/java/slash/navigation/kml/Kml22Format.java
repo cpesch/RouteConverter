@@ -670,31 +670,28 @@ public class Kml22Format extends KmlFormat {
 
         for (KmlRoute route : routes) {
             switch (route.getCharacteristics()) {
-                case Waypoints:
+                case Waypoints -> {
                     FolderType wayPointsFolder = objectFactory.createFolderType();
                     wayPointsFolder.setName(createFolderName(WAYPOINTS, route));
                     wayPointsFolder.setDescription(asDescription(route.getDescription()));
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(wayPointsFolder));
-
                     List<PlacemarkType> wayPoints = createWayPoints(route, 0, route.getPositionCount());
                     for (PlacemarkType wayPoint : wayPoints)
                         wayPointsFolder.getAbstractFeatureGroup().add(objectFactory.createPlacemark(wayPoint));
-                    break;
-                case Route:
+                }
+                case Route -> {
                     FolderType routeFolder = objectFactory.createFolderType();
                     routeFolder.setName(createFolderName(ROUTE, route));
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(routeFolder));
-
                     PlacemarkType routePlacemarks = createRoute(route, 0, route.getPositionCount());
                     routeFolder.getAbstractFeatureGroup().add(objectFactory.createPlacemark(routePlacemarks));
                     if (isWriteMarks())
                         routeFolder.getAbstractFeatureGroup().add(objectFactory.createFolder(createMarks(route, 0, route.getPositionCount())));
-                    break;
-                case Track:
+                }
+                case Track -> {
                     FolderType trackFolder = objectFactory.createFolderType();
                     trackFolder.setName(createFolderName(TRACK, route));
                     documentType.getAbstractFeatureGroup().add(objectFactory.createFolder(trackFolder));
-
                     PlacemarkType track = createTrack(route, 0, route.getPositionCount());
                     trackFolder.getAbstractFeatureGroup().add(objectFactory.createPlacemark(track));
                     if (isWriteSpeed()) {
@@ -704,9 +701,7 @@ public class Kml22Format extends KmlFormat {
                     }
                     if (isWriteMarks())
                         trackFolder.getAbstractFeatureGroup().add(objectFactory.createFolder(createMarks(route, 0, route.getPositionCount())));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
+                }
             }
         }
         return kmlType;

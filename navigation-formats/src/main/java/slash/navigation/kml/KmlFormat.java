@@ -152,17 +152,12 @@ public abstract class KmlFormat extends BaseKmlFormat {
         }
         if (styleUrl != null && styleUrl.startsWith("#")) {
             styleUrl = styleUrl.substring(1);
-            switch (styleUrl) {
-                case WAYPOINT_STYLE:
-                    result = Waypoints;
-                    break;
-                case ROUTE_LINE_STYLE:
-                    result = Route;
-                    break;
-                case TRACK_LINE_STYLE:
-                    result = Track;
-                    break;
-            }
+            result = switch (styleUrl) {
+                case WAYPOINT_STYLE -> Waypoints;
+                case ROUTE_LINE_STYLE -> Route;
+                case TRACK_LINE_STYLE -> Track;
+                default -> throw new IllegalArgumentException("Style " + styleUrl + " is not supported");
+            };
         }
         return result;
     }

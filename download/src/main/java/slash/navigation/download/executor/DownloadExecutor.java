@@ -72,23 +72,11 @@ public class DownloadExecutor implements Runnable {
         updateState(Running);
 
         try {
-            ActionPerformer performer;
-
-            switch (download.getAction()) {
-                case Copy:
-                case Flatten:
-                case Extract:
-                    performer = new GetPerformer();
-                    break;
-                case GetRange:
-                    performer = new GetRangePerformer();
-                    break;
-                case Head:
-                    performer = new HeadPerformer();
-                    break;
-                default:
-                    throw new IllegalArgumentException("Action " + download.getAction() + " is not supported");
-            }
+            ActionPerformer performer = switch (download.getAction()) {
+                case Copy, Flatten, Extract -> new GetPerformer();
+                case GetRange -> new GetRangePerformer();
+                case Head -> new HeadPerformer();
+            };
 
             performer.setDownloadExecutor(this);
             performer.run();

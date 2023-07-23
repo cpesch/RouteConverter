@@ -43,23 +43,21 @@ public class RemoteMapTableCellRenderer extends AlternatingColorTableCellRendere
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         RemoteMap map = (RemoteMap) value;
         switch (columnIndex) {
-            case DATASOURCE_COLUMN:
+            case DATASOURCE_COLUMN -> {
                 label.setText(map.getDataSource().getName());
                 label.setToolTipText(map.getUrl());
                 label.setHorizontalAlignment(LEFT);
-                break;
-            case DESCRIPTION_COLUMN:
+            }
+            case DESCRIPTION_COLUMN -> {
                 label.setText(map.getDescription());
                 label.setToolTipText(map.getUrl());
                 label.setHorizontalAlignment(LEFT);
-                break;
-            case SIZE_COLUMN:
+            }
+            case SIZE_COLUMN -> {
                 label.setText(formatSize(getContentLength(map)));
                 label.setToolTipText(map.getUrl());
                 label.setHorizontalAlignment(RIGHT);
-                break;
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+            }
         }
         return label;
     }

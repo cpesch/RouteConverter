@@ -51,7 +51,6 @@ public class SelectionUpdater {
         }
     }
 
-
     public void setSelectedPositions(List<NavigationPosition> selectedPositions) {
         int[] indices = selectedPositions.stream()
                 .map(positionsModel::getIndex)

@@ -333,18 +333,12 @@ public class Gpx10Format extends GpxFormat {
 
         for (RouteCharacteristics characteristic : characteristics) {
             switch (characteristic) {
-                case Route:
-                    gpx.getRte().addAll(createRoute(route, startIndex, endIndex));
-                    break;
-                case Track:
-                    gpx.getTrk().addAll(createTrack(route, startIndex, endIndex));
-                    break;
-                case Waypoints:
+                case Route -> gpx.getRte().addAll(createRoute(route, startIndex, endIndex));
+                case Track -> gpx.getTrk().addAll(createTrack(route, startIndex, endIndex));
+                case Waypoints -> {
                     createMetaData(route, gpx);
                     gpx.getWpt().addAll(createWayPoints(route, startIndex, endIndex));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown RouteCharacteristics " + characteristic);
+                }
             }
         }
         return gpx;
@@ -367,18 +361,12 @@ public class Gpx10Format extends GpxFormat {
 
         for (GpxRoute route : routes) {
             switch (route.getCharacteristics()) {
-                case Waypoints:
+                case Waypoints -> {
                     createMetaData(route, gpx);
                     gpx.getWpt().addAll(createWayPoints(route, 0, route.getPositionCount()));
-                    break;
-                case Route:
-                    gpx.getRte().addAll(createRoute(route, 0, route.getPositionCount()));
-                    break;
-                case Track:
-                    gpx.getTrk().addAll(createTrack(route, 0, route.getPositionCount()));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
+                }
+                case Route -> gpx.getRte().addAll(createRoute(route, 0, route.getPositionCount()));
+                case Track -> gpx.getTrk().addAll(createTrack(route, 0, route.getPositionCount()));
             }
         }
         return gpx;

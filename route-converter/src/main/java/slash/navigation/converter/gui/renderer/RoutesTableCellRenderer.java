@@ -38,16 +38,16 @@ public class RoutesTableCellRenderer extends AlternatingColorTableCellRenderer {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         RouteModel route = (RouteModel) value;
         switch (columnIndex) {
-            case 0:
+            case 0 -> {
                 label.setText(formatDescription(route));
                 label.setToolTipText(formatUrl(route));
-                break;
-            case 1:
+            }
+            case 1 -> {
                 label.setText(formatCreator(route));
                 label.setToolTipText(formatUrl(route));
-                break;
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+            }
+            default ->
+                    throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
         return label;
     }

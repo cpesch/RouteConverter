@@ -295,21 +295,18 @@ public class Tcx2Format extends TcxFormat {
         routeNames.add(routeName);
 
         switch (route.getCharacteristics()) {
-            case Route:
+            case Route -> {
                 if (trainingCenterDatabaseT.getCourses() == null)
                     trainingCenterDatabaseT.setCourses(objectFactory.createCourseListT());
                 trainingCenterDatabaseT.getCourses().getCourse().
                         add(createCourse(route, routeName, startIndex, endIndex));
-                break;
-            case Waypoints:
-            case Track:
+            }
+            case Waypoints, Track -> {
                 if (trainingCenterDatabaseT.getActivities() == null)
                     trainingCenterDatabaseT.setActivities(objectFactory.createActivityListT());
                 trainingCenterDatabaseT.getActivities().getActivity()
                         .add(createActivity(route, routeName, startIndex, endIndex));
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
+            }
         }
     }
 

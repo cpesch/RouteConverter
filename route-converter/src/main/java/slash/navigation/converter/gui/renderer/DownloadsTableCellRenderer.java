@@ -42,12 +42,12 @@ public class DownloadsTableCellRenderer extends AlternatingColorTableCellRendere
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         Download download = (Download) value;
         switch (columnIndex) {
-            case DESCRIPTION_COLUMN:
+            case DESCRIPTION_COLUMN -> {
                 label.setText(download.getDescription());
                 label.setToolTipText(download.getUrl());
                 label.setHorizontalAlignment(LEFT);
-                break;
-            case STATE_COLUMN:
+            }
+            case STATE_COLUMN -> {
                 String text = download.getState().name();
                 if (Downloading.equals(download.getState()) || Processing.equals(download.getState()) || Resuming.equals(download.getState())) {
                     Integer percentage = download.getPercentage();
@@ -63,19 +63,19 @@ public class DownloadsTableCellRenderer extends AlternatingColorTableCellRendere
                 else
                     label.setToolTipText(download.getUrl());
                 label.setHorizontalAlignment(RIGHT);
-                break;
-            case SIZE_COLUMN:
+            }
+            case SIZE_COLUMN -> {
                 label.setText(formatSize(download.getSize()));
                 label.setToolTipText(download.getUrl());
                 label.setHorizontalAlignment(RIGHT);
-                break;
-            case DATE_COLUMN:
+            }
+            case DATE_COLUMN -> {
                 label.setText(formatDate(download.getLastModified()));
                 label.setToolTipText(download.getUrl());
                 label.setHorizontalAlignment(RIGHT);
-                break;
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+            }
+            default ->
+                    throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
         return label;
     }

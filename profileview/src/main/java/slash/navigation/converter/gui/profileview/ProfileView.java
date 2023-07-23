@@ -155,27 +155,18 @@ public class ProfileView implements PositionsSelectionModel {
     }
 
     private String getYAxisUnit(YAxisMode mode) {
-        switch (mode) {
-            case Elevation:
-                return profileModel.getUnitSystem().getElevationName();
-            case Speed:
-                return profileModel.getUnitSystem().getSpeedName();
-            case HeartBeat:
-                return "bpm";
-            default:
-                throw new IllegalArgumentException("YAxisMode " + mode + " is not supported");
-        }
+        return switch (mode) {
+            case Elevation -> profileModel.getUnitSystem().getElevationName();
+            case Speed -> profileModel.getUnitSystem().getSpeedName();
+            case HeartBeat -> "bpm";
+        };
     }
 
     private String getXAxisUnit(XAxisMode mode) {
-        switch (mode) {
-            case Distance:
-                return profileModel.getUnitSystem().getDistanceName();
-            case Time:
-                return "s";
-            default:
-                throw new IllegalArgumentException("XAxisMode " + mode + " is not supported");
-        }
+        return switch (mode) {
+            case Distance -> profileModel.getUnitSystem().getDistanceName();
+            case Time -> "s";
+        };
     }
 
     private void updateAxis() {

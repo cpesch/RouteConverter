@@ -72,7 +72,10 @@ import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.BaseMapView;
 import slash.navigation.mapview.MapViewCallback;
-import slash.navigation.mapview.mapsforge.helpers.*;
+import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
+import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
+import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
+import slash.navigation.mapview.mapsforge.helpers.MapViewResizer;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
 import slash.navigation.mapview.mapsforge.renderer.RouteRenderer;
@@ -156,28 +159,28 @@ public class MapsforgeMapView extends BaseMapView {
     private MapPreferencesModel preferencesModel;
     private MapViewCallbackOpenSource mapViewCallback;
 
-    private PositionsModelListener positionsModelListener = new PositionsModelListener();
-    private RoutingPreferencesListener routingPreferencesListener = new RoutingPreferencesListener();
-    private CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
-    private UnitSystemListener unitSystemListener = new UnitSystemListener();
-    private ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
-    private RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
-    private DisplayedMapListener displayedMapListener = new DisplayedMapListener();
-    private AppliedThemeListener appliedThemeListener = new AppliedThemeListener();
-    private AppliedOverlayListener appliedOverlayListener = new AppliedOverlayListener();
-    private ShadedHillsListener shadedHillsListener = new ShadedHillsListener();
+    private final PositionsModelListener positionsModelListener = new PositionsModelListener();
+    private final RoutingPreferencesListener routingPreferencesListener = new RoutingPreferencesListener();
+    private final CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
+    private final UnitSystemListener unitSystemListener = new UnitSystemListener();
+    private final ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
+    private final RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
+    private final DisplayedMapListener displayedMapListener = new DisplayedMapListener();
+    private final AppliedThemeListener appliedThemeListener = new AppliedThemeListener();
+    private final AppliedOverlayListener appliedOverlayListener = new AppliedOverlayListener();
+    private final ShadedHillsListener shadedHillsListener = new ShadedHillsListener();
 
     private MapSelector mapSelector;
     private AwtGraphicMapView mapView;
     private MapViewMoverAndZoomer mapViewMoverAndZoomer;
-    private MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
-    private BorderPainter borderPainter = new BorderPainter();
-    private MagnifierPainter magnifierPainter = new MagnifierPainter();
+    private final MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
+    private final BorderPainter borderPainter = new BorderPainter();
+    private final MagnifierPainter magnifierPainter = new MagnifierPainter();
     private RouteRenderer routeRenderer;
     private TrackRenderer trackRenderer;
-    private GroupLayer overlaysLayer = new GroupLayer();
+    private final GroupLayer overlaysLayer = new GroupLayer();
     private TileRendererLayer backgroundLayer;
-    private HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
+    private final HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private UpdateDecoupler updateDecoupler;
@@ -462,7 +465,7 @@ public class MapsforgeMapView extends BaseMapView {
             String color = encodeInt(waypointColorModel.getColor().getRed(), 2) +
                     encodeInt(waypointColorModel.getColor().getGreen(), 2) +
                     encodeInt(waypointColorModel.getColor().getBlue(), 2);
-            String opacity = Transfer.formatDoubleAsString(new Float(asAlpha(waypointColorModel)).doubleValue(), 2);
+            String opacity = Transfer.formatDoubleAsString(Float.valueOf(asAlpha(waypointColorModel)).doubleValue(), 2);
 
             InputStream inputStream = MapsforgeMapView.class.getResourceAsStream("waypoint.svg");
             assert inputStream != null;
@@ -484,17 +487,9 @@ public class MapsforgeMapView extends BaseMapView {
     private void handleUnitSystem() {
         UnitSystem unitSystem = preferencesModel.getUnitSystemModel().getUnitSystem();
         switch (unitSystem) {
-            case Metric:
-                mapView.getMapScaleBar().setDistanceUnitAdapter(MetricUnitAdapter.INSTANCE);
-                break;
-            case Statute:
-                mapView.getMapScaleBar().setDistanceUnitAdapter(ImperialUnitAdapter.INSTANCE);
-                break;
-            case Nautic:
-                mapView.getMapScaleBar().setDistanceUnitAdapter(NauticalUnitAdapter.INSTANCE);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown UnitSystem " + unitSystem);
+            case Metric -> mapView.getMapScaleBar().setDistanceUnitAdapter(MetricUnitAdapter.INSTANCE);
+            case Statute -> mapView.getMapScaleBar().setDistanceUnitAdapter(ImperialUnitAdapter.INSTANCE);
+            case Nautic -> mapView.getMapScaleBar().setDistanceUnitAdapter(NauticalUnitAdapter.INSTANCE);
         }
     }
 
@@ -526,16 +521,11 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private Layer createLayerForMap(LocalMap map) {
-        switch (map.getType()) {
-            case Mapsforge:
-                return createTileRendererLayer(((MapsforgeFileMap)map).getMapFile(), map.getUrl());
-            case MBTiles:
-                return new TileMBTilesLayer(createTileCache(map.getUrl()), mapView.getModel().mapViewPosition, true, ((MBTilesFileMap)map).getMBTilesFile(), GRAPHIC_FACTORY);
-            case Download:
-                return new TileDownloadLayer(createTileCache(map.getUrl()), mapView.getModel().mapViewPosition, ((TileDownloadMap)map).getTileSource(), GRAPHIC_FACTORY);
-            default:
-                throw new IllegalArgumentException("Unknown MapType " + map.getType());
-        }
+        return switch (map.getType()) {
+            case Mapsforge -> createTileRendererLayer(((MapsforgeFileMap) map).getMapFile(), map.getUrl());
+            case MBTiles -> new TileMBTilesLayer(createTileCache(map.getUrl()), mapView.getModel().mapViewPosition, true, ((MBTilesFileMap) map).getMBTilesFile(), GRAPHIC_FACTORY);
+            case Download -> new TileDownloadLayer(createTileCache(map.getUrl()), mapView.getModel().mapViewPosition, ((TileDownloadMap) map).getTileSource(), GRAPHIC_FACTORY);
+        };
     }
 
     private final Map<LocalMap, Layer> mapsToLayers = new HashMap<>();
@@ -655,16 +645,11 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private EventMapUpdater getEventMapUpdaterFor(RouteCharacteristics characteristics) {
-        switch (characteristics) {
-            case Route:
-                return routeUpdater;
-            case Track:
-                return trackUpdater;
-            case Waypoints:
-                return waypointUpdater;
-            default:
-                throw new IllegalArgumentException("RouteCharacteristics " + characteristics + " is not supported");
-        }
+        return switch (characteristics) {
+            case Route -> routeUpdater;
+            case Track -> trackUpdater;
+            case Waypoints -> waypointUpdater;
+        };
     }
 
     public boolean isInitialized() {
@@ -1282,17 +1267,9 @@ public class MapsforgeMapView extends BaseMapView {
         public void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
             executor.execute(() -> {
                 switch (eventType) {
-                    case INSERT:
-                        eventMapUpdater.handleAdd(firstRow, lastRow);
-                        break;
-                    case UPDATE:
-                        eventMapUpdater.handleUpdate(firstRow, lastRow);
-                        break;
-                    case DELETE:
-                        eventMapUpdater.handleRemove(firstRow, lastRow);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Event type " + eventType + " is not supported");
+                    case INSERT -> eventMapUpdater.handleAdd(firstRow, lastRow);
+                    case UPDATE -> eventMapUpdater.handleUpdate(firstRow, lastRow);
+                    case DELETE -> eventMapUpdater.handleRemove(firstRow, lastRow);
                 }
             });
         }
@@ -1307,11 +1284,8 @@ public class MapsforgeMapView extends BaseMapView {
     private class PositionsModelListener implements TableModelListener {
         public void tableChanged(TableModelEvent e) {
             switch (e.getType()) {
-                case INSERT:
-                case DELETE:
-                    updateDecoupler.handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
-                    break;
-                case UPDATE:
+                case INSERT, DELETE -> updateDecoupler.handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
+                case UPDATE -> {
                     if (positionsModel.isContinousRange())
                         return;
                     if (!(e.getColumn() == DESCRIPTION_COLUMN_INDEX ||
@@ -1319,9 +1293,8 @@ public class MapsforgeMapView extends BaseMapView {
                             e.getColumn() == LATITUDE_COLUMN_INDEX ||
                             e.getColumn() == ALL_COLUMNS))
                         return;
-
                     boolean allRowsChanged = isFirstToLastRow(e);
-                    if(allRowsChanged)
+                    if (allRowsChanged)
                         updateDecoupler.replaceRoute();
                     else
                         updateDecoupler.handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
@@ -1329,9 +1302,8 @@ public class MapsforgeMapView extends BaseMapView {
                     // center and zoom if a file was just loaded
                     if (allRowsChanged && mapViewCallback.isShowAllPositionsAfterLoading())
                         centerAndZoom(getMapBoundingBox(), getRouteBoundingBox(), true, true);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
+                }
+                default -> throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
             }
         }
     }
@@ -1406,16 +1378,8 @@ public class MapsforgeMapView extends BaseMapView {
     private class AppliedOverlayListener implements TableModelListener {
         public void tableChanged(TableModelEvent e) {
             switch (e.getType()) {
-                case INSERT:
-                    handleOverlayInsert(e.getFirstRow(), e.getLastRow());
-                    break;
-                case DELETE:
-                    handleOverlayDelete(e.getFirstRow(), e.getLastRow());
-                    break;
-                case UPDATE:
-                    break;
-                default:
-                    throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
+                case INSERT -> handleOverlayInsert(e.getFirstRow(), e.getLastRow());
+                case DELETE -> handleOverlayDelete(e.getFirstRow(), e.getLastRow());
             }
         }
     }

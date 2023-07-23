@@ -39,15 +39,15 @@ public class LocalMapTableCellRenderer extends AlternatingColorTableCellRenderer
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         LocalMap map = (LocalMap) value;
         switch (columnIndex) {
-            case DESCRIPTION_COLUMN:
+            case DESCRIPTION_COLUMN -> {
                 String text = map.getDescription();
-                if(map.getType().isDownload())
+                if (map.getType().isDownload())
                     text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
                 label.setText(text);
                 label.setToolTipText(map.getUrl());
-                break;
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+            }
+            default ->
+                    throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
         }
         return label;
     }

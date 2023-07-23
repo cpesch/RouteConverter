@@ -39,19 +39,13 @@ public class ProxyHelper {
 
         Logger.setBackend(new Logger.LogBackEnd() {
             private Level mapLogLevel(Logger.LogLevel loglevel) {
-                switch (loglevel) {
-                    case ERROR:
-                        return Level.SEVERE;
-                    case WARNING:
-                        return Level.WARNING;
-                    case INFO:
-                        return Level.INFO;
-                    case TRACE:
-                        return Level.FINER;
-                    case DEBUG:
-                        return Level.FINE;
-                }
-                return null;
+                return switch (loglevel) {
+                    case ERROR -> Level.SEVERE;
+                    case WARNING -> Level.WARNING;
+                    case INFO -> Level.INFO;
+                    case TRACE -> Level.FINER;
+                    case DEBUG -> Level.FINE;
+                };
             }
 
             public void log(Class<?> clazz, Logger.LogLevel loglevel, String msg, Object... params) {

@@ -23,7 +23,6 @@
 package slash.navigation.common;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static java.util.Arrays.asList;

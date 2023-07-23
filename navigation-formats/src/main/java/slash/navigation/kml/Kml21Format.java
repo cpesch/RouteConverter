@@ -302,22 +302,20 @@ public class Kml21Format extends KmlFormat {
 
         for (KmlRoute route : routes) {
             switch (route.getCharacteristics()) {
-                case Waypoints:
+                case Waypoints -> {
                     FolderType folderType = createWayPoints(route, 0, route.getPositionCount());
                     documentType.getFeature().add(objectFactory.createFolder(folderType));
                     documentType.setName(createDocumentName(route));
                     documentType.setDescription(asDescription(route.getDescription()));
-                    break;
-                case Route:
+                }
+                case Route -> {
                     PlacemarkType placemarkRoute = createRoute(route, 0, route.getPositionCount());
                     documentType.getFeature().add(objectFactory.createPlacemark(placemarkRoute));
-                    break;
-                case Track:
+                }
+                case Track -> {
                     PlacemarkType placemarkTrack = createTrack(route, 0, route.getPositionCount());
                     documentType.getFeature().add(objectFactory.createPlacemark(placemarkTrack));
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown RouteCharacteristics " + route.getCharacteristics());
+                }
             }
         }
         return kmlType;

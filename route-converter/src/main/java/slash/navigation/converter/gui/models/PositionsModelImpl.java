@@ -85,22 +85,30 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     public String getStringAt(int rowIndex, int columnIndex) {
         NavigationPosition position = getPosition(rowIndex);
         switch (columnIndex) {
-            case DESCRIPTION_COLUMN_INDEX:
+            case DESCRIPTION_COLUMN_INDEX -> {
                 return position.getDescription();
-            case DATE_TIME_COLUMN_INDEX:
+            }
+            case DATE_TIME_COLUMN_INDEX -> {
                 return extractDateTime(position);
-            case DATE_COLUMN_INDEX:
+            }
+            case DATE_COLUMN_INDEX -> {
                 return extractDate(position);
-            case TIME_COLUMN_INDEX:
+            }
+            case TIME_COLUMN_INDEX -> {
                 return extractTime(position);
-            case LONGITUDE_COLUMN_INDEX:
+            }
+            case LONGITUDE_COLUMN_INDEX -> {
                 return formatLongitude(position.getLongitude());
-            case LATITUDE_COLUMN_INDEX:
+            }
+            case LATITUDE_COLUMN_INDEX -> {
                 return formatLatitude(position.getLatitude());
-            case ELEVATION_COLUMN_INDEX:
+            }
+            case ELEVATION_COLUMN_INDEX -> {
                 return extractElevation(position);
-            case SPEED_COLUMN_INDEX:
+            }
+            case SPEED_COLUMN_INDEX -> {
                 return extractSpeed(position);
+            }
         }
         throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
     }
@@ -173,19 +181,11 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        switch (columnIndex) {
-            case DESCRIPTION_COLUMN_INDEX:
-            case DATE_TIME_COLUMN_INDEX:
-            case DATE_COLUMN_INDEX:
-            case TIME_COLUMN_INDEX:
-            case LONGITUDE_COLUMN_INDEX:
-            case LATITUDE_COLUMN_INDEX:
-            case ELEVATION_COLUMN_INDEX:
-            case SPEED_COLUMN_INDEX:
-                return true;
-            default:
-                return false;
-        }
+        return switch (columnIndex) {
+            case DESCRIPTION_COLUMN_INDEX, DATE_TIME_COLUMN_INDEX, DATE_COLUMN_INDEX, TIME_COLUMN_INDEX,
+                    LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX, ELEVATION_COLUMN_INDEX, SPEED_COLUMN_INDEX -> true;
+            default -> false;
+        };
     }
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
@@ -216,32 +216,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         NavigationPosition position = getPosition(rowIndex);
         String string = value != null ? trim(value.toString()) : null;
         switch (columnIndex) {
-            case DESCRIPTION_COLUMN_INDEX:
-                position.setDescription(string);
-                break;
-            case DATE_TIME_COLUMN_INDEX:
-                position.setTime(parseDateTime(value, string));
-                break;
-            case DATE_COLUMN_INDEX:
-                position.setTime(parseDate(value, string, position.getTime()));
-                break;
-            case TIME_COLUMN_INDEX:
-                position.setTime(parseTime(value, string, position.getTime()));
-                break;
-            case LONGITUDE_COLUMN_INDEX:
-                position.setLongitude(parseLongitude(value, string));
-                break;
-            case LATITUDE_COLUMN_INDEX:
-                position.setLatitude(parseLatitude(value, string));
-                break;
-            case ELEVATION_COLUMN_INDEX:
-                position.setElevation(parseElevation(value, string));
-                break;
-            case SPEED_COLUMN_INDEX:
-                position.setSpeed(parseSpeed(value, string));
-                break;
-            default:
-                throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+            case DESCRIPTION_COLUMN_INDEX -> position.setDescription(string);
+            case DATE_TIME_COLUMN_INDEX -> position.setTime(parseDateTime(value, string));
+            case DATE_COLUMN_INDEX -> position.setTime(parseDate(value, string, position.getTime()));
+            case TIME_COLUMN_INDEX -> position.setTime(parseTime(value, string, position.getTime()));
+            case LONGITUDE_COLUMN_INDEX -> position.setLongitude(parseLongitude(value, string));
+            case LATITUDE_COLUMN_INDEX -> position.setLatitude(parseLatitude(value, string));
+            case ELEVATION_COLUMN_INDEX -> position.setElevation(parseElevation(value, string));
+            case SPEED_COLUMN_INDEX -> position.setSpeed(parseSpeed(value, string));
         }
     }
 
