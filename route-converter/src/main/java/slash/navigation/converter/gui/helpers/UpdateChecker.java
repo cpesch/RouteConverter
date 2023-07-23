@@ -83,7 +83,7 @@ public class UpdateChecker {
                     getStartCount(),
                     myJavaVersion,
                     System.getProperty("sun.arch.data.model"),
-                    System.getProperty("javafx.runtime.version"),
+                    System.getProperty("javafx.runtime.version", "?"),
                     System.getProperty("os.name"),
                     System.getProperty("os.version"),
                     System.getProperty("os.arch"),
