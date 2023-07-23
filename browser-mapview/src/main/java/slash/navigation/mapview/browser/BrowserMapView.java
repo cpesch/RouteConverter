@@ -453,7 +453,7 @@ public abstract class BrowserMapView extends BaseMapView {
                         haveToRepaintSelection = false;
                         copiedSelectedPositionIndices = new int[selectedPositionIndices.length];
                         System.arraycopy(selectedPositionIndices, 0, copiedSelectedPositionIndices, 0, copiedSelectedPositionIndices.length);
-                        copiedPositions = new ArrayList<>(positionsModel.getRoute().getPositions());
+                        copiedPositions = new ArrayList<NavigationPosition>(positionsModel.getRoute().getPositions());
                     } else
                         continue;
                 }
@@ -1831,11 +1831,7 @@ public abstract class BrowserMapView extends BaseMapView {
         }
         positionsModel.fireTableRowsUpdated(minimum, size, ALL_COLUMNS);
 
-        invokeLater(new Runnable() {
-            public void run() {
-                setSelectedPositions(selectedPositionIndices, true);
-            }
-        });
+        invokeLater(() -> setSelectedPositions(selectedPositionIndices, true));
     }
 
     private void selectPosition(Double longitude, Double latitude, Double threshold, boolean replaceSelection) {

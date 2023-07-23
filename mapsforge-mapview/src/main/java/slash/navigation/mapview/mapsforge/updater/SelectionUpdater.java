@@ -25,8 +25,6 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.Collections.emptyList;
-
 /**
  * Stores the current selection state and minimizes {@link SelectionOperation}s.
  * Used to reduce the number of interactions between event listener and map UI.
@@ -51,6 +49,15 @@ public class SelectionUpdater {
         } else {
             updateSelection(selectedPositions);
         }
+    }
+
+
+    public void setSelectedPositions(List<NavigationPosition> selectedPositions) {
+        int[] indices = selectedPositions.stream()
+                .map(positionsModel::getIndex)
+                .mapToInt(i->i)
+                .toArray();
+        replaceSelection(indices);
     }
 
     private void replaceSelection(int[] selectedPositions) {
@@ -104,9 +111,10 @@ public class SelectionUpdater {
     }
 
     public synchronized int[] getIndices() {
-        int[] indices = new int[positionWithLayers.size()];
-        for (int i = 0; i < positionWithLayers.size(); i++)
-            indices[i] = positionsModel.getIndex(positionWithLayers.get(i).getPosition());
-        return indices;
+        return positionWithLayers.stream()
+                .map(PositionWithLayer::getPosition)
+                .map(positionsModel::getIndex)
+                .mapToInt(i->i)
+                .toArray();
     }
 }

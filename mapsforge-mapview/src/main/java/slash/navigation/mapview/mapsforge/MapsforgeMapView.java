@@ -1086,7 +1086,9 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     public void setSelectedPositions(List<NavigationPosition> selectedPositions) {
-        throw new UnsupportedOperationException("photo panel not available in " + MapsforgeMapView.class.getSimpleName());
+        if (selectionUpdater == null)
+            return;
+        selectionUpdater.setSelectedPositions(selectedPositions);
     }
 
     private LatLong getMousePosition() {

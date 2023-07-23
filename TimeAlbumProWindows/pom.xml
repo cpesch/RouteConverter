@@ -130,10 +130,5 @@
             <artifactId>time-album-pro</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>javafx8-mapview</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

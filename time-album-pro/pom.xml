@@ -13,7 +13,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter-google</artifactId>
+            <artifactId>route-converter-opensource</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

@@ -32,7 +32,7 @@ import static java.util.Arrays.asList;
  * @author Christian Pesch
  */
 
-public class TimeAlbumPro extends RouteConverterGoogle {
+public class TimeAlbumPro extends RouteConverterOpenSource {
     private final NavigationFormatRegistry navigationFormatRegistry = new ColumbusNavigationFormatRegistry();
 
     public static void main(String[] args) {

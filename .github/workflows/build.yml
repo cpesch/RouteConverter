@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 8, 11, 12, 13, 14, 15, 16, 17, 18, 19 ]
+        java: [ 17, 18, 19, 20 ]
     name: Java ${{ matrix.java }} compatibility
     steps:
       - uses: actions/checkout@v2
@@ -31,7 +31,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        java: [ 8 ]
+        java: [ 17 ]
     name: Java ${{ matrix.java }} on Windows
     steps:
       - uses: actions/checkout@v2

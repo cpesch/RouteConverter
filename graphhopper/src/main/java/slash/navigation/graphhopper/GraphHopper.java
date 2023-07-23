@@ -158,7 +158,7 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public String getPath() {
-        return graphManager.getPath();
+        return graphManager != null ? graphManager.getPath() : "";
     }
 
     public void setPath(String path) {
