@@ -30,14 +30,12 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.conn.HttpClientConnectionManager;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.DefaultHttpRequestRetryHandler;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHttpResponse;
-import slash.navigation.rest.ssl.SSLConnectionManagerFactory;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -78,12 +76,6 @@ public abstract class HttpRequest {
         requestConfigBuilder.setConnectTimeout(15 * 1000);
         requestConfigBuilder.setSocketTimeout(90 * 1000);
         clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
-        try {
-            HttpClientConnectionManager connectionManager = new SSLConnectionManagerFactory().createConnectionManager();
-            clientBuilder.setConnectionManager(connectionManager);
-        } catch (Exception e) {
-            log.severe("Cannot create SSL connection manager that supports letsencrypt root certificate: " + getLocalizedMessage(e));
-        }
         setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "2.33")); // versioned preference
         this.method = method;
     }
@@ -157,10 +149,9 @@ public abstract class HttpRequest {
         Proxy proxy = findHTTPProxy(method.getURI());
         if(proxy != NO_PROXY) {
             SocketAddress address = proxy.address();
-            if(address instanceof InetSocketAddress) {
-                InetSocketAddress inetSocketAddress = (InetSocketAddress) address;
+            if(address instanceof InetSocketAddress inetSocketAddress) {
                 requestConfigBuilder.setProxy(new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort()));
-                log.info(format("Using proxy %s for %s", proxy.toString(), method.getURI()));
+                log.info(format("Using proxy %s for %s", proxy, method.getURI()));
             }
         }
 
