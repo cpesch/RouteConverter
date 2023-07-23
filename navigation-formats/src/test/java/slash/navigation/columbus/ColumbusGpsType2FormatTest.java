@@ -34,7 +34,7 @@ import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
 import static slash.navigation.columbus.ColumbusV1000Device.*;
 
 public class ColumbusGpsType2FormatTest {
-    private ColumbusGpsType2Format format = new ColumbusGpsType2Format();
+    private final ColumbusGpsType2Format format = new ColumbusGpsType2Format();
 
     @Test
     public void testIsValidLine() {
@@ -45,12 +45,14 @@ public class ColumbusGpsType2FormatTest {
         assertTrue(format.isValidLine("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,18,"));
         assertTrue(format.isValidLine("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51"));
         assertTrue(format.isValidLine("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,18,Description"));
+        assertTrue(format.isValidLine("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,"));
     }
 
     @Test
     public void testIsPosition() {
         assertTrue(format.isPosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,18"));
         assertTrue(format.isPosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51"));
+        assertTrue(format.isPosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,"));
 
         assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,PRES,TEMP"));
         assertFalse(format.isPosition("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING"));
@@ -59,7 +61,7 @@ public class ColumbusGpsType2FormatTest {
     @Test
     public void testParsePosition() throws Exception {
         ignoreLocalTimeZone(() -> {
-            Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,1", new ParserContextImpl());
+            Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,1", new ParserContextImpl<>());
             assertDoubleEquals(119.269951, position.getLongitude());
             assertDoubleEquals(26.099775, position.getLatitude());
             assertDoubleEquals(-71.0, position.getElevation());
@@ -84,7 +86,7 @@ public class ColumbusGpsType2FormatTest {
         try {
             setUseLocalTimeZone(true);
             setTimeZone("Asia/Shanghai");
-            Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,1", new ParserContextImpl());
+            Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,1", new ParserContextImpl<>());
             String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
             CompactCalendar expectedCal = calendar(2016, 3, 25, 7, 20, 59);
             String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -98,14 +100,20 @@ public class ColumbusGpsType2FormatTest {
 
     @Test
     public void testParsePositionWithDescription() {
-        Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,1,VOX02971", new ParserContextImpl());
+        Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51,1021.3,1,VOX02971", new ParserContextImpl<>());
         assertEquals("VOX02971", position.getDescription());
+    }
+
+    @Test
+    public void testParsePositionWithNullHeading() {
+        Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,", new ParserContextImpl<>());
+        assertNull(position.getHeading());
     }
 
     @Test
     public void testParseTypeBPosition() throws Exception {
         ignoreLocalTimeZone(() -> {
-            Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51", new ParserContextImpl());
+            Wgs84Position position = format.parsePosition("17,T,160325,152059,26.099775N,119.269951E,-71,22.9,51", new ParserContextImpl<>());
             assertDoubleEquals(119.269951, position.getLongitude());
             assertDoubleEquals(26.099775, position.getLatitude());
             assertDoubleEquals(-71.0, position.getElevation());

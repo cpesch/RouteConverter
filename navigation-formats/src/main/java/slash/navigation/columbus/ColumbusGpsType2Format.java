@@ -68,7 +68,7 @@ public class ColumbusGpsType2Format extends ColumbusGpsFormat {
                     SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO +
+                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO +
                     "(" + SEPARATOR +
                     SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
                     SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR + "?" +
