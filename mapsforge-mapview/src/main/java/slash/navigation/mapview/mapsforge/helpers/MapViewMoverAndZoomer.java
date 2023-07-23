@@ -64,6 +64,11 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         mapView.addMouseWheelListener(this);
     }
 
+    public void mouseClicked(MouseEvent e) {
+        // enables Select and New from context menu
+        lastMousePressPoint = e.getPoint();
+    }
+
     public void mousePressed(MouseEvent e) {
         markerAndDelta = getMarkerFor(e);
         if (markerAndDelta == null)
@@ -180,9 +185,9 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     private static class MarkerAndDelta {
-        private DraggableMarker marker;
-        private double deltaX;
-        private double deltaY;
+        private final DraggableMarker marker;
+        private final double deltaX;
+        private final double deltaY;
 
         public MarkerAndDelta(DraggableMarker marker, double deltaX, double deltaY) {
             this.marker = marker;

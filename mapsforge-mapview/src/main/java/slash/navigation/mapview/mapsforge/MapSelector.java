@@ -167,7 +167,7 @@ public class MapSelector {
     }
 
     private void createUIComponents() {
-        comboBoxMap = new ItemComboBox<LocalMap>() {
+        comboBoxMap = new ItemComboBox<>() {
             public void setSelectedItem(Object anObject) {
                 if (DOWNLOAD_MAP.equals(anObject)) {
                     Application.getInstance().getContext().getActionManager().run("show-maps");
@@ -176,7 +176,7 @@ public class MapSelector {
                 super.setSelectedItem(anObject);
             }
         };
-        comboBoxTheme = new ItemComboBox<LocalTheme>() {
+        comboBoxTheme = new ItemComboBox<>() {
             public void setSelectedItem(Object anObject) {
                 if (DOWNLOAD_THEME.equals(anObject)) {
                     Application.getInstance().getContext().getActionManager().run("show-themes");
