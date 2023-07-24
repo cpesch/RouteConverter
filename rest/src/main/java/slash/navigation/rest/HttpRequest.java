@@ -73,8 +73,9 @@ public abstract class HttpRequest {
 
     HttpRequest(HttpRequestBase method) {
         this.log = Logger.getLogger(getClass().getName());
-        requestConfigBuilder.setConnectTimeout(15 * 1000);
-        requestConfigBuilder.setSocketTimeout(90 * 1000);
+        requestConfigBuilder.setConnectTimeout(30 * 1000);
+        requestConfigBuilder.setConnectionRequestTimeout(15 * 1000);
+        requestConfigBuilder.setSocketTimeout(120 * 1000);
         clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
         setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "2.33")); // versioned preference
         this.method = method;
