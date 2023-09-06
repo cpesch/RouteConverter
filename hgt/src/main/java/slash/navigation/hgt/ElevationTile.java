@@ -106,19 +106,19 @@ public class ElevationTile {
         int pos;                                                    // The index of the elevation into the hgt file
 
         pos = (((intervalCount - latitudeIntervalIndex) - 1) * (intervalCount + 1)) + longitudeIntervalIndex; // The index for the left top elevation
-        file.seek(pos * 2);                                // We have 16-bit values for elevation, so multiply by 2
+        file.seek(pos * 2L);                                // We have 16-bit values for elevation, so multiply by 2
         dLeftTop = file.readShort();                       // Now read the left top elevation from hgt file
 
         pos = ((intervalCount - latitudeIntervalIndex) * (intervalCount + 1)) + longitudeIntervalIndex; // The index for the left bottom elevation
-        file.seek(pos * 2);                                // We have 16-bit values for elevation, so multiply by 2
+        file.seek(pos * 2L);                                // We have 16-bit values for elevation, so multiply by 2
         dLeftBottom = file.readShort();                    // Now read the left bottom elevation from hgt file
 
         pos = (((intervalCount - latitudeIntervalIndex) - 1) * (intervalCount + 1)) + longitudeIntervalIndex + 1; // The index for the right top elevation
-        file.seek(pos * 2);                                // We have 16-bit values for elevation, so multiply by 2
+        file.seek(pos * 2L);                                // We have 16-bit values for elevation, so multiply by 2
         dRightTop = file.readShort();                      // Now read the right top elevation from hgt file
 
         pos = ((intervalCount - latitudeIntervalIndex) * (intervalCount + 1)) + longitudeIntervalIndex + 1; // The index for the right bottom elevation
-        file.seek(pos * 2);                                // We have 16-bit values for elevation, so multiply by 2
+        file.seek(pos * 2L);                                // We have 16-bit values for elevation, so multiply by 2
         dRightBottom = file.readShort();                   // Now read the right bottom top elevation from hgt file
 
         // if one of the read elevation values is not valid, we cannot interpolate

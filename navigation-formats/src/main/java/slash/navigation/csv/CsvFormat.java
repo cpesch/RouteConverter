@@ -126,7 +126,7 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
             reader.close();
         }
 
-        if (positions.size() > 0) {
+        if (!positions.isEmpty()) {
             context.appendRoute(new CsvRoute(this, null, positions));
             return true;
         } else

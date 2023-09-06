@@ -26,7 +26,7 @@ import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class KompassFormatTest {
-    private KompassFormat format = new KompassFormat();
+    private final KompassFormat format = new KompassFormat();
 
     @Test
     public void testIsPosition() {

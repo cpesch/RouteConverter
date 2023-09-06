@@ -90,14 +90,14 @@ public class KurvigerUrlFormat extends BaseUrlParsingFormat {
     }
 
     private List<Wgs84Position> parseMatrixParameters(String data) {
-        if (data == null || data.length() == 0)
+        if (data == null || data.isEmpty())
             return null;
         return parsePositions(data);
     }
 
     protected void processURL(String url, String encoding, ParserContext<Wgs84Route> context) {
         List<Wgs84Position> positions = parseMatrixParameters(url);
-        if (positions.size() > 0)
+        if (!positions.isEmpty())
             context.appendRoute(createRoute(Route, null, positions));
     }
 

@@ -35,7 +35,7 @@ import static java.util.Collections.singletonList;
  */
 
 public class ReopenAction extends FrameAction {
-    private URL url;
+    private final URL url;
 
     public ReopenAction(URL url) {
         this.url = url;

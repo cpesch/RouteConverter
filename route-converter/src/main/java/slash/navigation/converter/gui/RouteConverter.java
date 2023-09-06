@@ -172,25 +172,25 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-2.33"; // versioned preference
     public static final String AUTOMATIC_UPDATE_CHECK_PREFERENCE = "automaticUpdateCheck-2.33";
 
-    private NavigationFormatRegistry navigationFormatRegistry = new NavigationFormatRegistry();
+    private final NavigationFormatRegistry navigationFormatRegistry = new NavigationFormatRegistry();
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
     private DataSourceManager dataSourceManager;
-    private ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade();
-    private GeocodingServiceFacade geocodingServiceFacade = new GeocodingServiceFacade();
-    private InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
-    private BooleanModel showAllPositionsAfterLoading = new BooleanModel(SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE, true);
-    private BooleanModel recenterAfterZooming = new BooleanModel(RECENTER_AFTER_ZOOMING_PREFERENCE, true);
-    private TimeZoneModel timeZoneModel = new TimeZoneModel(TIME_ZONE_PREFERENCE, TimeZone.getDefault());
-    private TimeZoneModel photoTimeZoneModel = new TimeZoneModel(PHOTO_TIMEZONE_PREFERENCE, timeZoneModel.getTimeZone());
+    private final ElevationServiceFacade elevationServiceFacade = new ElevationServiceFacade();
+    private final GeocodingServiceFacade geocodingServiceFacade = new GeocodingServiceFacade();
+    private final InsertPositionFacade insertPositionFacade = new InsertPositionFacade();
+    private final BooleanModel showAllPositionsAfterLoading = new BooleanModel(SHOW_ALL_POSITIONS_AFTER_LOADING_PREFERENCE, true);
+    private final BooleanModel recenterAfterZooming = new BooleanModel(RECENTER_AFTER_ZOOMING_PREFERENCE, true);
+    private final TimeZoneModel timeZoneModel = new TimeZoneModel(TIME_ZONE_PREFERENCE, TimeZone.getDefault());
+    private final TimeZoneModel photoTimeZoneModel = new TimeZoneModel(PHOTO_TIMEZONE_PREFERENCE, timeZoneModel.getTimeZone());
     private final UnitSystemModel unitSystemModel = new UnitSystemModel();
     private final CharacteristicsModel characteristicsModel = new CharacteristicsModel();
     private final RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
     private final MapPreferencesModel mapPreferencesModel = new MapPreferencesModel(getRoutingServiceFacade().getRoutingPreferencesModel(), getCharacteristicsModel(), getUnitSystemModel());
-    private GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
-    private ProfileModeModel profileModeModel = new ProfileModeModel();
+    private final GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
+    private final ProfileModeModel profileModeModel = new ProfileModeModel();
     private TileServerMapManager tileServerMapManager;
-    private DistanceAndTimeAggregator distanceAndTimeAggregator = new DistanceAndTimeAggregator();
+    private final DistanceAndTimeAggregator distanceAndTimeAggregator = new DistanceAndTimeAggregator();
 
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, profileSplitPane;
@@ -996,8 +996,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private class LazyTabInitializer implements ChangeListener {
-        private Map<Component, Runnable> lazyInitializers = new HashMap<>();
-        private Map<Component, PanelInTab> initialized = new HashMap<>();
+        private final Map<Component, Runnable> lazyInitializers = new HashMap<>();
+        private final Map<Component, PanelInTab> initialized = new HashMap<>();
 
         LazyTabInitializer() {
             lazyInitializers.put(convertPanel, () -> {
@@ -1150,7 +1150,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 getMapView().resize();
             }
             preferences.putInt(PROFILE_DIVIDER_LOCATION_PREFERENCE, newValue);
-            double newRatio = new Integer(newValue).doubleValue() / contentPane.getHeight();
+            double newRatio = Integer.valueOf(newValue).doubleValue() / contentPane.getHeight();
             preferences.putDouble(PROFILE_DIVIDER_RATIO_PREFERENCE, newRatio);
             log.fine("Changed profile divider to " + newValue + " and ratio " + newRatio);
             enableActions();

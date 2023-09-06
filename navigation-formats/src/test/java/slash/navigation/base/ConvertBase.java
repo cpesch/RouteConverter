@@ -60,7 +60,7 @@ public abstract class ConvertBase {
         assertNotNull(result.getFormat());
         assertNotNull(result.getTheRoute());
         assertNotNull(result.getAllRoutes());
-        assertTrue(result.getAllRoutes().size() > 0);
+        assertTrue(!result.getAllRoutes().isEmpty());
 
         // check append
         NavigationPosition sourcePosition = result.getTheRoute().getPositions().get(0);
@@ -113,11 +113,11 @@ public abstract class ConvertBase {
             removeTcxLap(targetFormat, targetResult);
 
             compareRouteMetaData(sourceRoute, targetResult.getTheRoute());
-            comparePositions(sourceRoute, sourceFormat, targetResult.getTheRoute(), targetFormat, targetResult.getAllRoutes().size() > 0);
+            comparePositions(sourceRoute, sourceFormat, targetResult.getTheRoute(), targetFormat, !targetResult.getAllRoutes().isEmpty());
 
             for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute : targetResult.getAllRoutes()) {
                 compareRouteMetaData(sourceRoute, targetRoute);
-                comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, targetResult.getAllRoutes().size() > 0);
+                comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, !targetResult.getAllRoutes().isEmpty());
             }
 
             assertTrue(target.exists());

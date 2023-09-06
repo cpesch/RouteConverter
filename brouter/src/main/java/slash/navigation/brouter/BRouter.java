@@ -226,7 +226,7 @@ public class BRouter extends BaseRoutingService {
             }
             if (!profile.exists()) {
                 List<TravelMode> availableTravelModes = getAvailableTravelModes();
-                if (availableTravelModes.size() == 0) {
+                if (availableTravelModes.isEmpty()) {
                     log.warning(format("Cannot route between %s and %s: no travel modes found in %s", from, to, getProfilesDirectory()));
                     return new RoutingResult(asList(from, to), new DistanceAndTime(calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), null), Invalid);
                 }

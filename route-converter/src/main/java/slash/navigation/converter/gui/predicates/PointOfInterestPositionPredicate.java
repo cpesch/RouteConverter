@@ -42,9 +42,8 @@ public class PointOfInterestPositionPredicate implements FilterPredicate<Navigat
     }
 
     public boolean shouldInclude(NavigationPosition position) {
-        if (!(position instanceof Wgs84Position))
+        if (!(position instanceof Wgs84Position poiPosition))
             return false;
-        Wgs84Position poiPosition = (Wgs84Position) position;
         return POINTS_OF_INTEREST_WAYPOINT_TYPES.contains(poiPosition.getWaypointType());
     }
 }

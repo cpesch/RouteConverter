@@ -35,7 +35,7 @@ import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.RouteCharacteristics.*;
 
 public class OziExplorerFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+    private final NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     private void checkFile(String testFileName, RouteCharacteristics characteristics, int routeCount, int positionCount) throws IOException {
         File source = new File(TEST_PATH + testFileName);

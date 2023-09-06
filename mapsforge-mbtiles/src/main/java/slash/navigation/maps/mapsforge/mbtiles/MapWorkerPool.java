@@ -141,7 +141,7 @@ class MapWorkerPool implements Runnable {
                     long te = totalExecutions.incrementAndGet();
                     long tt = totalTime.addAndGet(end - start);
                     if (te % 10 == 0) {
-                        LOGGER.info("TIMING " + Long.toString(te) + " " + Double.toString(tt / te));
+                        LOGGER.info("TIMING " + te + " " + Double.toString(tt / te));
                     }
                     concurrentJobs.decrementAndGet();
                 }

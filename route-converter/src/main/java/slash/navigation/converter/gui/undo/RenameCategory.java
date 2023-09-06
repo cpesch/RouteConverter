@@ -34,9 +34,10 @@ import javax.swing.undo.UndoableEdit;
  */
 
 class RenameCategory extends AbstractUndoableEdit {
-    private UndoCatalogModel catalogModel;
-    private CategoryTreeNode category;
-    private String oldName, newName;
+    private final UndoCatalogModel catalogModel;
+    private final CategoryTreeNode category;
+    private final String oldName;
+    private final String newName;
     
     public RenameCategory(UndoCatalogModel catalogModel, CategoryTreeNode category, String oldName, String newName) {
         this.catalogModel = catalogModel;

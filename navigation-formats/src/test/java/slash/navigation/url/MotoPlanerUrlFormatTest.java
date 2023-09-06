@@ -33,7 +33,7 @@ import static slash.navigation.base.RouteCalculations.asWgs84Position;
 public class MotoPlanerUrlFormatTest {
     private static final String INPUT1 = "http://www.motoplaner.de/#32.64013,-16.85148;1,32.70498,-16.8338;1,32.70624,-16.88255;1,32.66431,-16.86777;1,32.68353,-16.90509;1,32.67702,-16.94549;1,32.65959,-16.96608;1,32.74285,-17.02466;1,32.72115,-17.11077;1,32.72183,-17.15622;1,32.78202,-17.17759;1,32.86656,-17.17075;1,32.774,-16.87225;1,32.76274,-16.86161;1,32.74713,-16.82939;1,32.69222,-16.78324;1,32.64031,-16.85144;1&&1";
 
-    private MotoPlanerUrlFormat format = new MotoPlanerUrlFormat();
+    private final MotoPlanerUrlFormat format = new MotoPlanerUrlFormat();
 
     @Test
     public void testFindURL() {

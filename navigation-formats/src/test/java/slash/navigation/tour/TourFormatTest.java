@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class TourFormatTest {
-    private TourFormat format = new TourFormat();
+    private final TourFormat format = new TourFormat();
 
     @Test
     public void testIsSectionTitle() {

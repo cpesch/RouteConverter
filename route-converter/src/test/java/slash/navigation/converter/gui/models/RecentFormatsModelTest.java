@@ -38,8 +38,8 @@ import static org.junit.Assert.assertEquals;
 
 public class RecentFormatsModelTest {
     private static final int LIMIT = 5;
-    private NavigationFormatRegistry registry = new NavigationFormatRegistry();
-    private RecentFormatsModel recentFormatsModel = new RecentFormatsModel(registry);
+    private final NavigationFormatRegistry registry = new NavigationFormatRegistry();
+    private final RecentFormatsModel recentFormatsModel = new RecentFormatsModel(registry);
 
     @Before
     public void setUp() {

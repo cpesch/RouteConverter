@@ -88,10 +88,9 @@ public class PhotonService implements GeocodingService {
         List<NavigationPosition> result = new ArrayList<>(features.size());
         for (Feature feature : features) {
             GeoJsonObject geometry = feature.getGeometry();
-            if (!(geometry instanceof Point))
+            if (!(geometry instanceof Point point))
                 continue;
 
-            Point point = (Point) geometry;
             LngLatAlt lngLatAlt = point.getCoordinates();
             String type = feature.getProperty("osm_key");
             result.add(new SimpleNavigationPosition(lngLatAlt.getLongitude(), lngLatAlt.getLatitude(), null,
@@ -112,7 +111,7 @@ public class PhotonService implements GeocodingService {
         if (collection == null)
             return null;
         List<Feature> features = collection.getFeatures();
-        if (features.size() == 0)
+        if (features.isEmpty())
             return null;
         Feature feature = features.get(0);
         GeoJsonObject geometry = feature.getGeometry();
@@ -129,19 +128,19 @@ public class PhotonService implements GeocodingService {
 
     private String getDisplayName(Feature feature) {
         String result = getProperty(feature, "name");
-        if(result.length() > 0)
+        if(!result.isEmpty())
             result += ", ";
         String postcode = getProperty(feature, "postcode");
-        if(postcode.length() > 0)
+        if(!postcode.isEmpty())
             result += postcode;
         String city = getProperty(feature, "city");
-        if(city.length() > 0)
+        if(!city.isEmpty())
             result += " " + city;
         String state = getProperty(feature, "state");
-        if(state.length() > 0)
+        if(!state.isEmpty())
             result += ", " + state;
         String country = getProperty(feature, "country");
-        if(country.length() > 0)
+        if(!country.isEmpty())
             result += ", " + country;
 
         result = result.replaceAll(" {2}", " ");

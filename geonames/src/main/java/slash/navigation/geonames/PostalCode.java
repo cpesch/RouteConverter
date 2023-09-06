@@ -20,6 +20,8 @@
 
 package slash.navigation.geonames;
 
+import java.util.Objects;
+
 /**
  * A country code, postal code, place name aggregate returned when accessing the GeoNames.org service.
  *
@@ -41,9 +43,9 @@ public class PostalCode {
 
         PostalCode that = (PostalCode) o;
 
-        return !(countryCode != null ? !countryCode.equals(that.countryCode) : that.countryCode != null) &&
-                !(placeName != null ? !placeName.equals(that.placeName) : that.placeName != null) &&
-                !(postalCode != null ? !postalCode.equals(that.postalCode) : that.postalCode != null);
+        return !(!Objects.equals(countryCode, that.countryCode)) &&
+                !(!Objects.equals(placeName, that.placeName)) &&
+                !(!Objects.equals(postalCode, that.postalCode));
     }
 
     public int hashCode() {

@@ -21,6 +21,8 @@ package slash.navigation.common;
 
 import slash.common.type.CompactCalendar;
 
+import java.util.Objects;
+
 /**
  * A navigation position that supports just longitude, latitude, elevation, description and time.
  *
@@ -142,12 +144,12 @@ public class SimpleNavigationPosition implements NavigationPosition {
 
         SimpleNavigationPosition that = (SimpleNavigationPosition) o;
 
-        return !(description != null ? !description.equals(that.description) : that.description != null) &&
-                !(speed != null ? !speed.equals(that.speed) : that.speed != null) &&
-                !(elevation != null ? !elevation.equals(that.elevation) : that.elevation != null) &&
-                !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
-                !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
-                !(time != null ? !time.equals(that.time) : that.time != null);
+        return !(!Objects.equals(description, that.description)) &&
+                !(!Objects.equals(speed, that.speed)) &&
+                !(!Objects.equals(elevation, that.elevation)) &&
+                !(!Objects.equals(latitude, that.latitude)) &&
+                !(!Objects.equals(longitude, that.longitude)) &&
+                !(!Objects.equals(time, that.time));
     }
 
     public int hashCode() {

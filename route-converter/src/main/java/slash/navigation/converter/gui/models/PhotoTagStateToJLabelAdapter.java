@@ -66,7 +66,7 @@ public class PhotoTagStateToJLabelAdapter extends PositionsModelToDocumentAdapte
                 count(Taggable),
                 count(NotTaggable)
         );
-        if(text.length() == 0)
+        if(text.isEmpty())
             text = "-";
         label.setText(text);
     }

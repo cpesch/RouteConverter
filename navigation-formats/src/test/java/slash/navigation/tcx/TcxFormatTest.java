@@ -28,7 +28,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 
 public class TcxFormatTest {
-    private TcxFormat format = new Tcx2Format();
+    private final TcxFormat format = new Tcx2Format();
 
     @Test
     public void testCreateUniqueRouteName() {

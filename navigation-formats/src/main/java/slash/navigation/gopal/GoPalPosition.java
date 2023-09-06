@@ -26,6 +26,7 @@ import slash.navigation.bcr.BcrPosition;
 import slash.navigation.tour.TourPosition;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 /**
  * Represents a position in a GoPal 3 or 5 Route (.xml) file.
@@ -57,7 +58,7 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
                 (getCity() != null ? getCity() : "") +
                 (getStreet() != null ? ", " + getStreet() : "") +
                 (getHouseNumber() != null ? " " + getHouseNumber() : "");
-        return result.length() > 0 ? result : null;
+        return !result.isEmpty() ? result : null;
     }
 
     public void setDescription(String description) {
@@ -124,15 +125,15 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
 
         GoPalPosition that = (GoPalPosition) o;
 
-        return !(x != null ? !x.equals(that.x) : that.x != null) &&
-                !(y != null ? !y.equals(that.y) : that.y != null) &&
-                !(country != null ? !country.equals(that.country) : that.country != null) &&
-                !(zipCode != null ? !zipCode.equals(that.zipCode) : that.zipCode != null) &&
-                !(description != null ? !description.equals(that.description) : that.description != null) &&
-                !(suburb != null ? !suburb.equals(that.suburb) : that.suburb != null) &&
-                !(street != null ? !street.equals(that.street) : that.street != null) &&
-                !(sideStreet != null ? !sideStreet.equals(that.sideStreet) : that.sideStreet != null) &&
-                !(houseNumber != null ? !houseNumber.equals(that.houseNumber) : that.houseNumber != null);
+        return !(!Objects.equals(x, that.x)) &&
+                !(!Objects.equals(y, that.y)) &&
+                !(!Objects.equals(country, that.country)) &&
+                !(!Objects.equals(zipCode, that.zipCode)) &&
+                !(!Objects.equals(description, that.description)) &&
+                !(!Objects.equals(suburb, that.suburb)) &&
+                !(!Objects.equals(street, that.street)) &&
+                !(!Objects.equals(sideStreet, that.sideStreet)) &&
+                !(!Objects.equals(houseNumber, that.houseNumber));
     }
 
     public int hashCode() {

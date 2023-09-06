@@ -28,6 +28,7 @@ import slash.navigation.tour.TourPosition;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.regex.Matcher;
 
 import static slash.common.io.Transfer.trim;
@@ -91,7 +92,7 @@ public class BcrPosition extends MercatorPosition {
         String result = (getZipCode() != null ? getZipCode() + " " : "") +
                 (getCity() != null ? getCity() : "") +
                 (getStreet() != null ? ", " + getStreet() : "");
-        return result.length() > 0 ? result : null;
+        return !result.isEmpty() ? result : null;
     }
 
     public void setDescription(String description) {
@@ -115,7 +116,7 @@ public class BcrPosition extends MercatorPosition {
                 zipCode = null;
             }
             street = trim(matcher.group(3));
-            if (street != null && STREET_DEFINES_CENTER_SYMBOL.equals(street))
+            if (STREET_DEFINES_CENTER_SYMBOL.equals(street))
                 street = STREET_DEFINES_CENTER_NAME;
             this.type = trim(matcher.group(4));
         }
@@ -162,12 +163,12 @@ public class BcrPosition extends MercatorPosition {
         BcrPosition that = (BcrPosition) o;
 
         return altitude == that.altitude &&
-                !(x != null ? !x.equals(that.x) : that.x != null) &&
-                !(y != null ? !y.equals(that.y) : that.y != null) &&
-                !(description != null ? !description.equals(that.description) : that.description != null) &&
-                !(street != null ? !street.equals(that.street) : that.street != null) &&
-                !(type != null ? !type.equals(that.type) : that.type != null) &&
-                !(zipCode != null ? !zipCode.equals(that.zipCode) : that.zipCode != null);
+                !(!Objects.equals(x, that.x)) &&
+                !(!Objects.equals(y, that.y)) &&
+                !(!Objects.equals(description, that.description)) &&
+                !(!Objects.equals(street, that.street)) &&
+                !(!Objects.equals(type, that.type)) &&
+                !(!Objects.equals(zipCode, that.zipCode));
     }
 
     public int hashCode() {

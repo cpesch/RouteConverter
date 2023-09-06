@@ -35,8 +35,8 @@ import static slash.navigation.bcr.BcrPosition.NO_ALTITUDE_DEFINED;
 import static slash.navigation.bcr.BcrPosition.STREET_DEFINES_CENTER_NAME;
 
 public class MTP0607FormatTest {
-    private MTP0607Format format = new MTP0607Format();
-    private BcrRoute route = new BcrRoute(format, "RouteName", asList("Description1", "Description2"), asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "End")));
+    private final MTP0607Format format = new MTP0607Format();
+    private final BcrRoute route = new BcrRoute(format, "RouteName", asList("Description1", "Description2"), asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "End")));
 
     @Test
     public void testIsSectionTitle() {

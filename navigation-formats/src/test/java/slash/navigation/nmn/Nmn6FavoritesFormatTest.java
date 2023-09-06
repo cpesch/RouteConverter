@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Nmn6FavoritesFormatTest {
-    private Nmn6FavoritesFormat format = new Nmn6FavoritesFormat();
+    private final Nmn6FavoritesFormat format = new Nmn6FavoritesFormat();
 
     @Test
     public void testIsPosition() {

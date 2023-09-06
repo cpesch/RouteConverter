@@ -54,8 +54,8 @@ public class XAxisModeMenu {
     }
 
     private class XAxisModeListener implements ChangeListener {
-        private JRadioButtonMenuItem menuItem;
-        private XAxisMode mode;
+        private final JRadioButtonMenuItem menuItem;
+        private final XAxisMode mode;
 
         private XAxisModeListener(JRadioButtonMenuItem menuItem, XAxisMode mode) {
             this.menuItem = menuItem;

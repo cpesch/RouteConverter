@@ -51,6 +51,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -64,7 +65,7 @@ import static slash.navigation.base.RouteComments.createRouteName;
 
 public class CsvRoute extends BaseRoute<CsvPosition, CsvFormat> {
     private String name;
-    private List<CsvPosition> positions;
+    private final List<CsvPosition> positions;
 
     public CsvRoute(CsvFormat format, String name, List<CsvPosition> positions) {
         super(format, Track);
@@ -198,8 +199,8 @@ public class CsvRoute extends BaseRoute<CsvPosition, CsvFormat> {
 
         CsvRoute csvRoute = (CsvRoute) o;
 
-        return (name != null ? name.equals(csvRoute.name) : csvRoute.name == null) &&
-                (positions != null ? positions.equals(csvRoute.positions) : csvRoute.positions == null);
+        return (Objects.equals(name, csvRoute.name)) &&
+                (Objects.equals(positions, csvRoute.positions));
     }
 
     public int hashCode() {

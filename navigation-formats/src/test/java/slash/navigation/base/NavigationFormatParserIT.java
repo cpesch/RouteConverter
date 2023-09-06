@@ -37,14 +37,14 @@ import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.RouteCharacteristics.*;
 
 public class NavigationFormatParserIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+    private final NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     ParserResult read(String testFileName) throws IOException {
         File source = new File(testFileName);
         ParserResult result = parser.read(source);
         assertNotNull(result.getFormat());
         assertNotNull(result.getAllRoutes());
-        assertTrue(result.getAllRoutes().size() > 0);
+        assertTrue(!result.getAllRoutes().isEmpty());
         assertNotNull("Cannot read route from " + source, result.getTheRoute());
         assertTrue(result.getTheRoute().getPositionCount() > 0);
         return result;
@@ -56,7 +56,7 @@ public class NavigationFormatParserIT {
             if (route.getCharacteristics().equals(characteristics))
                 result.add(route);
         }
-        return result.size() > 0 ? result : null;
+        return !result.isEmpty() ? result : null;
     }
 
     void readRouteCharacteristics(String testFileName, RouteCharacteristics characteristics,

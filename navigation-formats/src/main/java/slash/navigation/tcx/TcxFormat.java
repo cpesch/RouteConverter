@@ -89,8 +89,7 @@ public abstract class TcxFormat extends XmlNavigationFormat<TcxRoute> implements
         Double heartBeat = null;
         if (wptType.getExtensions() != null) {
             for (Object any : wptType.getExtensions().getAny()) {
-                if (any instanceof Element) {
-                    Element extension = (Element) any;
+                if (any instanceof Element extension) {
                     if ("TrackPointExtension".equals(extension.getLocalName())) {
                         for (int i = 0; i < extension.getChildNodes().getLength(); i++) {
                             Node hr = extension.getChildNodes().item(i);

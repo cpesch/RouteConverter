@@ -135,7 +135,7 @@ public class NavigationFormatParser {
             buffer.close();
         }
 
-        if (context.getRoutes().size() == 0 && context.getFormats().size() == 0 && firstSuccessfulFormat != null)
+        if (context.getRoutes().isEmpty() && context.getFormats().isEmpty() && firstSuccessfulFormat != null)
             context.addFormat(firstSuccessfulFormat);
     }
 
@@ -189,12 +189,12 @@ public class NavigationFormatParser {
     private ParserResult createResult(ParserContext<BaseRoute> context) throws IOException {
         List<BaseRoute> source = context.getRoutes();
         // if (source != null && source.size() > 0) {
-        if (source != null && context.getFormats().size() > 0) {
+        if (source != null && !context.getFormats().isEmpty()) {
             NavigationFormat format = determineFormat(source, context.getFormats().get(0));
             List<BaseRoute> destination = convertRoute(source, format);
             log.info("Detected '" + format.getName() + "' with " + destination.size() + " route(s) and " +
                     getPositionCounts(destination) + " positions");
-            if (destination.size() == 0)
+            if (destination.isEmpty())
                 destination.add(format.createRoute(RouteCharacteristics.Route, null, new ArrayList<>()));
             commentRoutes(destination);
             return new ParserResult(new FormatAndRoutes(format, destination));

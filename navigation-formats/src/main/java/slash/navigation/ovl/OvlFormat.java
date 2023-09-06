@@ -89,7 +89,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
             String line = reader.readLine();
             if (line == null)
                 break;
-            if (line.length() == 0)
+            if (line.isEmpty())
                 continue;
 
             if (isSectionTitle(line)) {
@@ -225,7 +225,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
             }
             symbol.removePositions();
         }
-        OvlSection symbol = symbols.size() > 0 ? symbols.get(0) : null;
+        OvlSection symbol = !symbols.isEmpty() ? symbols.get(0) : null;
         return new OvlRoute(this, estimateCharacteristics(positions.size()), mapLage.getTitle(), symbol, overlay, mapLage, positions);
     }
 
@@ -303,7 +303,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
                 writeSymbol(route, writer, 0, route.getPositionCount(), ++symbols);
             }
             // stupid logic: the first route written determines the properties of the Overlays and MapLage sections
-            OvlRoute first = routes.size() > 0 ? routes.get(0) : null;
+            OvlRoute first = !routes.isEmpty() ? routes.get(0) : null;
             if (first != null) {
                 writeOverlay(first, writer, symbols);
                 writeMapLage(first, writer);

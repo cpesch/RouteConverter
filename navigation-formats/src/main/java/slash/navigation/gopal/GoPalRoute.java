@@ -52,6 +52,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteComments.createRouteName;
@@ -212,8 +213,8 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
 
         GoPalRoute gopalRoute = (GoPalRoute) o;
 
-        return !(name != null ? !name.equals(gopalRoute.name) : gopalRoute.name != null) &&
-                !(positions != null ? !positions.equals(gopalRoute.positions) : gopalRoute.positions != null);
+        return !(!Objects.equals(name, gopalRoute.name)) &&
+                !(!Objects.equals(positions, gopalRoute.positions));
     }
 
     public int hashCode() {

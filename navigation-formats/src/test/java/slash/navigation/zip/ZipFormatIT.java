@@ -14,7 +14,7 @@ import static slash.common.TestCase.assertEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class ZipFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+    private final NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     @Test
     public void readGPX11Archive() throws IOException {

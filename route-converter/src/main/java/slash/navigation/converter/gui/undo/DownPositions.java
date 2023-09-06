@@ -35,9 +35,9 @@ import javax.swing.undo.UndoableEdit;
  */
 
 class DownPositions extends AbstractUndoableEdit {
-    private UndoPositionsModel positionsModel;
-    private int[] rows;
-    private int delta;
+    private final UndoPositionsModel positionsModel;
+    private final int[] rows;
+    private final int delta;
 
     public DownPositions(UndoPositionsModel positionsModel, int[] rows, int delta) {
         this.positionsModel = positionsModel;

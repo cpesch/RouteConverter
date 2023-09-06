@@ -69,7 +69,7 @@ public class MicrosoftExcel97Format extends ExcelFormat {
     }
 
     public void write(List<ExcelRoute> routes, OutputStream target) throws IOException {
-        if(routes.size() == 0)
+        if(routes.isEmpty())
             return;
 
         Workbook workbook = routes.get(0).getWorkbook();

@@ -34,7 +34,7 @@ public abstract class ItemModel<T extends Item> {
     private final String preferenceName;
     private final String defaultValue;
 
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     protected ItemModel(String preferenceName, String defaultValue) {
         this.preferenceName = preferenceName;
@@ -50,11 +50,9 @@ public abstract class ItemModel<T extends Item> {
             // intentionally left empty
         }
         T item = stringToItem(defaultValue);
-        if(item != null)
-            return item;
+        return item;
         // throwing an exception here means one cannot clear since the default value is not present
         // throw new IllegalArgumentException(format("Cannot find item for preference %s and default value %s", preferenceName, defaultValue));
-        return null;
     }
 
     protected abstract T stringToItem(String value);

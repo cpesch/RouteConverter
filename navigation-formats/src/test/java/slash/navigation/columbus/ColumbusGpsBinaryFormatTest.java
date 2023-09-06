@@ -10,7 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class ColumbusGpsBinaryFormatTest {
-    private ColumbusGpsBinaryFormat format = new ColumbusGpsBinaryFormat();
+    private final ColumbusGpsBinaryFormat format = new ColumbusGpsBinaryFormat();
 
     @Test
     public void testHasBitSet() {

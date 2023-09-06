@@ -27,7 +27,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 public class AnchorParserTest {
-    private AnchorParser parser = new AnchorParser();
+    private final AnchorParser parser = new AnchorParser();
 
     @Test
     public void testParseSingleAnchor() throws IOException {

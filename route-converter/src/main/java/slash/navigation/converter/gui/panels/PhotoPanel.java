@@ -110,7 +110,7 @@ public class PhotoPanel implements PanelInTab {
             new TagStatePhotoPredicate(NotTaggable),
     });
 
-    private PositionsModel photosModel = new OverlayPositionsModel(new PositionsModelImpl());
+    private final PositionsModel photosModel = new OverlayPositionsModel(new PositionsModelImpl());
     private FilteringPositionsModel<NavigationPosition> filteredPhotosModel;
 
     public PhotoPanel() {

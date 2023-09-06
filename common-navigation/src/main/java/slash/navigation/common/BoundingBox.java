@@ -24,6 +24,7 @@ package slash.navigation.common;
 import slash.common.type.CompactCalendar;
 
 import java.util.List;
+import java.util.Objects;
 
 import static java.lang.Math.abs;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -135,8 +136,8 @@ public class BoundingBox {
 
         BoundingBox that = (BoundingBox) o;
 
-        return !(northEast != null ? !northEast.equals(that.northEast) : that.northEast != null) &&
-                !(southWest != null ? !southWest.equals(that.southWest) : that.southWest != null);
+        return !(!Objects.equals(northEast, that.northEast)) &&
+                !(!Objects.equals(southWest, that.southWest));
     }
 
     public int hashCode() {

@@ -29,6 +29,7 @@ import slash.navigation.gpx.binding11.WptType;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Objects;
 import java.util.regex.Matcher;
 
 import static slash.common.io.Transfer.*;
@@ -211,17 +212,17 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
 
         GpxPosition that = (GpxPosition) o;
 
-        return !(description != null ? !description.equals(that.description) : that.description != null) &&
+        return !(!Objects.equals(description, that.description)) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(heading != null ? !heading.equals(that.heading) : that.heading != null) &&
-                !(temperature != null ? !temperature.equals(that.temperature) : that.temperature != null) &&
-                !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
-                !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
+                !(!Objects.equals(heading, that.heading)) &&
+                !(!Objects.equals(temperature, that.temperature)) &&
+                !(!Objects.equals(latitude, that.latitude)) &&
+                !(!Objects.equals(longitude, that.longitude)) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime()) &&
-                !(hdop != null ? !hdop.equals(that.hdop) : that.hdop != null) &&
-                !(pdop != null ? !pdop.equals(that.pdop) : that.pdop != null) &&
-                !(vdop != null ? !vdop.equals(that.vdop) : that.vdop != null) &&
-                !(satellites != null ? !satellites.equals(that.satellites) : that.satellites != null);
+                !(!Objects.equals(hdop, that.hdop)) &&
+                !(!Objects.equals(pdop, that.pdop)) &&
+                !(!Objects.equals(vdop, that.vdop)) &&
+                !(!Objects.equals(satellites, that.satellites));
     }
 
     public int hashCode() {

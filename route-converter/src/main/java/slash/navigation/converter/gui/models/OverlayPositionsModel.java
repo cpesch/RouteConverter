@@ -337,8 +337,7 @@ public class OverlayPositionsModel implements PositionsModel {
         ImageAndFile imageAndFile = indexToImageAndFile.get(rowIndex);
         if (imageAndFile == null) {
             NavigationPosition position = getPosition(rowIndex);
-            if (position instanceof Wgs84Position) {
-                Wgs84Position wgs84Position = (Wgs84Position) position;
+            if (position instanceof Wgs84Position wgs84Position) {
                 File file = wgs84Position.getOrigin(File.class);
                 if (file != null && file.exists()) {
                     BufferedImage resize = resize(file, IMAGE_HEIGHT_FOR_IMAGE_COLUMN);

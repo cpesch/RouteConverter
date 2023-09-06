@@ -54,6 +54,7 @@ import slash.navigation.photo.PhotoFormat;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.RouteComments.createRouteName;
 
@@ -65,7 +66,7 @@ import static slash.navigation.base.RouteComments.createRouteName;
 
 public class TcxRoute extends BaseRoute<Wgs84Position, TcxFormat> {
     private String name;
-    private List<Wgs84Position> positions;
+    private final List<Wgs84Position> positions;
 
     public TcxRoute(TcxFormat format, RouteCharacteristics characteristics, String name, List<Wgs84Position> positions) {
         super(format, characteristics);
@@ -202,8 +203,8 @@ public class TcxRoute extends BaseRoute<Wgs84Position, TcxFormat> {
 
         TcxRoute nokiaLandmarkExchangeRoute = (TcxRoute) o;
 
-        return !(name != null ? !name.equals(nokiaLandmarkExchangeRoute.name) : nokiaLandmarkExchangeRoute.name != null) &&
-                !(positions != null ? !positions.equals(nokiaLandmarkExchangeRoute.positions) : nokiaLandmarkExchangeRoute.positions != null);
+        return !(!Objects.equals(name, nokiaLandmarkExchangeRoute.name)) &&
+                !(!Objects.equals(positions, nokiaLandmarkExchangeRoute.positions));
     }
 
     public int hashCode() {

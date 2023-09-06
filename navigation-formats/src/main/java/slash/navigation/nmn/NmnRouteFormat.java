@@ -533,7 +533,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         int timeStamp = (int) (System.currentTimeMillis() / 1000L);
         byteBuffer.putInt(timeStamp);
         //copied from itconv export
-        byte unknownBytes[] = new byte[]{
+        byte[] unknownBytes = new byte[]{
                 (byte) 0x28, (byte) 0x00, (byte) 0x00, (byte) 0x00
         };
         byteBuffer.put(unknownBytes);
@@ -557,7 +557,7 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
         //unknown copyied from itconv export.  wechselt in itconf an den ersten Stellen. Timestamp
         //passt nicht. Datum ist von 1990
         //Sind eigentlich 2x 4 Bytes. Die ersten 4 werden im Land nochmal verwendet
-        byte rawData[] = {
+        byte[] rawData = {
                 (byte) 0x90, (byte) 0xF9, (byte) 0x46, (byte) 0x27,
                 (byte) 0x0A, (byte) 0x00, (byte) 0x00, (byte) 0x00
         };

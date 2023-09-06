@@ -39,17 +39,17 @@ public class Bearing {
     /**
      * the azimuth, degrees, 0 = north, clockwise positive
      */
-    private double azimuth;
+    private final double azimuth;
 
     /**
      * the back azimuth, degrees, 0 = north, clockwise positive
      */
-    private double backazimuth;
+    private final double backazimuth;
 
     /**
      * separation in meters
      */
-    private double distance;
+    private final double distance;
 
     /**
      * Earth radius in meters

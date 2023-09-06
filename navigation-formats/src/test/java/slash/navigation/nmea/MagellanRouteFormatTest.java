@@ -32,7 +32,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 public class MagellanRouteFormatTest {
-    private MagellanRouteFormat format = new MagellanRouteFormat();
+    private final MagellanRouteFormat format = new MagellanRouteFormat();
 
     @Test
     public void testIsValidLine() {

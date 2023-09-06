@@ -86,7 +86,7 @@ public class MagicMapsPthFormat extends SimpleFormat<MagicMapsPthRoute> { // TOD
             }
         }
 
-        if (positions.size() > 0)
+        if (!positions.isEmpty())
             context.appendRoute(createRoute(Track, null, positions));
     }
 

@@ -26,7 +26,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class MG2009IntranetTest {
-    private MTP0809Format format = new MTP0809Format();
+    private final MTP0809Format format = new MTP0809Format();
 
     @Test
     public void testIsSectionTitle() {

@@ -84,7 +84,7 @@ public class APIKeyRegistry {
 
                 String apiKey = getAPIKey(serviceName, "usage");
                 if (apiKey != null)
-                    log.info(serviceName + " API key: " + apiKey + " usage:" + builder.toString());
+                    log.info(serviceName + " API key: " + apiKey + " usage:" + builder);
             }
 
         } catch (BackingStoreException e) {

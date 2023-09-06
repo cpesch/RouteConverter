@@ -50,8 +50,8 @@ public class ActionManager {
     private static final Preferences preferences = Preferences.userNodeForPackage(ActionManager.class);
     private static final String RUN_COUNT_PREFERENCE = "runCount";
 
-    private Map<String, Action> actionMap = new HashMap<>();
-    private Map<String, ProxyAction> proxyActionMap = new HashMap<>();
+    private final Map<String, Action> actionMap = new HashMap<>();
+    private final Map<String, ProxyAction> proxyActionMap = new HashMap<>();
     private String localName;
 
     public String getLocalName() {
@@ -143,12 +143,12 @@ public class ActionManager {
             if (runs > 0)
                 builder.append(format("%n%s, runs: %d", actionName, runs));
         }
-        log.info("Action usage:" + builder.toString());
+        log.info("Action usage:" + builder);
     }
 
     private static class ProxyAction implements Action, PropertyChangeListener {
         private Action delegate;
-        private SwingPropertyChangeSupport changeSupport = new SwingPropertyChangeSupport(this);
+        private final SwingPropertyChangeSupport changeSupport = new SwingPropertyChangeSupport(this);
 
         private ProxyAction() {
         }

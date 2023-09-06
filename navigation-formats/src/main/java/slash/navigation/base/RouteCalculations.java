@@ -81,7 +81,7 @@ public class RouteCalculations {
      * @return an array of indices to the original list of positions with the significant positions
      */
     public static int[] getSignificantPositions(List<? extends NavigationPosition> positions, double threshold) {
-        if (positions.size() == 0)
+        if (positions.isEmpty())
             return new int[0];
         else if (positions.size() == 1)
             return new int[]{0};

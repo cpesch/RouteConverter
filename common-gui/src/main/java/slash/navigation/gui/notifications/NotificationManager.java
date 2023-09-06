@@ -45,8 +45,8 @@ import static slash.navigation.gui.helpers.WindowHelper.getFrame;
 public class NotificationManager {
     private static final int DISPLAY_TIMEOUT = 2 * 1000;
 
-    private JWindow window;
-    private JLabel label = new JLabel();
+    private final JWindow window;
+    private final JLabel label = new JLabel();
 
     private static final Object notificationMutex = new Object();
     private boolean running = true;

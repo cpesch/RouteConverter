@@ -23,7 +23,7 @@ package slash.navigation.kml;
 import slash.navigation.base.NavigationTestCase;
 
 public class Wbt201LogTest extends NavigationTestCase {
-    private Kml20Format format = new Kml20Format();
+    private final Kml20Format format = new Kml20Format();
     private static final String WBT201LOG_DESCRIPTION = "<description><![CDATA[\n" +
             "\t\t\t\t\t<br>Lat.=7.5878249&deg;</br><br>Long.=51.1295766&deg;</br><br>Alt.=390m (1279ft)</br><br>Speed=4Km/h (2Mile/h)</br><br>Course=270&deg;</br><br>Elapsed Time: +00:00:11</br><br>Total distance: 0.02Km (0.01Mile)</br>\n" +
             "\t\t\t\t]]></description>";

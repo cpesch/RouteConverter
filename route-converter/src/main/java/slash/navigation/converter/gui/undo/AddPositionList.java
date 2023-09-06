@@ -34,9 +34,9 @@ import javax.swing.undo.UndoableEdit;
  */
 
 class AddPositionList extends AbstractUndoableEdit {
-    private UndoFormatAndRoutesModel formatAndRoutesModel;
-    private int index;
-    private BaseRoute route;
+    private final UndoFormatAndRoutesModel formatAndRoutesModel;
+    private final int index;
+    private final BaseRoute route;
 
     public AddPositionList(UndoFormatAndRoutesModel formatAndRoutesModel, int index, BaseRoute route) {
         this.formatAndRoutesModel = formatAndRoutesModel;

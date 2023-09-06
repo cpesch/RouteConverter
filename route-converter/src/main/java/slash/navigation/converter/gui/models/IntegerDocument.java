@@ -51,7 +51,7 @@ public class IntegerDocument extends PlainDocument {
     }
 
     private boolean isValidNumberString(String str) {
-        if (str.length() == 0)
+        if (str.isEmpty())
             return true;
 
         try {

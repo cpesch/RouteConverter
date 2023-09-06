@@ -92,9 +92,9 @@ public abstract class NavigationTestCase extends TestCase {
                 if (!w.equals(GENERATED_BY))
                     wasFiltered.add(w);
             }
-        if (expected.size() == 0)
+        if (expected.isEmpty())
             expected = null;
-        if (wasFiltered.size() == 0)
+        if (wasFiltered.isEmpty())
             wasFiltered = null;
         assertEquals(expected, wasFiltered);
     }
@@ -175,7 +175,7 @@ public abstract class NavigationTestCase extends TestCase {
         // remove RouteConverter course folder name prefix
         int index = name.indexOf('/');
         if (index != -1)
-            name = name.substring(index + 1, name.length());
+            name = name.substring(index + 1);
         name = name.replaceAll("\\d+: ", "");
         return name.substring(0, min(15 - "RouteConverter".length() /* Prefix length */, name.length()));
     }
@@ -390,8 +390,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static void compareHdop(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition) {
         Double sourceHdop = null;
-        if (sourcePosition instanceof Wgs84Position) {
-            Wgs84Position wgs84Position = (Wgs84Position) sourcePosition;
+        if (sourcePosition instanceof Wgs84Position wgs84Position) {
             sourceHdop = wgs84Position.getHdop();
         }
         if (sourcePosition instanceof NmeaPosition) {
@@ -400,8 +399,7 @@ public abstract class NavigationTestCase extends TestCase {
         }
 
         Double targetHdop = null;
-        if (targetPosition instanceof Wgs84Position) {
-            Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
+        if (targetPosition instanceof Wgs84Position wgs84TargetPosition) {
             targetHdop = wgs84TargetPosition.getHdop();
         }
         if (targetPosition instanceof NmeaPosition) {
@@ -425,8 +423,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static void comparePdop(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition) {
         Double sourcePdop = null;
-        if (sourcePosition instanceof Wgs84Position) {
-            Wgs84Position wgs84Position = (Wgs84Position) sourcePosition;
+        if (sourcePosition instanceof Wgs84Position wgs84Position) {
             sourcePdop = wgs84Position.getPdop();
         }
         if (sourcePosition instanceof NmeaPosition) {
@@ -435,8 +432,7 @@ public abstract class NavigationTestCase extends TestCase {
         }
 
         Double targetPdop = null;
-        if (targetPosition instanceof Wgs84Position) {
-            Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
+        if (targetPosition instanceof Wgs84Position wgs84TargetPosition) {
             targetPdop = wgs84TargetPosition.getPdop();
         }
         if (targetPosition instanceof NmeaPosition) {
@@ -456,8 +452,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static void compareVdop(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition) {
         Double sourceVdop = null;
-        if (sourcePosition instanceof Wgs84Position) {
-            Wgs84Position wgs84Position = (Wgs84Position) sourcePosition;
+        if (sourcePosition instanceof Wgs84Position wgs84Position) {
             sourceVdop = wgs84Position.getVdop();
         }
         if (sourcePosition instanceof NmeaPosition) {
@@ -466,8 +461,7 @@ public abstract class NavigationTestCase extends TestCase {
         }
 
         Double targetVdop = null;
-        if (targetPosition instanceof Wgs84Position) {
-            Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
+        if (targetPosition instanceof Wgs84Position wgs84TargetPosition) {
             targetVdop = wgs84TargetPosition.getVdop();
         }
         if (targetPosition instanceof NmeaPosition) {
@@ -487,8 +481,7 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static void compareSatellites(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition) {
         Integer sourceSatellites = null;
-        if (sourcePosition instanceof Wgs84Position) {
-            Wgs84Position wgs84Position = (Wgs84Position) sourcePosition;
+        if (sourcePosition instanceof Wgs84Position wgs84Position) {
             sourceSatellites = wgs84Position.getSatellites();
         }
         if (sourcePosition instanceof NmeaPosition) {
@@ -497,8 +490,7 @@ public abstract class NavigationTestCase extends TestCase {
         }
 
         Integer targetSatellites = null;
-        if (targetPosition instanceof Wgs84Position) {
-            Wgs84Position wgs84TargetPosition = (Wgs84Position) targetPosition;
+        if (targetPosition instanceof Wgs84Position wgs84TargetPosition) {
             targetSatellites = wgs84TargetPosition.getSatellites();
         }
         if (targetPosition instanceof NmeaPosition) {
@@ -991,7 +983,7 @@ public abstract class NavigationTestCase extends TestCase {
                 if (expectTime) {
                     assertTrue("Position " + j + " has no time", position.hasTime());
                     if (previous != null)
-                        assertTrue(!position.getTime().getCalendar().before(previous.getTime().getCalendar()));
+                        assertFalse(position.getTime().getCalendar().before(previous.getTime().getCalendar()));
                 }
                 previous = position;
             }

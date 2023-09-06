@@ -30,7 +30,7 @@ import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class CoPilotFormatTest {
-    private CoPilot6Format format = new CoPilot6Format();
+    private final CoPilot6Format format = new CoPilot6Format();
 
     @Test
     public void testIsValidLine() {

@@ -33,7 +33,7 @@ import static junit.framework.TestCase.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 
 public class GoPalTrackFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+    private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
 
     @Test
     public void testIsNotNmn6FavoritesWithValidPositions() throws IOException {

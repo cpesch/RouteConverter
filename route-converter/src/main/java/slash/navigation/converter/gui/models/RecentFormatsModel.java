@@ -42,7 +42,7 @@ public class RecentFormatsModel {
     private static final String MAXIMUM_RECENT_FORMAT_COUNT_PREFERENCE = "maximumRecentFormatCount";
     private static final char FIRST_CHAR = 'a';
 
-    private NavigationFormatRegistry navigationFormatRegistry;
+    private final NavigationFormatRegistry navigationFormatRegistry;
 
     public RecentFormatsModel(NavigationFormatRegistry navigationFormatRegistry) {
         this.navigationFormatRegistry = navigationFormatRegistry;

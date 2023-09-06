@@ -56,6 +56,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteComments.createRouteName;
@@ -68,8 +69,8 @@ import static slash.navigation.base.RouteComments.createRouteName;
 
 public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat> {
     private String name;
-    private KDRoute.RouteOptions options;
-    private List<Wgs84Position> positions;
+    private final KDRoute.RouteOptions options;
+    private final List<Wgs84Position> positions;
 
     public KlickTelRoute(String name, List<Wgs84Position> positions) {
         this(name, defaultOptions(), positions);
@@ -222,8 +223,8 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
 
         KlickTelRoute klicktelRoute = (KlickTelRoute) o;
 
-        return !(name != null ? !name.equals(klicktelRoute.name) : klicktelRoute.name != null) &&
-                !(positions != null ? !positions.equals(klicktelRoute.positions) : klicktelRoute.positions != null);
+        return !(!Objects.equals(name, klicktelRoute.name)) &&
+                !(!Objects.equals(positions, klicktelRoute.positions));
     }
 
     public int hashCode() {

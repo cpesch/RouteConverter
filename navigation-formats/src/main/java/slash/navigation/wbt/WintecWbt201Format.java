@@ -220,9 +220,9 @@ public abstract class WintecWbt201Format extends SimpleFormat<Wgs84Route> {
 
         String description;
         if (isTrackpoint)
-            description = "Trackpoint " + String.valueOf(pointNo);
+            description = "Trackpoint " + pointNo;
         else
-            description = "Pushpoint " + String.valueOf(pointNo);
+            description = "Pushpoint " + pointNo;
 
         return new Wgs84Position(longitude / FACTOR, latitude / FACTOR, (double) altitude, null,
                 fromCalendar(calendar), description);

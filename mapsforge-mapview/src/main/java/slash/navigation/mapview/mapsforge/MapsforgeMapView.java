@@ -715,7 +715,7 @@ public class MapsforgeMapView extends BaseMapView {
     @SuppressWarnings("unchecked")
     public void showAllPositions() {
         List<NavigationPosition> positions = positionsModel.getRoute().getPositions();
-        if (positions.size() > 0) {
+        if (!positions.isEmpty()) {
             BoundingBox both = new BoundingBox(positions);
             zoomToBounds(both);
             setCenter(both.getCenter(), true);
@@ -815,7 +815,7 @@ public class MapsforgeMapView extends BaseMapView {
     @SuppressWarnings("unchecked")
     private BoundingBox getRouteBoundingBox() {
         BaseRoute route = positionsModel.getRoute();
-        return route != null && route.getPositions().size() > 0 ? new BoundingBox(route.getPositions()) : null;
+        return route != null && !route.getPositions().isEmpty() ? new BoundingBox(route.getPositions()) : null;
     }
 
     private boolean isGoogleMap(LocalMap map) {
@@ -905,7 +905,7 @@ public class MapsforgeMapView extends BaseMapView {
             }
         }
 
-        if (positions.size() > 0) {
+        if (!positions.isEmpty()) {
             BoundingBox both = new BoundingBox(positions);
             if (alwaysZoom)
                 zoomToBounds(both);
@@ -1118,7 +1118,7 @@ public class MapsforgeMapView extends BaseMapView {
     private class AddPositionAction extends FrameAction {
         private int getAddRow() {
             List<PositionWithLayer> lastSelectedPositions = selectionUpdater.getPositionWithLayers();
-            NavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1).getPosition() : null;
+            NavigationPosition position = !lastSelectedPositions.isEmpty() ? lastSelectedPositions.get(lastSelectedPositions.size() - 1).getPosition() : null;
             // quite crude logic to be as robust as possible on failures
             if (position == null && positionsModel.getRowCount() > 0)
                 position = positionsModel.getPosition(positionsModel.getRowCount() - 1);
@@ -1176,7 +1176,7 @@ public class MapsforgeMapView extends BaseMapView {
         public void run() {
             if (mapViewCallback.isRecenterAfterZooming()) {
                 List<NavigationPosition> selectedPositions = toPositions(selectionUpdater.getPositionWithLayers());
-                NavigationPosition center = selectedPositions.size() > 0 ? new BoundingBox(selectedPositions).getCenter() : getCenter();
+                NavigationPosition center = !selectedPositions.isEmpty() ? new BoundingBox(selectedPositions).getCenter() : getCenter();
                 mapViewMoverAndZoomer.zoomToPosition(zoomLevelDiff, asLatLong(center));
             } else
                 mapViewMoverAndZoomer.zoomToMousePosition(zoomLevelDiff);

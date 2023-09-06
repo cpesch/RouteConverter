@@ -32,7 +32,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
 public class ColumbusGpsType1FormatTest {
-    private ColumbusGpsType1Format format = new ColumbusGpsType1Format();
+    private final ColumbusGpsType1Format format = new ColumbusGpsType1Format();
 
     @Test
     public void testIsValidLine() {

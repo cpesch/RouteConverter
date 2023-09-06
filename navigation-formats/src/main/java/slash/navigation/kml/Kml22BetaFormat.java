@@ -79,8 +79,7 @@ public class Kml22BetaFormat extends KmlFormat {
 
     private void extractTracks(KmlType kmlType, ParserContext<KmlRoute> context) throws IOException {
         AbstractFeatureType feature = kmlType.getAbstractFeatureGroup().getValue();
-        if (feature instanceof AbstractContainerType) {
-            AbstractContainerType containerType = (AbstractContainerType) feature;
+        if (feature instanceof AbstractContainerType containerType) {
             List<JAXBElement<? extends AbstractFeatureType>> features = null;
             if (containerType instanceof FolderType)
                 features = ((FolderType) containerType).getAbstractFeatureGroup();
@@ -89,8 +88,7 @@ public class Kml22BetaFormat extends KmlFormat {
             extractTracks(trim(containerType.getNameElement()), trim(containerType.getDescription()), features, context);
         }
 
-        if (feature instanceof PlacemarkType) {
-            PlacemarkType placemarkType = (PlacemarkType) feature;
+        if (feature instanceof PlacemarkType placemarkType) {
             String placemarkName = asDescription(trim(placemarkType.getNameElement()),
                     trim(placemarkType.getDescription()));
 
@@ -145,7 +143,7 @@ public class Kml22BetaFormat extends KmlFormat {
                 context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
-        if (waypoints.size() > 0) {
+        if (!waypoints.isEmpty()) {
             RouteCharacteristics characteristics = parseCharacteristics(name, null, Waypoints);
             context.prependRoute(new KmlRoute(this, characteristics, name, asDescription(description), waypoints));
         }
@@ -162,8 +160,7 @@ public class Kml22BetaFormat extends KmlFormat {
             List<JAXBElement<?>> rest = networkLinkType.getValue().getRest();
             for (JAXBElement<?> r : rest) {
                 Object rValue = r.getValue();
-                if (rValue instanceof LinkType) {
-                    LinkType linkType = (LinkType) rValue;
+                if (rValue instanceof LinkType linkType) {
                     String url = linkType.getHref();
                     context.parse(url);
                 }
@@ -176,16 +173,13 @@ public class Kml22BetaFormat extends KmlFormat {
         if (geometryType == null)
             return positions;
         AbstractGeometryType geometryTypeValue = geometryType.getValue();
-        if (geometryTypeValue instanceof PointType) {
-            PointType point = (PointType) geometryTypeValue;
+        if (geometryTypeValue instanceof PointType point) {
             positions.addAll(asKmlPositions(point.getCoordinates()));
         }
-        if (geometryTypeValue instanceof LineStringType) {
-            LineStringType lineString = (LineStringType) geometryTypeValue;
+        if (geometryTypeValue instanceof LineStringType lineString) {
             positions.addAll(asKmlPositions(lineString.getCoordinates()));
         }
-        if (geometryTypeValue instanceof MultiGeometryType) {
-            MultiGeometryType multiGeometryType = (MultiGeometryType) geometryTypeValue;
+        if (geometryTypeValue instanceof MultiGeometryType multiGeometryType) {
             List<JAXBElement<? extends AbstractGeometryType>> geometryTypes = multiGeometryType.getAbstractGeometryGroup();
             for (JAXBElement<? extends AbstractGeometryType> geometryType2 : geometryTypes) {
                 positions.addAll(extractPositions(geometryType2));

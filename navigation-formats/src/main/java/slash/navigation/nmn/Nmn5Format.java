@@ -92,7 +92,7 @@ public class Nmn5Format extends NmnFormat {
         String number = escape(nmnPosition.isUnstructured() ? null : nmnPosition.getNumber());
         writer.println("-" + SEPARATOR + "-" + SEPARATOR +
                 "-" + SEPARATOR + "-" + SEPARATOR + "-" + SEPARATOR +
-                city + "" + SEPARATOR +
+                city + SEPARATOR +
                 "-" + SEPARATOR +
                 street + SEPARATOR +
                 number + SEPARATOR +

@@ -49,7 +49,7 @@ public class DeleteCategoriesAction extends FrameAction {
 
     public void run() {
         List<CategoryTreeNode> categories = getSelectedCategoryTreeNodes(tree);
-        if (categories.size() == 0)
+        if (categories.isEmpty())
             return;
 
         StringBuilder categoryNames = new StringBuilder();

@@ -45,7 +45,7 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
 public class ExifColumnTableCellRenderer extends AlternatingColorTableCellRenderer {
     private static final String COMMA = ", ";
     public static final String UTC_TIMEZONE_ID = UTC.getID();
-    private static Map<String, Integer> EXIF_FLASH_CONSTANTS = new HashMap<>();
+    private static final Map<String, Integer> EXIF_FLASH_CONSTANTS = new HashMap<>();
 
     static {
         for(Field field : ExifTagConstants.class.getFields()) {

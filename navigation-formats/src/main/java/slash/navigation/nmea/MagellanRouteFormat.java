@@ -144,8 +144,8 @@ public class MagellanRouteFormat extends BaseNmeaFormat {
                 else
                     buffer.deleteCharAt(i);
             }
-            if (buffer.length() > 0)
-                return buffer.toString().substring(0, Math.min(buffer.length(), 20));
+            if (!buffer.isEmpty())
+                return buffer.substring(0, Math.min(buffer.length(), 20));
         }
         return "route01";
     }

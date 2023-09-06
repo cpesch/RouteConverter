@@ -157,7 +157,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
         new Thread(() -> {
             try {
                 try {
-                    byte buffer[] = new byte[DEFAULT_BUFFER_SIZE];
+                    byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
                     int count = 0;
                     while (count >= 0) {
                         count = input.read(buffer);
@@ -279,12 +279,12 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             log.severe("Couldn't read final response: " + e);
         }
 
-        log.info("Executed '" + process.toString() + "' with exit value: " + exitValue);
+        log.info("Executed '" + process + "' with exit value: " + exitValue);
         return exitValue;
     }
 
     private void readStream(InputStream inputStream, String streamName) throws IOException {
-        byte buffer[] = new byte[DEFAULT_BUFFER_SIZE];
+        byte[] buffer = new byte[DEFAULT_BUFFER_SIZE];
         int count = 0;
         while (inputStream.available() > 0 && count < buffer.length) {
             buffer[count++] = (byte) inputStream.read();
@@ -400,7 +400,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             if (isValidRoute(route))
                 result.add(route);
         }
-        return result.size() > 0 ? result : null;
+        return !result.isEmpty() ? result : null;
     }
 
     protected boolean isValidRoute(GpxRoute route) {
@@ -427,7 +427,7 @@ public abstract class BabelFormat extends BaseNavigationFormat<GpxRoute> {
             readFile(source, gpxContext);
         }
         List<GpxRoute> result = filterValidRoutes(gpxContext.getRoutes());
-        if (result != null && result.size() > 0) {
+        if (result != null && !result.isEmpty()) {
             context.appendRoutes(result);
             log.fine("Successfully converted " + getName() + " to " + BABEL_INTERFACE_FORMAT_NAME);
         }

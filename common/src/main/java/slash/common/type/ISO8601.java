@@ -251,7 +251,7 @@ public class ISO8601 {
              * calculate year using astronomical system:
              * year n BCE => astronomical year -n + 1
              */
-            year = 0 - year + 1;
+            year = -year + 1;
         }
 
         /*

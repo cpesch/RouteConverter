@@ -42,7 +42,8 @@ public class CategoryTreeNodeImpl extends DefaultMutableTreeNode implements Cate
     private static final Logger log = Logger.getLogger(CategoryTreeNodeImpl.class.getName());
     private static final CategoryComparator categoryComparator = new CategoryComparator();
 
-    private boolean localRoot, remoteRoot;
+    private final boolean localRoot;
+    private final boolean remoteRoot;
 
     public CategoryTreeNodeImpl(Category category) {
         this(category, false, false);

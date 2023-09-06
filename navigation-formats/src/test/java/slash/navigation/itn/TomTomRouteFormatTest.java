@@ -29,7 +29,7 @@ import static slash.common.TestCase.calendar;
 import static slash.navigation.base.RouteComments.parseDescription;
 
 public class TomTomRouteFormatTest {
-    private TomTomRouteFormat format = new TomTom5RouteFormat();
+    private final TomTomRouteFormat format = new TomTom5RouteFormat();
 
     @Test
     public void testIsPosition() {

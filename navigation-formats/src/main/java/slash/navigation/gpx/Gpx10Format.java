@@ -104,7 +104,7 @@ public class Gpx10Format extends GpxFormat {
         String name = gpx.getName();
         List<String> descriptions = asDescription(gpx.getDesc());
         List<GpxPosition> positions = extractWayPoints(gpx.getWpt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond);
-        return positions.size() == 0 ? null : new GpxRoute(this, isTripmasterTrack(positions) ? Track : Waypoints, name, descriptions, positions, gpx);
+        return positions.isEmpty() ? null : new GpxRoute(this, isTripmasterTrack(positions) ? Track : Waypoints, name, descriptions, positions, gpx);
     }
 
     private boolean isTripmasterTrack(List<GpxPosition> positions) {
@@ -122,7 +122,7 @@ public class Gpx10Format extends GpxFormat {
             String desc = trk.getDesc();
             List<String> descriptions = asDescription(desc);
             List<GpxPosition> positions = extractTrack(trk, hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond);
-            if (positions.size() > 0)
+            if (!positions.isEmpty())
                 result.add(new GpxRoute(this, Track, name, descriptions, positions, gpx, trk));
         }
         return result;

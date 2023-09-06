@@ -448,7 +448,7 @@ public class ConvertPanel implements PanelInTab {
         }
 
         // start with a non-existent file
-        if (copy.size() == 0) {
+        if (copy.isEmpty()) {
             newFile();
         } else {
             openPositionList(copy);
@@ -672,7 +672,7 @@ public class ConvertPanel implements PanelInTab {
             return;
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0)
+        if (selected == null || selected.getName().isEmpty())
             return;
 
         NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
@@ -828,7 +828,7 @@ public class ConvertPanel implements PanelInTab {
             return;
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0)
+        if (selected == null || selected.getName().isEmpty())
             return;
 
         NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
@@ -1046,7 +1046,7 @@ public class ConvertPanel implements PanelInTab {
             if (reads > 0 || writes > 0)
                 builder.append(format("%n%s, reads: %d, writes: %d", format.getName(), reads, writes));
         }
-        log.info("Format usage:" + builder.toString());
+        log.info("Format usage:" + builder);
     }
 
     private void countRead(NavigationFormat format) {
@@ -1358,7 +1358,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private class TableDragAndDropHandler extends TransferHandler {
-        private TransferHandler delegate;
+        private final TransferHandler delegate;
 
         TableDragAndDropHandler(TransferHandler delegate) {
             this.delegate = delegate;

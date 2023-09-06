@@ -28,7 +28,8 @@ import java.io.IOException;
  */
 
 public class ServiceUnavailableException extends IOException {
-    private String serviceName, serviceUrl;
+    private final String serviceName;
+    private final String serviceUrl;
 
     public ServiceUnavailableException(String serviceName, String serviceUrl, String result) {
         super("Service " + serviceName + " is unavailable, overloaded or beyond usage quota\n" +

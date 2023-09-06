@@ -35,7 +35,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class ColumbusNavigationFormatRegistryTest {
-    private NavigationFormatRegistry registry = new ColumbusNavigationFormatRegistry();
+    private final NavigationFormatRegistry registry = new ColumbusNavigationFormatRegistry();
 
     @Test
     public void testNotExistingExtension() {

@@ -105,7 +105,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
             body.position(0);
 
             List<Wgs84Position> positions = internalRead(body);
-            if (positions.size() > 0)
+            if (!positions.isEmpty())
                 context.appendRoute(new Wgs84Route(this, Track, null, positions));
         }
     }
@@ -142,7 +142,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
             double pressure = buffer.getShort() / PRESSURE_FACTOR;
             double temperature = buffer.getShort() / TEMPERATURE_FACTOR;
 
-            Wgs84Position position = new Wgs84Position(longitude, latitude, altitude, speed, time, "Trackpoint " + String.valueOf(index));
+            Wgs84Position position = new Wgs84Position(longitude, latitude, altitude, speed, time, "Trackpoint " + index);
             position.setHeading(heading);
             position.setPressure(pressure);
             position.setTemperature(temperature);

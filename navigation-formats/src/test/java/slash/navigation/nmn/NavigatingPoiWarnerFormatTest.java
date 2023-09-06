@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class NavigatingPoiWarnerFormatTest {
-    private NavigatingPoiWarnerFormat format = new NavigatingPoiWarnerFormat();
+    private final NavigatingPoiWarnerFormat format = new NavigatingPoiWarnerFormat();
 
     @Test
     public void testIsValidLine() {

@@ -50,7 +50,7 @@ public class StopDownloadsAction extends DialogAction {
 
     public void run() {
         List<Download> downloads = getSelectedDownloads(table);
-        if(downloads.size() == 0)
+        if(downloads.isEmpty())
             return;
 
         int[] selectedRows = table.getSelectedRows();

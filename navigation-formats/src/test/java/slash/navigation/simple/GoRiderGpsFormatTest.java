@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class GoRiderGpsFormatTest {
-    private GoRiderGpsFormat format = new GoRiderGpsFormat();
+    private final GoRiderGpsFormat format = new GoRiderGpsFormat();
 
     @Test
     public void testIsValidLine() {

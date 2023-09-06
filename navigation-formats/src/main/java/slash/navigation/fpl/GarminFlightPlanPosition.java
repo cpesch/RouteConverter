@@ -24,6 +24,7 @@ import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.trim;
@@ -94,8 +95,8 @@ public class GarminFlightPlanPosition extends Wgs84Position {
 
         GarminFlightPlanPosition that = (GarminFlightPlanPosition) o;
 
-        return !(countryCode != null ? !countryCode.equals(that.countryCode) : that.countryCode != null) &&
-                !(identifier != null ? !identifier.equals(that.identifier) : that.identifier != null) &&
+        return !(!Objects.equals(countryCode, that.countryCode)) &&
+                !(!Objects.equals(identifier, that.identifier)) &&
                 waypointType == that.waypointType;
     }
 

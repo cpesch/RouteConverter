@@ -52,7 +52,7 @@ public class SplitIT {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute = result.getTheRoute();
         assertNotNull(sourceRoute);
         assertNotNull(result.getAllRoutes());
-        assertTrue(result.getAllRoutes().size() > 0);
+        assertTrue(!result.getAllRoutes().isEmpty());
 
         int maximumPositionCount = result.getFormat().getMaximumPositionCount();
         if (maximumPositionCount == UNLIMITED_MAXIMUM_POSITION_COUNT) {
@@ -76,7 +76,7 @@ public class SplitIT {
                 NavigationFormat sourceFormat = sourceResult.getFormat();
                 NavigationFormat targetFormat = targetResult.getFormat();
                 assertEquals(sourceFormat, targetFormat);
-                assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - i * maximumPositionCount),
+                assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - (long) i * maximumPositionCount),
                         targetResult.getTheRoute().getPositionCount());
                 targetPositionCount += targetResult.getTheRoute().getPositionCount();
 
@@ -178,7 +178,7 @@ public class SplitIT {
         assertNotNull(result.getFormat());
         assertNotNull(result.getTheRoute());
         assertNotNull(result.getAllRoutes());
-        assertTrue(result.getAllRoutes().size() > 0);
+        assertTrue(!result.getAllRoutes().isEmpty());
 
         BaseRoute sourceRoute = result.getTheRoute();
         int maximumPositionCount = targetFormat.getMaximumPositionCount();
@@ -199,7 +199,7 @@ public class SplitIT {
                 assertEquals(targetFormat.getClass(), targetResult.getFormat().getClass());
                 assertEquals(sourceFormat.getName(), sourceResult.getFormat().getName());
                 assertEquals(targetFormat.getName(), targetResult.getFormat().getName());
-                assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - i * maximumPositionCount),
+                assertEquals(i != targets.length - 1 ? maximumPositionCount : (positionCount - (long) i * maximumPositionCount),
                         targetResult.getTheRoute().getPositionCount());
 
                 compareSplitPositions(sourceResult.getTheRoute().getPositions(), sourceFormat,

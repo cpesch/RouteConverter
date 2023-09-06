@@ -85,7 +85,7 @@
 			{ regex: new RegExp(this.getKeywords(functions), 'gm'),		css: 'functions bold' },
 			{ regex: new RegExp(this.getKeywords(keywords), 'gm'),		css: 'keyword bold' }
 			];
-	};
+	}
 
 	Brush.prototype	= new SyntaxHighlighter.Highlighter();
 	Brush.aliases	= ['cpp', 'c'];

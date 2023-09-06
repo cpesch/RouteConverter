@@ -250,7 +250,7 @@ public class AddressDetails {
     @XmlSchemaType(name = "anySimpleType")
     protected String code;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<>();
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the postalServiceElements property.
@@ -669,7 +669,7 @@ public class AddressDetails {
         @XmlSchemaType(name = "anySimpleType")
         protected String code;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<>();
+        private final Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the content property.
@@ -827,7 +827,7 @@ public class AddressDetails {
         @XmlAnyElement(lax = true)
         protected List<Object> any;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<>();
+        private final Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the addressLine property.
@@ -1069,7 +1069,7 @@ public class AddressDetails {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<>();
+            private final Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.
@@ -1329,7 +1329,7 @@ public class AddressDetails {
         @XmlSchemaType(name = "anySimpleType")
         protected String type;
         @XmlAnyAttribute
-        private Map<QName, String> otherAttributes = new HashMap<>();
+        private final Map<QName, String> otherAttributes = new HashMap<>();
 
         /**
          * Gets the value of the addressIdentifier property.
@@ -1690,7 +1690,7 @@ public class AddressDetails {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<>();
+            private final Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.
@@ -1842,7 +1842,7 @@ public class AddressDetails {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<>();
+            private final Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.
@@ -1972,7 +1972,7 @@ public class AddressDetails {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<>();
+            private final Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Specific to postal service
@@ -2100,7 +2100,7 @@ public class AddressDetails {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<>();
+            private final Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.
@@ -2228,7 +2228,7 @@ public class AddressDetails {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<>();
+            private final Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.
@@ -2356,7 +2356,7 @@ public class AddressDetails {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<>();
+            private final Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.
@@ -2484,7 +2484,7 @@ public class AddressDetails {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<>();
+            private final Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.
@@ -2612,7 +2612,7 @@ public class AddressDetails {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<>();
+            private final Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.
@@ -2820,7 +2820,7 @@ public class AddressDetails {
             @XmlSchemaType(name = "anySimpleType")
             protected String code;
             @XmlAnyAttribute
-            private Map<QName, String> otherAttributes = new HashMap<>();
+            private final Map<QName, String> otherAttributes = new HashMap<>();
 
             /**
              * Gets the value of the content property.

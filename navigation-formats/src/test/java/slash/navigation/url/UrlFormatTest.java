@@ -43,7 +43,7 @@ public class UrlFormatTest {
 
     private static final String FILE = "file:///CWD/../RouteSamples/trunk/test/from11.gpx";
 
-    private UrlFormat format = new UrlFormat();
+    private final UrlFormat format = new UrlFormat();
 
     @Test
     public void testFindGoogleMapsURLFromEmail() {

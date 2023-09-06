@@ -32,13 +32,13 @@ import static slash.common.TestCase.*;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 public class BcrRouteTest {
-    private BcrRoute route = new BcrRoute(new MTP0607Format(), "r", null, new ArrayList<>());
-    private BcrPosition a = new BcrPosition(1, 1, 0, "a");
-    private BcrPosition b = new BcrPosition(2, 1, 0, "b");
-    private BcrPosition c = new BcrPosition(3, 2, 0, "c");
-    private BcrPosition d = new BcrPosition(1, 3, 0, "d");
-    private BcrPosition e = new BcrPosition(1, 1, 0, "e");
-    private BcrPosition zero = new BcrPosition(null, null, null, null, null, null);
+    private final BcrRoute route = new BcrRoute(new MTP0607Format(), "r", null, new ArrayList<>());
+    private final BcrPosition a = new BcrPosition(1, 1, 0, "a");
+    private final BcrPosition b = new BcrPosition(2, 1, 0, "b");
+    private final BcrPosition c = new BcrPosition(3, 2, 0, "c");
+    private final BcrPosition d = new BcrPosition(1, 3, 0, "d");
+    private final BcrPosition e = new BcrPosition(1, 1, 0, "e");
+    private final BcrPosition zero = new BcrPosition(null, null, null, null, null, null);
 
     private void initialize() {
         List<BcrPosition> positions = route.getPositions();

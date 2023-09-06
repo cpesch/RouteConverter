@@ -102,7 +102,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
             String line = reader.readLine();
             if (line == null)
                 break;
-            if (line.length() == 0 || line.startsWith("~"))
+            if (line.isEmpty() || line.startsWith("~"))
                 continue;
             // some files contain EF BB BF which is displayed as FF FE in UltraEdit
             // in UTF-8 mode we filter like this for a valid line:
@@ -131,7 +131,7 @@ public abstract class TomTomRouteFormat extends TextNavigationFormat<TomTomRoute
             }
         }
 
-        if (positions.size() > 0)
+        if (!positions.isEmpty())
             context.appendRoute(new TomTomRoute(this, isTrack(positions) ? Track : Route, routeName, positions));
         else
             throw new IllegalArgumentException(format("Format %s cannot find positions; exiting", getName()));

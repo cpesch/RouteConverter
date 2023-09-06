@@ -43,7 +43,7 @@ import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.assertRouteNameEquals;
 
 public class AppendIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+    private final NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     private static boolean isStoringRouteName(NavigationFormat format) {
         return !(format instanceof GoPalRouteFormat) && !(format instanceof GoPalTrackFormat) &&
@@ -60,7 +60,7 @@ public class AppendIT {
         assertNotNull(appendResult.getTheRoute());
         assertNotNull(appendResult.getFormat());
         assertNotNull(appendResult.getAllRoutes());
-        assertTrue(appendResult.getAllRoutes().size() > 0);
+        assertTrue(!appendResult.getAllRoutes().isEmpty());
 
         int appendPositionCount = appendResult.getTheRoute().getPositionCount();
         List<BaseNavigationPosition> appendPositions = appendResult.getTheRoute().getPositions();

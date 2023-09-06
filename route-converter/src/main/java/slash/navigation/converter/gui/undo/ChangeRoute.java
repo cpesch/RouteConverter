@@ -34,8 +34,9 @@ import javax.swing.undo.UndoableEdit;
  */
 
 class ChangeRoute extends AbstractUndoableEdit {
-    private UndoFormatAndRoutesModel formatAndRoutesModel;
-    private BaseRoute previousRoute, nextRoute;
+    private final UndoFormatAndRoutesModel formatAndRoutesModel;
+    private final BaseRoute previousRoute;
+    private final BaseRoute nextRoute;
 
     public ChangeRoute(UndoFormatAndRoutesModel formatAndRoutesModel, BaseRoute previousRoute, BaseRoute nextRoute) {
         this.formatAndRoutesModel = formatAndRoutesModel;

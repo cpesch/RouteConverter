@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.io.File.createTempFile;
@@ -185,7 +186,7 @@ public class Download {
 
         Download download = (Download) o;
 
-        return !(url != null ? !url.equals(download.url) : download.url != null);
+        return !(!Objects.equals(url, download.url));
     }
 
     public int hashCode() {

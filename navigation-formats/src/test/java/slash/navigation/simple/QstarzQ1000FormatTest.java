@@ -31,7 +31,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
 public class QstarzQ1000FormatTest {
-    private QstarzQ1000Format format = new QstarzQ1000Format();
+    private final QstarzQ1000Format format = new QstarzQ1000Format();
 
     @Test
     public void testIsValidLine() {

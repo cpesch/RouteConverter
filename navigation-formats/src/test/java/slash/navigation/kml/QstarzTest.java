@@ -30,7 +30,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
 public class QstarzTest {
-    private Kml20Format format = new Kml20Format();
+    private final Kml20Format format = new Kml20Format();
     private static final String QSTARZ_DESCRIPTION = "<description>\n" +
             "      <![CDATA[Date: 2010/12/28<br />Time: 23:01:39<br />Latitude: 49.126387 N<br />Longitude: 8.613990 E<br />Speed: 0.561 km/h<br />DISTANCE:      0.66 m<br />]]>\n" +
             "</description>";

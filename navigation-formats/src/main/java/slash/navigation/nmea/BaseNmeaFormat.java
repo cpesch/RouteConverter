@@ -144,7 +144,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             }
         }
 
-        if (positions.size() > 0)
+        if (!positions.isEmpty())
             context.appendRoute(createRoute(getCharacteristics(), null, positions));
     }
 

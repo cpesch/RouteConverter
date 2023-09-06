@@ -47,8 +47,7 @@ public class CategoryTreeCellRenderer extends DefaultTreeCellRenderer {
 
     public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
         JLabel label = (JLabel) super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
-        if (value instanceof CategoryTreeNode) {
-            CategoryTreeNode categoryTreeNode = (CategoryTreeNode) value;
+        if (value instanceof CategoryTreeNode categoryTreeNode) {
             String name = categoryTreeNode.getName();
             if (name == null)
                 name = RouteConverter.getBundle().getString("no-name");

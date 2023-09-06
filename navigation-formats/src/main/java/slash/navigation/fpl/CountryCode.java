@@ -344,7 +344,7 @@ public enum CountryCode {
     Zambia("FL"),
     Zimbabwe("FV");
 
-    private String value;
+    private final String value;
 
     CountryCode(String value) {
         this.value = value;

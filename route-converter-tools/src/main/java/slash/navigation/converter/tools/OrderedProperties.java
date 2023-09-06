@@ -28,7 +28,7 @@ import java.util.*;
  */
 
 public class OrderedProperties extends Properties {
-    private Map<String,Object> properties = new LinkedHashMap<>();
+    private final Map<String,Object> properties = new LinkedHashMap<>();
 
     public synchronized Object put(Object key, Object value) {
         return properties.put(key.toString(), value);

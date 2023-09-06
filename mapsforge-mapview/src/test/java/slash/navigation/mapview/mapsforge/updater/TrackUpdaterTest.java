@@ -35,17 +35,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class TrackUpdaterTest {
-    private NavigationPosition p1 = new SimpleNavigationPosition(1.0, 0.0);
-    private NavigationPosition p2 = new SimpleNavigationPosition(2.0, 0.0);
-    private NavigationPosition p3 = new SimpleNavigationPosition(3.0, 0.0);
-    private NavigationPosition p4 = new SimpleNavigationPosition(4.0, 0.0);
-    private PairWithLayer p1p2 = new PairWithLayer(p1, p2, 0);
-    private PairWithLayer p1p3 = new PairWithLayer(p1, p3, 1);
-    private PairWithLayer p1p4 = new PairWithLayer(p1, p4, 2);
-    private PairWithLayer p2p3 = new PairWithLayer(p2, p3, 3);
-    private PairWithLayer p2p4 = new PairWithLayer(p2, p4, 4);
-    private PairWithLayer p3p1 = new PairWithLayer(p3, p1, 5);
-    private PairWithLayer p3p4 = new PairWithLayer(p3, p4, 6);
+    private final NavigationPosition p1 = new SimpleNavigationPosition(1.0, 0.0);
+    private final NavigationPosition p2 = new SimpleNavigationPosition(2.0, 0.0);
+    private final NavigationPosition p3 = new SimpleNavigationPosition(3.0, 0.0);
+    private final NavigationPosition p4 = new SimpleNavigationPosition(4.0, 0.0);
+    private final PairWithLayer p1p2 = new PairWithLayer(p1, p2, 0);
+    private final PairWithLayer p1p3 = new PairWithLayer(p1, p3, 1);
+    private final PairWithLayer p1p4 = new PairWithLayer(p1, p4, 2);
+    private final PairWithLayer p2p3 = new PairWithLayer(p2, p3, 3);
+    private final PairWithLayer p2p4 = new PairWithLayer(p2, p4, 4);
+    private final PairWithLayer p3p1 = new PairWithLayer(p3, p1, 5);
+    private final PairWithLayer p3p4 = new PairWithLayer(p3, p4, 6);
 
     @Test
     public void testInitiallyEmpty() {

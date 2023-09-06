@@ -20,6 +20,7 @@
 package slash.navigation.converter.tools;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -31,7 +32,7 @@ import java.util.Set;
  */
 
 public class OrderedResourceBundle extends ResourceBundle {
-    private OrderedProperties properties;
+    private final OrderedProperties properties;
 
     public OrderedResourceBundle(InputStream stream) throws IOException {
         properties = new OrderedProperties();
@@ -55,7 +56,7 @@ public class OrderedResourceBundle extends ResourceBundle {
     }
 
     public void store(OutputStream stream) throws IOException {
-        PrintWriter writer = new PrintWriter(new OutputStreamWriter(stream, "8859_1"));
+        PrintWriter writer = new PrintWriter(new OutputStreamWriter(stream, StandardCharsets.ISO_8859_1));
         for (String key : getOrderedKeys()) {
             String value = saveConvert(handleGetObject(key).toString());
             writer.println(key + "=" + value);

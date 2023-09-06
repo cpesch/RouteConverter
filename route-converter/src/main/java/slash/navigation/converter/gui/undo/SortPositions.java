@@ -37,9 +37,9 @@ import java.util.List;
  */
 
 class SortPositions extends AbstractUndoableEdit {
-    private UndoPositionsModel positionsModel;
-    private Comparator<NavigationPosition> comparator;
-    private List<NavigationPosition> positions;
+    private final UndoPositionsModel positionsModel;
+    private final Comparator<NavigationPosition> comparator;
+    private final List<NavigationPosition> positions;
 
     public SortPositions(UndoPositionsModel positionsModel, Comparator<NavigationPosition> comparator, List<NavigationPosition> positions) {
         this.positionsModel = positionsModel;

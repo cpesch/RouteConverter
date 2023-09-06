@@ -114,7 +114,7 @@ public class Gpx11Format extends GpxFormat {
         String desc = gpxType.getMetadata() != null ? gpxType.getMetadata().getDesc() : null;
         List<String> descriptions = asDescription(desc);
         List<GpxPosition> positions = extractWayPoints(gpxType.getWpt());
-        return positions.size() == 0 ? null : new GpxRoute(this, Waypoints, name, descriptions, positions, gpxType);
+        return positions.isEmpty() ? null : new GpxRoute(this, Waypoints, name, descriptions, positions, gpxType);
     }
 
     private List<GpxRoute> extractTracks(GpxType gpxType) {
@@ -152,8 +152,7 @@ public class Gpx11Format extends GpxFormat {
                     for (Object any : extensions.getAny()) {
                         if (any instanceof JAXBElement) {
                             Object anyValue = ((JAXBElement) any).getValue();
-                            if (anyValue instanceof RoutePointExtensionT) {
-                                RoutePointExtensionT routePoint = (RoutePointExtensionT) anyValue;
+                            if (anyValue instanceof RoutePointExtensionT routePoint) {
                                 for (AutoroutePointT autoroutePoint : routePoint.getRpt()) {
                                     positions.add(new GpxPosition(autoroutePoint.getLon(), autoroutePoint.getLat(), null, null, null, null, null, null, null, null, null, null));
                                 }
@@ -234,8 +233,7 @@ public class Gpx11Format extends GpxFormat {
         for (Iterator<Object> iterator = anys.iterator(); iterator.hasNext(); ) {
             Object any = iterator.next();
 
-            if (any instanceof Element) {
-                Element element = (Element) any;
+            if (any instanceof Element element) {
 
                 // TrackStatsExtension contains Distance element which BaseCamp uses if it's present
                 // but which might be inaccurate due to changes to the positions that affect the distance

@@ -34,7 +34,7 @@ import javax.swing.undo.UndoableEdit;
  */
 
 class RevertPositions extends AbstractUndoableEdit {
-    private UndoPositionsModel positionsModel;
+    private final UndoPositionsModel positionsModel;
 
     public RevertPositions(UndoPositionsModel positionsModel) {
         this.positionsModel = positionsModel;

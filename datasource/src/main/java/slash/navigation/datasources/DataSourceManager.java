@@ -97,7 +97,7 @@ public class DataSourceManager {
 
         DataSourceService service = loadDataSource(file);
         List<Edition> editions = service.getEditions();
-        return editions.size() > 0 ? editions.get(0) : null;
+        return !editions.isEmpty() ? editions.get(0) : null;
     }
 
     private void loadDataSources(List<DataSource> dataSources, java.io.File dataSourceDirectory) throws IOException, JAXBException {

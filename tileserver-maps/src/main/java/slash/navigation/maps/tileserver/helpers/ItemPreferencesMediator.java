@@ -118,7 +118,7 @@ public abstract class ItemPreferencesMediator<T extends Item> {
         }
     }
 
-    private List<String> keys = new ArrayList<>();
+    private final List<String> keys = new ArrayList<>();
 
     private void handleSelectionAdd(int firstRow, int lastRow) {
         for (int i = firstRow; i < lastRow + 1; i++) {

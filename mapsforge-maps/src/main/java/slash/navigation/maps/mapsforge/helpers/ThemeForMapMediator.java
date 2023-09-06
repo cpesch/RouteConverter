@@ -97,7 +97,7 @@ public class ThemeForMapMediator {
         File themesDirectory = new File(mapManager.getThemesDirectory(), map.getProvider());
         if (themesDirectory.exists()) {
             List<File> themes = collectFiles(mapManager.getThemesDirectory(), DOT_XML);
-            if(themes.size() > 0)
+            if(!themes.isEmpty())
                 return removePrefix(mapManager.getThemesDirectory(), themes.get(0));
         }
         return getAppliedThemeModel().getItem().getDescription();

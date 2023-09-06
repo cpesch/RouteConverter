@@ -108,7 +108,7 @@ public class AddPositionAction extends FrameAction {
             insertedPositions.add(insertRow(insertRow, center));
         }
 
-        if (insertedPositions.size() > 0) {
+        if (!insertedPositions.isEmpty()) {
             List<Integer> insertedRows = new ArrayList<>();
             for (NavigationPosition position : insertedPositions) {
                 int index = positionsModel.getIndex(position);

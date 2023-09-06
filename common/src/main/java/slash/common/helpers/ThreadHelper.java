@@ -57,7 +57,7 @@ public class ThreadHelper {
     }
 
     private static class NamedThreadFactory implements ThreadFactory {
-        private String namePrefix;
+        private final String namePrefix;
         private int number = 1;
 
         private NamedThreadFactory(String namePrefix) {

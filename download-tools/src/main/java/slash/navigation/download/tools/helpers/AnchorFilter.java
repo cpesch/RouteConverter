@@ -51,7 +51,7 @@ public class AnchorFilter {
                 if (anchor.equals("index.html") || anchor.startsWith(".."))
                     anchor = "";
 
-                if (anchor.length() > 0 && filterExtension(anchor, extensions) && filterIncludes(anchor, includes) && !filterExcludes(anchor, excludes))
+                if (!anchor.isEmpty() && filterExtension(anchor, extensions) && filterIncludes(anchor, includes) && !filterExcludes(anchor, excludes))
                     result.add(anchor);
             } catch (URISyntaxException e) {
                 log.warning("No valid uri: " + e);

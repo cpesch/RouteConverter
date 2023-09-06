@@ -75,6 +75,6 @@ public class ReopenMenu {
             menuItem.setToolTipText(text);
             menu.add(menuItem);
         }
-        menu.setEnabled(urls.size() > 0);
+        menu.setEnabled(!urls.isEmpty());
     }
 }

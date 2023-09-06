@@ -92,8 +92,7 @@ public class Kml22Format extends KmlFormat {
 
     protected void extractTracks(KmlType kmlType, ParserContext<KmlRoute> context) throws IOException {
         AbstractFeatureType feature = kmlType.getAbstractFeatureGroup().getValue();
-        if (feature instanceof AbstractContainerType) {
-            AbstractContainerType containerType = (AbstractContainerType) feature;
+        if (feature instanceof AbstractContainerType containerType) {
             List<JAXBElement<? extends AbstractFeatureType>> features = null;
             if (containerType instanceof FolderType)
                 features = ((FolderType) containerType).getAbstractFeatureGroup();
@@ -102,8 +101,7 @@ public class Kml22Format extends KmlFormat {
             extractTracks(trim(containerType.getName()), trim(containerType.getDescription()), features, context);
         }
 
-        if (feature instanceof PlacemarkType) {
-            PlacemarkType placemarkType = (PlacemarkType) feature;
+        if (feature instanceof PlacemarkType placemarkType) {
             String placemarkName = asDescription(trim(placemarkType.getName()), trim(placemarkType.getDescription()));
 
             List<KmlPosition> positions = extractPositionsFromGeometry(placemarkType.getAbstractGeometryGroup());
@@ -113,8 +111,7 @@ public class Kml22Format extends KmlFormat {
             context.appendRoute(new KmlRoute(this, Waypoints, placemarkName, asDescription(placemarkType.getDescription()), positions));
         }
 
-        if (feature instanceof TourType) {
-            TourType tourType = (TourType) feature;
+        if (feature instanceof TourType tourType) {
             String tourName = asDescription(trim(tourType.getName()), trim(tourType.getDescription()));
 
             List<KmlPosition> positions = extractPositionsFromTour(tourType.getPlaylist().getAbstractTourPrimitiveGroup());
@@ -187,7 +184,7 @@ public class Kml22Format extends KmlFormat {
                 context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
-        if (waypoints.size() > 0) {
+        if (!waypoints.isEmpty()) {
             RouteCharacteristics characteristics = parseCharacteristics(name, null, Waypoints);
             context.prependRoute(new KmlRoute(this, characteristics, name, asDescription(description), waypoints));
         }
@@ -204,8 +201,7 @@ public class Kml22Format extends KmlFormat {
             List<JAXBElement<?>> rest = networkLinkType.getValue().getRest();
             for (JAXBElement<?> r : rest) {
                 Object rValue = r.getValue();
-                if (rValue instanceof LinkType) {
-                    LinkType linkType = (LinkType) rValue;
+                if (rValue instanceof LinkType linkType) {
                     String url = linkType.getHref();
                     context.parse(url);
                 }
@@ -241,30 +237,25 @@ public class Kml22Format extends KmlFormat {
     private List<KmlPosition> extractPositionsFromGeometry(JAXBElement<? extends AbstractGeometryType> geometryType) {
         List<KmlPosition> positions = new ArrayList<>();
         AbstractGeometryType geometryTypeValue = geometryType.getValue();
-        if (geometryTypeValue instanceof PointType) {
-            PointType point = (PointType) geometryTypeValue;
+        if (geometryTypeValue instanceof PointType point) {
             positions.addAll(asKmlPositions(point.getCoordinates()));
         }
-        if (geometryTypeValue instanceof LineStringType) {
-            LineStringType lineString = (LineStringType) geometryTypeValue;
+        if (geometryTypeValue instanceof LineStringType lineString) {
             positions.addAll(asKmlPositions(lineString.getCoordinates()));
         }
-        if (geometryTypeValue instanceof MultiGeometryType) {
-            MultiGeometryType multiGeometryType = (MultiGeometryType) geometryTypeValue;
+        if (geometryTypeValue instanceof MultiGeometryType multiGeometryType) {
             List<JAXBElement<? extends AbstractGeometryType>> geometryTypes = multiGeometryType.getAbstractGeometryGroup();
             for (JAXBElement<? extends AbstractGeometryType> geometryType2 : geometryTypes) {
                 positions.addAll(extractPositionsFromGeometry(geometryType2));
             }
         }
-        if (geometryTypeValue instanceof MultiTrackType) {
-            MultiTrackType multiTrackType = (MultiTrackType) geometryTypeValue;
+        if (geometryTypeValue instanceof MultiTrackType multiTrackType) {
             List<TrackType> tracks = multiTrackType.getTrack();
             for (TrackType track : tracks) {
                 positions.addAll(extractPositions(track));
             }
         }
-        if (geometryTypeValue instanceof TrackType) {
-            TrackType trackType = (TrackType) geometryTypeValue;
+        if (geometryTypeValue instanceof TrackType trackType) {
             positions.addAll(extractPositions(trackType));
         }
         return positions;
@@ -274,11 +265,9 @@ public class Kml22Format extends KmlFormat {
         List<KmlPosition> positions = new ArrayList<>();
         for (JAXBElement<? extends AbstractTourPrimitiveType> tourPrimitive : tourPrimitives) {
             AbstractTourPrimitiveType tourPrimitiveValue = tourPrimitive.getValue();
-            if (tourPrimitiveValue instanceof FlyToType) {
-                FlyToType flyToType = (FlyToType) tourPrimitiveValue;
+            if (tourPrimitiveValue instanceof FlyToType flyToType) {
                 AbstractViewType abstractViewGroupValue = flyToType.getAbstractViewGroup().getValue();
-                if (abstractViewGroupValue instanceof LookAtType) {
-                    LookAtType lookAtType = (LookAtType) abstractViewGroupValue;
+                if (abstractViewGroupValue instanceof LookAtType lookAtType) {
                     Double elevation = isEmpty(lookAtType.getAltitude()) ? null : lookAtType.getAltitude();
                     KmlPosition position = new KmlPosition(lookAtType.getLongitude(), lookAtType.getLatitude(),
                             elevation, null, null, null);
@@ -423,15 +412,15 @@ public class Kml22Format extends KmlFormat {
     }
 
     private String getSpeedColor(int speedClass) {
-        return "speedColor_" + valueOf(speedClass);
+        return "speedColor_" + speedClass;
     }
 
     private String getSpeedDescription(int speedClass) {
         if (speedClass == 0)
-            return "&lt; " + valueOf(getSpeedScale()) + " Km/h";
+            return "&lt; " + getSpeedScale() + " Km/h";
         else if (speedClass <= SPEED_COLORS.length)
-            return valueOf(speedClass * getSpeedScale()) + " - " + valueOf((speedClass + 1) * getSpeedScale()) + " Km/h";
-        return "&gt; " + valueOf(speedClass * getSpeedScale()) + " Km/h";
+            return speedClass * getSpeedScale() + " - " + (speedClass + 1) * getSpeedScale() + " Km/h";
+        return "&gt; " + speedClass * getSpeedScale() + " Km/h";
     }
 
     private List<StyleType> createSpeedTrackColors(float width) {

@@ -30,7 +30,7 @@ import slash.navigation.photo.TagState;
  * @author Christian Pesch
  */
 public class TagStatePhotoPredicate implements FilterPredicate<NavigationPosition> {
-    private TagState tagState;
+    private final TagState tagState;
 
     public TagStatePhotoPredicate(TagState tagState) {
         this.tagState = tagState;
@@ -41,9 +41,8 @@ public class TagStatePhotoPredicate implements FilterPredicate<NavigationPositio
     }
 
     public boolean shouldInclude(NavigationPosition position) {
-        if (!(position instanceof PhotoPosition))
+        if (!(position instanceof PhotoPosition photoPosition))
             return false;
-        PhotoPosition photoPosition = (PhotoPosition) position;
         return photoPosition.getTagState().equals(tagState);
     }
 }

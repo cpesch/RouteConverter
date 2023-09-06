@@ -36,7 +36,7 @@ import java.util.List;
 
 public class RemoteFilesAggregator {
     private final List<DataSourceRemoteFiles> dataSourceRemoteFiles = new ArrayList<>();
-    private DataSourceManager dataSourceManager;
+    private final DataSourceManager dataSourceManager;
 
     public RemoteFilesAggregator(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;

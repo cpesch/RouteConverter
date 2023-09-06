@@ -71,7 +71,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     private JButton buttonPrevious;
     private JButton buttonNextOrFinish;
 
-    private GarminFlightPlanRoute route;
+    private final GarminFlightPlanRoute route;
     private int index;
 
     public CompleteFlightPlanDialog(GarminFlightPlanRoute routeToComplete) {
@@ -188,9 +188,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         comboBoxWaypointType.setBorder(validWaypointType ? VALID_BORDER : INVALID_BORDER);
         boolean validCountryCode = Airport.equals(comboBoxWaypointType.getSelectedItem()) ?
                 !CountryCode.None.equals(comboBoxCountryCode.getSelectedItem()) :
-                UserWaypoint.equals(comboBoxWaypointType.getSelectedItem()) ?
-                        CountryCode.None.equals(comboBoxCountryCode.getSelectedItem()) :
-                        !CountryCode.None.equals(comboBoxCountryCode.getSelectedItem());
+                UserWaypoint.equals(comboBoxWaypointType.getSelectedItem()) == CountryCode.None.equals(comboBoxCountryCode.getSelectedItem());
         comboBoxCountryCode.setBorder(validCountryCode ? VALID_BORDER : INVALID_BORDER);
 
         buttonPrevious.setEnabled(index > 0);

@@ -39,7 +39,7 @@ public class TimeZoneModel {
     private final String preferencesName;
     private final TimeZone defaultValue;
 
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     public TimeZoneModel(String preferencesName, TimeZone defaultValue) {
         this.preferencesName = preferencesName;

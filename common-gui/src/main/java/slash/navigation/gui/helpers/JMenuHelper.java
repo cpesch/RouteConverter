@@ -53,7 +53,7 @@ public class JMenuHelper {
         JMenu menu = new JMenu(getString(name + "-menu"));
         menu.setName(name);
         String mnemonic = getOptionalString(name + "-menu-mnemonic");
-        if (mnemonic != null && mnemonic.length() > 0)
+        if (mnemonic != null && !mnemonic.isEmpty())
             menu.setMnemonic(mnemonic.charAt(0));
         return menu;
     }
@@ -89,7 +89,7 @@ public class JMenuHelper {
 
     public static void setMnemonic(AbstractButton button, String key) {
         String mnemonic = getOptionalString(key);
-        if (mnemonic != null && mnemonic.length() > 0)
+        if (mnemonic != null && !mnemonic.isEmpty())
             setMnemonic(button, mnemonic.charAt(0));
     }
 

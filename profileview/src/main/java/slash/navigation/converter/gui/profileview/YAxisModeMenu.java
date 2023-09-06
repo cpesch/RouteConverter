@@ -55,8 +55,8 @@ public class YAxisModeMenu {
     }
 
     private class YAxisModeListener implements ChangeListener {
-        private JRadioButtonMenuItem menuItem;
-        private YAxisMode mode;
+        private final JRadioButtonMenuItem menuItem;
+        private final YAxisMode mode;
 
         private YAxisModeListener(JRadioButtonMenuItem menuItem, YAxisMode mode) {
             this.menuItem = menuItem;

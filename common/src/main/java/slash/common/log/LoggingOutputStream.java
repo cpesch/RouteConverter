@@ -34,9 +34,9 @@ import java.util.logging.Logger;
  */
 
 public class LoggingOutputStream extends ByteArrayOutputStream {
-    private String lineSeparator = System.getProperty("line.separator");
-    private Logger logger;
-    private Level level;
+    private final String lineSeparator = System.getProperty("line.separator");
+    private final Logger logger;
+    private final Level level;
 
     public LoggingOutputStream(Logger logger, Level level) {
         super();
@@ -52,7 +52,7 @@ public class LoggingOutputStream extends ByteArrayOutputStream {
             super.reset();
 
             // avoid empty records
-            if (record.length() == 0 || record.equals(lineSeparator)) {
+            if (record.isEmpty() || record.equals(lineSeparator)) {
                 return;
             }
 

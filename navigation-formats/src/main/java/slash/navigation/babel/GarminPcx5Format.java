@@ -61,7 +61,7 @@ public class GarminPcx5Format extends BabelFormat {
     protected boolean isValidRoute(GpxRoute route) {
         // clashes with some TomTom POI .ov2 files
         List<GpxPosition> positions = route.getPositions();
-        if (positions.size() == 0)
+        if (positions.isEmpty())
             return false;
         int count = 0;
         for (GpxPosition position : positions) {

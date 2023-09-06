@@ -34,7 +34,7 @@ import javax.swing.event.EventListenerList;
  */
 
 public class GoogleMapsServerModel {
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     public GoogleMapsServer getGoogleMapsServer() {
         return GoogleMapsServer.getGoogleMapsServer();

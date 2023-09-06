@@ -53,7 +53,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
             String line = reader.readLine();
             if (line == null)
                 break;
-            if (line.length() == 0)
+            if (line.isEmpty())
                 continue;
 
             if (isValidLine(line)) {
@@ -67,7 +67,7 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
             }
         }
 
-        if (positions.size() > 0)
+        if (!positions.isEmpty())
             context.appendRoute(createRoute(getRouteCharacteristics(), positions));
     }
 

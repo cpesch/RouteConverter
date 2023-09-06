@@ -132,8 +132,7 @@ public class CheckProxy {
 
             SocketAddress address = proxy.address();
             log.info("SocketAddress " + address);
-            if (address instanceof InetSocketAddress) {
-                InetSocketAddress inetSocketAddress = (InetSocketAddress) address;
+            if (address instanceof InetSocketAddress inetSocketAddress) {
                 HttpHost host = new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort());
                 requestConfigBuilder.setProxy(host);
 

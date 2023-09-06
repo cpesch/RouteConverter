@@ -34,9 +34,9 @@ import java.nio.CharBuffer;
  */
 
 public class TokenReplacingReader extends Reader {
-    private PushbackReader pushbackReader;
-    private TokenResolver tokenResolver;
-    private StringBuilder tokenNameBuffer = new StringBuilder();
+    private final PushbackReader pushbackReader;
+    private final TokenResolver tokenResolver;
+    private final StringBuilder tokenNameBuffer = new StringBuilder();
     private String tokenValue;
     private int tokenValueIndex;
 
@@ -79,7 +79,7 @@ public class TokenReplacingReader extends Reader {
 
         tokenValue = tokenResolver.resolveToken(tokenNameBuffer.toString());
         if (tokenValue == null)
-            tokenValue = "${" + tokenNameBuffer.toString() + "}";
+            tokenValue = "${" + tokenNameBuffer + "}";
 
         // token replaces to empty string
         else if (tokenValueIndex >= tokenValue.length())
@@ -88,7 +88,7 @@ public class TokenReplacingReader extends Reader {
         return tokenValue.charAt(tokenValueIndex++);
     }
 
-    public int read(char cbuf[], int off, int len) throws IOException {
+    public int read(char[] cbuf, int off, int len) throws IOException {
         int charsRead = -1;
         for (int i = 0; i < len; i++) {
             int nextChar = read();

@@ -72,9 +72,9 @@ public class DeletePositionsDialog extends SimpleDialog {
     private JButton buttonDeletePositions;
     private JButton buttonClearSelection;
     private JLabel labelDouglasPeucker;
-    private DoubleDocument distance;
-    private IntegerDocument order;
-    private DoubleDocument threshold;
+    private final DoubleDocument distance;
+    private final IntegerDocument order;
+    private final DoubleDocument threshold;
 
     public DeletePositionsDialog() {
         super(RouteConverter.getInstance().getFrame(), "delete-positions");

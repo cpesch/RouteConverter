@@ -46,7 +46,7 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
     private MapView mapView;
     private MapViewCallback mapViewCallback;
     private JWindow window;
-    private JLabel label = new JLabel();
+    private final JLabel label = new JLabel();
     private boolean showCoordinates;
 
     public void initialize(AwtGraphicMapView mapView, MapViewCallback mapViewCallback) {

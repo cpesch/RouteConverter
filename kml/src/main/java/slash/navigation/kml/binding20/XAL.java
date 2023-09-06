@@ -52,7 +52,7 @@ public class XAL {
     @XmlAttribute(name = "Version")
     protected String version;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<>();
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * Gets the value of the addressDetails property.

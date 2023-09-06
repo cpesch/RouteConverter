@@ -32,8 +32,9 @@ import javax.swing.undo.UndoableEdit;
  */
 
 class RenamePositionList extends AbstractUndoableEdit {
-    private UndoFormatAndRoutesModel formatAndRoutesModel;
-    private String previousName, nextName;
+    private final UndoFormatAndRoutesModel formatAndRoutesModel;
+    private final String previousName;
+    private final String nextName;
 
     public RenamePositionList(UndoFormatAndRoutesModel formatAndRoutesModel, String previousName, String nextName) {
         this.formatAndRoutesModel = formatAndRoutesModel;

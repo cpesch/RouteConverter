@@ -44,9 +44,9 @@ import static slash.common.io.Transfer.formatInt;
 public class TileServerMapManager {
     private static final String APPLIED_OVERLAY_PREFERENCE = "appliedOverlay";
     private final TileServerService tileServerService;
-    private ItemTableModel<TileServer> availableMapsModel = new ItemTableModel<>(1);
-    private ItemTableModel<TileServer> availableOverlaysModel = new ItemTableModel<>(1);
-    private ItemTableModel<TileServer> appliedOverlaysModel = new ItemTableModel<>(1);
+    private final ItemTableModel<TileServer> availableMapsModel = new ItemTableModel<>(1);
+    private final ItemTableModel<TileServer> availableOverlaysModel = new ItemTableModel<>(1);
+    private final ItemTableModel<TileServer> appliedOverlaysModel = new ItemTableModel<>(1);
     private ItemPreferencesMediator itemPreferencesMediator;
 
     public TileServerMapManager(File tileServerDirectory) {

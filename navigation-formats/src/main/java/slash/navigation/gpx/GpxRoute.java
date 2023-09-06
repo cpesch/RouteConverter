@@ -52,6 +52,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -68,9 +69,9 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
     private String name;
-    private List<String> description;
-    private List<GpxPosition> positions;
-    private List<Object> origins;
+    private final List<String> description;
+    private final List<GpxPosition> positions;
+    private final List<Object> origins;
 
     public GpxRoute(GpxFormat format, RouteCharacteristics characteristics,
                     String name, List<String> description, List<GpxPosition> positions,
@@ -239,8 +240,8 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
         final GpxRoute gpxRoute = (GpxRoute) o;
 
-        return !(description != null ? !description.equals(gpxRoute.description) : gpxRoute.description != null) &&
-                !(name != null ? !name.equals(gpxRoute.name) : gpxRoute.name != null) &&
+        return !(!Objects.equals(description, gpxRoute.description)) &&
+                !(!Objects.equals(name, gpxRoute.name)) &&
                 getCharacteristics().equals(gpxRoute.getCharacteristics()) &&
                 positions.equals(gpxRoute.positions);
     }

@@ -114,7 +114,7 @@ public class InsertPositionFacade {
 
         TravelMode travelMode = r.getRoutingServiceFacade().getRoutingPreferencesModel().getTravelMode();
         List<Integer> positions = insertPositions(routingService, future, travelMode, selectedPositions);
-        if (positions.size() > 0)
+        if (!positions.isEmpty())
             invokeLater(() -> r.getPositionAugmenter().addData(toArray(positions), false, true, true, false, false));
     }
 

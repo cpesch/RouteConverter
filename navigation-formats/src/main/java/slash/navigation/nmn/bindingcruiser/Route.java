@@ -26,7 +26,7 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Route {
-    private List<String> coords = new ArrayList<>();
+    private final List<String> coords = new ArrayList<>();
 
     public int v = 1;
     public Settings settings = new Settings();

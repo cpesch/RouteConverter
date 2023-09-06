@@ -46,7 +46,7 @@ import static java.lang.String.format;
 
 public abstract class KmzFormat extends BaseKmlFormat {
     private static final Logger log = Logger.getLogger(KmzFormat.class.getName());
-    private KmlFormat delegate;
+    private final KmlFormat delegate;
 
     protected KmzFormat(KmlFormat delegate) {
         this.delegate = delegate;
@@ -84,7 +84,7 @@ public abstract class KmzFormat extends BaseKmlFormat {
                 zip.closeEntry();
             }
         }
-        if(context.getFormats().size() == 0)
+        if(context.getFormats().isEmpty())
             throw new IOException(format("Cannot find %s format in %s", getName(), context.getFile()));
     }
 

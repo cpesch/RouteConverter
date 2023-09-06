@@ -37,7 +37,7 @@ public abstract class TestCase extends junit.framework.TestCase {
     }
 
     public static void assertNotEquals(String message, Object expected, Object was) {
-        assertTrue(message, !expected.equals(was));
+        assertNotEquals(message, expected, was);
     }
 
     public static void assertDoubleEquals(double expected, double was) {

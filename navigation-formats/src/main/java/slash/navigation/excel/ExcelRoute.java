@@ -55,6 +55,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteComments.createRouteName;
@@ -67,9 +68,9 @@ import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
  */
 
 public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
-    private Sheet sheet;
+    private final Sheet sheet;
     private ColumnTypeToRowIndexMapping mapping = DEFAULT;
-    private List<ExcelPosition> positions;
+    private final List<ExcelPosition> positions;
 
     public ExcelRoute(ExcelFormat format, Sheet sheet, ColumnTypeToRowIndexMapping mapping, List<ExcelPosition> positions) {
         super(format, Track);
@@ -309,8 +310,8 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         ExcelRoute that = (ExcelRoute) o;
 
         return !(getName() != null ? !getName().equals(that.getName()) : that.getName() != null) &&
-                !(mapping != null ? !mapping.equals(that.mapping) : that.mapping != null) &&
-                !(positions != null ? !positions.equals(that.positions) : that.positions != null);
+                !(!Objects.equals(mapping, that.mapping)) &&
+                !(!Objects.equals(positions, that.positions));
     }
 
     public int hashCode() {

@@ -34,9 +34,10 @@ import javax.swing.undo.UndoableEdit;
  */
 
 class RenameRoute extends AbstractUndoableEdit {
-    private UndoCatalogModel catalogModel;
-    private RouteModel route;
-    private String oldName, newName;
+    private final UndoCatalogModel catalogModel;
+    private final RouteModel route;
+    private final String oldName;
+    private final String newName;
 
     public RenameRoute(UndoCatalogModel catalogModel, RouteModel route, String oldName, String newName) {
         this.catalogModel = catalogModel;

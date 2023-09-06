@@ -55,6 +55,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.RouteComments.createRouteName;
@@ -67,8 +68,8 @@ import static slash.navigation.base.RouteComments.createRouteName;
 
 public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, GarminFlightPlanFormat> {
     private String name;
-    private List<String> description;
-    private List<GarminFlightPlanPosition> positions;
+    private final List<String> description;
+    private final List<GarminFlightPlanPosition> positions;
 
     public GarminFlightPlanRoute(String name, List<String> description, List<GarminFlightPlanPosition> positions) {
         super(new GarminFlightPlanFormat(), Track);
@@ -209,8 +210,8 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
         GarminFlightPlanRoute that = (GarminFlightPlanRoute) o;
 
-        return !(name != null ? !name.equals(that.name) : that.name != null) &&
-                !(positions != null ? !positions.equals(that.positions) : that.positions != null);
+        return !(!Objects.equals(name, that.name)) &&
+                !(!Objects.equals(positions, that.positions));
     }
 
     public int hashCode() {

@@ -31,7 +31,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.utcCalendar;
 
 public class ApeMapFormatTest {
-    private ApeMapFormat format = new ApeMapFormat();
+    private final ApeMapFormat format = new ApeMapFormat();
 
     @Test
     public void testGetExtension() {

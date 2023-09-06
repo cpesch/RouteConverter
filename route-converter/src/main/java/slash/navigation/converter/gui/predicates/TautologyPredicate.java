@@ -28,7 +28,7 @@ import slash.navigation.common.NavigationPosition;
  * @author Christian Pesch
  */
 public class TautologyPredicate implements FilterPredicate<NavigationPosition> {
-    private String name;
+    private final String name;
 
     public TautologyPredicate(String name) {
         this.name = name;

@@ -33,7 +33,7 @@ import javax.swing.*;
  */
 
 public class DeletePositionListAction extends FrameAction {
-    private FormatAndRoutesModel formatAndRoutesModel;
+    private final FormatAndRoutesModel formatAndRoutesModel;
 
     public DeletePositionListAction(FormatAndRoutesModel formatAndRoutesModel) {
         this.formatAndRoutesModel = formatAndRoutesModel;

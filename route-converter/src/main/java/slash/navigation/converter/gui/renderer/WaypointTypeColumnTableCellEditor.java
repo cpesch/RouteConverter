@@ -44,8 +44,7 @@ public class WaypointTypeColumnTableCellEditor extends PositionsTableCellEditor 
     }
 
     protected void formatLabel(JLabel label, Object value, boolean firstRow, boolean lastRow) {
-        if(value instanceof NavigationPosition) {
-            NavigationPosition position = (NavigationPosition) value;
+        if(value instanceof NavigationPosition position) {
             String key = null;
             if (lastRow)
                 key = "end";
@@ -84,8 +83,7 @@ public class WaypointTypeColumnTableCellEditor extends PositionsTableCellEditor 
     }
 
     private WaypointType getWaypointType(NavigationPosition position) {
-        if (position instanceof Wgs84Position) {
-            Wgs84Position wgs84Position = (Wgs84Position) position;
+        if (position instanceof Wgs84Position wgs84Position) {
             return wgs84Position.getWaypointType();
         }
         return null;

@@ -78,8 +78,7 @@ public class Kml21Format extends KmlFormat {
 
     private void extractTracks(KmlType kmlType, ParserContext<KmlRoute> context) throws IOException {
         FeatureType feature = kmlType.getFeature().getValue();
-        if (feature instanceof ContainerType) {
-            ContainerType containerType = (ContainerType) feature;
+        if (feature instanceof ContainerType containerType) {
             List<JAXBElement<? extends FeatureType>> features = null;
             if (containerType instanceof FolderType)
                 features = ((FolderType) containerType).getFeature();
@@ -88,8 +87,7 @@ public class Kml21Format extends KmlFormat {
             extractTracks(trim(containerType.getName()), trim(containerType.getDescription()), features, context);
         }
 
-        if (feature instanceof PlacemarkType) {
-            PlacemarkType placemarkType = (PlacemarkType) feature;
+        if (feature instanceof PlacemarkType placemarkType) {
             String placemarkName = asDescription(trim(placemarkType.getName()),
                     trim(placemarkType.getDescription()));
 
@@ -144,7 +142,7 @@ public class Kml21Format extends KmlFormat {
                 context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
-        if (waypoints.size() > 0) {
+        if (!waypoints.isEmpty()) {
             RouteCharacteristics characteristics = parseCharacteristics(name, null, Waypoints);
             context.prependRoute(new KmlRoute(this, characteristics, name, asDescription(description), waypoints));
         }
@@ -164,16 +162,13 @@ public class Kml21Format extends KmlFormat {
         List<KmlPosition> positions = new ArrayList<>();
         if (geometryType != null) {
             GeometryType geometryTypeValue = geometryType.getValue();
-            if (geometryTypeValue instanceof PointType) {
-                PointType point = (PointType) geometryTypeValue;
+            if (geometryTypeValue instanceof PointType point) {
                 positions.addAll(asKmlPositions(point.getCoordinates()));
             }
-            if (geometryTypeValue instanceof LineStringType) {
-                LineStringType lineString = (LineStringType) geometryTypeValue;
+            if (geometryTypeValue instanceof LineStringType lineString) {
                 positions.addAll(asKmlPositions(lineString.getCoordinates()));
             }
-            if (geometryTypeValue instanceof MultiGeometryType) {
-                MultiGeometryType multiGeometryType = (MultiGeometryType) geometryTypeValue;
+            if (geometryTypeValue instanceof MultiGeometryType multiGeometryType) {
                 List<JAXBElement<? extends GeometryType>> geometryTypes = multiGeometryType.getGeometry();
                 for (JAXBElement<? extends GeometryType> geometryType2 : geometryTypes) {
                     positions.addAll(extractPositions(geometryType2));

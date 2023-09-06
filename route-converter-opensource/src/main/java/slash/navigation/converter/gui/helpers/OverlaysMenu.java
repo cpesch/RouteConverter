@@ -62,7 +62,7 @@ public class OverlaysMenu {
         item.setToolTipText(tileServer.getDescription());
         menu.add(item);
 
-        menu.setEnabled(tileServers.size() > 0);
+        menu.setEnabled(!tileServers.isEmpty());
     }
 
     private void enableMenuEntries() {

@@ -46,7 +46,7 @@ public class HgtFilesService {
             "ferranti1"
     ));
 
-    private DataSourceManager dataSourceManager;
+    private final DataSourceManager dataSourceManager;
 
     public HgtFilesService(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;

@@ -466,7 +466,7 @@ public class NmeaFormatTest {
         assertEquals(1, routes.size());
         SimpleRoute<NmeaPosition, BaseNmeaFormat> route = routes.get(0);
         assertEquals(1, route.getPositionCount());
-        NmeaPosition position = (NmeaPosition) route.getPositions().get(0);
+        NmeaPosition position = route.getPositions().get(0);
         assertDoubleEquals(9.8037979667, position.getLongitude());
         assertDoubleEquals(43.01497215, position.getLatitude());
         assertDoubleEquals(19.3175, position.getSpeed());

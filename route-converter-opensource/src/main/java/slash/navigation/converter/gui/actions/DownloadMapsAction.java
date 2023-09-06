@@ -51,7 +51,7 @@ import static slash.common.io.Files.asDialogString;
 
 public class DownloadMapsAction extends DialogAction {
     private static final Logger log = Logger.getLogger(DownloadMapsAction.class.getName());
-    private static ExecutorService executor = newCachedThreadPool();
+    private static final ExecutorService executor = newCachedThreadPool();
 
     private final JTable table;
     private final MapsforgeMapManager mapManager;

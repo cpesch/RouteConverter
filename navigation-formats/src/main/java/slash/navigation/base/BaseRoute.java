@@ -102,7 +102,7 @@ import static slash.navigation.base.RouteCalculations.getSignificantPositions;
 
 public abstract class BaseRoute<P extends BaseNavigationPosition, F extends BaseNavigationFormat> {
     private static final String REVERSE_ROUTE_NAME_POSTFIX = " (rev)";
-    private F format;
+    private final F format;
     private RouteCharacteristics characteristics;
 
     protected BaseRoute(F format, RouteCharacteristics characteristics) {
@@ -358,7 +358,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         List<P> positions = getPositions();
         int index = 0;
         double distance = 0.0;
-        NavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
+        NavigationPosition previous = !positions.isEmpty() ? positions.get(0) : null;
         while (index <= endIndex) {
             NavigationPosition next = positions.get(index);
             if (previous != null) {
@@ -418,7 +418,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         List<P> positions = getPositions();
         int index = 0;
         long time = 0L;
-        NavigationPosition previous = positions.size() > 0 ? positions.get(0) : null;
+        NavigationPosition previous = !positions.isEmpty() ? positions.get(0) : null;
         while (index <= endIndex) {
             NavigationPosition next = positions.get(index);
             if (previous != null) {

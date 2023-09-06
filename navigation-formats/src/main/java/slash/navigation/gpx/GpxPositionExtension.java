@@ -71,8 +71,7 @@ public class GpxPositionExtension {
                         extensionTypes.add(TrackPoint2);
                     }
 
-                } else if (any instanceof Element) {
-                    Element element = (Element) any;
+                } else if (any instanceof Element element) {
                     if (isWellKnownElementName(element)) {
                         extensionTypes.add(Text);
                     }
@@ -94,13 +93,11 @@ public class GpxPositionExtension {
             for (Object any : extensions.getAny()) {
                 if (any instanceof JAXBElement) {
                     Object anyValue = ((JAXBElement) any).getValue();
-                    if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
-                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                    if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                         result = formatDouble(trackPoint.getCourse());
                     }
 
-                } else if (any instanceof Element) {
-                    Element element = (Element) any;
+                } else if (any instanceof Element element) {
                     if ("course".equalsIgnoreCase(element.getLocalName()))
                         result = parseDouble(element.getTextContent());
                 }
@@ -122,14 +119,12 @@ public class GpxPositionExtension {
         for (Object any : anys) {
             if (any instanceof JAXBElement) {
                 Object anyValue = ((JAXBElement) any).getValue();
-                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
-                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                     trackPoint.setCourse(formatHeading(heading));
                     foundHeading = true;
                 }
 
-            } else if (any instanceof Element) {
-                Element element = (Element) any;
+            } else if (any instanceof Element element) {
                 if ("course".equalsIgnoreCase(element.getLocalName())) {
                     element.setTextContent(formatHeadingAsString(heading));
                     foundHeading = true;
@@ -153,13 +148,11 @@ public class GpxPositionExtension {
             for (Object any : extensions.getAny()) {
                 if (any instanceof JAXBElement) {
                     Object anyValue = ((JAXBElement) any).getValue();
-                    if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
-                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                    if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                         result = msToKmh(trackPoint.getSpeed());
                     }
 
-                } else if (any instanceof Element) {
-                    Element element = (Element) any;
+                } else if (any instanceof Element element) {
                     if ("speed".equalsIgnoreCase(element.getLocalName()))
                         result = msToKmh(parseDouble(element.getTextContent()));
                 }
@@ -181,14 +174,12 @@ public class GpxPositionExtension {
         for (Object any : anys) {
             if (any instanceof JAXBElement) {
                 Object anyValue = ((JAXBElement) any).getValue();
-                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
-                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                     trackPoint.setSpeed(formatSpeedAsDouble(kmhToMs(speed)));
                     foundSpeed = true;
                 }
 
-            } else if (any instanceof Element) {
-                Element element = (Element) any;
+            } else if (any instanceof Element element) {
                 if ("speed".equalsIgnoreCase(element.getLocalName())) {
                     element.setTextContent(formatSpeedAsString(kmhToMs(speed)));
                     foundSpeed = true;
@@ -230,8 +221,7 @@ public class GpxPositionExtension {
                             result = trackPoint.getWtemp();
                     }
 
-                } else if (any instanceof Element) {
-                    Element element = (Element) any;
+                } else if (any instanceof Element element) {
                     if ("temperature".equalsIgnoreCase(element.getLocalName()))
                         result = parseDouble(element.getTextContent());
                 }
@@ -273,8 +263,7 @@ public class GpxPositionExtension {
                     foundTemperature = true;
                 }
 
-            } else if (any instanceof Element) {
-                Element element = (Element) any;
+            } else if (any instanceof Element element) {
                 if ("temperature".equalsIgnoreCase(element.getLocalName())) {
                     element.setTextContent(formatTemperatureAsString(temperature));
                     foundTemperature = true;
@@ -308,8 +297,7 @@ public class GpxPositionExtension {
                         result = trackPoint.getHr();
                     }
 
-                } else if (any instanceof Element) {
-                    Element element = (Element) any;
+                } else if (any instanceof Element element) {
                     if ("hr".equalsIgnoreCase(element.getLocalName()))
                         result = parseShort(element.getTextContent());
                 }
@@ -341,8 +329,7 @@ public class GpxPositionExtension {
                     foundHeartBeat = true;
                 }
 
-            } else if (any instanceof Element) {
-                Element element = (Element) any;
+            } else if (any instanceof Element element) {
                 if ("hr".equalsIgnoreCase(element.getLocalName())) {
                     element.setTextContent(formatShortAsString(heartBeat));
                     foundHeartBeat = true;
@@ -418,20 +405,20 @@ public class GpxPositionExtension {
 
     private boolean isEmptyExtension(slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint) {
         return isEmpty(trackPoint.getDepth()) && isEmpty(trackPoint.getTemperature()) &&
-                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().size() == 0);
+                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().isEmpty());
     }
 
     private boolean isEmptyExtension(slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
         return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getCad()) && isEmpty(trackPoint.getDepth()) &&
                 isEmpty(trackPoint.getHr()) && isEmpty(trackPoint.getWtemp()) &&
-                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().size() == 0);
+                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().isEmpty());
     }
 
     private boolean isEmptyExtension(slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
         return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getBearing()) && isEmpty(trackPoint.getCad()) &&
                 isEmpty(trackPoint.getCourse()) && isEmpty(trackPoint.getDepth()) && isEmpty(trackPoint.getHr()) &&
                 isEmpty(trackPoint.getSpeed()) && isEmpty(trackPoint.getWtemp()) &&
-                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().size() == 0);
+                (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().isEmpty());
     }
 
     private void removeExtension(Object extension) {
@@ -466,8 +453,7 @@ public class GpxPositionExtension {
         for (Iterator<Object> iterator = anys.iterator(); iterator.hasNext(); ) {
             Object any = iterator.next();
 
-            if (any instanceof Element) {
-                Element element = (Element) any;
+            if (any instanceof Element element) {
                 if (isWellKnownElementName(element)) {
                     if (isEmpty(parseDouble(element.getTextContent())))
                         iterator.remove();
@@ -475,7 +461,7 @@ public class GpxPositionExtension {
             }
         }
 
-        if (wptType.getExtensions() != null && wptType.getExtensions().getAny().size() == 0)
+        if (wptType.getExtensions() != null && wptType.getExtensions().getAny().isEmpty())
             wptType.setExtensions(null);
     }
 }

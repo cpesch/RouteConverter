@@ -31,7 +31,7 @@ import static slash.common.TestCase.calendar;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class CsvFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+    private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
 
     private void checkRoute(BaseRoute route) {
         assertEquals(3, route.getPositionCount());

@@ -130,7 +130,7 @@ public class GoogleService implements ElevationService, GeocodingService {
                 })
                 .map(GeocodeResponse.Result::getFormattedAddress)
                 .collect(Collectors.toList());
-        return locations.size() > 0 ? locations.get(0) : null;
+        return !locations.isEmpty() ? locations.get(0) : null;
     }
 
     public List<NavigationPosition> getPositionsFor(String address) throws IOException {
@@ -174,7 +174,7 @@ public class GoogleService implements ElevationService, GeocodingService {
                     String status = elevationResponse.getStatus();
                     checkForError(url, status);
                     List<Double> elevations = extractElevations(elevationResponse.getResult());
-                    return elevations != null && elevations.size() > 0 ? elevations.get(0) : null;
+                    return elevations != null && !elevations.isEmpty() ? elevations.get(0) : null;
                 }
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);

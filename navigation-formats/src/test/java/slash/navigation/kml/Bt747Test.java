@@ -30,7 +30,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
 public class Bt747Test {
-    private Kml20Format format = new Kml20Format();
+    private final Kml20Format format = new Kml20Format();
     private static final String BT747_NAME = "TIME: 10:11:56; &lt;table width=400&gt;&lt;tr&gt;&lt;td&gt;Index:&lt;/td&gt;&lt;td&gt;7643&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Zeit:&lt;/td&gt;&lt;td&gt;05-September-10 10:11:56&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Geographische Breite:&lt;/td&gt;&lt;td&gt;49.385769 N&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Geografische L&amp;auml;nge:&lt;/td&gt;&lt;td&gt;8.572565 E&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;H&amp;ouml;he:&lt;/td&gt;&lt;td&gt;102.109 m&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;".replaceAll("&gt;", ">").replaceAll("&lt;", "<");
 
     @Test

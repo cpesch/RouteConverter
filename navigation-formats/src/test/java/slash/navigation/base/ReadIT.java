@@ -74,7 +74,7 @@ public class ReadIT {
                 assertNotNull(result.getFormat());
                 assertNotNull("Cannot get route from " + file, result.getTheRoute());
                 assertNotNull(result.getAllRoutes());
-                assertTrue(result.getAllRoutes().size() > 0);
+                assertTrue(!result.getAllRoutes().isEmpty());
                 for (BaseRoute route : result.getAllRoutes()) {
                     List<NavigationPosition> positions = route.getPositions();
                     for (NavigationPosition position : positions) {

@@ -264,10 +264,10 @@ public class GoogleMapsUrlFormatTest {
         Wgs84Position position2 = positions.get(2);
         assertDoubleEquals(10.419159, position2.getLongitude());
         assertDoubleEquals(53.588429, position2.getLatitude());
-        assertEquals(null, position2.getDescription());
+        assertNull(position2.getDescription());
         Wgs84Position position3 = positions.get(3);
-        assertEquals(null, position3.getLongitude());
-        assertEquals(null, position3.getLatitude());
+        assertNull(position3.getLongitude());
+        assertNull(position3.getLatitude());
         assertEquals("Breitenfelde/Neuenlande", position3.getDescription());
     }
 

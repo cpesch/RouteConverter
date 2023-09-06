@@ -29,7 +29,7 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 
 public class AnchorFilterTest {
-    private AnchorFilter filter = new AnchorFilter();
+    private final AnchorFilter filter = new AnchorFilter();
 
     @Test
     public void testFilterAbsoluteURLs() {

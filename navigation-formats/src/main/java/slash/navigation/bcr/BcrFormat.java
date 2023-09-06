@@ -97,7 +97,7 @@ public abstract class BcrFormat extends IniFileFormat<BcrRoute> {
             String line = reader.readLine();
             if (line == null)
                 break;
-            if (line.length() == 0)
+            if (line.isEmpty())
                 continue;
 
             if (isSectionTitle(line)) {

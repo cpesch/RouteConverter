@@ -27,8 +27,8 @@ import java.util.TimeZone;
  * @author Christian Pesch
  */
 public class TimeZoneAndId {
-    private String id;
-    private TimeZone timeZone;
+    private final String id;
+    private final TimeZone timeZone;
 
     public TimeZoneAndId(String id, TimeZone timeZone) {
         this.id = id;

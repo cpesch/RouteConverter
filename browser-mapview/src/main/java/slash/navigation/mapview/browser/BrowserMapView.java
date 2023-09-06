@@ -452,7 +452,7 @@ public abstract class BrowserMapView extends BaseMapView {
 
                 List<NavigationPosition> render = new ArrayList<>(positionReducer.reduceSelectedPositions(copiedPositions, copiedSelectedPositionIndices));
                 render.addAll(selectedPositions);
-                NavigationPosition centerPosition = render.size() > 0 ? new BoundingBox(render).getCenter() : null;
+                NavigationPosition centerPosition = !render.isEmpty() ? new BoundingBox(render).getCenter() : null;
                 selectPositions(render, recenter ? centerPosition : null);
                 log.info("Selected positions updated for " + render.size() + " positions, reason: " +
                         selectionUpdateReason + ", recentering: " + recenter + " to: " + centerPosition);
@@ -491,13 +491,11 @@ public abstract class BrowserMapView extends BaseMapView {
 
                 try {
                     final Socket socket = callbackListenerServerSocket.accept();
-                    executor.execute(new Runnable() {
-                        public void run() {
-                            try {
-                                processStream(socket);
-                            } catch (IOException e) {
-                                log.severe(format("Cannot process stream from callback listener socket: %s, %s ", e, printStackTrace(e)));
-                            }
+                    executor.execute(() -> {
+                        try {
+                            processStream(socket);
+                        } catch (IOException e) {
+                            log.severe(format("Cannot process stream from callback listener socket: %s, %s ", e, printStackTrace(e)));
                         }
                     });
                 } catch (SocketTimeoutException e) {
@@ -581,42 +579,40 @@ public abstract class BrowserMapView extends BaseMapView {
             }
         };
 
-        executor.execute(new Runnable() {
-            public void run() {
-                addMapViewListener(callbackWaiter);
-                try {
-                    executeScript("checkCallbackListenerPort();");
+        executor.execute(() -> {
+            addMapViewListener(callbackWaiter);
+            try {
+                executeScript("checkCallbackListenerPort();");
 
-                    long start = currentTimeMillis();
-                    while (true) {
-                        synchronized (receivedCallback) {
-                            if (receivedCallback[0]) {
-                                long end = currentTimeMillis();
-                                log.info("Received callback from browser after " + (end - start) + " milliseconds");
-                                break;
-                            }
-                        }
-
-                        if (start + 5000 < currentTimeMillis())
-                            break;
-
-                        try {
-                            sleep(50);
-                        } catch (InterruptedException e) {
-                            // intentionally left empty
-                        }
-                    }
-
+                long start = currentTimeMillis();
+                while (true) {
                     synchronized (receivedCallback) {
-                        if (!receivedCallback[0]) {
-                            setCallbackListenerPort(-1);
-                            initializeCallbackPoller();
-                            log.warning("Switched from callback to polling the browser");
+                        if (receivedCallback[0]) {
+                            long end = currentTimeMillis();
+                            log.info("Received callback from browser after " + (end - start) + " milliseconds");
+                            break;
                         }
                     }
-                } finally {
-                    removeMapViewListener(callbackWaiter);
+
+                    if (start + 5000 < currentTimeMillis())
+                        break;
+
+                    try {
+                        sleep(50);
+                    } catch (InterruptedException e) {
+                        // intentionally left empty
+                    }
                 }
+
+                synchronized (receivedCallback) {
+                    if (!receivedCallback[0]) {
+                        setCallbackListenerPort(-1);
+                        initializeCallbackPoller();
+                        log.warning("Switched from callback to polling the browser");
+                    }
+                }
+            } finally {
+                removeMapViewListener(callbackWaiter);
             }
         });
     }
@@ -643,7 +639,7 @@ public abstract class BrowserMapView extends BaseMapView {
 
         String apiKey = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
         for (TileServer tileServer : tileServers) {
-            if (!tileServer.isActive() || tileServer.getHosts().size() == 0)
+            if (!tileServer.isActive() || tileServer.getHosts().isEmpty())
                 continue;
 
             String copyright = tileServer.getCopyright().toLowerCase();
@@ -861,7 +857,7 @@ public abstract class BrowserMapView extends BaseMapView {
         synchronized (notificationMutex) {
             this.selectedPositions = selectedPositions;
             this.selectedPositionIndices = new int[0];
-            haveToRecenterMap = selectedPositions.size() > 0;
+            haveToRecenterMap = !selectedPositions.isEmpty();
             haveToRepaintSelection = true;
             selectionUpdateReason = "selected " + selectedPositions.size() + " positions without model";
             notificationMutex.notifyAll();
@@ -1153,7 +1149,7 @@ public abstract class BrowserMapView extends BaseMapView {
     private void setCenterOfMap(List<NavigationPosition> positions, boolean recenter) {
         StringBuilder buffer = new StringBuilder();
 
-        boolean fitBoundsToPositions = positions.size() > 0 && recenter;
+        boolean fitBoundsToPositions = !positions.isEmpty() && recenter;
         if (fitBoundsToPositions) {
             BoundingBox boundingBox = new BoundingBox(positions);
             buffer.append("fitBounds(new google.maps.LatLng(").append(asCoordinates(boundingBox.getSouthWest())).append("),").
@@ -1164,7 +1160,7 @@ public abstract class BrowserMapView extends BaseMapView {
         if (haveToInitializeMapOnFirstStart) {
             NavigationPosition center;
             // if there are positions right at the start center on them else take the last known center and zoom
-            if (positions.size() > 0) {
+            if (!positions.isEmpty()) {
                 center = new BoundingBox(positions).getCenter();
             } else {
                 int zoom = getZoom();
@@ -1754,7 +1750,7 @@ public abstract class BrowserMapView extends BaseMapView {
     }
 
     private int getAddRow() {
-        NavigationPosition position = lastSelectedPositions.size() > 0 ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
+        NavigationPosition position = !lastSelectedPositions.isEmpty() ? lastSelectedPositions.get(lastSelectedPositions.size() - 1) : null;
         // quite crude logic to be as robust as possible on failures
         if (position == null && positionsModel.getRowCount() > 0)
             position = positionsModel.getPosition(positionsModel.getRowCount() - 1);

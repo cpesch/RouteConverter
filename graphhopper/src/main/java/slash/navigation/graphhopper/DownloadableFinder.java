@@ -58,7 +58,7 @@ public class DownloadableFinder {
                 .sorted(new GraphDescriptorComparator())
                 .collect(toList());
         // if there is no other choice use the graphs with the invalid bounding boxes
-        if(remoteDescriptors.size() == 0)
+        if(remoteDescriptors.isEmpty())
             remoteDescriptors = graphManager.getRemoteGraphDescriptors().stream()
                     .filter(graphDescriptor -> graphDescriptor.matches(mapDescriptor))
                     .sorted(new GraphDescriptorComparator())

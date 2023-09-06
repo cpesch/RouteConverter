@@ -37,9 +37,9 @@ import java.util.List;
  */
 
 class RemovePositions extends AbstractUndoableEdit {
-    private UndoPositionsModel positionsModel;
-    private List<Integer> rowList = new ArrayList<>();
-    private List<List<NavigationPosition>> positionsList = new ArrayList<>();
+    private final UndoPositionsModel positionsModel;
+    private final List<Integer> rowList = new ArrayList<>();
+    private final List<List<NavigationPosition>> positionsList = new ArrayList<>();
 
     public RemovePositions(UndoPositionsModel positionsModel) {
         this.positionsModel = positionsModel;

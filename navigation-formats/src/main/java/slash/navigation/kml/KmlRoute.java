@@ -52,6 +52,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A Google Earth (.kml) route.
@@ -61,8 +62,8 @@ import java.util.List;
 
 public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
     private String name;
-    private List<String> description;
-    private List<KmlPosition> positions;
+    private final List<String> description;
+    private final List<KmlPosition> positions;
 
     public KmlRoute(BaseKmlFormat format, RouteCharacteristics characteristics, String name, List<String> description, List<KmlPosition> positions) {
         super(format, characteristics);
@@ -200,8 +201,8 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
 
         final KmlRoute kmlRoute = (KmlRoute) o;
 
-        return !(description != null ? !description.equals(kmlRoute.description) : kmlRoute.description != null) &&
-                !(name != null ? !name.equals(kmlRoute.name) : kmlRoute.name != null) &&
+        return !(!Objects.equals(description, kmlRoute.description)) &&
+                !(!Objects.equals(name, kmlRoute.name)) &&
                 getCharacteristics().equals(kmlRoute.getCharacteristics()) &&
                 positions.equals(kmlRoute.positions);
     }

@@ -33,7 +33,7 @@ import javax.swing.*;
  */
 
 public class RenamePositionListAction extends FrameAction {
-    private FormatAndRoutesModel formatAndRoutesModel;
+    private final FormatAndRoutesModel formatAndRoutesModel;
 
     public RenamePositionListAction(FormatAndRoutesModel formatAndRoutesModel) {
         this.formatAndRoutesModel = formatAndRoutesModel;

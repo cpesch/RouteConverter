@@ -106,7 +106,7 @@ public class FitFormat extends SimpleFormat<Wgs84Route> {
         }
 
         List<Wgs84Position> positions = parser.getPositions();
-        if (positions.size() > 0)
+        if (!positions.isEmpty())
             context.appendRoute(new Wgs84Route(this, parser.getCharacteristics(), parser.getName(), positions));
     }
 

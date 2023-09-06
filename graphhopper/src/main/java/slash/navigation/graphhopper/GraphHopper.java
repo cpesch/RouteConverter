@@ -207,14 +207,14 @@ public class GraphHopper extends BaseRoutingService {
                 String errors = asDialogString(response.getErrors(), false);
                 log.severe(format("Error while routing between %s and %s: %s", from, to, errors));
 
-                boolean pointNotFound = response.getErrors().size() > 0 && response.getErrors().get(0) instanceof PointNotFoundException;
+                boolean pointNotFound = !response.getErrors().isEmpty() && response.getErrors().get(0) instanceof PointNotFoundException;
                 if (pointNotFound)
                     return new RoutingResult(null, null, PointNotFound);
 
                 throw new RuntimeException(errors);
             }
             PathWrapper best = response.getBest();
-            Validity validity = best.getErrors().size() == 0 ? Valid : Invalid;
+            Validity validity = best.getErrors().isEmpty() ? Valid : Invalid;
             return new RoutingResult(asPositions(best.getPoints()), new DistanceAndTime(best.getDistance(), best.getTime()), validity);
         } finally {
             counter.stop();

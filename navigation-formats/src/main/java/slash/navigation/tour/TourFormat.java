@@ -105,7 +105,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
                     positions.add(position);
                 break;
             }
-            if (line.length() == 0)
+            if (line.isEmpty())
                 continue;
 
             if (isSectionTitle(line)) {
@@ -135,7 +135,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
             }
         }
 
-        if (positions.size() > 0)
+        if (!positions.isEmpty())
             context.appendRoute(createRoute(Waypoints, routeName, sortPositions(positions)));
     }
 
@@ -206,7 +206,7 @@ public class TourFormat extends IniFileFormat<TourRoute> {
             if (name == null)
                 name = position.getDescription();
             writer.println(NAME + TOUR_FORMAT_NAME_VALUE_SEPARATOR + name);
-            writer.println(POSITION_IN_LIST + TOUR_FORMAT_NAME_VALUE_SEPARATOR + Integer.toString(i));
+            writer.println(POSITION_IN_LIST + TOUR_FORMAT_NAME_VALUE_SEPARATOR + i);
             if (position.getZipCode() != null)
                 writer.println(ZIPCODE + TOUR_FORMAT_NAME_VALUE_SEPARATOR + position.getZipCode());
             if (position.getCity() != null && !position.getCity().equals(name))

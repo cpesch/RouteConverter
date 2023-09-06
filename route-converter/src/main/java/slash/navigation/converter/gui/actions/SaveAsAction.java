@@ -32,7 +32,7 @@ import javax.swing.*;
  */
 
 public class SaveAsAction extends FrameAction {
-    private ConvertPanel convertPanel;
+    private final ConvertPanel convertPanel;
 
     public SaveAsAction(ConvertPanel convertPanel) {
         this.convertPanel = convertPanel;

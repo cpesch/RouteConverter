@@ -53,6 +53,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.RouteComments.createRouteName;
 
@@ -204,7 +205,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
 
         SimpleRoute route = (SimpleRoute) o;
 
-        return !(name != null ? !name.equals(route.name) : route.name != null) &&
+        return !(!Objects.equals(name, route.name)) &&
                 getCharacteristics().equals(route.getCharacteristics()) &&
                 positions.equals(route.positions);
     }

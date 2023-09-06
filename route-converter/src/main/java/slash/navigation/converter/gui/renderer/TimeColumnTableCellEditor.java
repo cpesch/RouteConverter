@@ -48,11 +48,9 @@ public class TimeColumnTableCellEditor extends PositionsTableCellEditor {
     }
 
     protected void formatLabel(JLabel label, Object value, boolean firstRow, boolean lastRow) {
-        if(value instanceof CompactCalendar) {
-            CompactCalendar time = (CompactCalendar) value;
+        if(value instanceof CompactCalendar time) {
             label.setText(formatTime(time, "UTC"));
-        } else if(value instanceof NavigationPosition) {
-            NavigationPosition position = (NavigationPosition) value;
+        } else if(value instanceof NavigationPosition position) {
             formatCell(label, position);
         } else
             label.setText("");

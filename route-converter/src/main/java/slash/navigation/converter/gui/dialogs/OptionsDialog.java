@@ -717,7 +717,7 @@ public class OptionsDialog extends SimpleDialog {
         }
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0) {
+        if (selected == null || selected.getName().isEmpty()) {
             return;
         }
 
@@ -737,7 +737,7 @@ public class OptionsDialog extends SimpleDialog {
         }
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0) {
+        if (selected == null || selected.getName().isEmpty()) {
             return;
         }
 
@@ -756,7 +756,7 @@ public class OptionsDialog extends SimpleDialog {
         }
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0) {
+        if (selected == null || selected.getName().isEmpty()) {
             return;
         }
 
@@ -776,7 +776,7 @@ public class OptionsDialog extends SimpleDialog {
         }
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0) {
+        if (selected == null || selected.getName().isEmpty()) {
             return;
         }
 
@@ -796,7 +796,7 @@ public class OptionsDialog extends SimpleDialog {
         }
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0) {
+        if (selected == null || selected.getName().isEmpty()) {
             return;
         }
 

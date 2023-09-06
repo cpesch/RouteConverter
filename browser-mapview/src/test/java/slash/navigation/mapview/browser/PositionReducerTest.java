@@ -30,7 +30,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class PositionReducerTest {
-    private PositionReducer reducer = new PositionReducer(new PositionReducer.Callback() {
+    private final PositionReducer reducer = new PositionReducer(new PositionReducer.Callback() {
         public int getZoom() {
             throw new UnsupportedOperationException();
         }

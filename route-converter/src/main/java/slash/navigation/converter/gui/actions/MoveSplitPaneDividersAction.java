@@ -29,8 +29,8 @@ import javax.swing.*;
  */
 
 public class MoveSplitPaneDividersAction extends MoveSplitPaneDividerAction {
-    private JSplitPane secondPane;
-    private int secondDividerLocation;
+    private final JSplitPane secondPane;
+    private final int secondDividerLocation;
 
     public MoveSplitPaneDividersAction(JSplitPane firstPane, int firstDividerLocation,
                                        JSplitPane secondPane, int secondDividerLocation) {

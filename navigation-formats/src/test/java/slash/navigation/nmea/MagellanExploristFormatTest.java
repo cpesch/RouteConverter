@@ -35,7 +35,7 @@ import static slash.common.TestCase.calendar;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 public class MagellanExploristFormatTest {
-    private MagellanExploristFormat format = new MagellanExploristFormat();
+    private final MagellanExploristFormat format = new MagellanExploristFormat();
 
     @Test
     public void testIsValidLine() {

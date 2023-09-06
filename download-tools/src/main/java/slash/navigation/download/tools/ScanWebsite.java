@@ -155,9 +155,9 @@ public class ScanWebsite extends BaseDownloadTool {
         removedUris.removeAll(collectedUris);
 
         if (hasDataSourcesServer()) {
-            if (addedUris.size() > 0)
+            if (!addedUris.isEmpty())
                 addUrisInChunks(source, addedUris);
-            if (removedUris.size() > 0)
+            if (!removedUris.isEmpty())
                 removeUris(source, removedUris);
         }
 
@@ -198,7 +198,7 @@ public class ScanWebsite extends BaseDownloadTool {
             }
         }
 
-        if (chunk.size() > 0)
+        if (!chunk.isEmpty())
             addUris(dataSource, chunk);
     }
 

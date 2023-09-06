@@ -30,7 +30,7 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 public class GeoNamesServiceIT {
-    private GeoNamesService service = new GeoNamesService();
+    private final GeoNamesService service = new GeoNamesService();
 
     @Before
     public void setUp() {

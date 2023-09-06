@@ -45,7 +45,7 @@ public enum WaypointType {
     Voice("V"),
     Waypoint("T");
 
-    private String value;
+    private final String value;
 
     WaypointType(String value) {
         this.value = value;

@@ -54,7 +54,7 @@ public class ThoroughfareNumberPrefix {
     @XmlSchemaType(name = "anySimpleType")
     protected String code;
     @XmlAnyAttribute
-    private Map<QName, String> otherAttributes = new HashMap<>();
+    private final Map<QName, String> otherAttributes = new HashMap<>();
 
     /**
      * A-12 where 12 is number and A is prefix and "-" is the separator

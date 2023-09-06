@@ -125,7 +125,7 @@ public class NominatimService implements GeocodingService {
         String result = (parts.getRoad() != null ? parts.getRoad() :
                 parts.getSuburb() != null ? parts.getSuburb() : "") +
                 (parts.getHouseNumber() != null ? " " + parts.getHouseNumber() : "");
-        if (result.length() > 0)
+        if (!result.isEmpty())
             result += ", ";
         result += (parts.getPostcode() != null ? parts.getPostcode() : "") + " " +
                         (parts.getCity() != null ? parts.getCity() + ", " :

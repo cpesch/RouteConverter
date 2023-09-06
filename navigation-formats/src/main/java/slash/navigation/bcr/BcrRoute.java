@@ -65,8 +65,8 @@ import static slash.navigation.bcr.BcrFormat.*;
  */
 
 public class BcrRoute extends BaseRoute<BcrPosition, BcrFormat> {
-    private List<BcrSection> sections;
-    private List<BcrPosition> positions;
+    private final List<BcrSection> sections;
+    private final List<BcrPosition> positions;
 
     public BcrRoute(BcrFormat format, List<BcrSection> sections, List<BcrPosition> positions) {
         super(format, Route);

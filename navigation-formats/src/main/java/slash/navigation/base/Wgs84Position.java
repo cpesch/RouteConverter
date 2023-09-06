@@ -27,6 +27,8 @@ import slash.navigation.gpx.GpxPosition;
 import slash.navigation.itn.TomTomPosition;
 import slash.navigation.nmea.NmeaPosition;
 
+import java.util.Objects;
+
 import static slash.navigation.base.RouteComments.parseDescription;
 
 /**
@@ -246,16 +248,16 @@ public class Wgs84Position extends BaseNavigationPosition implements ExtendedSen
 
         Wgs84Position that = (Wgs84Position) o;
 
-        return !(description != null ? !description.equals(that.description) : that.description != null) &&
+        return !(!Objects.equals(description, that.description)) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(heading != null ? !heading.equals(that.heading) : that.heading != null) &&
-                !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
-                !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
+                !(!Objects.equals(heading, that.heading)) &&
+                !(!Objects.equals(latitude, that.latitude)) &&
+                !(!Objects.equals(longitude, that.longitude)) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime()) &&
-                !(hdop != null ? !hdop.equals(that.hdop) : that.hdop != null) &&
-                !(pdop != null ? !pdop.equals(that.pdop) : that.pdop != null) &&
-                !(vdop != null ? !vdop.equals(that.vdop) : that.vdop != null) &&
-                !(satellites != null ? !satellites.equals(that.satellites) : that.satellites != null);
+                !(!Objects.equals(hdop, that.hdop)) &&
+                !(!Objects.equals(pdop, that.pdop)) &&
+                !(!Objects.equals(vdop, that.vdop)) &&
+                !(!Objects.equals(satellites, that.satellites));
     }
 
     public int hashCode() {

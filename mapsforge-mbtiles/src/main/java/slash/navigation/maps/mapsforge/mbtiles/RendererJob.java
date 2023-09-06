@@ -26,10 +26,7 @@ public class RendererJob extends Job {
             return false;
         }
         RendererJob other = (RendererJob) obj;
-        if (!this.getDatabaseRenderer().equals(other.getDatabaseRenderer())) {
-            return false;
-        }
-        return true;
+        return this.getDatabaseRenderer().equals(other.getDatabaseRenderer());
     }
 
     public int hashCode() {

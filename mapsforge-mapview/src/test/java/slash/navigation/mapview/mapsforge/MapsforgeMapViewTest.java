@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 
 public class MapsforgeMapViewTest {
-    private MapsforgeMapView mapView = new MapsforgeMapView();
+    private final MapsforgeMapView mapView = new MapsforgeMapView();
 
     @Test
     public void testBoundingBox() {

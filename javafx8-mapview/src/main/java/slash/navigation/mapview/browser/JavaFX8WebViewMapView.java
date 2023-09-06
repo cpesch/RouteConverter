@@ -282,7 +282,7 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
     // script execution
 
     protected void executeScript(final String script) {
-        if (webView == null || script.length() == 0)
+        if (webView == null || script.isEmpty())
             return;
 
         if (DEBUG)
@@ -313,7 +313,7 @@ public class JavaFX8WebViewMapView extends BrowserMapView {
     private static final Object LOCK = new Object();
 
     protected synchronized String executeScriptWithResult(final String script) {
-        if (script.length() == 0)
+        if (script.isEmpty())
             return null;
 
         final boolean pollingCallback = !script.contains("getCallbacks");

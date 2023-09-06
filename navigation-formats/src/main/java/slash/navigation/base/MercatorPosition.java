@@ -22,6 +22,8 @@ package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
 
+import java.util.Objects;
+
 import static slash.navigation.common.NavigationConversion.*;
 
 /**
@@ -121,10 +123,10 @@ public class MercatorPosition extends BaseNavigationPosition {
 
         MercatorPosition that = (MercatorPosition) o;
 
-        return !(description != null ? !description.equals(that.description) : that.description != null) &&
+        return !(!Objects.equals(description, that.description)) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(x != null ? !x.equals(that.x) : that.x != null) &&
-                !(y != null ? !y.equals(that.y) : that.y != null) &&
+                !(!Objects.equals(x, that.x)) &&
+                !(!Objects.equals(y, that.y)) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 

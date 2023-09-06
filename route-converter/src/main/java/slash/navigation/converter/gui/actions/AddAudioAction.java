@@ -68,9 +68,8 @@ public class AddAudioAction extends FrameAction {
         int[] selectedRows = table.getSelectedRows();
         for (final int selectedRow : selectedRows) {
             NavigationPosition position = positionsModel.getPosition(selectedRow);
-            if (!(position instanceof Wgs84Position))
+            if (!(position instanceof Wgs84Position wgs84Position))
                 continue;
-            Wgs84Position wgs84Position = (Wgs84Position) position;
             if (!(wgs84Position.getWaypointType().equals(Voice)))
                 continue;
 

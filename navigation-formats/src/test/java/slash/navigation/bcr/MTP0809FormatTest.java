@@ -33,8 +33,8 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 public class MTP0809FormatTest {
-    private MTP0809Format format = new MTP0809Format();
-    private BcrRoute route = new BcrRoute(format, "RouteName", Arrays.asList("Description1", "Description2"), Arrays.asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "WP,End,@,,0,")));
+    private final MTP0809Format format = new MTP0809Format();
+    private final BcrRoute route = new BcrRoute(format, "RouteName", Arrays.asList("Description1", "Description2"), Arrays.asList(new BcrPosition(1, 2, 3, "Start"), new BcrPosition(3, 4, 5, "WP,End,@,,0,")));
 
     @Test
     public void testReaddescription() throws IOException {

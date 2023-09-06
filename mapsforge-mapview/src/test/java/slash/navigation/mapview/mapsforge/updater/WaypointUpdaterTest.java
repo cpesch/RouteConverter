@@ -35,15 +35,15 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class WaypointUpdaterTest {
-    private NavigationPosition p1 = new SimpleNavigationPosition(1.0, 0.0);
-    private NavigationPosition p2 = new SimpleNavigationPosition(2.0, 0.0);
-    private NavigationPosition p3 = new SimpleNavigationPosition(3.0, 0.0);
-    private NavigationPosition p4 = new SimpleNavigationPosition(4.0, 0.0);
+    private final NavigationPosition p1 = new SimpleNavigationPosition(1.0, 0.0);
+    private final NavigationPosition p2 = new SimpleNavigationPosition(2.0, 0.0);
+    private final NavigationPosition p3 = new SimpleNavigationPosition(3.0, 0.0);
+    private final NavigationPosition p4 = new SimpleNavigationPosition(4.0, 0.0);
 
-    private PositionWithLayer w1 = new PositionWithLayer(p1);
-    private PositionWithLayer w2 = new PositionWithLayer(p2);
-    private PositionWithLayer w3 = new PositionWithLayer(p3);
-    private PositionWithLayer w4 = new PositionWithLayer(p4);
+    private final PositionWithLayer w1 = new PositionWithLayer(p1);
+    private final PositionWithLayer w2 = new PositionWithLayer(p2);
+    private final PositionWithLayer w3 = new PositionWithLayer(p3);
+    private final PositionWithLayer w4 = new PositionWithLayer(p4);
 
 
     @Test

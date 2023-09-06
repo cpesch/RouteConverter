@@ -23,6 +23,7 @@ package slash.navigation.nmn;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 
 import static slash.common.io.Transfer.escape;
@@ -59,7 +60,7 @@ public class NmnPosition extends Wgs84Position {
                 (getCity() != null ? getCity() : "") +
                 (getStreet() != null ? ", " + getStreet() : "") +
                 (getNumber() != null ? " " + getNumber() : "");
-        return result.length() > 0 ? result : null;
+        return !result.isEmpty() ? result : null;
     }
 
     public void setDescription(String description) {
@@ -111,12 +112,12 @@ public class NmnPosition extends Wgs84Position {
 
         NmnPosition that = (NmnPosition) o;
 
-        return !(description != null ? !description.equals(that.description) : that.description != null) &&
-                !(street != null ? !street.equals(that.street) : that.street != null) &&
-                !(number != null ? !number.equals(that.number) : that.number != null) &&
+        return !(!Objects.equals(description, that.description)) &&
+                !(!Objects.equals(street, that.street)) &&
+                !(!Objects.equals(number, that.number)) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
-                !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
+                !(!Objects.equals(latitude, that.latitude)) &&
+                !(!Objects.equals(longitude, that.longitude)) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 

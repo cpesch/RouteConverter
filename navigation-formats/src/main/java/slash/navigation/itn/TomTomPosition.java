@@ -26,6 +26,8 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.nmea.NmeaPosition;
 
+import java.util.Objects;
+
 import static slash.navigation.base.RouteComments.parseDescription;
 
 /**
@@ -188,12 +190,12 @@ public class TomTomPosition extends BaseNavigationPosition {
 
         TomTomPosition that = (TomTomPosition) o;
 
-        return !(city != null ? !city.equals(that.city) : that.city != null) &&
+        return !(!Objects.equals(city, that.city)) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(heading != null ? !heading.equals(that.heading) : that.heading != null) &&
-                !(latitude != null ? !latitude.equals(that.latitude) : that.latitude != null) &&
-                !(longitude != null ? !longitude.equals(that.longitude) : that.longitude != null) &&
-                !(reason != null ? !reason.equals(that.reason) : that.reason != null) &&
+                !(!Objects.equals(heading, that.heading)) &&
+                !(!Objects.equals(latitude, that.latitude)) &&
+                !(!Objects.equals(longitude, that.longitude)) &&
+                !(!Objects.equals(reason, that.reason)) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 

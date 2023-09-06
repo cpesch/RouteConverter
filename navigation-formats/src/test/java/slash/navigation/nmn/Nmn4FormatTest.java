@@ -27,7 +27,7 @@ import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Nmn4FormatTest {
-    private Nmn4Format format = new Nmn4Format();
+    private final Nmn4Format format = new Nmn4Format();
 
     @Test
     public void testIsPosition() {

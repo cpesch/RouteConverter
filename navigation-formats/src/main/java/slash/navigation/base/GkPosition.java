@@ -22,6 +22,8 @@ package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
 
+import java.util.Objects;
+
 import static slash.navigation.common.NavigationConversion.gaussKruegerRightHeightToWgs84LongitudeLatitude;
 import static slash.navigation.common.NavigationConversion.wgs84LongitudeLatitudeToGaussKruegerRightHeight;
 
@@ -134,7 +136,7 @@ public class GkPosition extends BaseNavigationPosition {
 
         return Double.compare(that.height, height) == 0 &&
                 Double.compare(that.right, right) == 0 &&
-                !(description != null ? !description.equals(that.description) : that.description != null) &&
+                !(!Objects.equals(description, that.description)) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }

@@ -52,7 +52,7 @@ public class Range {
         List<List<Integer>> result = new ArrayList<>();
         List<Integer> range = new ArrayList<>();
         for (int index : indices) {
-            if ((range.size() == 0 || index == range.get(range.size() - 1) + 1) && range.size() < maximumRangeLength) {
+            if ((range.isEmpty() || index == range.get(range.size() - 1) + 1) && range.size() < maximumRangeLength) {
                 range.add(index);
             } else {
                 result.add(range);
@@ -69,7 +69,7 @@ public class Range {
         List<List<Integer>> result = new ArrayList<>();
         List<Integer> range = new ArrayList<>();
         for (int index : indices) {
-            if (range.size() == 0 || index == range.get(range.size() - 1) - 1) {
+            if (range.isEmpty() || index == range.get(range.size() - 1) - 1) {
                 range.add(index);
             } else {
                 result.add(range);

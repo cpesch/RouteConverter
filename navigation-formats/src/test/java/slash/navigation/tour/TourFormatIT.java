@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class TourFormatIT {
-    private TourFormat format = new TourFormat();
+    private final TourFormat format = new TourFormat();
 
     @Test
     public void testPositionInListOrder() throws Exception {

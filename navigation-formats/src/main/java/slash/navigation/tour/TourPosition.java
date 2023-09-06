@@ -27,6 +27,7 @@ import slash.navigation.gopal.GoPalPosition;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -60,8 +61,8 @@ public class TourPosition extends MercatorPosition {
                 (getStreet() != null ? ", " + getStreet() : "") +
                 (getHouseNo() != null ? " " + getHouseNo() : "");
         if (getName() != null)
-            result += (result.length() > 0 ? ", " : "") + getName();
-        return result.length() > 0 ? result : null;
+            result += (!result.isEmpty() ? ", " : "") + getName();
+        return !result.isEmpty() ? result : null;
     }
 
     public void setDescription(String description) {
@@ -135,14 +136,14 @@ public class TourPosition extends MercatorPosition {
 
         TourPosition that = (TourPosition) o;
 
-        return !(x != null ? !x.equals(that.x) : that.x != null) &&
-                !(y != null ? !y.equals(that.y) : that.y != null) &&
-                !(name != null ? !name.equals(that.name) : that.name != null) &&
-                !(zipCode != null ? !zipCode.equals(that.zipCode) : that.zipCode != null) &&
-                !(description != null ? !description.equals(that.description) : that.description != null) &&
-                !(street != null ? !street.equals(that.street) : that.street != null) &&
-                !(houseNo != null ? !houseNo.equals(that.houseNo) : that.houseNo != null) &&
-                !(nameValues != null ? !nameValues.equals(that.nameValues) : that.nameValues != null);
+        return !(!Objects.equals(x, that.x)) &&
+                !(!Objects.equals(y, that.y)) &&
+                !(!Objects.equals(name, that.name)) &&
+                !(!Objects.equals(zipCode, that.zipCode)) &&
+                !(!Objects.equals(description, that.description)) &&
+                !(!Objects.equals(street, that.street)) &&
+                !(!Objects.equals(houseNo, that.houseNo)) &&
+                !(!Objects.equals(nameValues, that.nameValues));
     }
 
     public int hashCode() {

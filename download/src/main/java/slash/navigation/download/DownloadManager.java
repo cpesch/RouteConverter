@@ -245,7 +245,7 @@ public class DownloadManager {
                 throw new IllegalArgumentException(format("Need a directory for extraction but got %s", download.getFile().getFile()));
 
             List<FileAndChecksum> fragments = download.getFragments();
-            if (fragments == null || fragments.size() == 0)
+            if (fragments == null || fragments.isEmpty())
                 log.severe("No fragments given for " + download);
             else
                 for (FileAndChecksum fragmentTarget : fragments) {

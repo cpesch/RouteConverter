@@ -30,7 +30,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 
 public class PhotonServiceIT {
-    private PhotonService service = new PhotonService();
+    private final PhotonService service = new PhotonService();
 
     @Test
     public void getPositionsFor() throws IOException {

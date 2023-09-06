@@ -58,6 +58,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.base.RouteComments.createRouteName;
@@ -70,9 +71,9 @@ import static slash.navigation.base.RouteComments.createRouteName;
 
 public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLandmarkExchangeFormat> {
     private String name;
-    private List<String> description;
-    private List<Wgs84Position> positions;
-    private Lmx lmx;
+    private final List<String> description;
+    private final List<Wgs84Position> positions;
+    private final Lmx lmx;
 
     NokiaLandmarkExchangeRoute(String name, List<String> description, List<Wgs84Position> positions, Lmx lmx) {
         super(new NokiaLandmarkExchangeFormat(), Waypoints);
@@ -222,8 +223,8 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
         NokiaLandmarkExchangeRoute other = (NokiaLandmarkExchangeRoute) o;
 
-        return !(name != null ? !name.equals(other.name) : other.name != null) &&
-                !(positions != null ? !positions.equals(other.positions) : other.positions != null);
+        return !(!Objects.equals(name, other.name)) &&
+                !(!Objects.equals(positions, other.positions));
     }
 
     public int hashCode() {

@@ -41,7 +41,7 @@ import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
 
 public class ExcelPosition extends BaseNavigationPosition implements ExtendedSensorNavigationPosition {
     private ColumnTypeToRowIndexMapping mapping = DEFAULT;
-    private Row row;
+    private final Row row;
 
     public ExcelPosition(Row row, ColumnTypeToRowIndexMapping mapping) {
         this.row = row;

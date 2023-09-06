@@ -106,7 +106,7 @@ public class BrowserDisplayer extends JButton implements ActionListener, ViewAwa
 
     private SimpleAttributeSet textAttribs;
     private HTMLDocument doc;
-    private Cursor origCursor;
+    private final Cursor origCursor;
 
     private String content = "";
 

@@ -299,11 +299,10 @@ public class BrowsePanel implements PanelInTab {
         startWaitCursor(r.getFrame().getRootPane());
         try {
             Object selectedObject = treePath.getLastPathComponent();
-            if (!(selectedObject instanceof CategoryTreeNode))
+            if (!(selectedObject instanceof CategoryTreeNode selectedCategoryTreeNode))
                 return;
             if (selectCategoryTreePath)
                 selectCategoryTreePath(treeCategories, treePath);
-            CategoryTreeNode selectedCategoryTreeNode = (CategoryTreeNode) selectedObject;
             catalogModel.setCurrentCategory(selectedCategoryTreeNode);
             RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
         } finally {

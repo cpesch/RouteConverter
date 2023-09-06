@@ -36,7 +36,7 @@ import static slash.navigation.base.RouteComments.*;
 import static slash.navigation.common.NumberPattern.*;
 
 public class RouteCommentsTest {
-    private BcrRoute route = new BcrRoute(new MTP0607Format(), "r", null, new ArrayList<>());
+    private final BcrRoute route = new BcrRoute(new MTP0607Format(), "r", null, new ArrayList<>());
 
     private BcrPosition createPosition(String description) {
         return new BcrPosition(1, 2, 3, description);

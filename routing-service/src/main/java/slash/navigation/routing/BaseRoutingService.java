@@ -29,7 +29,7 @@ import javax.swing.event.EventListenerList;
  */
 
 public abstract class BaseRoutingService implements RoutingService {
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     protected void fireDownloading() {
         Object[] listeners = listenerList.getListenerList();

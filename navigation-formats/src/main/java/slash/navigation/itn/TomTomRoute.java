@@ -51,6 +51,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.RouteComments.createRouteName;
 
@@ -62,7 +63,7 @@ import static slash.navigation.base.RouteComments.createRouteName;
 
 public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
     private String name;
-    private List<TomTomPosition> positions;
+    private final List<TomTomPosition> positions;
 
     public TomTomRoute(TomTomRouteFormat format, RouteCharacteristics characteristics, String name, List<TomTomPosition> positions) {
         super(format, characteristics);
@@ -208,7 +209,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
 
         TomTomRoute route = (TomTomRoute) o;
 
-        return !(name != null ? !name.equals(route.name) : route.name != null) &&
+        return !(!Objects.equals(name, route.name)) &&
                 getCharacteristics().equals(route.getCharacteristics()) &&
                 positions.equals(route.positions);
     }

@@ -121,7 +121,7 @@ public class SendErrorReportDialog extends SimpleDialog {
             return;
 
         File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().length() == 0)
+        if (selected == null || selected.getName().isEmpty())
             return;
 
         textFieldFilePath.setText(selected.getAbsolutePath());

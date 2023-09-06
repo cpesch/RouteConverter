@@ -48,7 +48,7 @@ public class DeleteRoutesAction extends FrameAction {
 
     public void run() {
         List<RouteModel> routes = getSelectedRouteModels(table);
-        if(routes.size() == 0)
+        if(routes.isEmpty())
             return;
 
         int[] selectedRows = table.getSelectedRows();

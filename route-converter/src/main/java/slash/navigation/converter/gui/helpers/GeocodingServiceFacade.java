@@ -101,6 +101,6 @@ public class GeocodingServiceFacade {
 
     public NavigationPosition getPositionFor(String address) throws IOException, ServiceUnavailableException {
         List<NavigationPosition> positions = getPositionsFor(address);
-        return positions != null && positions.size() > 0 ? positions.get(0) : null;
+        return positions != null && !positions.isEmpty() ? positions.get(0) : null;
     }
 }

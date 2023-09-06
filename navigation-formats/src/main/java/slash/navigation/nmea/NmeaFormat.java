@@ -407,7 +407,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         writeSentence(writer, rmc);
 
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
-        if(time.length() > 0 || altitude.length() > 0 || satellites.length() > 0) {
+        if(!time.isEmpty() || !altitude.isEmpty() || !satellites.isEmpty()) {
             String gga = "GPGGA" + SEPARATOR + time + SEPARATOR + latitude + SEPARATOR + northOrSouth + SEPARATOR +
                     longitude + SEPARATOR + westOrEast + SEPARATOR + "1" + SEPARATOR + satellites + SEPARATOR + SEPARATOR +
                     altitude + SEPARATOR + "M" + SEPARATOR + SEPARATOR + "M" + SEPARATOR + SEPARATOR;

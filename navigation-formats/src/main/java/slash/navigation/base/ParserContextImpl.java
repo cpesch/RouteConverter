@@ -35,9 +35,9 @@ import java.util.List;
  */
 
 public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> {
-    private List<R> routes = new ArrayList<>();
-    private List<NavigationFormat<R>> formats = new ArrayList<>();
-    private File file;
+    private final List<R> routes = new ArrayList<>();
+    private final List<NavigationFormat<R>> formats = new ArrayList<>();
+    private final File file;
     private CompactCalendar startDate;
 
     public ParserContextImpl(File file, CompactCalendar startDate) {

@@ -49,8 +49,7 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
     }
 
     protected void formatLabel(JLabel label, Object value, boolean firstRow, boolean lastRow) {
-        if(value instanceof NavigationPosition) {
-            NavigationPosition position = (NavigationPosition) value;
+        if(value instanceof NavigationPosition position) {
             formatCell(label, position);
         } else
             label.setText("");
@@ -92,8 +91,7 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
     }
 
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
-        if (value instanceof NavigationPosition) {
-            NavigationPosition position = (NavigationPosition) value;
+        if (value instanceof NavigationPosition position) {
             Object editedValue = extractValue(position);
             return editor.getTableCellEditorComponent(table, editedValue, isSelected, row, column);
         } else

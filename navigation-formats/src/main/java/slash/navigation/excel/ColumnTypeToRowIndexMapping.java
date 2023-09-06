@@ -46,7 +46,7 @@ class ColumnTypeToRowIndexMapping {
         DEFAULT.add(8, Description);
     }
 
-    private Map<Integer, ColumnType> mapping = new LinkedHashMap<>();
+    private final Map<Integer, ColumnType> mapping = new LinkedHashMap<>();
 
     public void add(int index, ColumnType columnType) {
         mapping.put(index, columnType);

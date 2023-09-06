@@ -84,7 +84,7 @@ public class Tcx2Format extends TcxFormat {
                     coursePointT.getName(),
                     coursePointT));
         }
-        return positions.size() > 0 ? new TcxRoute(this, Route, courseT.getName(), positions) : null;
+        return !positions.isEmpty() ? new TcxRoute(this, Route, courseT.getName(), positions) : null;
     }
 
     private TcxRoute processCourseLap(String name, CourseLapT courseLapT) {

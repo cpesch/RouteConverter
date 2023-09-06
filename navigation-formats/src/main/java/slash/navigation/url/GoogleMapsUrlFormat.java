@@ -95,7 +95,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     protected void processURL(String url, String encoding, ParserContext<Wgs84Route> context) {
         if (url.startsWith("/dir/")) {
             List<Wgs84Position> positions = parsePositions(url.substring(5));
-            if (positions.size() > 0)
+            if (!positions.isEmpty())
                 context.appendRoute(createRoute(Route, null, positions));
         } else
             super.processURL(url, encoding, context);
@@ -180,7 +180,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
             }
 
             List<String> geocode = parameters.get("geocode");
-            if(geocode != null && geocode.size() > 0 && result.size() > 0) {
+            if(geocode != null && !geocode.isEmpty() && !result.isEmpty()) {
                 List<Wgs84Position> geocodePositions = extractGeocodePositions(result);
                 StringTokenizer tokenizer = new StringTokenizer(geocode.get(0), ",;");
                 int positionIndex = 0;

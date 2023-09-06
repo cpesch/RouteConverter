@@ -31,7 +31,7 @@ public enum DownloadableType {
     Map("map"),
     Theme("theme");
 
-    private String value;
+    private final String value;
 
     DownloadableType(String value) {
         this.value = value;

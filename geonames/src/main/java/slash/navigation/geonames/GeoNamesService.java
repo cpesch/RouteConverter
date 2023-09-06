@@ -168,7 +168,7 @@ public class GeoNamesService implements ElevationService, GeocodingService {
         for (Geonames.Geoname geoname : geonames.getGeoname()) {
             result.add(geoname.getName() + (trim(geoname.getCountryName()) != null ? ", " + geoname.getCountryName() : ""));
         }
-        return result.size() > 0 ? result.get(0) : null;
+        return !result.isEmpty() ? result.get(0) : null;
     }
 
     String getNearByToponymFor(double longitude, double latitude) throws IOException {

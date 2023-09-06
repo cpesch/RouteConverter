@@ -38,7 +38,7 @@ public class StringModel {
     private final String preferencesName;
     private final String defaultValue;
 
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     public StringModel(String preferencesName, String defaultValue) {
         this.preferencesName = preferencesName;

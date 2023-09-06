@@ -34,7 +34,7 @@ import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.calendar;
 
 public class ExcelRowOrderIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+    private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
     private static final File SOURCE = new File(TEST_PATH + "from-order.xls");
 
     private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> readRoute() throws IOException {

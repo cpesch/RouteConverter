@@ -41,10 +41,10 @@ import static slash.navigation.gpx.GpxExtensionType.*;
 import static slash.navigation.gpx.GpxUtil.toXml;
 
 public class Gpx11ExtensionsTest {
-    private slash.navigation.gpx.binding11.ObjectFactory gpx11Factory = new slash.navigation.gpx.binding11.ObjectFactory();
-    private slash.navigation.gpx.garmin3.ObjectFactory garmin3Factory = new slash.navigation.gpx.garmin3.ObjectFactory();
-    private slash.navigation.gpx.trackpoint1.ObjectFactory trackpoint1Factory = new slash.navigation.gpx.trackpoint1.ObjectFactory();
-    private slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
+    private final slash.navigation.gpx.binding11.ObjectFactory gpx11Factory = new slash.navigation.gpx.binding11.ObjectFactory();
+    private final slash.navigation.gpx.garmin3.ObjectFactory garmin3Factory = new slash.navigation.gpx.garmin3.ObjectFactory();
+    private final slash.navigation.gpx.trackpoint1.ObjectFactory trackpoint1Factory = new slash.navigation.gpx.trackpoint1.ObjectFactory();
+    private final slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
 
     private WptType createWptType() {
         WptType trkptType = gpx11Factory.createWptType();
@@ -79,7 +79,7 @@ public class Gpx11ExtensionsTest {
     private String writeGpx(List<GpxRoute> routes) throws Exception {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         new Gpx11Format().write(routes, outputStream);
-        return new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
+        return outputStream.toString(StandardCharsets.UTF_8);
     }
 
 
@@ -105,7 +105,7 @@ public class Gpx11ExtensionsTest {
     @Test
     public void testWriteTrackpoint2Heading() throws Exception {
         slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-        trackPointExtensionT.setCourse(new BigDecimal(168.4));
+        trackPointExtensionT.setCourse(new BigDecimal("168.4"));
         ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
         extensionsType.getAny().add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
 
@@ -142,8 +142,8 @@ public class Gpx11ExtensionsTest {
     @Test
     public void testWriteTrackpoint2HeadingAndBearing() throws Exception {
         slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-        trackPointExtensionT.setCourse(new BigDecimal(168.4));
-        trackPointExtensionT.setBearing(new BigDecimal(2.2));
+        trackPointExtensionT.setCourse(new BigDecimal("168.4"));
+        trackPointExtensionT.setBearing(new BigDecimal("2.2"));
         ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
         extensionsType.getAny().add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
 
@@ -273,8 +273,8 @@ public class Gpx11ExtensionsTest {
     @Test
     public void testWriteTrackpoint2SpeedAndBearing() throws Exception {
         slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-        trackPointExtensionT.setCourse(new BigDecimal(168.4));
-        trackPointExtensionT.setBearing(new BigDecimal(2.2));
+        trackPointExtensionT.setCourse(new BigDecimal("168.4"));
+        trackPointExtensionT.setBearing(new BigDecimal("2.2"));
         ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
         extensionsType.getAny().add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
 

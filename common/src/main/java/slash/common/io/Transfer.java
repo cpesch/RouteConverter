@@ -99,7 +99,7 @@ public class Transfer {
         if (string == null)
             return null;
         string = string.trim();
-        if (string.length() == 0)
+        if (string.isEmpty())
             return null;
         else
             return string;
@@ -296,7 +296,7 @@ public class Transfer {
     }
 
     public static boolean isEmpty(String string) {
-        return string == null || string.length() == 0;
+        return string == null || string.isEmpty();
     }
 
     public static boolean isEmpty(Short aShort) {

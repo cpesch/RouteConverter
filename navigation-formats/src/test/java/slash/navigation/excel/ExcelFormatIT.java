@@ -31,7 +31,7 @@ import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.calendar;
 
 public class ExcelFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+    private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
 
     private void checkAllRoutes(ParserResult result) {
         assertEquals(3, result.getAllRoutes().size());

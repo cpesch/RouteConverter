@@ -32,7 +32,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
 public class KienzleGpsFormatTest {
-    private KienzleGpsFormat format = new KienzleGpsFormat();
+    private final KienzleGpsFormat format = new KienzleGpsFormat();
 
     @Test
     public void testIsValidLine() {

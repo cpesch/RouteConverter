@@ -40,7 +40,7 @@ public class ProfileModeModel {
     private static final String X_AXIS_MODE_PREFERENCE = "xAxis";
     private static final String Y_AXIS_MODE_PREFERENCE = "yAxis";
 
-    private EventListenerList listenerList = new EventListenerList();
+    private final EventListenerList listenerList = new EventListenerList();
 
     public XAxisMode getXAxisMode() {
         try {

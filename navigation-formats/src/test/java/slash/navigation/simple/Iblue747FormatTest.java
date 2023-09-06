@@ -31,7 +31,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
 public class Iblue747FormatTest {
-    private Iblue747Format format = new Iblue747Format();
+    private final Iblue747Format format = new Iblue747Format();
 
     @Test
     public void testIsValidLine() {

@@ -45,7 +45,7 @@ public abstract class ReadWriteBase {
         assertNotNull(result);
         assertNotNull(result.getFormat());
         assertNotNull(result.getAllRoutes());
-        assertTrue(result.getAllRoutes().size() > 0);
+        assertTrue(!result.getAllRoutes().isEmpty());
 
         File target = createTempFile("target", getExtension(source));
         // see AlanWaypointsAndRoutesFormat#isSupportsMultipleRoutes
@@ -79,7 +79,7 @@ public abstract class ReadWriteBase {
             BaseRoute sourceRoute = sourceRoutes.get(i);
             BaseRoute targetRoute = targetRoutes.get(i);
             compareRouteMetaData(sourceRoute, targetRoute);
-            comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, targetRoutes.size() > 0);
+            comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, !targetRoutes.isEmpty());
         }
 
         if (parserCallback != null)

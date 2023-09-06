@@ -30,8 +30,8 @@ import static java.lang.Double.doubleToLongBits;
  * @author Christian Pesch
  */
 public class ValueAndOrientation {
-    private double value;
-    private Orientation orientation;
+    private final double value;
+    private final Orientation orientation;
 
     public ValueAndOrientation(double value, Orientation orientation) {
         this.value = value;

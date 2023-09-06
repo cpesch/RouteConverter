@@ -30,7 +30,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class BaseUrlParsingFormatTest {
-    private BaseUrlParsingFormat urlFormat = new BaseUrlParsingFormatImpl();
+    private final BaseUrlParsingFormat urlFormat = new BaseUrlParsingFormatImpl();
 
     @Test
     public void testParseSingleURLParameters() {

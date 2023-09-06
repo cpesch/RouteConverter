@@ -58,26 +58,23 @@ public class Kml20Format extends KmlFormat {
 
     public void read(InputStream source, ParserContext<KmlRoute> context) throws IOException {
         Object o = unmarshal20(source);
-        if (o instanceof Kml) {
-            Kml kml = (Kml) o;
+        if (o instanceof Kml kml) {
             extractTracks(kml.getDocument(), kml.getFolder(), context);
         }
-        if (o instanceof Document) {
-            Document document = (Document) o;
+        if (o instanceof Document document) {
             extractTracks(document, null, context);
         }
-        if (o instanceof Folder) {
-            Folder folder = (Folder) o;
+        if (o instanceof Folder folder) {
             extractTracks(null, folder, context);
         }
     }
 
     private void extractTracks(Document document, Folder folder, ParserContext<KmlRoute> context) throws IOException {
         List<Object> elements = null;
-        if (document != null && document.getDocumentOrFolderOrGroundOverlay().size() > 0)
+        if (document != null && !document.getDocumentOrFolderOrGroundOverlay().isEmpty())
             elements = document.getDocumentOrFolderOrGroundOverlay();
 
-        if (folder != null && folder.getDocumentOrFolderOrGroundOverlay().size() > 0)
+        if (folder != null && !folder.getDocumentOrFolderOrGroundOverlay().isEmpty())
             elements = folder.getDocumentOrFolderOrGroundOverlay();
 
         if (elements != null)
@@ -86,8 +83,7 @@ public class Kml20Format extends KmlFormat {
 
     private JAXBElement findElement(List elements, String name) {
         for (Object element : elements) {
-            if (element instanceof JAXBElement) {
-                JAXBElement jaxbElement = (JAXBElement) element;
+            if (element instanceof JAXBElement jaxbElement) {
                 if (name.equals(jaxbElement.getName().getLocalPart()))
                     return jaxbElement;
             }
@@ -206,7 +202,7 @@ public class Kml20Format extends KmlFormat {
                 context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
             }
         }
-        if (waypoints.size() != 0) {
+        if (!waypoints.isEmpty()) {
             RouteCharacteristics characteristics = parseCharacteristics(name, null, Waypoints);
             context.prependRoute(new KmlRoute(this, characteristics, name, description, waypoints));
         }
@@ -230,20 +226,17 @@ public class Kml20Format extends KmlFormat {
     private List<KmlPosition> extractPositions(List<Object> elements) {
         List<KmlPosition> result = new ArrayList<>();
         for (Object element : elements) {
-            if (element instanceof Point) {
-                Point point = (Point) element;
+            if (element instanceof Point point) {
                 result.add(asKmlPosition(parsePosition(point.getCoordinates(), null)));
             }
             if (element instanceof LineString) {
                 LineString lineString = (LineString) element;
                 result.addAll(extractPositions(lineString));
             }
-            if (element instanceof MultiGeometry) {
-                MultiGeometry multiGeometry = (MultiGeometry) element;
+            if (element instanceof MultiGeometry multiGeometry) {
                 result.addAll(extractPositions(multiGeometry.getExtrudeOrTessellateOrAltitudeMode()));
             }
-            if (element instanceof GeometryCollection) {
-                GeometryCollection geometryCollection = (GeometryCollection) element;
+            if (element instanceof GeometryCollection geometryCollection) {
                 for (LineString lineString : geometryCollection.getLineString())
                     result.addAll(extractPositions(lineString));
             }

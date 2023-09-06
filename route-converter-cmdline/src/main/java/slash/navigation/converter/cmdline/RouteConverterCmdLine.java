@@ -44,7 +44,7 @@ import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWri
 
 public class RouteConverterCmdLine {
     private static final Logger log = Logger.getLogger(RouteConverterCmdLine.class.getName());
-    private NavigationFormatRegistry registry = new CmdLineNavigationFormatRegistry();
+    private final NavigationFormatRegistry registry = new CmdLineNavigationFormatRegistry();
 
     private void initializeLogging() {
         try (InputStream inputStream = RouteConverterCmdLine.class.getResourceAsStream("cmdline.properties")) {

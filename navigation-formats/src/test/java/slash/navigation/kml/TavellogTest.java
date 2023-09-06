@@ -30,7 +30,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
 public class TavellogTest {
-    private Kml20Format format = new Kml20Format();
+    private final Kml20Format format = new Kml20Format();
     private static final String TAVELLOG_DESCRIPTION = "<description><![CDATA[<html><body>Time: 2009/02/07 21:45:55<BR>Altitude: 62.20<BR>Speed: 15.37<BR></body></html>]]></description>";
 
     @Test

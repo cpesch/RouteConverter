@@ -31,8 +31,8 @@ import javax.swing.*;
  */
 
 public class MoveSplitPaneDividerAction extends FrameAction {
-    private JSplitPane splitPane;
-    private int dividerLocation;
+    private final JSplitPane splitPane;
+    private final int dividerLocation;
 
     public MoveSplitPaneDividerAction(JSplitPane splitPane, int dividerLocation) {
         this.splitPane = splitPane;

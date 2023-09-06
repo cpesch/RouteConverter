@@ -33,14 +33,14 @@ import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.calendar;
 
 public class PositionAugmenterTest {
-    private PositionAugmenter augmenter = new PositionAugmenter(null, null, null, null, null);
-    private GpxPosition a = new GpxPosition(null, null, null, null, null, null);
-    private GpxPosition b = new GpxPosition(null, null, null, null, null, null);
-    private GpxPosition c = new GpxPosition(null, null, null, null, null, null);
-    private GpxPosition d = new GpxPosition(null, null, null, null, null, null);
-    private GpxPosition e = new GpxPosition(null, null, null, null, null, null);
-    private BaseRoute route = new GpxRoute(new Gpx11Format(), null, null, null, asList(a, b, c, d, e));
-    private PositionsModelImpl model = new PositionsModelImpl();
+    private final PositionAugmenter augmenter = new PositionAugmenter(null, null, null, null, null);
+    private final GpxPosition a = new GpxPosition(null, null, null, null, null, null);
+    private final GpxPosition b = new GpxPosition(null, null, null, null, null, null);
+    private final GpxPosition c = new GpxPosition(null, null, null, null, null, null);
+    private final GpxPosition d = new GpxPosition(null, null, null, null, null, null);
+    private final GpxPosition e = new GpxPosition(null, null, null, null, null, null);
+    private final BaseRoute route = new GpxRoute(new Gpx11Format(), null, null, null, asList(a, b, c, d, e));
+    private final PositionsModelImpl model = new PositionsModelImpl();
 
     @Before
     public void setUp() {

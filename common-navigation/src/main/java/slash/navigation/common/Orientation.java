@@ -34,7 +34,7 @@ public enum Orientation {
     West("W"),
     East("E");
 
-    private String value;
+    private final String value;
 
     Orientation(String value) {
         this.value = value;

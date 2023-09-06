@@ -25,6 +25,7 @@ import slash.common.type.CompactCalendar;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.common.io.Files.generateChecksum;
 import static slash.common.io.Transfer.roundMillisecondsToSecondPrecision;
@@ -85,9 +86,9 @@ public class Checksum {
 
         Checksum checksum = (Checksum) o;
 
-        return !(contentLength != null ? !contentLength.equals(checksum.contentLength) : checksum.contentLength != null) &&
-                !(lastModified != null ? !lastModified.equals(checksum.lastModified) : checksum.lastModified != null) &&
-                !(sha1 != null ? !sha1.equals(checksum.sha1) : checksum.sha1 != null);
+        return !(!Objects.equals(contentLength, checksum.contentLength)) &&
+                !(!Objects.equals(lastModified, checksum.lastModified)) &&
+                !(!Objects.equals(sha1, checksum.sha1));
     }
 
     public int hashCode() {

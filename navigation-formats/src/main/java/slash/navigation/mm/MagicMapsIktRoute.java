@@ -55,6 +55,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.RouteCharacteristics.Route;
 
@@ -66,8 +67,8 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 
 public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktFormat> {
     private String name;
-    private List<String> description;
-    private List<Wgs84Position> positions;
+    private final List<String> description;
+    private final List<Wgs84Position> positions;
 
     MagicMapsIktRoute(MagicMapsIktFormat format, String name, List<String> description,
                       List<Wgs84Position> positions) {
@@ -213,8 +214,8 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
 
         final MagicMapsIktRoute magicMapsIktRoute = (MagicMapsIktRoute) o;
 
-        return !(description != null ? !description.equals(magicMapsIktRoute.description) : magicMapsIktRoute.description != null) &&
-                !(name != null ? !name.equals(magicMapsIktRoute.name) : magicMapsIktRoute.name != null) &&
+        return !(!Objects.equals(description, magicMapsIktRoute.description)) &&
+                !(!Objects.equals(name, magicMapsIktRoute.name)) &&
                 getCharacteristics().equals(magicMapsIktRoute.getCharacteristics()) &&
                 positions.equals(magicMapsIktRoute.positions);
     }

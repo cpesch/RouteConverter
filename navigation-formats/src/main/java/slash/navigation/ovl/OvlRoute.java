@@ -55,6 +55,7 @@ import slash.navigation.tcx.TcxRoute;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static slash.navigation.base.RouteComments.createRouteName;
 
@@ -65,8 +66,10 @@ import static slash.navigation.base.RouteComments.createRouteName;
  */
 
 public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
-    private OvlSection symbol, overlay, mapLage;
-    private List<Wgs84Position> positions;
+    private final OvlSection symbol;
+    private final OvlSection overlay;
+    private final OvlSection mapLage;
+    private final List<Wgs84Position> positions;
 
     OvlRoute(OvlFormat format, RouteCharacteristics characteristics, String name,
              OvlSection symbol, OvlSection overlay, OvlSection mapLage,
@@ -230,10 +233,10 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
 
         OvlRoute ovlRoute = (OvlRoute) o;
 
-        return !(mapLage != null ? !mapLage.equals(ovlRoute.mapLage) : ovlRoute.mapLage != null) &&
-                !(overlay != null ? !overlay.equals(ovlRoute.overlay) : ovlRoute.overlay != null) &&
-                !(positions != null ? !positions.equals(ovlRoute.positions) : ovlRoute.positions != null) &&
-                !(symbol != null ? !symbol.equals(ovlRoute.symbol) : ovlRoute.symbol != null);
+        return !(!Objects.equals(mapLage, ovlRoute.mapLage)) &&
+                !(!Objects.equals(overlay, ovlRoute.overlay)) &&
+                !(!Objects.equals(positions, ovlRoute.positions)) &&
+                !(!Objects.equals(symbol, ovlRoute.symbol));
     }
 
     public int hashCode() {

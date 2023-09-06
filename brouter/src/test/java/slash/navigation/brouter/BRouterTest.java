@@ -28,7 +28,7 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 
 public class BRouterTest {
-    private BRouter router = new BRouter(null);
+    private final BRouter router = new BRouter(null);
 
     @Test
     public void testLongitude() {

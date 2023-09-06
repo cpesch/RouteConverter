@@ -56,14 +56,14 @@ public abstract class BaseUrlParsingFormat extends BaseUrlFormat {
             return;
 
         List<Wgs84Position> positions = parsePositions(parameters);
-        if (positions.size() > 0)
+        if (!positions.isEmpty())
             context.appendRoute(createRoute(Route, null, positions));
     }
 
     protected abstract List<Wgs84Position> parsePositions(Map<String, List<String>> parameters);
 
     public/*for tests*/ Map<String, List<String>> parseURLParameters(String data, String encoding) {
-        if (data == null || data.length() == 0)
+        if (data == null || data.isEmpty())
             return null;
 
         try {

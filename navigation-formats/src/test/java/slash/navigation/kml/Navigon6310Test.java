@@ -30,7 +30,7 @@ import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
 public class Navigon6310Test {
-    private Kml20Format format = new Kml20Format();
+    private final Kml20Format format = new Kml20Format();
     private static final String NAVIGON6310_NAME = " 10:08:18, 509.49 meter ";
 
     @Test

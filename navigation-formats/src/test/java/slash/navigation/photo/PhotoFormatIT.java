@@ -39,7 +39,7 @@ import static slash.common.io.InputOutput.copyAndClose;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class PhotoFormatIT {
-    private NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+    private final NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
     public static void assertRationalNumberEquals(RationalNumber expected, RationalNumber was) {
         assertEquals(expected.numerator, was.numerator);

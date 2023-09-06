@@ -251,14 +251,11 @@ public class PositionHelper {
     }
 
     public static File extractFile(NavigationPosition position) {
-        if (position instanceof Wgs84Position) {
-            Wgs84Position wgs84Position = (Wgs84Position) position;
+        if (position instanceof Wgs84Position wgs84Position) {
             WaypointType waypointType = wgs84Position.getWaypointType();
             if (waypointType != null && (waypointType.equals(Photo) || waypointType.equals(Voice))) {
                 File file = wgs84Position.getOrigin(File.class);
-                if (file != null) {
-                    return file;
-                }
+                return file;
             }
         }
         return null;

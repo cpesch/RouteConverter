@@ -151,7 +151,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         String identifier = position.getIdentifier();
         if (identifier != null) {
             // extra rule for the United States
-            if (identifier.length() > 0 && identifier.charAt(0) == 'K')
+            if (!identifier.isEmpty() && identifier.charAt(0) == 'K')
                 return United_States;
 
             if (identifier.length() >= COUNTRY_CODE_IDENTIFIER_LENGTH) {

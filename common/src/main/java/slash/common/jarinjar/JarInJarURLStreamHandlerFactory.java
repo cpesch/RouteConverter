@@ -33,7 +33,7 @@ import static slash.common.jarinjar.JarInJarURLStreamHandler.JAR_IN_JAR;
  * @author Christian Pesch, inspired from https://code.google.com/p/entail/source/browse/jarinjarloader/org/eclipse/jdt/internal/jarinjarloader/
  */
 class JarInJarURLStreamHandlerFactory implements URLStreamHandlerFactory {
-    private ClassLoader classLoader;
+    private final ClassLoader classLoader;
 
     JarInJarURLStreamHandlerFactory(ClassLoader classLoader) {
         this.classLoader = classLoader;

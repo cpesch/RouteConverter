@@ -345,8 +345,7 @@ public class GeoTagger {
 
             position.setTagState(Tagged);
 
-            if (closestPositionForTagging instanceof Wgs84Position) {
-                Wgs84Position wgs84Position = (Wgs84Position) closestPositionForTagging;
+            if (closestPositionForTagging instanceof Wgs84Position wgs84Position) {
                 wgs84Position.setDescription(source.getAbsolutePath());
                 wgs84Position.setWaypointType(Photo);
                 wgs84Position.setOrigin(source);
@@ -375,10 +374,9 @@ public class GeoTagger {
             }
 
             public boolean run(int index, NavigationPosition navigationPosition) {
-                if (!(navigationPosition instanceof PhotoPosition))
+                if (!(navigationPosition instanceof PhotoPosition position))
                     return false;
 
-                PhotoPosition position = (PhotoPosition) navigationPosition;
                 if (position.getTagState().equals(Tagged))
                     return false;
 
@@ -403,10 +401,9 @@ public class GeoTagger {
                 }
 
                 public boolean run(int index, NavigationPosition navigationPosition) throws Exception {
-                    if (!(navigationPosition instanceof PhotoPosition))
+                    if (!(navigationPosition instanceof PhotoPosition position))
                         return false;
 
-                    PhotoPosition position = (PhotoPosition) navigationPosition;
                     if (!position.getTagState().equals(Taggable))
                         return false;
 
