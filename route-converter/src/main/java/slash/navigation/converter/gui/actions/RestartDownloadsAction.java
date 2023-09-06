@@ -60,11 +60,7 @@ public class RestartDownloadsAction extends DialogAction {
         final int row = selectedRows[0] < table.getRowCount() ?
                 selectedRows[0] : table.getRowCount() - 1;
         if (table.getRowCount() > 0) {
-            invokeLater(new Runnable() {
-                public void run() {
-                    selectAndScrollToPosition(table, row, row);
-                }
-            });
+            invokeLater(() -> selectAndScrollToPosition(table, row, row));
         }
     }
 }

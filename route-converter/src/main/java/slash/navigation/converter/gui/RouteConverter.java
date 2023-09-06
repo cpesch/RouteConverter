@@ -324,10 +324,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void openMapAndProfileView() {
         new Thread(() -> {
             try {
-                getDownloadManager().removeDownload(getApiUrl() + V1 + "tileservers/" + FORMAT_XML);
-                getDownloadManager().removeDownload(getApiUrl() + V1 + "tileservers-offline/" + FORMAT_XML);
-                getDownloadManager().removeDownload(getApiUrl() + V1 + "datasources/openandromaps-themes/" + FORMAT_XML);
-
                 File mapServers = new File(getApplicationDirectory("tileservers"), "mapservers.xml");
                 getDownloadManager().executeDownload("RouteConverter Map Servers", getApiUrl() + V1 + "mapservers/" + FORMAT_XML, Copy, mapServers, () -> {
 
