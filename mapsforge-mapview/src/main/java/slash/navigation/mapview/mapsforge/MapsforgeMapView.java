@@ -120,7 +120,6 @@ import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.TransformUtil.delta;
 import static slash.navigation.common.TransformUtil.isPositionInChina;
-import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
@@ -825,7 +824,7 @@ public class MapsforgeMapView extends BaseMapView {
     private boolean isFixMap(Double longitude, Double latitude) {
         FixMapMode fixMapMode = preferencesModel.getFixMapModeModel().getFixMapMode();
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
-        return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleMap(map) && isPositionInChina(longitude, latitude);
+        return fixMapMode.equals(Yes) && isGoogleMap(map) && isPositionInChina(longitude, latitude);
     }
 
     public LatLong asLatLong(NavigationPosition position) {
@@ -1353,18 +1352,9 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private class DisplayedMapListener implements ChangeListener {
-        private LocalMap lastMap;
 
         public void stateChanged(ChangeEvent e) {
             handleMapAndThemeUpdate(true, !isVisible(mapView.getModel().mapViewPosition.getCenter()));
-
-            // if the map changes from/to Google in Automatic mode, do a recalculation
-            LocalMap currentMap = getMapManager().getDisplayedMapModel().getItem();
-            if(preferencesModel.getFixMapModeModel().getFixMapMode().equals(Automatic)) {
-                if(lastMap == null || isGoogleMap(lastMap) != isGoogleMap(currentMap))
-                    updateDecoupler.replaceRoute();
-            }
-            lastMap = currentMap;
         }
     }
 

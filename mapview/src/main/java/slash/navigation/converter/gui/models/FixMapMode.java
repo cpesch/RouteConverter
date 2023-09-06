@@ -28,5 +28,5 @@ package slash.navigation.converter.gui.models;
  * @author Christian Pesch
  */
 public enum FixMapMode {
-    Automatic, No, Yes
+    No, Yes
 }

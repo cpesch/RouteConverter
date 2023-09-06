@@ -26,7 +26,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
 import java.util.prefs.Preferences;
 
-import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
+import static slash.navigation.converter.gui.models.FixMapMode.Yes;
 
 /**
  * A model for {@link FixMapMode}.
@@ -41,9 +41,9 @@ public class FixMapModeModel {
 
     public FixMapMode getFixMapMode() {
         try {
-            return FixMapMode.valueOf(preferences.get(FIX_MAP_MODE_PREFERENCE, Automatic.toString()));
+            return FixMapMode.valueOf(preferences.get(FIX_MAP_MODE_PREFERENCE, Yes.toString()));
         } catch (IllegalArgumentException e) {
-            return Automatic;
+            return Yes;
         }
     }
 

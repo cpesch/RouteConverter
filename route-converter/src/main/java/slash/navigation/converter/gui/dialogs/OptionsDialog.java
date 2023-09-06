@@ -250,7 +250,7 @@ public class OptionsDialog extends SimpleDialog {
         });
 
         ComboBoxModel<FixMapMode> fixMapModeModel = new DefaultComboBoxModel<>(new FixMapMode[]{
-                Automatic, Yes, No
+                Yes, No
         });
         fixMapModeModel.setSelectedItem(r.getMapPreferencesModel().getFixMapModeModel().getFixMapMode());
         comboBoxFixMapMode.setModel(fixMapModeModel);

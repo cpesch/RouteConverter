@@ -83,7 +83,6 @@ import static slash.navigation.base.RouteCharacteristics.*;
 import static slash.navigation.base.WaypointType.*;
 import static slash.navigation.common.TransformUtil.delta;
 import static slash.navigation.common.TransformUtil.isPositionInChina;
-import static slash.navigation.converter.gui.models.FixMapMode.Automatic;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.events.IgnoreEvent.isIgnoreEvent;
@@ -930,7 +929,7 @@ public abstract class BrowserMapView extends BaseMapView {
 
     private boolean isFixMap(Double longitude, Double latitude) {
         FixMapMode fixMapMode = preferencesModel.getFixMapModeModel().getFixMapMode();
-        return fixMapMode.equals(Yes) || fixMapMode.equals(Automatic) && isGoogleMap() && isPositionInChina(longitude, latitude);
+        return fixMapMode.equals(Yes) && isGoogleMap() && isPositionInChina(longitude, latitude);
     }
 
     private NavigationPosition parsePosition(String latitudeString, String longitudeString) {
@@ -1642,13 +1641,6 @@ public abstract class BrowserMapView extends BaseMapView {
 
     private void mapTypeChanged(String mapType) {
         preferences.put(MAP_TYPE_PREFERENCE, mapType);
-        if(preferencesModel.getFixMapModeModel().getFixMapMode().equals(Automatic)) {
-            invokeLater(new Runnable() {
-                public void run() {
-                    update(false, false);
-                }
-            });
-        }
     }
 
     private boolean isDuplicate(NavigationPosition position, NavigationPosition insert) {
