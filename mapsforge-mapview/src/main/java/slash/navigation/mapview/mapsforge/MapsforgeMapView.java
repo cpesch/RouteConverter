@@ -801,8 +801,7 @@ public class MapsforgeMapView extends BaseMapView {
         Collection<Layer> values = mapsToLayers.values();
         if (!values.isEmpty()) {
             Layer layer = values.iterator().next();
-            if (layer instanceof TileRendererLayer) {
-                TileRendererLayer tileRendererLayer = (TileRendererLayer) layer;
+            if (layer instanceof TileRendererLayer tileRendererLayer) {
                 return toBoundingBox(tileRendererLayer.getMapDataStore().boundingBox());
             }
         }
@@ -837,8 +836,8 @@ public class MapsforgeMapView extends BaseMapView {
         double latitude = position.getLatitude() != null ? position.getLatitude() : 0.0;
         if (isFixMap(longitude, latitude)) {
             double[] delta = delta(latitude, longitude);
-            longitude -= delta[1];
-            latitude -= delta[0];
+            longitude += delta[1];
+            latitude += delta[0];
         }
         return new LatLong(latitude, longitude);
     }

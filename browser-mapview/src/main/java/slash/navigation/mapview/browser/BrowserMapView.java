@@ -942,8 +942,8 @@ public abstract class BrowserMapView extends BaseMapView {
         Double latitude = parseDouble(latitudeString);
         if (longitude != null && latitude != null && isFixMap(longitude, latitude)) {
             double[] delta = delta(latitude, longitude);
-            longitude -= delta[1];
-            latitude -= delta[0];
+            longitude += delta[1];
+            latitude += delta[0];
         }
         return new SimpleNavigationPosition(longitude, latitude);
     }
@@ -1341,7 +1341,7 @@ public abstract class BrowserMapView extends BaseMapView {
             for (String line : lines) {
                 buffer.append("  ").append(line).append("\n");
             }
-            log.fine("Processing callback @" + currentTimeMillis() + " from port " + socket.getPort() + ": \n" + buffer.toString());
+            log.fine("Processing callback @" + currentTimeMillis() + " from port " + socket.getPort() + ": \n" + buffer);
 
             if (!isAuthenticated(lines)) {
                 writeStatus("401 Unauthorized", outputStream);
@@ -1857,7 +1857,7 @@ public abstract class BrowserMapView extends BaseMapView {
     }
 
     private int generationId;
-    private List<NavigationPosition> directionsPositions = new ArrayList<>();
+    private final List<NavigationPosition> directionsPositions = new ArrayList<>();
 
     private void resetDirections() {
         directionsPositions.clear();
