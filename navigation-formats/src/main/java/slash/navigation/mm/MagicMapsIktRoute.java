@@ -214,8 +214,8 @@ public class MagicMapsIktRoute extends BaseRoute<Wgs84Position, MagicMapsIktForm
 
         final MagicMapsIktRoute magicMapsIktRoute = (MagicMapsIktRoute) o;
 
-        return !(!Objects.equals(description, magicMapsIktRoute.description)) &&
-                !(!Objects.equals(name, magicMapsIktRoute.name)) &&
+        return Objects.equals(description, magicMapsIktRoute.description) &&
+                Objects.equals(name, magicMapsIktRoute.name) &&
                 getCharacteristics().equals(magicMapsIktRoute.getCharacteristics()) &&
                 positions.equals(magicMapsIktRoute.positions);
     }

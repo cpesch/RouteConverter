@@ -144,12 +144,12 @@ public class SimpleNavigationPosition implements NavigationPosition {
 
         SimpleNavigationPosition that = (SimpleNavigationPosition) o;
 
-        return !(!Objects.equals(description, that.description)) &&
-                !(!Objects.equals(speed, that.speed)) &&
-                !(!Objects.equals(elevation, that.elevation)) &&
-                !(!Objects.equals(latitude, that.latitude)) &&
-                !(!Objects.equals(longitude, that.longitude)) &&
-                !(!Objects.equals(time, that.time));
+        return Objects.equals(description, that.description) &&
+                Objects.equals(speed, that.speed) &&
+                Objects.equals(elevation, that.elevation) &&
+                Objects.equals(latitude, that.latitude) &&
+                Objects.equals(longitude, that.longitude) &&
+                Objects.equals(time, that.time);
     }
 
     public int hashCode() {

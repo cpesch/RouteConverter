@@ -203,8 +203,8 @@ public class TcxRoute extends BaseRoute<Wgs84Position, TcxFormat> {
 
         TcxRoute nokiaLandmarkExchangeRoute = (TcxRoute) o;
 
-        return !(!Objects.equals(name, nokiaLandmarkExchangeRoute.name)) &&
-                !(!Objects.equals(positions, nokiaLandmarkExchangeRoute.positions));
+        return Objects.equals(name, nokiaLandmarkExchangeRoute.name) &&
+                Objects.equals(positions, nokiaLandmarkExchangeRoute.positions);
     }
 
     public int hashCode() {

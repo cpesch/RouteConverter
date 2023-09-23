@@ -212,17 +212,17 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
 
         GpxPosition that = (GpxPosition) o;
 
-        return !(!Objects.equals(description, that.description)) &&
+        return Objects.equals(description, that.description) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(!Objects.equals(heading, that.heading)) &&
-                !(!Objects.equals(temperature, that.temperature)) &&
-                !(!Objects.equals(latitude, that.latitude)) &&
-                !(!Objects.equals(longitude, that.longitude)) &&
+                Objects.equals(heading, that.heading) &&
+                Objects.equals(temperature, that.temperature) &&
+                Objects.equals(latitude, that.latitude) &&
+                Objects.equals(longitude, that.longitude) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime()) &&
-                !(!Objects.equals(hdop, that.hdop)) &&
-                !(!Objects.equals(pdop, that.pdop)) &&
-                !(!Objects.equals(vdop, that.vdop)) &&
-                !(!Objects.equals(satellites, that.satellites));
+                Objects.equals(hdop, that.hdop) &&
+                Objects.equals(pdop, that.pdop) &&
+                Objects.equals(vdop, that.vdop) &&
+                Objects.equals(satellites, that.satellites);
     }
 
     public int hashCode() {

@@ -213,8 +213,8 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
 
         GoPalRoute gopalRoute = (GoPalRoute) o;
 
-        return !(!Objects.equals(name, gopalRoute.name)) &&
-                !(!Objects.equals(positions, gopalRoute.positions));
+        return Objects.equals(name, gopalRoute.name) &&
+                Objects.equals(positions, gopalRoute.positions);
     }
 
     public int hashCode() {

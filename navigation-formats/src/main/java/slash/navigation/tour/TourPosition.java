@@ -136,14 +136,14 @@ public class TourPosition extends MercatorPosition {
 
         TourPosition that = (TourPosition) o;
 
-        return !(!Objects.equals(x, that.x)) &&
-                !(!Objects.equals(y, that.y)) &&
-                !(!Objects.equals(name, that.name)) &&
-                !(!Objects.equals(zipCode, that.zipCode)) &&
-                !(!Objects.equals(description, that.description)) &&
-                !(!Objects.equals(street, that.street)) &&
-                !(!Objects.equals(houseNo, that.houseNo)) &&
-                !(!Objects.equals(nameValues, that.nameValues));
+        return Objects.equals(x, that.x) &&
+                Objects.equals(y, that.y) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(zipCode, that.zipCode) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(street, that.street) &&
+                Objects.equals(houseNo, that.houseNo) &&
+                Objects.equals(nameValues, that.nameValues);
     }
 
     public int hashCode() {

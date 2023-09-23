@@ -223,8 +223,8 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
         NokiaLandmarkExchangeRoute other = (NokiaLandmarkExchangeRoute) o;
 
-        return !(!Objects.equals(name, other.name)) &&
-                !(!Objects.equals(positions, other.positions));
+        return Objects.equals(name, other.name) &&
+                Objects.equals(positions, other.positions);
     }
 
     public int hashCode() {

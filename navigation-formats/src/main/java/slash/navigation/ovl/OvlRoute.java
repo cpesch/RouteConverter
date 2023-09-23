@@ -233,10 +233,10 @@ public class OvlRoute extends BaseRoute<Wgs84Position, OvlFormat> {
 
         OvlRoute ovlRoute = (OvlRoute) o;
 
-        return !(!Objects.equals(mapLage, ovlRoute.mapLage)) &&
-                !(!Objects.equals(overlay, ovlRoute.overlay)) &&
-                !(!Objects.equals(positions, ovlRoute.positions)) &&
-                !(!Objects.equals(symbol, ovlRoute.symbol));
+        return Objects.equals(mapLage, ovlRoute.mapLage) &&
+                Objects.equals(overlay, ovlRoute.overlay) &&
+                Objects.equals(positions, ovlRoute.positions) &&
+                Objects.equals(symbol, ovlRoute.symbol);
     }
 
     public int hashCode() {

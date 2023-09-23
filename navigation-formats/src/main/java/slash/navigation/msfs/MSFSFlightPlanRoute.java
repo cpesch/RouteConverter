@@ -223,8 +223,8 @@ public class MSFSFlightPlanRoute extends BaseRoute<Wgs84Position, MSFSFlightPlan
 
         MSFSFlightPlanRoute other = (MSFSFlightPlanRoute) o;
 
-        return !(!Objects.equals(name, other.name)) &&
-                !(!Objects.equals(positions, other.positions));
+        return Objects.equals(name, other.name) &&
+                Objects.equals(positions, other.positions);
     }
 
     public int hashCode() {

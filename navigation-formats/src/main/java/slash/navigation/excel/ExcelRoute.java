@@ -310,8 +310,8 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         ExcelRoute that = (ExcelRoute) o;
 
         return !(getName() != null ? !getName().equals(that.getName()) : that.getName() != null) &&
-                !(!Objects.equals(mapping, that.mapping)) &&
-                !(!Objects.equals(positions, that.positions));
+                Objects.equals(mapping, that.mapping) &&
+                Objects.equals(positions, that.positions);
     }
 
     public int hashCode() {

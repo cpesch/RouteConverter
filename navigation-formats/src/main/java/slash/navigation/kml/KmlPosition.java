@@ -48,9 +48,9 @@ public class KmlPosition extends Wgs84Position {
         KmlPosition that = (KmlPosition) o;
 
         return !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(!Objects.equals(description, that.description)) &&
-                !(!Objects.equals(latitude, that.latitude)) &&
-                !(!Objects.equals(longitude, that.longitude)) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(latitude, that.latitude) &&
+                Objects.equals(longitude, that.longitude) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 

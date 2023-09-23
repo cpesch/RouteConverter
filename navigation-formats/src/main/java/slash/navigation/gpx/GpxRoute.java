@@ -240,8 +240,8 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
         final GpxRoute gpxRoute = (GpxRoute) o;
 
-        return !(!Objects.equals(description, gpxRoute.description)) &&
-                !(!Objects.equals(name, gpxRoute.name)) &&
+        return Objects.equals(description, gpxRoute.description) &&
+                Objects.equals(name, gpxRoute.name) &&
                 getCharacteristics().equals(gpxRoute.getCharacteristics()) &&
                 positions.equals(gpxRoute.positions);
     }

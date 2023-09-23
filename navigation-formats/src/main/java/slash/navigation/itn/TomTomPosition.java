@@ -190,12 +190,12 @@ public class TomTomPosition extends BaseNavigationPosition {
 
         TomTomPosition that = (TomTomPosition) o;
 
-        return !(!Objects.equals(city, that.city)) &&
+        return Objects.equals(city, that.city) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(!Objects.equals(heading, that.heading)) &&
-                !(!Objects.equals(latitude, that.latitude)) &&
-                !(!Objects.equals(longitude, that.longitude)) &&
-                !(!Objects.equals(reason, that.reason)) &&
+                Objects.equals(heading, that.heading) &&
+                Objects.equals(latitude, that.latitude) &&
+                Objects.equals(longitude, that.longitude) &&
+                Objects.equals(reason, that.reason) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 

@@ -123,10 +123,10 @@ public class MercatorPosition extends BaseNavigationPosition {
 
         MercatorPosition that = (MercatorPosition) o;
 
-        return !(!Objects.equals(description, that.description)) &&
+        return Objects.equals(description, that.description) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(!Objects.equals(x, that.x)) &&
-                !(!Objects.equals(y, that.y)) &&
+                Objects.equals(x, that.x) &&
+                Objects.equals(y, that.y) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 

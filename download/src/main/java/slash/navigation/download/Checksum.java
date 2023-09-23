@@ -86,9 +86,9 @@ public class Checksum {
 
         Checksum checksum = (Checksum) o;
 
-        return !(!Objects.equals(contentLength, checksum.contentLength)) &&
-                !(!Objects.equals(lastModified, checksum.lastModified)) &&
-                !(!Objects.equals(sha1, checksum.sha1));
+        return Objects.equals(contentLength, checksum.contentLength) &&
+                Objects.equals(lastModified, checksum.lastModified) &&
+                Objects.equals(sha1, checksum.sha1);
     }
 
     public int hashCode() {

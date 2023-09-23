@@ -95,8 +95,8 @@ public class GarminFlightPlanPosition extends Wgs84Position {
 
         GarminFlightPlanPosition that = (GarminFlightPlanPosition) o;
 
-        return !(!Objects.equals(countryCode, that.countryCode)) &&
-                !(!Objects.equals(identifier, that.identifier)) &&
+        return Objects.equals(countryCode, that.countryCode) &&
+                Objects.equals(identifier, that.identifier) &&
                 waypointType == that.waypointType;
     }
 

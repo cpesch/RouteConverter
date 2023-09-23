@@ -39,7 +39,7 @@ import static slash.common.type.CompactCalendar.UTC;
  *
  * The currently supported format is:
  * <pre>
- *   +-YYY-MM-DDThh:mm:ss[.SSS]TZD
+ *   +-YYYY-MM-DDThh:mm:ss[.SSS]TZD
  * </pre>
  * where:
  * <pre>

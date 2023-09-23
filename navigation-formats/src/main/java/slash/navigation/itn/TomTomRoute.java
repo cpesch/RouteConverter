@@ -209,7 +209,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
 
         TomTomRoute route = (TomTomRoute) o;
 
-        return !(!Objects.equals(name, route.name)) &&
+        return Objects.equals(name, route.name) &&
                 getCharacteristics().equals(route.getCharacteristics()) &&
                 positions.equals(route.positions);
     }

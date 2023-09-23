@@ -136,8 +136,8 @@ public class BoundingBox {
 
         BoundingBox that = (BoundingBox) o;
 
-        return !(!Objects.equals(northEast, that.northEast)) &&
-                !(!Objects.equals(southWest, that.southWest));
+        return Objects.equals(northEast, that.northEast) &&
+                Objects.equals(southWest, that.southWest);
     }
 
     public int hashCode() {

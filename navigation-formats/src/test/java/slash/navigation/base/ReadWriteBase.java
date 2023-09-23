@@ -45,7 +45,7 @@ public abstract class ReadWriteBase {
         assertNotNull(result);
         assertNotNull(result.getFormat());
         assertNotNull(result.getAllRoutes());
-        assertTrue(!result.getAllRoutes().isEmpty());
+        assertFalse(result.getAllRoutes().isEmpty());
 
         File target = createTempFile("target", getExtension(source));
         // see AlanWaypointsAndRoutesFormat#isSupportsMultipleRoutes

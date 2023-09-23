@@ -210,8 +210,8 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
         GarminFlightPlanRoute that = (GarminFlightPlanRoute) o;
 
-        return !(!Objects.equals(name, that.name)) &&
-                !(!Objects.equals(positions, that.positions));
+        return Objects.equals(name, that.name) &&
+                Objects.equals(positions, that.positions);
     }
 
     public int hashCode() {

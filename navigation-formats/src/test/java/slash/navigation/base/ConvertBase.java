@@ -60,7 +60,7 @@ public abstract class ConvertBase {
         assertNotNull(result.getFormat());
         assertNotNull(result.getTheRoute());
         assertNotNull(result.getAllRoutes());
-        assertTrue(!result.getAllRoutes().isEmpty());
+        assertFalse(result.getAllRoutes().isEmpty());
 
         // check append
         NavigationPosition sourcePosition = result.getTheRoute().getPositions().get(0);

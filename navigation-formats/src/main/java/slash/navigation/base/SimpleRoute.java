@@ -205,7 +205,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
 
         SimpleRoute route = (SimpleRoute) o;
 
-        return !(!Objects.equals(name, route.name)) &&
+        return Objects.equals(name, route.name) &&
                 getCharacteristics().equals(route.getCharacteristics()) &&
                 positions.equals(route.positions);
     }

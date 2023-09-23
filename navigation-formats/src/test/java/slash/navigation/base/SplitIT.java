@@ -52,7 +52,7 @@ public class SplitIT {
         BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute = result.getTheRoute();
         assertNotNull(sourceRoute);
         assertNotNull(result.getAllRoutes());
-        assertTrue(!result.getAllRoutes().isEmpty());
+        assertFalse(result.getAllRoutes().isEmpty());
 
         int maximumPositionCount = result.getFormat().getMaximumPositionCount();
         if (maximumPositionCount == UNLIMITED_MAXIMUM_POSITION_COUNT) {
@@ -178,7 +178,7 @@ public class SplitIT {
         assertNotNull(result.getFormat());
         assertNotNull(result.getTheRoute());
         assertNotNull(result.getAllRoutes());
-        assertTrue(!result.getAllRoutes().isEmpty());
+        assertFalse(result.getAllRoutes().isEmpty());
 
         BaseRoute sourceRoute = result.getTheRoute();
         int maximumPositionCount = targetFormat.getMaximumPositionCount();

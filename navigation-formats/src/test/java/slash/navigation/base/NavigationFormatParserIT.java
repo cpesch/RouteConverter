@@ -44,7 +44,7 @@ public class NavigationFormatParserIT {
         ParserResult result = parser.read(source);
         assertNotNull(result.getFormat());
         assertNotNull(result.getAllRoutes());
-        assertTrue(!result.getAllRoutes().isEmpty());
+        assertFalse(result.getAllRoutes().isEmpty());
         assertNotNull("Cannot read route from " + source, result.getTheRoute());
         assertTrue(result.getTheRoute().getPositionCount() > 0);
         return result;

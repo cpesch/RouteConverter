@@ -43,9 +43,9 @@ public class PostalCode {
 
         PostalCode that = (PostalCode) o;
 
-        return !(!Objects.equals(countryCode, that.countryCode)) &&
-                !(!Objects.equals(placeName, that.placeName)) &&
-                !(!Objects.equals(postalCode, that.postalCode));
+        return Objects.equals(countryCode, that.countryCode) &&
+                Objects.equals(placeName, that.placeName) &&
+                Objects.equals(postalCode, that.postalCode);
     }
 
     public int hashCode() {

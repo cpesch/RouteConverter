@@ -60,7 +60,7 @@ public class AppendIT {
         assertNotNull(appendResult.getTheRoute());
         assertNotNull(appendResult.getFormat());
         assertNotNull(appendResult.getAllRoutes());
-        assertTrue(!appendResult.getAllRoutes().isEmpty());
+        assertFalse(appendResult.getAllRoutes().isEmpty());
 
         int appendPositionCount = appendResult.getTheRoute().getPositionCount();
         List<BaseNavigationPosition> appendPositions = appendResult.getTheRoute().getPositions();

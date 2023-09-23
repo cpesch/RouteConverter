@@ -223,8 +223,8 @@ public class KlickTelRoute extends BaseRoute<Wgs84Position, KlickTelRouteFormat>
 
         KlickTelRoute klicktelRoute = (KlickTelRoute) o;
 
-        return !(!Objects.equals(name, klicktelRoute.name)) &&
-                !(!Objects.equals(positions, klicktelRoute.positions));
+        return Objects.equals(name, klicktelRoute.name) &&
+                Objects.equals(positions, klicktelRoute.positions);
     }
 
     public int hashCode() {

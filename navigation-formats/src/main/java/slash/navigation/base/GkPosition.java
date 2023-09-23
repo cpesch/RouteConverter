@@ -136,7 +136,7 @@ public class GkPosition extends BaseNavigationPosition {
 
         return Double.compare(that.height, height) == 0 &&
                 Double.compare(that.right, right) == 0 &&
-                !(!Objects.equals(description, that.description)) &&
+                Objects.equals(description, that.description) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }

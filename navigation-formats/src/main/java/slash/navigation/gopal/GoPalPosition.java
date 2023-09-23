@@ -125,15 +125,15 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
 
         GoPalPosition that = (GoPalPosition) o;
 
-        return !(!Objects.equals(x, that.x)) &&
-                !(!Objects.equals(y, that.y)) &&
-                !(!Objects.equals(country, that.country)) &&
-                !(!Objects.equals(zipCode, that.zipCode)) &&
-                !(!Objects.equals(description, that.description)) &&
-                !(!Objects.equals(suburb, that.suburb)) &&
-                !(!Objects.equals(street, that.street)) &&
-                !(!Objects.equals(sideStreet, that.sideStreet)) &&
-                !(!Objects.equals(houseNumber, that.houseNumber));
+        return Objects.equals(x, that.x) &&
+                Objects.equals(y, that.y) &&
+                Objects.equals(country, that.country) &&
+                Objects.equals(zipCode, that.zipCode) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(suburb, that.suburb) &&
+                Objects.equals(street, that.street) &&
+                Objects.equals(sideStreet, that.sideStreet) &&
+                Objects.equals(houseNumber, that.houseNumber);
     }
 
     public int hashCode() {

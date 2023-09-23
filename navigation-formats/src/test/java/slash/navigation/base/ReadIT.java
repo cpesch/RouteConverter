@@ -37,6 +37,7 @@ import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
 import static java.util.Collections.singletonList;
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static slash.common.TestCase.assertEquals;
 import static slash.common.io.Files.collectFiles;
@@ -74,7 +75,7 @@ public class ReadIT {
                 assertNotNull(result.getFormat());
                 assertNotNull("Cannot get route from " + file, result.getTheRoute());
                 assertNotNull(result.getAllRoutes());
-                assertTrue(!result.getAllRoutes().isEmpty());
+                assertFalse(result.getAllRoutes().isEmpty());
                 for (BaseRoute route : result.getAllRoutes()) {
                     List<NavigationPosition> positions = route.getPositions();
                     for (NavigationPosition position : positions) {

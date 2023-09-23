@@ -186,7 +186,7 @@ public class Download {
 
         Download download = (Download) o;
 
-        return !(!Objects.equals(url, download.url));
+        return Objects.equals(url, download.url);
     }
 
     public int hashCode() {

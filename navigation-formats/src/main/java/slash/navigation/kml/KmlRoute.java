@@ -201,8 +201,8 @@ public class KmlRoute extends BaseRoute<KmlPosition, BaseKmlFormat> {
 
         final KmlRoute kmlRoute = (KmlRoute) o;
 
-        return !(!Objects.equals(description, kmlRoute.description)) &&
-                !(!Objects.equals(name, kmlRoute.name)) &&
+        return Objects.equals(description, kmlRoute.description) &&
+                Objects.equals(name, kmlRoute.name) &&
                 getCharacteristics().equals(kmlRoute.getCharacteristics()) &&
                 positions.equals(kmlRoute.positions);
     }

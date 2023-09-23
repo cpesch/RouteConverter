@@ -112,12 +112,12 @@ public class NmnPosition extends Wgs84Position {
 
         NmnPosition that = (NmnPosition) o;
 
-        return !(!Objects.equals(description, that.description)) &&
-                !(!Objects.equals(street, that.street)) &&
-                !(!Objects.equals(number, that.number)) &&
+        return Objects.equals(description, that.description) &&
+                Objects.equals(street, that.street) &&
+                Objects.equals(number, that.number) &&
                 !(getElevation() != null ? !getElevation().equals(that.getElevation()) : that.getElevation() != null) &&
-                !(!Objects.equals(latitude, that.latitude)) &&
-                !(!Objects.equals(longitude, that.longitude)) &&
+                Objects.equals(latitude, that.latitude) &&
+                Objects.equals(longitude, that.longitude) &&
                 !(hasTime() ? !getTime().equals(that.getTime()) : that.hasTime());
     }
 

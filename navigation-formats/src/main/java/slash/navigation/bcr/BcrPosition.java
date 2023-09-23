@@ -163,12 +163,12 @@ public class BcrPosition extends MercatorPosition {
         BcrPosition that = (BcrPosition) o;
 
         return altitude == that.altitude &&
-                !(!Objects.equals(x, that.x)) &&
-                !(!Objects.equals(y, that.y)) &&
-                !(!Objects.equals(description, that.description)) &&
-                !(!Objects.equals(street, that.street)) &&
-                !(!Objects.equals(type, that.type)) &&
-                !(!Objects.equals(zipCode, that.zipCode));
+                Objects.equals(x, that.x) &&
+                Objects.equals(y, that.y) &&
+                Objects.equals(description, that.description) &&
+                Objects.equals(street, that.street) &&
+                Objects.equals(type, that.type) &&
+                Objects.equals(zipCode, that.zipCode);
     }
 
     public int hashCode() {
