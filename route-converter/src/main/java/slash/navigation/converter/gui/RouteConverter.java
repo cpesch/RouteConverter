@@ -1162,7 +1162,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     protected void initializeServices() {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
-        RouteFeedback routeFeedback = new RouteFeedback(System.getProperty("feedback", "https://www.routeconverter.com/feedback/"), getApiUrl(), RouteConverter.getInstance().getCredentials());
+        RouteFeedback routeFeedback = new RouteFeedback(getApiUrl(), RouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
         updateChecker = new UpdateChecker(routeFeedback);
         DownloadManager downloadManager = new DownloadManager(new File(getApplicationDirectory(), getEditionId() + "-queue.xml"));

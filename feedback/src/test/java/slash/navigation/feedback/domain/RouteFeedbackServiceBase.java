@@ -23,16 +23,14 @@ import org.junit.Before;
 import slash.navigation.rest.SimpleCredentials;
 
 public abstract class RouteFeedbackServiceBase {
-    protected static final String FEEDBACK = System.getProperty("feedback", "http://localhost:8000/feedback/");
     protected static final String API = System.getProperty("api", "http://localhost:8000/");
     protected static final String USERNAME = "test";
     protected static final String PASSWORD = "test";
-    protected static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
 
     protected RouteFeedback routeFeedback;
 
     @Before
     public void setUp() {
-        routeFeedback = new RouteFeedback(FEEDBACK, API, new SimpleCredentials(USERNAME, PASSWORD));
+        routeFeedback = new RouteFeedback(API, new SimpleCredentials(USERNAME, PASSWORD));
     }
 }

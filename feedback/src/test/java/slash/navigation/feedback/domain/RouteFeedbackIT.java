@@ -25,25 +25,26 @@ import org.junit.Test;
 import slash.navigation.rest.SimpleCredentials;
 import slash.navigation.rest.exception.ForbiddenException;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import static java.lang.System.currentTimeMillis;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.feedback.domain.RouteFeedback.USER_URI;
+import static slash.common.io.InputOutput.copyAndClose;
 
-public class RouteFeedbackIT {
-    private static final String API = System.getProperty("api", "http://localhost:8000/");
+public class RouteFeedbackIT extends RouteFeedbackServiceBase {
     private static final String SUPER_USERNAME = "super";
-    private static final String PASSWORD = "test";
-    private static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
     private static final String SPECIAL_CHARACTERS = "@!§$%&()=";
+    private static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
 
     private RouteFeedback routeFeedback;
     private String url;
 
     @Before
     public void setUp() {
-        routeFeedback = new RouteFeedback(null, API, null);
+        routeFeedback = new RouteFeedback(API, new SimpleCredentials(USERNAME, PASSWORD));
     }
 
     @After
@@ -53,8 +54,8 @@ public class RouteFeedbackIT {
     }
 
     private void deleteAsSuperuser(String url) throws IOException {
-        RouteFeedback superUser = new RouteFeedback(null, API, new SimpleCredentials(SUPER_USERNAME, PASSWORD));
-        superUser.deleteUser(url);
+        RouteFeedback superUser = new RouteFeedback(API, new SimpleCredentials(SUPER_USERNAME, PASSWORD));
+        superUser.deleteUser(API + "v1/" + url);
     }
 
     @Test
@@ -63,8 +64,8 @@ public class RouteFeedbackIT {
         url = routeFeedback.addUser(userName, userName, "egal", "egal", "egal@egal.egal");
     }
 
-    @Test
-    public void testCanAddUserWithSpecialCharacters() throws IOException {
+    @Test(expected = ForbiddenException.class)
+    public void testCannotAddUserWithSpecialCharacters() throws IOException {
         String userName = "Specials" + SPECIAL_CHARACTERS + currentTimeMillis();
         url = routeFeedback.addUser(userName, userName, "egal", "egal", "egal@egal.egal");
     }
@@ -72,10 +73,12 @@ public class RouteFeedbackIT {
     @Test
     public void testSuperuserCanDeleteOtherUser() throws IOException {
         String userName = "OtherUser" + currentTimeMillis();
-        String url = routeFeedback.addUser(userName, userName, "Other", "User", "Test@User.Mail");
-        assertTrue(url.startsWith(API + USER_URI));
+        url = routeFeedback.addUser(userName, userName, "Other", "User", "Test@User.Mail");
+        assertTrue(url.contains("users"));
 
         deleteAsSuperuser(url);
+
+        url = null;
     }
 
     @Test(expected = ForbiddenException.class)
@@ -107,6 +110,35 @@ public class RouteFeedbackIT {
     public void testCannotDeleteOtherUser() throws IOException {
         String userName = "TestUser" + currentTimeMillis();
         url = routeFeedback.addUser(userName, userName, "Test", "User", "Test@User.Mail");
-        routeFeedback.deleteUser(url);
+        routeFeedback.deleteUser(API + "v1/" + url);
+    }
+
+    @Test
+    public void testCanSendErrorReport() throws IOException {
+        InputStream input = getClass().getResourceAsStream("errorreporttest.txt");
+        File file = File.createTempFile("errorreport", ".txt");
+        file.deleteOnExit();
+        copyAndClose(input, new FileOutputStream(file));
+
+        String url = routeFeedback.sendErrorReport("log output", "description", file);
+        assertTrue(url.contains("error-report"));
+    }
+
+    @Test
+    public void testCanCheckForUpdateAnonymous() throws IOException {
+        RouteFeedback anonymous = new RouteFeedback(API, null);
+        String result = anonymous.checkForUpdate("1",
+                "2", 3, "4", "5", "6",
+                "7", "8", "9", 10);
+        assertTrue(result.contains("version"));
+        assertTrue(result.contains("feature"));
+    }
+
+    @Test
+    public void testCanCheckForUpdate() throws IOException {
+        String result = routeFeedback.checkForUpdate("2",
+                "3", 4, "5", "6", "7",
+                "8", "9", "10", 11);
+        assertTrue(result.contains("feature"));
     }
 }

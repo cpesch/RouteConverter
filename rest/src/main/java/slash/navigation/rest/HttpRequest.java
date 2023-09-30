@@ -92,8 +92,7 @@ public abstract class HttpRequest {
     }
 
     private void setAuthentication(String userName, String password, URI uri) {
-        int port = uri.getScheme().equals("https") ? 443 : 80;
-        HttpHost httpHost = new HttpHost(uri.getHost(), port, uri.getScheme());
+        HttpHost httpHost = new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
         AuthScope authScope = new AuthScope(httpHost, "api", null);
         CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(authScope, new UsernamePasswordCredentials(userName, password));

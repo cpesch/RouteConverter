@@ -57,23 +57,23 @@ import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 public class RouteFeedback {
     private static final Logger log = Logger.getLogger(RouteFeedback.class.getName());
 
-    private static final String ERROR_REPORT_URI = "error-report/";
-    private static final String UPDATE_CHECK_URI = "update-check/";
-    static final String USER_URI = V1 + "users/";
+    private static final String ERROR_REPORT_URI = V1 + "error-report/";
+    private static final String UPDATE_CHECK_URI = V1 + "update-check/";
+    private static final String USER_URI = V1 + "users/";
 
-    private final String rootUrl;
     private final String apiUrl;
     private final Credentials credentials;
 
-    public RouteFeedback(String rootUrl, String apiUrl, Credentials credentials) {
-        this.rootUrl = rootUrl;
+    public RouteFeedback(String apiUrl, Credentials credentials) {
         this.apiUrl = apiUrl;
         this.credentials = credentials;
     }
 
     public String addUser(String userName, String password, String firstName, String lastName, String email) throws IOException {
+        String userUrl = apiUrl + USER_URI;
+
         log.info("Adding user " + userName + "," + firstName + "," + lastName + "," + email);
-        Post request = new Post(apiUrl + USER_URI);
+        Post request = new Post(userUrl);
         request.setAccept(APPLICATION_JSON);
         request.addString("username", userName);
         request.addString("password", password);
@@ -82,11 +82,11 @@ public class RouteFeedback {
         request.addString("email", email);
         String result = request.executeAsString();
         if (request.isBadRequest())
-            throw new ForbiddenException("Cannot add user: " + result, apiUrl + USER_URI);
+            throw new ForbiddenException("Cannot add user: " + result, userUrl);
         if (request.isForbidden())
-            throw new DuplicateNameException("User " + userName + " already exists", apiUrl + USER_URI);
+            throw new DuplicateNameException("User " + userName + " already exists", userUrl);
         if (!request.isSuccessful())
-            throw new IOException("POST on " + (apiUrl + USER_URI) + " with payload " + userName + "," + firstName + "," + lastName + "," + email + " not successful: " + result);
+            throw new IOException("POST on " + userUrl + " with payload " + userName + "," + firstName + "," + lastName + "," + email + " not successful: " + result);
         return request.getLocation();
     }
 
@@ -101,14 +101,12 @@ public class RouteFeedback {
             throw new IOException("DELETE on " + userUrl + " not successful: " + result);
     }
 
-    private String getErrorReportUrl() {
-        return rootUrl + ERROR_REPORT_URI;
-    }
-
     public String sendErrorReport(String logOutput, String description, java.io.File file) throws IOException {
+        String errorReportUrl = apiUrl + ERROR_REPORT_URI;
+
         log.fine("Sending error report with log \"" + logOutput + "\", description \"" + description + "\"" +
                 (file != null ? ", file " + file.getAbsolutePath() : ""));
-        Post request = new Post(getErrorReportUrl(), credentials);
+        Post request = new Post(errorReportUrl, credentials);
         request.addString("log", logOutput);
         request.addString("description", description);
         if (file != null)
@@ -116,9 +114,9 @@ public class RouteFeedback {
 
         String result = request.executeAsString();
         if (request.isUnAuthorized())
-            throw new UnAuthorizedException("Cannot send error report " + (file != null ? ", file " + file.getAbsolutePath() : ""), getErrorReportUrl());
+            throw new UnAuthorizedException("Cannot send error report " + (file != null ? ", file " + file.getAbsolutePath() : ""), errorReportUrl);
         if (!request.isSuccessful())
-            throw new IOException("POST on " + getErrorReportUrl() + " with log " + logOutput.length() + " characters" +
+            throw new IOException("POST on " + errorReportUrl + " with log " + logOutput.length() + " characters" +
                     ", description \"" + description + "\", file " + file + " not successful: " + result);
         return request.getLocation();
     }
@@ -128,7 +126,7 @@ public class RouteFeedback {
                                  String osName, String osVersion, String osArch,
                                  long startTime) throws IOException {
         log.fine("Checking for update for version " + routeConverterVersion);
-        Post request = new Post(rootUrl + UPDATE_CHECK_URI, credentials);
+        Post request = new Post(apiUrl + UPDATE_CHECK_URI, credentials);
         request.addString("id", valueOf(startTime));
         request.addString("javaBits", javaBits);
         request.addString("javaVersion", javaVersion);
