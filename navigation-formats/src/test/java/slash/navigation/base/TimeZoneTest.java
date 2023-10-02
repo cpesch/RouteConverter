@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import static com.jcabi.matchers.RegexMatchers.matchesPattern;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.*;
 import static slash.common.io.Transfer.parseXMLTime;
@@ -69,7 +70,8 @@ public class TimeZoneTest {
         dateFormat.setTimeZone(java.getTimeZone());
         assertEquals(TimeZone.getTimeZone("GMT+00:00"), dateFormat.getTimeZone());
         String javaTime = dateFormat.format(java.getTime().getTime());
-        MatcherAssert.assertThat(javaTime, matchesPattern("6/7/07,? 2:04 PM"));
+        // .+ necessary for Java 20+ where a ? is inserted and not a space
+        assertThat(javaTime, matchesPattern("6/7/07,? 2:04.+PM"));
         Calendar parsed = parseXMLTime(xml).getCalendar();
         assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
         assertCalendarEquals(parsed, java);
@@ -84,7 +86,8 @@ public class TimeZoneTest {
         DateFormat dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.ENGLISH);
         dateFormat.setTimeZone(java.getTimeZone());
         String javaTime = dateFormat.format(java.getTime().getTime());
-        MatcherAssert.assertThat(javaTime, matchesPattern("6/7/07,? 2:04 PM"));
+        // .+ necessary for Java 20+ where a ? is inserted and not a space
+        assertThat(javaTime, matchesPattern("6/7/07,? 2:04.+PM"));
         Calendar parsed = parseXMLTime(xml).getCalendar();
         assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
         java.roll(Calendar.HOUR, 2);

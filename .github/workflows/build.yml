@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 17, 18, 19, 20 ]
+        java: [ 17, 20, 21 ]
     name: Java ${{ matrix.java }} compatibility
     steps:
       - uses: actions/checkout@v2
