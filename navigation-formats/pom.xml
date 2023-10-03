@@ -99,6 +99,10 @@
                     <groupId>commons-codec</groupId>
                     <artifactId>commons-codec</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -112,6 +116,14 @@
                     <artifactId>curvesapi</artifactId>
                 </exclusion>
                 <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-math3</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.apache.poi</groupId>
                     <artifactId>poi</artifactId>
                 </exclusion>
@@ -120,8 +132,12 @@
                     <artifactId>poi-ooxml-schemas</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>org.apache.commons</groupId>
-                    <artifactId>commons-math3</artifactId>
+                    <groupId>org.apache.poi</groupId>
+                    <artifactId>poi-ooxml-lite</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.xmlbeans</groupId>
+                    <artifactId>xmlbeans</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>stax</groupId>
