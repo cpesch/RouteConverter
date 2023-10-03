@@ -27,11 +27,11 @@
         <key>CFBundleVersion</key>
         <string>${project.version}-${maven.build.number} ${maven.build.timestamp.clone}</string>
         <key>NSHighResolutionCapable</key>
-        <true/>
+        <string>true</string>
         <key>NSHumanReadableCopyright</key>
         <string>Created by Christian Pesch</string>
         <key>LSMinimumSystemVersion</key>
-        <string>10.7.4</string>
+        <string>10.9</string>
         <key>LSApplicationCategoryType</key>
         <string>Navigation</string>
     </dict>

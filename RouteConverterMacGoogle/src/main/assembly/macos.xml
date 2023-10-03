@@ -6,6 +6,15 @@
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>target/Runtime/</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <outputDirectory>/RouteConverter.app/Contents/</outputDirectory>
+        </fileSet>
+    </fileSets>
     <files>
         <file>
             <source>src/main/app-resources/Java/RouteConverterGoogle.cfg</source>
@@ -14,21 +23,21 @@
             <lineEnding>lf</lineEnding>
         </file>
         <file>
-            <source>src/main/app-resources/Java/RouteConverterGoogleStart.jar</source>
-            <outputDirectory>/RouteConverter.app/Contents/Java/</outputDirectory>
-        </file>
-        <file>
             <source>src/main/app-resources/MacOS/RouteConverterGoogle</source>
             <outputDirectory>/RouteConverter.app/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/app-resources/MacOS/libpackager.dylib</source>
+            <source>src/main/app-resources/MacOS/libapplauncher.dylib</source>
             <outputDirectory>/RouteConverter.app/Contents/MacOS/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/Resources/RouteConverter.icns</source>
             <outputDirectory>/RouteConverter.app/Contents/Resources/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/app-resources/Resources/InfoPlist.strings</source>
+            <outputDirectory>/RouteConverter.app/Contents/Resources/German.lproj/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/Info.plist</source>

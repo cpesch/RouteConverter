@@ -220,8 +220,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     protected void checkJavaPrequisites() {
         String currentVersion = System.getProperty("java.version");
-        if (!isCurrentAtLeastMinimumVersion(currentVersion, "17")) {
-            showMessageDialog(null, "Java " + currentVersion + " is too old for JavaFX 20. Please install Java 17 or later.", "RouteConverter", ERROR_MESSAGE);
+        if (!isJava17OrLater()) {
+            showMessageDialog(null, "Java " + currentVersion + " is too old. Please install Java 17 or later.", "RouteConverter", ERROR_MESSAGE);
             System.exit(8);
         }
     }

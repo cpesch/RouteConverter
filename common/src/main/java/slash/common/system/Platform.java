@@ -62,6 +62,10 @@ public class Platform {
         return currentVersion.compareTo(minimumVersion) >= 0;
     }
 
+    public static boolean isJava17OrLater() {
+        return isJavaLaterThan(System.getProperty("java.version"), 17);
+    }
+
     private static String canonical(String value) {
         return value.toLowerCase().replaceAll("[\\\\/ ]", "_");
     }

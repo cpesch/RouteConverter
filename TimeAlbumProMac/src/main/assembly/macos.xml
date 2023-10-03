@@ -6,6 +6,15 @@
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>target/Runtime/</directory>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <outputDirectory>/TimeAlbumPro.app/Contents/</outputDirectory>
+        </fileSet>
+    </fileSets>
     <files>
         <file>
             <source>src/main/app-resources/Java/TimeAlbumPro.cfg</source>
@@ -14,21 +23,21 @@
             <lineEnding>lf</lineEnding>
         </file>
         <file>
-            <source>src/main/app-resources/Java/TimeAlbumProStart.jar</source>
-            <outputDirectory>/TimeAlbumPro.app/Contents/Java/</outputDirectory>
-        </file>
-        <file>
             <source>src/main/app-resources/MacOS/TimeAlbumPro</source>
             <outputDirectory>/TimeAlbumPro.app/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
-            <source>src/main/app-resources/MacOS/libpackager.dylib</source>
+            <source>src/main/app-resources/MacOS/libapplauncher.dylib</source>
             <outputDirectory>/TimeAlbumPro.app/Contents/MacOS/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/Resources/TimeAlbumPro.icns</source>
             <outputDirectory>/TimeAlbumPro.app/Contents/Resources/</outputDirectory>
+        </file>
+        <file>
+            <source>src/main/app-resources/Resources/InfoPlist.strings</source>
+            <outputDirectory>/TimeAlbumPro.app/Contents/Resources/German.lproj/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/Info.plist</source>
