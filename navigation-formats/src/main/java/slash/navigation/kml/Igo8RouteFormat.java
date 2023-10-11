@@ -86,7 +86,7 @@ public class Igo8RouteFormat extends Kml22Format {
     private FolderType createWayPoints(KmlRoute route, int startIndex, int endIndex) {
         ObjectFactory objectFactory = new ObjectFactory();
         FolderType folderType = objectFactory.createFolderType();
-        folderType.setName(WAYPOINTS);
+        folderType.setName(route.getName());
         List<KmlPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             KmlPosition position = positions.get(i);
