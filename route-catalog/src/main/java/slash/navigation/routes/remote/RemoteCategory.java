@@ -66,11 +66,12 @@ public class RemoteCategory implements Category {
     private synchronized CategoryType getCategoryType() throws IOException {
         if (categoryType == null) {
             CatalogType catalogType = getCatalog().fetch(getHref());
-            categoryType = catalogType.getCategory();
 
             // avoid subsequent NullPointerExceptions on server errors
-            if (categoryType == null)
+            if (catalogType == null)
                 categoryType = new CategoryType();
+            else
+                categoryType = catalogType.getCategory();
         }
         return categoryType;
     }
