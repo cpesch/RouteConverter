@@ -112,8 +112,8 @@ public class FrameMenu {
         JMenu extrasMenu = createMenu("extras");
         extrasMenu.add(createItem("complete-flight-plan"));
         extrasMenu.add(createItem("show-downloads"));
-        if (!isMac())
-            extrasMenu.add(createItem("show-options"));
+        extrasMenu.add(createItem("show-options"));
+        extrasMenu.add(createItem("login"));
 
         JMenu helpMenu = createMenu("help");
         helpMenu.add(createItem("help-topics"));

@@ -117,7 +117,6 @@ public class BrowsePanel implements PanelInTab {
     private JButton buttonAddRouteFromUrl;
     private JButton buttonRenameRoute;
     private JButton buttonDeleteRoute;
-    private JButton buttonLogin;
 
     private CatalogModel catalogModel;
 
@@ -156,12 +155,6 @@ public class BrowsePanel implements PanelInTab {
 
         setHelpIDString(treeCategories, "category-tree");
         setHelpIDString(tableRoutes, "route-list");
-
-        buttonLogin.addActionListener(new FrameAction() {
-            public void run() {
-                getOperator().showLogin();
-            }
-        });
 
         treeCategories.setModel(catalogModel.getCategoryTreeModel());
         treeCategories.addTreeSelectionListener(e -> {
@@ -472,7 +465,7 @@ public class BrowsePanel implements PanelInTab {
         this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "routes"));
         browsePanel.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
         browsePanel.add(panel2, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonAddRouteFromFile = new JButton();
         this.$$$loadButtonText$$$(buttonAddRouteFromFile, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-file-action"));
@@ -493,10 +486,6 @@ public class BrowsePanel implements PanelInTab {
         this.$$$loadButtonText$$$(buttonAddRouteFromUrl, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-url-action"));
         buttonAddRouteFromUrl.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-url-action-tooltip"));
         panel2.add(buttonAddRouteFromUrl, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonLogin = new JButton();
-        this.$$$loadButtonText$$$(buttonLogin, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "login"));
-        buttonLogin.setVisible(false);
-        panel2.add(buttonLogin, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
         browsePanel.add(scrollPane1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableRoutes = new JTable();

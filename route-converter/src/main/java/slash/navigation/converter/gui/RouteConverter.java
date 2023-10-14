@@ -1196,6 +1196,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("convert-track-to-route", new ConvertTrackToRouteAction());
         actionManager.register("show-downloads", new ShowDownloadsAction());
         actionManager.register("show-options", new ShowOptionsAction());
+        actionManager.register("login", new LoginAction());
         actionManager.register("complete-flight-plan", new CompleteFlightPlanAction());
         actionManager.register("help-topics", new HelpTopicsAction());
         actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
