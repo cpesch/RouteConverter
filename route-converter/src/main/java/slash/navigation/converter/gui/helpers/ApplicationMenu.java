@@ -22,10 +22,13 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.RouteConverter;
 
+import java.awt.*;
 import java.io.File;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
 import java.util.logging.Logger;
@@ -44,30 +47,24 @@ public class ApplicationMenu {
 
     public void addApplicationMenuItems() {
         try {
+            Desktop.getDesktop().setAboutHandler(this::about);
+            Desktop.getDesktop().setOpenFileHandler(this::openFiles);
+            Desktop.getDesktop().setPreferencesHandler(this::preferences);
+            Desktop.getDesktop().setQuitHandler(this::quit);
+            return;
+        } catch (Exception e) {
+            log.warning("Error while adding java.awt.Desktop application menu items: " + getLocalizedMessage(e));
+        }
+
+        // fall back to Reflection
+        try {
             setAboutHandler(this, getClass().getDeclaredMethod("about", EventObject.class));
             setOpenFilesHandler(this, getClass().getDeclaredMethod("openFiles", EventObject.class));
             setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", EventObject.class));
             setQuitHandler(this, getClass().getDeclaredMethod("quit", EventObject.class, Object.class));
         } catch (NoSuchMethodException | SecurityException e) {
-            log.warning("Error while adding application menu items: " + getLocalizedMessage(e));
+            log.warning("Error while adding Reflection OSX application menu items: " + getLocalizedMessage(e));
         }
-
-        /* Java 7,8
-        Application application = Application.getApplication();
-        application.setAboutHandler(new AboutHandler() {
-            public void handleAbout(AppEvent.AboutEvent aboutEvent) {
-                run("show-about");
-            }
-        });
-        */
-
-        /* Java 9
-        Desktop.getDesktop().setAboutHandler(new AboutHandler() {
-            public void handleAbout(AboutEvent e) {
-                run("show-about");
-           }
-        });
-        */
     }
 
     @SuppressWarnings("unused")
@@ -76,19 +73,32 @@ public class ApplicationMenu {
     }
 
     @SuppressWarnings("unchecked")
-    private List<File> extractFiles(EventObject eventObject) throws Exception {
-        Class<?> eventClass = Class.forName("java.awt.desktop." + "OpenFilesEvent");
-        Method getFilesMethod = eventClass.getMethod("getFiles");
-        Object result = getFilesMethod.invoke(eventObject);
-        return (List<File>)result;
+    private List<File> extractFiles(EventObject eventObject) {
+        try {
+            Class<?> eventClass = Class.forName("java.awt.desktop.OpenFilesEvent");
+            Method getFilesMethod = eventClass.getMethod("getFiles");
+            Object result = getFilesMethod.invoke(eventObject);
+            return (List<File>) result;
+        }
+        catch (Exception e) {
+            log.warning("Cannot extract files: " + getLocalizedMessage(e));
+            return Collections.emptyList();
+        }
     }
 
     @SuppressWarnings("unused")
-    public void openFiles(EventObject event) throws Exception {
+    public void openFiles(EventObject event) {
         List<URL> urls = new ArrayList<>();
         List<File> files = extractFiles(event);
+        if(files == null || files.isEmpty())
+            return;
+
         for(File file : files) {
-            urls.add(file.toURI().toURL());
+            try {
+                urls.add(file.toURI().toURL());
+            } catch (MalformedURLException e) {
+                log.warning("Cannot open file " + file + ": " + getLocalizedMessage(e));
+            }
         }
         ((RouteConverter)slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(urls);
     }
