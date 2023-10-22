@@ -6,7 +6,7 @@ SilentInstall silent
 RequestExecutionLevel user
 ShowInstDetails hide
 
-!define JRE "jre-17.0.7+7"
+!define JRE "jre-17.0.8"
 OutFile "target\RouteConverterBundle.exe"
 
 Icon "RouteConverter.ico"
@@ -15,7 +15,7 @@ VIAddVersionKey ProductName "RouteConverter"
 VIAddVersionKey LegalCopyright "Copyright (c) 2008-2023 Christian Pesch"
 VIAddVersionKey FileDescription "RouteConverter for Windows Offline Vector Map Ed."
 VIAddVersionKey FileVersion 2.34.0.00000
-VIAddVersionKey ProductVersion "2.34 / OpenJRE 17.0.7+7 (x64)"
+VIAddVersionKey ProductVersion "2.34 / OpenJRE 17.0.8 (x64)"
 VIAddVersionKey InternalName "RouteConverter"
 VIAddVersionKey OriginalFilename "RouteConverter.exe"
 
