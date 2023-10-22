@@ -11,7 +11,8 @@
     <organization>
         <name>RouteConverter Open Source Project</name>
     </organization>
-
+    <description>RouteConverter displays, modifies, enriches and converts GPS data between over 82 formats</description>
+    <inceptionYear>2008</inceptionYear>
     <developers>
         <developer>
             <id>cpesch</id>
@@ -275,7 +276,7 @@
                 <plugin>
                     <groupId>com.akathist.maven.plugins.launch4j</groupId>
                     <artifactId>launch4j-maven-plugin</artifactId>
-                    <version>2.0.1</version>
+                    <version>2.4.1</version>
                 </plugin>
                 <plugin>
                     <groupId>com.coderplus.maven.plugins</groupId>

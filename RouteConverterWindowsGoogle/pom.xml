@@ -99,8 +99,8 @@
                                 <mainClass>slash.navigation.converter.gui.RouteConverterGoogle</mainClass>
                             </classPath>
                             <jre>
+                                <path>%JAVA_HOME%;%PATH%</path>
                                 <minVersion>17</minVersion>
-                                <jdkPreference>preferJre</jdkPreference>
                                 <maxHeapSize>1024</maxHeapSize>
                             </jre>
                             <versionInfo>
