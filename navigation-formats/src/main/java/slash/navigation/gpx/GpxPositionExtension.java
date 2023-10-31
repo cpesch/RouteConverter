@@ -58,9 +58,9 @@ public class GpxPositionExtension {
         Set<GpxExtensionType> extensionTypes = new HashSet<>();
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions != null) {
-            for (Object any : extensions.getAny()) {
-                if (any instanceof JAXBElement) {
-                    Object anyValue = ((JAXBElement) any).getValue();
+            for (Object any : extensions.getAny())
+                if (any instanceof JAXBElement jaxbElement) {
+                    Object anyValue = jaxbElement.getValue();
                     if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT) {
                         extensionTypes.add(Garmin3);
 
@@ -76,7 +76,6 @@ public class GpxPositionExtension {
                         extensionTypes.add(Text);
                     }
                 }
-            }
         }
         return extensionTypes;
     }
@@ -91,8 +90,8 @@ public class GpxPositionExtension {
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions != null) {
             for (Object any : extensions.getAny()) {
-                if (any instanceof JAXBElement) {
-                    Object anyValue = ((JAXBElement) any).getValue();
+                if (any instanceof JAXBElement jaxbElement) {
+                    Object anyValue = jaxbElement.getValue();
                     if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                         result = formatDouble(trackPoint.getCourse());
                     }
@@ -117,8 +116,8 @@ public class GpxPositionExtension {
 
         boolean foundHeading = false;
         for (Object any : anys) {
-            if (any instanceof JAXBElement) {
-                Object anyValue = ((JAXBElement) any).getValue();
+            if (any instanceof JAXBElement jaxbElement) {
+                Object anyValue = jaxbElement.getValue();
                 if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                     trackPoint.setCourse(formatHeading(heading));
                     foundHeading = true;
@@ -146,8 +145,8 @@ public class GpxPositionExtension {
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions != null) {
             for (Object any : extensions.getAny()) {
-                if (any instanceof JAXBElement) {
-                    Object anyValue = ((JAXBElement) any).getValue();
+                if (any instanceof JAXBElement jaxbElement) {
+                    Object anyValue = jaxbElement.getValue();
                     if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                         result = msToKmh(trackPoint.getSpeed());
                     }
@@ -172,8 +171,8 @@ public class GpxPositionExtension {
 
         boolean foundSpeed = false;
         for (Object any : anys) {
-            if (any instanceof JAXBElement) {
-                Object anyValue = ((JAXBElement) any).getValue();
+            if (any instanceof JAXBElement jaxbElement) {
+                Object anyValue = jaxbElement.getValue();
                 if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                     trackPoint.setSpeed(formatSpeedAsDouble(kmhToMs(speed)));
                     foundSpeed = true;
@@ -202,8 +201,8 @@ public class GpxPositionExtension {
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions != null) {
             for (Object any : extensions.getAny()) {
-                if (any instanceof JAXBElement) {
-                    Object anyValue = ((JAXBElement) any).getValue();
+                if (any instanceof JAXBElement jaxbElement) {
+                    Object anyValue = jaxbElement.getValue();
                     if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT) {
                         slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint = (slash.navigation.gpx.garmin3.TrackPointExtensionT) anyValue;
                         result = trackPoint.getTemperature();
@@ -240,8 +239,8 @@ public class GpxPositionExtension {
 
         boolean foundTemperature = false;
         for (Object any : anys) {
-            if (any instanceof JAXBElement) {
-                Object anyValue = ((JAXBElement) any).getValue();
+            if (any instanceof JAXBElement jaxbElement) {
+                Object anyValue = jaxbElement.getValue();
                 if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT) {
                     slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint = (slash.navigation.gpx.garmin3.TrackPointExtensionT) anyValue;
                     trackPoint.setTemperature(formatTemperatureAsDouble(temperature));
@@ -286,8 +285,8 @@ public class GpxPositionExtension {
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions != null) {
             for (Object any : extensions.getAny()) {
-                if (any instanceof JAXBElement) {
-                    Object anyValue = ((JAXBElement) any).getValue();
+                if (any instanceof JAXBElement jaxbElement) {
+                    Object anyValue = jaxbElement.getValue();
                     if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
                         slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
                         result = trackPoint.getHr();
@@ -316,8 +315,8 @@ public class GpxPositionExtension {
 
         boolean foundHeartBeat = false;
         for (Object any : anys) {
-            if (any instanceof JAXBElement) {
-                Object anyValue = ((JAXBElement) any).getValue();
+            if (any instanceof JAXBElement jaxbElement) {
+                Object anyValue = jaxbElement.getValue();
                 if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
                     slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
                     trackPoint.setHr(heartBeat);
@@ -350,8 +349,8 @@ public class GpxPositionExtension {
     private <T> T getExtension(Class<T> extensionClass) {
         List<Object> anys = wptType.getExtensions().getAny();
         for (Object any : anys) {
-            if (any instanceof JAXBElement) {
-                Object anyValue = ((JAXBElement) any).getValue();
+            if (any instanceof JAXBElement jaxbElement) {
+                Object anyValue = jaxbElement.getValue();
                 if (extensionClass.isInstance(anyValue)) {
                     return extensionClass.cast(anyValue);
                 }
@@ -425,8 +424,8 @@ public class GpxPositionExtension {
         List<Object> anys = wptType.getExtensions().getAny();
         for (Iterator<Object> iterator = anys.iterator(); iterator.hasNext(); ) {
             Object any = iterator.next();
-            if (any instanceof JAXBElement) {
-                Object anyValue = ((JAXBElement) any).getValue();
+            if (any instanceof JAXBElement jaxbElement) {
+                Object anyValue = jaxbElement.getValue();
                 if (anyValue.equals(extension))
                     iterator.remove();
             }

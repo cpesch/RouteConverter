@@ -44,8 +44,6 @@ import static slash.navigation.base.RouteCharacteristics.Track;
  */
 
 public class MagicMaps2GoFormat extends SimpleLineBasedFormat<SimpleRoute> {
-    private static final Logger log = Logger.getLogger(MagicMaps2GoFormat.class.getName());
-    
     private static final char SEPARATOR = ' ';
     private static final String DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm:ss";
     private static final Pattern LINE_PATTERN = Pattern.

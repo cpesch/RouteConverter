@@ -32,7 +32,9 @@ import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.*;
@@ -51,6 +53,7 @@ import static slash.navigation.gpx.GpxUtil.unmarshal10;
  */
 
 public class Gpx10Format extends GpxFormat {
+    private static final Logger log = Logger.getLogger(Gpx10Format.class.getName());
     static final String VERSION = "1.0";
     private final boolean reuseReadObjectsForWriting, splitNameAndDesc;
 
@@ -68,8 +71,12 @@ public class Gpx10Format extends GpxFormat {
     }
 
     void process(Gpx gpx, ParserContext<GpxRoute> context) {
-        if (gpx == null || !VERSION.equals(gpx.getVersion()))
+        if (gpx == null)
             return;
+
+        if (!VERSION.equals(gpx.getVersion())) {
+            log.warning(format("GPX %s file declares invalid version number %s", VERSION, gpx.getVersion()));
+        }
 
         boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond = gpx.getCreator() != null &&
                 ("Mobile Action http://www.mobileaction.com/".equals(gpx.getCreator()) ||

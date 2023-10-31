@@ -37,7 +37,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Logger;
 
+import static java.lang.String.format;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.now;
 import static slash.navigation.base.RouteCharacteristics.*;
@@ -52,6 +54,8 @@ import static slash.navigation.gpx.GpxUtil.unmarshal11;
  */
 
 public class Gpx11Format extends GpxFormat {
+    private static final Logger log = Logger.getLogger(Gpx11Format.class.getName());
+
     static final String VERSION = "1.1";
 
     public String getName() {
@@ -59,8 +63,12 @@ public class Gpx11Format extends GpxFormat {
     }
 
     void process(GpxType gpxType, ParserContext<GpxRoute> context) {
-        if (gpxType == null || !VERSION.equals(gpxType.getVersion()))
+        if (gpxType == null)
             return;
+
+        if (!VERSION.equals(gpxType.getVersion())) {
+            log.warning(format("GPX %s file declares invalid version number %s", VERSION, gpxType.getVersion()));
+        }
 
         GpxRoute wayPointsAsRoute = extractWayPoints(gpxType);
         if (wayPointsAsRoute != null)
@@ -79,8 +87,8 @@ public class Gpx11Format extends GpxFormat {
             ExtensionsType extensions = wptType.getExtensions();
             if (extensions != null) {
                 for (Object any : extensions.getAny()) {
-                    if (any instanceof JAXBElement) {
-                        Object anyValue = ((JAXBElement) any).getValue();
+                    if (any instanceof JAXBElement jaxbElement) {
+                        Object anyValue = jaxbElement.getValue();
                         if(anyValue instanceof RoutePointExtensionT)
                             return true;
                     }
@@ -150,8 +158,8 @@ public class Gpx11Format extends GpxFormat {
                 ExtensionsType extensions = wptType.getExtensions();
                 if (extensions != null) {
                     for (Object any : extensions.getAny()) {
-                        if (any instanceof JAXBElement) {
-                            Object anyValue = ((JAXBElement) any).getValue();
+                        if (any instanceof JAXBElement jaxbElement) {
+                            Object anyValue = jaxbElement.getValue();
                             if (anyValue instanceof RoutePointExtensionT routePoint) {
                                 for (AutoroutePointT autoroutePoint : routePoint.getRpt()) {
                                     positions.add(new GpxPosition(autoroutePoint.getLon(), autoroutePoint.getLat(), null, null, null, null, null, null, null, null, null, null));
@@ -195,12 +203,10 @@ public class Gpx11Format extends GpxFormat {
         while (iterator.hasNext()) {
             Object any = iterator.next();
 
-            if (any instanceof JAXBElement) {
-                @SuppressWarnings("unchecked")
-                JAXBElement<String> element = (JAXBElement<String>) any;
-                if (extensionNameToRemove.equals(element.getName().getLocalPart())) {
+            if (any instanceof JAXBElement jaxbElement) {
+                if (extensionNameToRemove.equals(jaxbElement.getName().getLocalPart())) {
                     iterator.remove();
-                } else if (extensionNameToAdd.equals(element.getName().getLocalPart())) {
+                } else if (extensionNameToAdd.equals(jaxbElement.getName().getLocalPart())) {
                     foundElement = true;
                 }
             }
