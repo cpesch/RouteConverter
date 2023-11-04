@@ -28,6 +28,7 @@ import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.converter.gui.helpers.OverlaysMenu;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.geonames.GeoNamesService;
+import slash.navigation.googlemaps.GoogleService;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
@@ -132,6 +133,7 @@ public class RouteConverterOpenSource extends RouteConverter {
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
         }
+        getGeocodingServiceFacade().addGeocodingService(new GoogleService());
     }
 
     protected void updateElevationServices() {
@@ -150,6 +152,7 @@ public class RouteConverterOpenSource extends RouteConverter {
         getGeocodingServiceFacade().addGeocodingService(new GeoNamesService());
         getGeocodingServiceFacade().addGeocodingService(new NominatimService());
         getGeocodingServiceFacade().addGeocodingService(new PhotonService());
+        getGeocodingServiceFacade().addGeocodingService(new GoogleService());
     }
 
     protected void initializeRoutingServices() {
