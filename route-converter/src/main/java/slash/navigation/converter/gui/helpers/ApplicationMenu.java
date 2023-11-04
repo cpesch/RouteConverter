@@ -23,9 +23,11 @@ package slash.navigation.converter.gui.helpers;
 import slash.navigation.converter.gui.RouteConverter;
 
 import java.awt.*;
+import java.awt.desktop.OpenURIEvent;
 import java.io.File;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,8 +35,8 @@ import java.util.EventObject;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.awt.Desktop.isDesktopSupported;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.navigation.gui.OSXHelper.OSXHandler.*;
 
 /**
  * Creates an application menu for Mac OS X for RouteConverter.
@@ -46,25 +48,14 @@ public class ApplicationMenu {
     private static final Logger log = Logger.getLogger(ApplicationMenu.class.getName());
 
     public void addApplicationMenuItems() {
-        try {
-            Desktop.getDesktop().setAboutHandler(this::about);
-            Desktop.getDesktop().setOpenFileHandler(this::openFiles);
-            Desktop.getDesktop().setPreferencesHandler(this::preferences);
-            Desktop.getDesktop().setQuitHandler(this::quit);
-            return;
-        } catch (Exception e) {
-            log.warning("Error while adding java.awt.Desktop application menu items: " + getLocalizedMessage(e));
-        }
+        if (!isDesktopSupported())
+            throw new UnsupportedOperationException("No desktop support available");
 
-        // fall back to Reflection
-        try {
-            setAboutHandler(this, getClass().getDeclaredMethod("about", EventObject.class));
-            setOpenFilesHandler(this, getClass().getDeclaredMethod("openFiles", EventObject.class));
-            setPreferencesHandler(this, getClass().getDeclaredMethod("preferences", EventObject.class));
-            setQuitHandler(this, getClass().getDeclaredMethod("quit", EventObject.class, Object.class));
-        } catch (NoSuchMethodException | SecurityException e) {
-            log.warning("Error while adding Reflection OSX application menu items: " + getLocalizedMessage(e));
-        }
+        Desktop.getDesktop().setAboutHandler(this::about);
+        Desktop.getDesktop().setOpenFileHandler(this::openFiles);
+        Desktop.getDesktop().setOpenURIHandler(this::openUri);
+        Desktop.getDesktop().setPreferencesHandler(this::preferences);
+        Desktop.getDesktop().setQuitHandler(this::quit);
     }
 
     @SuppressWarnings("unused")
@@ -101,6 +92,16 @@ public class ApplicationMenu {
             }
         }
         ((RouteConverter)slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(urls);
+    }
+
+    private void openUri(OpenURIEvent openURIEvent) {
+        URI uri = openURIEvent.getURI();
+        try {
+            URL url = uri.toURL();
+            ((RouteConverter)slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(List.of(url));
+        } catch (MalformedURLException e) {
+            log.warning("Cannot open URI " + uri + ": " + getLocalizedMessage(e));
+        }
     }
 
     @SuppressWarnings("unused")
