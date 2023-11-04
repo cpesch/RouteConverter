@@ -121,6 +121,12 @@ public class RouteFeedback {
         return request.getLocation();
     }
 
+    public String getUpdateCheckUrl(String version, long startTime) {
+        if(version.equals("?"))
+            version = "unknown";
+        return apiUrl + UPDATE_CHECK_URI + getDefault().getLanguage() + "/" + version + "/" + startTime + "/";
+    }
+
     public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,
                                  String javaVersion, String javaBits, String javaFxVersion,
                                  String osName, String osVersion, String osArch,

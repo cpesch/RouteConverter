@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="RouteConverter (Java 17)" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="slash.navigation.converter.gui.RouteConverterOpenSource" />
+    <module name="route-converter-opensource" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -40,8 +40,7 @@ import static slash.feature.client.Feature.initializeFeatures;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
 import static slash.navigation.converter.gui.RouteConverter.getPreferences;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForJava;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForUpdateCheck;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowser;
 
 /**
  * Knows how to retrieve the information which is the latest version.
@@ -102,8 +101,9 @@ public class UpdateChecker {
                         result.getLatestRouteConverterVersion()),
                 RouteConverter.getTitle(), YES_NO_OPTION);
         if (confirm == YES_OPTION)
-            startBrowserForUpdateCheck(window, result.getMyRouteConverterVersion(), getStartTime());
+            startBrowser(window, routeFeedback.getUpdateCheckUrl(result.getMyRouteConverterVersion(), getStartTime()));
     }
+
 
     private void noUpdateAvailable(Window window) {
         showMessageDialog(window, format(RouteConverter.getBundle().getString("no-update-available"),
@@ -116,7 +116,7 @@ public class UpdateChecker {
                 format(RouteConverter.getBundle().getString("confirm-java-update"), result.getMyJavaVersion(), result.getLatestJavaVersion()),
                 RouteConverter.getTitle(), YES_NO_OPTION);
         if (confirm == YES_OPTION)
-            startBrowserForJava(window);
+            startBrowser(window, "https://java.com/download/");
     }
 
     public void implicitCheck(final Window window) {
@@ -136,7 +136,7 @@ public class UpdateChecker {
 
     public void explicitCheck(Window window) {
         UpdateResult result = check();
-        if (result.existsLaterRouteConverterVersion())
+        if (true || result.existsLaterRouteConverterVersion())
             offerRouteConverterUpdate(window, result);
         else
             noUpdateAvailable(window);

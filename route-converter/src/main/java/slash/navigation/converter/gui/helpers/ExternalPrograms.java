@@ -51,20 +51,16 @@ public class ExternalPrograms {
     }
 
     public static void startBrowserForRouteConverter(Window window) {
-        startBrowser(window, isGerman() ? "http://www.routeconverter.de/" : "http://www.routeconverter.com/");
+        startBrowser(window, "https://www.routeconverter.com");
     }
 
     public static void startBrowserForTimeAlbumProDownload(Window window) {
-        startBrowser(window, "http://cbgps.com/download_en.htm");
-    }
-
-    public static void startBrowserForUpdateCheck(Window window, String version, long startTime) {
-        String rootUrl = System.getProperty("feedback", "http://www.routeconverter.com/feedback/");
-        startBrowser(window, rootUrl + "update-check/" + getDefault().getLanguage() + "/" + version + "/" + startTime + "/");
+        startBrowser(window, "https://cbgps.com/download_en.htm");
     }
 
     public static void startBrowserForTerms(Window window) {
-        startBrowser(window, "http://www.routeconverter.com/routecatalog-terms/" + getDefault().getLanguage());
+        String language = isGerman() ? "de" : "en";
+        startBrowser(window, "https://www.routeconverter.com/routecatalog-terms-" + language);
     }
 
     public static void startBrowserForTranslation(Window window) {
@@ -83,14 +79,14 @@ public class ExternalPrograms {
     }
 
     public static void startBrowserForRouteConverterForum(Window window) {
-        startBrowser(window, isGerman() ? "https://forum.routeconverter.de/forum-4.html" :
+        startBrowser(window, isGerman() ? "https://forum.routeconverter.com/forum-4.html" :
                 "https://forum.routeconverter.com/forum-12.html");
     }
 
     public static void startBrowserForDouglasPeucker(Window window) {
         String url = isGerman() ?
-                "http://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus" :
-                "http://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm";
+                "https://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus" :
+                "https://en.wikipedia.org/wiki/Ramer-Douglas-Peucker_algorithm";
         startBrowser(window, url);
     }
 
@@ -103,11 +99,7 @@ public class ExternalPrograms {
     }
 
     public static void startBrowserForGeonamesUserName(Window window) {
-        startBrowser(window, "http://www.geonames.org/login");
-    }
-
-    public static void startBrowserForJava(Window window) {
-        startBrowser(window, "http://java.com/download/");
+        startBrowser(window, "https://www.geonames.org/login");
     }
 
     public static void startBrowser(Window window, String uri) {

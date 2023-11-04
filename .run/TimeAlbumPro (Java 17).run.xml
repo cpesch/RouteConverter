@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="TimeAlbumPro (Java 17)" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="slash.navigation.converter.gui.TimeAlbumPro" />
+    <module name="time-album-pro" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
