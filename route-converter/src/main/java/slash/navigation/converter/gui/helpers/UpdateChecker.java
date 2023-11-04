@@ -136,7 +136,7 @@ public class UpdateChecker {
 
     public void explicitCheck(Window window) {
         UpdateResult result = check();
-        if (true || result.existsLaterRouteConverterVersion())
+        if (result.existsLaterRouteConverterVersion())
             offerRouteConverterUpdate(window, result);
         else
             noUpdateAvailable(window);
