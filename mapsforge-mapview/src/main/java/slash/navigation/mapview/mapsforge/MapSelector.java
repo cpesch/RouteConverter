@@ -88,7 +88,7 @@ public class MapSelector {
             Integer zoom = (Integer) e.getItem();
             mapView.setZoomLevel(zoom.byteValue());
         });
-        int width = getMaxWidth("19", 0);
+        int width = getMaxWidth("19", 5);
         comboBoxZoom.setMaximumSize(new Dimension(width, comboBoxZoom.getMaximumSize().height));
         comboBoxZoom.setPreferredSize(new Dimension(width, comboBoxZoom.getPreferredSize().height));
 
