@@ -129,10 +129,6 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.apache.poi</groupId>
-                    <artifactId>poi-ooxml-schemas</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.poi</groupId>
                     <artifactId>poi-ooxml-lite</artifactId>
                 </exclusion>
                 <exclusion>
@@ -147,9 +143,8 @@
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml-schemas</artifactId>
-            <version>4.1.2</version>
-            <classifier>stripped</classifier>
+            <artifactId>poi-ooxml-lite</artifactId>
+            <version>${poi.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.xmlbeans</groupId>
