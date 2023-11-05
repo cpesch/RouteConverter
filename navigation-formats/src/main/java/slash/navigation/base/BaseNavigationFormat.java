@@ -41,7 +41,7 @@ public abstract class BaseNavigationFormat<R extends BaseRoute> implements Navig
     protected static final int UNLIMITED_MAXIMUM_POSITION_COUNT = MAX_VALUE;
 
     protected String getCreator() {
-        return "RouteConverter " + System.getProperty("rest", "2.26") ;
+        return "RouteConverter " + System.getProperty("rest", "3.0") ;
     }
 
     protected List<String> asDescription(String string) {

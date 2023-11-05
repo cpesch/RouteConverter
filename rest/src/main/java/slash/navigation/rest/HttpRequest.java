@@ -77,7 +77,7 @@ public abstract class HttpRequest {
         requestConfigBuilder.setConnectionRequestTimeout(15 * 1000);
         requestConfigBuilder.setSocketTimeout(120 * 1000);
         clientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(0, false));
-        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "2.33")); // versioned preference
+        setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "3.0"));
         this.method = method;
     }
 

@@ -36,6 +36,6 @@ public class OpenStreetMap extends TileDownloadMap {
 
     public OpenStreetMap() {
         super("OpenStreetMap Default Map", OPENSTREETMAP_URL, true, INSTANCE, retrieveCopyrightText("OpenStreetMap"));
-        getTileSource().setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "2.27"));
+        getTileSource().setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "3.0"));
     }
 }

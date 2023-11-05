@@ -52,7 +52,7 @@ public class TileServerMapSource extends AbstractTileSource {
     public TileServerMapSource(TileServer tileServer) {
         super(getHostNames(tileServer), 80);
         this.tileServer = tileServer;
-        setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "2.33"));
+        setUserAgent("RouteConverter Map Client/" + System.getProperty("rest", "3.0"));
         setTimeoutConnect(30 * 1000);
         setTimeoutRead(120 * 1000);
     }
