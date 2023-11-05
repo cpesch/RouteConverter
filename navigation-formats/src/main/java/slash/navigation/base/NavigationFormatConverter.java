@@ -21,6 +21,7 @@ package slash.navigation.base;
 
 import slash.navigation.babel.BabelFormat;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.gpx.GpxPosition;
 
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -101,6 +102,24 @@ public class NavigationFormatConverter {
         List<BaseRoute> result = new ArrayList<>(routes.size());
         for (BaseRoute route : routes) {
             result.add(asFormat(route, format));
+        }
+        return result;
+    }
+
+    public static List<BaseNavigationPosition> copyPositions(List<NavigationPosition> positions) throws IOException {
+        List<BaseNavigationPosition> result = new ArrayList<>(positions.size());
+        for (NavigationPosition source : positions) {
+            GpxPosition target = new GpxPosition(source.getLongitude(), source.getLatitude(), source.getElevation(),
+                    source.getSpeed(), source.getTime(), source.getDescription());
+            if (source instanceof ExtendedSensorNavigationPosition extendedSensorNavigationPosition)
+                ExtendedSensorNavigationPosition.transferExtendedSensorData(extendedSensorNavigationPosition, target);
+            if (source instanceof Wgs84Position wgs84Position) {
+                target.setHdop(wgs84Position.getHdop());
+                target.setPdop(wgs84Position.getPdop());
+                target.setVdop(wgs84Position.getVdop());
+                target.setSatellites(wgs84Position.getSatellites());
+            }
+            result.add(target);
         }
         return result;
     }

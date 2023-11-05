@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.dnd;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.SimpleRoute;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.simple.GlopusFormat;
 
 import java.awt.datatransfer.DataFlavor;
@@ -37,6 +36,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static slash.navigation.base.NavigationFormatConverter.convertPositions;
+import static slash.navigation.base.NavigationFormatConverter.copyPositions;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -60,7 +60,7 @@ public class PositionSelection implements Transferable {
 
     private List<NavigationPosition> createCopyFrom(List<NavigationPosition> sourcePositions) {
         try {
-            List<BaseNavigationPosition> targetPositions = convertPositions(sourcePositions, new Gpx10Format());
+            List<BaseNavigationPosition> targetPositions = copyPositions(sourcePositions);
             return new ArrayList<>(targetPositions);
         } catch (IOException e) {
             log.severe("Cannot convert " + sourcePositions + " for selection: " + e);

@@ -128,7 +128,6 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
         return reason;
     }
 
-
     GpxPositionExtension getPositionExtension() {
         return positionExtension;
     }
