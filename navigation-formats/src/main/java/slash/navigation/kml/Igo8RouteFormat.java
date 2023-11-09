@@ -66,7 +66,7 @@ public class Igo8RouteFormat extends Kml22Format {
         context.removeRoutes();
         if (routes != null && routes.size() == 1) {
             KmlRoute route = routes.get(0);
-            if (route.getName().equals(IGO_ROUTE + "/" + WAYPOINTS)) {
+            if (route.getName().equals(IGO_ROUTE + "/" + route.getName())) {
                 route.setName(IGO_ROUTE);
                 context.appendRoute(route);
             }
