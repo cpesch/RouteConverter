@@ -31,6 +31,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.awt.Frame.*;
+import static java.awt.Taskbar.Feature.ICON_IMAGE;
 import static java.awt.Taskbar.isTaskbarSupported;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.lang.Integer.MAX_VALUE;
@@ -91,10 +92,8 @@ public abstract class SingleFrameApplication extends Application {
     }
 
     private void setTaskbarIconImage(Image image) {
-        if (!isTaskbarSupported())
-            throw new UnsupportedOperationException("No taskbar support available");
-
-        Taskbar.getTaskbar().setIconImage(image);
+        if (isTaskbarSupported() && Taskbar.getTaskbar().isSupported(ICON_IMAGE))
+            Taskbar.getTaskbar().setIconImage(image);
     }
 
     private Image loadImage(String name) {

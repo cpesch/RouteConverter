@@ -315,9 +315,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     private void openFrame() {
         createFrame(getTitle(), "/slash/navigation/converter/gui/" + getProduct() + ".png", contentPane, null, new FrameMenu().createMenuBar());
-        if (isMac())
-            new ApplicationMenu().addApplicationMenuItems();
-
+        new ApplicationMenu().addApplicationMenuItems();
         new Thread(() -> invokeLater(() -> openFrame(contentPane)), "FrameOpener").start();
     }
 

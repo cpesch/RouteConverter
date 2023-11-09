@@ -35,6 +35,7 @@ import java.util.EventObject;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.awt.Desktop.Action.*;
 import static java.awt.Desktop.isDesktopSupported;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 
@@ -49,13 +50,18 @@ public class ApplicationMenu {
 
     public void addApplicationMenuItems() {
         if (!isDesktopSupported())
-            throw new UnsupportedOperationException("No desktop support available");
+            return;
 
-        Desktop.getDesktop().setAboutHandler(this::about);
-        Desktop.getDesktop().setOpenFileHandler(this::openFiles);
-        Desktop.getDesktop().setOpenURIHandler(this::openUri);
-        Desktop.getDesktop().setPreferencesHandler(this::preferences);
-        Desktop.getDesktop().setQuitHandler(this::quit);
+        if (Desktop.getDesktop().isSupported(APP_ABOUT))
+            Desktop.getDesktop().setAboutHandler(this::about);
+        if (Desktop.getDesktop().isSupported(APP_OPEN_FILE))
+            Desktop.getDesktop().setOpenFileHandler(this::openFiles);
+        if (Desktop.getDesktop().isSupported(APP_OPEN_URI))
+            Desktop.getDesktop().setOpenURIHandler(this::openUri);
+        if (Desktop.getDesktop().isSupported(APP_PREFERENCES))
+            Desktop.getDesktop().setPreferencesHandler(this::preferences);
+        if (Desktop.getDesktop().isSupported(APP_QUIT_HANDLER))
+            Desktop.getDesktop().setQuitHandler(this::quit);
     }
 
     @SuppressWarnings("unused")
