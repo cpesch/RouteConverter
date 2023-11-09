@@ -118,8 +118,8 @@ public class GeoNamesServiceIT {
         assertEquals("Earth", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertNotNull(service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
-        assertNull(service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
-        assertNull(service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
+        assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
+        assertTrue(service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)).contains("Antarctica"));
     }
 
     @Test
@@ -131,8 +131,8 @@ public class GeoNamesServiceIT {
         String southPole = service.getNearByToponymFor(0.0, -90.0);
         assertTrue(southPole.contains("Antarctica"));
         assertEquals("North Pole", service.getNearByToponymFor(0.0, 90.0));
-        assertNull(service.getNearByToponymFor(90.0, 90.0));
-        assertNull(service.getNearByToponymFor(-90.0, -90.0));
+        assertEquals("North Pole", service.getNearByToponymFor(90.0, 90.0));
+        assertTrue(service.getNearByToponymFor(-90.0, -90.0).contains("Antarctica"));
     }
 
     @Test
