@@ -25,9 +25,7 @@ import java.io.File;
 import java.io.IOException;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static slash.common.TestCase.assertNotEquals;
+import static org.junit.Assert.*;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.Transfer.decodeUri;

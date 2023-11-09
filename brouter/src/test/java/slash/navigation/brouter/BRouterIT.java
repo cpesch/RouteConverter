@@ -62,7 +62,7 @@ public class BRouterIT {
         DataSource profiles = mock(DataSource.class);
         when(profiles.getDownloadable(CAR_PROFILE_URI)).thenReturn(car);
         when(profiles.getDownloadable(TREKKING_PROFILE_URI)).thenReturn(trekking);
-        when(profiles.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/profiles2/");
+        when(profiles.getBaseUrl()).thenReturn("https://brouter.de/brouter/profiles2/");
         when(profiles.getDirectory()).thenReturn("test");
         prepareFile(profiles.getDirectory(), CAR_PROFILE_URI);
         prepareFile(profiles.getDirectory(), TREKKING_PROFILE_URI);
@@ -72,7 +72,7 @@ public class BRouterIT {
         when(segment.getUri()).thenReturn(SEGMENT_URI);
         DataSource brouterSegments = mock(DataSource.class);
         when(brouterSegments.getDownloadable(SEGMENT_URI)).thenReturn(segment);
-        when(brouterSegments.getBaseUrl()).thenReturn("http://h2096617.stratoserver.net/brouter/segments4/");
+        when(brouterSegments.getBaseUrl()).thenReturn("https://brouter.de/brouter/segments4/");
         when(brouterSegments.getDirectory()).thenReturn("test");
         when(brouterSegments.getAction()).thenReturn(Action.Copy.name());
 
@@ -103,8 +103,8 @@ public class BRouterIT {
     public void testGetRouteBetweenByCar() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("car-eco"));
         assertEquals(Valid, result.getValidity());
-        assertEquals(233, result.getPositions().size(), 10);
-        assertEquals(13754.0, result.getDistanceAndTime().getDistance(), 25.0);
+        assertEquals(324, result.getPositions().size(), 10);
+        assertEquals(13789, result.getDistanceAndTime().getDistance(), 25.0);
         assertEquals(500, result.getDistanceAndTime().getTimeInMillis(), 2);
     }
 
@@ -112,8 +112,8 @@ public class BRouterIT {
     public void testGetRouteBetweenByBike() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("trekking"));
         assertEquals(Valid, result.getValidity());
-        assertEquals(153, result.getPositions().size(), 8);
+        assertEquals(185, result.getPositions().size(), 8);
         assertEquals(13899.0, result.getDistanceAndTime().getDistance(), 25.0);
-        assertEquals(2332890, result.getDistanceAndTime().getTimeInMillis(), 1000);
+        assertEquals(2335703, result.getDistanceAndTime().getTimeInMillis(), 1000);
     }
 }

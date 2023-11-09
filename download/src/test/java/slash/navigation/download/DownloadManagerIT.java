@@ -46,7 +46,7 @@ import static slash.navigation.download.State.*;
 
 public class DownloadManagerIT {
     private static final Logger log = Logger.getLogger(DownloadManagerIT.class.getName());
-    private static final String DOWNLOAD = System.getProperty("download", "http://static.routeconverter.com/test/");
+    private static final String DOWNLOAD = System.getProperty("download", "https://static.routeconverter.com/test/");
     private static final String LOREM_IPSUM_DOLOR_SIT_AMET = "Lorem ipsum dolor sit amet";
     private static final String EXPECTED = LOREM_IPSUM_DOLOR_SIT_AMET + ", consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.\n" +
             "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.\n";
@@ -336,8 +336,12 @@ public class DownloadManagerIT {
     public void testNotModifiedDownload() {
         Download download = new Download("447 Bytes", DOWNLOAD + "447bytes.txt", Copy, new FileAndChecksum(target, new Checksum(LAST_MODIFIED, CONTENT_LENGTH, SHA1)), null);
         download.setETag(ETAG);
-        Download queued = manager.queue(download, true);
-        waitFor(queued, NotModified);
+
+        Download queued1 = manager.queue(download, true);
+        waitFor(queued1, Succeeded);
+
+        Download queued2 = manager.queue(download, true);
+        waitFor(queued2, NotModified);
     }
 
     @Test
@@ -359,14 +363,6 @@ public class DownloadManagerIT {
         waitFor(download2, Succeeded);
 
         assertEquals(download2, download1);
-    }
-
-    @Test
-    public void testDownloadWithHTTPS() throws IOException {
-        writeStringToFile(target, LOREM_IPSUM_DOLOR_SIT_AMET);
-
-        Download download = manager.queueForDownload("447 Bytes", DOWNLOAD.replaceAll("http", "https") + "447bytes.txt", Copy, new FileAndChecksum(target, null), null);
-        waitFor(download, Succeeded);
     }
 
     @Test

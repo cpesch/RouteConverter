@@ -32,14 +32,6 @@ import static slash.common.type.CompactCalendar.UTC;
 public abstract class TestCase extends junit.framework.TestCase {
     private static final DateFormat LONG_DATE_TIME_FORMAT = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.LONG, Locale.ENGLISH);
 
-    public static void assertNotEquals(Object expected, Object was) {
-        assertNotEquals("expected:<" + expected + "> but was:<" + was + ">", expected, was);
-    }
-
-    public static void assertNotEquals(String message, Object expected, Object was) {
-        assertNotEquals(message, expected, was);
-    }
-
     public static void assertDoubleEquals(double expected, double was) {
         assertEquals(expected, was);
     }
