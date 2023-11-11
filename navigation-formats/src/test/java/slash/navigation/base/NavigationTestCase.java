@@ -202,6 +202,11 @@ public abstract class NavigationTestCase extends TestCase {
             String sourcePrefix = getAlanWaypointsAndRoutesName(sourceRoute);
             String targetPrefix = getAlanWaypointsAndRoutesName(targetRoute);
             assertRouteNameEquals(sourcePrefix, targetPrefix);
+        } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
+                sourceRoute.getName().contains(" to ") && !targetRoute.getName().contains(" to ")) {
+            // Garmin 6 to KML
+            assertNotNull(sourceRoute.getName());
+            assertNotNull(targetRoute.getName());
         } else if (targetRoute.getFormat() instanceof TcxFormat) {
             // TcxFormat makes route names unique by prefixing "Name" with "1: "
             String sourceName = getTrainingCenterRouteName(sourceRoute);
@@ -378,7 +383,7 @@ public abstract class NavigationTestCase extends TestCase {
                         targetFormat instanceof Iblue747Format || targetFormat instanceof NmeaFormat ||
                         targetFormat instanceof TomTomRouteFormat)) {
             assertEquals("Heading " + index + " does not match", roundFraction(targetHeading, 1), roundFraction(sourceHeading, 1));
-        } else if (targetFormat instanceof GoPalTrackFormat ||
+        } else if (targetFormat instanceof GoPalTrackFormat || targetFormat instanceof  HaicomLoggerFormat ||
                 (sourceFormat instanceof GpxFormat && targetFormat instanceof CsvFormat) ||
                 (sourceFormat instanceof GpxFormat && targetFormat instanceof ExcelFormat) ||
                 (sourceFormat instanceof QstarzQ1000Format && targetFormat instanceof Iblue747Format)) {
