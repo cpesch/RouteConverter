@@ -50,7 +50,8 @@ public class RouteConverterCmdLine {
         try (InputStream inputStream = RouteConverterCmdLine.class.getResourceAsStream("cmdline.properties")) {
             LogManager.getLogManager().readConfiguration(inputStream);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.err.println("Error initializing logging: " + e.getMessage());
+            e.printStackTrace(System.err);
         }
     }
 

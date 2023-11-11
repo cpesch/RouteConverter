@@ -68,8 +68,8 @@ public class LoggingHelper {
             FileHandler fileHandler = createFileHandler();
             logger.addHandler(fileHandler);
         } catch (IOException e) {
-            System.err.println("Cannot configure file logging");
-            e.printStackTrace();
+            System.err.println("Cannot configure file logging: " + e.getMessage());
+            e.printStackTrace(System.err);
         }
     }
 

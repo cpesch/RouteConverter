@@ -333,7 +333,6 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 });
             } catch (Exception e) {
                 log.warning("Could not download tile servers: " + e);
-                e.printStackTrace();
             }
         }, "DownloadTileServerList").start();
 
@@ -1059,8 +1058,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 try {
                     runnable.run();
                 } catch (Exception e) {
-                    log.severe("Cannot initialize tab " + selected + ": " + getLocalizedMessage(e));
-                    e.printStackTrace();
+                    log.severe("Cannot initialize tab " + selected + ": " + getLocalizedMessage(e) + "," + e);
                 } finally {
                     stopWaitCursor(frame.getRootPane());
                 }

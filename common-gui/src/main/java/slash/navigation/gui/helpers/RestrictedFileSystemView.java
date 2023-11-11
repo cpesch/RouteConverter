@@ -141,7 +141,8 @@ class RestrictedFileSystemView extends FileSystemView {
                 temp.deleteOnExit();
                 defaultDirectory = temp.getParentFile();
             } catch (IOException e) {
-                e.printStackTrace();
+                System.err.println("Cannot create temp file: " + e.getMessage());
+                e.printStackTrace(System.err);
             }
         }
         return defaultDirectory;
