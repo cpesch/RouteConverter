@@ -95,7 +95,7 @@ public class NominatimService implements GeocodingService {
     }
 
     public List<NavigationPosition> getPositionsFor(String address) throws IOException {
-        SearchresultsType result = getSearchFor("search.php/?q=" + encodeUri(address) + "&limit=10&format=xml");
+        SearchresultsType result = getSearchFor("search?q=" + encodeUri(address) + "&limit=10&format=xml");
         if (result == null)
             return null;
         return extractPositions(result.getPlace());
