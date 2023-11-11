@@ -370,11 +370,11 @@ public abstract class NavigationTestCase extends TestCase {
         } else if ((sourceHeading != null && targetHeading != null) &&
                 (sourceFormat instanceof ColumbusGpsBinaryFormat || sourceFormat instanceof ColumbusGpsFormat ||
                         sourceFormat instanceof CsvFormat || sourceFormat instanceof GoPalTrackFormat ||
-                        sourceFormat instanceof GpsTunerFormat || sourceFormat instanceof GpxFormat ||
+                        sourceFormat instanceof GpsTunerFormat || sourceFormat instanceof GpxFormat || sourceFormat instanceof HaicomLoggerFormat ||
                         sourceFormat instanceof Iblue747Format || sourceFormat instanceof NmeaFormat ||
                         sourceFormat instanceof TomTomRouteFormat) &&
                 (targetFormat instanceof CsvFormat || targetFormat instanceof GoPalTrackFormat ||
-                        targetFormat instanceof GpxFormat ||
+                        targetFormat instanceof GpxFormat || sourceFormat instanceof HaicomLoggerFormat ||
                         targetFormat instanceof Iblue747Format || targetFormat instanceof NmeaFormat ||
                         targetFormat instanceof TomTomRouteFormat)) {
             assertEquals("Heading " + index + " does not match", roundFraction(targetHeading, 1), roundFraction(sourceHeading, 1));

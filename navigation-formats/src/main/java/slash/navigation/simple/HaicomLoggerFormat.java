@@ -38,8 +38,7 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.common.NavigationConversion.formatElevationAsString;
-import static slash.navigation.common.NavigationConversion.formatSpeedAsString;
+import static slash.navigation.common.NavigationConversion.*;
 
 /**
  * Reads and writes Haicom Logger (.csv) files.
@@ -189,10 +188,11 @@ public class HaicomLoggerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
         String altitude = formatElevationAsString(position.getElevation());
+        String heading = formatHeadingAsString(position.getHeading());
         String speed = formatSpeedAsString(position.getSpeed());
         writer.println((index + 1) + SEPARATOR + "T" + SEPARATOR +
                 date + SEPARATOR + time + SEPARATOR +
                 latitude + SEPARATOR + northOrSouth + SEPARATOR + longitude + SEPARATOR + westOrEast + SEPARATOR +
-                altitude + "m" + SEPARATOR + "0.0" + SEPARATOR + speed + "km/h");
+                altitude + "m" + SEPARATOR + heading + SEPARATOR + speed + "km/h");
     }
 }
