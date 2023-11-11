@@ -156,7 +156,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
                 case WAYPOINT_STYLE -> Waypoints;
                 case ROUTE_LINE_STYLE -> Route;
                 case TRACK_LINE_STYLE -> Track;
-                default -> throw new IllegalArgumentException("Style " + styleUrl + " is not supported");
+                default -> result;
             };
         }
         return result;
