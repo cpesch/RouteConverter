@@ -70,6 +70,7 @@ public class GraphHopper extends BaseRoutingService {
     private static final String BASE_URL_PREFERENCE = "baseUrl";
     private static final TravelMode CAR = new TravelMode("car");
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("bike"), CAR, new TravelMode("foot"));
+    static boolean TEST_MODE = false;
 
     private final DownloadManager downloadManager;
     private GraphManager graphManager;
@@ -378,7 +379,7 @@ public class GraphHopper extends BaseRoutingService {
 
         private boolean confirmDownload() {
             slash.navigation.datasources.File file = next.getRemoteFile();
-            if(file == null)
+            if(file == null || TEST_MODE)
                 return true;
 
             Long size = file.getLatestChecksum() != null ? file.getLatestChecksum().getContentLength() : null;
