@@ -84,7 +84,7 @@ public class HgtFilesIT {
 
     @Test
     public void testElevationFor() throws IOException {
-        HgtFiles files = new HgtFiles(createDataSource("test id", "test plain", "http://dds.cr.usgs.gov/srtm/version2_1/SRTM3/", "test"),
+        HgtFiles files = new HgtFiles(createDataSource("test id", "test plain", "https://static.routeconverter.com/srtm/version2_1/SRTM3/", "test"),
                 new DownloadManager(createTempFile("queueFile", ".xml")));
         files.downloadElevationDataFor(asList(new LongitudeAndLatitude(11.2, 59.0), new LongitudeAndLatitude(12.0, 60.2)), true);
 
