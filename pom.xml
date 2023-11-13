@@ -537,11 +537,6 @@
             </dependency>
             <dependency>
                 <groupId>org.openjfx</groupId>
-                <artifactId>javafx-swing</artifactId>
-                <version>${javafx.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.openjfx</groupId>
                 <artifactId>javafx-web</artifactId>
                 <version>${javafx.version}</version>
             </dependency>
@@ -593,7 +588,6 @@
         <module>gpx</module>
         <module>graphhopper</module>
         <module>hgt</module>
-        <module>javafx8-mapview</module>
         <module>kml</module>
         <module>mapsforge-maps</module>
         <module>mapsforge-mapview</module>
@@ -610,7 +604,6 @@
         <module>route-converter-build</module>
         <module>route-converter-license</module>
         <module>route-converter-cmdline</module>
-        <module>route-converter-google</module>
         <module>route-converter-opensource</module>
         <module>route-converter-tools</module>
         <module>routing-service</module>
@@ -619,11 +612,8 @@
 
         <module>RouteConverterBundle</module>
         <module>RouteConverterCmdLine</module>
-        <module>RouteConverterLinuxGoogle</module>
         <module>RouteConverterLinuxOpenSource</module>
-        <module>RouteConverterMacGoogle</module>
         <module>RouteConverterMacOpenSource</module>
-        <module>RouteConverterWindowsGoogle</module>
         <module>RouteConverterWindowsOpenSource</module>
         <module>RouteConverterPortable</module>
         <module>TimeAlbumProLinux</module>

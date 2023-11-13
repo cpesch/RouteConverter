@@ -20,10 +20,8 @@
 
 package slash.navigation.gui;
 
-import slash.common.jarinjar.ClassPathExtender;
 import slash.navigation.gui.helpers.CombinedResourceBundle;
 
-import java.io.File;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -101,31 +99,9 @@ public abstract class Application {
         return bundle;
     }
 
-    private static ClassLoader extendClassPath() {
-        ClassPathExtender extender = new ClassPathExtender();
-
-        File javaFxJar = new File(System.getProperty("java.home"), "lib/jfxrt.jar");
-        if (javaFxJar.exists()) {
-            try {
-                extender.addExternalFile(javaFxJar);
-            } catch (Exception e) {
-                log.info("Cannot extend classpath with JavaFX from " + javaFxJar + ": " + e);
-            }
-        }
-
-        return extender.getClassLoader();
-    }
-
     public static <T extends Application> void launch(final Class<T> applicationClass, final List<String> bundleNames, final String[] args) {
-        final ClassLoader contextClassLoader = extendClassPath();
-        if (contextClassLoader != null)
-            Thread.currentThread().setContextClassLoader(contextClassLoader);
-
         Runnable doCreateAndShowGUI = () -> {
             try {
-                if (contextClassLoader != null)
-                    Thread.currentThread().setContextClassLoader(contextClassLoader);
-
                 setLookAndFeel();
                 setUseSystemProxies(); 
                 initializeLocale(userNodeForPackage(applicationClass));
