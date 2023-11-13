@@ -7,7 +7,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>2.34-SNAPSHOT</version>
+        <version>2.99</version>
     </parent>
 
     <properties>
@@ -98,11 +98,6 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>javafx8-mapview</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>kml</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -169,11 +164,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>route-converter-cmdline</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter-google</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
