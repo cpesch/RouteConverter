@@ -93,7 +93,6 @@
                            <jar>target/TimeAlbumProWindows.jar</jar>
                            <errTitle>TimeAlbumPro</errTitle>
                            <icon>src/main/app-resources/TimeAlbumPro.ico</icon>
-                           <runtimeBits>32/64</runtimeBits>
                            <splash>
                                <file>src/main/app-resources/TimeAlbumProSplashScreen.bmp</file>
                                <timeout>10</timeout>

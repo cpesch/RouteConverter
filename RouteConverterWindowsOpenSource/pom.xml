@@ -110,7 +110,7 @@
                                 <productName>RouteConverter</productName>
                                 <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>
                                 <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtProductVersion>
-                                <internalName>RouteConverter for Windows Offline Vector Map Ed.</internalName>
+                                <internalName>RouteConverter for Windows Executable</internalName>
                                 <originalFilename>RouteConverterWindowsOpenSource.exe</originalFilename>
                             </versionInfo>
                         </configuration>
