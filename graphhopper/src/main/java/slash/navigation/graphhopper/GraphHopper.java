@@ -21,12 +21,12 @@ package slash.navigation.graphhopper;
 
 import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
-import com.graphhopper.PathWrapper;
-import com.graphhopper.reader.osm.GraphHopperOSM;
-import com.graphhopper.routing.util.DefaultFlagEncoderFactory;
-import com.graphhopper.routing.util.EncodingManager;
+import com.graphhopper.ResponsePath;
+import com.graphhopper.config.Profile;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.exceptions.PointNotFoundException;
+import com.graphhopper.util.shapes.GHPoint3D;
+import slash.common.io.Files;
 import slash.navigation.common.*;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
@@ -38,13 +38,11 @@ import slash.navigation.routing.*;
 import slash.navigation.routing.RoutingResult.Validity;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static com.graphhopper.routing.ch.CHAlgoFactoryDecorator.EdgeBasedCHMode.EDGE_OR_NODE;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
@@ -53,7 +51,6 @@ import static javax.swing.JOptionPane.*;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.asDialogString;
 import static slash.common.io.Files.removeExtension;
-import static slash.common.io.Transfer.trim;
 import static slash.navigation.download.Action.Extract;
 import static slash.navigation.graphhopper.PbfUtil.lookupGraphDirectory;
 import static slash.navigation.routing.RoutingResult.Validity.*;
@@ -77,33 +74,10 @@ public class GraphHopper extends BaseRoutingService {
 
     private DownloadableFinder finder;
     private com.graphhopper.GraphHopper hopper;
-    private final EncodingManager encodingManager;
     private java.io.File osmPbfFile;
 
     public GraphHopper(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
-
-        // disable options to reduce graph creation times
-        /*
-        EncodedValueFactory encodedValueFactory = new DefaultEncodedValueFactory();
-        this.encodingManager = new EncodingManager
-                .Builder(8)
-                .setEnableInstructions(true)
-                .add(encodedValueFactory.create("road_class"))
-                .add(encodedValueFactory.create("road_class_link"))
-                .add(encodedValueFactory.create("road_environment"))
-                .add(encodedValueFactory.create("max_speed"))
-                .add(encodedValueFactory.create("road_access"))
-                .add(new CarFlagEncoder("turn_costs=true|edge_based=true"))
-                .add(new FootFlagEncoder())
-                .add(new BikeFlagEncoder())
-                .build();
-        */
-        this.encodingManager = new EncodingManager
-                .Builder(4)
-                .setEnableInstructions(false)
-                .addAll(new DefaultFlagEncoderFactory(), getAvailableTravelModeNames()).
-                build();
     }
 
     public String getName() {
@@ -145,17 +119,6 @@ public class GraphHopper extends BaseRoutingService {
 
     public TravelMode getPreferredTravelMode() {
         return CAR;
-    }
-
-    private String getAvailableTravelModeNames() {
-        StringBuilder result = new StringBuilder();
-        List<TravelMode> availableTravelModes = getAvailableTravelModes();
-        for (int i = 0; i < availableTravelModes.size(); i++) {
-            result.append(availableTravelModes.get(i).getName().toLowerCase());
-            if (i < availableTravelModes.size() - 1)
-                result.append(",");
-        }
-        return result.toString();
     }
 
     public String getPath() {
@@ -202,7 +165,7 @@ public class GraphHopper extends BaseRoutingService {
         long start = currentTimeMillis();
         try {
             GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
-            request.setVehicle(travelMode.getName().toUpperCase());
+            request.setProfile(travelMode.getName());
             GHResponse response = hopper.route(request);
             if (response.hasErrors()) {
                 String errors = asDialogString(response.getErrors(), false);
@@ -214,9 +177,9 @@ public class GraphHopper extends BaseRoutingService {
 
                 throw new RuntimeException(errors);
             }
-            PathWrapper best = response.getBest();
-            Validity validity = best.getErrors().isEmpty() ? Valid : Invalid;
-            return new RoutingResult(asPositions(best.getPoints()), new DistanceAndTime(best.getDistance(), best.getTime()), validity);
+            ResponsePath path = response.getBest();
+            Validity validity = path.getErrors().isEmpty() ? Valid : Invalid;
+            return new RoutingResult(asPositions(path.getPoints()), new DistanceAndTime(path.getDistance(), path.getTime()), validity);
         } finally {
             counter.stop();
 
@@ -295,43 +258,49 @@ public class GraphHopper extends BaseRoutingService {
         }
     }
 
+    private com.graphhopper.GraphHopper createHopper() {
+        List<Profile> profiles = getAvailableTravelModes().stream()
+                .map(mode -> new Profile(mode.getName())
+                        .setVehicle(mode.getName()))
+                .toList();
+
+        return new com.graphhopper.GraphHopper()
+                .setProfiles(profiles);
+    }
+
     private com.graphhopper.GraphHopper loadHopper(File graphDirectory) {
-        Properties properties = new Properties();
+        com.graphhopper.GraphHopper result = createHopper()
+                .setGraphHopperLocation(graphDirectory.getAbsolutePath());
         try {
-            properties.load(new FileInputStream(PbfUtil.createPropertiesFile(graphDirectory)));
-        } catch (IOException e) {
-            log.warning(format("Cannot load properties: %s", e.getMessage()));
+            if (result.load())
+                return result;
         }
+        catch (IllegalStateException e) {
+            log.warning(format("GraphHopper couldn't read %s: %s. Deleting then reimporting.", graphDirectory, e.getLocalizedMessage()));
 
-        GraphHopperOSM osm = new GraphHopperOSM();
-        boolean existsCH = !"[]".equals(trim(properties.getProperty("graph.ch.profiles")));
-        osm.getCHFactoryDecorator().setEnabled(existsCH);
-        if(existsCH)
-            osm.getCHFactoryDecorator().setEdgeBasedCHMode(EDGE_OR_NODE);
-
-        if(osm.load(graphDirectory.getAbsolutePath()))
-            return osm;
-        else
-            return null;
+            try {
+                Files.recursiveDelete(graphDirectory);
+                log.warning(format("Deleted %s. Now reimporting", graphDirectory));
+            } catch (IOException ex) {
+                log.warning(format("RouteConverter couldn't delete %s: %s. Failing.", graphDirectory, e.getLocalizedMessage()));
+            }
+        }
+        return null;
     }
 
     private com.graphhopper.GraphHopper importHopper(File osmPbfFile, File graphDirectory) {
-        GraphHopperOSM osm = new GraphHopperOSM()
-                .setOSMFile(osmPbfFile.getAbsolutePath());
-        // disable options to reduce graph creation times
-        // osm.getCHFactoryDecorator().setEdgeBasedCHMode(EDGE_OR_NODE);
-        return osm
-                .setEncodingManager(encodingManager)
-                .setGraphHopperLocation(graphDirectory.getAbsolutePath())
-                .forDesktop()
-                .setCHEnabled(false) // disabled
-                .importOrLoad();
+        com.graphhopper.GraphHopper result = createHopper();
+        result.setOSMFile(osmPbfFile.getAbsolutePath())
+                // could set .setElevation(true) and .setElevationProvider(...)
+                .setGraphHopperLocation(graphDirectory.getAbsolutePath());
+        return result.importOrLoad();
     }
 
     private List<NavigationPosition> asPositions(PointList points) {
         List<NavigationPosition> result = new ArrayList<>();
-        for (int i = 0, c = points.getSize(); i < c; i++) {
-            result.add(new SimpleNavigationPosition(points.getLongitude(i), points.getLatitude(i), points.getElevation(i), null));
+        for (int i = 0, c = points.size(); i < c; i++) {
+            GHPoint3D ghPoint = points.get(i);
+            result.add(new SimpleNavigationPosition(ghPoint.getLon(), ghPoint.getLat(), ghPoint.getEle(), null));
         }
         return result;
     }

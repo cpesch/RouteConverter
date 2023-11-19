@@ -70,7 +70,7 @@
 
         <alephformatter.version>0.1.1</alephformatter.version>
         <brouter.version>1.6.1</brouter.version>
-        <graphhopper.version>0.13.0</graphhopper.version>
+        <graphhopper.version>8.0</graphhopper.version>
         <httpclient.version>4.5.14</httpclient.version>
         <istack.version>3.0.11</istack.version>
         <jackson.version>2.15.3</jackson.version>

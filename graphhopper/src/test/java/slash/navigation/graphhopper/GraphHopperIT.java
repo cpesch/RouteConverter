@@ -102,6 +102,6 @@ public class GraphHopperIT {
         assertEquals(Valid, result.getValidity());
         assertEquals(90, result.getPositions().size(), 10);
         assertEquals(13658.8, result.getDistanceAndTime().getDistance(), 25.0);
-        assertEquals(2882202, result.getDistanceAndTime().getTimeInMillis(), 100.0);
+        assertEquals(2921240, result.getDistanceAndTime().getTimeInMillis(), 100.0);
     }
 }
