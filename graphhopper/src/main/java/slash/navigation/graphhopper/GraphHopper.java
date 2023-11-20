@@ -261,7 +261,9 @@ public class GraphHopper extends BaseRoutingService {
     private com.graphhopper.GraphHopper createHopper() {
         List<Profile> profiles = getAvailableTravelModes().stream()
                 .map(mode -> new Profile(mode.getName())
-                        .setVehicle(mode.getName()))
+                        .setVehicle(mode.getName())
+                        // could set .setTurnCosts(true)
+                )
                 .toList();
 
         return new com.graphhopper.GraphHopper()
