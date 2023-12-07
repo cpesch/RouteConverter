@@ -24,10 +24,7 @@ import slash.navigation.datasources.*;
 import slash.navigation.datasources.binding.*;
 import slash.navigation.datasources.helpers.DataSourcesUtil;
 import slash.navigation.download.FileAndChecksum;
-import slash.navigation.rest.Credentials;
-import slash.navigation.rest.Delete;
-import slash.navigation.rest.Post;
-import slash.navigation.rest.Put;
+import slash.navigation.rest.*;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.rest.exception.UnAuthorizedException;
@@ -43,8 +40,7 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
-import static slash.navigation.datasources.DataSourceManager.DATASOURCES_URI;
-import static slash.navigation.datasources.DataSourceManager.V1;
+import static slash.navigation.datasources.DataSourceManager.*;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 
@@ -59,6 +55,7 @@ public class RouteFeedback {
 
     private static final String ERROR_REPORT_URI = V1 + "error-report/";
     private static final String UPDATE_CHECK_URI = V1 + "update-check/";
+    private static final String LOGIN_CHECK_URI = V1 + "login-check/";
     private static final String USER_URI = V1 + "users/";
 
     private final String apiUrl;
@@ -81,13 +78,33 @@ public class RouteFeedback {
         request.addString("last_name", lastName);
         request.addString("email", email);
         String result = request.executeAsString();
-        if (request.isBadRequest())
-            throw new ForbiddenException("Cannot add user: " + result, userUrl);
+        if (request.isBadRequest()) {
+            // the latest REST Framework returns 400
+            if (result.contains("username already exists"))
+                throw new DuplicateNameException("User " + userName + " already exists", userUrl);
+            else
+                throw new ForbiddenException("Cannot add user: " + result, userUrl);
+        }
         if (request.isForbidden())
-            throw new DuplicateNameException("User " + userName + " already exists", userUrl);
+            throw new UnAuthorizedException("Not authorized to add user", userUrl);
         if (!request.isSuccessful())
             throw new IOException("POST on " + userUrl + " with payload " + userName + "," + firstName + "," + lastName + "," + email + " not successful: " + result);
         return request.getLocation();
+    }
+
+    public String checkForLogin(String userName, String password) throws IOException {
+        String url = apiUrl + LOGIN_CHECK_URI;
+
+        log.info("Checking for login of user " + userName);
+        Post request = new Post(url);
+        request.addString("username", userName);
+        request.addString("password", password);
+        String result = request.executeAsString();
+        if (request.isUnAuthorized())
+            throw new UnAuthorizedException("Cannot login user: " + userName, url);
+        if (!request.isSuccessful())
+            throw new IOException("GET on " + url + " with payload " + userName + " not successful: " + result);
+        return result;
     }
 
     void deleteUser(String userUrl) throws IOException {
@@ -96,7 +113,9 @@ public class RouteFeedback {
         request.setAccept(APPLICATION_JSON);
         String result = request.executeAsString();
         if (request.isBadRequest())
-            throw new ForbiddenException("Not authorized to delete user", userUrl);
+            throw new ForbiddenException("Cannot delete user: " + result, userUrl);
+        if (request.isForbidden())
+            throw new UnAuthorizedException("Not authorized to delete user", userUrl);
         if (!request.isSuccessful())
             throw new IOException("DELETE on " + userUrl + " not successful: " + result);
     }

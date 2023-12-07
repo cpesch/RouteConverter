@@ -28,6 +28,7 @@ import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 import slash.navigation.rest.exception.DuplicateNameException;
+import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -157,14 +158,6 @@ public class LoginDialog extends SimpleDialog {
         return successful;
     }
 
-    private void login(String userName, String password) {
-        RouteConverter.getInstance().setUserNamePreference(userName, password);
-    }
-
-    private void register(String userName, String password, String firstName, String lastName, String email) throws IOException {
-        routeFeedback.addUser(userName, password, firstName, lastName, email);
-    }
-
     private void login() {
         JFrame frame = RouteConverter.getInstance().getFrame();
 
@@ -181,12 +174,24 @@ public class LoginDialog extends SimpleDialog {
             return;
         }
 
-        login(userName, password);
+        try {
+            routeFeedback.checkForLogin(userName, password);
 
-        successful = true;
-        dispose();
-        showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-success")),
-                frame.getTitle(), INFORMATION_MESSAGE);
+            successful = true;
+            RouteConverter.getInstance().setUserNamePreference(userName, password);
+
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-success")),
+                    frame.getTitle(), INFORMATION_MESSAGE);
+
+            dispose();
+        } catch (UnAuthorizedException e) {
+            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-failure")),
+                    frame.getTitle(), ERROR_MESSAGE);
+        } catch (Throwable t) {
+            log.severe("Could not login: " + t);
+            showMessageDialog(frame, new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"),
+                    t.getClass().getSimpleName(), getLocalizedMessage(t))), frame.getTitle(), ERROR_MESSAGE);
+        }
     }
 
     private void register() {
@@ -238,13 +243,15 @@ public class LoginDialog extends SimpleDialog {
         }
 
         try {
-            register(userName, password, firstName, lastName, email);
-            login(userName, password);
+            routeFeedback.addUser(userName, password, firstName, lastName, email);
 
             successful = true;
-            dispose();
+            RouteConverter.getInstance().setUserNamePreference(userName, password);
+
             showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-success")),
                     frame.getTitle(), INFORMATION_MESSAGE);
+
+            dispose();
         } catch (DuplicateNameException e) {
             showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-username-exists-error")),
                     frame.getTitle(), ERROR_MESSAGE);
