@@ -127,8 +127,9 @@ public class TransferTest {
 
     @Test
     public void testEncodeFileName() {
-        String original = ".A/B\\C:D.дцья";
-        String expected = "%2eA%2fB%5cC%3aD.дцья";
+        String umlauts = "\u00E4\u00F6\u00FC\u00DF";
+        String original = ".A/B\\C:D." + umlauts;
+        String expected = "%2eA%2fB%5cC%3aD." + umlauts;
         assertEquals(expected, encodeFileName(original));
         assertEquals(original, decodeUri(expected));
     }

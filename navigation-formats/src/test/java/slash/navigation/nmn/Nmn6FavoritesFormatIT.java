@@ -43,7 +43,7 @@ public class Nmn6FavoritesFormatIT {
         assertEquals(Nmn6FavoritesFormat.class, result.getFormat().getClass());
         assertEquals(result.getAllRoutes().size(), 1);
         assertEquals(result.getTheRoute().getPositionCount(), 2);
-        assertEquals(result.getTheRoute().getPosition(0).getDescription(), "P Halleneu Cinemaxx, Neustädter Passage");
+        assertEquals(result.getTheRoute().getPosition(0).getDescription(), "P Halleneu Cinemaxx, Neust\u00E4dter Passage");
     }
 
     @Test
@@ -54,6 +54,6 @@ public class Nmn6FavoritesFormatIT {
         assertEquals(Nmn6Format.class, result.getFormat().getClass());
         assertEquals(result.getAllRoutes().size(), 1);
         assertEquals(result.getTheRoute().getPositionCount(), 3);
-        assertEquals(result.getTheRoute().getPosition(0).getDescription(), "JET MÜNCHEN");
+        assertEquals(result.getTheRoute().getPosition(0).getDescription(), "JET M\u00DCNCHEN");
     }
 }

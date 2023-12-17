@@ -44,9 +44,9 @@ import static javax.xml.bind.Marshaller.JAXB_FRAGMENT;
 import static slash.common.helpers.JAXBHelper.newContext;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
-class ViaMichelinUtil {
+public class ViaMichelinUtil {
     private static final String XML_PREAMBLE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-    private static final String VIAMICHELIN_NAMESPACE_URI = "http://www2.viamichelin.com/vmw2/dtd/export.dtd";
+    public static final String VIAMICHELIN_NAMESPACE_URI = "http://www2.viamichelin.com/vmw2/dtd/export.dtd";
 
     private static Unmarshaller newUnmarshaller() {
         return JAXBHelper.newUnmarshaller(newContext(ObjectFactory.class));

@@ -208,7 +208,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-javadoc-plugin</artifactId>
-                    <version>3.2.0</version>
+                    <version>3.6.3</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -405,6 +405,8 @@
                 </configuration>
                 <reportSets>
                     <reportSet>
+                        <id>aggregate</id>
+                        <inherited>false</inherited>
                         <reports>
                             <report>aggregate</report>
                         </reports>
@@ -430,6 +432,12 @@
                                 </group>
                             </groups>
                         </configuration>
+                    </reportSet>
+                    <reportSet>
+                        <id>default</id>
+                        <reports>
+                            <report>javadoc</report>
+                        </reports>
                     </reportSet>
                 </reportSets>
             </plugin>

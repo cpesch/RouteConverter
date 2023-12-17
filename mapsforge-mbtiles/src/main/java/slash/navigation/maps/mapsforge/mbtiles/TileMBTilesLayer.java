@@ -40,13 +40,13 @@ public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer
 
     /**
      * Whether the tile is stale and should be refreshed.
-     * <p/>
+     *
      * This method is called from {@link #draw(org.mapsforge.core.model.BoundingBox, byte, org.mapsforge.core.graphics.Canvas, org.mapsforge.core.model.Point)} to determine whether the tile needs to
      * be refreshed.
-     * <p/>
+     *
      * A tile is considered stale if the timestamp of the layer's {@link #databaseRenderer} is more recent than the
      * {@code bitmap}'s {@link org.mapsforge.core.graphics.TileBitmap#getTimestamp()}.
-     * <p/>
+     *
      * When a tile has become stale, the layer will first display the tile referenced by {@code bitmap} and attempt to
      * obtain a fresh copy in the background. When a fresh copy becomes available, the layer will replace is and update
      * the cache. If a fresh copy cannot be obtained for whatever reason, the stale tile will continue to be used until

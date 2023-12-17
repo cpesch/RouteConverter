@@ -32,6 +32,8 @@ import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class CsvFormatIT {
     private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+    // ae oe ue sz AE OE UE
+    private static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
 
     private void checkRoute(BaseRoute route) {
         assertEquals(3, route.getPositionCount());
@@ -48,14 +50,14 @@ public class CsvFormatIT {
         assertEquals(654.7, second.getElevation());
         assertEquals(0.1, second.getSpeed());
         assertEquals(calendar(2017, 12, 14, 19, 39, 0), second.getTime());
-        assertEquals("äöüßÄÖÜ", second.getDescription());
+        assertEquals(UMLAUTS, second.getDescription());
         BaseNavigationPosition third = route.getPosition(2);
         assertEquals(8.4853035, third.getLongitude());
         assertEquals(50.2411252, third.getLatitude());
         assertEquals(654.8, third.getElevation());
         assertEquals(-2.3, third.getSpeed());
         assertEquals(calendar(2017, 12, 14, 19, 40, 0), third.getTime());
-        assertEquals("#\"§$%&/", third.getDescription());
+        assertEquals("#\"\u00A7$%&/", third.getDescription());
     }
 
     @Test

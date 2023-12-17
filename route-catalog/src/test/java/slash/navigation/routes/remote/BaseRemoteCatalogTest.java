@@ -38,8 +38,10 @@ public abstract class BaseRemoteCatalogTest {
     protected static final String ANOTHER_USERNAME = "another";
     protected static final String SUPER_USERNAME = "super";
     protected static final String PASSWORD = "test";
+    // ae oe ue sz AE OE UE
     protected static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
-    protected static final String SPECIAL_CHARACTERS = "@!§$%&()=";
+    // 00A7 is the section sign / Paragraph
+    protected static final String SPECIAL_CHARACTERS = "@!\u00A7$%&()=";
     protected static final String SAMPLE_FILE_NAME = "sample-file.itn";
     protected static final File SAMPLE_FILE = new File("route/src/test/resources/" + SAMPLE_FILE_NAME);
 

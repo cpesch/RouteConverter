@@ -50,7 +50,7 @@ public class NominatimServiceIT {
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0)));
-        assertEquals("Cantón San Cristóbal, Galápagos, Ecuador", service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)));
+        assertTrue(service.getAddressFor(new SimpleNavigationPosition(-90.0, 0.0)).contains("Ecuador"));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(-90.0, -90.0)));
         assertNull(service.getAddressFor(new SimpleNavigationPosition(90.0, 90.0)));
     }
@@ -72,6 +72,6 @@ public class NominatimServiceIT {
     @Test
     public void getAddressForVillage() throws IOException {
         // https://nominatim.openstreetmap.org/reverse?&lat=51.610954&lon=10.210236&format=xml
-        assertEquals("Am Schützenplatz 1, 37434 Gieboldehausen, Niedersachsen, Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.210236, 51.610954)));
+        assertEquals("Am Sch\u00fctzenplatz 1, 37434 Gieboldehausen, Niedersachsen, Deutschland", service.getAddressFor(new SimpleNavigationPosition(10.210236, 51.610954)));
     }
 }

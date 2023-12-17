@@ -36,7 +36,7 @@ import static slash.common.io.InputOutput.copyAndClose;
 
 public class RouteFeedbackIT extends RouteFeedbackServiceBase {
     private static final String SUPER_USERNAME = "super";
-    private static final String SPECIAL_CHARACTERS = "@!§$%&()=";
+    private static final String SPECIAL_CHARACTERS = "@!\u00A7$%&()=";
     private static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
 
     private RouteFeedback routeFeedback;
