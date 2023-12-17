@@ -25,7 +25,7 @@
     </repositories>
 
     <properties>
-        <eclipselink.version>2.7.4</eclipselink.version>
+        <poi.version>5.2.5</poi.version>
     </properties>
 
     <dependencies>
@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.garmin</groupId>
             <artifactId>fit</artifactId>
-            <version>21.47.00</version>
+            <version>21.126.00</version>
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
@@ -102,6 +102,10 @@
                 <exclusion>
                     <groupId>commons-io</groupId>
                     <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.logging.log4j</groupId>
+                    <artifactId>log4j-api</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
