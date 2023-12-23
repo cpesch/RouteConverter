@@ -1,7 +1,7 @@
 #!/bin/sh
 
 MAJOR=17
-VERSION=$MAJOR.0.7
+VERSION=$MAJOR.0.9
 
 mvn install:install-file \
     -Dfile=jlink-routeconverter-opensource-$MAJOR-osx.zip \
