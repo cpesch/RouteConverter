@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TimeAlbumProMac</artifactId>
     <packaging>jar</packaging>
-    <name>The TimeAlbum Pro tool for Mac OS X</name>
+    <name>TimeAlbum Pro for Mac OS X</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>

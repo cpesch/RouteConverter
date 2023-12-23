@@ -618,5 +618,6 @@
         <module>TimeAlbumProLinux</module>
         <module>TimeAlbumProMac</module>
         <module>TimeAlbumProWindows</module>
+        <module>TimeAlbumProWindowsBundle</module>
     </modules>
 </project>

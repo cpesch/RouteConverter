@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>RouteConverterPortable</artifactId>
+    <artifactId>TimeAlbumProWindowsBundle</artifactId>
     <packaging>jar</packaging>
-    <name>RouteConverter for Windows as Portable App</name>
+    <name>TimeAlbum Pro for Windows bundled with JRE</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -14,24 +14,15 @@
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
-                <targetPath>RouteConverterPortable</targetPath>
+                <targetPath>${basedir}/target</targetPath>
                 <filtering>true</filtering>
             </resource>
 
             <resource>
-                <directory>${basedir}/../RouteConverterWindowsOpenSource/target</directory>
-                <targetPath>RouteConverterPortable/App/RouteConverter</targetPath>
+                <directory>${basedir}/../TimeAlbumProWindows/target</directory>
+                <targetPath>${basedir}/target</targetPath>
                 <includes>
-                    <include>RouteConverterWindowsOpenSource.jar</include>
-                </includes>
-            </resource>
-
-            <resource>
-                <directory>${basedir}/../</directory>
-                <targetPath>RouteConverterPortable/Other/Source</targetPath>
-                <includes>
-                    <include>LICENSE*.txt</include>
-                    <include>README.*</include>
+                    <include>TimeAlbumProWindows.jar</include>
                 </includes>
             </resource>
         </resources>
@@ -40,7 +31,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>RouteConverterWindowsOpenSource</artifactId>
+            <artifactId>TimeAlbumProWindows</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
