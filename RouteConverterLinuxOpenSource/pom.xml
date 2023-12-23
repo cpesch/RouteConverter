@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>RouteConverterLinuxOpenSource</artifactId>
     <packaging>jar</packaging>
-    <name>RouteConverter OpenSource Edition for Linux</name>
+    <name>RouteConverter for Linux</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>

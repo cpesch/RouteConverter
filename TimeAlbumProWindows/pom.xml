@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TimeAlbumProWindows</artifactId>
     <packaging>jar</packaging>
-    <name>The TimeAlbum Pro tool for Windows</name>
+    <name>TimeAlbum Pro for Windows</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>

@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TimeAlbumProMac</artifactId>
     <packaging>jar</packaging>
-    <name>The TimeAlbum Pro tool for Mac OS X</name>
+    <name>TimeAlbum Pro for Mac OS X</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -91,7 +91,7 @@
                                 <artifactItem>
                                     <groupId>org.openjdk.java</groupId>
                                     <artifactId>jlink-routeconverter-opensource</artifactId>
-                                    <version>17.0.7</version>
+                                    <version>17.0.9</version>
                                     <type>zip</type>
                                     <classifier>osx</classifier>
                                     <outputDirectory>${project.basedir}/target/Runtime</outputDirectory>

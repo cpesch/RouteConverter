@@ -1,7 +1,7 @@
 @echo off
 
-set JDK=jdk-17.0.8
-set JRE=jre-17.0.8
+set JDK=jdk-17.0.9
+set JRE=jre-17.0.9
 
 echo Cleaning
 rmdir /s /q %JRE%

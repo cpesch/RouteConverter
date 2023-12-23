@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>RouteConverterMacOpenSource</artifactId>
     <packaging>jar</packaging>
-    <name>RouteConverter OpenSource Edition for Mac OS X</name>
+    <name>RouteConverter for Mac OS X</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -88,7 +88,7 @@
                                 <artifactItem>
                                     <groupId>org.openjdk.java</groupId>
                                     <artifactId>jlink-routeconverter-opensource</artifactId>
-                                    <version>17.0.7</version>
+                                    <version>17.0.9</version>
                                     <type>zip</type>
                                     <classifier>osx</classifier>
                                     <outputDirectory>${project.basedir}/target/Runtime</outputDirectory>
