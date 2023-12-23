@@ -609,10 +609,10 @@
         <module>tileserver-maps</module>
         <module>time-album-pro</module>
 
-        <module>RouteConverterBundle</module>
         <module>RouteConverterCmdLine</module>
         <module>RouteConverterLinuxOpenSource</module>
         <module>RouteConverterMacOpenSource</module>
+        <module>RouteConverterWindowsBundle</module>
         <module>RouteConverterWindowsOpenSource</module>
         <module>RouteConverterPortable</module>
         <module>TimeAlbumProLinux</module>

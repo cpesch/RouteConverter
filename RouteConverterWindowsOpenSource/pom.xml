@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>RouteConverterWindowsOpenSource</artifactId>
     <packaging>jar</packaging>
-    <name>RouteConverter OpenSource Edition for Windows</name>
+    <name>RouteConverter for Windows</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>

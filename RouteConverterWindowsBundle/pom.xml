@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>RouteConverterBundle</artifactId>
+    <artifactId>RouteConverterWindowsBundle</artifactId>
     <packaging>jar</packaging>
-    <name>RouteConverter OpenSource Edition bundled with JRE</name>
+    <name>RouteConverter for Windows bundled with JRE</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -12,6 +12,12 @@
 
     <build>
         <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <targetPath>${basedir}/target</targetPath>
+                <filtering>true</filtering>
+            </resource>
+
             <resource>
                 <directory>${basedir}/../RouteConverterWindowsOpenSource/target</directory>
                 <targetPath>${basedir}/target</targetPath>

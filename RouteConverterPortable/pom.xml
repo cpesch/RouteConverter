@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>RouteConverterPortable</artifactId>
     <packaging>jar</packaging>
-    <name>RouteConverter OpenSource Edition as Portable App</name>
+    <name>RouteConverter Windows as Portable App</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
