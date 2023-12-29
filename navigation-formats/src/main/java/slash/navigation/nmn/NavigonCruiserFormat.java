@@ -95,13 +95,13 @@ public class NavigonCruiserFormat extends XmlNavigationFormat<NavigonCruiserRout
 
     private Root createRoute(NavigonCruiserRoute route) {
         Route result = new Route();
-        for (Wgs84Position position : route.getPositions()) {
-            result.getCoords().add(formatDoubleAsString(position.getLatitude(), 5) + "," +
-                    formatDoubleAsString(position.getLongitude(), 5));
-        }
+        List<String> coords = route.getPositions().stream()
+                .map(position -> formatDoubleAsString(position.getLatitude(), 5) + "," +
+                        formatDoubleAsString(position.getLongitude(), 5))
+                .toList();
         result.setCreator(GENERATED_BY);
         result.setName(route.getName());
-
+        result.setCoords(coords);
         return new Root(result);
     }
 

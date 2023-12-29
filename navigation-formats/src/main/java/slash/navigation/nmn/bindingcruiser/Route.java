@@ -26,11 +26,10 @@ import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Route {
-    private final List<String> coords = new ArrayList<>();
-
     public int v = 1;
     public Settings settings = new Settings();
 
+    private List<String> coords = new ArrayList<>();
     private String name = null;
     private String creator = null;
 
@@ -38,18 +37,20 @@ public class Route {
         return coords;
     }
 
+    public void setCoords(List<String> coords) {
+        this.coords = coords;
+    }
+
     public String getName() {
         return name;
+    }
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getCreator() {
         return creator;
     }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public void setCreator(String creator) {
         this.creator = creator;
     }
