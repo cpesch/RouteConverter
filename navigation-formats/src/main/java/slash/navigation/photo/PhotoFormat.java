@@ -146,7 +146,7 @@ public class PhotoFormat extends SimpleFormat<Wgs84Route> {
                 image = extractToTempFile(bufferedSource);
             position.setOrigin(image);
             position.setWaypointType(Photo);
-            context.appendRoute(new Wgs84Route(this, Waypoints, null, new ArrayList<Wgs84Position>(singletonList(position))));
+            context.appendRoute(new Wgs84Route(this, Waypoints, null, new ArrayList<>(singletonList(position))));
         } catch (ImageReadException e) {
             throw new IOException("Image read error: " + e, e);
         }

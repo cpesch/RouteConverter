@@ -36,6 +36,7 @@ import slash.navigation.csv.CsvSemicolonFormat;
 import slash.navigation.excel.MicrosoftExcel2008Format;
 import slash.navigation.excel.MicrosoftExcel97Format;
 import slash.navigation.fit.FitFormat;
+import slash.navigation.geojson.GeoJsonFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPal7RouteFormat;
@@ -119,6 +120,12 @@ public class ConvertIT {
         convertRoundtrip(TEST_PATH + "from-columbusv900-professional.csv", new ColumbusGpsType1Format(), new CoPilot9Format());
         convertRoundtrip(TEST_PATH + "from-columbusv1000-type2.csv", new ColumbusGpsType2Format(), new CoPilot9Format());
         convertRoundtrip(TEST_PATH + "from-columbusv1000-binary.gps", new ColumbusGpsBinaryFormat(), new CoPilot9Format());
+    }
+
+    @Test
+    public void testConvertGeoJsonToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "GespeicherteOrte.json", new GeoJsonFormat(), new Gpx10Format());
+        convertRoundtrip(TEST_PATH + "GespeicherteOrte.json", new GeoJsonFormat(), new Gpx11Format());
     }
 
     @Test

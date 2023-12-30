@@ -98,6 +98,13 @@ public class ReadWriteRoundtripIT {
     }
 
     @Test
+    public void testGeoJsonReadWriteRoundtrip() throws IOException {
+        readWriteRoundtrip(TEST_PATH + "Bewertungen.json");
+        readWriteRoundtrip(TEST_PATH + "GespeicherteOrte.json");
+        readWriteRoundtrip(TEST_PATH + "OrteMitBeschriftungen.json");
+    }
+
+    @Test
     public void testGlopusReadWriteRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-glopus.tk");
     }

@@ -47,6 +47,7 @@ import slash.navigation.fit.FitFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
+import slash.navigation.geojson.GeoJsonFormat;
 import slash.navigation.gopal.*;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
@@ -636,6 +637,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof FitFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new FitFormat());
+    }
+
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
+    public SimpleRoute asGeoJsonFormat() {
+        if (getFormat() instanceof GeoJsonFormat)
+            return (SimpleRoute) this;
+        return asSimpleFormat(new GeoJsonFormat());
     }
 
     @SuppressWarnings({"UnusedDeclaration"})

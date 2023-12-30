@@ -108,7 +108,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<>();
-        for (GarminFlightPlanPosition position : positions) {
+        for (GarminFlightPlanPosition position : getPositions()) {
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
@@ -134,7 +134,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>();
-        for (GarminFlightPlanPosition position : positions) {
+        for (GarminFlightPlanPosition position : getPositions()) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
         return new GoPalRoute(format, getName(), gopalPositions);
@@ -142,7 +142,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     protected GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<>();
-        for (GarminFlightPlanPosition position : positions) {
+        for (GarminFlightPlanPosition position : getPositions()) {
             gpxPositions.add(position.asGpxPosition());
         }
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
@@ -150,7 +150,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     protected SimpleRoute asPhotoFormat(PhotoFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (GarminFlightPlanPosition position : positions) {
+        for (GarminFlightPlanPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
@@ -158,7 +158,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<>();
-        for (GarminFlightPlanPosition position : positions) {
+        for (GarminFlightPlanPosition position : getPositions()) {
             kmlPositions.add(position.asKmlPosition());
         }
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
@@ -166,7 +166,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
         List<NmeaPosition> nmeaPositions = new ArrayList<>();
-        for (GarminFlightPlanPosition position : positions) {
+        for (GarminFlightPlanPosition position : getPositions()) {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
@@ -174,7 +174,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<>();
-        for (GarminFlightPlanPosition position : positions) {
+        for (GarminFlightPlanPosition position : getPositions()) {
             nmnPositions.add(position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
@@ -182,7 +182,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (GarminFlightPlanPosition position : positions) {
+        for (GarminFlightPlanPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
@@ -190,7 +190,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (GarminFlightPlanPosition position : positions) {
+        for (GarminFlightPlanPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new TcxRoute(format, getCharacteristics(), getName(), wgs84Positions);
@@ -198,7 +198,7 @@ public class GarminFlightPlanRoute extends BaseRoute<GarminFlightPlanPosition, G
 
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<>();
-        for (GarminFlightPlanPosition position : positions) {
+        for (GarminFlightPlanPosition position : getPositions()) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);

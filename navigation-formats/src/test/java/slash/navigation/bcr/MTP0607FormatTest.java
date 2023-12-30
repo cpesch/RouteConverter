@@ -176,7 +176,7 @@ public class MTP0607FormatTest {
     }
 
     @Test
-    public void testSetdescriptionForMTPFirstAndLastPosition() {
+    public void testSetDescriptionForMTPFirstAndLastPosition() {
         BcrPosition position = new BcrPosition(1, 2, 3, ",Hamburg/Uhlenhorst,,0,");
         assertNull(position.getZipCode());
         assertEquals("Hamburg/Uhlenhorst", position.getCity());
@@ -186,7 +186,7 @@ public class MTP0607FormatTest {
     }
 
     @Test
-    public void testReaddescription() throws IOException {
+    public void testReadDescription() throws IOException {
         StringWriter writer = new StringWriter();
         format.write(route, new PrintWriter(writer), 0, 2);
         ParserContext<BcrRoute> context = new ParserContextImpl<>();

@@ -121,7 +121,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<>();
-        for (Wgs84Position position : positions) {
+        for (Wgs84Position position : getPositions()) {
             bcrPositions.add(position.asMTPPosition());
         }
         return new BcrRoute(format, getName(), getDescription(), bcrPositions);
@@ -147,7 +147,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>();
-        for (Wgs84Position position : positions) {
+        for (Wgs84Position position : getPositions()) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
         return new GoPalRoute(format, getName(), gopalPositions);
@@ -155,7 +155,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
     protected GpxRoute asGpxFormat(GpxFormat format) {
         List<GpxPosition> gpxPositions = new ArrayList<>();
-        for (Wgs84Position position : positions) {
+        for (Wgs84Position position : getPositions()) {
             gpxPositions.add(position.asGpxPosition());
         }
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
@@ -163,7 +163,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
     protected SimpleRoute asPhotoFormat(PhotoFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (Wgs84Position position : positions) {
+        for (Wgs84Position position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
@@ -171,7 +171,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<>();
-        for (Wgs84Position position : positions) {
+        for (Wgs84Position position : getPositions()) {
             kmlPositions.add(position.asKmlPosition());
         }
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
@@ -179,7 +179,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
         List<NmeaPosition> nmeaPositions = new ArrayList<>();
-        for (Wgs84Position position : positions) {
+        for (Wgs84Position position : getPositions()) {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
@@ -187,15 +187,15 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<>();
-        for (Wgs84Position Wgs84Position : positions) {
-            nmnPositions.add(Wgs84Position.asNmnPosition());
+        for (Wgs84Position position : getPositions()) {
+            nmnPositions.add(position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> Wgs84Positions = new ArrayList<>();
-        for (Wgs84Position position : positions) {
+        for (Wgs84Position position : getPositions()) {
             Wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), getName(), Wgs84Positions);
@@ -203,7 +203,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (Wgs84Position position : positions) {
+        for (Wgs84Position position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new TcxRoute(format, getCharacteristics(), getName(), wgs84Positions);
@@ -211,7 +211,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
 
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<>();
-        for (Wgs84Position position : positions) {
+        for (Wgs84Position position : getPositions()) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);

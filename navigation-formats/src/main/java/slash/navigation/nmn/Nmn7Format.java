@@ -81,7 +81,6 @@ public class Nmn7Format extends NmnFormat {
         context.appendRoute(process(route));
     }
 
-
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
         throw new UnsupportedOperationException();
     }

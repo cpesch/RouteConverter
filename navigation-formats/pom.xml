@@ -83,6 +83,10 @@
             <classifier>stripped</classifier>
         </dependency>
         <dependency>
+            <groupId>de.grundid.opendatalab</groupId>
+            <artifactId>geojson-jackson</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-imaging</artifactId>
             <version>1.0-20200524</version>

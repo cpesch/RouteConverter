@@ -35,6 +35,7 @@ import slash.navigation.csv.CsvFormat;
 import slash.navigation.excel.ExcelFormat;
 import slash.navigation.fit.FitFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
+import slash.navigation.geojson.GeoJsonFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPalTrackFormat;
 import slash.navigation.gpx.Gpx10Format;
@@ -217,6 +218,10 @@ public abstract class NavigationTestCase extends TestCase {
             String sourceName = getFlightPlaneRouteName(sourceRoute);
             String targetName = getFlightPlaneRouteName(targetRoute);
             assertRouteNameEquals(sourceName, targetName);
+        } else if (sourceRoute.getFormat() instanceof GeoJsonFormat) {
+            assertRouteNameEquals("FeatureCollection", sourceRoute.getName());
+        } else if (targetRoute.getFormat() instanceof GeoJsonFormat) {
+            assertRouteNameEquals("FeatureCollection", targetRoute.getName());
         } else if (sourceRoute.getName() != null && targetRoute.getName() != null &&
                 !targetRoute.getName().contains(" to ") && !targetRoute.getName().contains("Route: ") &&
                 !targetRoute.getName().startsWith("/Route") &&
@@ -781,7 +786,8 @@ public abstract class NavigationTestCase extends TestCase {
             if (targetFormat instanceof KmlFormat && targetCharacteristics.equals(Track)) {
                 assertNotNull(sourcePosition.getTime());
                 assertNotNull(targetPosition.getTime());
-            } else if (sourceFormat instanceof GoPalTrackFormat || sourceFormat instanceof GroundTrackFormat ||
+            } else if (sourceFormat instanceof GeoJsonFormat || sourceFormat instanceof GoPalTrackFormat ||
+                    sourceFormat instanceof GroundTrackFormat || targetFormat instanceof GeoJsonFormat ||
                     targetFormat instanceof GoPalTrackFormat || targetFormat instanceof GroundTrackFormat) {
                 DateFormat format = DateFormat.getTimeInstance();
                 format.setTimeZone(UTC);

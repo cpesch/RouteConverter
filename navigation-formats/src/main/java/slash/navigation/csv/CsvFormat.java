@@ -105,7 +105,7 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
 
         CsvSchema schema = CsvSchema.emptySchema().withHeader().withColumnSeparator(getColumnSeparator());
         ObjectReader objectReader = new CsvMapper().readerFor(LinkedHashMap.class).with(schema);
-        try {
+        try (reader) {
             MappingIterator<LinkedHashMap<String, String>> iterator = objectReader.readValues(reader);
             while (iterator.hasNext()) {
                 LinkedHashMap<String, String> rowAsMap = iterator.next();
@@ -116,14 +116,11 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
                 CsvPosition position = new CsvPosition(rowAsMap);
 
                 // skip positions without any reasonable data to make format less greedy
-                if(position.getLongitude() == null && position.getLatitude() == null && position.getDescription() == null)
+                if (position.getLongitude() == null && position.getLatitude() == null && position.getDescription() == null)
                     continue;
 
                 positions.add(position);
             }
-        }
-        finally {
-            reader.close();
         }
 
         if (!positions.isEmpty()) {

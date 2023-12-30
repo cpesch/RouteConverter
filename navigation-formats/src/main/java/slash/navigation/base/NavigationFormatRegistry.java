@@ -36,6 +36,7 @@ import slash.navigation.excel.MicrosoftExcel2008Format;
 import slash.navigation.excel.MicrosoftExcel97Format;
 import slash.navigation.fit.FitFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
+import slash.navigation.geojson.GeoJsonFormat;
 import slash.navigation.gopal.GoPal3RouteFormat;
 import slash.navigation.gopal.GoPal5RouteFormat;
 import slash.navigation.gopal.GoPal7RouteFormat;
@@ -166,6 +167,7 @@ public class NavigationFormatRegistry {
         addFormat(MicrosoftExcel97Format.class);
         addFormat(MicrosoftExcel2008Format.class);
         addFormat(FitFormat.class);
+        addFormat(GeoJsonFormat.class);
         addFormat(MSFSFlightPlanFormat.class);
 
         // kind of meta-format

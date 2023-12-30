@@ -136,7 +136,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     protected BcrRoute asBcrFormat(BcrFormat format) {
         List<BcrPosition> bcrPositions = new ArrayList<>();
-        for (GpxPosition position : positions) {
+        for (GpxPosition position : getPositions()) {
             BcrPosition bcrPosition = position.asMTPPosition();
             // shortens description to better fit to Map&Guide Tourenplaner station list
             String location = position.getCity();
@@ -167,7 +167,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>();
-        for (GpxPosition position : positions) {
+        for (GpxPosition position : getPositions()) {
             gopalPositions.add(position.asGoPalRoutePosition());
         }
         return new GoPalRoute(format, getName(), gopalPositions);
@@ -180,7 +180,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     protected SimpleRoute asPhotoFormat(PhotoFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (GpxPosition position : positions) {
+        for (GpxPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
@@ -188,7 +188,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     protected KmlRoute asKmlFormat(BaseKmlFormat format) {
         List<KmlPosition> kmlPositions = new ArrayList<>();
-        for (GpxPosition position : positions) {
+        for (GpxPosition position : getPositions()) {
             kmlPositions.add(position.asKmlPosition());
         }
         return new KmlRoute(format, getCharacteristics(), getName(), getDescription(), kmlPositions);
@@ -196,7 +196,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     protected NmeaRoute asNmeaFormat(BaseNmeaFormat format) {
         List<NmeaPosition> nmeaPositions = new ArrayList<>();
-        for (GpxPosition position : positions) {
+        for (GpxPosition position : getPositions()) {
             nmeaPositions.add(position.asNmeaPosition());
         }
         return new NmeaRoute(format, getCharacteristics(), nmeaPositions);
@@ -204,7 +204,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     protected NmnRoute asNmnFormat(NmnFormat format) {
         List<NmnPosition> nmnPositions = new ArrayList<>();
-        for (GpxPosition position : positions) {
+        for (GpxPosition position : getPositions()) {
             nmnPositions.add(position.asNmnPosition());
         }
         return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
@@ -212,7 +212,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     protected SimpleRoute asSimpleFormat(SimpleFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (GpxPosition position : positions) {
+        for (GpxPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
@@ -220,7 +220,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     protected TcxRoute asTcxFormat(TcxFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
-        for (GpxPosition position : positions) {
+        for (GpxPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
         }
         return new TcxRoute(format, getCharacteristics(), getName(), wgs84Positions);
@@ -228,7 +228,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
 
     protected TomTomRoute asTomTomRouteFormat(TomTomRouteFormat format) {
         List<TomTomPosition> tomTomPositions = new ArrayList<>();
-        for (GpxPosition position : positions) {
+        for (GpxPosition position : getPositions()) {
             tomTomPositions.add(position.asTomTomRoutePosition());
         }
         return new TomTomRoute(format, getCharacteristics(), getName(), tomTomPositions);
