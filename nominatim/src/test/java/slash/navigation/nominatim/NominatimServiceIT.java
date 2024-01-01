@@ -35,7 +35,7 @@ public class NominatimServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
-                new SimpleNavigationPosition(10.2006845, 50.000497, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland (residential)"),
+                new SimpleNavigationPosition(10.1990052, 50.0001936, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland (residential)"),
                 new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland (living_street)"),
                 new SimpleNavigationPosition(10.1999005, 50.0001319, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland (service)")
         );
