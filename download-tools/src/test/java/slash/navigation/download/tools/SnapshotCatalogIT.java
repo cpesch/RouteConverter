@@ -34,6 +34,14 @@ public class SnapshotCatalogIT {
         return new File(snapshotCatalog.getRootDirectory(), "editions.xml");
     }
 
+    private File createOfflineXml(SnapshotCatalog snapshotCatalog) {
+        return new File(snapshotCatalog.getEditionsDirectory(), "offline.xml");
+    }
+
+    private File createDataSourceXml(SnapshotCatalog snapshotCatalog) {
+        return new File(snapshotCatalog.getDataSourcesDirectory(), "androidmaps.xml");
+    }
+
     private void snapshotEditions(boolean reset) throws IOException, JAXBException {
         SnapshotCatalog snapshot1 = new SnapshotCatalog();
         snapshot1.setDataSourcesServer(API);
@@ -46,19 +54,31 @@ public class SnapshotCatalogIT {
 
         snapshot1.snapshot();
 
-        File after = createEditionsXml(snapshot1);
-        assertTrue(after.exists());
-        long length = after.length();
-        long lastModified = after.lastModified();
+        File edition1 = createEditionsXml(snapshot1);
+        assertTrue(edition1.exists());
+        File offline1 = createOfflineXml(snapshot1);
+        assertTrue(offline1.exists());
+        File datasource1 = createDataSourceXml(snapshot1);
+        assertTrue(datasource1.exists());
 
         SnapshotCatalog snapshot2 = new SnapshotCatalog();
         snapshot2.setDataSourcesServer(API);
         snapshot2.snapshot();
 
-        File second = createEditionsXml(snapshot2);
-        assertTrue(second.exists());
-        assertEquals(length, after.length());
-        assertEquals(lastModified, second.lastModified());
+        File edition2 = createEditionsXml(snapshot2);
+        assertTrue(edition2.exists());
+        File offline2 = createOfflineXml(snapshot2);
+        assertTrue(offline2.exists());
+        File datasource2 = createDataSourceXml(snapshot2);
+        assertTrue(datasource2.exists());
+
+        assertEquals(edition1.length(), edition2.length());
+
+        assertEquals(offline1.length(), offline2.length());
+        assertEquals(offline1.lastModified(), offline2.lastModified());
+
+        assertEquals(datasource1.length(), datasource2.length());
+        assertEquals(datasource1.lastModified(), datasource2.lastModified());
     }
 
     @Test

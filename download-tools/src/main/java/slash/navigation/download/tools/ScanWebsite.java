@@ -30,7 +30,6 @@ import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.MapType;
 import slash.navigation.datasources.binding.ThemeType;
 import slash.navigation.datasources.helpers.DataSourcesUtil;
-import slash.navigation.download.tools.base.BaseDownloadTool;
 import slash.navigation.download.tools.helpers.AnchorFilter;
 import slash.navigation.download.tools.helpers.AnchorParser;
 import slash.navigation.download.tools.helpers.DownloadableType;

@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.download.tools.base;
+package slash.navigation.download.tools;
 
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.helpers.DataSourceService;
@@ -109,15 +109,15 @@ public class BaseDownloadTool {
         return ensureDirectory(getApplicationDirectory("snapshot-" + postFix).getAbsolutePath());
     }
 
-    public File getRootDirectory() {
+    File getRootDirectory() {
         return ensureDirectory(new File(getSnapshotDirectory(), "root"));
     }
 
-    protected File getEditionsDirectory() {
+    File getEditionsDirectory() {
         return ensureDirectory(new File(getSnapshotDirectory(), "editions"));
     }
 
-    protected File getDataSourcesDirectory() {
+    File getDataSourcesDirectory() {
         return ensureDirectory(new File(getSnapshotDirectory(), "datasources"));
     }
 }

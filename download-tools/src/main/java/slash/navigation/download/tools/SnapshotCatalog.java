@@ -25,7 +25,6 @@ import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Edition;
 import slash.navigation.datasources.helpers.DataSourceService;
 import slash.navigation.download.DownloadManager;
-import slash.navigation.download.tools.base.BaseDownloadTool;
 
 import javax.xml.bind.JAXBException;
 import java.io.File;
