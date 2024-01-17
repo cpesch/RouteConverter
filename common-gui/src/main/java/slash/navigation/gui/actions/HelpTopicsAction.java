@@ -46,7 +46,8 @@ public class HelpTopicsAction extends FrameAction {
         CSH.DisplayHelpFromFocus helpFromFocus = new CSH.DisplayHelpFromFocus(broker);
         helpFromFocus.actionPerformed(getEvent());
         final Window window = ((DefaultHelpBroker) broker).getWindowPresentation().getHelpWindow();
-        window.setIconImage(WindowHelper.getFrame().getIconImage());
+        if (window != null)
+            window.setIconImage(WindowHelper.getFrame().getIconImage());
         if (window instanceof JFrame) {
             JRootPane rootPane = ((JFrame) window).getRootPane();
             rootPane.registerKeyboardAction(new ActionListener() {
