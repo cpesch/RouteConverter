@@ -17,9 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.maps.mapsforge.models;
-
-import slash.navigation.maps.item.Item;
+package slash.navigation.maps.item;
 
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -27,33 +25,25 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
 /**
- * Joins two {@link TableModel} into one.
+ * Joins two {@link ItemTableModel} into one.
  *
  * @author Christian Pesch
  */
 
-public class JoinedTableModel<T extends Item> extends AbstractTableModel {
+public class JoinedItemTableModel<T extends Item> extends AbstractTableModel {
     private final TableModel first;
     private final TableModel second;
 
-    public JoinedTableModel(final TableModel first, TableModel second) {
+    public JoinedItemTableModel(final TableModel first, TableModel second) {
         this.first = first;
         this.second = second;
 
-        first.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                fireTableChanged(new TableModelEvent(JoinedTableModel.this, e.getFirstRow(), e.getLastRow(),
-                        e.getColumn(), e.getType()));
-            }
-        });
+        first.addTableModelListener(e -> fireTableChanged(new TableModelEvent(JoinedItemTableModel.this,
+                e.getFirstRow(), e.getLastRow(), e.getColumn(), e.getType())));
 
-        second.addTableModelListener(new TableModelListener() {
-            public void tableChanged(TableModelEvent e) {
-                fireTableChanged(new TableModelEvent(JoinedTableModel.this,
-                        first.getRowCount() + e.getFirstRow(),
-                        first.getRowCount() + e.getLastRow(), e.getColumn(), e.getType()));
-            }
-        });
+        second.addTableModelListener(e -> fireTableChanged(new TableModelEvent(JoinedItemTableModel.this,
+                first.getRowCount() + e.getFirstRow(), first.getRowCount() + e.getLastRow(),
+                e.getColumn(), e.getType())));
     }
 
     public int getRowCount() {

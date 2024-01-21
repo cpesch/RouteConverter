@@ -31,7 +31,7 @@ import slash.navigation.maps.mapsforge.helpers.ActiveTileMapPredicate;
 import slash.navigation.maps.mapsforge.helpers.ThemeForMapMediator;
 import slash.navigation.maps.mapsforge.helpers.TileServerToTileMapMediator;
 import slash.navigation.maps.mapsforge.impl.*;
-import slash.navigation.maps.mapsforge.models.JoinedTableModel;
+import slash.navigation.maps.item.JoinedItemTableModel;
 import slash.navigation.maps.mapsforge.models.OpenStreetMap;
 import slash.navigation.maps.mapsforge.models.TileMapTableModel;
 import slash.navigation.maps.tileserver.TileServerMapManager;
@@ -78,7 +78,7 @@ public class MapsforgeMapManager {
     private final DataSourceManager dataSourceManager;
     private final ItemTableModel<TileDownloadMap> availableOnlineMapsModel = new TileMapTableModel();
     private final ItemTableModel<LocalMap> availableOfflineMapsModel = new ItemTableModel<>(1);
-    private final JoinedTableModel<LocalMap> availableMapsModel = new JoinedTableModel<>(availableOfflineMapsModel,
+    private final JoinedItemTableModel<LocalMap> availableMapsModel = new JoinedItemTableModel<>(availableOfflineMapsModel,
             new FilteringTableModel<>(availableOnlineMapsModel, new ActiveTileMapPredicate()));
     private final ItemTableModel<LocalTheme> availableThemesModel = new ItemTableModel<>(1);
     private final ItemTableModel<RemoteMap> downloadableMapsModel = new ItemTableModel<>(3);
@@ -126,7 +126,7 @@ public class MapsforgeMapManager {
         tileServerToTileMapMediator = null;
     }
 
-    public JoinedTableModel<LocalMap> getAvailableMapsModel() {
+    public JoinedItemTableModel<LocalMap> getAvailableMapsModel() {
         return availableMapsModel;
     }
 
