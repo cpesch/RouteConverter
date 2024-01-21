@@ -62,7 +62,6 @@
             <artifactId>slf4j-jdk14</artifactId>
         </dependency>
 
-        <!-- JAXB for Java 9 and later -->
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
