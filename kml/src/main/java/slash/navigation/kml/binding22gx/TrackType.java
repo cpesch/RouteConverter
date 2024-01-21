@@ -12,7 +12,7 @@ import slash.navigation.kml.binding22.AbstractGeometryType;
 import slash.navigation.kml.binding22.ExtendedDataType;
 import slash.navigation.kml.binding22.ModelType;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 

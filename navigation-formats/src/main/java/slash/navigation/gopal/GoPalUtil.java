@@ -20,13 +20,13 @@
 
 package slash.navigation.gopal;
 
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 import javax.xml.namespace.QName;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import static javax.xml.bind.Marshaller.JAXB_ENCODING;
+import static jakarta.xml.bind.Marshaller.JAXB_ENCODING;
 import static slash.common.helpers.JAXBHelper.*;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 

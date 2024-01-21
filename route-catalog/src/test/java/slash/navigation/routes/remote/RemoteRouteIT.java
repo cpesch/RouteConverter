@@ -88,7 +88,7 @@ public class RemoteRouteIT extends BaseRemoteCatalogTest {
 
     @Test(expected = UnAuthorizedException.class)
     public void testCreateRouteForbidden() throws IOException {
-        RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, "wrong-password"));
+        RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, WRONG_PASSWORD));
         wrong.addRoute(API, "egal", null, REMOTE_URL);
     }
 

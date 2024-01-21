@@ -20,14 +20,14 @@
 
 package slash.common.helpers;
 
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
 import static java.util.Arrays.asList;
-import static javax.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
+import static jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
 
 /**
  * Provides JAXB helpers.

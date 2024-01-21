@@ -8,7 +8,7 @@
 
 package slash.navigation.kml.binding22beta;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 
 public class NameElement

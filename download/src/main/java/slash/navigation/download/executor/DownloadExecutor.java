@@ -20,7 +20,6 @@
 
 package slash.navigation.download.executor;
 
-import org.apache.http.conn.ConnectTimeoutException;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.download.State;
@@ -84,8 +83,7 @@ public class DownloadExecutor implements Runnable {
         } catch (Exception e) {
             log.severe(format("Failed to download content from %s: %s %s", download.getUrl(), getLocalizedMessage(e),
                     e instanceof ConnectException || e instanceof UnknownHostException ||
-                            e instanceof SSLException || e instanceof SocketTimeoutException ||
-                            e instanceof ConnectTimeoutException ? "" : printStackTrace(e)));
+                            e instanceof SSLException || e instanceof SocketTimeoutException ? "" : printStackTrace(e)));
             downloadFailed();
         }
 

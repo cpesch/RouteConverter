@@ -28,8 +28,8 @@ import slash.navigation.gpx.garmin3.RoutePointExtensionT;
 import slash.navigation.gpx.trip1.ShapingPointExtensionT;
 import slash.navigation.gpx.trip1.ViaPointExtensionT;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

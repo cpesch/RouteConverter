@@ -5,7 +5,7 @@
 // Generated on: 2015.08.06 at 11:30:49 AM CEST 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/download-queue", elementFormDefault = QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/download-queue", elementFormDefault = QUALIFIED)
 package slash.navigation.download.queue.binding;
 
-import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
+import static jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED;

@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import slash.navigation.kml.binding20.Kml;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.*;
 import java.util.List;
 

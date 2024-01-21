@@ -8,7 +8,7 @@
 
 package slash.navigation.geonames.binding;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

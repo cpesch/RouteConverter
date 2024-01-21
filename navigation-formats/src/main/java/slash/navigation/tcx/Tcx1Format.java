@@ -24,7 +24,7 @@ import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.tcx.binding1.*;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

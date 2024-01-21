@@ -36,6 +36,7 @@ import static org.junit.Assert.*;
 import static slash.navigation.routes.remote.RemoteCatalog.CATEGORY_URI;
 
 public class RemoteCategoryIT extends BaseRemoteCatalogTest {
+
     @Test
     public void testGetRoot() throws IOException {
         Category root = catalog.getRootCategory();
@@ -49,6 +50,7 @@ public class RemoteCategoryIT extends BaseRemoteCatalogTest {
         assertNotNull(root.getCategories());
         assertNotNull(root.getRoutes());
     }
+
 
     private void createAndDeleteCategory(String name) throws IOException {
         Category category1 = test.create(name);
@@ -103,7 +105,7 @@ public class RemoteCategoryIT extends BaseRemoteCatalogTest {
 
     @Test(expected = UnAuthorizedException.class)
     public void testCreateCategoryForbidden() throws IOException {
-        RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, "wrong-password"));
+        RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, WRONG_PASSWORD));
         wrong.addCategory(API, "egal");
     }
 
@@ -121,7 +123,7 @@ public class RemoteCategoryIT extends BaseRemoteCatalogTest {
 
     @Test(expected = ForbiddenException.class)
     public void testDeleteCategoryForbidden() throws IOException {
-        RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, "wrong-password"));
+        RemoteCatalog wrong = new RemoteCatalog(API, new SimpleCredentials(USERNAME, WRONG_PASSWORD));
         wrong.deleteCategory(API);
     }
 

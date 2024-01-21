@@ -8,8 +8,8 @@
 
 package slash.navigation.kml.binding21;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.*;
 
 
 /**

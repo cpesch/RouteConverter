@@ -8,7 +8,7 @@
 
 package slash.navigation.gopal.binding3;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**

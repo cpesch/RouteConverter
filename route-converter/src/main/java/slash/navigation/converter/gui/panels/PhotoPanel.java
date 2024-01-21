@@ -97,13 +97,14 @@ public class PhotoPanel implements PanelInTab {
     private JPanel photosPanel;
     private JTable tablePhotos;
     private JLabel labelPhotos;
-    private JComboBox<FilterPredicate> comboBoxFilterPhotoPredicate;
+    private JComboBox<FilterPredicate<NavigationPosition>> comboBoxFilterPhotoPredicate;
     private JButton buttonAddPhotos;
     private JComboBox<TimeZoneAndId> comboBoxPhotoTimeZone;
     private JComboBox<TagStrategy> comboBoxTagStrategy;
     private JButton buttonTagPhotos;
 
-    private static final ComboBoxModel<FilterPredicate> FILTER_PREDICATE_MODEL = new DefaultComboBoxModel<>(new FilterPredicate[]{
+    private static final ComboBoxModel<FilterPredicate<NavigationPosition>> FILTER_PREDICATE_MODEL =
+            new DefaultComboBoxModel<FilterPredicate<NavigationPosition>>(new FilterPredicate[]{
             new TautologyPredicate("All"),
             new TagStatePhotoPredicate(Tagged),
             new TagStatePhotoPredicate(Taggable),

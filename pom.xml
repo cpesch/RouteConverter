@@ -68,11 +68,11 @@
         <maven.version>[3.5.4,)</maven.version>
 
         <alephformatter.version>0.1.1</alephformatter.version>
-        <httpclient.version>4.5.14</httpclient.version>
+        <httpclient.version>5.3</httpclient.version>
         <istack.version>3.0.11</istack.version>
         <jackson.version>2.16.0</jackson.version>
-        <jaxb-api.version>2.3.1</jaxb-api.version>
-        <jaxb-impl.version>2.3.1</jaxb-impl.version>
+        <jaxb-api.version>4.0.0</jaxb-api.version>
+        <jaxb-impl.version>4.0.1</jaxb-impl.version>
         <mapsforge.version>0.20.0</mapsforge.version>
         <slf4j.version>2.0.9</slf4j.version>
     </properties>

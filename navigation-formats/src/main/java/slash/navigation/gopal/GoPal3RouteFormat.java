@@ -26,7 +26,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.gopal.binding3.ObjectFactory;
 import slash.navigation.gopal.binding3.Tour;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -25,7 +25,7 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding10.ObjectFactory;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

@@ -8,7 +8,7 @@
 
 package slash.navigation.nmn.binding7;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

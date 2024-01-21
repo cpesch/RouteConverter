@@ -5,7 +5,7 @@
 // Generated on: 2012.03.20 at 03:41:45 PM CET 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://www8.garmin.com/xmlschemas/FlightPlan/v1", elementFormDefault = QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://www8.garmin.com/xmlschemas/FlightPlan/v1", elementFormDefault = QUALIFIED)
 package slash.navigation.fpl.binding;
 
-import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
+import static jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED;

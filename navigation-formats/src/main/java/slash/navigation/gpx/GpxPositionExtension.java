@@ -24,7 +24,7 @@ import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.ObjectFactory;
 import slash.navigation.gpx.binding11.WptType;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;

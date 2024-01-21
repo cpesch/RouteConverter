@@ -66,6 +66,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.*;
@@ -78,6 +79,7 @@ import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.abs;
 import static java.lang.String.format;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Locale.*;
@@ -489,8 +491,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 return preferences.get(USERNAME_PREFERENCE, "");
             }
 
-            public String getPassword() {
-                return new String(preferences.getByteArray(PASSWORD_PREFERENCE, new byte[0]));
+            public char[] getPassword() {
+                return new String(preferences.getByteArray(PASSWORD_PREFERENCE, new byte[0]), UTF_8).toCharArray();
             }
         };
     }

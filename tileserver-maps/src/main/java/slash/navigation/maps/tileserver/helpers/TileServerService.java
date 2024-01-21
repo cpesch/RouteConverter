@@ -22,8 +22,8 @@ package slash.navigation.maps.tileserver.helpers;
 import slash.navigation.maps.tileserver.bindingmap.MapServerType;
 import slash.navigation.maps.tileserver.bindingoverlay.OverlayServerType;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.UnmarshalException;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.UnmarshalException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

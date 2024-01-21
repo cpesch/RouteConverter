@@ -8,7 +8,7 @@
 
 package slash.navigation.lmx.binding;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 
 
 /**

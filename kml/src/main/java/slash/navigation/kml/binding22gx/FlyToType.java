@@ -12,8 +12,8 @@ import slash.navigation.kml.binding22.AbstractViewType;
 import slash.navigation.kml.binding22.CameraType;
 import slash.navigation.kml.binding22.LookAtType;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.*;
 
 
 /**

@@ -23,9 +23,9 @@ import slash.common.helpers.JAXBHelper;
 import slash.navigation.maps.tileserver.bindingmap.CatalogType;
 import slash.navigation.maps.tileserver.bindingmap.ObjectFactory;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.InputStream;
 
 import static slash.common.helpers.JAXBHelper.newContext;

@@ -8,7 +8,7 @@
 
 package slash.navigation.googlemaps.elevation;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;

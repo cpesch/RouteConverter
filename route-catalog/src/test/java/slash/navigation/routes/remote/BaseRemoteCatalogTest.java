@@ -37,7 +37,8 @@ public abstract class BaseRemoteCatalogTest {
     protected static final String USERNAME = "test";
     protected static final String ANOTHER_USERNAME = "another";
     protected static final String SUPER_USERNAME = "super";
-    protected static final String PASSWORD = "test";
+    protected static final char[] PASSWORD = "test".toCharArray();
+    protected static final char[] WRONG_PASSWORD = "wrong-password".toCharArray();
     // ae oe ue sz AE OE UE
     protected static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
     // 00A7 is the section sign / Paragraph

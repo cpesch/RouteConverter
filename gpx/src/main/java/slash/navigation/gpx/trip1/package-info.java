@@ -5,11 +5,11 @@
 // Generated on: 2014.10.28 at 04:01:32 PM MEZ 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI, elementFormDefault = QUALIFIED, xmlns = {
+@jakarta.xml.bind.annotation.XmlSchema(namespace = GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI, elementFormDefault = QUALIFIED, xmlns = {
         @XmlNs(prefix = "trp", namespaceURI = GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI) })
 package slash.navigation.gpx.trip1;
 
-import javax.xml.bind.annotation.XmlNs;
+import jakarta.xml.bind.annotation.XmlNs;
 
-import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
+import static jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED;
 import static slash.navigation.gpx.GpxUtil.GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI;

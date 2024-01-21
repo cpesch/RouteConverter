@@ -20,16 +20,18 @@
 package slash.navigation.rest.tools;
 
 import org.apache.commons.cli.*;
-import org.apache.http.HttpHost;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.CredentialsProvider;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.protocol.HttpClientContext;
-import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.HttpResponse;
 
 import java.io.IOException;
 import java.net.*;
@@ -74,21 +76,22 @@ public class CheckProxy {
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
         String userName = line.getOptionValue(USERNAME_ARGUMENT);
-        String password = line.getOptionValue(PASSWORD_ARGUMENT);
+        String passwordOption = line.getOptionValue(PASSWORD_ARGUMENT);
+        char[] passwordArray = passwordOption != null ? passwordOption.toCharArray() : null;
 
         setUseSystemProxies();
 
         ProxySelector selector = ProxySelector.getDefault();
         log.info(format("ProxySelector %s", selector));
 
-        if(userName != null && password != null) {
+        if(userName != null && passwordArray != null) {
             log.info(format("Using proxy authentication with user %s", userName));
 
             Authenticator.setDefault(new Authenticator() {
                 protected PasswordAuthentication getPasswordAuthentication() {
                     log.info("Authenticator#getPasswordAuthentication " + getRequestorType());
                     if (getRequestorType() == PROXY) {
-                        return new PasswordAuthentication(userName, password.toCharArray());
+                        return new PasswordAuthentication(userName, passwordArray);
                     } else {
                         return super.getPasswordAuthentication();
                     }
@@ -96,11 +99,11 @@ public class CheckProxy {
             });
         }
 
-        checkProxy("https://api.routeconverter.com/v1/mapservers/?format=xml", userName, password);
-        checkProxy("https://static.routeconverter.com/maps/world.map", userName, password);
+        checkProxy("https://api.routeconverter.com/v1/mapservers/?format=xml", userName, passwordArray);
+        checkProxy("https://static.routeconverter.com/maps/world.map", userName, passwordArray);
     }
 
-    private void checkProxy(String url, String userName, String password) throws Exception {
+    private void checkProxy(String url, String userName, char[] password) throws Exception {
         log.info(format("Checking proxy for %s", url));
 
         URI uri = new URI(url);
@@ -124,8 +127,8 @@ public class CheckProxy {
         return proxyList;
     }
 
-    private void apacheCommonsHttpRequest(URI uri, Proxy proxy, String userName, String password) throws IOException {
-        CredentialsProvider credentialsProvider = null;
+    private void apacheCommonsHttpRequest(URI uri, Proxy proxy, String userName, char[] password) throws IOException {
+        BasicCredentialsProvider credentialsProvider = null;
 
         RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
         if (proxy != NO_PROXY && !proxy.type().equals(DIRECT)) {
@@ -150,10 +153,9 @@ public class CheckProxy {
         if (credentialsProvider != null)
             clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
 
-        HttpClientContext context = HttpClientContext.create();
-        try {
-            HttpResponse response = clientBuilder.build().execute(new HttpGet(uri), context);
-            log.info(format("Apache Commons HTTP response %s", response));
+        try(CloseableHttpClient httpClient = clientBuilder.build()) {
+            String response = httpClient.execute(new HttpGet(uri), new BasicHttpClientResponseHandler());
+            log.info(format("Apache Commons HTTP code 2xx length %s", response.length()));
         } catch (SocketException e) {
             log.info(format("Failed to execute Apache Commons HTTP request %s with proxy %s: %s", uri, proxy, e));
         }
@@ -167,9 +169,9 @@ public class CheckProxy {
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod("GET");
 
-            int status = connection.getResponseCode();
+            int code = connection.getResponseCode();
             int length = connection.getContentLength();
-            log.info(format("Java HTTP Client status %s length %s", status, length));
+            log.info(format("Java HTTP Client code %s length %s", code, length));
 
             connection.disconnect();
         } catch (Exception e) {

@@ -5,12 +5,12 @@
 // Generated on: 2010.06.29 at 05:04:10 PM MESZ 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = LMX_NAMESPACE_URI, elementFormDefault = QUALIFIED, xmlns = {
+@jakarta.xml.bind.annotation.XmlSchema(namespace = LMX_NAMESPACE_URI, elementFormDefault = QUALIFIED, xmlns = {
 		@XmlNs(prefix = "", namespaceURI = LMX_NAMESPACE_URI),
 		@XmlNs(prefix = "lm", namespaceURI = LMX_NAMESPACE_URI)})
 package slash.navigation.lmx.binding;
-import javax.xml.bind.annotation.XmlNs;
+import jakarta.xml.bind.annotation.XmlNs;
 
-import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
+import static jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED;
 import static slash.navigation.lmx.NokiaLandmarkExchangeUtil.LMX_NAMESPACE_URI;
 

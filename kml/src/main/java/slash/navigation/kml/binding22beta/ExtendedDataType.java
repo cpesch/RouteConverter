@@ -10,7 +10,7 @@ package slash.navigation.kml.binding22beta;
 
 import org.w3c.dom.Element;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 

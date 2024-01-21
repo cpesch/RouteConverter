@@ -8,7 +8,7 @@
 
 package slash.navigation.maps.tileserver.bindingoverlay;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;

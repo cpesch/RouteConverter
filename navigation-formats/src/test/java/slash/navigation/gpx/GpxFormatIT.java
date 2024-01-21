@@ -24,7 +24,7 @@ import org.junit.Test;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.*;
 
 import static org.junit.Assert.*;

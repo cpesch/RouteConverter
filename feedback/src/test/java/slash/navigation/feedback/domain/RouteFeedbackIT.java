@@ -144,7 +144,7 @@ public class RouteFeedbackIT extends RouteFeedbackServiceBase {
 
     @Test
     public void testCanCheckForUpdateWrongCredentials() throws IOException {
-        RouteFeedback anonymous = new RouteFeedback(API, new SimpleCredentials("UnknownUser" + System.currentTimeMillis(), "SomePassword"));
+        RouteFeedback anonymous = new RouteFeedback(API, new SimpleCredentials("UnknownUser" + System.currentTimeMillis(), WRONG_PASSWORD));
         String result = anonymous.checkForUpdate("1",
                 "2", 3, "4", "5", "6",
                 "7", "8", "9", 10);

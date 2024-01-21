@@ -24,8 +24,8 @@ import slash.common.helpers.JAXBHelper;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
 import static slash.common.helpers.JAXBHelper.newContext;

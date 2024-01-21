@@ -31,10 +31,10 @@ import slash.navigation.datasources.binding.*;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.FileAndChecksum;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;

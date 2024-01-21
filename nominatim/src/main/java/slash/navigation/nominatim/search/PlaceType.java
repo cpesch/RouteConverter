@@ -8,7 +8,7 @@
 
 package slash.navigation.nominatim.search;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.math.BigDecimal;
 
 

@@ -11,9 +11,9 @@ package slash.navigation.kml.binding22gx;
 import slash.navigation.kml.binding22.TimeSpanType;
 import slash.navigation.kml.binding22.TimeStampType;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlElementDecl;
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.XmlElementDecl;
+import jakarta.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 import java.math.BigInteger;
 

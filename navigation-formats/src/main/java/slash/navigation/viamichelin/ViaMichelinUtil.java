@@ -28,7 +28,7 @@ import slash.common.helpers.JAXBHelper;
 import slash.navigation.viamichelin.binding.ObjectFactory;
 import slash.navigation.viamichelin.binding.PoiList;
 
-import javax.xml.bind.*;
+import jakarta.xml.bind.*;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -39,8 +39,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
 
-import static javax.xml.bind.Marshaller.JAXB_ENCODING;
-import static javax.xml.bind.Marshaller.JAXB_FRAGMENT;
+import static jakarta.xml.bind.Marshaller.JAXB_ENCODING;
+import static jakarta.xml.bind.Marshaller.JAXB_FRAGMENT;
 import static slash.common.helpers.JAXBHelper.newContext;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 

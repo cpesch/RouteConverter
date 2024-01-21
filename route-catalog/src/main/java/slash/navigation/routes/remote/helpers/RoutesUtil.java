@@ -24,10 +24,10 @@ import slash.common.helpers.JAXBHelper;
 import slash.navigation.routes.remote.binding.CatalogType;
 import slash.navigation.routes.remote.binding.ObjectFactory;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;

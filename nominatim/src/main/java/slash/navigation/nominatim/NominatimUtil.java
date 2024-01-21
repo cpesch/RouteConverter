@@ -24,9 +24,9 @@ import slash.common.helpers.JAXBHelper;
 import slash.navigation.nominatim.reverse.ReversegeocodeType;
 import slash.navigation.nominatim.search.SearchresultsType;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Unmarshaller;
 import java.io.StringReader;
 
 import static slash.common.helpers.JAXBHelper.newContext;

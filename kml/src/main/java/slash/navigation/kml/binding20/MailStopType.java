@@ -8,7 +8,7 @@
 
 package slash.navigation.kml.binding20;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;

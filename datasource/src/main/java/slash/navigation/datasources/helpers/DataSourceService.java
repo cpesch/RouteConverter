@@ -30,7 +30,7 @@ import slash.navigation.datasources.binding.EditionType;
 import slash.navigation.datasources.impl.DataSourceImpl;
 import slash.navigation.datasources.impl.EditionImpl;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

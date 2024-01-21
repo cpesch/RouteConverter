@@ -8,7 +8,7 @@
 
 package slash.navigation.download.queue.binding;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 

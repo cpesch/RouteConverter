@@ -8,7 +8,7 @@
 
 package slash.navigation.kml.binding22;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 

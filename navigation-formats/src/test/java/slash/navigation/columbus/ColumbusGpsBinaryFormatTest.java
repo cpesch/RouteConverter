@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import java.nio.ByteBuffer;
 
-import static javax.xml.bind.DatatypeConverter.parseHexBinary;
+import static jakarta.xml.bind.DatatypeConverter.parseHexBinary;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;

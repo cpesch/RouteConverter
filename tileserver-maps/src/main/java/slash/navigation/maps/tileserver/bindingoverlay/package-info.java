@@ -5,5 +5,5 @@
 // Generated on: 2018.11.29 at 02:46:29 PM MEZ 
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/overlayserver-catalog", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
+@jakarta.xml.bind.annotation.XmlSchema(namespace = "http://api.routeconverter.com/v1/schemas/overlayserver-catalog", elementFormDefault = jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED)
 package slash.navigation.maps.tileserver.bindingoverlay;

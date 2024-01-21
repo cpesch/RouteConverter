@@ -5,11 +5,11 @@
 // Generiert: 2014.07.23 um 04:23:54 PM CEST
 //
 
-@javax.xml.bind.annotation.XmlSchema(namespace = GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI, elementFormDefault = QUALIFIED, xmlns = {
+@jakarta.xml.bind.annotation.XmlSchema(namespace = GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI, elementFormDefault = QUALIFIED, xmlns = {
         @XmlNs(prefix = "gpxtpx1", namespaceURI = GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI) })
 package slash.navigation.gpx.trackpoint1;
 
-import javax.xml.bind.annotation.XmlNs;
+import jakarta.xml.bind.annotation.XmlNs;
 
-import static javax.xml.bind.annotation.XmlNsForm.QUALIFIED;
+import static jakarta.xml.bind.annotation.XmlNsForm.QUALIFIED;
 import static slash.navigation.gpx.GpxUtil.GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI;

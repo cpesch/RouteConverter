@@ -29,7 +29,7 @@ import slash.navigation.nominatim.search.PlaceType;
 import slash.navigation.nominatim.search.SearchresultsType;
 import slash.navigation.rest.Get;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;

@@ -13,8 +13,8 @@ import slash.navigation.kml.bindingatom.AtomPersonConstruct;
 import slash.navigation.kml.bindingatom.Link;
 import slash.navigation.kml.bindingxal.AddressDetails;
 
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.JAXBElement;
+import jakarta.xml.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 

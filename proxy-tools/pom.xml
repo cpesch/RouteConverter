@@ -84,8 +84,8 @@
             <artifactId>proxy-vole</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
             <version>${httpclient.version}</version>
             <exclusions>
                 <exclusion>

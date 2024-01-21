@@ -26,7 +26,7 @@ import slash.navigation.datasources.Edition;
 import slash.navigation.datasources.helpers.DataSourceService;
 import slash.navigation.download.DownloadManager;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

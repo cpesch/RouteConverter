@@ -48,7 +48,6 @@ import static slash.navigation.download.State.*;
  */
 public class GetPerformer implements ActionPerformer {
     private static final Logger log = getLogger(GetPerformer.class.getName());
-    private static final int SOCKET_TIMEOUT = 15 * 60 * 1000;
 
     private DownloadExecutor downloadExecutor;
 
@@ -98,7 +97,6 @@ public class GetPerformer implements ActionPerformer {
         log.info(format("Downloading %d bytes from %s with ETag %s", contentLength, getDownload().getUrl(), getDownload().getETag()));
 
         Get request = new Get(getDownload().getUrl());
-        request.setSocketTimeout(SOCKET_TIMEOUT);
         if (new Validator(getDownload()).isExistsTargets() && getDownload().getETag() != null)
             request.setIfNoneMatch(getDownload().getETag());
 

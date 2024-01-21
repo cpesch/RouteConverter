@@ -37,7 +37,7 @@ import slash.navigation.rest.Delete;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.Post;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
@@ -89,6 +89,8 @@ public class ScanWebsite extends BaseDownloadTool {
         log.info(format("Downloading %s", getUrl() + uri));
         Get get = new Get(getUrl() + uri);
         String result = get.executeAsString();
+
+        System.out.println(result);
 
         List<String> anchors = new AnchorParser().parseAnchors(result.replaceAll("<area", "<a"));
 
@@ -208,7 +210,6 @@ public class ScanWebsite extends BaseDownloadTool {
         Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes(StandardCharsets.UTF_8));
         request.setAccept(APPLICATION_JSON);
-        request.setSocketTimeout(SOCKET_TIMEOUT);
 
         String result = null;
         try {

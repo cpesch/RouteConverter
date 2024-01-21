@@ -19,6 +19,7 @@
 */
 package slash.navigation.download.tools;
 
+import jakarta.xml.bind.JAXBException;
 import org.apache.commons.cli.*;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.datasources.*;
@@ -30,7 +31,6 @@ import slash.navigation.download.FileAndChecksum;
 import slash.navigation.graphhopper.PbfUtil;
 import slash.navigation.rest.Post;
 
-import javax.xml.bind.JAXBException;
 import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -334,7 +334,6 @@ public class UpdateCatalog extends BaseDownloadTool {
         Post request = new Post(dataSourcesUrl, getCredentials());
         request.addFile("file", xml.getBytes(StandardCharsets.UTF_8));
         request.setAccept(APPLICATION_JSON);
-        request.setSocketTimeout(SOCKET_TIMEOUT);
 
         String result = null;
         try {

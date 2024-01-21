@@ -21,7 +21,7 @@ package slash.navigation.download.tools;
 
 import org.junit.Test;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 

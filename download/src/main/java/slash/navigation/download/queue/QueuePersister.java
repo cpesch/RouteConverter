@@ -22,7 +22,7 @@ package slash.navigation.download.queue;
 import slash.navigation.download.*;
 import slash.navigation.download.queue.binding.*;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;

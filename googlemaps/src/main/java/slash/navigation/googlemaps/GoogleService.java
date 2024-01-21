@@ -29,7 +29,7 @@ import slash.navigation.googlemaps.geocode.GeocodeResponse;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.exception.ServiceUnavailableException;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

@@ -19,12 +19,12 @@
 */
 package slash.navigation.download.tools;
 
+import jakarta.xml.bind.JAXBException;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.helpers.DataSourceService;
 import slash.navigation.rest.Credentials;
 import slash.navigation.rest.SimpleCredentials;
 
-import javax.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 
@@ -45,7 +45,7 @@ public class BaseDownloadTool {
     protected static final String DATASOURCES_SERVER_ARGUMENT = "server";
     protected static final String DATASOURCES_USERNAME_ARGUMENT = "username";
     protected static final String DATASOURCES_PASSWORD_ARGUMENT = "password";
-    protected static final int SOCKET_TIMEOUT = 15 * 60 * 1000;
+    protected static final String DATASOURCES_PASSWORD_ENVIRONMENT_VARIABLE = "PASSWORD";
     protected static final int MAXIMUM_UPDATE_COUNT = 10;
 
     private String url, id, dataSourcesServer, dataSourcesUserName, dataSourcesPassword;
@@ -79,6 +79,8 @@ public class BaseDownloadTool {
     }
 
     public void setDataSourcesPassword(String dataSourcesPassword) {
+        if(dataSourcesPassword == null)
+            dataSourcesPassword = System.getenv(DATASOURCES_PASSWORD_ENVIRONMENT_VARIABLE);
         this.dataSourcesPassword = dataSourcesPassword;
     }
 
@@ -91,7 +93,7 @@ public class BaseDownloadTool {
     }
 
     protected Credentials getCredentials() {
-        return new SimpleCredentials(dataSourcesUserName, dataSourcesPassword);
+        return new SimpleCredentials(dataSourcesUserName, dataSourcesPassword.toCharArray());
     }
 
     protected DataSource loadDataSource(String id) throws IOException, JAXBException {

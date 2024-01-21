@@ -8,7 +8,7 @@
 
 package slash.navigation.gpx.binding11;
 
-import javax.xml.bind.annotation.*;
+import jakarta.xml.bind.annotation.*;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigDecimal;
 

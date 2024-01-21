@@ -31,7 +31,7 @@ import slash.navigation.routes.remote.binding.CategoryType;
 import slash.navigation.routes.remote.binding.FileType;
 import slash.navigation.routes.remote.binding.RouteType;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
