@@ -19,13 +19,13 @@
 */
 package slash.navigation.rest;
 
-import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Calendar;
 
-import static org.apache.http.HttpHeaders.*;
+import static org.apache.hc.core5.http.HttpHeaders.*;
 import static slash.common.io.Transfer.parseLong;
 import static slash.navigation.rest.RFC2616.formatDate;
 import static slash.navigation.rest.RFC2616.parseDate;
@@ -37,7 +37,7 @@ import static slash.navigation.rest.RFC2616.parseDate;
  */
 
 public abstract class ReadRequest extends HttpRequest {
-    public ReadRequest(HttpRequestBase method) {
+    public ReadRequest(HttpUriRequestBase method) {
         super(method);
     }
 

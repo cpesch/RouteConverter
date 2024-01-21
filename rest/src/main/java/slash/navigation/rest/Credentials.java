@@ -26,5 +26,5 @@ package slash.navigation.rest;
  */
 public interface Credentials {
     String getUserName();
-    String getPassword();
+    char[] getPassword();
 }

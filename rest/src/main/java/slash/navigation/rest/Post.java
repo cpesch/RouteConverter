@@ -19,7 +19,7 @@
 */
 package slash.navigation.rest;
 
-import org.apache.http.client.methods.HttpPost;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
 
 /**
  * Wrapper to initiate an HTTP POST Request.

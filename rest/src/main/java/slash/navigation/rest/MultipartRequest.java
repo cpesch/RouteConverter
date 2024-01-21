@@ -19,19 +19,19 @@
 */
 package slash.navigation.rest;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.HttpEntity;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.apache.http.Consts.UTF_8;
-import static org.apache.http.HttpHeaders.ACCEPT;
-import static org.apache.http.HttpHeaders.LOCATION;
-import static org.apache.http.entity.ContentType.APPLICATION_OCTET_STREAM;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.apache.hc.core5.http.ContentType.APPLICATION_OCTET_STREAM;
+import static org.apache.hc.core5.http.HttpHeaders.ACCEPT;
+import static org.apache.hc.core5.http.HttpHeaders.LOCATION;
 import static slash.common.io.Transfer.encodeUriButKeepSlashes;
 
 /**
@@ -45,7 +45,7 @@ abstract class MultipartRequest extends HttpRequest {
     private MultipartEntityBuilder builder;
     private boolean containsFileLargerThan4k;
 
-    MultipartRequest(HttpEntityEnclosingRequestBase method, Credentials credentials) {
+    MultipartRequest(HttpUriRequestBase method, Credentials credentials) {
         super(method, credentials);
     }
 
@@ -53,10 +53,6 @@ abstract class MultipartRequest extends HttpRequest {
         if (builder == null)
             builder = MultipartEntityBuilder.create();
         return builder;
-    }
-
-    private HttpEntityEnclosingRequestBase getHttpEntityEnclosingRequestBase() {
-        return (HttpEntityEnclosingRequestBase) getMethod();
     }
 
     public void addString(String name, String value) {
@@ -79,10 +75,10 @@ abstract class MultipartRequest extends HttpRequest {
         return containsFileLargerThan4k;
     }
 
-    protected HttpResponse execute() throws IOException {
+    protected ClassicHttpResponse execute() throws IOException {
         if (builder != null) {
             HttpEntity entity = builder.build();
-            getHttpEntityEnclosingRequestBase().setEntity(entity);
+            getMethod().setEntity(entity);
         }
         return super.execute();
     }

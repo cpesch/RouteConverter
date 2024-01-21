@@ -19,9 +19,9 @@
 */
 package slash.navigation.rest;
 
-import org.apache.http.client.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
 
-import static org.apache.http.HttpHeaders.RANGE;
+import static org.apache.hc.core5.http.HttpHeaders.RANGE;
 
 /**
  * Wrapper to initiate an HTTP GET Request.

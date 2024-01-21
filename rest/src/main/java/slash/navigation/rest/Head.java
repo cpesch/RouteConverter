@@ -19,7 +19,7 @@
 */
 package slash.navigation.rest;
 
-import org.apache.http.client.methods.HttpHead;
+import org.apache.hc.client5.http.classic.methods.HttpHead;
 
 /**
  * Wrapper to initiate an HTTP HEAD Request.

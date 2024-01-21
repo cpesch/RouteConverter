@@ -19,7 +19,7 @@
 */
 package slash.navigation.rest;
 
-import org.apache.http.client.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
 
 /**
  * Wrapper to initiate an HTTP PUT Request.

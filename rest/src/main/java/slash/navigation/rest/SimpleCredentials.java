@@ -25,9 +25,10 @@ package slash.navigation.rest;
  * @author Christian Pesch
  */
 public class SimpleCredentials implements Credentials {
-    private final String userName, password;
+    private final String userName;
+    private final char[] password;
 
-    public SimpleCredentials(String userName, String password) {
+    public SimpleCredentials(String userName, char[] password) {
         this.userName = userName;
         this.password = password;
     }
@@ -36,7 +37,7 @@ public class SimpleCredentials implements Credentials {
         return userName;
     }
 
-    public String getPassword() {
+    public char[] getPassword() {
         return password;
     }
 }
