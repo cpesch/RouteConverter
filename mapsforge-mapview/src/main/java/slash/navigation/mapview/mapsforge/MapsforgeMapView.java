@@ -548,9 +548,8 @@ public class MapsforgeMapView extends BaseMapView {
             layers.remove(remove);
             remove.onDestroy();
 
-            if (remove instanceof TileLayer)
-                //noinspection rawtypes
-                ((TileLayer) remove).getTileCache().destroy();
+            if (remove instanceof TileLayer tileLayer)
+                tileLayer.getTileCache().destroy();
         }
         mapsToLayers.clear();
 
@@ -562,8 +561,8 @@ public class MapsforgeMapView extends BaseMapView {
         handleOverlays();
 
         // then start download layer threads
-        if (layer instanceof TileDownloadLayer)
-           ((TileDownloadLayer) layer).start();
+        if (layer instanceof TileDownloadLayer tileDownloadLayer)
+           tileDownloadLayer.start();
 
         // center and zoom: if map is initialized, doesn't contain route or there is no route
         BoundingBox mapBoundingBox = getMapBoundingBox();

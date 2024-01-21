@@ -121,8 +121,8 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
                     continue;
 
                 org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
-                if (layer.onTap(tapLatLong, layerXY, tapXY)) {
-                    return new MarkerAndDelta((DraggableMarker) layer, layerXY.x - tapXY.x, layerXY.y - tapXY.y);
+                if (layer.onTap(tapLatLong, layerXY, tapXY) && layer instanceof DraggableMarker draggableMarker) {
+                    return new MarkerAndDelta(draggableMarker, layerXY.x - tapXY.x, layerXY.y - tapXY.y);
                 }
             }
         }

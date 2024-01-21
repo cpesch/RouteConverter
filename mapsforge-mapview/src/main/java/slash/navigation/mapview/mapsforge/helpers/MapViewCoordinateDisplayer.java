@@ -70,9 +70,10 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
 
     private JFrame getFrame() {
         Application application = Application.getInstance();
-        if (!(application instanceof SingleFrameApplication))
+        if (application instanceof SingleFrameApplication singleFrameApplication)
+            return singleFrameApplication.getFrame();
+        else
             return null;
-        return ((SingleFrameApplication) application).getFrame();
     }
 
     private void display(Point locationOnScreen, int mouseX, int mouseY) {
