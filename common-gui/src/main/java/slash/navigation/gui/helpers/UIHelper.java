@@ -56,12 +56,16 @@ public class UIHelper {
         JFrame.setDefaultLookAndFeelDecorated(true);
         JDialog.setDefaultLookAndFeelDecorated(true);
 
+        // to avoid blurred maps on Windows with a scaled UI
+        if(isWindows())
+            System.setProperty("sun.java2d.uiScale", "1.0");
+
         // to get menus out of the window and into the menu bar
         // https://developer.apple.com/library/content/documentation/Java/Conceptual/Java14Development/04-JavaUIToolkits/JavaUIToolkits.html
         if(isMac())
             System.setProperty("apple.laf.useScreenMenuBar", "true");
 
-        // override what the JRE reads from the user's desktop settings as the user's desktop antialiased text preferences
+        // override what the JRE reads from the user's desktop settings as the user's desktop anti-aliased text preferences
         // https://docs.oracle.com/javase/7/docs/technotes/guides/2d/flags.html#aaFonts
         if (isLinux())
             System.setProperty("awt.useSystemAAFontSettings", "lcd");
