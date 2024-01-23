@@ -72,4 +72,19 @@ public class CompactCalendarTest {
         assertEquals("UTC", inTimeZone.getTimeZoneId());
     }
 
+    @Test
+    public void testSameDay() {
+        CompactCalendar today = CompactCalendar.now();
+        CompactCalendar todayMinusAMilli = fromMillis(today.getTimeInMillis() - 1);
+        CompactCalendar yesterday = fromMillis(today.getTimeInMillis() - 24 * 60 * 60 * 1000);
+        CompactCalendar tomorrow = fromMillis(today.getTimeInMillis() + 24 * 60 * 60 * 1000);
+
+        assertTrue(today.sameDay(today));
+        assertTrue(today.sameDay(todayMinusAMilli));
+        assertTrue(yesterday.sameDay(yesterday));
+        assertTrue(tomorrow.sameDay(tomorrow));
+
+        assertFalse(today.sameDay(yesterday));
+        assertFalse(today.sameDay(tomorrow));
+    }
 }

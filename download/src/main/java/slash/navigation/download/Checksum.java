@@ -60,6 +60,11 @@ public class Checksum {
         return sha1;
     }
 
+    public boolean sameDay(Checksum other) {
+        return other == null || getLastModified() != null && other.getLastModified() != null &&
+                getLastModified().sameDay(other.getLastModified());
+    }
+
     public boolean laterThan(Checksum other) {
         return other == null || getLastModified() != null && other.getLastModified() != null &&
                 getLastModified().after(other.getLastModified());

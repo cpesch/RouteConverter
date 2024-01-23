@@ -379,6 +379,46 @@ public class BRouter extends BaseRoutingService {
             downloadManager.waitForCompletion(downloads);
     }
 
+    private Collection<Downloadable> collectDownloadables(Collection<String> uris) {
+        Collection<Downloadable> result = new HashSet<>();
+
+        for (String key : uris) {
+            Downloadable downloadable = getSegments().getDownloadable(key);
+            if (downloadable == null) {
+                log.warning(format("Cannot find downloadable for segment %s", key));
+                continue;
+            }
+            result.add(downloadable);
+        }
+        return result;
+    }
+
+    private boolean existAllSegmentsFromSameDay(Collection<Downloadable> segments) {
+        Checksum latestChecksum = null;
+
+        for (Downloadable downloadable : segments) {
+            File file = createSegmentFile(downloadable.getUri());
+            Checksum fileChecksum = null;
+            try {
+                fileChecksum = createChecksum(file, false);
+            } catch (IOException e) {
+                log.warning(format("Cannot calculate checksum for %s: %s", file, e.getLocalizedMessage()));
+            }
+
+            // file does not exist or failed to calculate checksum
+            if (fileChecksum == null)
+                return false;
+
+            if (latestChecksum == null)
+                latestChecksum = fileChecksum;
+
+            // file is from a different day than existing file
+            else if (!fileChecksum.sameDay(latestChecksum))
+                return false;
+        }
+        return true;
+    }
+
     public DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes) {
         if (!isInitialized()) {
             return new DownloadFutureImpl(Collections.emptySet());
@@ -389,42 +429,10 @@ public class BRouter extends BaseRoutingService {
             uris.addAll(createFileKeys(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
         }
 
-        Collection<Downloadable> segments = new HashSet<>();
-        Checksum latestChecksum = null;
-
-        for (String key : uris) {
-            Downloadable downloadable = getSegments().getDownloadable(key);
-            if (downloadable != null) {
-                File file = createSegmentFile(downloadable.getUri());
-                if (!file.exists())
-                    segments.add(downloadable);
-
-                if (latestChecksum == null || downloadable.getLatestChecksum() != null &&
-                        downloadable.getLatestChecksum().laterThan(latestChecksum))
-                    latestChecksum = downloadable.getLatestChecksum();
-            }
-        }
-
-        // all segments have to be from the same (latest) date
-        if (latestChecksum != null) {
-            for (String key : uris) {
-                Downloadable downloadable = getSegments().getDownloadable(key);
-                if (downloadable != null) {
-                    File file = createSegmentFile(downloadable.getUri());
-                    if (file.exists()) {
-                        Checksum fileChecksum = null;
-                        try {
-                            fileChecksum = createChecksum(file, false);
-                        } catch (IOException e) {
-                            log.warning(format("Cannot calculate checksum for %s: %s", file, e.getLocalizedMessage()));
-                        }
-
-                        if (fileChecksum != null && latestChecksum.laterThan(fileChecksum))
-                            segments.add(downloadable);
-                    }
-                }
-            }
-        }
+        Collection<Downloadable> segments = collectDownloadables(uris);
+        // if all segments exist locally and are from the same day, we don't need to download them
+        if(existAllSegmentsFromSameDay(segments))
+            segments = new HashSet<>();
         return new DownloadFutureImpl(segments);
     }
 

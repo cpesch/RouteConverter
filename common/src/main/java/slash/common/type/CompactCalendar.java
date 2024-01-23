@@ -43,6 +43,7 @@ import static java.util.Collections.unmodifiableMap;
 public class CompactCalendar {
     private static final Logger log = Logger.getLogger(CompactCalendar.class.getName());
     public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
+    private static final long MILLI_SECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
     private final long timeInMillis;
     private final String timeZoneId;
@@ -156,6 +157,10 @@ public class CompactCalendar {
         if (getTimeZoneId().equals(other.getTimeZoneId()))
             return getTimeInMillis() < other.getTimeInMillis();
         return getCalendar().before(other.getCalendar());
+    }
+
+    public boolean sameDay(CompactCalendar other) {
+        return getTimeInMillis() / MILLI_SECONDS_PER_DAY == other.getTimeInMillis()/ MILLI_SECONDS_PER_DAY;
     }
 
     public boolean equals(Object o) {
