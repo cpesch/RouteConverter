@@ -51,6 +51,7 @@ import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.toArray;
+import static slash.common.system.Platform.isWindows;
 import static slash.navigation.gui.events.Range.asRange;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 import static slash.navigation.maps.tileserver.TileServerMapManager.extractCopyrightHref;
@@ -88,7 +89,10 @@ public class MapSelector {
             Integer zoom = (Integer) e.getItem();
             mapView.setZoomLevel(zoom.byteValue());
         });
-        int width = getMaxWidth("19", 7);
+        int width = getMaxWidth("19", 0);
+        // several people report the zoom box with three dots ... instead of a number on Windows
+        if(isWindows())
+            width = width * 2;
         comboBoxZoom.setMaximumSize(new Dimension(width, comboBoxZoom.getMaximumSize().height));
         comboBoxZoom.setPreferredSize(new Dimension(width, comboBoxZoom.getPreferredSize().height));
 
