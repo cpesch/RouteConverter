@@ -31,7 +31,6 @@ import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.kml.Kml22Format;
 import slash.navigation.nmn.NmnFormat;
 import slash.navigation.photo.PhotoFormat;
-import slash.navigation.rest.Get;
 import slash.navigation.tcx.TcxFormat;
 
 import java.io.*;
@@ -218,22 +217,16 @@ public class NavigationFormatParser {
             URL url = new URL(urlString);
             int readBufferSize = getSize(url);
             log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-
-            Get request = new Get(url);
-            request.execute(response -> {
-                InputStream inputStream = response.getEntity().getContent();
-                NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(inputStream, CHUNK_BUFFER_SIZE));
-                // make sure not to read a byte after the limit
-                buffer.mark(readBufferSize + CHUNK_BUFFER_SIZE * 2);
-                try {
-                    CompactCalendar startDate = extractStartDate(url);
-                    internalSetStartDate(startDate);
-                    internalRead(buffer, getNavigationFormatRegistry().getReadFormats(), this);
-                } finally {
-                    buffer.closeUnderlyingInputStream();
-                }
-                return null;
-            });
+            NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(url.openStream(), CHUNK_BUFFER_SIZE));
+            // make sure not to read a byte after the limit
+            buffer.mark(readBufferSize + CHUNK_BUFFER_SIZE * 2);
+            try {
+                CompactCalendar startDate = extractStartDate(url);
+                internalSetStartDate(startDate);
+                internalRead(buffer, getNavigationFormatRegistry().getReadFormats(), this);
+            } finally {
+                buffer.closeUnderlyingInputStream();
+            }
         }
     }
 
@@ -325,11 +318,7 @@ public class NavigationFormatParser {
 
         int readBufferSize = getSize(url);
         log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-
-        final URL finalUrl = url;
-        final List<NavigationFormat> finalFormats = formats;
-        Get request = new Get(finalUrl);
-        return request.execute(response -> read(response.getEntity().getContent(), readBufferSize, extractStartDate(finalUrl), extractFile(finalUrl), finalFormats));
+        return read(url.openStream(), readBufferSize, extractStartDate(url), extractFile(url), formats);
     }
 
     public ParserResult read(URL url) throws IOException {
