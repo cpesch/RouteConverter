@@ -91,7 +91,7 @@ public class MapSelector {
         });
         int width = getMaxWidth("19", 0);
         // several people report the zoom box with three dots ... instead of a number on Windows
-        if(isWindows())
+        if (isWindows())
             width = width * 2;
         comboBoxZoom.setMaximumSize(new Dimension(width, comboBoxZoom.getMaximumSize().height));
         comboBoxZoom.setPreferredSize(new Dimension(width, comboBoxZoom.getPreferredSize().height));
