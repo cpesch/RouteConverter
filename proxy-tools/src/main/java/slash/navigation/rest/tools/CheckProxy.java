@@ -23,15 +23,11 @@ import org.apache.commons.cli.*;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
-import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
 import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
-import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.HttpHost;
-import org.apache.hc.core5.http.HttpResponse;
 
 import java.io.IOException;
 import java.net.*;
@@ -128,31 +124,23 @@ public class CheckProxy {
     }
 
     private void apacheCommonsHttpRequest(URI uri, Proxy proxy, String userName, char[] password) throws IOException {
-        BasicCredentialsProvider credentialsProvider = null;
-
-        RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
+        HttpClientBuilder clientBuilder = HttpClientBuilder.create();
         if (proxy != NO_PROXY && !proxy.type().equals(DIRECT)) {
-
             SocketAddress address = proxy.address();
-            log.info("SocketAddress " + address);
+            log.info("SocketAddress for proxy is " + address);
             if (address instanceof InetSocketAddress inetSocketAddress) {
                 HttpHost host = new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort());
-                requestConfigBuilder.setProxy(host);
+                clientBuilder.setProxy(host);
+                log.info("Using proxy " + proxy);
 
-                credentialsProvider = new BasicCredentialsProvider();
+                BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
                 credentialsProvider.setCredentials(new AuthScope(host), new UsernamePasswordCredentials(userName, password));
-                log.info("CredentialsProvider#setCredentials " + host);
+                clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
+                log.info("Using credentials " + credentialsProvider);
             }
         }
 
         log.info(format("Apache Commons HTTP request to %s with proxy %s", uri, proxy));
-        RequestConfig requestConfig = requestConfigBuilder.build();
-
-        HttpClientBuilder clientBuilder = HttpClientBuilder.create();
-        clientBuilder.setDefaultRequestConfig(requestConfig);
-        if (credentialsProvider != null)
-            clientBuilder.setDefaultCredentialsProvider(credentialsProvider);
-
         try(CloseableHttpClient httpClient = clientBuilder.build()) {
             String response = httpClient.execute(new HttpGet(uri), new BasicHttpClientResponseHandler());
             log.info(format("Apache Commons HTTP code 2xx length %s", response.length()));

@@ -37,7 +37,6 @@ import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.*;
 import java.util.List;
 import java.util.logging.Logger;
@@ -73,7 +72,6 @@ public abstract class HttpRequest {
         requestConfigBuilder.setConnectionRequestTimeout(15, SECONDS);
         requestConfigBuilder.setResponseTimeout(30, SECONDS);
         clientBuilder.setRetryStrategy(new DefaultHttpRequestRetryStrategy(0, ZERO_MILLISECONDS));
-        // TODO setUserAgent("curl/8.1.2"); method.setHeader("Accept", "*/*");
         setUserAgent("RouteConverter REST Client/" + System.getProperty("rest", "3.0"));
         this.method = method;
     }
@@ -151,7 +149,7 @@ public abstract class HttpRequest {
         if(proxy != NO_PROXY) {
             SocketAddress address = proxy.address();
             if(address instanceof InetSocketAddress inetSocketAddress) {
-                requestConfigBuilder.setProxy(new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort()));
+                clientBuilder.setProxy(new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort()));
                 log.info(format("Using proxy %s for %s", proxy, getURI()));
             }
         }

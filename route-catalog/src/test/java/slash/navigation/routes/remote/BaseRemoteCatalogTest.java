@@ -71,12 +71,14 @@ public abstract class BaseRemoteCatalogTest {
     }
 
     protected File getUrlAsFile(String url) throws IOException {
-        Get get = new Get(url);
+        Get request = new Get(url);
         File tempFile = createTempFile("url-as-file", ".bin");
         tempFile.deleteOnExit();
-        try (InputStream inputStream = get.executeAsStream(); OutputStream outputStream = new FileOutputStream(tempFile)) {
-            copyLarge(inputStream, outputStream);
-        }
-        return tempFile;
+        return request.execute(response -> {
+            try (OutputStream outputStream = new FileOutputStream(tempFile)) {
+                copyLarge(response.getEntity().getContent(), outputStream);
+                return tempFile;
+            }
+        });
     }
 }

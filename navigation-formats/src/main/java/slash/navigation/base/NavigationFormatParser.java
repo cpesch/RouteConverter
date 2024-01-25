@@ -218,16 +218,22 @@ public class NavigationFormatParser {
             URL url = new URL(urlString);
             int readBufferSize = getSize(url);
             log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-            NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(openStream(url), CHUNK_BUFFER_SIZE));
-            // make sure not to read a byte after the limit
-            buffer.mark(readBufferSize + CHUNK_BUFFER_SIZE * 2);
-            try {
-                CompactCalendar startDate = extractStartDate(url);
-                internalSetStartDate(startDate);
-                internalRead(buffer, getNavigationFormatRegistry().getReadFormats(), this);
-            } finally {
-                buffer.closeUnderlyingInputStream();
-            }
+
+            Get request = new Get(url);
+            request.execute(response -> {
+                InputStream inputStream = response.getEntity().getContent();
+                NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(inputStream, CHUNK_BUFFER_SIZE));
+                // make sure not to read a byte after the limit
+                buffer.mark(readBufferSize + CHUNK_BUFFER_SIZE * 2);
+                try {
+                    CompactCalendar startDate = extractStartDate(url);
+                    internalSetStartDate(startDate);
+                    internalRead(buffer, getNavigationFormatRegistry().getReadFormats(), this);
+                } finally {
+                    buffer.closeUnderlyingInputStream();
+                }
+                return null;
+            });
         }
     }
 
@@ -319,17 +325,11 @@ public class NavigationFormatParser {
 
         int readBufferSize = getSize(url);
         log.info("Reading '" + url + "' with a buffer of " + readBufferSize + " bytes");
-        return read(openStream(url), readBufferSize, extractStartDate(url), extractFile(url), formats);
-    }
 
-   private InputStream openStream(URL url) throws IOException {
-        String urlString = url.toExternalForm();
-        // make sure HTTPS requests use HTTP Client with it's SSL tweaks
-        if (urlString.contains("https://")) {
-            Get get = new Get(urlString);
-            return get.executeAsStream();
-        }
-        return url.openStream();
+        final URL finalUrl = url;
+        final List<NavigationFormat> finalFormats = formats;
+        Get request = new Get(finalUrl);
+        return request.execute(response -> read(response.getEntity().getContent(), readBufferSize, extractStartDate(finalUrl), extractFile(finalUrl), finalFormats));
     }
 
     public ParserResult read(URL url) throws IOException {

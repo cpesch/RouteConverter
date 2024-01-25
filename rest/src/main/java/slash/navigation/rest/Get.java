@@ -21,6 +21,9 @@ package slash.navigation.rest;
 
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 
+import java.io.IOException;
+import java.net.URL;
+
 import static org.apache.hc.core5.http.HttpHeaders.RANGE;
 
 /**
@@ -32,6 +35,10 @@ import static org.apache.hc.core5.http.HttpHeaders.RANGE;
 public class Get extends ReadRequest {
     public Get(String url) {
         super(new HttpGet(url));
+    }
+
+    public Get(URL url) {
+        this(url.toExternalForm());
     }
 
     public void setRange(long startIndex, Long endIndex) {
