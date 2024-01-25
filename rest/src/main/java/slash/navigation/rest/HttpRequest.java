@@ -19,18 +19,13 @@
 */
 package slash.navigation.rest;
 
-import org.apache.hc.client5.http.auth.AuthCache;
 import org.apache.hc.client5.http.auth.AuthScope;
-import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
-import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
-import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
-import org.apache.hc.client5.http.impl.auth.BasicScheme;
+import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
-import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
@@ -63,8 +58,8 @@ public abstract class HttpRequest {
     private final Logger log;
     private final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
     private final HttpUriRequestBase method;
+    private Credentials credentials;
     private ClassicHttpResponse response;
-    private HttpClientContext context = HttpClientContext.create();
     private final RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
 
     HttpRequest(HttpUriRequestBase method) {
@@ -78,24 +73,11 @@ public abstract class HttpRequest {
 
     HttpRequest(HttpUriRequestBase method, Credentials credentials) {
         this(method);
-        if (credentials != null)
-            setAuthentication(credentials);
+        this.credentials = credentials;
     }
 
     HttpUriRequestBase getMethod() {
         return method;
-    }
-
-    private void setAuthentication(String userName, char[] password, URI uri) {
-        HttpHost httpHost = new HttpHost(uri.getScheme(), uri.getHost(), uri.getPort());
-        AuthScope authScope = new AuthScope(httpHost, "api", null);
-        BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
-        credentialsProvider.setCredentials(authScope, new UsernamePasswordCredentials(userName, password));
-        AuthCache authCache = new BasicAuthCache();
-        BasicScheme basicAuth = new BasicScheme();
-        authCache.put(httpHost, basicAuth);
-        context.setAuthCache(authCache);
-        context.setCredentialsProvider(credentialsProvider);
     }
 
     private URI getURI() {
@@ -104,11 +86,6 @@ public abstract class HttpRequest {
         } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void setAuthentication(Credentials credentials) {
-        URI uri = getURI();
-        setAuthentication(credentials.getUserName(), credentials.getPassword(), uri);
     }
 
     public void setUserAgent(String userAgent) {
@@ -144,19 +121,28 @@ public abstract class HttpRequest {
     }
 
     public <T> T execute(HttpClientResponseHandler<T> responseHandler) throws IOException {
-        Proxy proxy = findHTTPProxy(getURI());
+        URI uri = getURI();
+        Proxy proxy = findHTTPProxy(uri);
         if(proxy != NO_PROXY) {
             SocketAddress address = proxy.address();
             if(address instanceof InetSocketAddress inetSocketAddress) {
                 clientBuilder.setProxy(new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort()));
-                log.info(format("Using proxy %s for %s", proxy, getURI()));
+                log.info(format("Using proxy %s for %s", proxy, uri));
             }
         }
 
         RequestConfig requestConfig = requestConfigBuilder.build();
         clientBuilder.setDefaultRequestConfig(requestConfig);
+        if(credentials != null) {
+            HttpHost httpHost = new HttpHost(uri.getScheme(), uri.getHost(), uri.getPort());
+            AuthScope authScope = new AuthScope(httpHost, "api", null);
+            clientBuilder.setDefaultCredentialsProvider(CredentialsProviderBuilder.create()
+                            .add(authScope, credentials.getUserName(), credentials.getPassword())
+                    .build());
+        }
+
         try(CloseableHttpClient httpClient = clientBuilder.build()) {
-            return httpClient.execute(method, context, response -> {
+            return httpClient.execute(method, response -> {
                 HttpRequest.this.response = response;
                 try {
                     return responseHandler.handleResponse(response);
