@@ -36,16 +36,13 @@ public interface RoutingService {
     String getName();
     boolean isInitialized();
     boolean isDownload();
-    boolean isSupportTurnpoints();
-    boolean isSupportAvoidFerries();
-    boolean isSupportAvoidHighways();
-    boolean isSupportAvoidTolls();
     List<TravelMode> getAvailableTravelModes();
+    TravelRestrictions getAvailableTravelRestrictions();
     TravelMode getPreferredTravelMode();
     String getPath();
     void setPath(String path);
 
-    RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode);
+    RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode, TravelRestrictions travelRestrictions);
 
     DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes);
     long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors);

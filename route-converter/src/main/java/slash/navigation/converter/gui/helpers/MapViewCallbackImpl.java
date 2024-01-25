@@ -27,6 +27,7 @@ import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
+import slash.navigation.routing.TravelRestrictions;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitude;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
@@ -67,16 +68,8 @@ public abstract class MapViewCallbackImpl implements MapViewCallback {
         return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().getTravelMode();
     }
 
-    public boolean isAvoidFerries() {
-        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().isAvoidFerries();
-    }
-
-    public boolean isAvoidHighways() {
-        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().isAvoidHighways();
-    }
-
-    public boolean isAvoidTolls() {
-        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().isAvoidTolls();
+    public TravelRestrictions getTravelRestrictions() {
+        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().getTravelRestrictions();
     }
 
     public boolean isShowAllPositionsAfterLoading() {

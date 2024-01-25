@@ -20,7 +20,10 @@
 
 package slash.navigation.routing;
 
-import slash.navigation.common.*;
+import slash.navigation.common.DistanceAndTime;
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.MapDescriptor;
+import slash.navigation.common.NavigationPosition;
 
 import java.util.List;
 
@@ -28,6 +31,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.routing.RoutingResult.Validity.Invalid;
+import static slash.navigation.routing.TravelRestrictions.NO_RESTRICTIONS;
 
 /**
  * A routing service that does no routing, i.e. returns beelines.
@@ -50,24 +54,12 @@ public class Beeline extends BaseRoutingService {
         return false;
     }
 
-    public boolean isSupportTurnpoints() {
-        return false;
-    }
-
-    public boolean isSupportAvoidFerries() {
-        return false;
-    }
-
-    public boolean isSupportAvoidHighways() {
-        return false;
-    }
-
-    public boolean isSupportAvoidTolls() {
-        return false;
-    }
-
     public List<TravelMode> getAvailableTravelModes() {
         return singletonList(BEELINE);
+    }
+
+    public TravelRestrictions getAvailableTravelRestrictions() {
+        return NO_RESTRICTIONS;
     }
 
     public TravelMode getPreferredTravelMode() {
@@ -87,7 +79,7 @@ public class Beeline extends BaseRoutingService {
         return new RoutingResult(asList(from, to), new DistanceAndTime(distance, null), Invalid);
     }
 
-    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
+    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode, TravelRestrictions travelRestrictions) {
         return getRouteBetween(from, to);
     }
 

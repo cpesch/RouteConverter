@@ -23,8 +23,10 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.ResponsePath;
 import com.graphhopper.config.Profile;
+import com.graphhopper.json.Statement;
+import com.graphhopper.util.CustomModel;
 import com.graphhopper.util.PointList;
-import com.graphhopper.util.exceptions.PointNotFoundException;
+import com.graphhopper.util.exceptions.DetailedIllegalArgumentException;
 import com.graphhopper.util.shapes.GHPoint3D;
 import slash.common.io.Files;
 import slash.navigation.common.*;
@@ -43,6 +45,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
+import static com.graphhopper.json.Statement.Op.MULTIPLY;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
@@ -97,28 +100,16 @@ public class GraphHopper extends BaseRoutingService {
         return true;
     }
 
-    public boolean isSupportTurnpoints() {
-        return false;
-    }
-
-    public boolean isSupportAvoidFerries() {
-        return false;
-    }
-
-    public boolean isSupportAvoidHighways() {
-        return false;
-    }
-
-    public boolean isSupportAvoidTolls() {
-        return false;
-    }
-
     public List<TravelMode> getAvailableTravelModes() {
         return TRAVEL_MODES;
     }
 
     public TravelMode getPreferredTravelMode() {
         return CAR;
+    }
+
+    public TravelRestrictions getAvailableTravelRestrictions() {
+        return new TravelRestrictions(true, true, true, false, true);
     }
 
     public String getPath() {
@@ -150,7 +141,7 @@ public class GraphHopper extends BaseRoutingService {
         return ensureDirectory(new java.io.File(getDirectory(downloadable.getDataSource()), removeExtension(downloadable.getUri())).getParentFile());
     }
 
-    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
+    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode, TravelRestrictions travelRestrictions) {
         initializeHopper();
         if (hopper == null)
             throw new IllegalStateException("Could not initialize from graph directory of GraphHopper");
@@ -166,12 +157,24 @@ public class GraphHopper extends BaseRoutingService {
         try {
             GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
             request.setProfile(travelMode.getName());
+            CustomModel customModel = new CustomModel();
+            if (travelRestrictions.isAvoidBridges())
+                customModel.addToPriority(Statement.If("road_environment == BRIDGE", MULTIPLY, "0"));
+            if (travelRestrictions.isAvoidFerries())
+                customModel.addToPriority(Statement.If("road_environment == FERRY", MULTIPLY, "0"));
+            if (travelRestrictions.isAvoidMotorways())
+                customModel.addToPriority(Statement.If("road_class == MOTORWAY", MULTIPLY, "0"));
+            // if (travelRestrictions.isAvoidToll())
+            //    customModel.addToPriority(Statement.If("toll == all", MULTIPLY, "0"));
+            if (travelRestrictions.isAvoidTunnels())
+                customModel.addToPriority(Statement.If("road_environment == TUNNEL", MULTIPLY, "0"));
+            request.setCustomModel(customModel);
             GHResponse response = hopper.route(request);
             if (response.hasErrors()) {
                 String errors = asDialogString(response.getErrors(), false);
                 log.severe(format("Error while routing between %s and %s: %s", from, to, errors));
 
-                boolean pointNotFound = !response.getErrors().isEmpty() && response.getErrors().get(0) instanceof PointNotFoundException;
+                boolean pointNotFound = !response.getErrors().isEmpty() && response.getErrors().get(0) instanceof DetailedIllegalArgumentException;
                 if (pointNotFound)
                     return new RoutingResult(null, null, PointNotFound);
 
@@ -261,7 +264,7 @@ public class GraphHopper extends BaseRoutingService {
     private com.graphhopper.GraphHopper createHopper() {
         List<Profile> profiles = getAvailableTravelModes().stream()
                 .map(mode -> new Profile(mode.getName())
-                        .setVehicle(mode.getName())
+                                .setVehicle(mode.getName())
                         // could set .setTurnCosts(true)
                 )
                 .toList();
@@ -276,8 +279,7 @@ public class GraphHopper extends BaseRoutingService {
         try {
             if (result.load())
                 return result;
-        }
-        catch (IllegalStateException e) {
+        } catch (IllegalStateException e) {
             log.warning(format("GraphHopper couldn't read %s: %s. Deleting then reimporting.", graphDirectory, e.getLocalizedMessage()));
 
             try {
@@ -316,9 +318,11 @@ public class GraphHopper extends BaseRoutingService {
                 public String getIdentifier() {
                     return mapIdentifier;
                 }
+
                 public BoundingBox getBoundingBox() {
                     return createBoundingBox(asList(l1, l2));
                 }
+
                 public String toString() {
                     return "MapDescriptor[identifier=" + getIdentifier() + ", boundingBox=" + getBoundingBox() + "]";
                 }
@@ -350,19 +354,19 @@ public class GraphHopper extends BaseRoutingService {
 
         private boolean confirmDownload() {
             slash.navigation.datasources.File file = next.getRemoteFile();
-            if(file == null || TEST_MODE)
+            if (file == null || TEST_MODE)
                 return true;
 
             Long size = file.getLatestChecksum() != null ? file.getLatestChecksum().getContentLength() : null;
             int confirm = showConfirmDialog(null,
                     "Do you want to download the routing data\n" +
                             file.getUri() + "\n" +
-                            "with a size of " + (size != null ? size / (1024*1024) : "a large number of ") + " MBytes?",
+                            "with a size of " + (size != null ? size / (1024 * 1024) : "a large number of ") + " MBytes?",
                     "GraphHopper", YES_NO_OPTION);
-            if(confirm == YES_OPTION)
+            if (confirm == YES_OPTION)
                 return true;
             this.next = !graphDescriptors.isEmpty() ? graphDescriptors.remove(0) : null;
-            if(next == null)
+            if (next == null)
                 return false;
             return confirmDownload();
         }
@@ -397,7 +401,7 @@ public class GraphHopper extends BaseRoutingService {
 
     private void downloadAndWait(GraphDescriptor graphDescriptor) {
         Downloadable downloadable = graphDescriptor.getRemoteFile();
-        if(downloadable != null) {
+        if (downloadable != null) {
             Download download = download(downloadable);
             downloadManager.waitForCompletion(singletonList(download));
         }
@@ -405,7 +409,7 @@ public class GraphHopper extends BaseRoutingService {
 
     private void download(GraphDescriptor graphDescriptor) {
         Downloadable downloadable = graphDescriptor.getRemoteFile();
-        if(downloadable != null) {
+        if (downloadable != null) {
             download(downloadable);
         }
     }
@@ -424,7 +428,7 @@ public class GraphHopper extends BaseRoutingService {
         long notExists = 0L;
         for (GraphDescriptor graphDescriptor : graphDescriptors) {
             Downloadable downloadable = graphDescriptor.getRemoteFile();
-            if(downloadable == null)
+            if (downloadable == null)
                 continue;
 
             Long contentLength = downloadable.getLatestChecksum() != null ? downloadable.getLatestChecksum().getContentLength() : null;

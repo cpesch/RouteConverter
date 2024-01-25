@@ -51,6 +51,7 @@ import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.download.Checksum.createChecksum;
 import static slash.navigation.routing.RoutingResult.Validity.Invalid;
 import static slash.navigation.routing.RoutingResult.Validity.Valid;
+import static slash.navigation.routing.TravelRestrictions.NO_RESTRICTIONS;
 
 /**
  * Encapsulates access to the BRouter.
@@ -107,22 +108,6 @@ public class BRouter extends BaseRoutingService {
         return true;
     }
 
-    public boolean isSupportTurnpoints() {
-        return false;
-    }
-
-    public boolean isSupportAvoidFerries() {
-        return false;
-    }
-
-    public boolean isSupportAvoidHighways() {
-        return false;
-    }
-
-    public boolean isSupportAvoidTolls() {
-        return false;
-    }
-
     public List<TravelMode> getAvailableTravelModes() {
         List<TravelMode> result = new ArrayList<>();
         if (getProfiles() != null) {
@@ -138,6 +123,10 @@ public class BRouter extends BaseRoutingService {
 
     public TravelMode getPreferredTravelMode() {
         return MOPED;
+    }
+
+    public TravelRestrictions getAvailableTravelRestrictions() {
+        return NO_RESTRICTIONS;
     }
 
     public String getPath() {
@@ -209,7 +198,7 @@ public class BRouter extends BaseRoutingService {
         return result;
     }
 
-    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode) {
+    public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode, TravelRestrictions travelRestrictions) {
         SecondCounter secondCounter = new SecondCounter() {
             protected void second(int second) {
                 fireRouting(second);

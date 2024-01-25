@@ -267,7 +267,7 @@ public class RouteRenderer {
             }
 
             try {
-                result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode());
+                result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode(), mapViewCallback.getTravelRestrictions());
                 if (result.getValidity().equals(PointNotFound)) {
 
                     // special treatment for GraphHopper: try the next download

@@ -25,10 +25,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.Application;
-import slash.navigation.routing.DownloadFuture;
-import slash.navigation.routing.RoutingResult;
-import slash.navigation.routing.RoutingService;
-import slash.navigation.routing.TravelMode;
+import slash.navigation.routing.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -46,7 +43,7 @@ import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.gui.helpers.WindowHelper.getFrame;
-import static slash.navigation.routing.RoutingResult.Validity.*;
+import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
 /**
  * Helps to insert positions.
@@ -63,22 +60,7 @@ public class InsertPositionFacade {
         r.clearSelection();
 
         RoutingService service = r.getRoutingServiceFacade().getRoutingService();
-        if (service instanceof GoogleDirections) {
-            ((GoogleDirections) service).insertAllWaypoints(selectedRows);
-        } else
-            insertWithRoutingService(service, selectedRows);
-    }
-
-    public void insertOnlyTurnpoints() {
-        RouteConverter r = RouteConverter.getInstance();
-        int[] selectedRows = r.getConvertPanel().getPositionsView().getSelectedRows();
-        r.clearSelection();
-
-        RoutingService service = r.getRoutingServiceFacade().getRoutingService();
-        if (service instanceof GoogleDirections) {
-            ((GoogleDirections) service).insertOnlyTurnpoints(selectedRows);
-        } else
-            throw new UnsupportedOperationException();
+        insertWithRoutingService(service, selectedRows);
     }
 
     private final ExecutorService executor = createSingleThreadExecutor("InsertPositions");
@@ -103,22 +85,25 @@ public class InsertPositionFacade {
         for (int selectedRow : selectedRows)
             selectedPositions.add(positionsModel.getPosition(selectedRow));
 
-        DownloadFuture future = null;
         if (routingService.isDownload()) {
             List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<>();
             for (NavigationPosition position : selectedPositions) {
                 longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
             }
-            future = routingService.downloadRoutingDataFor(r.getMapView().getMapIdentifier(), longitudeAndLatitudes);
+            DownloadFuture future = routingService.downloadRoutingDataFor(r.getMapView().getMapIdentifier(), longitudeAndLatitudes);
+            if(future.isRequiresDownload())
+                future.download();
         }
 
         TravelMode travelMode = r.getRoutingServiceFacade().getRoutingPreferencesModel().getTravelMode();
-        List<Integer> positions = insertPositions(routingService, future, travelMode, selectedPositions);
+        TravelRestrictions travelRestrictions = r.getRoutingServiceFacade().getRoutingPreferencesModel().getTravelRestrictions();
+        List<Integer> positions = insertPositions(routingService, travelMode, travelRestrictions, selectedPositions);
         if (!positions.isEmpty())
             invokeLater(() -> r.getPositionAugmenter().addData(toArray(positions), false, true, true, false, false));
     }
 
-    private List<Integer> insertPositions(RoutingService routingService, DownloadFuture future, TravelMode travelMode, List<NavigationPosition> selectedPositions) throws InterruptedException, InvocationTargetException {
+    private List<Integer> insertPositions(RoutingService routingService, TravelMode travelMode, TravelRestrictions travelRestrictions,
+                                          List<NavigationPosition> selectedPositions) throws InterruptedException, InvocationTargetException {
         PositionsModel positionsModel = RouteConverter.getInstance().getConvertPanel().getPositionsModel();
 
         List<Integer> insertedPositions = new ArrayList<>();
@@ -127,7 +112,7 @@ public class InsertPositionFacade {
             if (i == positionsModel.getRowCount() - 1 || i == selectedPositions.size() - 1)
                 continue;
 
-            RoutingResult result = routingService.getRouteBetween(selectedPositions.get(i), selectedPositions.get(i + 1), travelMode);
+            RoutingResult result = routingService.getRouteBetween(selectedPositions.get(i), selectedPositions.get(i + 1), travelMode, travelRestrictions);
             if (result.getValidity().equals(Valid)) {
                 final List<BaseNavigationPosition> positions = new ArrayList<>();
                 for (NavigationPosition position : result.getPositions()) {

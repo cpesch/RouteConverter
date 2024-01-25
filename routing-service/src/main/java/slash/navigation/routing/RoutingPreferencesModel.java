@@ -20,9 +20,11 @@ public class RoutingPreferencesModel {
 
     private static final String ROUTING_SERVICE_PREFERENCE = "routingService";
     private static final String TRAVEL_MODE_PREFERENCE = "travelMode";
+    private static final String AVOID_BRIDGES_PREFERENCE = "avoidBridges";
     private static final String AVOID_FERRIES_PREFERENCE = "avoidFerries";
-    private static final String AVOID_HIGHWAYS_PREFERENCE = "avoidHighways";
+    private static final String AVOID_MOTORWAYS_PREFERENCE = "avoidMotorways";
     private static final String AVOID_TOLLS_PREFERENCE = "avoidTolls";
+    private static final String AVOID_TUNNELS_PREFERENCE = "avoidTunnels";
 
     private final EventListenerList listenerList = new EventListenerList();
 
@@ -84,31 +86,39 @@ public class RoutingPreferencesModel {
         fireChanged();
     }
 
-    public boolean isAvoidFerries() {
-        return preferences.getBoolean(AVOID_FERRIES_PREFERENCE + getRoutingService().getName(), false);
+    public TravelRestrictions getTravelRestrictions() {
+        return new TravelRestrictions(getAvoidPreference(AVOID_BRIDGES_PREFERENCE),
+                getAvoidPreference(AVOID_FERRIES_PREFERENCE), getAvoidPreference(AVOID_MOTORWAYS_PREFERENCE),
+                getAvoidPreference(AVOID_TOLLS_PREFERENCE), getAvoidPreference(AVOID_TUNNELS_PREFERENCE));
+    }
+
+    private boolean getAvoidPreference(String key) {
+        return preferences.getBoolean(key + getRoutingService().getName(), false);
+    }
+
+    private void setAvoidPreference(String key, boolean avoidPreference) {
+        preferences.putBoolean(key + getRoutingService().getName(), avoidPreference);
+        fireChanged();
+    }
+
+    public void setAvoidBridges(boolean avoidBridges) {
+        setAvoidPreference(AVOID_BRIDGES_PREFERENCE, avoidBridges);
     }
 
     public void setAvoidFerries(boolean avoidFerries) {
-        preferences.putBoolean(AVOID_FERRIES_PREFERENCE + getRoutingService().getName(), avoidFerries);
-        fireChanged();
+        setAvoidPreference(AVOID_FERRIES_PREFERENCE, avoidFerries);
     }
 
-    public boolean isAvoidHighways() {
-        return preferences.getBoolean(AVOID_HIGHWAYS_PREFERENCE + getRoutingService().getName(), false);
-    }
-
-    public void setAvoidHighways(boolean avoidHighways) {
-        preferences.putBoolean(AVOID_HIGHWAYS_PREFERENCE + getRoutingService().getName(), avoidHighways);
-        fireChanged();
-    }
-
-    public boolean isAvoidTolls() {
-        return preferences.getBoolean(AVOID_TOLLS_PREFERENCE + getRoutingService().getName(), false);
+    public void setAvoidMotorways(boolean avoidMotorways) {
+        setAvoidPreference(AVOID_MOTORWAYS_PREFERENCE, avoidMotorways);
     }
 
     public void setAvoidTolls(boolean avoidTolls) {
-        preferences.putBoolean(AVOID_TOLLS_PREFERENCE + getRoutingService().getName(), avoidTolls);
-        fireChanged();
+        setAvoidPreference(AVOID_TOLLS_PREFERENCE, avoidTolls);
+    }
+
+    public void setAvoidTunnels(boolean avoidTunnels) {
+        setAvoidPreference(AVOID_TUNNELS_PREFERENCE, avoidTunnels);
     }
 
     protected void fireChanged() {

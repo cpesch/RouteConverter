@@ -44,6 +44,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.navigation.routing.RoutingResult.Validity.Valid;
+import static slash.navigation.routing.TravelRestrictions.NO_RESTRICTIONS;
 
 public class GraphHopperIT {
     private static final NavigationPosition FROM = new SimpleNavigationPosition(10.18587, 53.40451);
@@ -89,7 +90,7 @@ public class GraphHopperIT {
 
     @Test
     public void testGetRouteBetweenByCar() {
-        RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("car"));
+        RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("car"), NO_RESTRICTIONS);
         assertEquals(Valid, result.getValidity());
         assertEquals(134, result.getPositions().size(), 10);
         assertEquals(13605.6, result.getDistanceAndTime().getDistance(), 25.0);
@@ -98,7 +99,7 @@ public class GraphHopperIT {
 
     @Test
     public void testGetRouteBetweenByBike() {
-        RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("bike"));
+        RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("bike"), NO_RESTRICTIONS);
         assertEquals(Valid, result.getValidity());
         assertEquals(90, result.getPositions().size(), 10);
         assertEquals(13658.8, result.getDistanceAndTime().getDistance(), 25.0);

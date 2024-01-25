@@ -64,7 +64,7 @@ public abstract class HttpRequest {
     private final HttpClientBuilder clientBuilder = HttpClientBuilder.create();
     private final HttpUriRequestBase method;
     private ClassicHttpResponse response;
-    private HttpClientContext context;
+    private HttpClientContext context = HttpClientContext.create();
     private final RequestConfig.Builder requestConfigBuilder = RequestConfig.custom();
 
     HttpRequest(HttpUriRequestBase method) {
@@ -87,14 +87,13 @@ public abstract class HttpRequest {
     }
 
     private void setAuthentication(String userName, char[] password, URI uri) {
-        HttpHost httpHost = new HttpHost( uri.getScheme(), uri.getHost(), uri.getPort());
+        HttpHost httpHost = new HttpHost(uri.getScheme(), uri.getHost(), uri.getPort());
         AuthScope authScope = new AuthScope(httpHost, "api", null);
         BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
         credentialsProvider.setCredentials(authScope, new UsernamePasswordCredentials(userName, password));
         AuthCache authCache = new BasicAuthCache();
         BasicScheme basicAuth = new BasicScheme();
         authCache.put(httpHost, basicAuth);
-        context = HttpClientContext.create();
         context.setAuthCache(authCache);
         context.setCredentialsProvider(credentialsProvider);
     }

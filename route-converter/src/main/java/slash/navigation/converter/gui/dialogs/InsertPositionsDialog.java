@@ -31,8 +31,6 @@ import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -58,7 +56,6 @@ public class InsertPositionsDialog extends SimpleDialog {
     private JButton buttonSelectAll;
     private JButton buttonClearSelection;
     private JButton buttonInsertAllWaypoints;
-    private JButton buttonInsertOnlyTurnpoints;
 
     public InsertPositionsDialog() {
         super(RouteConverter.getInstance().getFrame(), "insert-positions");
@@ -85,13 +82,6 @@ public class InsertPositionsDialog extends SimpleDialog {
         buttonInsertAllWaypoints.addActionListener(new DialogAction(this) {
             public void run() {
                 insertAllWaypoints();
-            }
-        });
-
-        setMnemonic(buttonInsertOnlyTurnpoints, "insert-only-turnpoints-mnemonic");
-        buttonInsertOnlyTurnpoints.addActionListener(new DialogAction(this) {
-            public void run() {
-                insertOnlyTurnpoints();
             }
         });
 
@@ -133,7 +123,6 @@ public class InsertPositionsDialog extends SimpleDialog {
 
         boolean existsSelectedPosition = selectedRowCount > 0;
         buttonInsertAllWaypoints.setEnabled(existsSelectedPosition);
-        buttonInsertOnlyTurnpoints.setEnabled(existsSelectedPosition && r.getRoutingServiceFacade().getRoutingPreferencesModel().getRoutingService().isSupportTurnpoints());
         buttonClearSelection.setEnabled(existsSelectedPosition);
 
         boolean notAllPositionsSelected = r.getConvertPanel().getPositionsView().getRowCount() > selectedRowCount;
@@ -154,10 +143,6 @@ public class InsertPositionsDialog extends SimpleDialog {
 
     private void insertAllWaypoints() {
         RouteConverter.getInstance().getInsertPositionFacade().insertAllWaypoints();
-    }
-
-    private void insertOnlyTurnpoints() {
-        RouteConverter.getInstance().getInsertPositionFacade().insertOnlyTurnpoints();
     }
 
     private void close() {
@@ -208,19 +193,16 @@ public class InsertPositionsDialog extends SimpleDialog {
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel4, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
         final JPanel panel5 = new JPanel();
-        panel5.setLayout(new GridLayoutManager(2, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel5.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel5, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        panel5.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         buttonInsertAllWaypoints = new JButton();
         this.$$$loadButtonText$$$(buttonInsertAllWaypoints, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "insert-all-waypoints"));
-        panel5.add(buttonInsertAllWaypoints, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonInsertOnlyTurnpoints = new JButton();
-        this.$$$loadButtonText$$$(buttonInsertOnlyTurnpoints, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "insert-only-turnpoints"));
-        panel5.add(buttonInsertOnlyTurnpoints, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        panel5.add(spacer2, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel5.add(buttonInsertAllWaypoints, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "insert-positions"));
-        panel5.add(label2, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel5.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;

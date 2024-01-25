@@ -24,6 +24,7 @@ import slash.navigation.common.DistanceAndTimeAggregator;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
+import slash.navigation.routing.TravelRestrictions;
 
 /**
  * Interface for callbacks from the {@link MapView} to the other RouteConverter services.
@@ -40,9 +41,7 @@ public interface MapViewCallback {
 
     RoutingService getRoutingService();
     TravelMode getTravelMode();
-    boolean isAvoidFerries();
-    boolean isAvoidHighways();
-    boolean isAvoidTolls();
+    TravelRestrictions getTravelRestrictions();
 
     boolean isShowAllPositionsAfterLoading();
     boolean isRecenterAfterZooming();

@@ -25,7 +25,7 @@ import slash.navigation.rest.SimpleCredentials;
 public abstract class RouteFeedbackServiceBase {
     protected static final String API = System.getProperty("api", "http://localhost:8000/");
     protected static final String USERNAME = "test";
-    protected static final char[] PASSWORD = "test".toCharArray();
+    protected static final char[] PASSWORD = System.getProperty("password", "test").toCharArray();
     protected static final char[] WRONG_PASSWORD = "wrong-password".toCharArray();
 
     protected RouteFeedback routeFeedback;
