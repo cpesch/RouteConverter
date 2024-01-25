@@ -31,10 +31,9 @@ import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.protocol.HttpClientContext;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.Header;
-import org.apache.hc.core5.http.HttpEntity;
-import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.*;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
 
 import java.io.IOException;
@@ -46,13 +45,11 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.net.Proxy.NO_PROXY;
 import static java.net.Proxy.Type.HTTP;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.apache.hc.core5.http.HttpStatus.*;
 import static org.apache.hc.core5.util.TimeValue.ZERO_MILLISECONDS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.io.InputOutput.readBytes;
 
 /**
  * Wrapper for a simple HTTP Request.
@@ -149,7 +146,7 @@ public abstract class HttpRequest {
         return NO_PROXY;
     }
 
-    protected ClassicHttpResponse execute(/* TODO HttpClientResponseHandler*/) throws IOException {
+    public <T> T execute(HttpClientResponseHandler<T> responseHandler) throws IOException {
         Proxy proxy = findHTTPProxy(getURI());
         if(proxy != NO_PROXY) {
             SocketAddress address = proxy.address();
@@ -161,45 +158,37 @@ public abstract class HttpRequest {
 
         RequestConfig requestConfig = requestConfigBuilder.build();
         clientBuilder.setDefaultRequestConfig(requestConfig);
-        try {
-            CloseableHttpClient httpClient = clientBuilder.build();
-            return httpClient.execute(method, context);
+        try(CloseableHttpClient httpClient = clientBuilder.build()) {
+            return httpClient.execute(method, context, response -> {
+                HttpRequest.this.response = response;
+                try {
+                    return responseHandler.handleResponse(response);
+                } catch (HttpException e) {
+                    throw new IOException(e);
+                }
+            });
         } catch (SocketException e) {
             if (throwsSocketExceptionIfUnAuthorized())
-                return new BasicClassicHttpResponse(SC_UNAUTHORIZED, "socket exception since unauthorized");
+                this.response = new BasicClassicHttpResponse(SC_UNAUTHORIZED, "socket exception since unauthorized");
             else
                 throw e;
         }
+        return null;
     }
 
     public String executeAsString() throws IOException {
-        try {
-            this.response = execute();
-            HttpEntity entity = response.getEntity();
-            // HEAD requests don't have a body
-            String body = entity != null ? new String(readBytes(entity.getContent()), UTF_8) : null;
-            if (!isSuccessful() && body != null)
-                log.warning(format("Body of %s not null: %s", response, body));
-            return body;
-        } finally {
-            release();
-        }
-    }
-
-    public InputStream executeAsStream(/* TODO HttpClientResponseHandler*/) throws IOException {
-        this.response = execute();
-        // no response body then
-        HttpEntity entity = response.getEntity();
-        InputStream body = entity != null ? entity.getContent() : null;
-        if (!isSuccessful() && !isNotModified())
-            log.warning(format("Cannot read response body for %s", getURI()));
+        String body = execute(response -> {
+            try {
+                HttpEntity entity = response.getEntity();
+                // HEAD requests don't have a body
+                return entity != null ? EntityUtils.toString(entity) : null;
+            } catch (ParseException e) {
+                throw new IOException(e);
+            }
+        });
+        if (!isSuccessful() && body != null)
+            log.warning(format("Body of %s is not null: %s", getURI(), body));
         return body;
-    }
-
-    public void release() throws IOException {
-        if(response != null)
-            response.close();
-        method.reset();
     }
 
     private void assertExecuted() throws IOException {

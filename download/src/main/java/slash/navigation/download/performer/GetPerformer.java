@@ -19,6 +19,9 @@
 */
 package slash.navigation.download.performer;
 
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import slash.navigation.download.Action;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
@@ -80,14 +83,18 @@ public class GetPerformer implements ActionPerformer {
         Get request = new Get(getDownload().getUrl());
         request.setRange(fileSize, contentLength);
 
-        InputStream inputStream = request.executeAsStream();
-        log.info(format("Resume from %s returned with status code %s", getDownload().getUrl(), request.getStatusCode()));
-        if (request.isPartialContent()) {
-            getModelUpdater().expectingBytes(contentLength != null ? contentLength : request.getContentLength() != null ? request.getContentLength() : 0);
-            new Copier(getModelUpdater()).copyAndClose(inputStream, new FileOutputStream(getDownload().getTempFile(), true), fileSize, contentLength);
-            return new Result(request, true);
-        }
-        return new Result(request, false);
+        return request.execute(new HttpClientResponseHandler<Result>() {
+            public Result handleResponse(ClassicHttpResponse response) throws IOException {
+                log.info(format("Resume from %s returned with status code %s", getDownload().getUrl(), request.getStatusCode()));
+                if (request.isPartialContent()) {
+                    getModelUpdater().expectingBytes(contentLength != null ? contentLength : request.getContentLength() != null ? request.getContentLength() : 0);
+                    InputStream inputStream = response.getEntity().getContent();
+                    new Copier(getModelUpdater()).copyAndClose(inputStream, new FileOutputStream(getDownload().getTempFile(), true), fileSize, contentLength);
+                    return new Result(request, true);
+                }
+                return new Result(request, false);
+            }
+        });
     }
 
     private Result download() throws IOException {
@@ -100,17 +107,25 @@ public class GetPerformer implements ActionPerformer {
         if (new Validator(getDownload()).isExistsTargets() && getDownload().getETag() != null)
             request.setIfNoneMatch(getDownload().getETag());
 
-        InputStream inputStream = request.executeAsStream();
-        log.info(format("Download from %s returned with status code %s and content length %d", getDownload().getUrl(), request.getStatusCode(), request.getContentLength()));
-        if (request.isSuccessful() && inputStream != null) {
-            if(contentLength == null)
-                contentLength = request.getContentLength();
-            if (contentLength != null)
-                getModelUpdater().expectingBytes(contentLength);
-            new Copier(getModelUpdater()).copyAndClose(inputStream, new FileOutputStream(getDownload().getTempFile()), 0, contentLength);
-            return new Result(request, true, request.getLastModified());
-        }
-        return new Result(request, request.isSuccessful(), request.isNotModified());
+        return request.execute(response -> {
+            HttpEntity entity = response.getEntity();
+            log.info(format("Download from %s returned with status code %s", getDownload().getUrl(), request.getStatusCode()));
+            if(request.getContentLength() != null)
+                log.info(format("Download from %s returned has content length %d", getDownload().getUrl(), request.getContentLength()));
+
+            // 304 results don't have a body
+            if (request.isSuccessful() && entity != null) {
+                InputStream inputStream = entity.getContent();
+                Long length = contentLength;
+                if (length == null)
+                    length = request.getContentLength();
+                if (length != null)
+                    getModelUpdater().expectingBytes(length);
+                new Copier(getModelUpdater()).copyAndClose(inputStream, new FileOutputStream(getDownload().getTempFile()), 0, length);
+                return new Result(request, true, request.getLastModified());
+            }
+            return new Result(request, request.isSuccessful(), request.isNotModified());
+        });
     }
 
     public void run() throws IOException {
@@ -165,9 +180,10 @@ public class GetPerformer implements ActionPerformer {
     }
 
     private void copy(Long lastModified) throws IOException {
-        File target = getDownload().getFile().getFile();
+        File target = getDownload().getFile().getFile(); // a directory
         ensureDirectory(target.getParent());
         new Copier(getModelUpdater()).copyAndClose(getDownload().getTempFile(), target);
+        setLastModified(target, lastModified);
         setLastModified(target, lastModified);
     }
 
@@ -178,8 +194,9 @@ public class GetPerformer implements ActionPerformer {
     }
 
     private void extract(Long lastModified) throws IOException {
-        File target = getDownload().getFile().getFile();
+        File target = getDownload().getFile().getFile(); // a directory
         new Extractor(getModelUpdater()).extract(getDownload().getTempFile(), target);
+        setLastModified(target, lastModified);
         setLastModified(getDownload().getTempFile(), lastModified);
     }
 

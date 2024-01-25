@@ -60,16 +60,19 @@ public class GetRangePerformer implements ActionPerformer {
             request.setIfNoneMatch(getDownload().getETag());
 
         log.info(format("GET 0-%d for %s returned with status code %s and content length %d", RANGE_END_INDEX, getDownload().getUrl(), request.getStatusCode(), request.getContentLength()));
-        if (request.isPartialContent()) {
-            try(InputStream inputStream = request.executeAsStream()) {
+
+        request.execute(response -> {
+            InputStream inputStream = response.getEntity().getContent();
+            if (request.isPartialContent()) {
                 writePartialFile(inputStream, getDownload().getFile().getExpectedChecksum().getContentLength(), getDownload().getFile().getFile());
+
+            } else if (request.isOk()) {
+                // HTTP Range not supported
+                copyAndClose(inputStream, new FileOutputStream(getDownload().getFile().getFile()));
+                setLastModified(getDownload().getFile().getFile(), request.getLastModified());
             }
-        } else if (request.isOk()){
-            // HTTP Range not supported
-            copyAndClose(request.executeAsStream(), new FileOutputStream(getDownload().getFile().getFile()));
-            setLastModified(getDownload().getFile().getFile(), request.getLastModified());
-        }
-        request.release();
+            return null;
+        });
 
         if (request.isNotModified()) {
             updateDownload(getDownload(), request);
