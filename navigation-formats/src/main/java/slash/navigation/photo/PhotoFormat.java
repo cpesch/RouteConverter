@@ -35,6 +35,7 @@ import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
+import slash.navigation.bcr.BcrFormat;
 import slash.navigation.common.NavigationPosition;
 
 import java.awt.*;
@@ -44,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 import static java.io.File.createTempFile;
 import static java.lang.Integer.parseInt;
@@ -76,11 +78,13 @@ import static slash.navigation.photo.TagState.Tagged;
  */
 public class PhotoFormat extends SimpleFormat<Wgs84Route> {
     private static final Logger log = Logger.getLogger(PhotoFormat.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(PhotoFormat.class);
+
     private static final String DATE_FORMAT = "yyyy:MM:dd";
     private static final String DATE_TIME_FORMAT = "yyyy:MM:dd HH:mm:ss";
     private static final DecimalFormat XX_FORMAT = new DecimalFormat("00");
     private static final DecimalFormat XXXX_FORMAT = new DecimalFormat("0000");
-    private static final int READ_BUFFER_SIZE = 128 * 1024;
+    private static final int READ_BUFFER_SIZE = preferences.getInt("readBufferSize", 128 * 1024);
 
     public String getName() {
         return "Photo (" + getExtension() + ")";
