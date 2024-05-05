@@ -42,6 +42,8 @@ How to develop for RouteConverter
    IntelliJ
    * Install IntelliJ IDEA Community Edition from http://www.jetbrains.com/idea/download/
    * Choose "File/Open Project..." and the root pom.xml.
+   * In "Preferences/GUI Designer" choose "Generate GUI to Java source code" and disable 
+     "Automatically copy form runtime classes to the output directory"
 
    Eclipse
    * Install Eclipse IDE for Java Developers from http://www.eclipse.org/downloads/
