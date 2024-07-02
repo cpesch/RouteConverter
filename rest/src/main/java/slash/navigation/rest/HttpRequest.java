@@ -135,7 +135,7 @@ public abstract class HttpRequest {
         clientBuilder.setDefaultRequestConfig(requestConfig);
         if(credentials != null) {
             HttpHost httpHost = new HttpHost(uri.getScheme(), uri.getHost(), uri.getPort());
-            AuthScope authScope = new AuthScope(httpHost, "api", null);
+            AuthScope authScope = new AuthScope(httpHost, null, null);
             clientBuilder.setDefaultCredentialsProvider(CredentialsProviderBuilder.create()
                             .add(authScope, credentials.getUserName(), credentials.getPassword())
                     .build());
