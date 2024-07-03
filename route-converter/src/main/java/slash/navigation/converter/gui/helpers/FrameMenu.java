@@ -114,6 +114,7 @@ public class FrameMenu {
         extrasMenu.add(createItem("show-downloads"));
         extrasMenu.add(createItem("show-options"));
         extrasMenu.add(createItem("login"));
+        extrasMenu.add(createItem("logout"));
 
         JMenu helpMenu = createMenu("help");
         helpMenu.add(createItem("help-topics"));

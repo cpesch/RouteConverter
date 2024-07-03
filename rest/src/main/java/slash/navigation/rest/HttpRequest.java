@@ -19,17 +19,25 @@
 */
 package slash.navigation.rest;
 
+import org.apache.hc.client5.http.auth.AuthCache;
 import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.CredentialsProvider;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.DefaultHttpRequestRetryStrategy;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
 import org.apache.hc.client5.http.impl.auth.CredentialsProviderBuilder;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.apache.hc.core5.http.protocol.HttpContext;
 
 import java.io.IOException;
 import java.net.*;
@@ -133,16 +141,25 @@ public abstract class HttpRequest {
 
         RequestConfig requestConfig = requestConfigBuilder.build();
         clientBuilder.setDefaultRequestConfig(requestConfig);
+
+
+        HttpClientContext context = HttpClientContext.create();
         if(credentials != null) {
+            UsernamePasswordCredentials preemptiveCredentials = new UsernamePasswordCredentials(credentials.getUserName(), credentials.getPassword());
+            BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
+            credentialsProvider.setCredentials(new AuthScope(uri.getHost(), uri.getPort()), preemptiveCredentials);
+            BasicScheme authScheme = new BasicScheme();
+            authScheme.initPreemptive(preemptiveCredentials);
+            context.setCredentialsProvider(credentialsProvider);
+
             HttpHost httpHost = new HttpHost(uri.getScheme(), uri.getHost(), uri.getPort());
-            AuthScope authScope = new AuthScope(httpHost, null, null);
-            clientBuilder.setDefaultCredentialsProvider(CredentialsProviderBuilder.create()
-                            .add(authScope, credentials.getUserName(), credentials.getPassword())
-                    .build());
+            AuthCache authCache = new BasicAuthCache();
+            authCache.put(httpHost, authScheme);
+            context.setAuthCache(authCache);
         }
 
         try(CloseableHttpClient httpClient = clientBuilder.build()) {
-            return httpClient.execute(method, response -> {
+            return httpClient.execute(method, context, response -> {
                 HttpRequest.this.response = response;
                 try {
                     return responseHandler.handleResponse(response);

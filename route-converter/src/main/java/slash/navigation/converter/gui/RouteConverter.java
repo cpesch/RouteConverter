@@ -66,7 +66,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.*;
@@ -497,9 +496,22 @@ public abstract class RouteConverter extends SingleFrameApplication {
         };
     }
 
-    public void setUserNamePreference(String userNamePreference, String passwordPreference) {
+    private void initializeLoginAction() {
+        boolean enableLogin = preferences.get(USERNAME_PREFERENCE, null) == null;
+        getContext().getActionManager().enable("login", enableLogin);
+        getContext().getActionManager().enable("logout", !enableLogin);
+    }
+
+    public void setLogin(String userNamePreference, String passwordPreference) {
         preferences.put(USERNAME_PREFERENCE, userNamePreference);
         preferences.putByteArray(PASSWORD_PREFERENCE, passwordPreference.getBytes());
+        initializeLoginAction();
+    }
+
+    public void removeLogin() {
+        preferences.remove(USERNAME_PREFERENCE);
+        preferences.remove(PASSWORD_PREFERENCE);
+        initializeLoginAction();
     }
 
     public File getUploadRoutePreference() {
@@ -1015,7 +1027,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     PanelInTab panelInTab;
                     try {
                         panelInTab = panelInTabClass.getDeclaredConstructor().newInstance();
-                    } catch (InstantiationException | InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+                    } catch (InstantiationException | InvocationTargetException | IllegalAccessException |
+                             NoSuchMethodException e) {
                         throw new RuntimeException(e);
                     }
                     panel.add(panelInTab.getRootComponent());
@@ -1172,7 +1185,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         });
         tileServerMapManager = new TileServerMapManager(getTileServersDirectory());
         routingServiceFacade.addRoutingServiceFacadeListener(new RoutingServiceFacadeNotifier());
-     }
+    }
 
     protected void initializeActions() {
         ActionManager actionManager = getContext().getActionManager();
@@ -1195,6 +1208,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("show-downloads", new ShowDownloadsAction());
         actionManager.register("show-options", new ShowOptionsAction());
         actionManager.register("login", new LoginAction());
+        actionManager.register("logout", new LogoutAction());
+        initializeLoginAction();
         actionManager.register("complete-flight-plan", new CompleteFlightPlanAction());
         actionManager.register("help-topics", new HelpTopicsAction());
         actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
@@ -1310,7 +1325,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     protected abstract void scanLocalMapsAndThemes();
+
     protected abstract void installBackgroundMap();
+
     protected abstract void scanRemoteMapsAndThemes();
 
     private void scanForFilesMissingInQueue() {

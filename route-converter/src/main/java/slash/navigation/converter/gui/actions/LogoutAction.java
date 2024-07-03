@@ -21,18 +21,16 @@
 package slash.navigation.converter.gui.actions;
 
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.dialogs.LoginDialog;
-import slash.navigation.gui.SimpleDialog;
-import slash.navigation.gui.actions.SingletonDialogAction;
+import slash.navigation.gui.actions.FrameAction;
 
 /**
- * Login to the RouteCatalog.
+ * Logout from the RouteCatalog.
  *
  * @author Christian Pesch
  */
 
-public class LoginAction extends SingletonDialogAction {
-    protected SimpleDialog createDialog() {
-        return new LoginDialog(RouteConverter.getInstance().getRouteServiceOperator().getRouteFeedback());
+public class LogoutAction extends FrameAction {
+    public void run() throws Exception {
+        RouteConverter.getInstance().removeLogin();
     }
 }

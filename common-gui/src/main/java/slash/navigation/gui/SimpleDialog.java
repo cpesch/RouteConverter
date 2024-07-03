@@ -114,9 +114,17 @@ public abstract class SimpleDialog extends JDialog {
         log.fine("Storing dialog " + getName() + " size as " + getSize());
     }
 
+    private boolean disposed = false;
+
     public void dispose() {
         putPreferencesLocation();
         putPreferencesSize();
         super.dispose();
+        disposed = true;
+    }
+
+    public void setVisible(boolean visible) {
+        if(disposed) return;
+        super.setVisible(visible);
     }
 }

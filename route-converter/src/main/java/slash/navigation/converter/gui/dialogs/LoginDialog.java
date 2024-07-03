@@ -38,7 +38,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
@@ -178,7 +177,7 @@ public class LoginDialog extends SimpleDialog {
             routeFeedback.checkForLogin(userName, password);
 
             successful = true;
-            RouteConverter.getInstance().setUserNamePreference(userName, password);
+            RouteConverter.getInstance().setLogin(userName, password);
 
             showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-success")),
                     frame.getTitle(), INFORMATION_MESSAGE);
@@ -246,7 +245,7 @@ public class LoginDialog extends SimpleDialog {
             routeFeedback.addUser(userName, password, firstName, lastName, email);
 
             successful = true;
-            RouteConverter.getInstance().setUserNamePreference(userName, password);
+            RouteConverter.getInstance().setLogin(userName, password);
 
             showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-success")),
                     frame.getTitle(), INFORMATION_MESSAGE);

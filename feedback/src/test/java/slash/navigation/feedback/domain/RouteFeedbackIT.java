@@ -44,7 +44,7 @@ public class RouteFeedbackIT extends RouteFeedbackServiceBase {
 
     @Before
     public void setUp() {
-        routeFeedback = new RouteFeedback(API, new SimpleCredentials(USERNAME, PASSWORD));
+        routeFeedback = new RouteFeedback(API, new SimpleCredentials("routeconverter", "pmcs123$".toCharArray()));
     }
 
     @After
