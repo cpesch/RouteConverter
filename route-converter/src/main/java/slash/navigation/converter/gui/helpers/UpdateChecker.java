@@ -71,7 +71,7 @@ public class UpdateChecker {
         return getPreferences().getLong(START_TIME_PREFERENCE, currentTimeMillis());
     }
 
-    private UpdateResult check() {
+    public UpdateResult check() {
         String myRouteConverterVersion = parseVersionFromManifest().getVersion();
         String myJavaVersion = System.getProperty("java.version");
         UpdateResult result = new UpdateResult(myRouteConverterVersion, myJavaVersion);

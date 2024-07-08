@@ -496,8 +496,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
         };
     }
 
+    public String getUserNamePreference() {
+        return preferences.get(USERNAME_PREFERENCE, null);
+    }
+
     private void initializeLoginAction() {
-        boolean enableLogin = preferences.get(USERNAME_PREFERENCE, null) == null;
+        boolean enableLogin = getUserNamePreference() == null;
         getContext().getActionManager().enable("login", enableLogin);
         getContext().getActionManager().enable("logout", !enableLogin);
     }
@@ -506,6 +510,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         preferences.put(USERNAME_PREFERENCE, userNamePreference);
         preferences.putByteArray(PASSWORD_PREFERENCE, passwordPreference.getBytes());
         initializeLoginAction();
+        updateChecker.check();
     }
 
     public void removeLogin() {
