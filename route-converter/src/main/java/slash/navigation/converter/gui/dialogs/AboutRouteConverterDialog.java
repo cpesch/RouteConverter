@@ -89,7 +89,7 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         }
 
         String featuredTo = getFeature("featured-to");
-print        if (featuredTo != null) {
+        if (featuredTo != null) {
             labelFeature.setText(format(RouteConverter.getBundle().getString("featured-to"), featuredTo));
             labelFeature.setVisible(true);
         }
