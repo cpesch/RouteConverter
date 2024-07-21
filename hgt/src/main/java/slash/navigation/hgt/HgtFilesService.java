@@ -42,6 +42,7 @@ public class HgtFilesService {
             "srtm1",
             "sonny3",
             "sonny1",
+            "sonny05",
             "ferranti3",
             "ferranti1"
     ));

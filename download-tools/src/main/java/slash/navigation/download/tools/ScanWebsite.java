@@ -90,8 +90,6 @@ public class ScanWebsite extends BaseDownloadTool {
         Get get = new Get(getUrl() + uri);
         String result = get.executeAsString();
 
-        System.out.println(result);
-
         List<String> anchors = new AnchorParser().parseAnchors(result.replaceAll("<area", "<a"));
 
         List<String> included = new AnchorFilter().filterAnchors(baseUrl, anchors, extensions, includes, excludes);

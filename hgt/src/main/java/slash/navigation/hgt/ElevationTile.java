@@ -35,8 +35,8 @@ public class ElevationTile {
     private static final int SRTM3_FILE_SIZE = (SRTM3_INTERVALS + 1) * (SRTM3_INTERVALS + 1) * 2;
     private static final int SRTM1_INTERVALS = 3600;
     private static final int SRTM1_FILE_SIZE = (SRTM1_INTERVALS + 1) * (SRTM1_INTERVALS + 1) * 2;
-    private static final int SRTM05_INTERVALS = 7200;
-    private static final int SRTM05_FILE_SIZE = (SRTM05_INTERVALS + 1) * (SRTM05_INTERVALS + 1) * 2;
+    private static final int SRTM0dot5_INTERVALS = 7200;
+    private static final int SRTM0dot5_FILE_SIZE = (SRTM0dot5_INTERVALS + 1) * (SRTM0dot5_INTERVALS + 1) * 2;
     private static final int INVALID_VALUE_LIMIT = -15000; // Won't interpolate below this elevation in Meters, guess is: -0x8000
 
     private final RandomAccessFile file;
@@ -51,8 +51,8 @@ public class ElevationTile {
           return SRTM3_INTERVALS;
         else if(fileLength == SRTM1_FILE_SIZE)
             return SRTM1_INTERVALS;
-        else if(fileLength == SRTM05_FILE_SIZE)
-            return SRTM05_INTERVALS;
+        else if(fileLength == SRTM0dot5_FILE_SIZE)
+            return SRTM0dot5_INTERVALS;
         else
             throw new IOException("Elevation tile " + file + " has invalid size " + fileLength);
     }
