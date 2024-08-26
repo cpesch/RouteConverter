@@ -37,17 +37,14 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>jakarta.xml.bind</groupId>

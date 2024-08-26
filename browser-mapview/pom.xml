@@ -35,7 +35,6 @@
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>net.andreinc.aleph</groupId>

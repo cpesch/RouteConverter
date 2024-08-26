@@ -79,8 +79,7 @@
         <dependency>
             <groupId>com.garmin</groupId>
             <artifactId>fit</artifactId>
-            <version>21.126.00</version>
-            <classifier>stripped</classifier>
+            <version>21.141.00</version>
         </dependency>
         <dependency>
             <groupId>de.grundid.opendatalab</groupId>

@@ -77,7 +77,6 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>org.bidib.com.github.markusbernhardt</groupId>
