@@ -23,7 +23,6 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.ResponsePath;
 import com.graphhopper.config.Profile;
-import com.graphhopper.json.Statement;
 import com.graphhopper.util.CustomModel;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.exceptions.DetailedIllegalArgumentException;
@@ -44,7 +43,11 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static com.graphhopper.json.Statement.If;
+import static com.graphhopper.json.Statement.Op.LIMIT;
 import static com.graphhopper.json.Statement.Op.MULTIPLY;
 import static java.lang.String.format;
 import static java.lang.System.currentTimeMillis;
@@ -159,15 +162,15 @@ public class GraphHopper extends BaseRoutingService {
             request.setProfile(travelMode.getName());
             CustomModel customModel = new CustomModel();
             if (travelRestrictions.isAvoidBridges())
-                customModel.addToPriority(Statement.If("road_environment == BRIDGE", MULTIPLY, "0"));
+                customModel.addToPriority(If("road_environment == BRIDGE", MULTIPLY, "0"));
             if (travelRestrictions.isAvoidFerries())
-                customModel.addToPriority(Statement.If("road_environment == FERRY", MULTIPLY, "0"));
+                customModel.addToPriority(If("road_environment == FERRY", MULTIPLY, "0"));
             if (travelRestrictions.isAvoidMotorways())
-                customModel.addToPriority(Statement.If("road_class == MOTORWAY", MULTIPLY, "0"));
+                customModel.addToPriority(If("road_class == MOTORWAY", MULTIPLY, "0"));
             // if (travelRestrictions.isAvoidToll())
             //    customModel.addToPriority(Statement.If("toll == all", MULTIPLY, "0"));
             if (travelRestrictions.isAvoidTunnels())
-                customModel.addToPriority(Statement.If("road_environment == TUNNEL", MULTIPLY, "0"));
+                customModel.addToPriority(If("road_environment == TUNNEL", MULTIPLY, "0"));
             request.setCustomModel(customModel);
             GHResponse response = hopper.route(request);
             if (response.hasErrors()) {
@@ -265,11 +268,18 @@ public class GraphHopper extends BaseRoutingService {
         List<Profile> profiles = getAvailableTravelModes().stream()
                 .map(mode -> new Profile(mode.getName())
                                 .setName(mode.getName())
-                        // could set .setTurnCosts(true)
+                                .setCustomModel(new CustomModel()
+                                        .addToPriority(If("!" + mode.getName() + "_access", MULTIPLY, "0"))
+                                        .addToSpeed(If("true", LIMIT, mode.getName() + "_average_speed")))
                 )
                 .toList();
 
+        String modePriorityAndSpeed = getAvailableTravelModes().stream()
+                .flatMap(mode -> Stream.of(mode.getName() + "_access", mode.getName() + "_average_speed"))
+                .collect(Collectors.joining(","));
+
         return new com.graphhopper.GraphHopper()
+                .setEncodedValuesString("road_class,road_environment,toll," + modePriorityAndSpeed)
                 .setProfiles(profiles);
     }
 
