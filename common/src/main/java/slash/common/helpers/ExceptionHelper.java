@@ -20,8 +20,11 @@
 
 package slash.common.helpers;
 
+import javax.net.ssl.SSLException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 /**
@@ -31,6 +34,11 @@ import java.net.UnknownHostException;
  */
 
 public class ExceptionHelper {
+    public static boolean isComputerOffline(Throwable throwable) {
+        return throwable instanceof ConnectException || throwable instanceof UnknownHostException ||
+                throwable instanceof SSLException || throwable instanceof SocketTimeoutException;
+    }
+
     public static String getLocalizedMessage(Throwable throwable) {
         if (throwable instanceof UnknownHostException)
             return "Your computer is not connected to the Internet and\n" +

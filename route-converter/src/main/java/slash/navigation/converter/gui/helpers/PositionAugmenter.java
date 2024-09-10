@@ -49,8 +49,7 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
-import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.helpers.ExceptionHelper.printStackTrace;
+import static slash.common.helpers.ExceptionHelper.*;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Transfer.widthInDigits;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -158,20 +157,17 @@ public class PositionAugmenter {
             public void run() {
                 final int[] count = new int[1];
                 count[0] = 0;
+                final Exception[] lastException = new Exception[1];
+                lastException[0] = null;
 
                 try {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            if (positionsTable != null && rows.length > 0)
-                                scrollToPosition(positionsTable, rows[0]);
-                        }
+                    invokeLater(() -> {
+                        if (positionsTable != null && rows.length > 0)
+                            scrollToPosition(positionsTable, rows[0]);
                     });
                     operation.performOnStart();
 
-                    final Exception[] lastException = new Exception[1];
-                    lastException[0] = null;
                     final int maximumRangeLength = rows.length > 99 ? rows.length / (slowOperation ? 100 : 10) : rows.length;
-
                     new ContinousRange(rows, new RangeOperation() {
                         public void performOnIndex(final int index) {
                             NavigationPosition position = positionsModel.getPosition(index);
@@ -190,12 +186,10 @@ public class PositionAugmenter {
                         }
 
                         public void performOnRange(final int firstIndex, final int lastIndex) {
-                            invokeLater(new Runnable() {
-                                public void run() {
-                                    positionsModel.fireTableRowsUpdated(firstIndex, lastIndex, operation.getColumnIndex());
-                                    if (positionsTable != null) {
-                                        scrollToPosition(positionsTable, min(lastIndex + maximumRangeLength, positionsModel.getRowCount() - 1));
-                                    }
+                            invokeLater(() -> {
+                                positionsModel.fireTableRowsUpdated(firstIndex, lastIndex, operation.getColumnIndex());
+                                if (positionsTable != null) {
+                                    scrollToPosition(positionsTable, min(lastIndex + maximumRangeLength, positionsModel.getRowCount() - 1));
                                 }
                             });
                         }
@@ -207,18 +201,15 @@ public class PositionAugmenter {
                         }
                     }).performMonotonicallyIncreasing(maximumRangeLength);
 
-                    if (lastException[0] != null) {
+                    if (lastException[0] != null && !isComputerOffline(lastException[0])) {
                         String errorMessage = RouteConverter.getBundle().getString(operation.getMessagePrefix() + "error");
                         showMessageDialog(frame,
                                 MessageFormat.format(errorMessage, getLocalizedMessage(lastException[0])), frame.getTitle(), ERROR_MESSAGE);
                     }
                 } finally {
-                    invokeLater(new Runnable() {
-                        public void run() {
-                            getNotificationManager().showNotification(MessageFormat.format(
-                                    RouteConverter.getBundle().getString("augmenting-finished"), count[0]), null);
-                        }
-                    });
+                    if (lastException[0] == null || !isComputerOffline(lastException[0]))
+                        invokeLater(() -> getNotificationManager().showNotification(MessageFormat.format(
+                                RouteConverter.getBundle().getString("augmenting-finished"), count[0]), null));
                 }
             }
         });
