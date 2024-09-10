@@ -84,7 +84,7 @@ public class MapsforgeMapManager {
     private final ItemTableModel<RemoteMap> downloadableMapsModel = new ItemTableModel<>(3);
     private final ItemTableModel<RemoteTheme> downloadableThemesModel = new ItemTableModel<>(3);
 
-    private final ItemModel<LocalMap> displayedMapModel = new ItemModel<LocalMap>(DISPLAYED_MAP_PREFERENCE,  OPENSTREETMAP_URL) {
+    private final ItemModel<LocalMap> displayedMapModel = new ItemModel<>(DISPLAYED_MAP_PREFERENCE, OPENSTREETMAP_URL) {
         protected LocalMap stringToItem(String url) {
             return getAvailableMapsModel().getItemByUrl(url);
         }
@@ -94,7 +94,7 @@ public class MapsforgeMapManager {
         }
     };
 
-    private final ItemModel<LocalTheme> appliedThemeModel = new ItemModel<LocalTheme>(APPLIED_THEME_PREFERENCE, OSMARENDER_URL) {
+    private final ItemModel<LocalTheme> appliedThemeModel = new ItemModel<>(APPLIED_THEME_PREFERENCE, OSMARENDER_URL) {
         protected LocalTheme stringToItem(String url) {
             return getAvailableThemesModel().getItemByUrl(url);
         }

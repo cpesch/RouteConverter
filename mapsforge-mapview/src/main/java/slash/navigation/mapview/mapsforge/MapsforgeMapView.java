@@ -43,6 +43,10 @@ import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.model.MapViewDimension;
 import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.reader.MapFile;
+import org.mapsforge.map.rendertheme.XmlRenderTheme;
+import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
+import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
+import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
 import org.mapsforge.map.scalebar.DefaultMapScaleBar;
 import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
@@ -506,6 +510,28 @@ public class MapsforgeMapView extends BaseMapView {
         TileRendererLayer tileRendererLayer = new TileRendererLayer(createTileCache(cacheId), mapFile,
                 mapView.getModel().mapViewPosition, true, true, true,
                 GRAPHIC_FACTORY, hillsRenderConfig);
+        XmlRenderTheme xmlRenderTheme = getMapManager().getAppliedThemeModel().getItem().getXmlRenderTheme();
+        xmlRenderTheme.setMenuCallback(new XmlRenderThemeMenuCallback() {
+            public Set<String> getCategories(XmlRenderThemeStyleMenu renderThemeStyleMenu) {
+                Set<String> result = new HashSet<>();
+                log.info("Menu id: " + renderThemeStyleMenu.getId() +
+                        " default language: " + renderThemeStyleMenu.getDefaultLanguage() +
+                        " default value: " + renderThemeStyleMenu.getDefaultValue());
+                Map<String, XmlRenderThemeStyleLayer> layers = renderThemeStyleMenu.getLayers();
+                for (Map.Entry<String, XmlRenderThemeStyleLayer> entry : layers.entrySet()) {
+                    XmlRenderThemeStyleLayer layer = entry.getValue();
+                    log.info("Layer: " + entry.getKey() +
+                            " enabled: " + layer.isEnabled() +
+                            " visible: " + layer.isVisible() +
+                            " titles: " + layer.getTitles() +
+                            " categories: " + layer.getCategories() +
+                            " overlays: " + layer.getOverlays());
+                    Set<String> categories = layer.getCategories();
+                    result.addAll(categories);
+                }
+                return result;
+            }
+        });
         tileRendererLayer.setXmlRenderTheme(getMapManager().getAppliedThemeModel().getItem().getXmlRenderTheme());
         return tileRendererLayer;
     }
