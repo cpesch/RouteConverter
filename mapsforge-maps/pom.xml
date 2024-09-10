@@ -70,8 +70,8 @@
             <version>${mapsforge.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.andreinc.aleph</groupId>
-            <artifactId>aleph-formatter</artifactId>
+            <groupId>net.andreinc</groupId>
+            <artifactId>aleph</artifactId>
             <version>${alephformatter.version}</version>
         </dependency>
     </dependencies>

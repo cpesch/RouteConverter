@@ -36,10 +36,5 @@
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
         </dependency>
-        <dependency>
-            <groupId>net.andreinc.aleph</groupId>
-            <artifactId>aleph-formatter</artifactId>
-            <version>${alephformatter.version}</version>
-        </dependency>
     </dependencies>
 </project>
