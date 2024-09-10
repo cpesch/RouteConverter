@@ -33,8 +33,7 @@ import static java.util.logging.Logger.getLogger;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.helpers.ExceptionHelper.printStackTrace;
+import static slash.common.helpers.ExceptionHelper.*;
 import static slash.common.system.Platform.getMaximumMemory;
 
 /**
@@ -68,10 +67,11 @@ public class WindowHelper {
     }
 
     public static void handleThrowable(Class clazz, ActionEvent e, Throwable throwable) {
-        log.severe(format("Unhandled throwable in action %s from event %s: %s, %s", clazz.getName(), e, throwable, printStackTrace(throwable)));
+        String stacktrace = isComputerOffline(throwable) ? "" : printStackTrace(throwable);
+        log.severe(format("Unhandled throwable in action %s from event %s: %s, %s", clazz.getName(), e, getLocalizedMessage(throwable), stacktrace));
         showMessageDialog(getFrame(),
                 MessageFormat.format(Application.getInstance().getContext().getBundle().
-                        getString("unhandled-throwable-error"), clazz.getSimpleName(), getLocalizedMessage(throwable), printStackTrace(throwable)),
+                        getString("unhandled-throwable-error"), clazz.getName(), getLocalizedMessage(throwable), stacktrace),
                 getFrame().getTitle(), ERROR_MESSAGE);
     }
 }

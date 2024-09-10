@@ -40,7 +40,7 @@ public class ExceptionHelper {
     }
 
     public static String getLocalizedMessage(Throwable throwable) {
-        if (throwable instanceof UnknownHostException)
+        if (isComputerOffline(throwable))
             return "Your computer is not connected to the Internet and\n" +
                     "cannot access " + throwable.getMessage() + ".";
         return throwable.getLocalizedMessage() != null ? throwable.getLocalizedMessage() : throwable.toString();
