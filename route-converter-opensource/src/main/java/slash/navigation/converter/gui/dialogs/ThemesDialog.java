@@ -179,6 +179,10 @@ public class ThemesDialog extends SimpleDialog {
     }
 
     private void close() {
+        ActionManager actionManager = RouteConverter.getInstance().getContext().getActionManager();
+        actionManager.unregister("apply-theme");
+        actionManager.unregister("download-themes");
+
         dispose();
     }
 

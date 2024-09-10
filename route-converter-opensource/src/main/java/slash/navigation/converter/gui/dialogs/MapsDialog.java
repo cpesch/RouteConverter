@@ -305,7 +305,14 @@ public class MapsDialog extends SimpleDialog {
     }
 
     private void close() {
-        RouteConverter.getInstance().showMapBorder(null);
+        RouteConverter r = RouteConverter.getInstance();
+        r.showMapBorder(null);
+
+        ActionManager actionManager = r.getContext().getActionManager();
+        actionManager.unregister("display-online-map");
+        actionManager.unregister("display-offline-map");
+        actionManager.unregister("delete-offline-maps");
+        actionManager.unregister("download-maps");
         dispose();
     }
 

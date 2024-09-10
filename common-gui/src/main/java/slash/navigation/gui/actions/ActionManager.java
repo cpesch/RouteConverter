@@ -88,6 +88,15 @@ public class ActionManager {
         }
     }
 
+    public void unregister(String actionName) {
+        Action found = actionMap.get(actionName);
+        if (found != null)
+            actionMap.remove(actionName);
+        ProxyAction proxyAction = proxyActionMap.get(actionName);
+        if (proxyAction != null)
+            proxyAction.setDelegate(null);
+    }
+
     public void registerLocal(String globalName, String localName, String actionName) {
         GlobalAction found = (GlobalAction) actionMap.get(globalName);
         if (found == null)
@@ -159,11 +168,12 @@ public class ActionManager {
 
         public void setDelegate(Action delegate) {
             if (this.delegate != null)
-                delegate.removePropertyChangeListener(this);
+                this.delegate.removePropertyChangeListener(this);
 
             this.delegate = delegate;
 
-            delegate.addPropertyChangeListener(this);
+            if (this.delegate != null)
+                this.delegate.addPropertyChangeListener(this);
         }
 
         public void propertyChange(PropertyChangeEvent evt) {
