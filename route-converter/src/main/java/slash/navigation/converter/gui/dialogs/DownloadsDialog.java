@@ -165,6 +165,11 @@ public class DownloadsDialog extends SimpleDialog {
     }
 
     private void close() {
+        ActionManager actionManager = RouteConverter.getInstance().getContext().getActionManager();
+        actionManager.unregister("restart-download");
+        actionManager.unregister("stop-download");
+        actionManager.unregister("remove-download");
+
         dispose();
     }
 
