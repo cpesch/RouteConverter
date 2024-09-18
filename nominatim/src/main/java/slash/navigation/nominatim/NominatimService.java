@@ -61,7 +61,7 @@ public class NominatimService implements GeocodingService {
     }
 
     private String getNominatimUrl() {
-        return preferences.get(NOMINATIM_URL_PREFERENCE, "https://nominatim.openstreetmap.org/");
+        return preferences.get(NOMINATIM_URL_PREFERENCE, "https://nominatim.openstreetmap.org");
     }
 
     private String execute(String uri) throws IOException {
@@ -95,7 +95,7 @@ public class NominatimService implements GeocodingService {
     }
 
     public List<NavigationPosition> getPositionsFor(String address) throws IOException {
-        SearchresultsType result = getSearchFor("search?q=" + encodeUri(address) + "&limit=10&format=xml");
+        SearchresultsType result = getSearchFor("/search?q=" + encodeUri(address) + "&limit=10&format=xml");
         if (result == null)
             return null;
         return extractPositions(result.getPlace());
@@ -114,7 +114,7 @@ public class NominatimService implements GeocodingService {
     }
 
     public String getAddressFor(NavigationPosition position) throws IOException {
-        ReversegeocodeType type = getReverseFor("reverse?lat=" + position.getLatitude() +
+        ReversegeocodeType type = getReverseFor("/reverse?lat=" + position.getLatitude() +
                 "&lon=" + position.getLongitude() + "&zoom=18&addressdetails=1&format=xml");
         if (type == null)
             return null;
