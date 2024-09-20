@@ -83,6 +83,10 @@ public class ExternalPrograms {
                 "https://forum.routeconverter.com/forum-12.html");
     }
 
+    public static void startBrowserForRouteConverterResources(Window window) {
+        startBrowser(window, "https://www.routeconverter.com/resources/");
+    }
+
     public static void startBrowserForDouglasPeucker(Window window) {
         String url = isGerman() ?
                 "https://de.wikipedia.org/wiki/Douglas-Peucker-Algorithmus" :
