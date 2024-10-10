@@ -75,7 +75,8 @@ public class DistanceAndTimeAggregator {
         for (int i = firstAndLastIndex.lastIndex + 1; i < sizeBeforeRemoval; i++) {
             DistanceAndTime move = relativeDistancesAndTimes.remove(i);
             int moveIndex = firstAndLastIndex.firstIndex + i - (firstAndLastIndex.lastIndex + 1);
-            relativeDistancesAndTimes.put(moveIndex, new DistanceAndTime(move.getDistance(), move.getTimeInMillis()));
+            // avoid NullPointerException since move could be null
+            relativeDistancesAndTimes.put(moveIndex, move != null ? new DistanceAndTime(move.getDistance(), move.getTimeInMillis()) : new DistanceAndTime(0.0, 0L));
             absoluteDistancesAndTimes.remove(i);
         }
 
