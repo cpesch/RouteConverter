@@ -21,6 +21,7 @@ package slash.navigation.converter.gui;
 
 import slash.navigation.brouter.BRouter;
 import slash.navigation.converter.gui.actions.ShowMapsAction;
+import slash.navigation.converter.gui.actions.ShowStyleAction;
 import slash.navigation.converter.gui.actions.ShowThemesAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.AutomaticGeocodingService;
@@ -99,16 +100,18 @@ public class RouteConverterOpenSource extends RouteConverter {
     protected void initializeActions() {
         super.initializeActions();
         getContext().getActionManager().register("show-maps", new ShowMapsAction());
+        getContext().getActionManager().register("show-styles", new ShowStyleAction());
         getContext().getActionManager().register("show-themes", new ShowThemesAction());
         JMenu viewMenu = findMenu(getContext().getMenuBar(), "view");
         if (viewMenu != null) {
             viewMenu.add(createItem("show-maps"), 0);
             viewMenu.add(createItem("show-themes"), 1);
+            viewMenu.add(createItem("show-styles"), 2);
             JMenu overlaysMenu = createMenu("show-overlays");
-            viewMenu.add(overlaysMenu, 2);
+            viewMenu.add(overlaysMenu, 3);
             new OverlaysMenu(overlaysMenu, getTileServerMapManager().getAvailableOverlaysModel(), getTileServerMapManager().getAppliedOverlaysModel());
-            viewMenu.add(createCheckBoxItem("show-shaded-hills", getMapPreferencesModel().getShowShadedHills()), 3);
-            viewMenu.add(new JPopupMenu.Separator(), 4);
+            viewMenu.add(createCheckBoxItem("show-shaded-hills", getMapPreferencesModel().getShowShadedHills()), 4);
+            viewMenu.add(new JPopupMenu.Separator(), 5);
         }
     }
 
