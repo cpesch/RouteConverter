@@ -39,7 +39,6 @@ public interface MapView extends PositionsSelectionModel {
     void initialize(PositionsModel positionsModel,
                     MapPreferencesModel preferencesModel,
                     MapViewCallback mapViewCallback);
-    boolean isInitialized();
     boolean isDownload();
     String getMapIdentifier();
     String getMapsPath(); // only MapsforgeMapView

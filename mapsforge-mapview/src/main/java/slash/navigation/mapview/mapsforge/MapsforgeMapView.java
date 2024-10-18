@@ -674,10 +674,6 @@ public class MapsforgeMapView extends BaseMapView {
         };
     }
 
-    public boolean isInitialized() {
-        return true;
-    }
-
     public boolean isDownload() {
         return true;
     }
