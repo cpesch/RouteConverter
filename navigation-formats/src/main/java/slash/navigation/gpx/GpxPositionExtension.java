@@ -203,18 +203,15 @@ public class GpxPositionExtension {
             for (Object any : extensions.getAny()) {
                 if (any instanceof JAXBElement jaxbElement) {
                     Object anyValue = jaxbElement.getValue();
-                    if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT) {
-                        slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint = (slash.navigation.gpx.garmin3.TrackPointExtensionT) anyValue;
+                    if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint) {
                         result = trackPoint.getTemperature();
 
-                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
-                        slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
+                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
                         result = trackPoint.getAtemp();
                         if (result == null)
                             result = trackPoint.getWtemp();
 
-                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
-                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                         result = trackPoint.getAtemp();
                         if (result == null)
                             result = trackPoint.getWtemp();
@@ -241,21 +238,18 @@ public class GpxPositionExtension {
         for (Object any : anys) {
             if (any instanceof JAXBElement jaxbElement) {
                 Object anyValue = jaxbElement.getValue();
-                if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT) {
-                    slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint = (slash.navigation.gpx.garmin3.TrackPointExtensionT) anyValue;
+                if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint) {
                     trackPoint.setTemperature(formatTemperatureAsDouble(temperature));
                     foundTemperature = true;
 
-                } else if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
-                    slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
+                } else if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
                     if(isEmpty(trackPoint.getAtemp()) && isEmpty(temperature))
                         trackPoint.setWtemp(null);
                     trackPoint.setAtemp(formatTemperatureAsDouble(temperature));
 
                     foundTemperature = true;
 
-                } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
-                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                     if(isEmpty(trackPoint.getAtemp()) && isEmpty(temperature))
                         trackPoint.setWtemp(null);
                     trackPoint.setAtemp(formatTemperatureAsDouble(temperature));
@@ -287,12 +281,10 @@ public class GpxPositionExtension {
             for (Object any : extensions.getAny()) {
                 if (any instanceof JAXBElement jaxbElement) {
                     Object anyValue = jaxbElement.getValue();
-                    if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
-                        slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
+                    if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
                         result = trackPoint.getHr();
 
-                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
-                        slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                         result = trackPoint.getHr();
                     }
 
@@ -317,13 +309,11 @@ public class GpxPositionExtension {
         for (Object any : anys) {
             if (any instanceof JAXBElement jaxbElement) {
                 Object anyValue = jaxbElement.getValue();
-                if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT) {
-                    slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint1.TrackPointExtensionT) anyValue;
+                if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
                     trackPoint.setHr(heartBeat);
                     foundHeartBeat = true;
 
-                } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT) {
-                    slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = (slash.navigation.gpx.trackpoint2.TrackPointExtensionT) anyValue;
+                } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                     trackPoint.setHr(heartBeat);
                     foundHeartBeat = true;
                 }

@@ -229,8 +229,7 @@ public class Kml20Format extends KmlFormat {
             if (element instanceof Point point) {
                 result.add(asKmlPosition(parsePosition(point.getCoordinates(), null)));
             }
-            if (element instanceof LineString) {
-                LineString lineString = (LineString) element;
+            if (element instanceof LineString lineString) {
                 result.addAll(extractPositions(lineString));
             }
             if (element instanceof MultiGeometry multiGeometry) {

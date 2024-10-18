@@ -8,11 +8,11 @@ package slash.navigation.routing;
 public class TravelRestrictions {
     public static final TravelRestrictions NO_RESTRICTIONS = new TravelRestrictions(false, false, false, false, false);
 
-    private boolean avoidBridges;
-    private boolean avoidFerries;
-    private boolean avoidMotorways;
-    private boolean avoidTolls;
-    private boolean avoidTunnels;
+    private final boolean avoidBridges;
+    private final boolean avoidFerries;
+    private final boolean avoidMotorways;
+    private final boolean avoidTolls;
+    private final boolean avoidTunnels;
 
     public TravelRestrictions(boolean avoidBridges, boolean avoidFerries, boolean avoidMotorways, boolean avoidTolls, boolean avoidTunnels) {
         this.avoidBridges = avoidBridges;

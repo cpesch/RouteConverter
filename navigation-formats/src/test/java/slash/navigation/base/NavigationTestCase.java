@@ -327,30 +327,24 @@ public abstract class NavigationTestCase extends TestCase {
 
     private static void compareHeading(NavigationFormat sourceFormat, NavigationFormat targetFormat, int index, NavigationPosition sourcePosition, NavigationPosition targetPosition, RouteCharacteristics sourceCharacteristics, RouteCharacteristics targetCharacteristics) {
         Double sourceHeading = null;
-        if (sourcePosition instanceof ExtendedSensorNavigationPosition) {
-            ExtendedSensorNavigationPosition extendedPosition = (ExtendedSensorNavigationPosition) sourcePosition;
+        if (sourcePosition instanceof ExtendedSensorNavigationPosition extendedPosition) {
             sourceHeading = extendedPosition.getHeading();
         }
-        if (sourcePosition instanceof TomTomPosition) {
-            TomTomPosition tomTomPosition = (TomTomPosition) sourcePosition;
+        if (sourcePosition instanceof TomTomPosition tomTomPosition) {
             sourceHeading = tomTomPosition.getHeading();
         }
-        if (sourcePosition instanceof NmeaPosition) {
-            NmeaPosition nmeaPosition = (NmeaPosition) sourcePosition;
+        if (sourcePosition instanceof NmeaPosition nmeaPosition) {
             sourceHeading = nmeaPosition.getHeading();
         }
 
         Double targetHeading = null;
-        if (targetPosition instanceof ExtendedSensorNavigationPosition) {
-            ExtendedSensorNavigationPosition extendedPosition = (ExtendedSensorNavigationPosition) targetPosition;
+        if (targetPosition instanceof ExtendedSensorNavigationPosition extendedPosition) {
             targetHeading = extendedPosition.getHeading();
         }
-        if (targetPosition instanceof TomTomPosition) {
-            TomTomPosition tomTomPosition = (TomTomPosition) targetPosition;
+        if (targetPosition instanceof TomTomPosition tomTomPosition) {
             targetHeading = tomTomPosition.getHeading();
         }
-        if (targetPosition instanceof NmeaPosition) {
-            NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
+        if (targetPosition instanceof NmeaPosition nmeaPosition) {
             targetHeading = nmeaPosition.getHeading();
         }
 
@@ -403,8 +397,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (sourcePosition instanceof Wgs84Position wgs84Position) {
             sourceHdop = wgs84Position.getHdop();
         }
-        if (sourcePosition instanceof NmeaPosition) {
-            NmeaPosition nmeaPosition = (NmeaPosition) sourcePosition;
+        if (sourcePosition instanceof NmeaPosition nmeaPosition) {
             sourceHdop = nmeaPosition.getHdop();
         }
 
@@ -412,8 +405,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (targetPosition instanceof Wgs84Position wgs84TargetPosition) {
             targetHdop = wgs84TargetPosition.getHdop();
         }
-        if (targetPosition instanceof NmeaPosition) {
-            NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
+        if (targetPosition instanceof NmeaPosition nmeaPosition) {
             targetHdop = nmeaPosition.getHdop();
         }
 
@@ -436,8 +428,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (sourcePosition instanceof Wgs84Position wgs84Position) {
             sourcePdop = wgs84Position.getPdop();
         }
-        if (sourcePosition instanceof NmeaPosition) {
-            NmeaPosition nmeaPosition = (NmeaPosition) sourcePosition;
+        if (sourcePosition instanceof NmeaPosition nmeaPosition) {
             sourcePdop = nmeaPosition.getPdop();
         }
 
@@ -445,8 +436,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (targetPosition instanceof Wgs84Position wgs84TargetPosition) {
             targetPdop = wgs84TargetPosition.getPdop();
         }
-        if (targetPosition instanceof NmeaPosition) {
-            NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
+        if (targetPosition instanceof NmeaPosition nmeaPosition) {
             targetPdop = nmeaPosition.getPdop();
         }
 
@@ -465,8 +455,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (sourcePosition instanceof Wgs84Position wgs84Position) {
             sourceVdop = wgs84Position.getVdop();
         }
-        if (sourcePosition instanceof NmeaPosition) {
-            NmeaPosition nmeaPosition = (NmeaPosition) sourcePosition;
+        if (sourcePosition instanceof NmeaPosition nmeaPosition) {
             sourceVdop = nmeaPosition.getVdop();
         }
 
@@ -474,8 +463,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (targetPosition instanceof Wgs84Position wgs84TargetPosition) {
             targetVdop = wgs84TargetPosition.getVdop();
         }
-        if (targetPosition instanceof NmeaPosition) {
-            NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
+        if (targetPosition instanceof NmeaPosition nmeaPosition) {
             targetVdop = nmeaPosition.getVdop();
         }
 
@@ -494,8 +482,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (sourcePosition instanceof Wgs84Position wgs84Position) {
             sourceSatellites = wgs84Position.getSatellites();
         }
-        if (sourcePosition instanceof NmeaPosition) {
-            NmeaPosition nmeaPosition = (NmeaPosition) sourcePosition;
+        if (sourcePosition instanceof NmeaPosition nmeaPosition) {
             sourceSatellites = nmeaPosition.getSatellites();
         }
 
@@ -503,8 +490,7 @@ public abstract class NavigationTestCase extends TestCase {
         if (targetPosition instanceof Wgs84Position wgs84TargetPosition) {
             targetSatellites = wgs84TargetPosition.getSatellites();
         }
-        if (targetPosition instanceof NmeaPosition) {
-            NmeaPosition nmeaPosition = (NmeaPosition) targetPosition;
+        if (targetPosition instanceof NmeaPosition nmeaPosition) {
             targetSatellites = nmeaPosition.getSatellites();
         }
 
