@@ -37,7 +37,6 @@ public interface MapViewCallback {
     String createCoordinates(Double longitude, Double latitude);
     void setSelectedPositions(int[] selectedPositions, boolean replaceSelection);
     void complementData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo);
-    void startBrowser(String url);
 
     RoutingService getRoutingService();
     TravelMode getTravelMode();
