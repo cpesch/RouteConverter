@@ -487,11 +487,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
         // important: return the current values since the Credentials is passed to the RemoteCatalog
         return new Credentials() {
             public String getUserName() {
-                return preferences.get(USERNAME_PREFERENCE, "");
+                return preferences.get(USERNAME_PREFERENCE, null);
             }
 
             public char[] getPassword() {
-                return new String(preferences.getByteArray(PASSWORD_PREFERENCE, new byte[0]), UTF_8).toCharArray();
+                byte[] byteArray = preferences.getByteArray(PASSWORD_PREFERENCE, null);
+                return byteArray != null ? new String(byteArray, UTF_8).toCharArray() : null;
             }
         };
     }

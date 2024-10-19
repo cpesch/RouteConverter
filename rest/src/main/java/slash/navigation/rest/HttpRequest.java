@@ -144,7 +144,7 @@ public abstract class HttpRequest {
 
 
         HttpClientContext context = HttpClientContext.create();
-        if(credentials != null) {
+        if(credentials != null && credentials.getUserName() != null && credentials.getPassword() != null) {
             UsernamePasswordCredentials preemptiveCredentials = new UsernamePasswordCredentials(credentials.getUserName(), credentials.getPassword());
             BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             credentialsProvider.setCredentials(new AuthScope(uri.getHost(), uri.getPort()), preemptiveCredentials);
