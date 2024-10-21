@@ -5,7 +5,6 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.SimpleDialog;
-import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
@@ -20,20 +19,20 @@ import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
 
 /**
- * Dialog to select map styles and layers
+ * Dialog to select theme styles and layers
  *
  * @author Christian Pesch
  */
 
-public class StyleDialog extends SimpleDialog {
+public class ThemeStyleDialog extends SimpleDialog {
     private JPanel contentPane;
     private JComboBox comboBoxStyle;
     private JTable tableCategories;
     private JButton buttonClose;
 
-    public StyleDialog() {
+    public ThemeStyleDialog() {
         super(RouteConverter.getInstance().getFrame(), "style");
-        setTitle(RouteConverter.getBundle().getString("style-title"));
+        setTitle(RouteConverter.getBundle().getString("theme-style-title"));
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
 
@@ -88,7 +87,7 @@ public class StyleDialog extends SimpleDialog {
         this.$$$loadButtonText$$$(buttonClose, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "close"));
         panel1.add(buttonClose, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
         final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "styles"));
+        this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "style"));
         contentPane.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "style-categories"));

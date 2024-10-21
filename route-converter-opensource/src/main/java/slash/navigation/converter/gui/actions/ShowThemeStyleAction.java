@@ -19,18 +19,18 @@
 */
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.dialogs.StyleDialog;
+import slash.navigation.converter.gui.dialogs.ThemeStyleDialog;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.SingletonDialogAction;
 
 /**
- * Show styles of the map theme.
+ * Show styles and categories of the map theme.
  *
  * @author Christian Pesch
  */
 
-public class ShowStyleAction extends SingletonDialogAction {
+public class ShowThemeStyleAction extends SingletonDialogAction {
     protected SimpleDialog createDialog() {
-        return new StyleDialog();
+        return new ThemeStyleDialog();
     }
 }
