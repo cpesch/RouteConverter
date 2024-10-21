@@ -327,10 +327,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
                 getDownloadManager().executeDownload("RouteConverter Map Servers", getApiUrl() + V1 + "mapservers/" + FORMAT_XML, Copy, mapServers, () -> {
 
                     File overlayServers = new File(getApplicationDirectory("tileservers"), "overlayservers.xml");
-                    getDownloadManager().executeDownload("RouteConverter Overlay Servers", getApiUrl() + V1 + "overlayservers/" + FORMAT_XML, Copy, overlayServers, () -> {
-
-                        getTileServerMapManager().scanTileServers();
-                    });
+                    getDownloadManager().executeDownload("RouteConverter Overlay Servers", getApiUrl() + V1 + "overlayservers/" + FORMAT_XML, Copy, overlayServers, () -> getTileServerMapManager().scanTileServers());
                 });
             } catch (Exception e) {
                 log.warning("Could not download tile servers: " + e);
