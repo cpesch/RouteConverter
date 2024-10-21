@@ -63,7 +63,7 @@ public class Download {
         setFragments(fragments);
         setETag(eTag);
         this.state = state;
-        this.tempFile = tempFile;
+        this.tempFile = tempFile.exists() ? tempFile : newTempFile();
     }
 
     public Download(String description, String url, Action action, FileAndChecksum file,
