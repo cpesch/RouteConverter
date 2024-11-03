@@ -249,7 +249,7 @@ public class RouteConverterOpenSource extends RouteConverter {
     }
 
     protected void scanRemoteMapsAndThemes() {
-        getMapsforgeMapManager().scanDatasources();
+        getMapsforgeMapManager().scanDataSources();
     }
 
     protected void shutdown() {

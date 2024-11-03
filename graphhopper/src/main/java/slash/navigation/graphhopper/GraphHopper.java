@@ -245,14 +245,14 @@ public class GraphHopper extends BaseRoutingService {
             // load existing graph first
             if (existsGraphDirectory()) {
                 log.info(format("Loading existing graph from %s", graphDirectory));
-                this.hopper = loadHopper(graphDirectory);
+                this.hopper = graphDirectory != null ? loadHopper(graphDirectory) : null;
                 if (this.hopper != null)
                     return;
             }
 
             // if there is none or it fails:
             log.info(format("Creating graph from %s to %s", osmPbfFile, graphDirectory));
-            this.hopper = importHopper(osmPbfFile, graphDirectory);
+            this.hopper = graphDirectory != null ? importHopper(osmPbfFile, graphDirectory) : null;
         } catch (IllegalStateException e) {
             log.warning("Could not initialize GraphHopper: " + e);
             throw e;
@@ -324,19 +324,7 @@ public class GraphHopper extends BaseRoutingService {
         for (int i = 0; i < longitudeAndLatitudes.size() - 1; i += 2) {
             LongitudeAndLatitude l1 = longitudeAndLatitudes.get(i);
             LongitudeAndLatitude l2 = longitudeAndLatitudes.get(i + 1);
-            mapDescriptors.add(new MapDescriptor() {
-                public String getIdentifier() {
-                    return mapIdentifier;
-                }
-
-                public BoundingBox getBoundingBox() {
-                    return createBoundingBox(asList(l1, l2));
-                }
-
-                public String toString() {
-                    return "MapDescriptor[identifier=" + getIdentifier() + ", boundingBox=" + getBoundingBox() + "]";
-                }
-            });
+            mapDescriptors.add(new LatitudeAndLongitudeMapDescriptor(mapIdentifier, l1, l2));
         }
 
         List<GraphDescriptor> graphDescriptors = finder.getGraphDescriptorsFor(mapDescriptors);
@@ -363,22 +351,22 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         private boolean confirmDownload() {
-            slash.navigation.datasources.File file = next.getRemoteFile();
-            if (file == null || TEST_MODE)
-                return true;
+            while(!graphDescriptors.isEmpty()) {
+                slash.navigation.datasources.File file = next.getRemoteFile();
+                if (file == null || TEST_MODE)
+                    return true;
 
-            Long size = file.getLatestChecksum() != null ? file.getLatestChecksum().getContentLength() : null;
-            int confirm = showConfirmDialog(null,
-                    "Do you want to download the routing data\n" +
-                            file.getUri() + "\n" +
-                            "with a size of " + (size != null ? size / (1024 * 1024) : "a large number of ") + " MBytes?",
-                    "GraphHopper", YES_NO_OPTION);
-            if (confirm == YES_OPTION)
-                return true;
-            this.next = !graphDescriptors.isEmpty() ? graphDescriptors.remove(0) : null;
-            if (next == null)
-                return false;
-            return confirmDownload();
+                Long size = file.getLatestChecksum() != null ? file.getLatestChecksum().getContentLength() : null;
+                int confirm = showConfirmDialog(null,
+                        "Do you want to download the routing data\n" +
+                                file.getUri() + "\n" +
+                                "with a size of " + (size != null ? size / (1024 * 1024) : "a large number of ") + " MBytes?",
+                        "GraphHopper", YES_NO_OPTION);
+                if (confirm == YES_OPTION)
+                    return true;
+                this.next = !graphDescriptors.isEmpty() ? graphDescriptors.remove(0) : null;
+            }
+            return false;
         }
 
         public void download() {
@@ -399,14 +387,6 @@ public class GraphHopper extends BaseRoutingService {
         public void process() {
             initializeHopper();
         }
-    }
-
-    private BoundingBox createBoundingBox(List<LongitudeAndLatitude> longitudeAndLatitudes) {
-        List<NavigationPosition> positions = new ArrayList<>();
-        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            positions.add(new SimpleNavigationPosition(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
-        }
-        return new BoundingBox(positions);
     }
 
     private void downloadAndWait(GraphDescriptor graphDescriptor) {

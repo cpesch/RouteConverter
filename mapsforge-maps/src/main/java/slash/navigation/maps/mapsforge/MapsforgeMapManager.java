@@ -252,7 +252,7 @@ public class MapsforgeMapManager {
                 themeFiles.size(), asDialogString(themeFiles,false), themesDirectory, (end - start)));
     }
 
-    public void scanDatasources() {
+    public void scanDataSources() {
         RemoteFilesAggregator remoteFilesAggregator = new RemoteFilesAggregator(dataSourceManager);
         remoteFilesAggregator.initialize();
 

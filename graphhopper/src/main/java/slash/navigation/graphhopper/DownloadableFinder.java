@@ -25,12 +25,15 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.graphhopper.GraphManager.GraphDescriptorComparator;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Finds {@link Downloadable}s for {@link BoundingBox}es from a given {@link DataSource}
@@ -39,7 +42,7 @@ import static java.util.stream.Collectors.toList;
  * @author Christian Pesch
  */
 
-public class DownloadableFinder {
+class DownloadableFinder {
     private static final Logger log = Logger.getLogger(DownloadableFinder.class.getName());
     private final GraphManager graphManager;
 
@@ -62,15 +65,25 @@ public class DownloadableFinder {
             remoteDescriptors = graphManager.getRemoteGraphDescriptors().stream()
                     .filter(graphDescriptor -> graphDescriptor.matches(mapDescriptor))
                     .sorted(new GraphDescriptorComparator())
-                    .collect(toList());
+                    .toList();
         descriptors.addAll(remoteDescriptors);
         return descriptors;
     }
 
-    public List<GraphDescriptor> getGraphDescriptorsFor(Collection<MapDescriptor> mapDescriptors) {
-        List<GraphDescriptor> result = mapDescriptors.stream()
+    List<GraphDescriptor> getGraphDescriptorsFor(Collection<MapDescriptor> mapDescriptors) {
+        Set<GraphDescriptor> graphDescriptors = mapDescriptors.stream()
                 .flatMap(mapDescriptor -> getGraphDescriptorsFor(mapDescriptor).stream())
-                .collect(toList());
+                .collect(toSet());
+        List<GraphDescriptor> result = new ArrayList<>(graphDescriptors.stream().toList());
+        result.sort((d1, d2) -> {
+            if(d1.equals(d2))
+                return 0;
+            if(!d1.hasValidBoundingBox())
+                return -1;
+            if(!d2.hasValidBoundingBox())
+                return 1;
+            return d1.getBoundingBox().contains(d2.getBoundingBox()) ? -1 : 1;
+        });
         log.info(format("Found %d graph descriptors: %s for %d map descriptors: %s", result.size(), result, mapDescriptors.size(), mapDescriptors));
         return result;
     }

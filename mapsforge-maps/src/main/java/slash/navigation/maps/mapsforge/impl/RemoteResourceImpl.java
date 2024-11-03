@@ -53,4 +53,18 @@ public class RemoteResourceImpl implements RemoteResource {
     public String getUrl() {
         return datasource.getBaseUrl() + downloadable.getUri();
     }
+
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        RemoteResourceImpl that = (RemoteResourceImpl) o;
+        return datasource.equals(that.datasource) && getDownloadable().equals(that.getDownloadable());
+    }
+
+    public int hashCode() {
+        int result = datasource.hashCode();
+        result = 31 * result + getDownloadable().hashCode();
+        return result;
+    }
 }
