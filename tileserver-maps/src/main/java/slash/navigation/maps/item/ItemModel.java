@@ -31,12 +31,16 @@ import java.util.prefs.Preferences;
 
 public abstract class ItemModel<T extends Item> {
     private static final Preferences preferences = Preferences.userNodeForPackage(ItemModel.class);
-    private final String preferenceName;
-    private final String defaultValue;
+    private String preferenceName;
+    private String defaultValue;
 
     private final EventListenerList listenerList = new EventListenerList();
 
     protected ItemModel(String preferenceName, String defaultValue) {
+        initializePreferences(preferenceName, defaultValue);
+    }
+
+    public void initializePreferences(String preferenceName, String defaultValue) {
         this.preferenceName = preferenceName;
         this.defaultValue = defaultValue;
     }
@@ -49,8 +53,7 @@ public abstract class ItemModel<T extends Item> {
         } catch (IllegalArgumentException e) {
             // intentionally left empty
         }
-        T item = stringToItem(defaultValue);
-        return item;
+        return stringToItem(defaultValue);
         // throwing an exception here means one cannot clear since the default value is not present
         // throw new IllegalArgumentException(format("Cannot find item for preference %s and default value %s", preferenceName, defaultValue));
     }

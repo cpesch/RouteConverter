@@ -4,8 +4,12 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.models.ThemeStyle;
+import slash.navigation.converter.gui.models.ThemeStyleModel;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
+import slash.navigation.mapview.mapsforge.models.TableModelToComboBoxModelAdapter;
+import slash.navigation.mapview.mapsforge.renderer.ThemeStyleListCellRenderer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -26,7 +30,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 
 public class ThemeStyleDialog extends SimpleDialog {
     private JPanel contentPane;
-    private JComboBox comboBoxStyle;
+    private JComboBox<ThemeStyle> comboBoxStyle;
     private JTable tableCategories;
     private JButton buttonClose;
 
@@ -35,6 +39,16 @@ public class ThemeStyleDialog extends SimpleDialog {
         setTitle(RouteConverter.getBundle().getString("theme-style-title"));
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
+
+        comboBoxStyle.setModel(new TableModelToComboBoxModelAdapter<>(getThemeStyleModel().getAvailableStylesModel(), getThemeStyleModel().getAppliedStyleModel()));
+        comboBoxStyle.setPrototypeDisplayValue(getThemeStyleModel().getAvailableStylesModel().getItem(0));
+        comboBoxStyle.setRenderer(new ThemeStyleListCellRenderer());
+
+        buttonClose.addActionListener(new DialogAction(this) {
+            public void run() {
+                close();
+            }
+        });
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
@@ -49,6 +63,10 @@ public class ThemeStyleDialog extends SimpleDialog {
             }
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
+    }
+
+    private ThemeStyleModel getThemeStyleModel() {
+        return RouteConverter.getInstance().getMapPreferencesModel().getThemeStyleModel();
     }
 
     private void close() {
@@ -72,10 +90,13 @@ public class ThemeStyleDialog extends SimpleDialog {
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(3, 2, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setMinimumSize(new Dimension(200, 100));
+        contentPane.setOpaque(false);
+        contentPane.setPreferredSize(new Dimension(240, 200));
         comboBoxStyle = new JComboBox();
         contentPane.add(comboBoxStyle, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
-        contentPane.add(scrollPane1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        contentPane.add(scrollPane1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         tableCategories = new JTable();
         scrollPane1.setViewportView(tableCategories);
         final JPanel panel1 = new JPanel();
@@ -85,7 +106,7 @@ public class ThemeStyleDialog extends SimpleDialog {
         panel1.add(spacer1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         buttonClose = new JButton();
         this.$$$loadButtonText$$$(buttonClose, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "close"));
-        panel1.add(buttonClose, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 1, false));
+        panel1.add(buttonClose, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "style"));
         contentPane.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
