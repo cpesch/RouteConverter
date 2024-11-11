@@ -85,11 +85,11 @@ public abstract class SimpleDialog extends JDialog {
     }
 
     private int getPreferenceHeight() {
-        return crop("preferencesHeight", preferences.getInt(getName() + "-" + HEIGHT_PREFERENCE, -1), 0, MAX_VALUE);
+        return -1;
     }
 
     private int getPreferenceWidth() {
-        return crop("preferenceWidth", preferences.getInt(getName() + "-" + WIDTH_PREFERENCE, -1), 0, MAX_VALUE);
+return -1;
     }
 
     private void putPreferencesLocation() {
