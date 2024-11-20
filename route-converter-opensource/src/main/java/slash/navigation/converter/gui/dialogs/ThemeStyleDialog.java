@@ -41,7 +41,8 @@ public class ThemeStyleDialog extends SimpleDialog {
         getRootPane().setDefaultButton(buttonClose);
 
         comboBoxStyle.setModel(new TableModelToComboBoxModelAdapter<>(getThemeStyleModel().getAvailableStylesModel(), getThemeStyleModel().getAppliedStyleModel()));
-        comboBoxStyle.setPrototypeDisplayValue(getThemeStyleModel().getAvailableStylesModel().getItem(0));
+        if (getThemeStyleModel().getAvailableStylesModel().getRowCount() > 0)
+            comboBoxStyle.setPrototypeDisplayValue(getThemeStyleModel().getAvailableStylesModel().getItem(0));
         comboBoxStyle.setRenderer(new ThemeStyleListCellRenderer());
 
         buttonClose.addActionListener(new DialogAction(this) {

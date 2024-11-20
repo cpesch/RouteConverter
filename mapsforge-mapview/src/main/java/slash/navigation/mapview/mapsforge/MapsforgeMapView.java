@@ -523,6 +523,7 @@ public class MapsforgeMapView extends BaseMapView {
 
         LocalTheme theme = getMapManager().getAppliedThemeModel().getItem();
         preferencesModel.getThemeStyleModel().setCurrentTheme(theme.getDescription());
+        preferencesModel.getThemeStyleModel().getAvailableStylesModel().clear();
 
         XmlRenderTheme xmlRenderTheme = theme.getXmlRenderTheme();
         xmlRenderTheme.setMenuCallback(menuCallback);
@@ -532,8 +533,6 @@ public class MapsforgeMapView extends BaseMapView {
 
     private class MenuCallback implements XmlRenderThemeMenuCallback {
         public Set<String> getCategories(XmlRenderThemeStyleMenu renderThemeStyleMenu) {
-            preferencesModel.getThemeStyleModel().getAvailableStylesModel().clear();
-
             Map<String, XmlRenderThemeStyleLayer> layers = renderThemeStyleMenu.getLayers();
             preferencesModel.getThemeStyleModel().setThemeStyles(
                     layers.values().stream().
