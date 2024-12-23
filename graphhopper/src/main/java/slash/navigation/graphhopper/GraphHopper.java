@@ -366,6 +366,8 @@ public class GraphHopper extends BaseRoutingService {
                     return true;
                 this.next = !graphDescriptors.isEmpty() ? graphDescriptors.remove(0) : null;
             }
+            if (next != null)
+                setOsmPbfFile(createFile(next));
             return false;
         }
 

@@ -1274,9 +1274,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
         }
 
+        initializeRoutingServices();
         initializeElevationServices();
         initializeGeocodingServices();
-        initializeRoutingServices();
 
         // make sure the queue is loaded before any components uses it
         try {

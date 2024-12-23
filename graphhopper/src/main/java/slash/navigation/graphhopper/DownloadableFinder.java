@@ -76,6 +76,12 @@ class DownloadableFinder {
                 .collect(toSet());
         List<GraphDescriptor> result = new ArrayList<>(graphDescriptors.stream().toList());
         result.sort((d1, d2) -> {
+            // prefer local files over downloads
+            if(d1.getLocalFile() != null && d2.getLocalFile() == null)
+                return -1;
+            if(d1.getLocalFile() == null && d2.getLocalFile() != null)
+                return 1;
+
             if(d1.equals(d2))
                 return 0;
             if(!d1.hasValidBoundingBox())
