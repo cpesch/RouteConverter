@@ -35,15 +35,17 @@ class LatitudeAndLongitudeMapDescriptor implements MapDescriptor {
     }
 
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         LatitudeAndLongitudeMapDescriptor that = (LatitudeAndLongitudeMapDescriptor) o;
-        return mapIdentifier.equals(that.mapIdentifier);
+        return mapIdentifier.equals(that.mapIdentifier) && l1.equals(that.l1) && l2.equals(that.l2);
     }
 
     public int hashCode() {
-        return mapIdentifier.hashCode();
+        int result = mapIdentifier.hashCode();
+        result = 31 * result + l1.hashCode();
+        result = 31 * result + l2.hashCode();
+        return result;
     }
 
     public String toString() {

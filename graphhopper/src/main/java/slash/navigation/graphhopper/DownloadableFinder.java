@@ -51,10 +51,9 @@ class DownloadableFinder {
     }
 
     private List<GraphDescriptor> getGraphDescriptorsFor(MapDescriptor mapDescriptor) {
-        List<GraphDescriptor> descriptors = graphManager.getLocalGraphDescriptors().stream()
+        List<GraphDescriptor> localDescriptors = graphManager.getLocalGraphDescriptors().stream()
                 .filter(graphDescriptor -> graphDescriptor.matches(mapDescriptor))
                 .collect(toList());
-
         List<GraphDescriptor> remoteDescriptors = graphManager.getRemoteGraphDescriptors().stream()
                 .filter(graphDescriptor -> graphDescriptor.matches(mapDescriptor))
                 .filter(GraphDescriptor::hasValidBoundingBox)
@@ -66,8 +65,11 @@ class DownloadableFinder {
                     .filter(graphDescriptor -> graphDescriptor.matches(mapDescriptor))
                     .sorted(new GraphDescriptorComparator())
                     .toList();
-        descriptors.addAll(remoteDescriptors);
-        return descriptors;
+
+        List<GraphDescriptor> result = new ArrayList<>();
+        result.addAll(localDescriptors);
+        result.addAll(remoteDescriptors);
+        return result;
     }
 
     List<GraphDescriptor> getGraphDescriptorsFor(Collection<MapDescriptor> mapDescriptors) {
