@@ -21,6 +21,8 @@ package slash.navigation.converter.gui.models;
 
 import slash.navigation.maps.item.Item;
 
+import java.util.Set;
+
 /**
  * The style of a theme
  *
@@ -28,4 +30,5 @@ import slash.navigation.maps.item.Item;
  */
 
 public interface ThemeStyle extends Item {
+    Set<String> getCategories();
 }

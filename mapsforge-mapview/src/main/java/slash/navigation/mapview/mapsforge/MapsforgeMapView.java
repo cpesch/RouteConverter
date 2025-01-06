@@ -590,6 +590,10 @@ public class MapsforgeMapView extends BaseMapView {
                 public String getUrl() {
                     return layer.getId();
                 }
+
+                public Set<String> getCategories() {
+                    return layer.getCategories();
+                }
             };
         }
     }
