@@ -87,11 +87,7 @@ public class ThemesDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableThemes = new TableRowSorter<>(tableAvailableThemes.getModel());
         sorterAvailableThemes.setSortsOnUpdates(true);
-        sorterAvailableThemes.setComparator(LocalThemeTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<LocalTheme>() {
-            public int compare(LocalTheme t1, LocalTheme t2) {
-                return t1.getDescription().compareToIgnoreCase(t2.getDescription());
-            }
-        });
+        sorterAvailableThemes.setComparator(LocalThemeTableCellRenderer.DESCRIPTION_COLUMN, (Comparator<LocalTheme>) (t1, t2) -> t1.getDescription().compareToIgnoreCase(t2.getDescription()));
         tableAvailableThemes.setRowSorter(sorterAvailableThemes);
         LocalTheme selectedTheme = getMapsforgeMapManager().getAppliedThemeModel().getItem();
         if (selectedTheme != null) {
@@ -123,16 +119,8 @@ public class ThemesDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterResources = new TableRowSorter<>(tableDownloadableThemes.getModel());
         sorterResources.setSortsOnUpdates(true);
-        sorterResources.setComparator(RemoteThemeTableCellRenderer.DATASOURCE_COLUMN, new Comparator<RemoteTheme>() {
-            public int compare(RemoteTheme t1, RemoteTheme t2) {
-                return t1.getDataSource().getName().compareToIgnoreCase(t2.getDataSource().getName());
-            }
-        });
-        sorterResources.setComparator(RemoteThemeTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<RemoteTheme>() {
-            public int compare(RemoteTheme t1, RemoteTheme t2) {
-                return t1.getDescription().compareToIgnoreCase(t2.getDescription());
-            }
-        });
+        sorterResources.setComparator(RemoteThemeTableCellRenderer.DATASOURCE_COLUMN, (Comparator<RemoteTheme>) (t1, t2) -> t1.getDataSource().getName().compareToIgnoreCase(t2.getDataSource().getName()));
+        sorterResources.setComparator(RemoteThemeTableCellRenderer.DESCRIPTION_COLUMN, (Comparator<RemoteTheme>) (t1, t2) -> t1.getDescription().compareToIgnoreCase(t2.getDescription()));
         sorterResources.setComparator(RemoteThemeTableCellRenderer.SIZE_COLUMN, new Comparator<RemoteTheme>() {
             private long getSize(RemoteTheme theme) {
                 Checksum checksum = theme.getDownloadable().getLatestChecksum();

@@ -59,11 +59,7 @@ public class TimeZoneAndIds {
 
         timeZoneAndIds = filterDuplicates(tzi);
 
-        sort(timeZoneAndIds, new Comparator<TimeZoneAndId>() {
-            public int compare(TimeZoneAndId tz1, TimeZoneAndId tz2) {
-                return tz1.getId().compareTo(tz2.getId());
-            }
-        });
+        sort(timeZoneAndIds, Comparator.comparing(TimeZoneAndId::getId));
     }
 
     private String modifyId(String id) {

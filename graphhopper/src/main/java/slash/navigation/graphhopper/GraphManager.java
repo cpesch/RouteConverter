@@ -122,20 +122,18 @@ public class GraphManager {
             2. PBFs with graph directories first
             3. then file name by length and alphabet
          */
-        localGraphDescriptors.sort(new Comparator<GraphDescriptor>() {
-          public int compare(GraphDescriptor g1, GraphDescriptor g2) {
-                int order = Integer.compare(g2.getGraphType().order, g1.getGraphType().order);
-                if(order != 0)
-                    return order;
+        localGraphDescriptors.sort((g1, g2) -> {
+              int order = Integer.compare(g2.getGraphType().order, g1.getGraphType().order);
+              if(order != 0)
+                  return order;
 
-                if(g1.hasGraphDirectory() && !g2.hasGraphDirectory())
-                    return -1;
-                if(!g1.hasGraphDirectory() && g2.hasGraphDirectory())
-                    return 1;
+              if(g1.hasGraphDirectory() && !g2.hasGraphDirectory())
+                  return -1;
+              if(!g1.hasGraphDirectory() && g2.hasGraphDirectory())
+                  return 1;
 
-                return Files.compare(g1.getLocalFile(), g2.getLocalFile());
-            }
-        });
+              return compare(g1.getLocalFile(), g2.getLocalFile());
+          });
 
         long end = currentTimeMillis();
         log.info(format("Collected %d local graph files %s in %d milliseconds",

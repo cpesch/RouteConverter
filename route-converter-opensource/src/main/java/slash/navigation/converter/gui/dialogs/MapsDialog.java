@@ -111,28 +111,18 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<>(tableAvailableOnlineMaps.getModel());
         sorterAvailableMaps.setSortsOnUpdates(true);
-        sorterAvailableMaps.setComparator(DESCRIPTION_COLUMN, new Comparator<TileDownloadMap>() {
-            public int compare(TileDownloadMap m1, TileDownloadMap m2) {
-                return m1.getDescription().compareToIgnoreCase(m2.getDescription());
-            }
-        });
-        sorterAvailableMaps.setComparator(ACTIVE_COLUMN, new Comparator<Boolean>() {
-            public int compare(Boolean b1, Boolean b2) {
-                return b1.compareTo(b2);
-            }
-        });
+        sorterAvailableMaps.setComparator(DESCRIPTION_COLUMN, (Comparator<TileDownloadMap>) (m1, m2) -> m1.getDescription().compareToIgnoreCase(m2.getDescription()));
+        sorterAvailableMaps.setComparator(ACTIVE_COLUMN, (Comparator<Boolean>) Boolean::compareTo);
         tableAvailableOnlineMaps.setRowSorter(sorterAvailableMaps);
-        tableAvailableOnlineMaps.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting())
-                    return;
-                int selectedRow = tableAvailableOnlineMaps.getSelectedRow();
-                if (selectedRow == -1)
-                    return;
-                int row = tableAvailableOnlineMaps.convertRowIndexToView(selectedRow);
-                LocalMap map = getMapsforgeMapManager().getAvailableOnlineMapsModel().getItem(row);
-                r.showMapBorder(map.getType().equals(Mapsforge) ? map.getBoundingBox() : null);
-            }
+        tableAvailableOnlineMaps.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting())
+                return;
+            int selectedRow = tableAvailableOnlineMaps.getSelectedRow();
+            if (selectedRow == -1)
+                return;
+            int row = tableAvailableOnlineMaps.convertRowIndexToView(selectedRow);
+            LocalMap map = getMapsforgeMapManager().getAvailableOnlineMapsModel().getItem(row);
+            r.showMapBorder(map.getType().equals(Mapsforge) ? map.getBoundingBox() : null);
         });
 
         tableAvailableOfflineMaps.setModel(getMapsforgeMapManager().getAvailableOfflineMapsModel());
@@ -144,11 +134,7 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableOfflineMaps = new TableRowSorter<>(tableAvailableOfflineMaps.getModel());
         sorterAvailableOfflineMaps.setSortsOnUpdates(true);
-        sorterAvailableOfflineMaps.setComparator(LocalMapTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<LocalMap>() {
-            public int compare(LocalMap m1, LocalMap m2) {
-                return m1.getDescription().compareToIgnoreCase(m2.getDescription());
-            }
-        });
+        sorterAvailableOfflineMaps.setComparator(LocalMapTableCellRenderer.DESCRIPTION_COLUMN, (Comparator<LocalMap>) (m1, m2) -> m1.getDescription().compareToIgnoreCase(m2.getDescription()));
         tableAvailableOfflineMaps.setRowSorter(sorterAvailableOfflineMaps);
         final LocalMap selectedMap = getMapsforgeMapManager().getDisplayedMapModel().getItem();
         if (selectedMap != null) {
@@ -159,17 +145,15 @@ public class MapsDialog extends SimpleDialog {
                 scrollToPosition(tableAvailableOfflineMaps, selectedRow);
             }
         }
-        tableAvailableOfflineMaps.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting())
-                    return;
-                int selectedRow = tableAvailableOfflineMaps.getSelectedRow();
-                if (selectedRow == -1)
-                    return;
-                int row = tableAvailableOfflineMaps.convertRowIndexToView(selectedRow);
-                LocalMap map = getMapsforgeMapManager().getAvailableOfflineMapsModel().getItem(row);
-                r.showMapBorder(map.getBoundingBox());
-            }
+        tableAvailableOfflineMaps.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting())
+                return;
+            int selectedRow = tableAvailableOfflineMaps.getSelectedRow();
+            if (selectedRow == -1)
+                return;
+            int row = tableAvailableOfflineMaps.convertRowIndexToView(selectedRow);
+            LocalMap map = getMapsforgeMapManager().getAvailableOfflineMapsModel().getItem(row);
+            r.showMapBorder(map.getBoundingBox());
         });
 
         tableDownloadableMaps.setModel(getMapsforgeMapManager().getDownloadableMapsModel());
@@ -192,16 +176,8 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterDownloadableMaps = new TableRowSorter<>(tableDownloadableMaps.getModel());
         sorterDownloadableMaps.setSortsOnUpdates(true);
-        sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.DATASOURCE_COLUMN, new Comparator<RemoteMap>() {
-            public int compare(RemoteMap m1, RemoteMap m2) {
-                return m1.getDataSource().getName().compareToIgnoreCase(m2.getDataSource().getName());
-            }
-        });
-        sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.DESCRIPTION_COLUMN, new Comparator<RemoteMap>() {
-            public int compare(RemoteMap m1, RemoteMap m2) {
-                return m1.getDescription().compareToIgnoreCase(m2.getDescription());
-            }
-        });
+        sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.DATASOURCE_COLUMN, (Comparator<RemoteMap>) (m1, m2) -> m1.getDataSource().getName().compareToIgnoreCase(m2.getDataSource().getName()));
+        sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.DESCRIPTION_COLUMN, (Comparator<RemoteMap>) (m1, m2) -> m1.getDescription().compareToIgnoreCase(m2.getDescription()));
         sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.SIZE_COLUMN, new Comparator<RemoteMap>() {
             private long getSize(RemoteMap map) {
                 Checksum checksum = map.getDownloadable().getLatestChecksum();
@@ -213,18 +189,16 @@ public class MapsDialog extends SimpleDialog {
             }
         });
         tableDownloadableMaps.setRowSorter(sorterDownloadableMaps);
-        tableDownloadableMaps.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting())
-                    return;
-                int selectedRow = tableDownloadableMaps.getSelectedRow();
-                if (selectedRow == -1)
-                    return;
-                int row = tableDownloadableMaps.convertRowIndexToView(selectedRow);
-                RemoteMap map = getMapsforgeMapManager().getDownloadableMapsModel().getItem(row);
-                r.showMapBorder(map.getBoundingBox());
-                updateLabel();
-            }
+        tableDownloadableMaps.getSelectionModel().addListSelectionListener(e -> {
+            if (e.getValueIsAdjusting())
+                return;
+            int selectedRow = tableDownloadableMaps.getSelectedRow();
+            if (selectedRow == -1)
+                return;
+            int row = tableDownloadableMaps.convertRowIndexToView(selectedRow);
+            RemoteMap map = getMapsforgeMapManager().getDownloadableMapsModel().getItem(row);
+            r.showMapBorder(map.getBoundingBox());
+            updateLabel();
         });
 
         r.getRoutingServiceFacade().getRoutingPreferencesModel().addChangeListener(e -> updateLabel());

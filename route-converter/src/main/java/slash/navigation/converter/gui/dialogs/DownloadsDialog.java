@@ -98,16 +98,8 @@ public class DownloadsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableDownloads.getModel());
         sorter.setSortsOnUpdates(true);
-        sorter.setComparator(DESCRIPTION_COLUMN, new Comparator<Download>() {
-            public int compare(Download d1, Download d2) {
-                return d1.getDescription().compareToIgnoreCase(d2.getDescription());
-            }
-        });
-        sorter.setComparator(STATE_COLUMN, new Comparator<Download>() {
-            public int compare(Download d1, Download d2) {
-                return d1.getState().compareTo(d2.getState());
-            }
-        });
+        sorter.setComparator(DESCRIPTION_COLUMN, (Comparator<Download>) (d1, d2) -> d1.getDescription().compareToIgnoreCase(d2.getDescription()));
+        sorter.setComparator(STATE_COLUMN, Comparator.comparing(Download::getState));
         sorter.setComparator(SIZE_COLUMN, new Comparator<Download>() {
             private long getSize(Download download) {
                 return download.getSize() != null ? download.getSize() : 0L;
@@ -117,14 +109,12 @@ public class DownloadsDialog extends SimpleDialog {
                 return (int) (getSize(d1) - getSize(d2));
             }
         });
-        sorter.setComparator(DATE_COLUMN, new Comparator<Download>() {
-            public int compare(Download d1, Download d2) {
-                if (d1.getLastModified() == null)
-                    return -1;
-                if (d2.getLastModified() == null)
-                    return 1;
-                return d1.getLastModified().getCalendar().compareTo(d2.getLastModified().getCalendar());
-            }
+        sorter.setComparator(DATE_COLUMN, (Comparator<Download>) (d1, d2) -> {
+            if (d1.getLastModified() == null)
+                return -1;
+            if (d2.getLastModified() == null)
+                return 1;
+            return d1.getLastModified().getCalendar().compareTo(d2.getLastModified().getCalendar());
         });
         tableDownloads.setRowSorter(sorter);
         tableDownloads.setRowHeight(getDefaultRowHeight());
