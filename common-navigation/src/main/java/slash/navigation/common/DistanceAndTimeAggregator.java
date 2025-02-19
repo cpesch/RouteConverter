@@ -93,7 +93,7 @@ public class DistanceAndTimeAggregator {
         DistanceAndTime firstPosition = absoluteDistancesAndTimes.get(startIndex - 1);
         if(firstPosition == null)
             return;
-        int endIndex = relativeDistancesAndTimes.keySet().size();
+        int endIndex = relativeDistancesAndTimes.size();
 
         double aggregatedDistance = firstPosition.getDistance();
         long aggregatedTime = firstPosition.getTimeInMillis();
