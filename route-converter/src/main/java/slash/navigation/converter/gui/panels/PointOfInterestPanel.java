@@ -102,7 +102,7 @@ public class PointOfInterestPanel implements PanelInTab {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
-                if (getPositionsModel().isContinousRange())
+                if (getPositionsModel().isContinousRangeOperation())
                     return;
                 handlePositionsUpdate();
             }
@@ -111,7 +111,7 @@ public class PointOfInterestPanel implements PanelInTab {
             public void tableChanged(TableModelEvent e) {
                 if (!isFirstToLastRow(e))
                     return;
-                if (getPositionsModel().isContinousRange())
+                if (getPositionsModel().isContinousRangeOperation())
                     return;
                 handlePositionsUpdate();
             }

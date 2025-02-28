@@ -1366,7 +1366,7 @@ public class MapsforgeMapView extends BaseMapView {
             switch (e.getType()) {
                 case INSERT, DELETE -> updateDecoupler.handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
                 case UPDATE -> {
-                    if (positionsModel.isContinousRange())
+                    if (positionsModel.isContinousRangeOperation())
                         return;
                     if (!(e.getColumn() == DESCRIPTION_COLUMN_INDEX ||
                             e.getColumn() == LONGITUDE_COLUMN_INDEX ||

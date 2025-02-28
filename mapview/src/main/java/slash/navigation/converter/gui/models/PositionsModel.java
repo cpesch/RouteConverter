@@ -77,7 +77,8 @@ public interface PositionsModel extends TableModel {
     void down(int[] rowIndices, int delta);
     void bottom(int[] rowIndices);
 
-    boolean isContinousRange();
+    boolean isContinousRangeOperation();
+    boolean isFullTableModification();
     void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex);
     void fireTableRowsUpdatedInContinousRange(int firstIndex, int lastIndex, int columnIndex);
 }

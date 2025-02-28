@@ -64,7 +64,7 @@ public class ElevationToJLabelAdapter extends PositionsModelToDocumentAdapter {
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {
         // ignored updates on columns not relevant for elevation
-        if (getDelegate().isContinousRange() && (e.getColumn() == DISTANCE_COLUMN_INDEX || e.getColumn() == TIME_COLUMN_INDEX))
+        if (getDelegate().isContinousRangeOperation() && (e.getColumn() == DISTANCE_COLUMN_INDEX || e.getColumn() == TIME_COLUMN_INDEX))
             return;
 
         @SuppressWarnings("rawtypes")

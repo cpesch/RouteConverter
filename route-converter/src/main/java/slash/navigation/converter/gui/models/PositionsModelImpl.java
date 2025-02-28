@@ -41,7 +41,6 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.format;
 import static java.util.Calendar.*;
 import static java.util.Collections.singletonList;
@@ -436,20 +435,20 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     public void sort(Comparator<NavigationPosition> comparator) {
         getRoute().sort(comparator);
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
-        fireTableRowsUpdated(0, MAX_VALUE);
+        fireTableModified();
     }
 
     @SuppressWarnings("unchecked")
     public void order(List<NavigationPosition> positions) {
         getRoute().order(positions);
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
-        fireTableRowsUpdated(0, MAX_VALUE);
+        fireTableModified();
     }
 
     public void revert() {
         getRoute().revert();
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
-        fireTableRowsUpdated(0, MAX_VALUE);
+        fireTableModified();
     }
 
     public void top(int[] rowIndices) {
@@ -522,8 +521,12 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         this.currentEvent = null;
     }
 
-    public boolean isContinousRange() {
+    public boolean isContinousRangeOperation() {
         return currentEvent instanceof ContinousRangeTableModelEvent;
+    }
+
+    public boolean isFullTableModification() {
+        return currentEvent instanceof FullTableModicationTableModelEvent;
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {
@@ -538,8 +541,18 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableChanged(new ContinousRangeTableModelEvent(this, firstRow, lastRow, ALL_COLUMNS, DELETE));
     }
 
+    public void fireTableModified() {
+        fireTableChanged(new FullTableModicationTableModelEvent(this, 0, Integer.MAX_VALUE, ALL_COLUMNS, UPDATE));
+    }
+
     private static class ContinousRangeTableModelEvent extends TableModelEvent {
         ContinousRangeTableModelEvent(TableModel source, int firstRow, int lastRow, int column, int type) {
+            super(source, firstRow, lastRow, column, type);
+        }
+    }
+
+    private static class FullTableModicationTableModelEvent extends TableModelEvent {
+        FullTableModicationTableModelEvent(TableModel source, int firstRow, int lastRow, int column, int type) {
             super(source, firstRow, lastRow, column, type);
         }
     }

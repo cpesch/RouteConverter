@@ -232,14 +232,14 @@ public class ConvertPanel implements PanelInTab {
         tablePositions.getSelectionModel().addListSelectionListener(e -> {
             if (e.getValueIsAdjusting())
                 return;
-            if (positionsModel.isContinousRange())
+            if (positionsModel.isContinousRangeOperation())
                 return;
             handlePositionsUpdate();
         });
         positionsModel.addTableModelListener(e -> {
             if (!isFirstToLastRow(e))
                 return;
-            if (positionsModel.isContinousRange())
+            if (positionsModel.isContinousRangeOperation())
                 return;
             handlePositionsUpdate();
         });

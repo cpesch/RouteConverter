@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static java.lang.Integer.MAX_VALUE;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -374,8 +373,12 @@ public class OverlayPositionsModel implements PositionsModel {
         return timesFromStart != null ? fromMillis(timesFromStart[0]) : null;
     }
 
-    public boolean isContinousRange() {
-        return delegate.isContinousRange();
+    public boolean isContinousRangeOperation() {
+        return delegate.isContinousRangeOperation();
+    }
+
+    public boolean isFullTableModification() {
+        return delegate.isFullTableModification();
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {

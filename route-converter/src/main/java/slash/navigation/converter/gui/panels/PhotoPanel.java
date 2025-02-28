@@ -144,7 +144,7 @@ public class PhotoPanel implements PanelInTab {
             public void valueChanged(ListSelectionEvent e) {
                 if (e.getValueIsAdjusting())
                     return;
-                if (getFilteredPhotosModel().isContinousRange())
+                if (getFilteredPhotosModel().isContinousRangeOperation())
                     return;
                 handlePositionsUpdate();
             }

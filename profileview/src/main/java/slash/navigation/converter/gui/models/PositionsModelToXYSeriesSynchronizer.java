@@ -75,7 +75,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
 
     private void handleUpdate(TableModelEvent e) {
         int columnIndex = e.getColumn();
-        if (getPositions().isContinousRange()) {
+        if (getPositions().isContinousRangeOperation()) {
             // handle distance and time column updates from the overlay position model - only once
             if (columnIndex == DISTANCE_COLUMN_INDEX) {
                 handleFullUpdate();
@@ -120,7 +120,7 @@ public abstract class PositionsModelToXYSeriesSynchronizer {
     }
 
     protected void handleRemove(int firstRow, int lastRow) {
-        if (getPositions().isContinousRange())
+        if (getPositions().isContinousRangeOperation())
             return;
         series.delete(firstRow, lastRow);
     }

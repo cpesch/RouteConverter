@@ -160,8 +160,12 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
         throw new UnsupportedOperationException();
     }
 
-    public boolean isContinousRange() {
-        return getDelegate().isContinousRange();
+    public boolean isContinousRangeOperation() {
+        return getDelegate().isContinousRangeOperation();
+    }
+
+    public boolean isFullTableModification() {
+        return getDelegate().isFullTableModification();
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {

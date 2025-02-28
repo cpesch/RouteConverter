@@ -50,7 +50,7 @@ public class PositionsCountToJLabelAdapter extends PositionsModelToDocumentAdapt
         if (e.getType() == UPDATE &&
                 !isFirstToLastRow(e))
             return;
-        if (getDelegate().isContinousRange())
+        if (getDelegate().isContinousRangeOperation())
             return;
 
         label.setText(Integer.toString(getDelegate().getRowCount()));

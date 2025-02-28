@@ -102,13 +102,13 @@ public class InsertPositionsDialog extends SimpleDialog {
         r.getConvertPanel().getPositionsView().getSelectionModel().addListSelectionListener(e -> {
             if (e.getValueIsAdjusting())
                 return;
-            if (positionsModel.isContinousRange())
+            if (positionsModel.isContinousRangeOperation())
                 return;
             handlePositionsUpdate();
         });
         r.getRoutingServiceFacade().addPreferencesChangeListener(e -> handlePositionsUpdate());
         positionsModel.addTableModelListener(e -> {
-            if (positionsModel.isContinousRange())
+            if (positionsModel.isContinousRangeOperation())
                 return;
             handlePositionsUpdate();
         });

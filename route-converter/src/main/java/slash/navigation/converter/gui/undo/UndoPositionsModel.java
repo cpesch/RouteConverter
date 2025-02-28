@@ -119,8 +119,12 @@ public class UndoPositionsModel implements PositionsModel {
 
     private static final int CONTINOUS_RANGE_FINAL_EVENT = -2;
 
-    public boolean isContinousRange() {
-        return delegate.isContinousRange();
+    public boolean isContinousRangeOperation() {
+        return delegate.isContinousRangeOperation();
+    }
+
+    public boolean isFullTableModification() {
+        return delegate.isFullTableModification();
     }
 
     public void fireTableRowsUpdated(int firstIndex, int lastIndex, int columnIndex) {

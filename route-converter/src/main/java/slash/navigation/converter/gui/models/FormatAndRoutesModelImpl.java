@@ -50,11 +50,17 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
 
         positionsModel.addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
+                // something like revert, sort, order is changed the complete table
+                if (positionsModel.isFullTableModification()) {
+                    setModified(true);
+                    return;
+                }
+
                 // ignore events following setSelectedRoute()
                 if (isFirstToLastRow(e))
                     return;
                 // ignore distance and time column updates from the OverlayPositionsModel not relevant for modification state
-                if (positionsModel.isContinousRange() && (e.getColumn() == DISTANCE_COLUMN_INDEX || e.getColumn() == TIME_COLUMN_INDEX))
+                if (positionsModel.isContinousRangeOperation() && (e.getColumn() == DISTANCE_COLUMN_INDEX || e.getColumn() == TIME_COLUMN_INDEX))
                     return;
                 setModified(true);
             }
