@@ -398,16 +398,10 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableRowsInserted(rowIndex, rowIndex - 1 + positions.size());
     }
 
-    public int[] createRowIndices(int from, int to) {
-        int[] rows = new int[to - from];
-        int count = 0;
-        for (int i = to - 1; i >= from; i--)
-            rows[count++] = i;
-        return rows;
-    }
-
     public void remove(int firstIndex, int lastIndex) {
-        remove(createRowIndices(firstIndex, lastIndex));
+        int[] range = Range.asRange(firstIndex, lastIndex - 1);
+        int[] rows = Range.revert(range);
+        remove(rows);
     }
 
     public void remove(int[] rowIndices) {
@@ -465,12 +459,15 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableRowsUpdated(0, rowIndices[rowIndices.length - 1]);
     }
 
-    public void topDown(int[] rows) {
-        int[] reverted = Range.revert(rows);
-        for (int i = 0; i < reverted.length; i++) {
-            getRoute().move(reverted.length - i - 1, reverted[i]);
+    public void topDown(int[] rowIndices) {
+        int[] reverted = Range.revert(rowIndices);
+        for (int row = 0; row < reverted.length; row++) {
+            // move largest index with largest distance to top first
+            for (int i = reverted.length - row - 1; i < reverted[row]; i++) {
+                getRoute().move(i, i + 1);
+            }
         }
-        fireTableRowsUpdated(0, reverted[0]);
+        fireTableRowsUpdated(0, rowIndices[rowIndices.length - 1]);
     }
 
     public void up(int[] rowIndices, int delta) {
@@ -507,8 +504,11 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void bottomUp(int[] rows) {
         Arrays.sort(rows);
-        for (int i = 0; i < rows.length; i++) {
-            getRoute().move(getRowCount() - rows.length + i, rows[i]);
+        for (int row = 0; row < rows.length; row++) {
+            // move smallest index with largest distance to bottom first
+            for (int i = getRowCount() - rows.length + row; i > rows[row]; i--) {
+                getRoute().move(i, i - 1);
+            }
         }
         fireTableRowsUpdated(rows[0], getRowCount() - 1);
     }

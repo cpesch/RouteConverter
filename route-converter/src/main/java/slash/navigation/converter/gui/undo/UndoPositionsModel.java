@@ -246,7 +246,8 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     void remove(int from, int to, boolean fireEvent, boolean trackUndo) {
-        int[] rows = delegate.createRowIndices(from, to);
+        int[] range = Range.asRange(from, to - 1);
+        int[] rows = Range.revert(range);
         remove(rows, fireEvent, trackUndo);
     }
 
