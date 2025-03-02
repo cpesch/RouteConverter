@@ -328,6 +328,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("up", new UpAction(this));
         actionManager.register("down", new DownAction(this));
         actionManager.register("bottom", new BottomAction(this));
+        actionManager.register("revert-positions", new RevertPositionsAction(this));
         actionManager.register("new-file", new NewFileAction(this));
         actionManager.register("open", new OpenAction(this));
         actionManager.register("paste", new PasteAction(getPositionsView(), positionsModel, clipboardInteractor));
@@ -905,7 +906,7 @@ public class ConvertPanel implements PanelInTab {
         tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
         actionManager.enable("insert-positions", existsMoreThanOnePosition);
         actionManager.enable("delete-positions", existsMoreThanOnePosition);
-        actionManager.enable("revert-positions", existsMoreThanOnePosition);
+        actionManager.enable("revert-all-positionlist", existsMoreThanOnePosition);
         RouteCharacteristics characteristics = r.getCharacteristicsModel().getSelectedCharacteristics();
         actionManager.enable("convert-route-to-track", existsAPosition && characteristics.equals(Route));
         actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));
@@ -943,6 +944,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("up", firstRowNotSelected);
         actionManager.enable("down", lastRowNotSelected);
         actionManager.enable("bottom", lastRowNotSelected);
+        actionManager.enable("revert-positions", existsASelectedPosition);
         actionManager.enable("add-coordinates", existsASelectedPosition);
         actionManager.enable("add-elevation", existsASelectedPosition);
         actionManager.enable("add-address", existsASelectedPosition);
@@ -955,7 +957,7 @@ public class ConvertPanel implements PanelInTab {
         tableHeaderMenu.enableSortActions(existsMoreThanOnePosition);
         actionManager.enable("insert-positions", existsAPosition);
         actionManager.enable("delete-positions", existsAPosition);
-        actionManager.enable("revert-positions", existsMoreThanOnePosition);
+        actionManager.enable("revert-all-positionlist", existsMoreThanOnePosition);
         RouteCharacteristics characteristics = r.getCharacteristicsModel().getSelectedCharacteristics();
         actionManager.enable("convert-route-to-track", existsAPosition && characteristics.equals(Route));
         actionManager.enable("convert-track-to-route", existsAPosition && characteristics.equals(Track));

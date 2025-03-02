@@ -303,7 +303,17 @@ public class UndoPositionsModel implements PositionsModel {
     void revert(boolean trackUndo) {
         delegate.revert();
         if (trackUndo)
-            undoManager.addEdit(new RevertPositions(this));
+            undoManager.addEdit(new RevertPositionList(this));
+    }
+
+    public void revert(int[] rowIndices) {
+        revert(rowIndices, true);
+    }
+
+    void revert(int[] rows, boolean trackUndo) {
+        delegate.revert(rows);
+        if (trackUndo)
+            undoManager.addEdit(new RevertPositions(this, rows));
     }
 
     public void top(int[] rowIndices) {

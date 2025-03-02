@@ -1205,7 +1205,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.registerGlobal("delete");
         actionManager.register("insert-positions", new InsertPositionsAction());
         actionManager.register("delete-positions", new DeletePositionsAction());
-        actionManager.register("revert-positions", new RevertPositionListAction());
+        actionManager.register("revert-all-positionlist", new RevertPositionListAction());
         actionManager.register("convert-route-to-track", new ConvertRouteToTrackAction());
         actionManager.register("convert-track-to-route", new ConvertTrackToRouteAction());
         actionManager.register("show-downloads", new ShowDownloadsAction());

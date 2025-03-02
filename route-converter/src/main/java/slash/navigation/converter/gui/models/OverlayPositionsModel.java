@@ -286,6 +286,10 @@ public class OverlayPositionsModel implements PositionsModel {
         delegate.revert();
     }
 
+    public void revert(int[] rowIndices) {
+        delegate.revert(rowIndices);
+    }
+
     public void top(int[] rowIndices) {
         delegate.top(rowIndices);
     }

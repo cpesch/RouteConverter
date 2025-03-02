@@ -17,23 +17,32 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
 package slash.navigation.converter.gui.actions;
 
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
+import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
 
 /**
- * {@link Action} that reverts all rows of a {@link PositionsModel}.
+ * {@link Action} that reverts the selected rows of a {@link JTable} in a {@link PositionsModel}.
  *
  * @author Christian Pesch
  */
 
-public class RevertPositionListAction extends FrameAction {
+public class RevertPositionsAction extends FrameAction {
+    private final ConvertPanel convertPanel;
+
+    public RevertPositionsAction(ConvertPanel convertPanel) {
+        this.convertPanel = convertPanel;
+    }
+
     public void run() {
-        RouteConverter.getInstance().revertPositions();
+        int[] selectedRows = convertPanel.getPositionsView().getSelectedRows();
+        if (selectedRows.length > 0) {
+            convertPanel.getPositionsModel().revert(selectedRows);
+            convertPanel.selectPositions(selectedRows);
+        }
     }
 }

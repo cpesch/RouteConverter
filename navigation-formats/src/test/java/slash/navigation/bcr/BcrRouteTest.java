@@ -189,13 +189,34 @@ public class BcrRouteTest {
     }
 
     @Test
-    public void testReverse() {
+    public void testRevertAll() {
         initialize();
         assertPositions(a, b, c);
         route.revert();
         assertPositions(c, b, a);
         route.revert();
         assertPositions(a, b, c);
+    }
+
+    @Test
+    public void testRevertSome() {
+        List<BcrPosition> positions = route.getPositions();
+        positions.add(a);
+        positions.add(b);
+        positions.add(c);
+        positions.add(d);
+        positions.add(e);
+        assertPositions(a, b, c, d, e);
+        route.revert(new int[]{1,3});
+        assertPositions(a, d, c, b, e);
+        route.revert(new int[]{0, 1});
+        assertPositions(d, a, c, b, e);
+        route.revert(new int[]{4, 3});
+        assertPositions(d, a, c, e, b);
+        route.revert(new int[]{4, 0});
+        assertPositions(b, a, c, e, d);
+        route.revert(new int[]{0, 4});
+        assertPositions(d, a, c, e, b);
     }
 
     @Test

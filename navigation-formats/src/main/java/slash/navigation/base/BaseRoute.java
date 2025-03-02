@@ -536,6 +536,19 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         setName(routeName);
     }
 
+    public void revert(int[] indices) {
+        Arrays.sort(indices);
+        List<P> existing = getPositions();
+        List<P> positions = new ArrayList<>();
+        for (int row : indices) {
+            positions.add(0, existing.get(row));
+        }
+        int index = 0;
+        for (int row : indices) {
+            existing.set(row, positions.get(index++));
+        }
+    }
+
     public abstract P createPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description);
 
     protected abstract BcrRoute asBcrFormat(BcrFormat format);

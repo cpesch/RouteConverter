@@ -71,6 +71,7 @@ public interface PositionsModel extends TableModel {
 
     void sort(Comparator<NavigationPosition> comparator);
     void revert();
+    void revert(int[] rowIndices);
 
     void top(int[] rowIndices);
     void up(int[] rowIndices, int delta);

@@ -69,6 +69,7 @@ public class FrameMenu {
         positionMenu.add(createItem("up"));
         positionMenu.add(createItem("down"));
         positionMenu.add(createItem("bottom"));
+        positionMenu.add(createItem("revert-positions"));
         positionMenu.addSeparator();
         positionMenu.add(createItem("find-place"));
         JMenu completeMenu = createMenu("complete");
@@ -90,7 +91,7 @@ public class FrameMenu {
         positionlistMenu.addSeparator();
         positionlistMenu.add(createItem("convert-route-to-track"));
         positionlistMenu.add(createItem("convert-track-to-route"));
-        positionlistMenu.add(createItem("revert-positions"));
+        positionlistMenu.add(createItem("revert-all-positionlist"));
         positionlistMenu.add(createMenu("sort-positions"));
         positionlistMenu.addSeparator();
         positionlistMenu.add(createItem("split-positionlist"));

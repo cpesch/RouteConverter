@@ -28,35 +28,33 @@ import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoableEdit;
 
 /**
- * Acts as a {@link UndoableEdit} for reverting some positions of a {@link PositionsModel}.
+ * Acts as a {@link UndoableEdit} for reverting all positions of a {@link PositionsModel}.
  *
  * @author Christian Pesch
  */
 
-class RevertPositions extends AbstractUndoableEdit {
+class RevertPositionList extends AbstractUndoableEdit {
     private final UndoPositionsModel positionsModel;
-    private final int[] rows;
 
-    public RevertPositions(UndoPositionsModel positionsModel, int[] rows) {
+    public RevertPositionList(UndoPositionsModel positionsModel) {
         this.positionsModel = positionsModel;
-        this.rows = rows;
     }
 
     public String getUndoPresentationName() {
-        return "revert-positions-undo";
+        return "revert-all-positionlist-undo";
     }
 
     public String getRedoPresentationName() {
-        return "revert-positions-redo";
+        return "revert-all-positionlist-redo";
     }
 
     public void undo() throws CannotUndoException {
         super.undo();
-        positionsModel.revert(rows, false);
+        positionsModel.revert(false);
     }
 
     public void redo() throws CannotRedoException {
         super.redo();
-        positionsModel.revert(rows, false);
+        positionsModel.revert(false);
     }
 }

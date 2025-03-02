@@ -451,9 +451,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableModified();
     }
 
+    public void revert(int[] rowIndices) {
+        Arrays.sort(rowIndices);
+        getRoute().revert(rowIndices);
+        fireTableRowsUpdated(rowIndices[0], rowIndices[rowIndices.length - 1]);
+    }
+
     public void top(int[] rowIndices) {
         Arrays.sort(rowIndices);
-
         for (int i = 0; i < rowIndices.length; i++) {
             getRoute().top(rowIndices[i], i);
         }
@@ -462,7 +467,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void topDown(int[] rows) {
         int[] reverted = Range.revert(rows);
-
         for (int i = 0; i < reverted.length; i++) {
             getRoute().move(reverted.length - i - 1, reverted[i]);
         }
@@ -471,7 +475,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void up(int[] rowIndices, int delta) {
         Arrays.sort(rowIndices);
-
         for (int row : rowIndices) {
             // protect against IndexArrayOutOfBoundsException
             if(row - delta < 0)
@@ -484,7 +487,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void down(int[] rowIndices, int delta) {
         int[] reverted = Range.revert(rowIndices);
-
         for (int row : reverted) {
             // protect against IndexArrayOutOfBoundsException
             if(row + delta >= getRowCount())
@@ -497,7 +499,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void bottom(int[] rowIndices) {
         int[] reverted = Range.revert(rowIndices);
-
         for (int i = 0; i < reverted.length; i++) {
             getRoute().bottom(reverted[i], i);
             fireTableRowsUpdated(reverted[i], getRowCount() - 1 - i);
@@ -506,7 +507,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void bottomUp(int[] rows) {
         Arrays.sort(rows);
-
         for (int i = 0; i < rows.length; i++) {
             getRoute().move(getRowCount() - rows.length + i, rows[i]);
         }

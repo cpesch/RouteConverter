@@ -144,6 +144,10 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
         throw new UnsupportedOperationException();
     }
 
+    public void revert(int[] rowIndices) {
+        throw new UnsupportedOperationException();
+    }
+
     public void top(int[] rowIndices) {
         throw new UnsupportedOperationException();
     }
