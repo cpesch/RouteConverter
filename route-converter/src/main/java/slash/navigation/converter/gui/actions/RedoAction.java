@@ -42,7 +42,7 @@ public class RedoAction extends FrameAction {
     public void run() {
         int[] selectedRows = convertPanel.getPositionsView().getSelectedRows();
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
-        undoManager.undo();
+        undoManager.redo();
         convertPanel.selectPositions(selectedRows);
     }
 }
