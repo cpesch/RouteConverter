@@ -227,7 +227,7 @@ public class BRouter extends BaseRoutingService {
 
             double bearing = Bearing.calculateBearing(from.getLongitude(), from.getLatitude(),
                     to.getLongitude(), to.getLatitude()).getDistance();
-            long routingTimeout = (long) (3000L + bearing / 20.0);
+            long routingTimeout = (long) (10000L + bearing / 15.0);
             log.fine(format("Distance %f results to default routing timeout %d milliseconds", bearing, routingTimeout));
 
             RoutingContext routingContext = new RoutingContext();

@@ -38,7 +38,6 @@ import java.util.prefs.Preferences;
 
 public class TileServerMapSource extends AbstractTileSource {
     private static final Preferences preferences = Preferences.userNodeForPackage(TileServerMapSource.class);
-    private static final String USER_AGENT_PREFERENCE = "userAgent";
     private static final String PARALLEL_REQUEST_LIMIT_PREFERENCE = "parallelRequestLimit";
     private final TileServer tileServer;
     private boolean alpha = false;
@@ -53,7 +52,7 @@ public class TileServerMapSource extends AbstractTileSource {
     public TileServerMapSource(TileServer tileServer) {
         super(getHostNames(tileServer), 80);
         this.tileServer = tileServer;
-        setUserAgent(preferences.get(USER_AGENT_PREFERENCE, "RouteConverter Map Client") + "/" + System.getProperty("rest", "3.0"));
+        setUserAgent(!tileServer.isActive() ? "RouteConverter Map Client /" + System.getProperty("rest", "3.0") : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246");
         setTimeoutConnect(30 * 1000);
         setTimeoutRead(120 * 1000);
     }
