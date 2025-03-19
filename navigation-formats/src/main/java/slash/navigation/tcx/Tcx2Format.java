@@ -25,6 +25,7 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.tcx.binding2.*;
 
 import jakarta.xml.bind.JAXBException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -62,13 +63,17 @@ public class Tcx2Format extends TcxFormat {
     private List<Wgs84Position> processTrack(TrackT trackT) {
         List<Wgs84Position> result = new ArrayList<>();
         for (TrackpointT trackpointT : trackT.getTrackpoint()) {
-            result.add(new Wgs84Position(convertLongitude(trackpointT.getPosition()),
+            Wgs84Position position = new Wgs84Position(convertLongitude(trackpointT.getPosition()),
                     convertLatitude(trackpointT.getPosition()),
                     trackpointT.getAltitudeMeters(),
                     null,
                     parseXMLTime(trackpointT.getTime()),
                     null,
-                    trackpointT));
+                    trackpointT);
+            HeartRateInBeatsPerMinuteT heartRateBpm = trackpointT.getHeartRateBpm();
+            if (heartRateBpm != null)
+                position.setHeartBeat(heartRateBpm.getValue());
+            result.add(position);
         }
         return result;
     }
@@ -312,7 +317,7 @@ public class Tcx2Format extends TcxFormat {
 
     private TrainingCenterDatabaseT createTrainingCenterDatabase(List<TcxRoute> routes) {
         TrainingCenterDatabaseT trainingCenterDatabaseT = new ObjectFactory().createTrainingCenterDatabaseT();
-        for(TcxRoute route : routes) {
+        for (TcxRoute route : routes) {
             addToTrainingCenterDatabase(trainingCenterDatabaseT, new HashSet<>(routes.size()),
                     route, 0, route.getPositionCount());
         }

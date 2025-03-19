@@ -62,13 +62,15 @@ public class Tcx1Format extends TcxFormat {
     private List<Wgs84Position> processTrack(TrackT trackT) {
         List<Wgs84Position> result = new ArrayList<>();
         for (TrackpointT trackpointT : trackT.getTrackpoint()) {
-            result.add(new Wgs84Position(convertLongitude(trackpointT.getPosition()),
+            Wgs84Position position = new Wgs84Position(convertLongitude(trackpointT.getPosition()),
                     convertLatitude(trackpointT.getPosition()),
                     trackpointT.getAltitudeMeters(),
                     null,
                     parseXMLTime(trackpointT.getTime()),
                     null,
-                    trackpointT));
+                    trackpointT);
+            position.setHeartBeat(trackpointT.getHeartRateBpm());
+            result.add(position);
         }
         return result;
     }
