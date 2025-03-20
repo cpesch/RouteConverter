@@ -65,6 +65,9 @@ public abstract class TcxFormat extends XmlNavigationFormat<TcxRoute> implements
 
     protected Short getHeartBeat(Wgs84Position position) {
         if (position != null) {
+            if(position.getHeartBeat() != null)
+                return position.getHeartBeat();
+
             WptType wpt = position.getOrigin(WptType.class);
             if (wpt != null) {
                 Double heartBeat = getHeartBeat(wpt);

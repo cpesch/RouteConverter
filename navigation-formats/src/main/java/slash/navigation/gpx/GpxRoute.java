@@ -221,7 +221,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
     protected TcxRoute asTcxFormat(TcxFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (GpxPosition position : getPositions()) {
-            wgs84Positions.add(position.asWgs84Position());
+            wgs84Positions.add(position.asTcxPosition());
         }
         return new TcxRoute(format, getCharacteristics(), getName(), wgs84Positions);
     }

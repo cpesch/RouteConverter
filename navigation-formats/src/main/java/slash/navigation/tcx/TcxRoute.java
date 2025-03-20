@@ -32,7 +32,6 @@ import slash.navigation.csv.CsvRoute;
 import slash.navigation.excel.ExcelFormat;
 import slash.navigation.excel.ExcelPosition;
 import slash.navigation.excel.ExcelRoute;
-import slash.navigation.geojson.GeoJsonFormat;
 import slash.navigation.gopal.GoPalPosition;
 import slash.navigation.gopal.GoPalRoute;
 import slash.navigation.gopal.GoPalRouteFormat;
