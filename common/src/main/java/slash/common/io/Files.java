@@ -452,6 +452,8 @@ public class Files {
     public static <T> String asDialogString(List<T> list, boolean shorten) {
         if (list == null)
             return "null";
+        if (list.isEmpty())
+            return "none";
 
         StringBuilder buffer = new StringBuilder();
         for (int i = 0; i < list.size(); i++) {

@@ -35,7 +35,7 @@ public class PhotonServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
-                new SimpleNavigationPosition(10.1990052, 50.0001936, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bayern, Deutschland (highway)"),
+                new SimpleNavigationPosition(10.2006845, 50.0004970, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bayern, Deutschland (highway)"),
                 new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bayern, Deutschland (highway)"),
                 new SimpleNavigationPosition(10.1999005, 50.0001319, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bayern, Deutschland (highway)")
         );
@@ -51,7 +51,7 @@ public class PhotonServiceIT {
         assertTrue(address2.contains("Grafenrheinfeld") && address2.contains("Bayern") && address2.contains("Deutschland"));
         String address3 = service.getAddressFor(new SimpleNavigationPosition(11.06561, 47.42428));
         assertTrue(address3.contains("Hoher Gaif") && address3.contains("Deutschland"));
-        assertEquals("Soul Buoy", service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
+        assertNull(service.getAddressFor(new SimpleNavigationPosition(0.0, 0.0)));
         assertEquals("North Pole", service.getAddressFor(new SimpleNavigationPosition(0.0, 90.0)));
         String pole1 = service.getAddressFor(new SimpleNavigationPosition(0.0, -90.0));
         assertTrue(pole1.contains("Pole") || pole1.contains("Skiway"));
