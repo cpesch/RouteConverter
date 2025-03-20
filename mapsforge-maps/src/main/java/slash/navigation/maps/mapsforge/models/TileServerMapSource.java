@@ -24,11 +24,14 @@ import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
 import slash.navigation.maps.tileserver.TileServer;
+import slash.navigation.rest.HttpRequest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
 import java.util.prefs.Preferences;
+
+import static slash.navigation.rest.HttpRequest.USER_AGENT;
 
 /**
  * A {@link OnlineTileSource} that is configured from a {@link TileServer}.
@@ -52,7 +55,7 @@ public class TileServerMapSource extends AbstractTileSource {
     public TileServerMapSource(TileServer tileServer) {
         super(getHostNames(tileServer), 80);
         this.tileServer = tileServer;
-        setUserAgent(!tileServer.isActive() ? "RouteConverter Map Client /" + System.getProperty("rest", "3.0") : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.246");
+        setUserAgent(!tileServer.isActive() ? "RouteConverter Map Client /" + System.getProperty("rest", "3.0") : USER_AGENT);
         setTimeoutConnect(30 * 1000);
         setTimeoutRead(120 * 1000);
     }
