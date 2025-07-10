@@ -17,33 +17,18 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge.renderer;
+package slash.navigation.maps.mapsforge;
 
-import slash.navigation.maps.mapsforge.ThemeStyle;
+import slash.navigation.maps.item.Item;
 
-import javax.swing.*;
-import java.awt.*;
+import java.util.Set;
 
 /**
- * Renders the {@link ThemeStyle} labels of the style selector combo box.
+ * The style of a theme with categories that refine the style.
  *
  * @author Christian Pesch
  */
 
-public class ThemeStyleListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        String text = "?";
-        String tooltip = "?";
-
-        ThemeStyle themeStyle = (ThemeStyle) value;
-        if(themeStyle != null) {
-            text = themeStyle.getDescription();
-            tooltip = themeStyle.getUrl();
-        }
-
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        label.setText(text);
-        label.setToolTipText(tooltip);
-        return label;
-    }
+public interface ThemeStyle extends Item {
+    Set<ThemeStyleCategory> getCategories();
 }

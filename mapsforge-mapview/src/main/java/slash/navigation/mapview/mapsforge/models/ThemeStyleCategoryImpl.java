@@ -17,18 +17,28 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.converter.gui.models;
+package slash.navigation.mapview.mapsforge.models;
 
-import slash.navigation.maps.item.Item;
-
-import java.util.Set;
+import slash.navigation.maps.mapsforge.ThemeStyle;
+import slash.navigation.maps.mapsforge.ThemeStyleCategory;
 
 /**
- * The style of a theme
+ * A category of a {@link ThemeStyle} based on a {@link String}
  *
  * @author Christian Pesch
  */
+public class ThemeStyleCategoryImpl implements ThemeStyleCategory {
+    private final String category;
 
-public interface ThemeStyle extends Item {
-    Set<String> getCategories();
+    public ThemeStyleCategoryImpl(String category) {
+        this.category = category;
+    }
+
+    public String getDescription() {
+        return category;
+    }
+
+    public String getUrl() {
+        return category;
+    }
 }

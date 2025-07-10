@@ -1,17 +1,42 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
 package slash.navigation.converter.gui.dialogs;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.models.ThemeStyle;
-import slash.navigation.converter.gui.models.ThemeStyleModel;
+import slash.navigation.converter.gui.RouteConverterOpenSource;
+import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
+import slash.navigation.converter.gui.renderer.ThemeStyleCategoryTableCellRenderer;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
+import slash.navigation.maps.mapsforge.ThemeStyle;
 import slash.navigation.mapview.mapsforge.models.TableModelToComboBoxModelAdapter;
 import slash.navigation.mapview.mapsforge.renderer.ThemeStyleListCellRenderer;
 
 import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -40,10 +65,20 @@ public class ThemeStyleDialog extends SimpleDialog {
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
 
-        comboBoxStyle.setModel(new TableModelToComboBoxModelAdapter<>(getThemeStyleModel().getAvailableStylesModel(), getThemeStyleModel().getAppliedStyleModel()));
-        if (getThemeStyleModel().getAvailableStylesModel().getRowCount() > 0)
-            comboBoxStyle.setPrototypeDisplayValue(getThemeStyleModel().getAvailableStylesModel().getItem(0));
+        comboBoxStyle.setModel(new TableModelToComboBoxModelAdapter<>(getMapsforgeMapManager().getAvailableThemeStylesModel(), getMapsforgeMapManager().getAppliedThemeStyleModel()));
+        if (getMapsforgeMapManager().getAvailableThemeStylesModel().getRowCount() > 0)
+            comboBoxStyle.setPrototypeDisplayValue(getMapsforgeMapManager().getAvailableThemeStylesModel().getItem(0));
         comboBoxStyle.setRenderer(new ThemeStyleListCellRenderer());
+
+        tableCategories.setModel(getMapsforgeMapManager().getAvailableThemeStyleCategoriesModel());
+        tableCategories.setDefaultRenderer(Object.class, new ThemeStyleCategoryTableCellRenderer());
+        TableCellRenderer headerRenderer = new SimpleHeaderRenderer("category");
+        TableColumnModel columns = tableCategories.getColumnModel();
+        for (int i = 0; i < columns.getColumnCount(); i++) {
+            TableColumn column = columns.getColumn(i);
+            column.setHeaderRenderer(headerRenderer);
+        }
+        // TODO getMapsforgeMapManager().setCurrentThemeStyle(getMapsforgeMapManager().getAppliedStyleModel().getItem());
 
         buttonClose.addActionListener(new DialogAction(this) {
             public void run() {
@@ -66,8 +101,8 @@ public class ThemeStyleDialog extends SimpleDialog {
 
     }
 
-    private ThemeStyleModel getThemeStyleModel() {
-        return RouteConverter.getInstance().getMapPreferencesModel().getThemeStyleModel();
+    private MapsforgeMapManager getMapsforgeMapManager() {
+        return ((RouteConverterOpenSource) RouteConverter.getInstance()).getMapsforgeMapManager();
     }
 
     private void close() {

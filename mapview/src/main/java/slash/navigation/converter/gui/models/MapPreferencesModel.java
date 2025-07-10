@@ -19,7 +19,6 @@
  *     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
  * /
  */
-
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.gui.models.BooleanModel;
@@ -39,7 +38,6 @@ public class MapPreferencesModel {
     private static final String SHOW_SHADED_HILLS_PREFERENCE = "showShadedHills";
     private static final String SHOW_WAYPOINT_DESCRIPTION_PREFERENCE = "showWaypointDescription";
 
-    private final ThemeStyleModel themeStyleModel = new ThemeStyleModel();
     private final RoutingPreferencesModel routingPreferencesModel;
     private final CharacteristicsModel characteristicsModel;
     private final UnitSystemModel unitSystemModel;
@@ -59,10 +57,6 @@ public class MapPreferencesModel {
         this.routingPreferencesModel = routingPreferencesModel;
         this.characteristicsModel = characteristicsModel;
         this.unitSystemModel = unitSystemModel;
-    }
-
-    public ThemeStyleModel getThemeStyleModel() {
-        return themeStyleModel;
     }
 
     public RoutingPreferencesModel getRoutingPreferencesModel() {

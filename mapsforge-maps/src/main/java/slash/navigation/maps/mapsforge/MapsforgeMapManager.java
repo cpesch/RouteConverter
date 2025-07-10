@@ -71,6 +71,7 @@ public class MapsforgeMapManager {
     private static final String THEME_DIRECTORY_PREFERENCE = "themeDirectory";
     private static final String DISPLAYED_MAP_PREFERENCE = "displayedMap";
     private static final String APPLIED_THEME_PREFERENCE = "appliedTheme";
+    private static final String APPLIED_STYLE_PREFERENCE = "appliedStyle";
     private static final String DEFAULT_URL = "http://wiki.openstreetmap.org/wiki/Default";
     private static final String OSMARENDER_URL = "http://wiki.openstreetmap.org/wiki/Osmarender";
     private static final OpenStreetMap OPEN_STREET_MAP = new OpenStreetMap();
@@ -81,6 +82,8 @@ public class MapsforgeMapManager {
     private final JoinedItemTableModel<LocalMap> availableMapsModel = new JoinedItemTableModel<>(availableOfflineMapsModel,
             new FilteringTableModel<>(availableOnlineMapsModel, new ActiveTileMapPredicate()));
     private final ItemTableModel<LocalTheme> availableThemesModel = new ItemTableModel<>(1);
+    private final ItemTableModel<ThemeStyle> availableThemeStylesModel = new ItemTableModel<>(1);
+    private final ItemTableModel<ThemeStyleCategory> availableThemeStyleCategoriesModel = new ItemTableModel<>(1);
     private final ItemTableModel<RemoteMap> downloadableMapsModel = new ItemTableModel<>(3);
     private final ItemTableModel<RemoteTheme> downloadableThemesModel = new ItemTableModel<>(3);
 
@@ -104,6 +107,16 @@ public class MapsforgeMapManager {
         }
     };
 
+    private final ItemModel<ThemeStyle> appliedThemeStyleModel = new ItemModel<>(APPLIED_STYLE_PREFERENCE, null) {
+        protected ThemeStyle stringToItem(String url) {
+            return getAvailableThemeStylesModel().getItemByUrl(url);
+        }
+
+        protected String itemToString(ThemeStyle style) {
+            return style.getUrl();
+        }
+    };
+
     private ThemeForMapMediator themeForMapMediator;
     private TileServerToTileMapMediator tileServerToTileMapMediator;
 
@@ -114,6 +127,33 @@ public class MapsforgeMapManager {
         tileServerToTileMapMediator = new TileServerToTileMapMediator(tileServerMapManager.getAvailableMapsModel(), availableOnlineMapsModel);
         initializeOpenStreetMap();
         initializeBuiltinThemes();
+    }
+
+    public void clearThemeStyles() {
+        getAvailableThemeStylesModel().clear();
+        getAvailableThemeStyleCategoriesModel().clear();
+    }
+
+    public void setThemeStyles(List<ThemeStyle> themeStyles) {
+        clearThemeStyles();
+
+        List<ThemeStyle> styles = new ArrayList<>(themeStyles);
+        styles.sort(Comparator.comparing(ThemeStyle::getDescription));
+        for (ThemeStyle themeStyle : styles)
+            getAvailableThemeStylesModel().addOrUpdateItem(themeStyle);
+
+        LocalTheme currentTheme = appliedThemeModel.getItem();
+        appliedThemeStyleModel.initializePreferences(currentTheme.getDescription() + APPLIED_STYLE_PREFERENCE, themeStyles.get(0).getUrl());
+
+        ThemeStyle themeStyle = getAppliedThemeStyleModel().getItem();
+        if (themeStyle != null) {
+            List<ThemeStyleCategory> categories = new ArrayList<>(themeStyle.getCategories());
+            categories.sort(Comparator.comparing(ThemeStyleCategory::getDescription));
+            for (ThemeStyleCategory category : categories) {
+                getAvailableThemeStyleCategoriesModel().addOrUpdateItem(category);
+            }
+        }
+        // could set the applied theme style categories here later
     }
 
     public void dispose() {
@@ -154,8 +194,20 @@ public class MapsforgeMapManager {
         return downloadableThemesModel;
     }
 
+    public ItemTableModel<ThemeStyle> getAvailableThemeStylesModel() {
+        return availableThemeStylesModel;
+    }
+
+    public ItemTableModel<ThemeStyleCategory> getAvailableThemeStyleCategoriesModel() {
+        return availableThemeStyleCategoriesModel;
+    }
+
     public ItemModel<LocalTheme> getAppliedThemeModel() {
         return appliedThemeModel;
+    }
+
+    public ItemModel<ThemeStyle> getAppliedThemeStyleModel() {
+        return appliedThemeStyleModel;
     }
 
     public String getMapsPath() {

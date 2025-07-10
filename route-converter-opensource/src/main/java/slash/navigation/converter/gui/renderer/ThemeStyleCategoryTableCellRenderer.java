@@ -17,33 +17,26 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge.renderer;
+package slash.navigation.converter.gui.renderer;
 
-import slash.navigation.maps.mapsforge.ThemeStyle;
+import slash.navigation.maps.mapsforge.ThemeStyleCategory;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders the {@link ThemeStyle} labels of the style selector combo box.
+ * Renders the table cells of the {@link ThemeStyleCategory} table.
  *
  * @author Christian Pesch
  */
 
-public class ThemeStyleListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        String text = "?";
-        String tooltip = "?";
+public class ThemeStyleCategoryTableCellRenderer extends AlternatingColorTableCellRenderer {
 
-        ThemeStyle themeStyle = (ThemeStyle) value;
-        if(themeStyle != null) {
-            text = themeStyle.getDescription();
-            tooltip = themeStyle.getUrl();
-        }
-
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        label.setText(text);
-        label.setToolTipText(tooltip);
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
+        JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
+        ThemeStyleCategory category = (ThemeStyleCategory) value;
+        label.setText(category.getDescription());
+        label.setToolTipText(category.getUrl());
         return label;
     }
 }
