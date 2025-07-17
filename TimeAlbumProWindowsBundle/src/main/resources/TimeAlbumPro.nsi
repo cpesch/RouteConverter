@@ -6,7 +6,7 @@ SilentInstall silent
 RequestExecutionLevel user
 ShowInstDetails hide
 
-!define JRE "17.0.9"
+!define JRE "17.0.15"
 !define JRE_PATH "..\jre-${JRE}"
 OutFile "TimeAlbumProWindowsBundle.exe"
 

@@ -6,14 +6,14 @@ SilentInstall silent
 RequestExecutionLevel user
 ShowInstDetails hide
 
-!define JRE "17.0.9"
+!define JRE "17.0.15"
 !define JRE_PATH "..\jre-${JRE}"
 OutFile "RouteConverterWindowsBundle.exe"
 
 Icon "RouteConverter.ico"
 VIProductVersion ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0.${maven.build.number}
 VIAddVersionKey ProductName "RouteConverter"
-VIAddVersionKey LegalCopyright "Copyright (c) 2008-2023 Christian Pesch"
+VIAddVersionKey LegalCopyright "Copyright (c) 2008-2025 Christian Pesch"
 VIAddVersionKey FileDescription "RouteConverter for Windows bundled with JRE"
 VIAddVersionKey FileVersion ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0.${maven.build.number}
 VIAddVersionKey ProductVersion "${project.version} / OpenJRE ${JRE} (x64)"
