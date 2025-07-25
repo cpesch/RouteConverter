@@ -252,7 +252,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     private List<String> getLanguagesWithActiveTranslators() {
-        List<Locale> localesOfActiveTranslators = asList(CATALAN, CROATIA, DENMARK, GERMANY, ITALY, NEDERLANDS, PORTUGAL, SPAIN, US);
+        List<Locale> localesOfActiveTranslators = asList(CATALAN, CROATIA, DENMARK, GERMANY, ITALY, NEDERLANDS, PORTUGAL, SPAIN, TAMIL, US);
         List<String> results = new ArrayList<>();
         for (Locale locale : localesOfActiveTranslators) {
             results.add(locale.getLanguage());

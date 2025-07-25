@@ -35,7 +35,7 @@ public class ResourceBundleTest {
     private static final Logger log = Logger.getLogger(ResourceBundleTest.class.getName());
     private final List<Locale> LOCALES = asList(ARABIA, BRAZIL, CATALAN, CHINA, CROATIA, CZECH, DENMARK,
             FINLAND, FRANCE, GERMANY, ITALY, JAPAN, KOREA, HUNGARY, NEDERLANDS, NORWAY_BOKMAL, POLAND,
-            PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, TURKEY, UKRAINE, US);
+            PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, TAMIL, TURKEY, UKRAINE, US);
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
             return singletonList(new Locale(locale.getLanguage()));
