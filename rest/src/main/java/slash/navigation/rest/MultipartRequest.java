@@ -41,7 +41,6 @@ import static slash.common.io.Transfer.encodeUriButKeepSlashes;
  */
 
 abstract class MultipartRequest extends HttpRequest {
-    private static final ContentType TEXT_PLAIN_UTF8 = ContentType.create("text/plain", UTF_8);
     private MultipartEntityBuilder builder;
     private boolean containsFileLargerThan4k;
 
@@ -56,7 +55,7 @@ abstract class MultipartRequest extends HttpRequest {
     }
 
     public void addString(String name, String value) {
-        getBuilder().addTextBody(name, value, TEXT_PLAIN_UTF8);
+        getBuilder().addTextBody(name, value);
     }
 
     public void addFile(String name, File value) {
