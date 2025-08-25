@@ -21,6 +21,7 @@ package slash.navigation.rest;
 
 import org.apache.hc.client5.http.classic.methods.HttpUriRequestBase;
 import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 
@@ -28,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import static org.apache.hc.core5.http.ContentType.APPLICATION_JSON;
 import static org.apache.hc.core5.http.ContentType.APPLICATION_OCTET_STREAM;
 import static org.apache.hc.core5.http.HttpHeaders.ACCEPT;
 import static org.apache.hc.core5.http.HttpHeaders.LOCATION;
@@ -56,7 +58,7 @@ abstract class MultipartRequest extends HttpRequest {
     }
 
     public void addString(String name, String value) {
-        getBuilder().addTextBody(name, value);
+        getBuilder().addTextBody(name, value, ContentType.APPLICATION_JSON);
     }
 
     public void addFile(String name, File value) {
