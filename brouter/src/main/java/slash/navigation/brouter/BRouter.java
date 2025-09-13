@@ -146,6 +146,9 @@ public class BRouter extends BaseRoutingService {
     }
 
     private java.io.File getDirectory(DataSource dataSource) {
+        if(dataSource == null)
+            return null;
+
         String path = getPath() + separator + dataSource.getDirectory();
         java.io.File f = new java.io.File(path);
         if (!f.exists())
@@ -208,20 +211,25 @@ public class BRouter extends BaseRoutingService {
 
         long start = currentTimeMillis();
         try {
-            File profile = new File(getProfilesDirectory(), travelMode.getName() + ".brf");
+            File profilesDirectory = getProfilesDirectory();
+            if(profilesDirectory == null) {
+                log.warning(format("Cannot route between %s and %s: no profiles directory found", from, to));
+                return new RoutingResult(asList(from, to), new DistanceAndTime(calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), null), Invalid);
+            }
+            File profile = new File(profilesDirectory, travelMode.getName() + ".brf");
             if (!profile.exists()) {
-                profile = new File(getProfilesDirectory(), getPreferredTravelMode().getName() + ".brf");
+                profile = new File(profilesDirectory, getPreferredTravelMode().getName() + ".brf");
                 log.warning(format("Failed to find profile for travel mode %s; using preferred travel mode %s", travelMode, getPreferredTravelMode()));
             }
             if (!profile.exists()) {
                 List<TravelMode> availableTravelModes = getAvailableTravelModes();
                 if (availableTravelModes.isEmpty()) {
-                    log.warning(format("Cannot route between %s and %s: no travel modes found in %s", from, to, getProfilesDirectory()));
+                    log.warning(format("Cannot route between %s and %s: no travel modes found in %s", from, to, profilesDirectory));
                     return new RoutingResult(asList(from, to), new DistanceAndTime(calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), null), Invalid);
                 }
 
                 TravelMode firstTravelMode = availableTravelModes.get(0);
-                profile = new File(getProfilesDirectory(), firstTravelMode.getName() + ".brf");
+                profile = new File(profilesDirectory, firstTravelMode.getName() + ".brf");
                 log.warning(format("Failed to find profile for travel mode %s; using first travel mode %s", travelMode, firstTravelMode));
             }
 
