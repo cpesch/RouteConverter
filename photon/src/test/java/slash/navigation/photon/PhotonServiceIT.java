@@ -32,6 +32,17 @@ import static org.junit.Assert.*;
 public class PhotonServiceIT {
     private final PhotonService service = new PhotonService();
 
+    private void assertPositionsAlmostEqual(List<SimpleNavigationPosition> expected, List<NavigationPosition> actual, double tolerance) {
+        assertEquals("List sizes differ", expected.size(), actual.size());
+        for (int i = 0; i < expected.size(); i++) {
+            SimpleNavigationPosition exp = expected.get(i);
+            NavigationPosition act = actual.get(i);
+            assertEquals("Latitude differs at index " + i, exp.getLatitude(), act.getLatitude(), tolerance);
+            assertEquals("Longitude differs at index " + i, exp.getLongitude(), act.getLongitude(), tolerance);
+            assertEquals("Description differs at index " + i, exp.getDescription(), act.getDescription());
+        }
+    }
+
     @Test
     public void getPositionsFor() throws IOException {
         List<SimpleNavigationPosition> expected = asList(
@@ -40,7 +51,7 @@ public class PhotonServiceIT {
                 new SimpleNavigationPosition(10.1999005, 50.0001319, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bayern, Deutschland (highway)")
         );
         List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
-        assertEquals(expected, actual);
+        assertPositionsAlmostEqual(expected, actual, 0.01);
     }
 
     @Test

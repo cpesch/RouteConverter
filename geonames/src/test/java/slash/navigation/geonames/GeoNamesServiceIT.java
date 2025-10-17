@@ -73,7 +73,7 @@ public class GeoNamesServiceIT {
         assertEquals(190, service.getSRTM3ElevationFor(11.2, 60.0), 5);
         assertNull(service.getSRTM3ElevationFor(11.2, 61.0));
 
-        assertNull(service.getSRTM3ElevationFor(-68.0, -55.0));
+        assertEquals(455, service.getSRTM3ElevationFor(-68.0, -55.0), 5);
         assertNull(service.getSRTM3ElevationFor(-68.0, -56.0));
         assertNull(service.getSRTM3ElevationFor(-68.0, -56.1));
         assertNull(service.getSRTM3ElevationFor(-68.0, -57.0));

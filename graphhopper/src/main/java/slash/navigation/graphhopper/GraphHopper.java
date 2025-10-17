@@ -351,9 +351,12 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         private boolean confirmDownload() {
+            if (TEST_MODE)
+                return true;
+
             while(!graphDescriptors.isEmpty()) {
                 slash.navigation.datasources.File file = next.getRemoteFile();
-                if (file == null || TEST_MODE)
+                if (file == null)
                     return true;
 
                 Long size = file.getLatestChecksum() != null ? file.getLatestChecksum().getContentLength() : null;
