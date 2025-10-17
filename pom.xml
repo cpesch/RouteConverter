@@ -68,7 +68,7 @@
         <maven.version>[3.5.4,)</maven.version>
 
         <alephformatter.version>0.1.1</alephformatter.version>
-        <httpclient.version>5.3</httpclient.version>
+        <httpclient.version>5.5.1</httpclient.version>
         <istack.version>3.0.11</istack.version>
         <jackson.version>2.19.2</jackson.version>
         <jaxb-api.version>4.0.4</jaxb-api.version>
