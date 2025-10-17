@@ -24,6 +24,7 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
+import org.mapsforge.core.model.Rotation;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 
@@ -34,7 +35,7 @@ import static org.mapsforge.core.util.MercatorProjection.*;
 /**
  * A line spanning across several {@link LatLong}s on {@link MapsforgeMapView}
  *
- * @author Christian Pesch, inspired by Vass Gabor https://groups.google.com/forum/#!msg/mapsforge-dev/9svKL86y4aM/WdIay38iNeEJ
+ * @author Christian Pesch, inspired by Vass Gabor <a href="https://groups.google.com/forum/#!msg/mapsforge-dev/9svKL86y4aM/WdIay38iNeEJ">...</a>
  */
 
 public class Polyline extends Layer {
@@ -48,7 +49,8 @@ public class Polyline extends Layer {
         this.tileSize = tileSize;
     }
 
-    public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
+    @Override
+    public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint, Rotation rotation) {
         long mapSize = getMapSize(zoomLevel, tileSize);
         for (int i = 0; i < latLongs.size() - 1; i++) {
             LatLong from = latLongs.get(i);

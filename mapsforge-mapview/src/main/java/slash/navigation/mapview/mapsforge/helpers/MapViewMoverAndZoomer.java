@@ -25,7 +25,7 @@ import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.overlay.Marker;
-import org.mapsforge.map.model.IMapViewPosition;
+import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.mapview.mapsforge.AwtGraphicMapView;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
@@ -166,12 +166,12 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     private void zoomToPoint(byte zoomLevelDiff, org.mapsforge.core.model.Point point) {
-        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         if (mapViewPosition.getZoomLevel() + zoomLevelDiff <= mapViewPosition.getZoomLevelMax() &&
                 mapViewPosition.getZoomLevel() + zoomLevelDiff >= mapViewPosition.getZoomLevelMin()) {
             Dimension dimension = mapView.getDimension();
-            int horizontalDiff = (int) ((dimension.width / 2 - point.x) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
-            int verticalDiff = (int) ((dimension.height / 2 - point.y) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
+            int horizontalDiff = (int) ((dimension.width / 2.0 - point.x) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
+            int verticalDiff = (int) ((dimension.height / 2.0 - point.y) * (zoomLevelDiff > 0 ? 0.5 : -1.0));
             mapViewPosition.moveCenterAndZoom(horizontalDiff, verticalDiff, zoomLevelDiff);
         }
     }

@@ -1,19 +1,23 @@
 package slash.navigation.maps.mapsforge.mbtiles;
 
+import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.TileBitmap;
+import org.mapsforge.core.model.BoundingBox;
+import org.mapsforge.core.model.Point;
+import org.mapsforge.core.model.Rotation;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.TileLayer;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.model.DisplayModel;
-import org.mapsforge.map.model.IMapViewPosition;
+import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
 
 public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer {
     private final DatabaseRenderer databaseRenderer;
     private MapWorkerPool mapWorkerPool;
 
-    public TileMBTilesLayer(TileCache tileCache, IMapViewPosition mapViewPosition, boolean isTransparent,
+    public TileMBTilesLayer(TileCache tileCache, MapViewPosition mapViewPosition, boolean isTransparent,
                             MBTilesFile file, GraphicFactory graphicFactory) {
         super(tileCache, mapViewPosition, graphicFactory.createMatrix(), isTransparent);
         this.databaseRenderer = new DatabaseRenderer(file, graphicFactory);
@@ -27,7 +31,7 @@ public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer
             }
             this.mapWorkerPool.start();
         } else {
-            // if we do not have a displayModel any more we can stop rendering.
+            // if we do not have a displayModel anymore we can stop rendering.
             if (this.mapWorkerPool != null) {
                 this.mapWorkerPool.stop();
             }
@@ -41,7 +45,7 @@ public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer
     /**
      * Whether the tile is stale and should be refreshed.
      *
-     * This method is called from {@link #draw(org.mapsforge.core.model.BoundingBox, byte, org.mapsforge.core.graphics.Canvas, org.mapsforge.core.model.Point)} to determine whether the tile needs to
+     * This method is called from {@link #draw(BoundingBox, byte, Canvas, Point, Rotation)} to determine whether the tile needs to
      * be refreshed.
      *
      * A tile is considered stale if the timestamp of the layer's {@link #databaseRenderer} is more recent than the

@@ -21,7 +21,7 @@ package slash.navigation.mapview.mapsforge;
 
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
-import org.mapsforge.map.model.IMapViewPosition;
+import org.mapsforge.map.model.MapViewPosition;
 import slash.navigation.gui.Application;
 import slash.navigation.maps.item.ItemComboBox;
 import slash.navigation.maps.mapsforge.LocalMap;
@@ -96,7 +96,7 @@ public class MapSelector {
         comboBoxZoom.setMaximumSize(new Dimension(width, comboBoxZoom.getMaximumSize().height));
         comboBoxZoom.setPreferredSize(new Dimension(width, comboBoxZoom.getPreferredSize().height));
 
-        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.addObserver(() -> zoomChanged(mapViewPosition.getZoomLevelMin(), mapViewPosition.getZoomLevelMax(), mapViewPosition.getZoomLevel()));
 
         comboBoxMap.setModel(new JoinedListComboBoxModel<>(

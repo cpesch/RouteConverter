@@ -39,8 +39,8 @@ import org.mapsforge.map.layer.hills.MemoryCachingHgtReaderTileSource;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.DisplayModel;
-import org.mapsforge.map.model.IMapViewPosition;
 import org.mapsforge.map.model.MapViewDimension;
+import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.model.common.Observer;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.XmlRenderTheme;
@@ -52,6 +52,7 @@ import org.mapsforge.map.scalebar.ImperialUnitAdapter;
 import org.mapsforge.map.scalebar.MetricUnitAdapter;
 import org.mapsforge.map.scalebar.NauticalUnitAdapter;
 import org.mapsforge.map.util.MapViewProjection;
+import org.mapsforge.map.view.MapView;
 import slash.common.io.TokenReplacingReader;
 import slash.common.io.TokenResolver;
 import slash.common.io.Transfer;
@@ -66,7 +67,10 @@ import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
-import slash.navigation.maps.mapsforge.*;
+import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.mapsforge.LocalTheme;
+import slash.navigation.maps.mapsforge.MapsforgeMapManager;
+import slash.navigation.maps.mapsforge.ThemeStyle;
 import slash.navigation.maps.mapsforge.impl.MBTilesFileMap;
 import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
 import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
@@ -184,7 +188,7 @@ public class MapsforgeMapView extends BaseMapView {
     private TrackRenderer trackRenderer;
     private final GroupLayer overlaysLayer = new GroupLayer();
     private TileRendererLayer backgroundLayer;
-    private final HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
+    private HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private UpdateDecoupler updateDecoupler;
@@ -399,7 +403,7 @@ public class MapsforgeMapView extends BaseMapView {
             }
         }, getKeyStroke(VK_DOWN, CTRL_DOWN_MASK), WHEN_IN_FOCUSED_WINDOW);
 
-        final IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setZoomLevelMin(MINIMUM_ZOOM_LEVEL);
         mapViewPosition.setZoomLevelMax(MAXIMUM_ZOOM_LEVEL);
 
@@ -671,7 +675,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private void handleShadedHills() {
-        hillsRenderConfig.setTileSource(null);
+        hillsRenderConfig = new HillsRenderConfig(null);
 
         if (preferencesModel.getShowShadedHills().getBoolean()) {
             ElevationService elevationService = mapViewCallback.getElevationService();
@@ -679,9 +683,8 @@ public class MapsforgeMapView extends BaseMapView {
                 File directory = elevationService.getDirectory();
                 if (directory != null && directory.exists()) {
                     MemoryCachingHgtReaderTileSource tileSource = new MemoryCachingHgtReaderTileSource(
-                            new DemFolderFS(directory), new DiffuseLightShadingAlgorithm(), GRAPHIC_FACTORY);
-                    tileSource.setEnableInterpolationOverlap(true);
-                    hillsRenderConfig.setTileSource(tileSource);
+                            new DemFolderFS(directory), new DiffuseLightShadingAlgorithm(), GRAPHIC_FACTORY, true);
+                    hillsRenderConfig = new HillsRenderConfig(tileSource);
                     hillsRenderConfig.indexOnThread();
                 }
             }
@@ -956,7 +959,7 @@ public class MapsforgeMapView extends BaseMapView {
 
     private void limitZoomLevel() {
         LocalMap map = mapsToLayers.keySet().iterator().next();
-        IMapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
+        MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
 
         // first set maximum as the implementation checks that minimum > maximum
         Integer max = map.getZoomLevelMax();
@@ -1021,6 +1024,10 @@ public class MapsforgeMapView extends BaseMapView {
 
     private void zoomToBounds(BoundingBox boundingBox) {
         zoomToBounds(asBoundingBox(boundingBox));
+    }
+
+    public /*for DraggableMarker*/ MapView getMapView() {
+        return mapView;
     }
 
     public boolean isSupportsPrinting() {

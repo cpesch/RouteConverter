@@ -24,6 +24,7 @@ import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
+import org.mapsforge.core.model.Rotation;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 
@@ -48,7 +49,8 @@ public class Line extends Layer {
         this.tileSize = tileSize;
     }
 
-    public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint) {
+    @Override
+    public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint, Rotation rotation) {
         long mapSize = getMapSize(zoomLevel, tileSize);
         int fromX = (int) (longitudeToPixelX(from.longitude, mapSize) - topLeftPoint.x);
         int fromY = (int) (latitudeToPixelY(from.latitude, mapSize) - topLeftPoint.y);

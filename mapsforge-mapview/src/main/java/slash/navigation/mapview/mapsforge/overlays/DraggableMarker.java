@@ -35,20 +35,20 @@ import static javax.swing.SwingUtilities.invokeLater;
  * @author Christian Pesch
  */
 public class DraggableMarker extends Marker {
-    private final MapsforgeMapView mapView;
+    private final MapsforgeMapView mapsforgeMapView;
     private final PositionWithLayer positionWithLayer;
 
-    public DraggableMarker(MapsforgeMapView mapView, PositionWithLayer positionWithLayer, LatLong latLong, Bitmap bitmap, int horizontalOffset, int verticalOffset) {
+    public DraggableMarker(MapsforgeMapView mapsforgeMapView, PositionWithLayer positionWithLayer, LatLong latLong, Bitmap bitmap, int horizontalOffset, int verticalOffset) {
         super(latLong, bitmap, horizontalOffset, verticalOffset);
-        this.mapView = mapView;
+        this.mapsforgeMapView = mapsforgeMapView;
         this.positionWithLayer = positionWithLayer;
     }
 
     public boolean onTap(LatLong tapLatLong, Point viewPosition, Point tapPoint) {
-        return contains(viewPosition, tapPoint);
+        return contains(viewPosition, tapPoint, mapsforgeMapView.getMapView());
     }
 
     public void onDrop(final LatLong latLong) {
-        invokeLater(() -> mapView.movePosition(positionWithLayer, latLong.getLongitude(), latLong.getLatitude()));
+        invokeLater(() -> mapsforgeMapView.movePosition(positionWithLayer, latLong.getLongitude(), latLong.getLatitude()));
     }
 }
