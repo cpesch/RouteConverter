@@ -53,12 +53,11 @@ class DownloadableFinder {
     private List<GraphDescriptor> getGraphDescriptorsFor(MapDescriptor mapDescriptor) {
         List<GraphDescriptor> localDescriptors = graphManager.getLocalGraphDescriptors().stream()
                 .filter(graphDescriptor -> graphDescriptor.matches(mapDescriptor))
-                .collect(toList());
+                .toList();
         List<GraphDescriptor> remoteDescriptors = graphManager.getRemoteGraphDescriptors().stream()
                 .filter(graphDescriptor -> graphDescriptor.matches(mapDescriptor))
-                .filter(GraphDescriptor::hasValidBoundingBox)
                 .sorted(new GraphDescriptorComparator())
-                .collect(toList());
+                .toList();
         // if there is no other choice use the graphs with the invalid bounding boxes
         if(remoteDescriptors.isEmpty())
             remoteDescriptors = graphManager.getRemoteGraphDescriptors().stream()
