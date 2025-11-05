@@ -32,10 +32,7 @@ import org.mapsforge.map.layer.cache.InMemoryTileCache;
 import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.cache.TwoLevelTileCache;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
-import org.mapsforge.map.layer.hills.DemFolderFS;
-import org.mapsforge.map.layer.hills.DiffuseLightShadingAlgorithm;
-import org.mapsforge.map.layer.hills.HillsRenderConfig;
-import org.mapsforge.map.layer.hills.MemoryCachingHgtReaderTileSource;
+import org.mapsforge.map.layer.hills.*;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.layer.renderer.TileRendererLayer;
 import org.mapsforge.map.model.DisplayModel;
@@ -79,10 +76,7 @@ import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.BaseMapView;
 import slash.navigation.mapview.MapViewCallback;
-import slash.navigation.mapview.mapsforge.helpers.MapViewCoordinateDisplayer;
-import slash.navigation.mapview.mapsforge.helpers.MapViewMoverAndZoomer;
-import slash.navigation.mapview.mapsforge.helpers.MapViewPopupMenu;
-import slash.navigation.mapview.mapsforge.helpers.MapViewResizer;
+import slash.navigation.mapview.mapsforge.helpers.*;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.models.ThemeStyleImpl;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
@@ -188,7 +182,7 @@ public class MapsforgeMapView extends BaseMapView {
     private TrackRenderer trackRenderer;
     private final GroupLayer overlaysLayer = new GroupLayer();
     private TileRendererLayer backgroundLayer;
-    private HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(null);
+    private HillsRenderConfig hillsRenderConfig = createHillsRenderConfig();
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private UpdateDecoupler updateDecoupler;
@@ -433,6 +427,8 @@ public class MapsforgeMapView extends BaseMapView {
 
     public void setBackgroundMap(File backgroundMap) {
         backgroundLayer = createTileRendererLayer(new MapFile(backgroundMap), backgroundMap.getName());
+        LocalTheme theme = getMapManager().getAppliedThemeModel().getItem();
+        backgroundLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
         handleBackground();
     }
 
@@ -529,6 +525,10 @@ public class MapsforgeMapView extends BaseMapView {
         xmlRenderTheme.setMenuCallback(menuCallback);
         tileRendererLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
         return tileRendererLayer;
+    }
+
+    private HillsRenderConfig createHillsRenderConfig() {
+        return new HillsRenderConfig(new NoOpShadeTileSource());
     }
 
     private class MenuCallback implements XmlRenderThemeMenuCallback {
@@ -675,7 +675,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private void handleShadedHills() {
-        hillsRenderConfig = new HillsRenderConfig(null);
+        hillsRenderConfig = createHillsRenderConfig();
 
         if (preferencesModel.getShowShadedHills().getBoolean()) {
             ElevationService elevationService = mapViewCallback.getElevationService();

@@ -71,7 +71,7 @@ class GraphDescriptor {
         /* basically it's a good idea to choose the graph with the smallest enclosing bounding box
            unfortunately, files like https://download.geofabrik.de/north-america/us/alaska-latest.osm.pbf
            claim too large bounding boxes */
-        return getBoundingBox() == null ||
+        return getBoundingBox() != null &&
                 !(getBoundingBox().getNorthEast().getLongitude() >= 179.9999 ||
                         getBoundingBox().getSouthWest().getLongitude() <= -179.9999);
     }
