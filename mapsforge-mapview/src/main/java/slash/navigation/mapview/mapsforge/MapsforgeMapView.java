@@ -182,7 +182,8 @@ public class MapsforgeMapView extends BaseMapView {
     private TrackRenderer trackRenderer;
     private final GroupLayer overlaysLayer = new GroupLayer();
     private TileRendererLayer backgroundLayer;
-    private HillsRenderConfig hillsRenderConfig = createHillsRenderConfig();
+    private final DelegatingShadeTileSource shadeTileSource = new DelegatingShadeTileSource();
+    private final HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(shadeTileSource);
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private UpdateDecoupler updateDecoupler;
@@ -527,10 +528,6 @@ public class MapsforgeMapView extends BaseMapView {
         return tileRendererLayer;
     }
 
-    private HillsRenderConfig createHillsRenderConfig() {
-        return new HillsRenderConfig(new NoOpShadeTileSource());
-    }
-
     private class MenuCallback implements XmlRenderThemeMenuCallback {
         public Set<String> getCategories(XmlRenderThemeStyleMenu renderThemeStyleMenu) {
             Map<String, XmlRenderThemeStyleLayer> layers = renderThemeStyleMenu.getLayers();
@@ -675,7 +672,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private void handleShadedHills() {
-        hillsRenderConfig = createHillsRenderConfig();
+        shadeTileSource.setDelegate(null);
 
         if (preferencesModel.getShowShadedHills().getBoolean()) {
             ElevationService elevationService = mapViewCallback.getElevationService();
@@ -684,7 +681,7 @@ public class MapsforgeMapView extends BaseMapView {
                 if (directory != null && directory.exists()) {
                     MemoryCachingHgtReaderTileSource tileSource = new MemoryCachingHgtReaderTileSource(
                             new DemFolderFS(directory), new DiffuseLightShadingAlgorithm(), GRAPHIC_FACTORY, true);
-                    hillsRenderConfig = new HillsRenderConfig(tileSource);
+                    shadeTileSource.setDelegate(tileSource);
                     hillsRenderConfig.indexOnThread();
                 }
             }
@@ -745,6 +742,7 @@ public class MapsforgeMapView extends BaseMapView {
         int zoom = getZoom();
         preferences.putInt(CENTER_ZOOM_PREFERENCE, zoom);
 
+        hillsRenderConfig.interruptAndDestroy();
         mapView.destroyAll();
     }
 
