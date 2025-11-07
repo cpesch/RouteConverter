@@ -328,19 +328,11 @@ public class Transfer {
     }
 
     public static int[] toArray(List<Integer> integers) {
-        int[] result = new int[integers.size()];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = integers.get(i);
-        }
-        return result;
+        return integers.stream().mapToInt(Integer::intValue).toArray();
     }
 
     public static Integer[] toArray(int[] ints) {
-        Integer[] result = new Integer[ints.length];
-        for (int i = 0; i < result.length; i++) {
-            result[i] = ints[i];
-        }
-        return result;
+        return Arrays.stream(ints).boxed().toArray(Integer[]::new);
     }
 
     public static String encodeUri(String uri) {

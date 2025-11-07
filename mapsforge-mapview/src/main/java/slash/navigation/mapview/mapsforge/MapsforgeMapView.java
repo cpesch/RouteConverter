@@ -1174,8 +1174,8 @@ public class MapsforgeMapView extends BaseMapView {
         private void insertPosition(int row, Double longitude, Double latitude) {
             positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
             int[] rows = new int[]{row};
-            mapViewCallback.setSelectedPositions(rows, true);
             mapViewCallback.complementData(rows, true, true, true, true, false);
+            mapViewCallback.setSelectedPositions(rows, true);
         }
 
         public void run() {
