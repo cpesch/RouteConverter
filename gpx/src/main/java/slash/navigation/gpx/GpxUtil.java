@@ -20,11 +20,19 @@
 
 package slash.navigation.gpx;
 
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
 
 import jakarta.xml.bind.*;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.sax.SAXSource;
 import java.io.*;
 
 import static slash.common.helpers.JAXBHelper.*;
@@ -36,6 +44,7 @@ public class GpxUtil {
     public static final String GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v1";
     public static final String GARMIN_TRACKPOINT_EXTENSIONS_2_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TrackPointExtension/v2";
     public static final String GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI = "http://www.garmin.com/xmlschemas/TripExtensions/v1";
+    public static final String OSMAND_EXTENSIONS_NAMESPACE_URI = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx";
     public static final String TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI = "http://trekbuddy.net/2009/01/gpx/nmea";
 
     public static Unmarshaller newUnmarshaller10() {
@@ -49,6 +58,7 @@ public class GpxUtil {
     private static JAXBContext newContext11() {
         return newContext(slash.navigation.gpx.binding11.ObjectFactory.class,
                 slash.navigation.gpx.garmin3.ObjectFactory.class,
+                slash.navigation.gpx.osmand.ObjectFactory.class,
                 slash.navigation.gpx.trackpoint1.ObjectFactory.class,
                 slash.navigation.gpx.trackpoint2.ObjectFactory.class,
                 slash.navigation.gpx.trip1.ObjectFactory.class);
@@ -102,26 +112,30 @@ public class GpxUtil {
         return unmarshal11(new StringReader(string));
     }
 
-    public static GpxType unmarshal11(Reader reader) throws IOException {
-        GpxType result;
+    private static GpxType unmarshal11Internal(InputSource inputSource) throws IOException {
         try {
-            JAXBElement element = (JAXBElement) newUnmarshaller11().unmarshal(reader);
-            result = (GpxType) element.getValue();
-        } catch (ClassCastException | JAXBException e) {
+            SAXParserFactory factory = SAXParserFactory.newInstance();
+            factory.setNamespaceAware(true);
+            SAXParser saxParser = factory.newSAXParser();
+            NamespaceFilter filter = new NamespaceFilter();
+            filter.addMapping("https://www8.garmin.com/xmlschemas/TrackPointExtensionv1.xsd",
+                    "http://www.garmin.com/xmlschemas/TrackPointExtension/v1");
+            filter.setParent(saxParser.getXMLReader());
+
+            SAXSource source = new SAXSource(filter, inputSource);
+            JAXBElement<?> element = (JAXBElement<?>) newUnmarshaller11().unmarshal(source);
+            return (GpxType) element.getValue();
+        } catch (ClassCastException | JAXBException | SAXException | ParserConfigurationException e) {
             throw new IOException("Parse error: " + e, e);
         }
-        return result;
+    }
+
+    public static GpxType unmarshal11(Reader reader) throws IOException {
+        return unmarshal11Internal(new InputSource(reader));
     }
 
     public static GpxType unmarshal11(InputStream in) throws IOException {
-        GpxType result;
-        try {
-            JAXBElement element = (JAXBElement) newUnmarshaller11().unmarshal(in);
-            result = (GpxType) element.getValue();
-        } catch (ClassCastException | JAXBException e) {
-            throw new IOException("Parse error: " + e, e);
-        }
-        return result;
+        return unmarshal11Internal(new InputSource(in));
     }
 
     public static void marshal11(GpxType gpxType, Writer writer) throws JAXBException {

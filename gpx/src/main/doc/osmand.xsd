@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+            xmlns:osmand="https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx"
+            targetNamespace="https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx"
+            elementFormDefault="qualified"
+            attributeFormDefault="unqualified">
+
+    <!-- OsmAnd Extensions Type - used inside GPX 1.1 <extensions> elements -->
+    <xsd:complexType name="OsmAndExtensionsType">
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+            <!-- Track Appearance Parameters -->
+            <xsd:element name="color" type="osmand:ColorType"/>
+            <xsd:element name="width" type="osmand:WidthType"/>
+            <xsd:element name="show_arrows" type="xsd:boolean"/>
+            <xsd:element name="show_start_finish" type="xsd:boolean"/>
+            <xsd:element name="split_type" type="osmand:SplitTypeEnum"/>
+            <xsd:element name="split_interval" type="xsd:double"/>
+            <xsd:element name="line_3d_visualization_by_type" type="osmand:Visualization3DTypeEnum"/>
+            <xsd:element name="line_3d_visualization_wall_color_type" type="osmand:WallColorTypeEnum"/>
+            <xsd:element name="line_3d_visualization_position_type" type="osmand:PositionTypeEnum"/>
+            <xsd:element name="vertical_exaggeration_scale" type="xsd:float"/>
+            <xsd:element name="elevation_meters" type="xsd:float"/>
+            <xsd:element name="coloring_type" type="osmand:ColoringTypeEnum"/>
+            <xsd:element name="color_palette" type="xsd:string"/>
+
+            <!-- Activity Type -->
+            <xsd:element name="activity" type="xsd:string"/>
+
+            <!-- Route Information -->
+            <xsd:element name="route" type="osmand:RouteType"/>
+            <xsd:element name="types" type="osmand:TypesType"/>
+
+            <!-- Waypoint Grouping -->
+            <xsd:element name="points_groups" type="osmand:PointsGroupsType"/>
+
+            <!-- OBF Related Tags -->
+            <xsd:element name="ref" type="xsd:string"/>
+            <xsd:element name="shield_text" type="xsd:string"/>
+            <xsd:element name="shield_fg" type="xsd:string"/>
+            <xsd:element name="shield_fg_2" type="xsd:string"/>
+            <xsd:element name="shield_bg" type="xsd:string"/>
+            <xsd:element name="shield_textcolor" type="osmand:ColorType"/>
+            <xsd:element name="shield_waycolor" type="osmand:ColorType"/>
+            <xsd:element name="translucent_line_colors" type="xsd:boolean"/>
+
+            <!-- Localized names and other extensions -->
+            <xsd:any namespace="##other" processContents="lax"/>
+        </xsd:choice>
+    </xsd:complexType>
+
+    <!-- Waypoint Extensions Type -->
+    <xsd:complexType name="WaypointExtensionsType">
+        <xsd:sequence>
+            <xsd:element name="color" type="osmand:ColorType" minOccurs="0"/>
+            <xsd:element name="icon" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="background" type="osmand:BackgroundShapeEnum" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Track Point Extensions Type -->
+    <xsd:complexType name="TrackPointExtensionsType">
+        <xsd:sequence>
+            <xsd:element name="speed" type="xsd:decimal" minOccurs="0"/>
+            <xsd:element name="heading" type="xsd:decimal" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Route Point Extensions Type -->
+    <xsd:complexType name="RoutePointExtensionsType">
+        <xsd:sequence>
+            <xsd:element name="profile" type="xsd:string" minOccurs="0"/>
+            <xsd:element name="trkpt_idx" type="xsd:nonNegativeInteger" minOccurs="0"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Route Type -->
+    <xsd:complexType name="RouteType">
+        <xsd:sequence>
+            <xsd:element name="segment" type="osmand:SegmentType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Segment Type -->
+    <xsd:complexType name="SegmentType">
+        <xsd:attribute name="id" type="xsd:string" use="required"/>
+        <xsd:attribute name="length" type="xsd:positiveInteger" use="required"/>
+        <xsd:attribute name="startTrkptIdx" type="xsd:nonNegativeInteger" use="optional"/>
+        <xsd:attribute name="segmentTime" type="xsd:decimal" use="optional"/>
+        <xsd:attribute name="speed" type="xsd:decimal" use="optional"/>
+        <xsd:attribute name="turnType" type="xsd:string" use="optional"/>
+        <xsd:attribute name="turnAngle" type="xsd:decimal" use="optional"/>
+        <xsd:attribute name="types" type="xsd:string" use="optional"/>
+        <xsd:attribute name="pointTypes" type="xsd:string" use="optional"/>
+        <xsd:attribute name="names" type="xsd:string" use="optional"/>
+    </xsd:complexType>
+
+    <!-- Types Type -->
+    <xsd:complexType name="TypesType">
+        <xsd:sequence>
+            <xsd:element name="type" type="osmand:TypeDefinitionType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Type Definition Type (renamed to avoid conflict) -->
+    <xsd:complexType name="TypeDefinitionType">
+        <xsd:attribute name="t" type="xsd:string" use="required"/>
+        <xsd:attribute name="v" type="xsd:string" use="required"/>
+    </xsd:complexType>
+
+    <!-- Points Groups Type -->
+    <xsd:complexType name="PointsGroupsType">
+        <xsd:sequence>
+            <xsd:element name="group" type="osmand:GroupType" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
+    <!-- Group Type -->
+    <xsd:complexType name="GroupType">
+        <xsd:attribute name="name" type="xsd:string" use="required"/>
+        <xsd:attribute name="color" type="osmand:ColorType" use="optional"/>
+        <xsd:attribute name="icon" type="xsd:string" use="optional"/>
+        <xsd:attribute name="background" type="osmand:BackgroundShapeEnum" use="optional"/>
+    </xsd:complexType>
+
+    <!-- Color Type (HEX or color name) -->
+    <xsd:simpleType name="ColorType">
+        <xsd:union>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:pattern value="#[0-9A-Fa-f]{6}"/>
+                    <xsd:pattern value="#[0-9A-Fa-f]{8}"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="black"/>
+                    <xsd:enumeration value="blue"/>
+                    <xsd:enumeration value="brown"/>
+                    <xsd:enumeration value="darkyellow"/>
+                    <xsd:enumeration value="gray"/>
+                    <xsd:enumeration value="green"/>
+                    <xsd:enumeration value="lightblue"/>
+                    <xsd:enumeration value="lightgreen"/>
+                    <xsd:enumeration value="orange"/>
+                    <xsd:enumeration value="purple"/>
+                    <xsd:enumeration value="red"/>
+                    <xsd:enumeration value="white"/>
+                    <xsd:enumeration value="yellow"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:union>
+    </xsd:simpleType>
+
+    <!-- Width Type -->
+    <xsd:simpleType name="WidthType">
+        <xsd:union>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:string">
+                    <xsd:enumeration value="thin"/>
+                    <xsd:enumeration value="medium"/>
+                    <xsd:enumeration value="bold"/>
+                    <xsd:enumeration value="roadstyle"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+            <xsd:simpleType>
+                <xsd:restriction base="xsd:integer">
+                    <xsd:minInclusive value="1"/>
+                    <xsd:maxInclusive value="24"/>
+                </xsd:restriction>
+            </xsd:simpleType>
+        </xsd:union>
+    </xsd:simpleType>
+
+    <!-- Split Type Enum -->
+    <xsd:simpleType name="SplitTypeEnum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="no_split"/>
+            <xsd:enumeration value="distance"/>
+            <xsd:enumeration value="time"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- 3D Visualization Type Enum -->
+    <xsd:simpleType name="Visualization3DTypeEnum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="none"/>
+            <xsd:enumeration value="altitude"/>
+            <xsd:enumeration value="speed"/>
+            <xsd:enumeration value="shared_string_speed"/>
+            <xsd:enumeration value="map_widget_ant_heart_rate"/>
+            <xsd:enumeration value="map_widget_ant_bicycle_cadence"/>
+            <xsd:enumeration value="map_widget_ant_bicycle_power"/>
+            <xsd:enumeration value="shared_string_temperature"/>
+            <xsd:enumeration value="fixed_height"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- Wall Color Type Enum -->
+    <xsd:simpleType name="WallColorTypeEnum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="none"/>
+            <xsd:enumeration value="solid"/>
+            <xsd:enumeration value="downward_gradient"/>
+            <xsd:enumeration value="upward_gradient"/>
+            <xsd:enumeration value="altitude"/>
+            <xsd:enumeration value="slope"/>
+            <xsd:enumeration value="speed"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- Position Type Enum -->
+    <xsd:simpleType name="PositionTypeEnum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="top"/>
+            <xsd:enumeration value="bottom"/>
+            <xsd:enumeration value="top_bottom"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- Coloring Type Enum -->
+    <xsd:simpleType name="ColoringTypeEnum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="solid"/>
+            <xsd:enumeration value="speed"/>
+            <xsd:enumeration value="altitude"/>
+            <xsd:enumeration value="slope"/>
+            <xsd:enumeration value="routeInfo_roadClass"/>
+            <xsd:enumeration value="routeInfo_surface"/>
+            <xsd:enumeration value="routeInfo_smoothness"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+    <!-- Background Shape Enum -->
+    <xsd:simpleType name="BackgroundShapeEnum">
+        <xsd:restriction base="xsd:string">
+            <xsd:enumeration value="circle"/>
+            <xsd:enumeration value="square"/>
+            <xsd:enumeration value="octagon"/>
+        </xsd:restriction>
+    </xsd:simpleType>
+
+</xsd:schema>
