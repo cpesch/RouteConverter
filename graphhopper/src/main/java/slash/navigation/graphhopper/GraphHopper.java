@@ -23,16 +23,9 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.ResponsePath;
 import com.graphhopper.config.Profile;
-import com.graphhopper.matching.EdgeMatch;
-import com.graphhopper.matching.MapMatching;
-import com.graphhopper.matching.MatchResult;
-import com.graphhopper.matching.Observation;
 import com.graphhopper.util.CustomModel;
-import com.graphhopper.util.FetchMode;
-import com.graphhopper.util.PMap;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.exceptions.DetailedIllegalArgumentException;
-import com.graphhopper.util.shapes.GHPoint;
 import com.graphhopper.util.shapes.GHPoint3D;
 import slash.common.io.Files;
 import slash.navigation.common.*;
@@ -165,10 +158,7 @@ public class GraphHopper extends BaseRoutingService {
 
         long start = currentTimeMillis();
         try {
-            NavigationPosition from2 = snapToRoad(asList(from), travelMode).get(0);
-            NavigationPosition to2 = snapToRoad(asList(to), travelMode).get(0);
-
-            GHRequest request = new GHRequest(from2.getLatitude(), from2.getLongitude(), to2.getLatitude(), to2.getLongitude());
+            GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
             request.setProfile(travelMode.getName());
             CustomModel customModel = new CustomModel();
             if (travelRestrictions.isAvoidBridges())
@@ -202,24 +192,6 @@ public class GraphHopper extends BaseRoutingService {
             long end = currentTimeMillis();
             log.info(format("Routing from %s to %s with %s took %d milliseconds", from, to, getOsmPbfFile(), end - start));
         }
-    }
-
-    public List<NavigationPosition> snapToRoad(List<NavigationPosition> positions, TravelMode travelMode) {
-        initializeHopper();
-        if (hopper == null)
-            throw new IllegalStateException("Could not initialize from graph directory of GraphHopper");
-
-        MapMatching mapMatching = MapMatching.fromGraphHopper(hopper, new PMap().putObject("profile", travelMode.getName()));
-
-        List<Observation> observations = new ArrayList<>();
-        for (NavigationPosition position : positions) {
-            observations.add(new Observation(new GHPoint(position.getLatitude(), position.getLongitude())));
-        }
-
-        MatchResult matchResult = mapMatching.match(observations);
-
-        PointList pointList = matchResult.getMergedPath().calcPoints();
-        return asPositions(pointList);
     }
 
     private synchronized java.io.File getOsmPbfFile() {
