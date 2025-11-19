@@ -241,7 +241,7 @@ public class BRouter extends BaseRoutingService {
             RoutingContext routingContext = new RoutingContext();
             routingContext.localFunction = profile.getPath();
 
-            RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory().getPath(), createWaypoints(from, to), routingContext);
+            RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory(), createWaypoints(from, to), routingContext);
             routingEngine.quite = true;
             routingEngine.doRun(preferences.getLong("routingTimeout", routingTimeout));
 

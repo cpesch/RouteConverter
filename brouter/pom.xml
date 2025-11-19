@@ -10,14 +10,9 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <!--
-    <repositories>
-        <repository>
-            <id>github</id>
-            <url>https://maven.pkg.github.com/abrensch/brouter</url>
-        </repository>
-    </repositories>
-    -->
+    <properties>
+        <brouter.version>1.7.3</brouter.version>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -44,8 +39,28 @@
         </dependency>
         <dependency>
             <groupId>org.btools</groupId>
+            <artifactId>brouter-codec</artifactId>
+            <version>${brouter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btools</groupId>
             <artifactId>brouter-core</artifactId>
-            <version>1.6.1</version>
+            <version>${brouter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btools</groupId>
+            <artifactId>brouter-expressions</artifactId>
+            <version>${brouter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btools</groupId>
+            <artifactId>brouter-mapaccess</artifactId>
+            <version>${brouter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btools</groupId>
+            <artifactId>brouter-util</artifactId>
+            <version>${brouter.version}</version>
         </dependency>
     </dependencies>
 </project>
