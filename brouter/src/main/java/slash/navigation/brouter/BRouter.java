@@ -260,8 +260,20 @@ public class BRouter extends BaseRoutingService {
         }
     }
 
+    private static final double DUPLICATE_OFFSET = 0.0001;
+
     public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
-        return null; // TODO implement snapping
+        NavigationPosition duplicate = new SimpleNavigationPosition(position.getLongitude() + DUPLICATE_OFFSET, position.getLatitude() + DUPLICATE_OFFSET);
+        RoutingResult result = getRouteBetween(position, duplicate, getPreferredTravelMode(), NO_RESTRICTIONS);
+        NavigationPosition snapPosition = result.getValidity().equals(Valid) && !result.getPositions().isEmpty() ? result.getPositions().get(0) : null;
+        if (snapPosition != null) {
+            double bearing = Bearing.calculateBearing(position.getLongitude(), position.getLatitude(),
+                    snapPosition.getLongitude(), snapPosition.getLatitude()).getDistance();
+            log.info(format("Found snapping position %s for %s with distance %s", snapPosition, position, bearing));
+            if (bearing < 100.0)
+                return snapPosition;
+        }
+        return null;
     }
 
     private long getTime(OsmTrack track) {
