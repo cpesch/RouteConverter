@@ -333,6 +333,7 @@ public class MapsforgeMapView extends BaseMapView {
         actionManager.register("delete-position-from-map", new DeletePositionAction());
         actionManager.registerLocal("delete", MAP, "delete-position-from-map");
         actionManager.register("center-here", new CenterAction());
+        actionManager.register("snap-to-road", new SnapToRoadAction());
         actionManager.register("zoom-in", new ZoomAction(+1));
         actionManager.register("zoom-out", new ZoomAction(-1));
 
@@ -502,6 +503,7 @@ public class MapsforgeMapView extends BaseMapView {
         menu.add(createItem("select-position"));
         menu.add(createItem("add-position"));    // TODO should be "new-position"
         menu.add(createItem("delete-position-from-map"));
+        menu.add(createItem("snap-to-road"));
         menu.addSeparator();
         menu.add(createItem("center-here"));
         menu.add(createItem("zoom-in"));
@@ -1088,10 +1090,19 @@ public class MapsforgeMapView extends BaseMapView {
                     continue;
 
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                        Arrays.asList(position.getLongitude() + diffLongitude, position.getLatitude() + diffLatitude)), false, true);
+                        asList(position.getLongitude() + diffLongitude, position.getLatitude() + diffLatitude)), false, true);
             } else {
+
+                if(preferencesModel.getCharacteristicsModel().getSelectedCharacteristics().equals(Route)) {
+                    NavigationPosition roadPosition = mapViewCallback.getRoutingService().getSnapToRoadPosition(new SimpleNavigationPosition(longitude, latitude));
+                    if (roadPosition != null) {
+                        longitude = roadPosition.getLongitude();
+                        latitude = roadPosition.getLatitude();
+                    }
+                }
+
                 positionsModel.edit(index, new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
-                        Arrays.asList(longitude, latitude)), false, true);
+                        asList(longitude, latitude)), false, true);
             }
 
             if (cleanTime)
@@ -1181,6 +1192,13 @@ public class MapsforgeMapView extends BaseMapView {
         public void run() {
             LatLong latLong = getMousePosition();
             if (latLong != null) {
+                if(preferencesModel.getCharacteristicsModel().getSelectedCharacteristics().equals(Route)) {
+                    NavigationPosition roadPosition = mapViewCallback.getRoutingService().getSnapToRoadPosition(asNavigationPosition(latLong));
+                    if (roadPosition != null) {
+                        latLong = asLatLong(roadPosition);
+                    }
+                }
+
                 int row = getAddRow();
                 log.info("Adding position at " + latLong + " to row " + row);
                 insertPosition(row, latLong.longitude, latLong.latitude);
@@ -1209,6 +1227,25 @@ public class MapsforgeMapView extends BaseMapView {
     private class CenterAction extends FrameAction {
         public void run() {
             mapViewMoverAndZoomer.centerToMousePosition();
+        }
+    }
+
+    private class SnapToRoadAction extends FrameAction {
+        private void updatePosition(NavigationPosition position, NavigationPosition roadPosition) {
+            positionsModel.edit(positionsModel.getIndex(position),
+                    new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
+                            asList(roadPosition.getLongitude(), roadPosition.getLatitude())), true, true);
+        }
+
+        public void run() {
+            List<NavigationPosition> selectedPositions = toPositions(selectionUpdater.getPositionWithLayers());
+            for(NavigationPosition position : selectedPositions) {
+                NavigationPosition roadPosition = mapViewCallback.getRoutingService().getSnapToRoadPosition(position);
+                if(roadPosition != null) {
+                    updatePosition(position, roadPosition);
+                }
+            }
+            setSelectedPositions(selectedPositions);
         }
     }
 

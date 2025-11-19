@@ -43,6 +43,7 @@ public interface RoutingService {
     void setPath(String path);
 
     RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode, TravelRestrictions travelRestrictions);
+    NavigationPosition getSnapToRoadPosition(NavigationPosition position);
 
     DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes);
     long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors);

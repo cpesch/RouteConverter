@@ -23,6 +23,9 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.ResponsePath;
 import com.graphhopper.config.Profile;
+import com.graphhopper.routing.util.EdgeFilter;
+import com.graphhopper.storage.index.LocationIndex;
+import com.graphhopper.storage.index.Snap;
 import com.graphhopper.util.CustomModel;
 import com.graphhopper.util.PointList;
 import com.graphhopper.util.exceptions.DetailedIllegalArgumentException;
@@ -192,6 +195,23 @@ public class GraphHopper extends BaseRoutingService {
             long end = currentTimeMillis();
             log.info(format("Routing from %s to %s with %s took %d milliseconds", from, to, getOsmPbfFile(), end - start));
         }
+    }
+
+    public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
+        try {
+            LocationIndex locationIndex = hopper.getLocationIndex();
+            Snap snap = locationIndex.findClosest(position.getLatitude(), position.getLongitude(), EdgeFilter.ALL_EDGES);
+
+            log.info(format("Found snapping position %s for %s with query distance %s",
+                    snap.getSnappedPoint(), position, snap.getQueryDistance()));
+            if (snap.isValid() && snap.getQueryDistance() < 100.0) {
+                GHPoint3D snappedPoint = snap.getSnappedPoint();
+                return new SimpleNavigationPosition(snappedPoint.lon, snappedPoint.lat);
+            }
+        } catch (Exception e) {
+            log.severe("Snapping position " + position + " failed: " + e.getMessage());
+        }
+        return null;
     }
 
     private synchronized java.io.File getOsmPbfFile() {

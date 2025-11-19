@@ -83,6 +83,10 @@ public class Beeline extends BaseRoutingService {
         return getRouteBetween(from, to);
     }
 
+    public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
+        return null;
+    }
+
     public DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes) {
         throw new UnsupportedOperationException();
     }
