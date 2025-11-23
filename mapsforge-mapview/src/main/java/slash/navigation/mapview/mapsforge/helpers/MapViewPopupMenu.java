@@ -61,9 +61,9 @@ public class MapViewPopupMenu extends MouseAdapter {
             else if (shiftKey && !altKey && !ctrlKey)
                 actionManager.run("extend-selection");
             else if (!shiftKey && !altKey && ctrlKey)
-                actionManager.run("add-position");
+                actionManager.run("new-position");
             else if (!shiftKey && altKey && ctrlKey)
-                actionManager.run("delete-position-from-map");
+                actionManager.run("delete");
 
         } else if (isRightMouseButton(e)) {
             popupMenu.show(component, e.getX(), e.getY());

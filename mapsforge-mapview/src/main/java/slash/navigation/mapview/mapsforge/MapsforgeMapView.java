@@ -329,9 +329,10 @@ public class MapsforgeMapView extends BaseMapView {
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         actionManager.register("select-position", new SelectPositionAction());
         actionManager.register("extend-selection", new ExtendSelectionAction());
-        actionManager.register("add-position", new AddPositionAction());
-        actionManager.register("delete-position-from-map", new DeletePositionAction());
-        actionManager.registerLocal("delete", MAP, "delete-position-from-map");
+        actionManager.register("new-position-map", new AddPositionAction());
+        actionManager.registerLocal("new-position", MAP, "new-position-map");
+        actionManager.register("delete-position-map", new DeletePositionAction());
+        actionManager.registerLocal("delete", MAP, "delete-position-map");
         actionManager.register("center-here", new CenterAction());
         actionManager.register("snap-to-road-map", new SnapToRoadAction());
         actionManager.registerLocal("snap-to-road", MAP, "snap-to-road-map");
@@ -502,8 +503,8 @@ public class MapsforgeMapView extends BaseMapView {
     private JPopupMenu createPopupMenu() {
         JPopupMenu menu = new JPopupMenu();
         menu.add(createItem("select-position"));
-        menu.add(createItem("add-position"));    // TODO should be "new-position"
-        menu.add(createItem("delete-position-from-map"));
+        menu.add(createItem("new-position"));
+        menu.add(createItem("delete"));
         menu.add(createItem("snap-to-road"));
         menu.addSeparator();
         menu.add(createItem("center-here"));
