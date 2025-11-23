@@ -324,6 +324,8 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("new-position", new AddPositionAction(getPositionsView(), positionsModel, getPositionsSelectionModel()));
         actionManager.register("delete-position", new DeletePositionAction(getPositionsView(), positionsModel));
         actionManager.registerLocal("delete", POSITIONS, "delete-position");
+        actionManager.register("snap-to-road-positions", new SnapToRoadAction(getPositionsView(), positionsModel, r.getRoutingServiceFacade(), this));
+        actionManager.registerLocal("snap-to-road", POSITIONS, "snap-to-road-positions");
         actionManager.register("top", new TopAction(this));
         actionManager.register("up", new UpAction(this));
         actionManager.register("down", new DownAction(this));

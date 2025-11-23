@@ -333,7 +333,8 @@ public class MapsforgeMapView extends BaseMapView {
         actionManager.register("delete-position-from-map", new DeletePositionAction());
         actionManager.registerLocal("delete", MAP, "delete-position-from-map");
         actionManager.register("center-here", new CenterAction());
-        actionManager.register("snap-to-road", new SnapToRoadAction());
+        actionManager.register("snap-to-road-map", new SnapToRoadAction());
+        actionManager.registerLocal("snap-to-road", MAP, "snap-to-road-map");
         actionManager.register("zoom-in", new ZoomAction(+1));
         actionManager.register("zoom-out", new ZoomAction(-1));
 

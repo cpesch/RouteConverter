@@ -1197,6 +1197,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         actionManager.register("print-map", new PrintMapAction());
         actionManager.register("print-profile", new PrintProfileAction());
         actionManager.register("find-place", new FindPlaceAction());
+        actionManager.registerGlobal("snap-to-road");
         actionManager.register("show-map-and-positionlist", new ShowMapAndPositionListAction());
         actionManager.register("show-profile", new ShowProfileAction());
         actionManager.register("maximize-map", new MoveSplitPaneDividersAction(mapSplitPane, MAX_VALUE, profileSplitPane, MAX_VALUE));

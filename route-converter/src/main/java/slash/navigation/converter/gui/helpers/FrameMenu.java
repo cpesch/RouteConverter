@@ -80,6 +80,7 @@ public class FrameMenu {
         completeMenu.add(createItem("add-time"));
         completeMenu.add(createItem("add-number"));
         positionMenu.add(completeMenu);
+        positionMenu.add(createItem("snap-to-road"));
         positionMenu.addSeparator();
         positionMenu.add(createItem("insert-positions"));
         positionMenu.add(createItem("delete-positions"));
