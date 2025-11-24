@@ -28,8 +28,8 @@
             <url>https://subversion.routeconverter.com/public/RouteThirdParty</url>
         </repository>
         <repository>
-            <id>jcenter-repository</id>
-            <url>https://jcenter.bintray.com/</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
@@ -73,7 +73,7 @@
         <jackson.version>2.19.2</jackson.version>
         <jaxb-api.version>4.0.4</jaxb-api.version>
         <jaxb-impl.version>4.0.6</jaxb-impl.version>
-        <mapsforge.version>0.25.0</mapsforge.version>
+        <mapsforge.version>0.26.1</mapsforge.version>
         <slf4j.version>2.0.17</slf4j.version>
     </properties>
 

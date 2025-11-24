@@ -10,13 +10,6 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -55,7 +48,7 @@
         </dependency>
 
         <dependency>
-            <groupId>org.mapsforge</groupId>
+            <groupId>com.github.mapsforge.mapsforge</groupId>
             <artifactId>mapsforge-map-awt</artifactId>
             <version>${mapsforge.version}</version>
             <exclusions>
