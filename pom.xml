@@ -70,7 +70,8 @@
         <alephformatter.version>0.1.1</alephformatter.version>
         <httpclient.version>5.5.1</httpclient.version>
         <istack.version>3.0.11</istack.version>
-        <jackson.version>2.19.2</jackson.version>
+        <jackson.version>2.20.1</jackson.version>
+        <jackson-annotations.version>2.20</jackson-annotations.version>
         <jaxb-api.version>4.0.4</jaxb-api.version>
         <jaxb-impl.version>4.0.6</jaxb-impl.version>
         <mapsforge.version>0.26.1</mapsforge.version>
@@ -255,8 +256,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>license-maven-plugin</artifactId>
-                    <!-- Don't update to 2.0.0 until https://github.com/mojohaus/license-maven-plugin/issues/358 is fixed -->
-                    <version>1.20</version>
+                    <version>2.7.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -266,7 +266,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>versions-maven-plugin</artifactId>
-                    <version>2.19.1</version>
+                    <version>2.20.0</version>
                 </plugin>
 
                 <plugin>
@@ -338,32 +338,17 @@
                 <artifactId>findbugs-maven-plugin</artifactId>
             </plugin>
 
-            <!-- JACOCO - code coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <executions>
-                    <!-- METHOD 1 -->
-                    <!--<execution>-->
-                    <!--<id>prepare-agent</id>-->
-                    <!--<goals>-->
-                    <!--<goal>prepare-agent</goal>-->
-                    <!--</goals>-->
-                    <!--</execution>-->
-                    <!-- prepare agent for measuring unit tests -->
-
-                    <!-- METHOD 2 -->
                     <execution>
                         <id>prepare-unit-tests</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
-                        <!--<configuration>-->
-                        <!--<destFile>${sonar.jacoco.reportPath}</destFile>-->
-                        <!--</configuration>-->
                     </execution>
 
-                    <!-- prepare agent for measuring integration tests -->
                     <execution>
                         <id>prepare-agent</id>
                         <goals>
@@ -513,19 +498,19 @@
             <dependency>
                 <groupId>commons-cli</groupId>
                 <artifactId>commons-cli</artifactId>
-                <version>1.10.0</version>
+                <version>1.11.0</version>
                 <classifier>stripped</classifier>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
-                <version>1.19.0</version>
+                <version>1.20.0</version>
                 <classifier>stripped</classifier>
             </dependency>
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
-                <version>2.20.0</version>
+                <version>2.21.0</version>
                 <classifier>stripped</classifier>
             </dependency>
             <dependency>
