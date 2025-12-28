@@ -30,6 +30,7 @@ import static java.util.Arrays.asList;
  */
 
 enum ColumnType {
+    Position(),
     Latitude("Breite", "Breitengrad"),
     Longitude("L\u00e4nge", "L\u00e4ngengrad"),
     Elevation("H\u00f6he", "Altitude"),
@@ -40,6 +41,7 @@ enum ColumnType {
     Heartbeat("Heartbeat", "hr", "Herzschlag", "Herzschlagfrequenz"),
     Time("Zeit", "Timestamp", "Zeitstempel", "Date", "Datum"),
     Description("Beschreibung", "Comment", "Kommentar"),
+    Callsign(), // Element in CSV from Flightradar24
     Unsupported();
 
     private final List<String> alternativeNames;

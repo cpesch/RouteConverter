@@ -238,6 +238,12 @@ public class Transfer {
         return Short.toString(aShort);
     }
 
+    public static String formatLongAsString(Long aLong) {
+        if (aLong == null)
+            return "0";
+        return Long.toString(aLong);
+    }
+
     public static Double parseDouble(String string) {
         return parseDouble(string, true);
     }

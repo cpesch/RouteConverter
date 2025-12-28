@@ -19,6 +19,7 @@
 */
 package slash.navigation.csv;
 
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.ExtendedSensorNavigationPosition;
@@ -26,14 +27,15 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.excel.ExcelPosition;
 import slash.navigation.gpx.GpxPosition;
 
-import java.util.Calendar;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
 
 import static slash.common.io.Transfer.*;
+import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.parseDate;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.type.ISO8601.parseDate;
 import static slash.navigation.base.ExtendedSensorNavigationPosition.transferExtendedSensorData;
 import static slash.navigation.csv.ColumnType.*;
@@ -43,6 +45,13 @@ import static slash.navigation.csv.ColumnType.*;
  */
 
 public class CsvPosition extends BaseNavigationPosition implements ExtendedSensorNavigationPosition {
+
+    private record Point(double longitude, double latitude) {
+    }
+
+    private static final double FEET_TO_METER = 0.3048;
+    private static final double KNOT_TO_KMH = 1.852;
+
     private static final String DATE_AND_TIME_FORMAT = "dd.MM.yy HH:mm:ss";
     private static final String DATE_AND_TIME_WITHOUT_SECONDS_FORMAT = "dd.MM.yy HH:mm";
 
@@ -89,6 +98,19 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
         return parseShort(value);
     }
 
+    private Point getValueAsPoint(ColumnType type) {
+        String value = getValueAsString(type);
+        if (value != null) {
+            List<Double> parts = Arrays.stream(value.split(","))
+                    .map(Transfer::parseDouble)
+                    .toList();
+            if (parts.size() == 2 && !parts.contains(null)) {
+                return new Point(parts.get(1), parts.get(0));
+            }
+        }
+        return null;
+    }
+
     private CompactCalendar getValueAsTime(ColumnType type) {
         String value = getValueAsString(type);
         CompactCalendar calendar = parseDate(value, DATE_AND_TIME_FORMAT);
@@ -99,11 +121,37 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
             if (date != null)
                 calendar = fromCalendar(date);
         }
+
+        if (calendar == null && value != null && isFlightradar24Csv()) {
+            Long longValue = parseLong(value);
+            if (longValue != null) {
+                // Flightradar24 timestamp is in seconds since 1.1.1970
+                calendar = fromMillis(longValue * 1000);
+            }
+        }
+
         return calendar;
     }
 
     private void setValueAsString(ColumnType type, String value) {
-        rowAsMap.put(type.name(), value);
+
+        Collection<String> existingColumns = new HashSet<>();
+        if (rowAsMap.containsKey(type.name())) {
+            existingColumns.add(type.name());
+        }
+
+        for (String alternativeName : type.getAlternativeNames()) {
+            if (rowAsMap.containsKey(alternativeName)) {
+                existingColumns.add(alternativeName);
+            }
+        }
+
+        if (existingColumns.isEmpty()) {
+            rowAsMap.put(type.name(), value);
+        }
+        else {
+            existingColumns.forEach(column -> rowAsMap.put(column, value));
+        }
     }
 
     private void setValueAsDouble(ColumnType type, Double value) {
@@ -114,33 +162,77 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
         setValueAsString(type, formatShortAsString(value));
     }
 
+    private void setValueAsLong(ColumnType type, Long value) {
+        setValueAsString(type, formatLongAsString(value));
+    }
+
     private void setValueAsTime(ColumnType type, CompactCalendar calendar) {
         String value = calendar != null ? createDateFormat(DATE_AND_TIME_FORMAT).format(calendar.getTime().getTime()) : null;
         setValueAsString(type, value);
     }
 
+    private void setValueAsPosition(ColumnType columnType, Point point) {
+        if (point != null) {
+            setValueAsString(columnType, formatDoubleAsString(point.latitude) + "," + formatDoubleAsString(point.longitude));
+        }
+        else {
+            setValueAsString(columnType, "0.0,0.0");
+        }
+    }
+
     public Double getLongitude() {
-        return getValueAsDouble(Longitude);
+        Point position = getValueAsPoint(Position);
+        Double longitude = getValueAsDouble(Longitude);
+        if (position != null && longitude == null) {
+            return position.longitude;
+        }
+        if (position == null && longitude != null) {
+            return longitude;
+        }
+        return null;
     }
 
     public void setLongitude(Double longitude) {
-        setValueAsDouble(Longitude, longitude);
+        if (isFlightradar24Csv()) {
+            Point position = getValueAsPoint(Position);
+            setValueAsPosition(Position, new Point(longitude, position != null ? position.latitude : 0));
+        } else {
+            setValueAsDouble(Longitude, longitude);
+        }
     }
 
     public Double getLatitude() {
-        return getValueAsDouble(Latitude);
+        Point position = getValueAsPoint(Position);
+        Double latitude = getValueAsDouble(Latitude);
+        if (position != null && latitude == null) {
+            return position.latitude;
+        }
+        if (position == null && latitude != null) {
+            return latitude;
+        }
+        return null;
     }
 
     public void setLatitude(Double latitude) {
-        setValueAsDouble(Latitude, latitude);
+        if (isFlightradar24Csv()) {
+            Point position = getValueAsPoint(Position);
+            setValueAsPosition(Position, new Point(position != null ? position.longitude : 0, latitude));
+        } else {
+            setValueAsDouble(Latitude, latitude);
+        }
     }
 
     public Double getElevation() {
-        return getValueAsDouble(Elevation);
+        Double elevation = getValueAsDouble(Elevation);
+        if (elevation != null && isFlightradar24Csv()) {
+            // Flightradar24 uses Feet
+            return elevation * FEET_TO_METER;
+        }
+        return elevation;
     }
 
     public void setElevation(Double elevation) {
-        setValueAsDouble(Elevation, elevation);
+        setValueAsDouble(Elevation, isFlightradar24Csv() ? elevation / FEET_TO_METER : elevation);
     }
 
     public CompactCalendar getTime() {
@@ -148,15 +240,24 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
     }
 
     public void setTime(CompactCalendar time) {
-        setValueAsTime(Time, time);
+        if (isFlightradar24Csv()) {
+            setValueAsLong(Time, time.getTimeInMillis() / 1000);
+        } else {
+            setValueAsTime(Time, time);
+        }
     }
 
     public Double getSpeed() {
-        return getValueAsDouble(Speed);
+        Double speed = getValueAsDouble(Speed);
+        if (speed != null && isFlightradar24Csv()) {
+            // Flightradar24 uses Knots
+            return speed * KNOT_TO_KMH;
+        }
+        return speed;
     }
 
     public void setSpeed(Double speed) {
-        setValueAsDouble(Speed, speed);
+        setValueAsDouble(Speed, isFlightradar24Csv() ? speed / KNOT_TO_KMH : speed);
     }
 
     public Double getPressure() {
@@ -218,5 +319,13 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
         Wgs84Position position = super.asWgs84Position();
         transferExtendedSensorData(this, position);
         return position;
+    }
+
+    String getCallSign() {
+        return getValueAsString(Callsign);
+    }
+
+    private boolean isFlightradar24Csv() {
+        return getValueAsString(Callsign) != null;
     }
 }

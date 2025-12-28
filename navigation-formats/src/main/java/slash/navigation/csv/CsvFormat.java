@@ -105,6 +105,7 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
 
         CsvSchema schema = CsvSchema.emptySchema().withHeader().withColumnSeparator(getColumnSeparator());
         ObjectReader objectReader = new CsvMapper().readerFor(LinkedHashMap.class).with(schema);
+        Collection<String> callSigns = new HashSet<>();
         try (reader) {
             MappingIterator<LinkedHashMap<String, String>> iterator = objectReader.readValues(reader);
             while (iterator.hasNext()) {
@@ -120,11 +121,16 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
                     continue;
 
                 positions.add(position);
+
+                String callSign = position.getCallSign();
+                if (callSign != null) {
+                    callSigns.add(callSign);
+                }
             }
         }
 
         if (!positions.isEmpty()) {
-            context.appendRoute(new CsvRoute(this, null, positions));
+            context.appendRoute(new CsvRoute(this, callSigns.size() == 1 ? callSigns.iterator().next(): null, positions));
             return true;
         } else
             return false;
