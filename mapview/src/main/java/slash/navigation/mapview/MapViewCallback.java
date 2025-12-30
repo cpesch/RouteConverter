@@ -27,7 +27,7 @@ import slash.navigation.routing.TravelMode;
 import slash.navigation.routing.TravelRestrictions;
 
 /**
- * Interface for callbacks from the {@link MapView} to the other RouteConverter services.
+ * Interface for callbacks from the {@link MapView} to other RouteConverter services.
  *
  * @author Christian Pesch
  */

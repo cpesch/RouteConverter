@@ -180,8 +180,9 @@ public class ConvertPanel implements PanelInTab {
 
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.addChangeListener(e -> handleUndoUpdate());
+        UndoPositionsModel undoPositionsModel = new UndoPositionsModel(undoManager, new PositionsModelCallbackImpl());
 
-        positionsModel = new OverlayPositionsModel(new UndoPositionsModel(undoManager), r.getCharacteristicsModel(), r.getDistanceAndTimeAggregator());
+        positionsModel = new OverlayPositionsModel(undoPositionsModel, r.getCharacteristicsModel(), r.getDistanceAndTimeAggregator());
         formatAndRoutesModel = new UndoFormatAndRoutesModel(undoManager, new FormatAndRoutesModelImpl(positionsModel, r.getCharacteristicsModel()));
         positionsSelectionModel = new PositionsSelectionModel() {
             public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {

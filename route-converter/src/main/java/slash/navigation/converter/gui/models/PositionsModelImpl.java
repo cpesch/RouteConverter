@@ -25,7 +25,6 @@ import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.*;
-import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.PositionHelper;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.Range;
@@ -35,8 +34,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.*;
 import java.util.logging.Logger;
@@ -44,8 +41,6 @@ import java.util.logging.Logger;
 import static java.lang.String.format;
 import static java.util.Calendar.*;
 import static java.util.Collections.singletonList;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.event.TableModelEvent.*;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -61,6 +56,12 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 public class PositionsModelImpl extends AbstractTableModel implements PositionsModel {
     private static final Logger log = Logger.getLogger(PositionsModelImpl.class.getName());
+
+    private final PositionsModelCallback positionsModelCallback;
+
+    public PositionsModelImpl(PositionsModelCallback positionsModelCallback) {
+        this.positionsModelCallback = positionsModelCallback;
+    }
 
     private BaseRoute route;
 
@@ -226,16 +227,11 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }
     }
 
-    private List<DegreeFormat> getDegreeFormats() {
-        DegreeFormat preferred = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
-        return DegreeFormat.getDegreeFormatsWithPreferredDegreeFormat(preferred);
-    }
-
     private Double parseLongitude(Object objectValue, String stringValue) {
         if (objectValue == null || objectValue instanceof Double)
             return (Double) objectValue;
 
-        for(DegreeFormat degreeFormat : getDegreeFormats()) {
+        for(DegreeFormat degreeFormat : positionsModelCallback.getDegreeFormats()) {
             try {
                 Double value = degreeFormat.parseLongitude(stringValue);
                 log.fine(format("Parsed longitude %s with degree format %s to %s", stringValue, degreeFormat, value));
@@ -253,7 +249,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         if (objectValue == null || objectValue instanceof Double)
             return (Double) objectValue;
 
-        for(DegreeFormat degreeFormat : getDegreeFormats()) {
+        for(DegreeFormat degreeFormat : positionsModelCallback.getDegreeFormats()) {
             try {
                 Double value = degreeFormat.parseLatitude(stringValue);
                 log.fine(format("Parsed latitude %s with degree format %s to %s", stringValue, degreeFormat, value));
@@ -267,11 +263,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         throw new IllegalArgumentException(format("Could not parse latitude %s", stringValue));
     }
 
-    private List<UnitSystem> getUnitSystems() {
-        UnitSystem preferred = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
-        return UnitSystem.getUnitSystemsWithPreferredUnitSystem(preferred);
-    }
-
     private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
         if (objectValue == null || objectValue instanceof Double)
             return (Double) objectValue;
@@ -281,7 +272,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private Double parseElevation(Object objectValue, String stringValue) {
-        for(UnitSystem unitSystem : getUnitSystems()) {
+        for(UnitSystem unitSystem : positionsModelCallback.getUnitSystems()) {
             try {
                 Double value = parseDouble(objectValue, stringValue, unitSystem.getElevationName());
                 log.fine(format("Parsed elevation %s with unit system %s to %s", stringValue, unitSystem, value));
@@ -296,7 +287,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     private Double parseSpeed(Object objectValue, String stringValue) {
-        for(UnitSystem unitSystem : getUnitSystems()) {
+        for(UnitSystem unitSystem : positionsModelCallback.getUnitSystems()) {
             try {
                 Double value = parseDouble(objectValue, stringValue, unitSystem.getSpeedName());
                 log.fine(format("Parsed speed %s with unit system %s to %s", stringValue, unitSystem, value));
@@ -310,13 +301,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         throw new IllegalArgumentException(format("Could not parse speed %s", stringValue));
     }
 
-    private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateFormat format) {
-        showMessageDialog(RouteConverter.getInstance().getFrame(),
-                MessageFormat.format(RouteConverter.getBundle().getString(messageBundleKey),
-                        stringValue, extractPattern(format)),
-                RouteConverter.getTitle(), ERROR_MESSAGE);
-    }
-
     private CompactCalendar parseDateTime(Object objectValue, String stringValue) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
@@ -324,7 +308,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             try {
                 return PositionHelper.parseDateTime(stringValue);
             } catch (ParseException e) {
-                handleDateTimeParseException(stringValue, "date-time-format-error", getDateTimeFormat());
+                positionsModelCallback.handleDateTimeParseException(stringValue, "date-time-format-error", getDateTimeFormat());
             }
         }
         return null;
@@ -345,7 +329,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 }
                 return result;
             } catch (ParseException e) {
-                handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
+                positionsModelCallback.handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
             }
         }
         return null;
@@ -366,8 +350,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
                 }
                 return result;
             } catch (ParseException e) {
-                handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
-
+                positionsModelCallback.handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
             }
         }
         return null;

@@ -24,6 +24,7 @@ import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.converter.gui.models.PositionsModelImpl;
+import slash.navigation.converter.gui.panels.PositionsModelCallbackImpl;
 import slash.navigation.gpx.Gpx11Format;
 import slash.navigation.gpx.GpxPosition;
 import slash.navigation.gpx.GpxRoute;
@@ -40,7 +41,7 @@ public class PositionAugmenterTest {
     private final GpxPosition d = new GpxPosition(null, null, null, null, null, null);
     private final GpxPosition e = new GpxPosition(null, null, null, null, null, null);
     private final BaseRoute route = new GpxRoute(new Gpx11Format(), null, null, null, asList(a, b, c, d, e));
-    private final PositionsModelImpl model = new PositionsModelImpl();
+    private final PositionsModelImpl model = new PositionsModelImpl(new PositionsModelCallbackImpl());
 
     @Before
     public void setUp() {

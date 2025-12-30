@@ -30,6 +30,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsModelImpl;
+import slash.navigation.converter.gui.models.PositionsModelCallback;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.Range;
 import slash.navigation.gui.events.RangeOperation;
@@ -52,11 +53,12 @@ import static slash.common.io.Transfer.trim;
  */
 
 public class UndoPositionsModel implements PositionsModel {
-    private final PositionsModelImpl delegate = new PositionsModelImpl();
+    private final PositionsModelImpl delegate;
     private final UndoManager undoManager;
 
-    public UndoPositionsModel(UndoManager undoManager) {
+    public UndoPositionsModel(UndoManager undoManager, PositionsModelCallback positionsModelCallback) {
         this.undoManager = undoManager;
+        this.delegate = new PositionsModelImpl(positionsModelCallback);
     }
 
     // TableModel
