@@ -39,7 +39,7 @@ public class Flightradar24Test {
     }
 
     @Test
-    public void testAllFlighradar24CsvToKmlTracks() throws IOException {
+    public void testCheckAllFlighradar24CsvAgainstKml() throws IOException {
         // The main track from the KML and the CSV file must have the same content.
         List<File> files = collectFiles(new File(SAMPLE_PATH), ".csv");
         for (File file : files) {
