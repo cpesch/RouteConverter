@@ -29,6 +29,7 @@ import slash.navigation.gpx.GpxPosition;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.logging.Level;
 
 import static slash.common.io.Transfer.*;
 import static slash.common.io.Transfer.formatDoubleAsString;
@@ -113,9 +114,9 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
 
     private CompactCalendar getValueAsTime(ColumnType type) {
         String value = getValueAsString(type);
-        CompactCalendar calendar = parseDate(value, DATE_AND_TIME_FORMAT);
+        CompactCalendar calendar = parseDate(value, DATE_AND_TIME_FORMAT, Level.FINE);
         if (calendar == null)
-            calendar = parseDate(value, DATE_AND_TIME_WITHOUT_SECONDS_FORMAT);
+            calendar = parseDate(value, DATE_AND_TIME_WITHOUT_SECONDS_FORMAT, Level.FINE);
         if (calendar == null) {
             Calendar date = parseDate(value);
             if (date != null)
