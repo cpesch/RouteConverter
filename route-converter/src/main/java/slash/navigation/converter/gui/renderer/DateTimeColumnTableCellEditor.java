@@ -21,10 +21,11 @@
 package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.converter.gui.models.PositionsModelCallback;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractDateTime;
+import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
 
 /**
  * Renders the date time column of the positions table.
@@ -33,8 +34,11 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.extractDateT
  */
 
 public class DateTimeColumnTableCellEditor extends PositionsTableCellEditor {
-    public DateTimeColumnTableCellEditor() {
+    private final PositionsModelCallback positionsModelCallback;
+
+    public DateTimeColumnTableCellEditor(PositionsModelCallback positionsModelCallback) {
         super(RIGHT);
+        this.positionsModelCallback = positionsModelCallback;
     }
 
     protected void formatCell(JLabel label, NavigationPosition position) {
@@ -42,6 +46,6 @@ public class DateTimeColumnTableCellEditor extends PositionsTableCellEditor {
     }
 
     protected String extractValue(NavigationPosition position) {
-        return extractDateTime(position);
+        return positionsModelCallback.getStringAt(position, DATE_TIME_COLUMN_INDEX);
     }
 }

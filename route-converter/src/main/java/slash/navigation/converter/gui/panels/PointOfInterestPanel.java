@@ -84,7 +84,7 @@ public class PointOfInterestPanel implements PanelInTab {
 
         positionsModel = new FilteringPositionsModel<>(r.getConvertPanel().getPositionsModel(), new PointOfInterestPositionPredicate());
         tablePointsOfInterest.setModel(getPositionsModel());
-        PointsOfInterestTableColumnModel tableColumnModel = new PointsOfInterestTableColumnModel();
+        PointsOfInterestTableColumnModel tableColumnModel = new PointsOfInterestTableColumnModel(new PositionsModelCallbackImpl(r.getTimeZone()));
         tablePointsOfInterest.setColumnModel(tableColumnModel);
 
         r.getUnitSystemModel().addChangeListener(new ChangeListener() {

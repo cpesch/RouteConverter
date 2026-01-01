@@ -153,27 +153,6 @@ public class PositionHelper {
         return dateFormat instanceof SimpleDateFormat ? ((SimpleDateFormat)dateFormat).toLocalizedPattern() : dateFormat.toString();
     }
 
-    // date time
-
-    public static DateFormat getDateTimeFormat() {
-        String timeZoneId = RouteConverter.getInstance().getTimeZone().getTimeZoneId();
-        return Transfer.getDateTimeFormat(timeZoneId);
-    }
-
-    private static String formatDateTime(CompactCalendar time) {
-        return getDateTimeFormat().format(time.getTime());
-    }
-
-    public static String extractDateTime(NavigationPosition position) {
-        CompactCalendar time = position.getTime();
-        return time != null ? formatDateTime(time) : "";
-    }
-
-    public static CompactCalendar parseDateTime(String stringValue) throws ParseException {
-        Date parsed = getDateTimeFormat().parse(stringValue);
-        return fromDate(parsed);
-    }
-
     // date
 
     public static DateFormat getDateFormat() {

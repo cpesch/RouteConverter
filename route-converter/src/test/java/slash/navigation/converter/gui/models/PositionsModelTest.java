@@ -33,7 +33,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 public class PositionsModelTest {
-    PositionsModelImpl model = new PositionsModelImpl(new PositionsModelCallbackImpl());
+    PositionsModelImpl model = new PositionsModelImpl(new PositionsModelCallbackImpl(null));
     BaseRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
     BcrPosition a = new BcrPosition(1, 1, 0, "a");
     BcrPosition b = new BcrPosition(3, 3, 0, "b");

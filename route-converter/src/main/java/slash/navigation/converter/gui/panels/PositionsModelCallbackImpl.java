@@ -28,11 +28,13 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.PositionHelper;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
+import slash.navigation.converter.gui.models.TimeZoneModel;
 
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -42,6 +44,7 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
+import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.converter.gui.helpers.PositionHelper.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 
@@ -54,6 +57,12 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 public class PositionsModelCallbackImpl implements PositionsModelCallback {
     private static final Logger log = Logger.getLogger(PositionsModelCallbackImpl.class.getName());
+
+    private final TimeZoneModel timeZoneModel;
+
+    public PositionsModelCallbackImpl(TimeZoneModel timeZoneModel) {
+        this.timeZoneModel = timeZoneModel;
+    }
 
     public String getStringAt(NavigationPosition position, int columnIndex) {
         switch (columnIndex) {
@@ -173,12 +182,26 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         throw new IllegalArgumentException(format("Could not parse speed %s", stringValue));
     }
 
+    private String formatDateTime(CompactCalendar time) {
+        return getDateTimeFormat().format(time.getTime());
+    }
+
+    private String extractDateTime(NavigationPosition position) {
+        CompactCalendar time = position.getTime();
+        return time != null ? formatDateTime(time) : "";
+    }
+
+    private CompactCalendar parseDateTime(String stringValue) throws ParseException {
+        Date parsed = getDateTimeFormat().parse(stringValue);
+        return fromDate(parsed);
+    }
+
     private CompactCalendar parseDateTime(Object objectValue, String stringValue) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                return PositionHelper.parseDateTime(stringValue);
+                return parseDateTime(stringValue);
             } catch (ParseException e) {
                 handleDateTimeParseException(stringValue, "date-time-format-error", getDateTimeFormat());
             }
@@ -226,6 +249,11 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             }
         }
         return null;
+    }
+
+    private DateFormat getDateTimeFormat() {
+        String timeZoneId = timeZoneModel.getTimeZoneId();
+        return Transfer.getDateTimeFormat(timeZoneId);
     }
 
     private List<DegreeFormat> getDegreeFormats() {

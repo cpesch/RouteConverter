@@ -180,7 +180,8 @@ public class ConvertPanel implements PanelInTab {
 
         UndoManager undoManager = Application.getInstance().getContext().getUndoManager();
         undoManager.addChangeListener(e -> handleUndoUpdate());
-        UndoPositionsModel undoPositionsModel = new UndoPositionsModel(undoManager, new PositionsModelCallbackImpl());
+        PositionsModelCallback positionsModelCallback = new PositionsModelCallbackImpl(r.getTimeZone());
+        UndoPositionsModel undoPositionsModel = new UndoPositionsModel(undoManager, positionsModelCallback);
 
         positionsModel = new OverlayPositionsModel(undoPositionsModel, r.getCharacteristicsModel(), r.getDistanceAndTimeAggregator());
         formatAndRoutesModel = new UndoFormatAndRoutesModel(undoManager, new FormatAndRoutesModelImpl(positionsModel, r.getCharacteristicsModel()));
@@ -246,7 +247,7 @@ public class ConvertPanel implements PanelInTab {
         });
 
         tablePositions.setModel(positionsModel);
-        PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel();
+        PositionsTableColumnModel tableColumnModel = new PositionsTableColumnModel(positionsModelCallback);
         tablePositions.setColumnModel(tableColumnModel);
 
         tableColumnModel.addChangeListener(e -> handleColumnVisibilityUpdate((PositionTableColumn) e.getSource()));

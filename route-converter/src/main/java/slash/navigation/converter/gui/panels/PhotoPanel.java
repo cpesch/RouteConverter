@@ -111,7 +111,7 @@ public class PhotoPanel implements PanelInTab {
             new TagStatePhotoPredicate(NotTaggable),
     });
 
-    private final PositionsModel photosModel = new OverlayPositionsModel(new PositionsModelImpl(new PositionsModelCallbackImpl()));
+    private PositionsModel photosModel;
     private FilteringPositionsModel<NavigationPosition> filteredPhotosModel;
 
     public PhotoPanel() {
@@ -122,6 +122,7 @@ public class PhotoPanel implements PanelInTab {
     private void initialize() {
         final RouteConverter r = RouteConverter.getInstance();
 
+        photosModel = new OverlayPositionsModel(new PositionsModelImpl(new PositionsModelCallbackImpl(r.getTimeZone())));
         photosModel.setRoute(new Wgs84Route(new PhotoFormat(), Waypoints, null, new ArrayList<Wgs84Position>()));
         filteredPhotosModel = new FilteringPositionsModel<>(photosModel, getFilterPredicatePreference());
         tablePhotos.setModel(filteredPhotosModel);
