@@ -39,11 +39,12 @@ import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 public class PositionsTableColumnModel extends AbstractTableColumnModel {
     public PositionsTableColumnModel(PositionsModelCallback positionsModelCallback) {
-        super(POSITIONS);
+        super(POSITIONS, positionsModelCallback);
+
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
         predefineColumn(DESCRIPTION_COLUMN_INDEX, "description", null, true, new DescriptionColumnTableCellEditor(), headerRenderer, new DescriptionComparator());
         predefineColumn(PHOTO_COLUMN_INDEX, "photo", null, false, new PhotoColumnTableCellRenderer(), headerRenderer);
-        predefineColumn(DATE_TIME_COLUMN_INDEX, "datetime", getMaxWidth(getExampleDateTimeFromCurrentLocale(), 10), false, new DateTimeColumnTableCellEditor(positionsModelCallback), headerRenderer, new DateTimeComparator());
+        predefineColumn(DATE_TIME_COLUMN_INDEX, "datetime", getMaxWidth(getExampleDateTimeFromCurrentLocale(), 10), false, new GenericColumnTableCellEditor(), headerRenderer, new DateTimeComparator());
         predefineColumn(DATE_COLUMN_INDEX, "date", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new DateColumnTableCellEditor(), headerRenderer);
         predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleTimeFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer);
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);

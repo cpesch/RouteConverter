@@ -39,10 +39,6 @@ public class TimeColumnTableCellEditor extends PositionsTableCellEditor {
         super(RIGHT);
     }
 
-    protected void formatCell(JLabel label, NavigationPosition position) {
-        label.setText(extractValue(position));
-    }
-
     protected String extractValue(NavigationPosition position) {
         return extractTime(position);
     }

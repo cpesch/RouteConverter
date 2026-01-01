@@ -23,29 +23,26 @@ package slash.navigation.converter.gui.renderer;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
 
-import javax.swing.*;
-
-import static slash.navigation.converter.gui.models.PositionColumns.DATE_TIME_COLUMN_INDEX;
-
 /**
- * Renders the date time column of the positions table.
+ * Renders the given column of the positions table.
  *
  * @author Christian Pesch
  */
 
-public class DateTimeColumnTableCellEditor extends PositionsTableCellEditor {
-    private final PositionsModelCallback positionsModelCallback;
+public class GenericColumnTableCellEditor extends PositionsTableCellEditor {
+    private PositionsModelCallback positionsModelCallback;
+    private int columnIndex;
 
-    public DateTimeColumnTableCellEditor(PositionsModelCallback positionsModelCallback) {
+    public GenericColumnTableCellEditor() {
         super(RIGHT);
-        this.positionsModelCallback = positionsModelCallback;
     }
 
-    protected void formatCell(JLabel label, NavigationPosition position) {
-        label.setText(extractValue(position));
+    public void initialize(PositionsModelCallback positionsModelCallback, int columnIndex) {
+        this.positionsModelCallback = positionsModelCallback;
+        this.columnIndex = columnIndex;
     }
 
     protected String extractValue(NavigationPosition position) {
-        return positionsModelCallback.getStringAt(position, DATE_TIME_COLUMN_INDEX);
+        return positionsModelCallback.getStringAt(position, columnIndex);
     }
 }

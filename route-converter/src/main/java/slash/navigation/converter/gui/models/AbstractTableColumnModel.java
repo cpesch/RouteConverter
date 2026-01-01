@@ -20,6 +20,7 @@
 package slash.navigation.converter.gui.models;
 
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.converter.gui.renderer.GenericColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.PositionsTableCellEditor;
 
 import javax.swing.event.ChangeEvent;
@@ -52,10 +53,12 @@ public abstract class AbstractTableColumnModel extends DefaultTableColumnModel {
     private static final String ORDER_INFIX = "-order-";
 
     private final String preferencesPrefix;
+    private final PositionsModelCallback positionsModelCallback;
     private final List<PositionTableColumn> predefinedColumns = new ArrayList<>();
 
-    public AbstractTableColumnModel(String preferencesPrefix) {
+    public AbstractTableColumnModel(String preferencesPrefix, PositionsModelCallback positionsModelCallback) {
         this.preferencesPrefix = preferencesPrefix;
+        this.positionsModelCallback = positionsModelCallback;
     }
 
     public List<PositionTableColumn> getPreparedColumns() {
@@ -73,15 +76,18 @@ public abstract class AbstractTableColumnModel extends DefaultTableColumnModel {
     }
 
     protected void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,
-                                 PositionsTableCellEditor cellEditor, TableCellRenderer headerRenderer,
-                                 Comparator<NavigationPosition> comparator) {
+                                   PositionsTableCellEditor cellEditor, TableCellRenderer headerRenderer,
+                                   Comparator<NavigationPosition> comparator) {
         predefineColumn(modelIndex, name, maxWidth, visibilityDefault, cellEditor, cellEditor, headerRenderer, comparator);
     }
 
     protected void predefineColumn(int modelIndex, String name, Integer maxWidth, boolean visibilityDefault,
-                                 TableCellRenderer cellRenderer, TableCellEditor cellEditor, TableCellRenderer headerRenderer,
-                                 Comparator<NavigationPosition> comparator) {
+                                   TableCellRenderer cellRenderer, TableCellEditor cellEditor, TableCellRenderer headerRenderer,
+                                   Comparator<NavigationPosition> comparator) {
         boolean visible = preferences.getBoolean(createVisibleKey(name), visibilityDefault);
+        if (cellEditor instanceof GenericColumnTableCellEditor genericEditor) {
+            genericEditor.initialize(positionsModelCallback, modelIndex);
+        }
         PositionTableColumn column = new PositionTableColumn(modelIndex, name, visible, cellRenderer, cellEditor, comparator);
         column.setHeaderRenderer(headerRenderer);
         if (maxWidth != null) {

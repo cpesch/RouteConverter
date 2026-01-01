@@ -65,10 +65,6 @@ public class WaypointTypeColumnTableCellEditor extends PositionsTableCellEditor 
             label.setText("");
     }
 
-    protected void formatCell(JLabel label, NavigationPosition position) {
-        label.setText(extractValue(position));
-    }
-
     protected String extractValue(NavigationPosition position) {
         String text = "?";
         WaypointType waypointType = getWaypointType(position);

@@ -55,7 +55,9 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
             label.setText("");
     }
 
-    protected abstract void formatCell(JLabel label, NavigationPosition position);
+    protected void formatCell(JLabel label, NavigationPosition position) {
+        label.setText(extractValue(position));
+    }
 
     private final DefaultCellEditor editor = new DefaultCellEditor(new JTextField());
     {

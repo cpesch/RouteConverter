@@ -38,7 +38,8 @@ import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 public class PhotosTableColumnModel extends AbstractTableColumnModel {
     public PhotosTableColumnModel() {
-        super(PHOTOS);
+        super(PHOTOS, null);
+
         PositionsTableHeaderRenderer headerRenderer = new PositionsTableHeaderRenderer();
         predefineColumn(PHOTO_COLUMN_INDEX, "photo", null, true, new PhotoColumnTableCellRenderer(), headerRenderer);
         predefineColumn(EXIF_COLUMN_INDEX, "exif", getMaxWidth("Belichtungszeit: 1/1000s", 5), true, new ExifColumnTableCellRenderer(), headerRenderer);
