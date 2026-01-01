@@ -19,13 +19,13 @@
 */
 package slash.navigation.converter.gui.models;
 
-import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationFormat;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.common.*;
-import slash.navigation.converter.gui.helpers.PositionHelper;
+import slash.navigation.common.BoundingBox;
+import slash.navigation.common.DistanceAndTimeAggregator;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.gui.events.ContinousRange;
 import slash.navigation.gui.events.Range;
 import slash.navigation.gui.events.RangeOperation;
@@ -34,18 +34,15 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.io.IOException;
-import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
 import java.util.logging.Logger;
 
-import static java.lang.String.format;
-import static java.util.Calendar.*;
 import static java.util.Collections.singletonList;
 import static javax.swing.event.TableModelEvent.*;
-import static slash.common.io.Transfer.trim;
-import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.navigation.base.NavigationFormatConverter.convertPositions;
-import static slash.navigation.converter.gui.helpers.PositionHelper.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
@@ -82,35 +79,8 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         throw new IllegalArgumentException("This is determined by the PositionsTableColumnModel");
     }
 
-    public String getStringAt(int rowIndex, int columnIndex) {
-        NavigationPosition position = getPosition(rowIndex);
-        switch (columnIndex) {
-            case DESCRIPTION_COLUMN_INDEX -> {
-                return position.getDescription();
-            }
-            case DATE_TIME_COLUMN_INDEX -> {
-                return extractDateTime(position);
-            }
-            case DATE_COLUMN_INDEX -> {
-                return extractDate(position);
-            }
-            case TIME_COLUMN_INDEX -> {
-                return extractTime(position);
-            }
-            case LONGITUDE_COLUMN_INDEX -> {
-                return formatLongitude(position.getLongitude());
-            }
-            case LATITUDE_COLUMN_INDEX -> {
-                return formatLatitude(position.getLatitude());
-            }
-            case ELEVATION_COLUMN_INDEX -> {
-                return extractElevation(position);
-            }
-            case SPEED_COLUMN_INDEX -> {
-                return extractSpeed(position);
-            }
-        }
-        throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+    public/*for UndoPositionsModel*/ String getStringAt(int rowIndex, int columnIndex) {
+        return positionsModelCallback.getStringAt(getPosition(rowIndex), columnIndex);
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
@@ -200,7 +170,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         if (columnToValues.getNextValues() != null) {
             for (int i = 0; i < columnToValues.getColumnIndices().size(); i++) {
                 int columnIndex = columnToValues.getColumnIndices().get(i);
-                editCell(rowIndex, columnIndex, columnToValues.getNextValues().get(i));
+                positionsModelCallback.setValueAt(getPosition(rowIndex), columnIndex, columnToValues.getNextValues().get(i));
             }
         }
 
@@ -210,150 +180,6 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
             else
                 fireTableRowsUpdated(rowIndex, rowIndex, columnToValues.getColumnIndices().get(0));
         }
-    }
-
-    private void editCell(int rowIndex, int columnIndex, Object value) {
-        NavigationPosition position = getPosition(rowIndex);
-        String string = value != null ? trim(value.toString()) : null;
-        switch (columnIndex) {
-            case DESCRIPTION_COLUMN_INDEX -> position.setDescription(string);
-            case DATE_TIME_COLUMN_INDEX -> position.setTime(parseDateTime(value, string));
-            case DATE_COLUMN_INDEX -> position.setTime(parseDate(value, string, position.getTime()));
-            case TIME_COLUMN_INDEX -> position.setTime(parseTime(value, string, position.getTime()));
-            case LONGITUDE_COLUMN_INDEX -> position.setLongitude(parseLongitude(value, string));
-            case LATITUDE_COLUMN_INDEX -> position.setLatitude(parseLatitude(value, string));
-            case ELEVATION_COLUMN_INDEX -> position.setElevation(parseElevation(value, string));
-            case SPEED_COLUMN_INDEX -> position.setSpeed(parseSpeed(value, string));
-        }
-    }
-
-    private Double parseLongitude(Object objectValue, String stringValue) {
-        if (objectValue == null || objectValue instanceof Double)
-            return (Double) objectValue;
-
-        for(DegreeFormat degreeFormat : positionsModelCallback.getDegreeFormats()) {
-            try {
-                Double value = degreeFormat.parseLongitude(stringValue);
-                log.fine(format("Parsed longitude %s with degree format %s to %s", stringValue, degreeFormat, value));
-                return value;
-            }
-            catch (Exception e) {
-                // intentionally left empty
-            }
-        }
-        // this exception unsures that the editing can continue because the cell value is not cleared
-        throw new IllegalArgumentException(format("Could not parse longitude %s", stringValue));
-    }
-
-    private Double parseLatitude(Object objectValue, String stringValue) {
-        if (objectValue == null || objectValue instanceof Double)
-            return (Double) objectValue;
-
-        for(DegreeFormat degreeFormat : positionsModelCallback.getDegreeFormats()) {
-            try {
-                Double value = degreeFormat.parseLatitude(stringValue);
-                log.fine(format("Parsed latitude %s with degree format %s to %s", stringValue, degreeFormat, value));
-                return value;
-            }
-            catch (Exception e) {
-                // intentionally left empty
-            }
-        }
-        // this exception unsures that the editing can continue because the cell value is not cleared
-        throw new IllegalArgumentException(format("Could not parse latitude %s", stringValue));
-    }
-
-    private Double parseDouble(Object objectValue, String stringValue, String replaceAll) {
-        if (objectValue == null || objectValue instanceof Double)
-            return (Double) objectValue;
-        if (replaceAll != null && stringValue != null)
-            stringValue = stringValue.replaceAll(replaceAll, "");
-        return Transfer.parseDouble(stringValue);
-    }
-
-    private Double parseElevation(Object objectValue, String stringValue) {
-        for(UnitSystem unitSystem : positionsModelCallback.getUnitSystems()) {
-            try {
-                Double value = parseDouble(objectValue, stringValue, unitSystem.getElevationName());
-                log.fine(format("Parsed elevation %s with unit system %s to %s", stringValue, unitSystem, value));
-                return unitSystem.valueToDefault(value);
-            }
-            catch (Exception e) {
-                // intentionally left empty
-            }
-        }
-        // this exception unsures that the editing can continue because the cell value is not cleared
-        throw new IllegalArgumentException(format("Could not parse elevation %s", stringValue));
-    }
-
-    private Double parseSpeed(Object objectValue, String stringValue) {
-        for(UnitSystem unitSystem : positionsModelCallback.getUnitSystems()) {
-            try {
-                Double value = parseDouble(objectValue, stringValue, unitSystem.getSpeedName());
-                log.fine(format("Parsed speed %s with unit system %s to %s", stringValue, unitSystem, value));
-                return unitSystem.distanceToDefault(value);
-            }
-            catch (Exception e) {
-                // intentionally left empty
-            }
-        }
-        // this exception unsures that the editing can continue because the cell value is not cleared
-        throw new IllegalArgumentException(format("Could not parse speed %s", stringValue));
-    }
-
-    private CompactCalendar parseDateTime(Object objectValue, String stringValue) {
-        if (objectValue == null || objectValue instanceof CompactCalendar) {
-            return (CompactCalendar) objectValue;
-        } else if (stringValue != null) {
-            try {
-                return PositionHelper.parseDateTime(stringValue);
-            } catch (ParseException e) {
-                positionsModelCallback.handleDateTimeParseException(stringValue, "date-time-format-error", getDateTimeFormat());
-            }
-        }
-        return null;
-    }
-
-    private CompactCalendar parseDate(Object objectValue, String stringValue, CompactCalendar positionTime) {
-        if (objectValue == null || objectValue instanceof CompactCalendar) {
-            return (CompactCalendar) objectValue;
-        } else if (stringValue != null) {
-            try {
-                CompactCalendar result = PositionHelper.parseDate(stringValue);
-                if(positionTime != null) {
-                    Calendar calendar = positionTime.getCalendar();
-                    calendar.set(DAY_OF_MONTH, result.getCalendar().get(DAY_OF_MONTH));
-                    calendar.set(MONTH, result.getCalendar().get(MONTH));
-                    calendar.set(YEAR, result.getCalendar().get(YEAR));
-                    result = fromCalendar(calendar);
-                }
-                return result;
-            } catch (ParseException e) {
-                positionsModelCallback.handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
-            }
-        }
-        return null;
-    }
-
-    private CompactCalendar parseTime(Object objectValue, String stringValue, CompactCalendar positionTime) {
-        if (objectValue == null || objectValue instanceof CompactCalendar) {
-            return (CompactCalendar) objectValue;
-        } else if (stringValue != null) {
-            try {
-                CompactCalendar result = PositionHelper.parseTime(stringValue);
-                if (positionTime != null) {
-                    Calendar calendar = positionTime.getCalendar();
-                    calendar.set(HOUR_OF_DAY, result.getCalendar().get(HOUR_OF_DAY));
-                    calendar.set(MINUTE, result.getCalendar().get(MINUTE));
-                    calendar.set(SECOND, result.getCalendar().get(SECOND));
-                    result = fromCalendar(calendar);
-                }
-                return result;
-            } catch (ParseException e) {
-                positionsModelCallback.handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
-            }
-        }
-        return null;
     }
 
     public void add(int rowIndex, Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {

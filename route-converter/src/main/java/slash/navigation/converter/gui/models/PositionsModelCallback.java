@@ -20,11 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
-import slash.navigation.common.DegreeFormat;
-import slash.navigation.common.UnitSystem;
-
-import java.text.DateFormat;
-import java.util.List;
+import slash.navigation.common.NavigationPosition;
 
 /**
  * Interface for callbacks from the {@link PositionsModel} to other RouteConverter services.
@@ -33,8 +29,6 @@ import java.util.List;
  */
 
 public interface PositionsModelCallback {
-    List<DegreeFormat> getDegreeFormats();
-    List<UnitSystem> getUnitSystems();
-
-    void handleDateTimeParseException(String stringValue, String messageBundleKey, DateFormat format);
+    String getStringAt(NavigationPosition position, int columnIndex);
+    void setValueAt(NavigationPosition position, int columnIndex, Object value);
  }
