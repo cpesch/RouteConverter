@@ -45,7 +45,6 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromCalendar;
 import static slash.common.type.CompactCalendar.fromDate;
-import static slash.navigation.converter.gui.helpers.PositionHelper.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
@@ -79,16 +78,16 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
                 return extractTime(position);
             }
             case LONGITUDE_COLUMN_INDEX -> {
-                return formatLongitude(position.getLongitude());
+                return PositionHelper.formatLongitude(position.getLongitude());
             }
             case LATITUDE_COLUMN_INDEX -> {
-                return formatLatitude(position.getLatitude());
+                return PositionHelper.formatLatitude(position.getLatitude());
             }
             case ELEVATION_COLUMN_INDEX -> {
-                return extractElevation(position);
+                return PositionHelper.extractElevation(position);
             }
             case SPEED_COLUMN_INDEX -> {
-                return extractSpeed(position);
+                return PositionHelper.extractSpeed(position);
             }
         }
         throw new IllegalArgumentException("Column " + columnIndex + " does not exist");
@@ -209,12 +208,28 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return null;
     }
 
+    private String formatDate(CompactCalendar time) {
+        if(time == null)
+            return "?";
+        return getDateFormat().format(time.getTime());
+    }
+
+    private String extractDate(NavigationPosition position) {
+        CompactCalendar time = position.getTime();
+        return time != null ? formatDate(time) : "";
+    }
+
+    private CompactCalendar parseDate(String stringValue) throws ParseException {
+        Date parsed = getDateFormat().parse(stringValue);
+        return fromDate(parsed);
+    }
+
     private CompactCalendar parseDate(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                CompactCalendar result = PositionHelper.parseDate(stringValue);
+                CompactCalendar result = parseDate(stringValue);
                 if(positionTime != null) {
                     Calendar calendar = positionTime.getCalendar();
                     calendar.set(DAY_OF_MONTH, result.getCalendar().get(DAY_OF_MONTH));
@@ -230,12 +245,28 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return null;
     }
 
+    private String formatTime(CompactCalendar time) {
+        if(time == null)
+            return "?";
+        return getTimeFormat().format(time.getTime());
+    }
+
+    private String extractTime(NavigationPosition position) {
+        CompactCalendar time = position.getTime();
+        return time != null ? formatTime(time) : "";
+    }
+
+    private CompactCalendar parseTime(String stringValue) throws ParseException {
+        Date parsed = getTimeFormat().parse(stringValue);
+        return fromDate(parsed);
+    }
+
     private CompactCalendar parseTime(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                CompactCalendar result = PositionHelper.parseTime(stringValue);
+                CompactCalendar result = parseTime(stringValue);
                 if (positionTime != null) {
                     Calendar calendar = positionTime.getCalendar();
                     calendar.set(HOUR_OF_DAY, result.getCalendar().get(HOUR_OF_DAY));
@@ -256,6 +287,16 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return Transfer.getDateTimeFormat(timeZoneId);
     }
 
+    private DateFormat getDateFormat() {
+        String timeZoneId = timeZoneModel.getTimeZoneId();
+        return Transfer.getDateFormat(timeZoneId);
+    }
+
+    private DateFormat getTimeFormat() {
+        String timeZoneId = timeZoneModel.getTimeZoneId();
+        return Transfer.getTimeFormat(timeZoneId);
+    }
+
     private List<DegreeFormat> getDegreeFormats() {
         DegreeFormat preferred = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
         return DegreeFormat.getDegreeFormatsWithPreferredDegreeFormat(preferred);
@@ -269,6 +310,6 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateFormat format) {
         showMessageDialog(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString(messageBundleKey),
-                        stringValue, extractPattern(format)), RouteConverter.getTitle(), ERROR_MESSAGE);
+                        stringValue, PositionHelper.extractPattern(format)), RouteConverter.getTitle(), ERROR_MESSAGE);
     }
 }

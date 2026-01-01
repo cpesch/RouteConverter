@@ -25,7 +25,6 @@ import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helpers.PositionHelper.extractTime;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
 
 /**
@@ -34,14 +33,7 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
  * @author Christian Pesch
  */
 
-public class TimeColumnTableCellEditor extends PositionsTableCellEditor {
-    public TimeColumnTableCellEditor() {
-        super(RIGHT);
-    }
-
-    protected String extractValue(NavigationPosition position) {
-        return extractTime(position);
-    }
+public class TimeColumnTableCellEditor extends GenericColumnTableCellEditor {
 
     protected void formatLabel(JLabel label, Object value, boolean firstRow, boolean lastRow) {
         if(value instanceof CompactCalendar time) {
