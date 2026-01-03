@@ -26,13 +26,14 @@ public class PositionsModelCallbackImplTest extends TestCase {
 
     @Override
     public void setUp() {
+        originalLocale = Locale.getDefault();
+        Locale.setDefault(Locale.GERMAN);
+
         timeZoneModel = new TimeZoneModel("unittest."+getClass().getSimpleName(), ZONE_UTC);
 
         sut = new PositionsModelCallbackImpl(timeZoneModel);
         position = mock(NavigationPosition.class);
 
-        originalLocale = Locale.getDefault();
-        Locale.setDefault(Locale.GERMAN);
     }
 
     @Override
