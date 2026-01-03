@@ -5,9 +5,11 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
 import slash.navigation.converter.gui.models.TimeZoneModel;
+import slash.navigation.converter.gui.models.UnitSystemModel;
 import slash.navigation.gpx.GpxPosition;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import static org.mockito.Mockito.*;
@@ -21,12 +23,22 @@ public class PositionsModelCallbackImplTest extends TestCase {
     private PositionsModelCallback sut;
     private TimeZoneModel timeZoneModel;
     private NavigationPosition position;
+    private Locale originalLocale;
 
     @Override
     public void setUp() throws Exception {
         timeZoneModel = new TimeZoneModel("unittest."+getClass().getSimpleName(), ZONE_UTC);
+
         sut = new PositionsModelCallbackImpl(timeZoneModel);
         position = mock(NavigationPosition.class);
+
+        originalLocale = Locale.getDefault();
+        Locale.setDefault(Locale.GERMAN);
+    }
+
+    @Override
+    public void tearDown() throws Exception {
+        Locale.setDefault(originalLocale);
     }
 
     public void testGetStringNull() {
@@ -35,8 +47,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
         assertEquals("", sut.getStringAt(position, DATE_TIME_COLUMN_INDEX));
         assertEquals("", sut.getStringAt(position, DATE_COLUMN_INDEX));
         assertEquals("", sut.getStringAt(position, TIME_COLUMN_INDEX));
-        // TODO - @Christian: soll das wirklich so sein ?
-        assertNull(sut.getStringAt(position, DESCRIPTION_COLUMN_INDEX));
+        assertEquals("", sut.getStringAt(position, DESCRIPTION_COLUMN_INDEX));
         assertEquals("", sut.getStringAt(position, LONGITUDE_COLUMN_INDEX));
         assertEquals("", sut.getStringAt(position, LATITUDE_COLUMN_INDEX));
         assertEquals("", sut.getStringAt(position, ELEVATION_COLUMN_INDEX));
@@ -210,8 +221,6 @@ public class PositionsModelCallbackImplTest extends TestCase {
 
         runSetTimeTestStep(DATE_COLUMN_INDEX, null, null);
         runSetTimeTestStep(DATE_COLUMN_INDEX, "", null);
-        // TODO
-//        runSetTimeTestStep(DATE_COLUMN_INDEX, "abc", null);
 
         // Variante, wenn noch kein Wert gesetzt ist ==> dann wird 00:00:00 in der Eingabe-Zeitzone angenommen
         when(position.getTime()).thenReturn(null);
@@ -256,8 +265,6 @@ public class PositionsModelCallbackImplTest extends TestCase {
 
         runSetTimeTestStep(DATE_COLUMN_INDEX, null, null);
         runSetTimeTestStep(DATE_COLUMN_INDEX, "", null);
-        // TODO
-//        runSetTimeTestStep(DATE_COLUMN_INDEX, "abc", null);
 
         // Variante, wenn noch kein Wert gesetzt ist ==> dann wird 00:00:00 in der Eingabe-Zeitzone angenommen
         when(position.getTime()).thenReturn(null);
@@ -303,10 +310,8 @@ public class PositionsModelCallbackImplTest extends TestCase {
 
         runSetTimeTestStep(TIME_COLUMN_INDEX, null, null);
         runSetTimeTestStep(TIME_COLUMN_INDEX, "", null);
-        // TODO
-//        runSetTimeTestStep(TIME_COLUMN_INDEX, "abc", null);
 
-        // Variante, wenn noch kein Wert gesetzt ist ==> dann wird 1.1.1970 als Datum genommen (TODO @Christin oder sollte man da das aktuelle Datum nehmen ? )
+        // Variante, wenn noch kein Wert gesetzt ist ==> dann wird 1.1.1970 als Datum genommen
         when(position.getTime()).thenReturn(null);
 
         runSetTimeTestStep(TIME_COLUMN_INDEX, "1:2:3", cal(1970, 1, 1, 1, 2, 3, ZONE_UTC));
@@ -344,10 +349,8 @@ public class PositionsModelCallbackImplTest extends TestCase {
 
         runSetTimeTestStep(TIME_COLUMN_INDEX, null, null);
         runSetTimeTestStep(TIME_COLUMN_INDEX, "", null);
-        // TODO
-//        runSetTimeTestStep(TIME_COLUMN_INDEX, "abc", null);
 
-        // Variante, wenn noch kein Wert gesetzt ist ==> dann wird 1.1.1970 als Datum genommen (TODO @Christin oder sollte man da das aktuelle Datum nehmen ? )
+        // Variante, wenn noch kein Wert gesetzt ist ==> dann wird 1.1.1970 als Datum genommen
         when(position.getTime()).thenReturn(null);
 
         runSetTimeTestStep(TIME_COLUMN_INDEX, "1:2:3", cal(1970, 1, 1, 0, 2, 3, ZONE_UTC));
@@ -384,9 +387,6 @@ public class PositionsModelCallbackImplTest extends TestCase {
 
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, null, null);
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "", null);
-
-        // TODO
-//        runSetTimeTestStep(TIME_COLUMN_INDEX, "abc", null);
 
         // Variante, wenn noch kein Wert gesetzt ist
         when(position.getTime()).thenReturn(null);
@@ -437,9 +437,6 @@ public class PositionsModelCallbackImplTest extends TestCase {
 
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, null, null);
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "", null);
-
-        // TODO
-//        runSetTimeTestStep(TIME_COLUMN_INDEX, "abc", null);
 
         // Variante, wenn noch kein Wert gesetzt ist
         when(position.getTime()).thenReturn(null);

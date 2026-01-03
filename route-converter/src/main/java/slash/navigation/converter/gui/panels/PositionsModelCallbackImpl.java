@@ -41,7 +41,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static java.util.Calendar.*;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
@@ -67,7 +66,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     public String getStringAt(NavigationPosition position, int columnIndex) {
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX -> {
-                return position.getDescription();
+                return position.getDescription() != null ? position.getDescription() : "";
             }
             case DATE_TIME_COLUMN_INDEX -> {
                 return extractDateTime(position);
