@@ -45,8 +45,7 @@ import static java.util.Calendar.*;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
-import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
@@ -207,7 +206,9 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
 
     private CompactCalendar parseDateTime(String stringValue) throws ParseException {
         Date parsed = getDateTimeFormat().parse(stringValue);
-        return fromDate(parsed);
+        Calendar calendar = Calendar.getInstance(timeZoneModel.getTimeZone());
+        calendar.setTime(parsed);
+        return fromMillisAndTimeZone(calendar.getTimeInMillis(), "UTC");
     }
 
     private CompactCalendar parseDateTime(Object objectValue, String stringValue) {
@@ -234,25 +235,17 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return time != null ? formatDate(time) : "";
     }
 
-    private CompactCalendar parseDate(String stringValue) throws ParseException {
-        Date parsed = getDateFormat().parse(stringValue);
-        return fromDate(parsed);
-    }
-
     private CompactCalendar parseDate(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                CompactCalendar result = parseDate(stringValue);
-                if(positionTime != null) {
-                    Calendar calendar = positionTime.getCalendar();
-                    calendar.set(DAY_OF_MONTH, result.getCalendar().get(DAY_OF_MONTH));
-                    calendar.set(MONTH, result.getCalendar().get(MONTH));
-                    calendar.set(YEAR, result.getCalendar().get(YEAR));
-                    result = fromCalendar(calendar);
+                if (positionTime != null) {
+                    return parseDateTime(stringValue+", "+formatTime(positionTime));
                 }
-                return result;
+                else {
+                    return parseDateTime(stringValue+", 0:0:0");
+                }
             } catch (ParseException e) {
                 handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
             }
@@ -271,25 +264,17 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return time != null ? formatTime(time) : "";
     }
 
-    private CompactCalendar parseTime(String stringValue) throws ParseException {
-        Date parsed = getTimeFormat().parse(stringValue);
-        return fromDate(parsed);
-    }
-
     private CompactCalendar parseTime(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                CompactCalendar result = parseTime(stringValue);
                 if (positionTime != null) {
-                    Calendar calendar = positionTime.getCalendar();
-                    calendar.set(HOUR_OF_DAY, result.getCalendar().get(HOUR_OF_DAY));
-                    calendar.set(MINUTE, result.getCalendar().get(MINUTE));
-                    calendar.set(SECOND, result.getCalendar().get(SECOND));
-                    result = fromCalendar(calendar);
+                    return parseDateTime(formatDate(positionTime)+", "+stringValue);
                 }
-                return result;
+                else {
+                    return parseDateTime("1.1.1970, "+stringValue);
+                }
             } catch (ParseException e) {
                 handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
             }
