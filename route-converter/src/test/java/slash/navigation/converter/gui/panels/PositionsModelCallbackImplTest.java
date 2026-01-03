@@ -1,6 +1,10 @@
 package slash.navigation.converter.gui.panels;
 
 import junit.framework.TestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
@@ -24,10 +28,12 @@ public class PositionsModelCallbackImplTest extends TestCase {
     private NavigationPosition position;
     private Locale originalLocale;
 
+    @Before
     @Override
     public void setUp() {
         originalLocale = Locale.getDefault();
         Locale.setDefault(Locale.GERMAN);
+        Transfer.reinit();
 
         timeZoneModel = new TimeZoneModel("unittest."+getClass().getSimpleName(), ZONE_UTC);
 
@@ -36,11 +42,14 @@ public class PositionsModelCallbackImplTest extends TestCase {
 
     }
 
+    @After
     @Override
     public void tearDown() {
         Locale.setDefault(originalLocale);
+        Transfer.reinit();
     }
 
+    @Test
     public void testGetStringNull() {
         timeZoneModel.setTimeZone(ZONE_UTC);
         NavigationPosition position = new GpxPosition(null, null, null, null, null, null);
@@ -54,6 +63,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
         assertEquals("", sut.getStringAt(position, SPEED_COLUMN_INDEX));
     }
 
+    @Test
     public void testGetStringUTC() {
         timeZoneModel.setTimeZone(ZONE_UTC);
         NavigationPosition position = createTestPosition(2025, 3, 2, 21, 34, 56);
@@ -78,6 +88,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
         assertEquals("00:00:00", sut.getStringAt(position, TIME_COLUMN_INDEX));
     }
 
+    @Test
     public void testGetStringBerlin() {
         timeZoneModel.setTimeZone(ZONE_BERLIN);
 
@@ -102,6 +113,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
         assertEquals("01:00:00", sut.getStringAt(position, TIME_COLUMN_INDEX));
     }
 
+    @Test
     public void testSetSameValueUTC() {
         // If you only click in the cell and don't change anything, the value should not change.
         timeZoneModel.setTimeZone(ZONE_UTC);
@@ -133,6 +145,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
 //        assertEquals(referencePosition, position);
     }
 
+    @Test
     public void testSetSameValueUTC_1945() {
         // If you only click in the cell and don't change anything, the value should not change.
         timeZoneModel.setTimeZone(ZONE_UTC);
@@ -149,6 +162,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
         assertEquals(referencePosition, position);
     }
 
+    @Test
     public void testSetSameValueBerlin() {
         // If you only click in the cell and don't change anything, the value should not change.
         timeZoneModel.setTimeZone(ZONE_BERLIN);
@@ -180,6 +194,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
 //        assertEquals(referencePosition, position);
     }
 
+    @Test
     public void testSetSameValueBERLIN_1945() {
         // If you only click in the cell and don't change anything, the value should not change.
         timeZoneModel.setTimeZone(ZONE_BERLIN);
@@ -197,6 +212,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
     }
 
 
+    @Test
     public void testSetDateUTC() {
         timeZoneModel.setTimeZone(ZONE_UTC);
         when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
@@ -240,6 +256,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
         runSetTimeTestStep(DATE_COLUMN_INDEX, "1.1.45", cal(2045, 1, 1, 0, 0, 0));
     }
 
+    @Test
     public void testSetDateBerlin() {
         timeZoneModel.setTimeZone(ZONE_BERLIN);
         when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
@@ -287,7 +304,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
         runSetTimeTestStep(DATE_COLUMN_INDEX, "2.1.45", cal(2045, 1, 1, 23, 0, 0));
     }
 
-
+    @Test
     public void testSetTimeUtc() {
         timeZoneModel.setTimeZone(ZONE_UTC);
         when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
@@ -320,6 +337,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
         runSetTimeTestStep(TIME_COLUMN_INDEX, "15:65:78", cal(1970, 1, 1, 16, 6, 18));
     }
 
+    @Test
     public void testSetTimeBerlin() {
         timeZoneModel.setTimeZone(ZONE_BERLIN);
         when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
@@ -364,6 +382,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
         runSetTimeTestStep(TIME_COLUMN_INDEX, "15:65:78", cal(1970, 1, 1, 15, 6, 18));
     }
 
+    @Test
     public void testSetDateTimeUtc() {
         timeZoneModel.setTimeZone(ZONE_UTC);
 
@@ -412,6 +431,7 @@ public class PositionsModelCallbackImplTest extends TestCase {
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 15:65:78", cal(2025, 8, 1, 16, 6, 18));
     }
 
+    @Test
     public void testSetDateTimeBerlin() {
         timeZoneModel.setTimeZone(ZONE_BERLIN);
 

@@ -376,12 +376,22 @@ public class Transfer {
         return builder.toString();
     }
 
-    private static final DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
+    private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
     private static String currentDateTimeTimeZone = "";
-    private static final DateFormat dateFormat = DateFormat.getDateInstance(SHORT);
+    private static DateFormat dateFormat = DateFormat.getDateInstance(SHORT);
     private static String currentDateTimeZone = "";
-    private static final DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
+    private static DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
     private static String currentTimeTimeZone = "";
+
+    // TestOnly
+    public static void reinit() {
+        dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
+        currentDateTimeTimeZone = "";
+        dateFormat = DateFormat.getDateInstance(SHORT);
+        currentDateTimeZone = "";
+        timeFormat = DateFormat.getTimeInstance(MEDIUM);
+        currentTimeTimeZone = "";
+    }
 
     public synchronized static DateFormat getDateTimeFormat(String timeZonePreference) {
         if (!currentDateTimeTimeZone.equals(timeZonePreference)) {
