@@ -239,17 +239,22 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                if (positionTime != null) {
-                    return parseDateTime(stringValue+", "+formatTime(positionTime));
-                }
-                else {
-                    return parseDateTime(stringValue+", 0:0:0");
-                }
+                return parseDateTime(stringValue+", "+formatTime(getReferenceTime(positionTime)));
             } catch (ParseException e) {
                 handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
             }
         }
         return null;
+    }
+
+    private CompactCalendar getReferenceTime(CompactCalendar positionTime) {
+        if (positionTime != null) {
+            return positionTime;
+        }
+        Calendar calendar = Calendar.getInstance(timeZoneModel.getTimeZone());
+        calendar.clear(); // prevents "remnants" such as milliseconds
+        calendar.set(1970, Calendar.JANUARY, 1, 0, 0, 0);
+        return fromMillisAndTimeZone(calendar.getTimeInMillis(), "UTC");
     }
 
     private String formatTime(CompactCalendar time) {
@@ -268,12 +273,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                if (positionTime != null) {
-                    return parseDateTime(formatDate(positionTime)+", "+stringValue);
-                }
-                else {
-                    return parseDateTime("1.1.1970, "+stringValue);
-                }
+                return parseDateTime(formatDate(getReferenceTime(positionTime))+", "+stringValue);
             } catch (ParseException e) {
                 handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
             }
