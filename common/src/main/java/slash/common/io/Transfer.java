@@ -378,13 +378,13 @@ public class Transfer {
 
     private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
     private static String currentDateTimeTimeZone = "";
+    private static Locale currentLocale;
     private static DateFormat dateFormat = DateFormat.getDateInstance(SHORT);
     private static String currentDateTimeZone = "";
     private static DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
     private static String currentTimeTimeZone = "";
 
-    // TestOnly
-    public static void reinit() {
+    private static void reInitDateFormat() {
         dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
         currentDateTimeTimeZone = "";
         dateFormat = DateFormat.getDateInstance(SHORT);
@@ -393,7 +393,16 @@ public class Transfer {
         currentTimeTimeZone = "";
     }
 
+    private static void checkDateFormatLocale() {
+        if (Objects.equals(currentLocale, Locale.getDefault())) {
+            reInitDateFormat();
+            currentLocale = Locale.getDefault();
+        }
+    }
+
     public synchronized static DateFormat getDateTimeFormat(String timeZonePreference) {
+        checkDateFormatLocale();
+
         if (!currentDateTimeTimeZone.equals(timeZonePreference)) {
             dateTimeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
             currentDateTimeTimeZone = timeZonePreference;
@@ -402,6 +411,8 @@ public class Transfer {
     }
 
     public synchronized static DateFormat getDateFormat(String timeZonePreference) {
+        checkDateFormatLocale();
+
         if (!currentDateTimeZone.equals(timeZonePreference)) {
             dateFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
             currentDateTimeZone = timeZonePreference;
@@ -410,6 +421,8 @@ public class Transfer {
     }
 
     public synchronized static DateFormat getTimeFormat(String timeZonePreference) {
+        checkDateFormatLocale();
+
         if (!currentTimeTimeZone.equals(timeZonePreference)) {
             timeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
             currentTimeTimeZone = timeZonePreference;

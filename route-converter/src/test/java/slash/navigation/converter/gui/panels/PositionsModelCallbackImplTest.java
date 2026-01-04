@@ -33,7 +33,6 @@ public class PositionsModelCallbackImplTest extends TestCase {
     public void setUp() {
         originalLocale = Locale.getDefault();
         Locale.setDefault(Locale.GERMAN);
-        Transfer.reinit();
 
         timeZoneModel = new TimeZoneModel("unittest."+getClass().getSimpleName(), ZONE_UTC);
 
@@ -46,7 +45,6 @@ public class PositionsModelCallbackImplTest extends TestCase {
     @Override
     public void tearDown() {
         Locale.setDefault(originalLocale);
-        Transfer.reinit();
     }
 
     @Test
