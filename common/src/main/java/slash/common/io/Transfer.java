@@ -378,11 +378,11 @@ public class Transfer {
 
     private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
     private static String currentDateTimeTimeZone = "";
-    private static Locale currentLocale;
     private static DateFormat dateFormat = DateFormat.getDateInstance(SHORT);
     private static String currentDateTimeZone = "";
     private static DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
     private static String currentTimeTimeZone = "";
+    private static Locale currentLocale;
 
     private static void reInitDateFormat() {
         dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
@@ -394,7 +394,7 @@ public class Transfer {
     }
 
     private static void checkDateFormatLocale() {
-        if (Objects.equals(currentLocale, Locale.getDefault())) {
+        if (! Objects.equals(currentLocale, Locale.getDefault())) {
             reInitDateFormat();
             currentLocale = Locale.getDefault();
         }
