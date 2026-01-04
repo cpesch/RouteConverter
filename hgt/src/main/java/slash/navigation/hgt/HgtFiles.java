@@ -134,7 +134,7 @@ public class HgtFiles implements ElevationService {
     public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload) {
         Set<String> keys = new HashSet<>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            keys.add(createFileKey(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
+            keys.add(createFileKey(longitudeAndLatitude.longitude(), longitudeAndLatitude.latitude()));
         }
 
         Collection<Downloadable> downloadables = new HashSet<>();

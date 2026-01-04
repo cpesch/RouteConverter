@@ -25,7 +25,7 @@ class LatitudeAndLongitudeMapDescriptor implements MapDescriptor {
     private BoundingBox createBoundingBox(List<LongitudeAndLatitude> longitudeAndLatitudes) {
         List<NavigationPosition> positions = new ArrayList<>();
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            positions.add(new SimpleNavigationPosition(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
+            positions.add(new SimpleNavigationPosition(longitudeAndLatitude.longitude(), longitudeAndLatitude.latitude()));
         }
         return new BoundingBox(positions);
     }

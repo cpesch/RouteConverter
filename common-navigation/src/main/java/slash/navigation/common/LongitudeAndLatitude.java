@@ -26,31 +26,17 @@ package slash.navigation.common;
  * @author Christian Pesch
  */
 
-public class LongitudeAndLatitude {
-    public final double longitude, latitude;
-
-    public LongitudeAndLatitude(double longitude, double latitude) {
-        this.longitude = longitude;
-        this.latitude = latitude;
-    }
-
+public record LongitudeAndLatitude(double longitude, double latitude) {
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        final LongitudeAndLatitude that = (LongitudeAndLatitude) o;
-
-        return Double.compare(that.latitude, latitude) == 0 &&
-                Double.compare(that.longitude, longitude) == 0;
+        LongitudeAndLatitude that = (LongitudeAndLatitude) o;
+        return Double.compare(latitude, that.latitude) == 0 && Double.compare(longitude, that.longitude) == 0;
     }
 
     public int hashCode() {
-        int result;
-        long temp;
-        temp = longitude != +0.0d ? Double.doubleToLongBits(longitude) : 0L;
-        result = (int) (temp ^ (temp >>> 32));
-        temp = latitude != +0.0d ? Double.doubleToLongBits(latitude) : 0L;
-        result = 29 * result + (int) (temp ^ (temp >>> 32));
+        int result = Double.hashCode(longitude);
+        result = 31 * result + Double.hashCode(latitude);
         return result;
     }
 }

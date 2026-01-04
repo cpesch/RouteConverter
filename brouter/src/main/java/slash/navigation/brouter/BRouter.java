@@ -439,7 +439,7 @@ public class BRouter extends BaseRoutingService {
         Collection<String> uris = new HashSet<>();
 
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
-            uris.addAll(createFileKeys(longitudeAndLatitude.longitude, longitudeAndLatitude.latitude));
+            uris.addAll(createFileKeys(longitudeAndLatitude.longitude(), longitudeAndLatitude.latitude()));
         }
 
         Collection<Downloadable> segments = collectDownloadables(uris);

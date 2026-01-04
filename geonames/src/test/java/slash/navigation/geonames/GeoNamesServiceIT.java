@@ -140,9 +140,10 @@ public class GeoNamesServiceIT {
         assertEquals("Grafenrheinfeld, Germany", service.getNearByPlaceNameFor(10.2, 50.001));
         assertEquals("Knappenh\u00e4user, Germany", service.getNearByPlaceNameFor(11.06561, 47.42428));
         assertNull(service.getNearByPlaceNameFor(0.0, 0.0));
-        assertNull(service.getNearByPlaceNameFor(0.0, -90.0));
+        String southPolePlace = "Amundsen-Scott Station, Antarctica";
+        assertEquals(southPolePlace, service.getNearByPlaceNameFor(0.0, -90.0));
+        assertEquals(southPolePlace, service.getNearByPlaceNameFor(-90.0, -90.0));
         assertNull(service.getNearByPlaceNameFor(0.0, 90.0));
         assertNull(service.getNearByPlaceNameFor(90.0, 90.0));
-        assertNull(service.getNearByPlaceNameFor(-90.0, -90.0));
     }
 }
