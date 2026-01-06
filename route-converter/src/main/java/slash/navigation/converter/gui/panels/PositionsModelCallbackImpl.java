@@ -36,15 +36,15 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static java.util.Calendar.*;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
-import static slash.common.type.CompactCalendar.fromCalendar;
-import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
@@ -66,7 +66,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     public String getStringAt(NavigationPosition position, int columnIndex) {
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX -> {
-                return position.getDescription();
+                return position.getDescription() != null ? position.getDescription() : "";
             }
             case DATE_TIME_COLUMN_INDEX -> {
                 return extractDateTime(position);
@@ -94,6 +94,19 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     }
 
     public void setValueAt(NavigationPosition position, int columnIndex, Object value) {
+
+        // If the same string is set that `getStringAt` returns, then do not change anything.
+        // ==> It's likely that only in the table cell was clicked and nothing was changed.
+        try {
+            if (Objects.equals(getStringAt(position, columnIndex), value)) {
+                return;
+            }
+        }
+        catch(IllegalArgumentException e) {
+            // This should only happen if an illegal column is specified. However, the set method ignores this and should not throw an exception in that case.
+            log.log(Level.WARNING, e.getMessage(), e);
+        }
+
         String string = value != null ? trim(value.toString()) : null;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX -> position.setDescription(string);
@@ -192,7 +205,9 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
 
     private CompactCalendar parseDateTime(String stringValue) throws ParseException {
         Date parsed = getDateTimeFormat().parse(stringValue);
-        return fromDate(parsed);
+        Calendar calendar = Calendar.getInstance(timeZoneModel.getTimeZone());
+        calendar.setTime(parsed);
+        return fromMillisAndTimeZone(calendar.getTimeInMillis(), "UTC");
     }
 
     private CompactCalendar parseDateTime(Object objectValue, String stringValue) {
@@ -219,30 +234,27 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return time != null ? formatDate(time) : "";
     }
 
-    private CompactCalendar parseDate(String stringValue) throws ParseException {
-        Date parsed = getDateFormat().parse(stringValue);
-        return fromDate(parsed);
-    }
-
     private CompactCalendar parseDate(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                CompactCalendar result = parseDate(stringValue);
-                if(positionTime != null) {
-                    Calendar calendar = positionTime.getCalendar();
-                    calendar.set(DAY_OF_MONTH, result.getCalendar().get(DAY_OF_MONTH));
-                    calendar.set(MONTH, result.getCalendar().get(MONTH));
-                    calendar.set(YEAR, result.getCalendar().get(YEAR));
-                    result = fromCalendar(calendar);
-                }
-                return result;
+                return parseDateTime(stringValue+", "+formatTime(getReferenceTime(positionTime)));
             } catch (ParseException e) {
                 handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
             }
         }
         return null;
+    }
+
+    private CompactCalendar getReferenceTime(CompactCalendar positionTime) {
+        if (positionTime != null) {
+            return positionTime;
+        }
+        Calendar calendar = Calendar.getInstance(timeZoneModel.getTimeZone());
+        calendar.clear(); // prevents "remnants" such as milliseconds
+        calendar.set(1970, Calendar.JANUARY, 1, 0, 0, 0);
+        return fromMillisAndTimeZone(calendar.getTimeInMillis(), "UTC");
     }
 
     private String formatTime(CompactCalendar time) {
@@ -256,25 +268,12 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return time != null ? formatTime(time) : "";
     }
 
-    private CompactCalendar parseTime(String stringValue) throws ParseException {
-        Date parsed = getTimeFormat().parse(stringValue);
-        return fromDate(parsed);
-    }
-
     private CompactCalendar parseTime(Object objectValue, String stringValue, CompactCalendar positionTime) {
         if (objectValue == null || objectValue instanceof CompactCalendar) {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                CompactCalendar result = parseTime(stringValue);
-                if (positionTime != null) {
-                    Calendar calendar = positionTime.getCalendar();
-                    calendar.set(HOUR_OF_DAY, result.getCalendar().get(HOUR_OF_DAY));
-                    calendar.set(MINUTE, result.getCalendar().get(MINUTE));
-                    calendar.set(SECOND, result.getCalendar().get(SECOND));
-                    result = fromCalendar(calendar);
-                }
-                return result;
+                return parseDateTime(formatDate(getReferenceTime(positionTime))+", "+stringValue);
             } catch (ParseException e) {
                 handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
             }
