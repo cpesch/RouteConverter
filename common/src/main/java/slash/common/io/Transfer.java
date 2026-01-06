@@ -25,7 +25,6 @@ import slash.common.type.CompactCalendar;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
@@ -384,7 +383,7 @@ public class Transfer {
     private static String currentTimeTimeZone = "";
     private static Locale currentLocale;
 
-    private static void reInitDateFormat() {
+    private static void reinitializeDateFormat() {
         dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
         currentDateTimeTimeZone = "";
         dateFormat = DateFormat.getDateInstance(SHORT);
@@ -394,8 +393,8 @@ public class Transfer {
     }
 
     private static void checkDateFormatLocale() {
-        if (! Objects.equals(currentLocale, Locale.getDefault())) {
-            reInitDateFormat();
+        if (!Objects.equals(currentLocale, Locale.getDefault())) {
+            reinitializeDateFormat();
             currentLocale = Locale.getDefault();
         }
     }
@@ -447,7 +446,7 @@ public class Transfer {
     }
 
     public static XMLGregorianCalendar formatXMLTime(CompactCalendar time) {
-       return formatXMLTime(time, preferences.getBoolean(REDUCE_TIME_TO_SECOND_PRECISION_PREFERENCE, false));
+        return formatXMLTime(time, preferences.getBoolean(REDUCE_TIME_TO_SECOND_PRECISION_PREFERENCE, false));
     }
 
     public static XMLGregorianCalendar formatXMLTime(CompactCalendar time, boolean reduceTimeToSecondPrecision) {
@@ -464,7 +463,6 @@ public class Transfer {
         }
     }
 
-    @SuppressWarnings("MagicConstant")
     private static GregorianCalendar toUTC(Calendar calendar) {
         GregorianCalendar gregorianCalendar = new GregorianCalendar(UTC, Locale.getDefault());
         gregorianCalendar.clear();
