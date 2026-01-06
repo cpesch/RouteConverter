@@ -37,14 +37,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static java.util.Objects.requireNonNullElse;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.io.Transfer.trim;
-import static slash.common.type.CompactCalendar.*;
+import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
@@ -66,7 +66,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     public String getStringAt(NavigationPosition position, int columnIndex) {
         switch (columnIndex) {
             case DESCRIPTION_COLUMN_INDEX -> {
-                return position.getDescription() != null ? position.getDescription() : "";
+                return requireNonNullElse(position.getDescription(), "");
             }
             case DATE_TIME_COLUMN_INDEX -> {
                 return extractDateTime(position);
@@ -94,7 +94,6 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     }
 
     public void setValueAt(NavigationPosition position, int columnIndex, Object value) {
-
         // If the same string is set that `getStringAt` returns, then do not change anything.
         // ==> It's likely that only in the table cell was clicked and nothing was changed.
         try {
@@ -103,8 +102,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             }
         }
         catch(IllegalArgumentException e) {
-            // This should only happen if an illegal column is specified. However, the set method ignores this and should not throw an exception in that case.
-            log.log(Level.WARNING, e.getMessage(), e);
+            // intentionally left empty
         }
 
         String string = value != null ? trim(value.toString()) : null;

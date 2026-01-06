@@ -1,3 +1,23 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+
 package slash.navigation.converter.gui.panels;
 
 import junit.framework.TestCase;
@@ -17,9 +37,9 @@ import java.util.TimeZone;
 
 import static org.mockito.Mockito.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static org.junit.Assert.*;
 
-public class PositionsModelCallbackImplTest extends TestCase {
-
+public class PositionsModelCallbackImplTest {
     private static final TimeZone ZONE_UTC = TimeZone.getTimeZone("UTC");
     private static final TimeZone ZONE_BERLIN = TimeZone.getTimeZone("Europe/Berlin");
 
@@ -29,7 +49,6 @@ public class PositionsModelCallbackImplTest extends TestCase {
     private Locale originalLocale;
 
     @Before
-    @Override
     public void setUp() {
         originalLocale = Locale.getDefault();
         Locale.setDefault(Locale.GERMAN);
@@ -38,11 +57,9 @@ public class PositionsModelCallbackImplTest extends TestCase {
 
         sut = new PositionsModelCallbackImpl(timeZoneModel);
         position = mock(NavigationPosition.class);
-
     }
 
     @After
-    @Override
     public void tearDown() {
         Locale.setDefault(originalLocale);
     }
