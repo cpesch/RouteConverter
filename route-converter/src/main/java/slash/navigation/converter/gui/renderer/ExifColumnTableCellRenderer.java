@@ -87,7 +87,7 @@ public class ExifColumnTableCellRenderer extends AlternatingColorTableCellRender
         String exposure = position.getExposure() != null ? position.getExposure().numerator + "/" + position.getExposure().divisor : "?";
         String text = MessageFormat.format(RouteConverter.getBundle().getString("exif-data"),
                 formatDate(position.getTime(), UTC_TIMEZONE_ID),
-                formatTime(position.getTime(), UTC_TIMEZONE_ID),
+                formatTime(position.getTime()),
                 formatString(position.getMake()), formatString(position.getModel()),
                 formatString(position.getWidth()), formatString(position.getHeight()),
                 formatString(position.getfNumber()), exposure, formatString(position.getFocal()), getFlash(position.getFlash()),

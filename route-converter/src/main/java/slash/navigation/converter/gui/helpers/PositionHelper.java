@@ -167,16 +167,15 @@ public class PositionHelper {
 
     // time
 
-    public static String formatTime(CompactCalendar time, String timeZone) {
+    public static String formatTime(CompactCalendar time) {
         if(time == null)
             return "?";
-        return Transfer.getTimeFormat(timeZone).format(time.getTime());
+        long totalSeconds = time.getTimeInMillis() / 1000;
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
-
-    public static String formatTime(CompactCalendar time) {
-        return formatTime(time, RouteConverter.getInstance().getTimeZone().getTimeZoneId());
-    }
-
 
     private static long toNextUnit(Long size, long nextUnit) {
         return round(size / (double) nextUnit + 0.5);

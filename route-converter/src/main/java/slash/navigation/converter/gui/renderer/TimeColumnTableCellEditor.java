@@ -37,7 +37,7 @@ public class TimeColumnTableCellEditor extends GenericColumnTableCellEditor {
 
     protected void formatLabel(JLabel label, Object value, boolean firstRow, boolean lastRow) {
         if(value instanceof CompactCalendar time) {
-            label.setText(formatTime(time, "UTC"));
+            label.setText(formatTime(time));
         } else if(value instanceof NavigationPosition position) {
             formatCell(label, position);
         } else
