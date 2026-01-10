@@ -60,11 +60,11 @@ public class Flightradar24Format extends CsvFormat {
     protected LinkedHashMap<String, String> transformRead(LinkedHashMap<String, String> rowAsMap) {
         LinkedHashMap<String, String> result = new LinkedHashMap<>(rowAsMap);
 
-        result.put(ColumnType.Time.name(), trim(rowAsMap.remove(UTC_COLUMN)));
-        rowAsMap.remove(TIMESTAMP_COLUMN);
-        result.put(Description.name(), trim(rowAsMap.remove(CALLSIGN_COLUMN)));
+        result.put(Time.name(), trim(result.remove(UTC_COLUMN)));
+        result.remove(TIMESTAMP_COLUMN);
+        result.put(Description.name(), trim(result.remove(CALLSIGN_COLUMN)));
 
-        String position = rowAsMap.remove(POSITION_COLUMN);
+        String position = result.remove(POSITION_COLUMN);
         if (position != null && !position.isEmpty()) {
             String[] parts = position.split(",");
             if (parts.length == 2) {
@@ -73,15 +73,15 @@ public class Flightradar24Format extends CsvFormat {
             }
         }
 
-        Double altitude = parseDouble(rowAsMap.remove(ALTITUDE_COLUMN));
+        Double altitude = parseDouble(result.remove(ALTITUDE_COLUMN));
         if (altitude != null)
             result.put(Elevation.name(), formatDoubleAsString(feetToMeters(altitude), 2));
 
-        Double speed = parseDouble(rowAsMap.remove(Speed.name()));
+        Double speed = parseDouble(result.remove(Speed.name()));
         if (speed != null)
             result.put(Speed.name(), formatDoubleAsString(nauticMilesToKiloMeter(speed), 2));
 
-        result.put(Heading.name(), trim(rowAsMap.remove(DIRECTION_COLUMN)));
+        result.put(Heading.name(), trim(result.remove(DIRECTION_COLUMN)));
 
         return result;
     }
