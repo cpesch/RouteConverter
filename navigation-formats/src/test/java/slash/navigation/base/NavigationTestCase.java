@@ -32,6 +32,7 @@ import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.csv.CsvFormat;
+import slash.navigation.csv.Flightradar24Format;
 import slash.navigation.excel.ExcelFormat;
 import slash.navigation.fit.FitFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
@@ -753,9 +754,8 @@ public abstract class NavigationTestCase extends TestCase {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
             } else if (sourceFormat instanceof Iblue747Format && targetFormat instanceof ColumbusGpsFormat) {
                 assertEquals("Speed " + index + " does not match", sourcePosition.getSpeed().intValue(), targetPosition.getSpeed().intValue());
-            } else if (sourceFormat instanceof Iblue747Format) {
-                assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
-            } else if (sourceFormat instanceof FitFormat && targetFormat instanceof GpxFormat) {
+            } else if (sourceFormat instanceof Iblue747Format || sourceFormat instanceof Flightradar24Format || targetFormat instanceof Flightradar24Format ||
+                    sourceFormat instanceof FitFormat && targetFormat instanceof GpxFormat) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1), roundFraction(targetPosition.getSpeed(), 1), 1.5);
             } else if (sourceFormat instanceof ColumbusGpsBinaryFormat && targetFormat instanceof GpxFormat) {
                 assertNearBy(roundFraction(sourcePosition.getSpeed(), 1) + 1.0, roundFraction(targetPosition.getSpeed(), 1) + 1.0, 5.0);

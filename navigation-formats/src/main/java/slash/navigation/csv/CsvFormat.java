@@ -70,6 +70,14 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
 
     protected abstract char getColumnSeparator();
 
+    protected LinkedHashMap<String, String> transformRead(LinkedHashMap<String, String> rowAsMap) {
+        return rowAsMap;
+    }
+
+    protected Map<String, String> transformWrite(Map<String, String> rowAsMap) {
+        return rowAsMap;
+    }
+
     public void read(InputStream source, ParserContext<CsvRoute> context) throws IOException {
         // +1 since CsvDecoder is reading until the buffer is completely processed plus one to allow for #reset()
         source.mark(source.available() + 1);
@@ -113,7 +121,7 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
                     log.warning(format("Found garbage for format %s: %s", getName(), rowAsMap));
                     return false;
                 }
-                CsvPosition position = new CsvPosition(rowAsMap);
+                CsvPosition position = new CsvPosition(transformRead(rowAsMap));
 
                 // skip positions without any reasonable data to make format less greedy
                 if (position.getLongitude() == null && position.getLatitude() == null && position.getDescription() == null)
@@ -131,14 +139,12 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
     }
 
     private Set<String> collectKeys(List<CsvPosition> positions) {
-        Set<String> result = new HashSet<>();
+        Set<String> result = new LinkedHashSet<>();
         for (CsvPosition position : positions) {
-            Set<String> keys = position.getRowAsMap().keySet();
+            Set<String> keys = transformWrite(position.getRowAsMap()).keySet();
             result.addAll(keys);
         }
-        String[] array = result.toArray(new String[0]);
-        sort(array);
-        return new LinkedHashSet<>(asList(array));
+        return result;
     }
 
     public void write(CsvRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
@@ -152,7 +158,7 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
         try(SequenceWriter writer = new CsvMapper().writer(schema).writeValues(target)) {
             for (int i = startIndex; i < endIndex; i++) {
                 CsvPosition position = positions.get(i);
-                writer.write(position.getRowAsMap());
+                writer.write(transformWrite(position.getRowAsMap()));
             }
         }
     }

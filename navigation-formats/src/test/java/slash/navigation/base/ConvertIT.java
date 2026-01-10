@@ -33,6 +33,7 @@ import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
 import slash.navigation.csv.CsvCommaFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
+import slash.navigation.csv.Flightradar24Format;
 import slash.navigation.excel.MicrosoftExcel2008Format;
 import slash.navigation.excel.MicrosoftExcel97Format;
 import slash.navigation.fit.FitFormat;
@@ -145,12 +146,14 @@ public class ConvertIT {
     public void testConvertGpxToCsv() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new CsvCommaFormat());
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new CsvSemicolonFormat());
+        convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new Flightradar24Format());
     }
 
     @Test
     public void testConvertCsvToGpx() throws IOException {
         convertRoundtrip(TEST_PATH + "from-excel1.csv", new CsvSemicolonFormat(), new Gpx10Format());
         convertRoundtrip(TEST_PATH + "from-librecalc1.csv", new CsvCommaFormat(), new Gpx11Format());
+        convertRoundtrip(TEST_PATH + "from-flightradar1.csv", new Flightradar24Format(), new Gpx11Format());
     }
 
     @Test

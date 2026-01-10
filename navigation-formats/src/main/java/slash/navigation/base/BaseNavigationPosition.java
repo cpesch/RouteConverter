@@ -169,6 +169,11 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     @SuppressWarnings("UnusedDeclaration")
+    public CsvPosition asFlightradarPosition() {
+        return asCsvPosition();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
     public ExcelPosition asMicrosoftExcelPosition() {
         return new ExcelPosition(getLongitude(), getLatitude(), getElevation(), getSpeed(), getTime(), getDescription());
     }

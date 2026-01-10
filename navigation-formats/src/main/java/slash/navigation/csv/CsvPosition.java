@@ -91,6 +91,10 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
 
     private CompactCalendar getValueAsTime(ColumnType type) {
         String value = getValueAsString(type);
+        return parseCalendar(value);
+    }
+
+    static CompactCalendar parseCalendar(String value) {
         CompactCalendar calendar = parseDate(value, DATE_AND_TIME_FORMAT);
         if (calendar == null)
             calendar = parseDate(value, DATE_AND_TIME_WITHOUT_SECONDS_FORMAT);

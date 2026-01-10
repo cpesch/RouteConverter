@@ -35,10 +35,7 @@ import slash.navigation.copilot.CoPilot6Format;
 import slash.navigation.copilot.CoPilot7Format;
 import slash.navigation.copilot.CoPilot8Format;
 import slash.navigation.copilot.CoPilot9Format;
-import slash.navigation.csv.CsvCommaFormat;
-import slash.navigation.csv.CsvFormat;
-import slash.navigation.csv.CsvRoute;
-import slash.navigation.csv.CsvSemicolonFormat;
+import slash.navigation.csv.*;
 import slash.navigation.excel.ExcelFormat;
 import slash.navigation.excel.ExcelRoute;
 import slash.navigation.excel.MicrosoftExcel2008Format;
@@ -643,6 +640,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof CsvSemicolonFormat)
             return (CsvRoute) this;
         return asCsvFormat(new CsvSemicolonFormat());
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    public CsvRoute asFlightradar24Format() {
+        if (getFormat() instanceof Flightradar24Format)
+            return (CsvRoute) this;
+        return asCsvFormat(new Flightradar24Format());
     }
 
     @SuppressWarnings({"UnusedDeclaration", "rawtypes"})

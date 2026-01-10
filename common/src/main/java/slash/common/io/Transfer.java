@@ -231,6 +231,12 @@ public class Transfer {
         return aDouble.floatValue();
     }
 
+    public static String formatLongAsString(Long aLong) {
+        if (aLong == null)
+            return "0";
+        return Long.toString(aLong);
+    }
+
     public static String formatShortAsString(Short aShort) {
         if (aShort == null)
             return "0";

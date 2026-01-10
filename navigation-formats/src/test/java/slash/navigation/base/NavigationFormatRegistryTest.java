@@ -26,6 +26,7 @@ import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.columbus.GarbleColumbusGpsType1Format;
 import slash.navigation.csv.CsvCommaFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
+import slash.navigation.csv.Flightradar24Format;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.simple.*;
 import slash.navigation.url.GoogleMapsUrlFormat;
@@ -69,6 +70,7 @@ public class NavigationFormatRegistryTest {
         assertEquals(Iblue747Format.class, formats.get(index++).getClass());
         assertEquals(CsvCommaFormat.class, formats.get(index++).getClass());
         assertEquals(CsvSemicolonFormat.class, formats.get(index++).getClass());
+        assertEquals(Flightradar24Format.class, formats.get(index++).getClass());
         assertEquals(GarbleColumbusGpsType1Format.class, formats.get(index++).getClass());
         assertEquals(GarbleHaicomLoggerFormat.class, formats.get(index++).getClass());
         assertEquals(NmnUrlFormat.class, formats.get(index).getClass());
