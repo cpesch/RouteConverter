@@ -106,7 +106,7 @@ public class CsvFormatIT {
     }
 
     @Test
-    public void testReadFlightradap24() throws IOException {
+    public void testReadFlightradar24() throws IOException {
         File source = new File(TEST_PATH + "from-flightradar24.csv");
         ParserResult result = parser.read(source);
         assertNotNull(result);
