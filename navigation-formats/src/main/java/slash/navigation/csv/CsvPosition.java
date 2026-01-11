@@ -26,9 +26,7 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.excel.ExcelPosition;
 import slash.navigation.gpx.GpxPosition;
 
-import java.util.Calendar;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
@@ -107,7 +105,27 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
     }
 
     private void setValueAsString(ColumnType type, String value) {
-        rowAsMap.put(type.name(), value);
+        // Identify the existing columns of this column type.
+        Collection<String> existingColumns = new HashSet<>();
+        if (rowAsMap.containsKey(type.name())) {
+            existingColumns.add(type.name());
+        }
+
+        for (String alternativeName : type.getAlternativeNames()) {
+            if (rowAsMap.containsKey(alternativeName)) {
+                existingColumns.add(alternativeName);
+            }
+        }
+
+        // If columns of this type already exist, the value will be set there. Otherwise, the default type will be used and the value set accordingly.
+        if (existingColumns.isEmpty()) {
+            rowAsMap.put(type.name(), value);
+        }
+        else {
+            // Set all columns of this type to ensure consistent values. Furthermore, the order can change during writing,
+            // and otherwise an old value would still be present when loading the data.
+            existingColumns.forEach(column -> rowAsMap.put(column, value));
+        }
     }
 
     private void setValueAsDouble(ColumnType type, Double value) {
