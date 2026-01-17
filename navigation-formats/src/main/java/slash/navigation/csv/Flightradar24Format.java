@@ -19,19 +19,15 @@
 */
 package slash.navigation.csv;
 
-import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.common.type.ISO8601;
-import slash.navigation.common.UnitConversion;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static java.lang.Math.round;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.common.UnitConversion.*;
-import static slash.navigation.common.UnitConversion.kiloMeterToNauticMiles;
 import static slash.navigation.csv.ColumnType.*;
 import static slash.navigation.csv.CsvPosition.parseCalendar;
 

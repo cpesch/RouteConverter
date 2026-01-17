@@ -33,16 +33,13 @@ import slash.navigation.converter.gui.RouteConverter;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.abs;
 import static java.lang.Math.round;
 import static java.lang.String.format;
 import static slash.common.io.Transfer.roundFraction;
-import static slash.common.type.CompactCalendar.fromDate;
 import static slash.navigation.base.WaypointType.Photo;
 import static slash.navigation.base.WaypointType.Voice;
 import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
