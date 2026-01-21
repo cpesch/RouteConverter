@@ -66,6 +66,7 @@ public abstract class SecondCounter {
             running = false;
             notificationMutex.notifyAll();
         }
+        thread.interrupt();
     }
 
     protected abstract void second(int second);

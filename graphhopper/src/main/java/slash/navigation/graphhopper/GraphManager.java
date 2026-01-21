@@ -19,13 +19,15 @@
 */
 package slash.navigation.graphhopper;
 
-import slash.common.io.Files;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.File;
 
 import java.io.IOException;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 

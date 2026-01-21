@@ -20,8 +20,6 @@
 
 package slash.navigation.gui.actions;
 
-import slash.common.helpers.ExceptionHelper;
-
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
