@@ -6,7 +6,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
-        <version>3.3</version>
+        <version>3.4-SNAPSHOT</version>
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
@@ -84,8 +84,4 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
-
-  <scm>
-    <tag>3.3</tag>
-  </scm>
 </project>

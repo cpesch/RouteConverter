@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>slash.navigation</groupId>
     <artifactId>RouteConverter</artifactId>
-    <version>3.3</version>
+    <version>3.4-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>RouteConverter</name>
     <url>https://www.routeconverter.com</url>
@@ -56,7 +56,7 @@
     <scm>
         <connection>scm:git:https://github.com/cpesch/RouteConverter</connection>
         <developerConnection>scm:git:git@github.com:cpesch/RouteConverter.git</developerConnection>
-        <tag>3.3</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
