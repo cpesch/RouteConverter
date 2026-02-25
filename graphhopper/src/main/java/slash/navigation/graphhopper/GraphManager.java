@@ -62,11 +62,11 @@ public class GraphManager {
         scanRemoteGraphs(asList(kurviger, mapsforge, graphHopper));
     }
 
-    public List<GraphDescriptor> getLocalGraphDescriptors() {
+    List<GraphDescriptor> getLocalGraphDescriptors() {
         return new ArrayList<>(localGraphDescriptors);
     }
 
-    public List<GraphDescriptor> getRemoteGraphDescriptors() {
+    List<GraphDescriptor> getRemoteGraphDescriptors() {
         return new ArrayList<>(remoteGraphDescriptors);
     }
 
@@ -143,7 +143,7 @@ public class GraphManager {
     }
 
     private void scanRemoteGraphs(List<DataSource> dataSources) {
-        for (DataSource dataSource : dataSources.stream().filter(Objects::nonNull).collect(toList())) {
+        for (DataSource dataSource : dataSources.stream().filter(Objects::nonNull).toList()) {
             for (File file : dataSource.getFiles()) {
                 if (getExtension(file.getUri()).equals(DOT_PBF))
                     remoteGraphDescriptors.add(new GraphDescriptor(GraphType.PBF, null, file));

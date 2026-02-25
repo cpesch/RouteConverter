@@ -111,7 +111,7 @@ public class MotoPlanerUrlFormat extends BaseUrlParsingFormat {
     }
 
     String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {
-        StringBuilder buffer = new StringBuilder("http://www.motoplaner.de/#");
+        StringBuilder buffer = new StringBuilder("https://www.motoplaner.de/#");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             String longitude = position.getLongitude() != null ? formatDoubleAsString(position.getLongitude(), 6) : null;

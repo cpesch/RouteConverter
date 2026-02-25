@@ -207,7 +207,7 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     }
 
     String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {
-        StringBuilder buffer = new StringBuilder("http://maps.google.com/maps?ie=UTF8&");
+        StringBuilder buffer = new StringBuilder("https://maps.google.com/maps?ie=UTF8&");
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
             String longitude = position.getLongitude() != null ? formatDoubleAsString(position.getLongitude(), 6) : null;
