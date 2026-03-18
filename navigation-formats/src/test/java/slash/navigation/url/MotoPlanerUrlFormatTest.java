@@ -64,7 +64,7 @@ public class MotoPlanerUrlFormatTest {
         positions.add(asWgs84Position(10.20026067, 53.57662034));
         positions.add(asWgs84Position(10.35735078, 53.59171021));
         positions.add(asWgs84Position(10.45696089, 53.64781001));
-        String expected = "http://www.motoplaner.de/#53.574977,10.025711;1,53.576620,10.200260;1,53.591710,10.357350;1,53.647810,10.456960;1";
+        String expected = "https://www.motoplaner.de/#53.574977,10.025711;1,53.576620,10.200260;1,53.591710,10.357350;1,53.647810,10.456960;1";
         String actual = format.createURL(positions, 0, positions.size());
         assertEquals(expected, actual);
     }
