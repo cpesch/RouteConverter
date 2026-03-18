@@ -41,7 +41,7 @@ public class RouteHelper {
     public static String formatDescription(RouteModel route) {
         String description = "";
         try {
-            description = route.getRoute().getDescription();
+            description = route.route().getDescription();
             if(description == null)
                 formatName(route);
         } catch (Exception e) {
@@ -53,7 +53,7 @@ public class RouteHelper {
     public static String formatCreator(RouteModel route) {
         String creator;
         try {
-            creator = route.getRoute().getCreator();
+            creator = route.route().getCreator();
             if (creator == null)
                 creator = RouteConverter.getBundle().getString("no-creator");
         } catch (Exception e) {

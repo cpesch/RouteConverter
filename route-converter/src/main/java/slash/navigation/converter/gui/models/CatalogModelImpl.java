@@ -225,7 +225,7 @@ public class CatalogModelImpl implements CatalogModel {
             }
 
             public void run() throws IOException {
-                route.getRoute().update(route.getCategory().getCategory(), name);
+                route.route().update(route.category().getCategory(), name);
 
                 invokeLater(new Runnable() {
                     public void run() {
@@ -253,14 +253,14 @@ public class CatalogModelImpl implements CatalogModel {
                 for (int i = 0; i < routes.size(); i++) {
                     RouteModel route = routes.get(i);
                     CategoryTreeNode parent = parents.get(i);
-                    CategoryTreeNode category = route.getCategory();
+                    CategoryTreeNode category = route.category();
 
                     if (category.isLocal() && parent.isRemote())
                         throw new IOException("cannot move local route " + route.getName() + " to remote parent " + parent.getName());
                     if (category.isRemote() && parent.isLocal())
                         throw new IOException("cannot move remote route " + route.getName() + " to local parent " + parent.getName());
 
-                    route.getRoute().update(parent.getCategory(), route.getDescription() != null ? route.getDescription() : route.getName());
+                    route.route().update(parent.getCategory(), route.getDescription() != null ? route.getDescription() : route.getName());
                 }
 
                 invokeLater(new Runnable() {
@@ -284,7 +284,7 @@ public class CatalogModelImpl implements CatalogModel {
 
             public void run() throws IOException {
                 for (final RouteModel route : routes) {
-                    route.getRoute().delete();
+                    route.route().delete();
 
                     invokeLater(new Runnable() {
                         public void run() {

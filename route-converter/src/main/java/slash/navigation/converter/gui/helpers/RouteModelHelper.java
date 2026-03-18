@@ -69,7 +69,7 @@ public class RouteModelHelper {
         // search for RouteModel with same Route (Category might be different due to move)
         RoutesTableModel model = (RoutesTableModel) table.getModel();
         for(int i = 0; i < model.getRowCount(); i++) {
-            if(model.getRoute(i).getRoute().equals(route.getRoute())) {
+            if(model.getRoute(i).route().equals(route.route())) {
                 scrollToPosition(table, i);
                 table.getSelectionModel().addSelectionInterval(i, i);
                 break;
@@ -121,7 +121,7 @@ public class RouteModelHelper {
     public static List<CategoryTreeNode> asParentsFromRoutes(List<RouteModel> routes) {
         List<CategoryTreeNode> parents = new ArrayList<>(routes.size());
         for (RouteModel routeModel : routes) {
-            parents.add(routeModel.getCategory());
+            parents.add(routeModel.category());
         }
         return parents;
     }

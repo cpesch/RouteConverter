@@ -311,7 +311,7 @@ public class BrowsePanel implements PanelInTab {
         RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
         URL url;
         try {
-            String urlString = route.getRoute().getUrl();
+            String urlString = route.route().getUrl();
             if (urlString == null)
                 return;
             url = new URL(urlString);

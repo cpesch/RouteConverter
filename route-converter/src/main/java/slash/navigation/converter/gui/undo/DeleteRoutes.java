@@ -55,14 +55,14 @@ class DeleteRoutes extends AbstractUndoableEdit {
         this.catalogModel = catalogModel;
         this.routes = routes;
         for (RouteModel route : routes) {
-            categories.add(route.getCategory());
+            categories.add(route.category());
             descriptions.add(route.getDescription() != null ? route.getDescription() : route.getName());
             try {
-                files.add(route.getRoute().getUrl());
+                files.add(route.route().getUrl());
             } catch (IOException e) {
                 files.add(null);
             }
-            urls.add(route.getRoute().getHref());
+            urls.add(route.route().getHref());
         }
     }
 

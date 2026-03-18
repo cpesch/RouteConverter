@@ -31,27 +31,12 @@ import java.util.logging.Logger;
  * @author Christian Pesch
  */
 
-public class RouteModel {
+public record RouteModel(CategoryTreeNode category, Route route) {
     private static final Logger log = Logger.getLogger(RouteModel.class.getName());
-    private final CategoryTreeNode category;
-    private final Route route;
-
-    public RouteModel(CategoryTreeNode category, Route route) {
-        this.category = category;
-        this.route = route;
-    }
-
-    public CategoryTreeNode getCategory() {
-        return category;
-    }
-
-    public Route getRoute() {
-        return route;
-    }
 
     public String getName() {
         try {
-            return getRoute().getName();
+            return route().getName();
         } catch (Exception e) {
             log.severe("Cannot get name: " + e);
             return "?";
@@ -60,7 +45,7 @@ public class RouteModel {
 
     public String getDescription() {
         try {
-            return getRoute().getDescription();
+            return route().getDescription();
         } catch (Exception e) {
             log.severe("Cannot get description: " + e);
             return "?";
@@ -69,7 +54,7 @@ public class RouteModel {
 
     public String getUrl() {
         try {
-            return getRoute().getUrl();
+            return route().getUrl();
         } catch (Exception e) {
             log.severe("Cannot get URL: " + e);
             return "?";
@@ -80,11 +65,11 @@ public class RouteModel {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RouteModel that = (RouteModel) o;
-        return Objects.equals(getCategory(), that.getCategory()) &&
-                Objects.equals(getRoute(), that.getRoute());
+        return Objects.equals(category(), that.category()) &&
+                Objects.equals(route(), that.route());
     }
 
     public int hashCode() {
-        return Objects.hash(getCategory(), getRoute());
+        return Objects.hash(category(), route());
     }
 }
