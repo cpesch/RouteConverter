@@ -82,7 +82,7 @@ public class GraphHopperIT {
 
     private TravelMode getTravelMode(String lookupName) {
         for (TravelMode travelMode : hopper.getAvailableTravelModes()) {
-            if (lookupName.equals(travelMode.getName()))
+            if (lookupName.equals(travelMode.name()))
                 return travelMode;
         }
        throw new IllegalArgumentException(lookupName + " not found");
@@ -91,18 +91,18 @@ public class GraphHopperIT {
     @Test
     public void testGetRouteBetweenByCar() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("car"), NO_RESTRICTIONS);
-        assertEquals(Valid, result.getValidity());
-        assertEquals(161.0, result.getPositions().size(), 10);
-        assertEquals(13605.6, result.getDistanceAndTime().getDistance(), 25.0);
-        assertEquals(1068740.0, result.getDistanceAndTime().getTimeInMillis(), 100);
+        assertEquals(Valid, result.validity());
+        assertEquals(161.0, result.positions().size(), 10);
+        assertEquals(13605.6, result.distanceAndTime().distance(), 25.0);
+        assertEquals(1068740.0, result.distanceAndTime().timeInMillis(), 100);
     }
 
     @Test
     public void testGetRouteBetweenByBike() {
         RoutingResult result = hopper.getRouteBetween(FROM, TO, getTravelMode("bike"), NO_RESTRICTIONS);
-        assertEquals(Valid, result.getValidity());
-        assertEquals(161.0, result.getPositions().size(), 10);
-        assertEquals(13608.1, result.getDistanceAndTime().getDistance(), 25.0);
-        assertEquals(2725320.0, result.getDistanceAndTime().getTimeInMillis(), 1000.0);
+        assertEquals(Valid, result.validity());
+        assertEquals(161.0, result.positions().size(), 10);
+        assertEquals(13608.1, result.distanceAndTime().distance(), 25.0);
+        assertEquals(2725320.0, result.distanceAndTime().timeInMillis(), 1000.0);
     }
 }

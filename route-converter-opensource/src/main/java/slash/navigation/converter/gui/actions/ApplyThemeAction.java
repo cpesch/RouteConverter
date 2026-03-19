@@ -23,7 +23,6 @@ package slash.navigation.converter.gui.actions;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.DialogAction;
-import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.maps.mapsforge.LocalTheme;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
@@ -62,7 +61,7 @@ public class ApplyThemeAction extends DialogAction {
             return;
         LocalTheme theme = mapManager.getAvailableThemesModel().getItem(selectedRow);
         mapManager.getAppliedThemeModel().setItem(theme);
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("theme-applied"), theme.getDescription()), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("theme-applied"), theme.description()), getAction());
 
     }
 }

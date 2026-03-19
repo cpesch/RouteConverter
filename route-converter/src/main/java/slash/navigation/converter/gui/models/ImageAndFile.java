@@ -29,20 +29,5 @@ import java.io.File;
  *
  * @author Christian Pesch
  */
-public class ImageAndFile {
-    private final ImageIcon image;
-    private final File file;
-
-    public ImageAndFile(ImageIcon image, File file) {
-        this.image = image;
-        this.file = file;
-    }
-
-    public ImageIcon getImage() {
-        return image;
-    }
-
-    public File getFile() {
-        return file;
-    }
+public record ImageAndFile(ImageIcon image, File file) {
 }

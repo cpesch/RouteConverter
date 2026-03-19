@@ -120,6 +120,7 @@ import static slash.common.io.Transfer.encodeUri;
 import static slash.common.type.HexadecimalNumber.encodeInt;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.BoundingBox.asBoundingBox;
 import static slash.navigation.common.TransformUtil.delta;
 import static slash.navigation.common.TransformUtil.isPositionInChina;
 import static slash.navigation.converter.gui.models.FixMapMode.Yes;
@@ -589,7 +590,7 @@ public class MapsforgeMapView extends BaseMapView {
         try {
             layer = createLayerForMap(map);
         } catch (Exception e) {
-            mapViewCallback.showMapException(map != null ? map.getDescription() : "<no map>", e);
+            mapViewCallback.showMapException(map != null ? map.description() : "<no map>", e);
             return;
         }
 
@@ -639,7 +640,7 @@ public class MapsforgeMapView extends BaseMapView {
             TileServer tileServer = mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().getItem(i);
             TileServerMapSource mapSource = new TileServerMapSource(tileServer);
             mapSource.setAlpha(true);
-            TileDownloadLayer overlay = new TileDownloadLayer(createTileCache(tileServer.getId()), mapView.getModel().mapViewPosition, mapSource, GRAPHIC_FACTORY);
+            TileDownloadLayer overlay = new TileDownloadLayer(createTileCache(tileServer.id()), mapView.getModel().mapViewPosition, mapSource, GRAPHIC_FACTORY);
             overlaysLayer.layers.add(overlay);
             overlay.setDisplayModel(mapView.getModel().displayModel);
             overlay.start();
@@ -705,7 +706,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     public String getMapIdentifier() {
-        return getMapManager().getDisplayedMapModel().getItem().getDescription();
+        return getMapManager().getDisplayedMapModel().getItem().description();
     }
 
     public Throwable getInitializationCause() {
@@ -762,7 +763,7 @@ public class MapsforgeMapView extends BaseMapView {
     public void showAllPositions() {
         List<NavigationPosition> positions = positionsModel.getRoute().getPositions();
         if (!positions.isEmpty()) {
-            BoundingBox both = new BoundingBox(positions);
+            BoundingBox both = asBoundingBox(positions);
             zoomToBounds(both);
             setCenter(both.getCenter(), true);
         }
@@ -861,7 +862,7 @@ public class MapsforgeMapView extends BaseMapView {
     @SuppressWarnings("unchecked")
     private BoundingBox getRouteBoundingBox() {
         BaseRoute route = positionsModel.getRoute();
-        return route != null && !route.getPositions().isEmpty() ? new BoundingBox(route.getPositions()) : null;
+        return route != null && !route.getPositions().isEmpty() ? asBoundingBox(route.getPositions()) : null;
     }
 
     private boolean isGoogleMap(LocalMap map) {
@@ -900,20 +901,20 @@ public class MapsforgeMapView extends BaseMapView {
 
     private List<LatLong> asLatLong(BoundingBox boundingBox) {
         return asLatLong(asList(
-                boundingBox.getNorthEast(),
+                boundingBox.northEast(),
                 boundingBox.getSouthEast(),
-                boundingBox.getSouthWest(),
+                boundingBox.southWest(),
                 boundingBox.getNorthWest(),
-                boundingBox.getNorthEast()
+                boundingBox.northEast()
         ));
     }
 
-    org.mapsforge.core.model.BoundingBox asBoundingBox(BoundingBox boundingBox) {
+    org.mapsforge.core.model.BoundingBox asMapsforgeBoundingBox(BoundingBox boundingBox) {
         return new org.mapsforge.core.model.BoundingBox(
-                boundingBox.getSouthWest().getLatitude(),
-                boundingBox.getSouthWest().getLongitude(),
-                boundingBox.getNorthEast().getLatitude(),
-                boundingBox.getNorthEast().getLongitude()
+                boundingBox.southWest().getLatitude(),
+                boundingBox.southWest().getLongitude(),
+                boundingBox.northEast().getLatitude(),
+                boundingBox.northEast().getLongitude()
         );
     }
 
@@ -927,8 +928,8 @@ public class MapsforgeMapView extends BaseMapView {
 
         // if there is a route and we center and zoom, then use the route bounding box
         if (routeBoundingBox != null) {
-            positions.add(routeBoundingBox.getNorthEast());
-            positions.add(routeBoundingBox.getSouthWest());
+            positions.add(routeBoundingBox.northEast());
+            positions.add(routeBoundingBox.southWest());
         }
 
         // if the map is limited
@@ -936,23 +937,23 @@ public class MapsforgeMapView extends BaseMapView {
 
             // if there is a route
             if (routeBoundingBox != null) {
-                positions.add(routeBoundingBox.getNorthEast());
-                positions.add(routeBoundingBox.getSouthWest());
+                positions.add(routeBoundingBox.northEast());
+                positions.add(routeBoundingBox.southWest());
                 // if the map is limited and doesn't cover the route
                 if (!mapBoundingBox.contains(routeBoundingBox)) {
-                    positions.add(mapBoundingBox.getNorthEast());
-                    positions.add(mapBoundingBox.getSouthWest());
+                    positions.add(mapBoundingBox.northEast());
+                    positions.add(mapBoundingBox.southWest());
                 }
 
                 // if there just a map
             } else {
-                positions.add(mapBoundingBox.getNorthEast());
-                positions.add(mapBoundingBox.getSouthWest());
+                positions.add(mapBoundingBox.northEast());
+                positions.add(mapBoundingBox.southWest());
             }
         }
 
         if (!positions.isEmpty()) {
-            BoundingBox both = new BoundingBox(positions);
+            BoundingBox both = asBoundingBox(positions);
             if (alwaysZoom)
                 zoomToBounds(both);
             setCenter(both.getCenter(), alwaysRecenter);
@@ -979,7 +980,7 @@ public class MapsforgeMapView extends BaseMapView {
         MapViewDimension mapViewDimension = mapView.getModel().mapViewDimension;
         if (map.getType().equals(Mapsforge) && mapViewDimension.getDimension() != null)
             zoomLevelMin = (byte) max(0, zoomForBounds(mapViewDimension.getDimension(),
-                    asBoundingBox(map.getBoundingBox()), getTileSize()) - 3);
+                    asMapsforgeBoundingBox(map.getBoundingBox()), getTileSize()) - 3);
         mapViewPosition.setZoomLevelMin(zoomLevelMin);
 
         // don't zoom below minimum
@@ -1025,7 +1026,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private void zoomToBounds(BoundingBox boundingBox) {
-        zoomToBounds(asBoundingBox(boundingBox));
+        zoomToBounds(asMapsforgeBoundingBox(boundingBox));
     }
 
     public /*for DraggableMarker*/ MapView getMapView() {
@@ -1261,7 +1262,7 @@ public class MapsforgeMapView extends BaseMapView {
         public void run() {
             if (mapViewCallback.isRecenterAfterZooming()) {
                 List<NavigationPosition> selectedPositions = toPositions(selectionUpdater.getPositionWithLayers());
-                NavigationPosition center = !selectedPositions.isEmpty() ? new BoundingBox(selectedPositions).getCenter() : getCenter();
+                NavigationPosition center = !selectedPositions.isEmpty() ? asBoundingBox(selectedPositions).getCenter() : getCenter();
                 mapViewMoverAndZoomer.zoomToPosition(zoomLevelDiff, asLatLong(center));
             } else
                 mapViewMoverAndZoomer.zoomToMousePosition(zoomLevelDiff);
@@ -1328,7 +1329,7 @@ public class MapsforgeMapView extends BaseMapView {
                 addLayers(icons);
                 markers.addAll(icons);
 
-                setCenter(new BoundingBox(positions).getCenter(), true);
+                setCenter(asBoundingBox(positions).getCenter(), true);
             }
         }
     }

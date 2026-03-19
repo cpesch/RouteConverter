@@ -37,7 +37,7 @@ import static slash.navigation.base.WaypointType.*;
 public class PointOfInterestPositionPredicate implements FilterPredicate<NavigationPosition> {
     private final List<WaypointType> POINTS_OF_INTEREST_WAYPOINT_TYPES = asList(Photo, PointOfInterestC, PointOfInterestD, Voice);
 
-    public String getName() {
+    public String name() {
         return "PointOfInterest";
     }
 

@@ -29,22 +29,7 @@ import static java.lang.Double.doubleToLongBits;
  *
  * @author Christian Pesch
  */
-public class ValueAndOrientation {
-    private final double value;
-    private final Orientation orientation;
-
-    public ValueAndOrientation(double value, Orientation orientation) {
-        this.value = value;
-        this.orientation = orientation;
-    }
-
-    public double getValue() {
-        return value;
-    }
-
-    public Orientation getOrientation() {
-        return orientation;
-    }
+public record ValueAndOrientation(double value, Orientation orientation) {
 
     public boolean equals(Object o) {
         if (this == o) return true;

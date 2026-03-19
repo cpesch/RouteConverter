@@ -174,11 +174,11 @@ public class HgtFiles implements ElevationService {
     private Collection<Fragment<Downloadable>> getDownloadablesFor(BoundingBox boundingBox) {
         Collection<Fragment<Downloadable>> result = new HashSet<>();
 
-        double longitude = boundingBox.getSouthWest().getLongitude();
-        while (longitude < boundingBox.getNorthEast().getLongitude()) {
+        double longitude = boundingBox.southWest().getLongitude();
+        while (longitude < boundingBox.northEast().getLongitude()) {
 
-            double latitude = boundingBox.getSouthWest().getLatitude();
-            while (latitude < boundingBox.getNorthEast().getLatitude()) {
+            double latitude = boundingBox.southWest().getLatitude();
+            while (latitude < boundingBox.northEast().getLatitude()) {
                 String key = createFileKey(longitude, latitude);
                 Fragment<Downloadable> fragment = dataSource.getFragment(key);
                 if (fragment != null)

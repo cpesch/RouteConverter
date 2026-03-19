@@ -63,10 +63,10 @@ public class TileServerToTileMapMediator {
 
     private TileDownloadMap convert(TileServer tileServer) {
         TileServerMapSource tileSource = new TileServerMapSource(tileServer);
-        if (THUNDER_FOREST_API_KEY != null && tileServer.getCopyright().toLowerCase().contains("thunderforest"))
+        if (THUNDER_FOREST_API_KEY != null && tileServer.copyright().toLowerCase().contains("thunderforest"))
             tileSource.setApiKey(THUNDER_FOREST_API_KEY);
 
-        return new TileDownloadMap(tileServer.getId(), tileServer.getDescription(), tileServer.isActive(), tileSource, tileServer.getCopyrightText());
+        return new TileDownloadMap(tileServer.id(), tileServer.description(), tileServer.active(), tileSource, tileServer.copyrightText());
     }
 
     private void handleAdd(int firstRow, int lastRow) {

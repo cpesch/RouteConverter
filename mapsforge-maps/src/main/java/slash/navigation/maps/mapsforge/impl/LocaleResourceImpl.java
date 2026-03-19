@@ -38,7 +38,7 @@ abstract class LocaleResourceImpl implements LocalResource {
         this.copyrightText = copyrightText;
     }
 
-    public String getDescription() {
+    public String description() {
         return description;
     }
 

@@ -138,17 +138,17 @@ public class MapsforgeMapManager {
         clearThemeStyles();
 
         List<ThemeStyle> styles = new ArrayList<>(themeStyles);
-        styles.sort(Comparator.comparing(ThemeStyle::getDescription));
+        styles.sort(Comparator.comparing(ThemeStyle::description));
         for (ThemeStyle themeStyle : styles)
             getAvailableThemeStylesModel().addOrUpdateItem(themeStyle);
 
         LocalTheme currentTheme = appliedThemeModel.getItem();
-        appliedThemeStyleModel.initializePreferences(currentTheme.getDescription() + APPLIED_STYLE_PREFERENCE, themeStyles.get(0).getUrl());
+        appliedThemeStyleModel.initializePreferences(currentTheme.description() + APPLIED_STYLE_PREFERENCE, themeStyles.get(0).getUrl());
 
         ThemeStyle themeStyle = getAppliedThemeStyleModel().getItem();
         if (themeStyle != null) {
             List<ThemeStyleCategory> categories = new ArrayList<>(themeStyle.getCategories());
-            categories.sort(Comparator.comparing(ThemeStyleCategory::getDescription));
+            categories.sort(Comparator.comparing(ThemeStyleCategory::description));
             for (ThemeStyleCategory category : categories) {
                 getAvailableThemeStyleCategoriesModel().addOrUpdateItem(category);
             }

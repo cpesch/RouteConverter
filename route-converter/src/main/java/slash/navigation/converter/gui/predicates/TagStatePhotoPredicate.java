@@ -36,7 +36,7 @@ public class TagStatePhotoPredicate implements FilterPredicate<NavigationPositio
         this.tagState = tagState;
     }
 
-    public String getName() {
+    public String name() {
         return tagState.name();
     }
 

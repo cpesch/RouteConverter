@@ -40,7 +40,7 @@ public class LocalMapTableCellRenderer extends AlternatingColorTableCellRenderer
         LocalMap map = (LocalMap) value;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN -> {
-                String text = map.getDescription();
+                String text = map.description();
                 if (map.getType().isDownload())
                     text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
                 label.setText(text);

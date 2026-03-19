@@ -84,8 +84,8 @@ public class DataSourceServiceTest {
 
     private void checkBoundingBox(BoundingBox boundingBox) {
         assertNotNull(boundingBox);
-        assertEquals(new SimpleNavigationPosition(1.0, 2.0), boundingBox.getNorthEast());
-        assertEquals(new SimpleNavigationPosition(3.0, 4.0), boundingBox.getSouthWest());
+        assertEquals(new SimpleNavigationPosition(1.0, 2.0), boundingBox.northEast());
+        assertEquals(new SimpleNavigationPosition(3.0, 4.0), boundingBox.southWest());
     }
 
     private File getFile(List<File> files, String uri) {

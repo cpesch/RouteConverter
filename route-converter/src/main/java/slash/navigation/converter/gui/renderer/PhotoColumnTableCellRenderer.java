@@ -45,13 +45,13 @@ public class PhotoColumnTableCellRenderer extends AlternatingColorTableCellRende
 
         ImageAndFile imageAndFile = (ImageAndFile) value;
         if (imageAndFile != null) {
-            File file = imageAndFile.getFile();
+            File file = imageAndFile.file();
             if (file != null) {
                 label.setText(file.getName());
                 label.setToolTipText(file.getPath());
             }
 
-            ImageIcon image = imageAndFile.getImage();
+            ImageIcon image = imageAndFile.image();
             label.setIcon(image);
         }
         return label;

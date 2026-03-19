@@ -35,6 +35,7 @@ import java.util.List;
 import static slash.common.io.InputOutput.readBytes;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.navigation.base.RouteCharacteristics.*;
+import static slash.navigation.common.BoundingBox.asBoundingBox;
 
 /**
  * Writes a Web Page (*.html).
@@ -115,9 +116,9 @@ public class WebPageFormat extends SimpleFormat<Wgs84Route> {
             }
         }
 
-        BoundingBox boundingBox = new BoundingBox(positions);
-        String southWestBuffer = "new google.maps.LatLng(" + boundingBox.getSouthWest().getLatitude() + "," + boundingBox.getSouthWest().getLongitude() + ")";
-        String northEastBuffer = "new google.maps.LatLng(" + boundingBox.getNorthEast().getLatitude() + "," + boundingBox.getNorthEast().getLongitude() + ")";
+        BoundingBox boundingBox = asBoundingBox(positions);
+        String southWestBuffer = "new google.maps.LatLng(" + boundingBox.southWest().getLatitude() + "," + boundingBox.southWest().getLongitude() + ")";
+        String northEastBuffer = "new google.maps.LatLng(" + boundingBox.northEast().getLatitude() + "," + boundingBox.northEast().getLongitude() + ")";
         String centerBuffer = "new google.maps.LatLng(" + boundingBox.getCenter().getLatitude() + "," + boundingBox.getCenter().getLongitude() + ")";
 
         String mapServerApiUrl = "https://maps.google.com";

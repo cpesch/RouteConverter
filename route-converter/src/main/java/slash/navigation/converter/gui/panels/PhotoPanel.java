@@ -205,7 +205,7 @@ public class PhotoPanel implements PanelInTab {
                 if (e.getStateChange() != SELECTED)
                     return;
                 TimeZoneAndId timeZoneAndId = (TimeZoneAndId) e.getItem();
-                r.getPhotoTimeZone().setTimeZone(timeZoneAndId.getTimeZone());
+                r.getPhotoTimeZone().setTimeZone(timeZoneAndId.timeZone());
             }
         });
 
@@ -304,10 +304,10 @@ public class PhotoPanel implements PanelInTab {
 
     private FilterPredicate<NavigationPosition> getFilterPredicatePreference() {
         FilterPredicate result = FILTER_PREDICATE_MODEL.getElementAt(0);
-        String name = preferences.get(FILTER_PHOTO_PREDICATE_PREFERENCE, result.getName());
+        String name = preferences.get(FILTER_PHOTO_PREDICATE_PREFERENCE, result.name());
         for (int i = 0, c = FILTER_PREDICATE_MODEL.getSize(); i < c; i++) {
             FilterPredicate filterPredicate = FILTER_PREDICATE_MODEL.getElementAt(i);
-            if (filterPredicate.getName().equals(name)) {
+            if (filterPredicate.name().equals(name)) {
                 result = filterPredicate;
                 break;
             }
@@ -316,7 +316,7 @@ public class PhotoPanel implements PanelInTab {
     }
 
     private void setFilterPredicatePreference(FilterPredicate filterPredicate) {
-        preferences.put(FILTER_PHOTO_PREDICATE_PREFERENCE, filterPredicate.getName());
+        preferences.put(FILTER_PHOTO_PREDICATE_PREFERENCE, filterPredicate.name());
     }
 
     public void addPhotos(List<File> files) {

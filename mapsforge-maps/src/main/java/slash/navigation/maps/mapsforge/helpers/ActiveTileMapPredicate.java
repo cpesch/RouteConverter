@@ -29,7 +29,7 @@ import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
  */
 
 public class ActiveTileMapPredicate implements FilterPredicate<TileDownloadMap> {
-    public String getName() {
+    public String name() {
         return "Active";
     }
 

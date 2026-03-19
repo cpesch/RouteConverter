@@ -219,7 +219,7 @@ public class RouteRenderer {
             mapView.removeLayer(layer);
             pairWithLayer.setLayer(null);
 
-            Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.getPositions()), intermediateRoute.isValid() ? paint : getRouteNotValidPaint(), mapView.getTileSize());
+            Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.positions()), intermediateRoute.valid() ? paint : getRouteNotValidPaint(), mapView.getTileSize());
             pairWithLayer.setLayer(polyline);
             mapView.addLayer(polyline);
         }
@@ -249,12 +249,12 @@ public class RouteRenderer {
         positions.add(pairWithLayer.getFirst());
 
         RoutingResult result = calculateResult(routingService, future, pairWithLayer);
-        if (result.getValidity().equals(Valid)) {
-            positions.addAll(result.getPositions());
-            pairWithLayer.setDistanceAndTime(result.getDistanceAndTime());
+        if (result.validity().equals(Valid)) {
+            positions.addAll(result.positions());
+            pairWithLayer.setDistanceAndTime(result.distanceAndTime());
         }
         positions.add(pairWithLayer.getSecond());
-        return new IntermediateRoute(positions, result.getValidity().equals(Valid));
+        return new IntermediateRoute(positions, result.validity().equals(Valid));
     }
 
     private RoutingResult calculateResult(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {
@@ -268,7 +268,7 @@ public class RouteRenderer {
 
             try {
                 result = routingService.getRouteBetween(pairWithLayer.getFirst(), pairWithLayer.getSecond(), mapViewCallback.getTravelMode(), mapViewCallback.getTravelRestrictions());
-                if (result.getValidity().equals(PointNotFound)) {
+                if (result.validity().equals(PointNotFound)) {
 
                     // special treatment for GraphHopper: try the next download
                     if (routingService.isDownload()) {

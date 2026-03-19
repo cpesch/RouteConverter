@@ -79,8 +79,8 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         if (isLeftMouseButton(e)) {
             if (isMousePressedOnMarker()) {
                 startDragCursor(mapView);
-                LatLong latLong = projection.fromPixels(e.getX() + markerAndDelta.getDeltaX(), e.getY() + markerAndDelta.getDeltaY());
-                Marker marker = markerAndDelta.getMarker();
+                LatLong latLong = projection.fromPixels(e.getX() + markerAndDelta.deltaX(), e.getY() + markerAndDelta.deltaY());
+                Marker marker = markerAndDelta.marker();
                 marker.setLatLong(latLong);
                 marker.requestRedraw();
 
@@ -96,8 +96,8 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
 
     public void mouseReleased(MouseEvent e) {
         if (isMousePressedOnMarker() && isDragCursor(mapView)) {
-            LatLong latLong = projection.fromPixels(e.getX() + markerAndDelta.getDeltaX(), e.getY() + markerAndDelta.getDeltaY());
-            DraggableMarker marker = markerAndDelta.getMarker();
+            LatLong latLong = projection.fromPixels(e.getX() + markerAndDelta.deltaX(), e.getY() + markerAndDelta.deltaY());
+            DraggableMarker marker = markerAndDelta.marker();
             marker.onDrop(latLong);
             markerAndDelta = null;
             stopWaitCursor(mapView);
@@ -184,27 +184,6 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         return markerAndDelta != null;
     }
 
-    private static class MarkerAndDelta {
-        private final DraggableMarker marker;
-        private final double deltaX;
-        private final double deltaY;
-
-        public MarkerAndDelta(DraggableMarker marker, double deltaX, double deltaY) {
-            this.marker = marker;
-            this.deltaX = deltaX;
-            this.deltaY = deltaY;
-        }
-
-        public DraggableMarker getMarker() {
-            return marker;
-        }
-
-        public double getDeltaX() {
-            return deltaX;
-        }
-
-        public double getDeltaY() {
-            return deltaY;
-        }
+    private record MarkerAndDelta(DraggableMarker marker, double deltaX, double deltaY) {
     }
 }

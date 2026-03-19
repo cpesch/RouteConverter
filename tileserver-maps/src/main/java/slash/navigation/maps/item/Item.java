@@ -25,6 +25,6 @@ package slash.navigation.maps.item;
  * @author Christian Pesch
  */
 public interface Item {
-    String getDescription();
+    String description();
     String getUrl();
 }

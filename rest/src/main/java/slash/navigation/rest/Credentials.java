@@ -25,6 +25,6 @@ package slash.navigation.rest;
  * @author Christian Pesch
  */
 public interface Credentials {
-    String getUserName();
-    char[] getPassword();
+    String userName();
+    char[] password();
 }

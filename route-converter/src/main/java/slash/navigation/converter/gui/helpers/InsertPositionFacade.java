@@ -113,9 +113,9 @@ public class InsertPositionFacade {
                 continue;
 
             RoutingResult result = routingService.getRouteBetween(selectedPositions.get(i), selectedPositions.get(i + 1), travelMode, travelRestrictions);
-            if (result.getValidity().equals(Valid)) {
+            if (result.validity().equals(Valid)) {
                 final List<BaseNavigationPosition> positions = new ArrayList<>();
-                for (NavigationPosition position : result.getPositions()) {
+                for (NavigationPosition position : result.positions()) {
                     positions.add(positionsModel.getRoute().createPosition(position.getLongitude(), position.getLatitude(), position.getElevation(), null, null, null));
                 }
                 final int insertRow = positionsModel.getIndex(selectedPositions.get(i)) + 1;

@@ -42,7 +42,7 @@ public class ThemeStyleImpl implements ThemeStyle {
         this.layer = layer;
     }
 
-    public String getDescription() {
+    public String description() {
         String title = layer.getTitle(Locale.getDefault().getLanguage());
         if (title != null) {
             return title;

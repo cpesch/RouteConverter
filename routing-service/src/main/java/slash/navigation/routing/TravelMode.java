@@ -26,14 +26,5 @@ package slash.navigation.routing;
  * @author Christian Pesch
  */
 
-public class TravelMode {
-    private final String name;
-
-    public TravelMode(String name) {
-        this.name = name;
-    }
-
-    public String getName() {
-        return name;
-    }
+public record TravelMode(String name) {
 }

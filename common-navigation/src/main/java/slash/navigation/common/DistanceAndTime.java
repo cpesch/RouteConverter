@@ -24,24 +24,8 @@ package slash.navigation.common;
  *
  * @author Christian Pesch
  */
-public class DistanceAndTime {
+public record DistanceAndTime(Double distance, Long timeInMillis) {
     public static final DistanceAndTime ZERO = new DistanceAndTime(0.0, 0L);
-
-    private final Double distance;
-    private final Long timeInMillis;
-
-    public DistanceAndTime(Double distance, Long timeInMillis) {
-        this.distance = distance;
-        this.timeInMillis = timeInMillis;
-    }
-
-    public Double getDistance() {
-        return distance;
-    }
-
-    public Long getTimeInMillis() {
-        return timeInMillis;
-    }
 
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,18 +33,18 @@ public class DistanceAndTime {
 
         DistanceAndTime that = (DistanceAndTime) o;
 
-        if (getDistance() != null ? !getDistance().equals(that.getDistance()) : that.getDistance() != null)
+        if (distance() != null ? !distance().equals(that.distance()) : that.distance() != null)
             return false;
-        return getTimeInMillis() != null ? getTimeInMillis().equals(that.getTimeInMillis()) : that.getTimeInMillis() == null;
+        return timeInMillis() != null ? timeInMillis().equals(that.timeInMillis()) : that.timeInMillis() == null;
     }
 
     public int hashCode() {
-        int result = getDistance() != null ? getDistance().hashCode() : 0;
-        result = 31 * result + (getTimeInMillis() != null ? getTimeInMillis().hashCode() : 0);
+        int result = distance() != null ? distance().hashCode() : 0;
+        result = 31 * result + (timeInMillis() != null ? timeInMillis().hashCode() : 0);
         return result;
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "[distance=" + getDistance() + ", time=" + getTimeInMillis() + "]";
+        return getClass().getSimpleName() + "[distance=" + distance() + ", time=" + timeInMillis() + "]";
     }
 }

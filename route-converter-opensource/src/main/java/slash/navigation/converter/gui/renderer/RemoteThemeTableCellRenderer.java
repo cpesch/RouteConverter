@@ -49,7 +49,7 @@ public class RemoteThemeTableCellRenderer extends AlternatingColorTableCellRende
                 label.setHorizontalAlignment(LEFT);
             }
             case DESCRIPTION_COLUMN -> {
-                label.setText(theme.getDescription());
+                label.setText(theme.description());
                 label.setToolTipText(theme.getUrl());
                 label.setHorizontalAlignment(LEFT);
             }

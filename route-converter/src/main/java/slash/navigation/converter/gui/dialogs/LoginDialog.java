@@ -128,7 +128,7 @@ public class LoginDialog extends SimpleDialog {
             }
         });
 
-        textFieldLogin.setText(RouteConverter.getInstance().getCredentials().getUserName());
+        textFieldLogin.setText(RouteConverter.getInstance().getCredentials().userName());
 
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {

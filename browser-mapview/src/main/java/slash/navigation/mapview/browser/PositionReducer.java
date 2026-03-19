@@ -38,6 +38,7 @@ import static java.lang.System.currentTimeMillis;
 import static slash.navigation.base.RouteCalculations.getSignificantPositions;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.common.BoundingBox.asBoundingBox;
 
 /**
  * Helps to reduce the amount of positions for rending routes, tracks, waypoint lists.
@@ -178,7 +179,7 @@ class PositionReducer {
 
         int positionCountAfterReduction = positions.size();
         if (positionCountAfterReduction < positionCountBeforeReduction) {
-            visible = new BoundingBox(positions);
+            visible = asBoundingBox(positions);
         } else {
             visible = null;
         }

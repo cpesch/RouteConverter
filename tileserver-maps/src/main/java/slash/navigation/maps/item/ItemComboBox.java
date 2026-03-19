@@ -55,8 +55,8 @@ public class ItemComboBox<E extends Item> extends JComboBox<E> {
             for (int i = 0; i < getItemCount(); i++) {
                 E item = getItemAt(i);
 
-                if (item.getDescription() != null)
-                    size.width = max(size.width, fontMetrics.stringWidth(item.getDescription()) + SCROLLBAR_WIDTH);
+                if (item.description() != null)
+                    size.width = max(size.width, fontMetrics.stringWidth(item.description()) + SCROLLBAR_WIDTH);
             }
 
             size.width = max(size.width, getPreferredSize().width);

@@ -216,9 +216,9 @@ public class BRouter extends BaseRoutingService {
                 log.warning(format("Cannot route between %s and %s: no profiles directory found", from, to));
                 return new RoutingResult(asList(from, to), new DistanceAndTime(calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), null), Invalid);
             }
-            File profile = new File(profilesDirectory, travelMode.getName() + ".brf");
+            File profile = new File(profilesDirectory, travelMode.name() + ".brf");
             if (!profile.exists()) {
-                profile = new File(profilesDirectory, getPreferredTravelMode().getName() + ".brf");
+                profile = new File(profilesDirectory, getPreferredTravelMode().name() + ".brf");
                 log.warning(format("Failed to find profile for travel mode %s; using preferred travel mode %s", travelMode, getPreferredTravelMode()));
             }
             if (!profile.exists()) {
@@ -229,7 +229,7 @@ public class BRouter extends BaseRoutingService {
                 }
 
                 TravelMode firstTravelMode = availableTravelModes.get(0);
-                profile = new File(profilesDirectory, firstTravelMode.getName() + ".brf");
+                profile = new File(profilesDirectory, firstTravelMode.name() + ".brf");
                 log.warning(format("Failed to find profile for travel mode %s; using first travel mode %s", travelMode, firstTravelMode));
             }
 
@@ -265,7 +265,7 @@ public class BRouter extends BaseRoutingService {
     public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
         NavigationPosition duplicate = new SimpleNavigationPosition(position.getLongitude() + DUPLICATE_OFFSET, position.getLatitude() + DUPLICATE_OFFSET);
         RoutingResult result = getRouteBetween(position, duplicate, getPreferredTravelMode(), NO_RESTRICTIONS);
-        NavigationPosition snapPosition = result.getValidity().equals(Valid) && !result.getPositions().isEmpty() ? result.getPositions().get(0) : null;
+        NavigationPosition snapPosition = result.validity().equals(Valid) && !result.positions().isEmpty() ? result.positions().get(0) : null;
         if (snapPosition != null) {
             double bearing = Bearing.calculateBearing(position.getLongitude(), position.getLatitude(),
                     snapPosition.getLongitude(), snapPosition.getLatitude()).getDistance();
@@ -343,11 +343,11 @@ public class BRouter extends BaseRoutingService {
     private Collection<Downloadable> getDownloadablesFor(BoundingBox boundingBox) {
         Collection<Downloadable> result = new HashSet<>();
 
-        double longitude = boundingBox.getSouthWest().getLongitude();
-        while (longitude < boundingBox.getNorthEast().getLongitude()) {
+        double longitude = boundingBox.southWest().getLongitude();
+        while (longitude < boundingBox.northEast().getLongitude()) {
 
-            double latitude = boundingBox.getSouthWest().getLatitude();
-            while (latitude < boundingBox.getNorthEast().getLatitude()) {
+            double latitude = boundingBox.southWest().getLatitude();
+            while (latitude < boundingBox.northEast().getLatitude()) {
                 String key = createFileKey(longitude, latitude);
                 Downloadable downloadable = getSegments().getDownloadable(key);
                 if (downloadable != null)

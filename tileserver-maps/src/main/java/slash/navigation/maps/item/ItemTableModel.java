@@ -68,7 +68,7 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
 
     public T getItemByDescription(String description) {
         for (T item : new ArrayList<>(items)) {
-            if (item.getDescription().equals(description))
+            if (item.description().equals(description))
                 return item;
         }
         return null;

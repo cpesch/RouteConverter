@@ -39,9 +39,9 @@ public class TravelModeListCellRenderer extends DefaultListCellRenderer {
         TravelMode travelMode = (TravelMode) value;
         String text;
         try {
-            text = RouteConverter.getBundle().getString("travel-mode-" + travelMode.getName().toLowerCase());
+            text = RouteConverter.getBundle().getString("travel-mode-" + travelMode.name().toLowerCase());
         } catch (MissingResourceException e) {
-            text = travelMode.getName();
+            text = travelMode.name();
         }
         label.setText(text);
         return label;

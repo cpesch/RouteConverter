@@ -31,67 +31,10 @@ import static slash.common.io.Files.asDialogString;
  * @author Christian Pesch
  */
 
-public class TileServer implements Item {
-    private final String id;
-    private final String description;
-    private final String urlPattern;
-    private final List<String> hosts;
-    private final boolean active;
-    private final int minZoom;
-    private final int maxZoom;
-    private final String copyright;
-    private final String copyrightText;
-
-    public TileServer(String id, String description, String urlPattern, List<String> hosts,
-                      boolean active, int minZoom, int maxZoom, String copyright, String copyrightText) {
-        this.id = id;
-        this.description = description;
-        this.urlPattern = urlPattern;
-        this.hosts = hosts;
-        this.active = active;
-        this.minZoom = minZoom;
-        this.maxZoom = maxZoom;
-        this.copyright = copyright;
-        this.copyrightText = copyrightText;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
+public record TileServer(String id, String description, String urlPattern, List<String> hosts, boolean active,
+                         int minZoom, int maxZoom, String copyright, String copyrightText) implements Item {
 
     public String getUrl() {
-        return asDialogString(getHosts(), false);
-    }
-
-    public String getUrlPattern() {
-        return urlPattern;
-    }
-
-    public List<String> getHosts() {
-        return hosts;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public int getMinZoom() {
-        return minZoom;
-    }
-
-    public int getMaxZoom() {
-        return maxZoom;
-    }
-
-    public String getCopyright() {
-        return copyright;
-    }
-
-    public String getCopyrightText() {
-        return copyrightText;
+        return asDialogString(hosts(), false);
     }
 }

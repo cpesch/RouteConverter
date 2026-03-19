@@ -29,20 +29,5 @@ import java.util.List;
  *
  * @author Christian Pesch
  */
-public class IntermediateRoute {
-    private final List<NavigationPosition> positions;
-    private final boolean valid;
-
-    public IntermediateRoute(List<NavigationPosition> positions, boolean valid) {
-        this.positions = positions;
-        this.valid = valid;
-    }
-
-    public List<NavigationPosition> getPositions() {
-        return positions;
-    }
-
-    public boolean isValid() {
-        return valid;
-    }
+public record IntermediateRoute(List<NavigationPosition> positions, boolean valid) {
 }

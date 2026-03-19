@@ -39,7 +39,7 @@ public class LocalThemeTableCellRenderer extends AlternatingColorTableCellRender
         LocalTheme theme = (LocalTheme) value;
         switch (columnIndex) {
             case DESCRIPTION_COLUMN -> {
-                label.setText(theme.getDescription());
+                label.setText(theme.description());
                 label.setToolTipText(theme.getUrl());
             }
             default ->

@@ -54,12 +54,12 @@ public class UnitConversion {
     public static Double nmea2degrees(ValueAndOrientation nmea) {
         if(nmea == null)
             return null;
-        double decimal = nmea.getValue() / 100.0;
+        double decimal = nmea.value() / 100.0;
         int asInt = (int) decimal;
         double behindDot = ((decimal - asInt) * 100.0) / SECONDS_OF_A_MINUTE;
         double degrees = asInt + behindDot;
         degrees = roundFraction(degrees, 10);
-        Orientation orientation = nmea.getOrientation();
+        Orientation orientation = nmea.orientation();
         boolean southOrWest = orientation.equals(South) || orientation.equals(West);
         return southOrWest ? -degrees : degrees;
     }

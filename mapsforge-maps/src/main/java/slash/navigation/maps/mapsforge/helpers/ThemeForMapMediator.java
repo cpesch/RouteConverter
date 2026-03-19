@@ -74,7 +74,7 @@ public class ThemeForMapMediator {
                 if (!map.getType().isThemed())
                     return;
 
-                String themeId = getAppliedThemeModel().getItem().getDescription();
+                String themeId = getAppliedThemeModel().getItem().description();
                 preferences.put(getMapKey(map), themeId);
                 preferences.put(getMapProviderKey(map), themeId);
             }
@@ -100,7 +100,7 @@ public class ThemeForMapMediator {
             if(!themes.isEmpty())
                 return removePrefix(mapManager.getThemesDirectory(), themes.get(0));
         }
-        return getAppliedThemeModel().getItem().getDescription();
+        return getAppliedThemeModel().getItem().description();
     }
 
     private ItemModel<LocalMap> getDisplayedMapModel() {
@@ -116,7 +116,7 @@ public class ThemeForMapMediator {
     }
 
     private String getMapKey(LocalMap map) {
-        String key = THEME_FOR_MAP_PREFERENCE + map.getDescription();
+        String key = THEME_FOR_MAP_PREFERENCE + map.description();
         return key.substring(0, min(key.length(), MAX_KEY_LENGTH));
     }
 

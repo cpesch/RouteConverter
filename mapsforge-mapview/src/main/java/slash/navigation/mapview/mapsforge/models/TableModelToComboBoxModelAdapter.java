@@ -86,22 +86,17 @@ public class TableModelToComboBoxModelAdapter<E extends Item> implements ComboBo
         selectedDelegate.setItem((E) anItem);
     }
 
-    private static class TableModelToListDataListenerAdapter implements TableModelListener {
-        private final ListDataListener delegate;
-
-        private TableModelToListDataListenerAdapter(ListDataListener delegate) {
-            this.delegate = delegate;
-        }
+    private record TableModelToListDataListenerAdapter(ListDataListener delegate) implements TableModelListener {
 
         public void tableChanged(TableModelEvent e) {
-            switch (e.getType()) {
-                case INSERT ->
-                        delegate.intervalAdded(new ListDataEvent(this, INTERVAL_ADDED, e.getFirstRow(), e.getLastRow()));
-                case DELETE ->
-                        delegate.intervalRemoved(new ListDataEvent(this, INTERVAL_REMOVED, e.getFirstRow(), e.getLastRow()));
-                case UPDATE ->
-                        delegate.contentsChanged(new ListDataEvent(this, CONTENTS_CHANGED, e.getFirstRow(), e.getLastRow()));
+                switch (e.getType()) {
+                    case INSERT ->
+                            delegate.intervalAdded(new ListDataEvent(this, INTERVAL_ADDED, e.getFirstRow(), e.getLastRow()));
+                    case DELETE ->
+                            delegate.intervalRemoved(new ListDataEvent(this, INTERVAL_REMOVED, e.getFirstRow(), e.getLastRow()));
+                    case UPDATE ->
+                            delegate.contentsChanged(new ListDataEvent(this, CONTENTS_CHANGED, e.getFirstRow(), e.getLastRow()));
+                }
             }
         }
-    }
 }

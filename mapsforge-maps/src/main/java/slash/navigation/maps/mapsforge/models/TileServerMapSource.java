@@ -24,7 +24,6 @@ import org.mapsforge.core.model.Tile;
 import org.mapsforge.map.layer.download.tilesource.AbstractTileSource;
 import org.mapsforge.map.layer.download.tilesource.OnlineTileSource;
 import slash.navigation.maps.tileserver.TileServer;
-import slash.navigation.rest.HttpRequest;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -46,7 +45,7 @@ public class TileServerMapSource extends AbstractTileSource {
     private boolean alpha = false;
 
     private static String[] getHostNames(TileServer tileServer) {
-        String[] hostNames = tileServer.getHosts().toArray(new String[0]);
+        String[] hostNames = tileServer.hosts().toArray(new String[0]);
         if (hostNames.length == 0)
             hostNames = new String[]{"not.existing.tile.server"};
         return hostNames;
@@ -55,7 +54,7 @@ public class TileServerMapSource extends AbstractTileSource {
     public TileServerMapSource(TileServer tileServer) {
         super(getHostNames(tileServer), 80);
         this.tileServer = tileServer;
-        setUserAgent(!tileServer.isActive() ? "RouteConverter Map Client /" + System.getProperty("rest", "3.0") : USER_AGENT);
+        setUserAgent(!tileServer.active() ? "RouteConverter Map Client /" + System.getProperty("rest", "3.0") : USER_AGENT);
         setTimeoutConnect(30 * 1000);
         setTimeoutRead(120 * 1000);
     }
@@ -65,11 +64,11 @@ public class TileServerMapSource extends AbstractTileSource {
     }
 
     public byte getZoomLevelMin() {
-        return (byte)tileServer.getMinZoom();
+        return (byte)tileServer.minZoom();
     }
 
     public byte getZoomLevelMax() {
-        return (byte)tileServer.getMaxZoom();
+        return (byte)tileServer.maxZoom();
     }
 
     public boolean hasAlpha() {
@@ -82,7 +81,7 @@ public class TileServerMapSource extends AbstractTileSource {
 
     public URL getTileUrl(Tile tile) throws MalformedURLException {
         // Integer.toString() avoids points that group digits
-        String url = AlephFormatter.str(tileServer.getUrlPattern())
+        String url = AlephFormatter.str(tileServer.urlPattern())
                 .arg("host", getHostName())
                 .arg("language", Locale.getDefault().getLanguage())
                 .arg("tilex", Integer.toString(tile.tileX))

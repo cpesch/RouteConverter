@@ -82,10 +82,10 @@ public class MagellanExploristFormatTest {
     @Test
     public void testParsePMGNTRK() {
         NmeaPosition position = format.parsePosition("$PMGNTRK,4914.9670,N,00651.2080,E,000199,M,152224,A,KLLERTAL-RADWEG,210307*56");
-        assertDoubleEquals(4914.967, position.getLatitudeAsValueAndOrientation().getValue());
-        assertDoubleEquals(651.208, position.getLongitudeAsValueAndOrientation().getValue());
-        assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
-        assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
+        assertDoubleEquals(4914.967, position.getLatitudeAsValueAndOrientation().value());
+        assertDoubleEquals(651.208, position.getLongitudeAsValueAndOrientation().value());
+        assertEquals("N", position.getLatitudeAsValueAndOrientation().orientation().value());
+        assertEquals("E", position.getLongitudeAsValueAndOrientation().orientation().value());
         assertDoubleEquals(6.8534666667, position.getLongitude());
         assertDoubleEquals(49.24945, position.getLatitude());
         assertDoubleEquals(199.0, position.getElevation());
@@ -109,10 +109,10 @@ public class MagellanExploristFormatTest {
         NmeaRoute route = routes.get(0);
         assertEquals(1, route.getPositionCount());
         NmeaPosition position = route.getPositions().get(0);
-        assertDoubleEquals(4914.9672, position.getLatitudeAsValueAndOrientation().getValue());
-        assertDoubleEquals(651.2081, position.getLongitudeAsValueAndOrientation().getValue());
-        assertEquals("N", position.getLatitudeAsValueAndOrientation().getOrientation().value());
-        assertEquals("E", position.getLongitudeAsValueAndOrientation().getOrientation().value());
+        assertDoubleEquals(4914.9672, position.getLatitudeAsValueAndOrientation().value());
+        assertDoubleEquals(651.2081, position.getLongitudeAsValueAndOrientation().value());
+        assertEquals("N", position.getLatitudeAsValueAndOrientation().orientation().value());
+        assertEquals("E", position.getLongitudeAsValueAndOrientation().orientation().value());
         assertDoubleEquals(6.8534683333, position.getLongitude());
         assertDoubleEquals(49.2494533333, position.getLatitude());
         assertDoubleEquals(199.0, position.getElevation());

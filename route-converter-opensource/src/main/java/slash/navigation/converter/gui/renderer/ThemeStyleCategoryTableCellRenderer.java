@@ -35,7 +35,7 @@ public class ThemeStyleCategoryTableCellRenderer extends AlternatingColorTableCe
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         ThemeStyleCategory category = (ThemeStyleCategory) value;
-        label.setText(category.getDescription());
+        label.setText(category.description());
         label.setToolTipText(category.getUrl());
         return label;
     }

@@ -40,7 +40,7 @@ public class TileMapTableCellRenderer extends AlternatingColorTableCellRenderer 
             case DESCRIPTION_COLUMN -> {
                 TileDownloadMap map = (TileDownloadMap) value;
                 JLabel label = (JLabel) component;
-                label.setText(map.getDescription());
+                label.setText(map.description());
                 label.setToolTipText(map.getUrl());
             }
         }

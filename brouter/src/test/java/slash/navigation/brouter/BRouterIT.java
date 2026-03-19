@@ -94,7 +94,7 @@ public class BRouterIT {
 
     private TravelMode getTravelMode(String lookupName) {
         for (TravelMode travelMode : router.getAvailableTravelModes()) {
-            if (lookupName.equals(travelMode.getName()))
+            if (lookupName.equals(travelMode.name()))
                 return travelMode;
         }
         throw new IllegalArgumentException(lookupName + " not found");
@@ -103,18 +103,18 @@ public class BRouterIT {
     @Test
     public void testGetRouteBetweenByCar() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("car-eco"), NO_RESTRICTIONS);
-        assertEquals(Valid, result.getValidity());
-        assertEquals(324, result.getPositions().size(), 10);
-        assertEquals(13638, result.getDistanceAndTime().getDistance(), 25.0);
-        assertEquals(1091539, result.getDistanceAndTime().getTimeInMillis(), 1000);
+        assertEquals(Valid, result.validity());
+        assertEquals(324, result.positions().size(), 10);
+        assertEquals(13638, result.distanceAndTime().distance(), 25.0);
+        assertEquals(1091539, result.distanceAndTime().timeInMillis(), 1000);
     }
 
     @Test
     public void testGetRouteBetweenByBike() {
         RoutingResult result = router.getRouteBetween(FROM, TO, getTravelMode("trekking"), NO_RESTRICTIONS);
-        assertEquals(Valid, result.getValidity());
-        assertEquals(185, result.getPositions().size(), 8);
-        assertEquals(13811, result.getDistanceAndTime().getDistance(), 25.0);
-        assertEquals(2328092.0, result.getDistanceAndTime().getTimeInMillis(), 1000);
+        assertEquals(Valid, result.validity());
+        assertEquals(185, result.positions().size(), 8);
+        assertEquals(13811, result.distanceAndTime().distance(), 25.0);
+        assertEquals(2328092.0, result.distanceAndTime().timeInMillis(), 1000);
     }
 }

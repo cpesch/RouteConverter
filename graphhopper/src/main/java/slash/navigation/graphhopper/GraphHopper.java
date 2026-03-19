@@ -162,17 +162,17 @@ public class GraphHopper extends BaseRoutingService {
         long start = currentTimeMillis();
         try {
             GHRequest request = new GHRequest(from.getLatitude(), from.getLongitude(), to.getLatitude(), to.getLongitude());
-            request.setProfile(travelMode.getName());
+            request.setProfile(travelMode.name());
             CustomModel customModel = new CustomModel();
-            if (travelRestrictions.isAvoidBridges())
+            if (travelRestrictions.avoidBridges())
                 customModel.addToPriority(If("road_environment == BRIDGE", MULTIPLY, "0"));
-            if (travelRestrictions.isAvoidFerries())
+            if (travelRestrictions.avoidFerries())
                 customModel.addToPriority(If("road_environment == FERRY", MULTIPLY, "0"));
-            if (travelRestrictions.isAvoidMotorways())
+            if (travelRestrictions.avoidMotorways())
                 customModel.addToPriority(If("road_class == MOTORWAY", MULTIPLY, "0"));
             // if (travelRestrictions.isAvoidToll())
             //    customModel.addToPriority(Statement.If("toll == all", MULTIPLY, "0"));
-            if (travelRestrictions.isAvoidTunnels())
+            if (travelRestrictions.avoidTunnels())
                 customModel.addToPriority(If("road_environment == TUNNEL", MULTIPLY, "0"));
             request.setCustomModel(customModel);
             GHResponse response = hopper.route(request);
@@ -286,16 +286,16 @@ public class GraphHopper extends BaseRoutingService {
 
     private com.graphhopper.GraphHopper createHopper() {
         List<Profile> profiles = getAvailableTravelModes().stream()
-                .map(mode -> new Profile(mode.getName())
-                                .setName(mode.getName())
+                .map(mode -> new Profile(mode.name())
+                                .setName(mode.name())
                                 .setCustomModel(new CustomModel()
-                                        .addToPriority(If("!" + mode.getName() + "_access", MULTIPLY, "0"))
-                                        .addToSpeed(If("true", LIMIT, mode.getName() + "_average_speed")))
+                                        .addToPriority(If("!" + mode.name() + "_access", MULTIPLY, "0"))
+                                        .addToSpeed(If("true", LIMIT, mode.name() + "_average_speed")))
                 )
                 .toList();
 
         String modePriorityAndSpeed = getAvailableTravelModes().stream()
-                .flatMap(mode -> Stream.of(mode.getName() + "_access", mode.getName() + "_average_speed"))
+                .flatMap(mode -> Stream.of(mode.name() + "_access", mode.name() + "_average_speed"))
                 .collect(Collectors.joining(","));
 
         return new com.graphhopper.GraphHopper()

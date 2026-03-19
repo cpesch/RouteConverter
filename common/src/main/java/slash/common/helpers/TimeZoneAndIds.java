@@ -59,7 +59,7 @@ public class TimeZoneAndIds {
 
         timeZoneAndIds = filterDuplicates(tzi);
 
-        sort(timeZoneAndIds, Comparator.comparing(TimeZoneAndId::getId));
+        sort(timeZoneAndIds, Comparator.comparing(TimeZoneAndId::id));
     }
 
     private String modifyId(String id) {
@@ -76,9 +76,9 @@ public class TimeZoneAndIds {
         List<TimeZoneAndId> result = new ArrayList<>();
         Set<String> foundId = new HashSet<>();
         for(TimeZoneAndId timeZoneAndId : timeZoneAndIds) {
-            if(foundId.contains(timeZoneAndId.getId()))
+            if(foundId.contains(timeZoneAndId.id()))
                 continue;
-            foundId.add(timeZoneAndId.getId());
+            foundId.add(timeZoneAndId.id());
             result.add(timeZoneAndId);
         }
         return result.toArray(new TimeZoneAndId[0]);
@@ -90,7 +90,7 @@ public class TimeZoneAndIds {
 
     public TimeZoneAndId getTimeZoneAndIdFor(TimeZone timeZone) {
         for (TimeZoneAndId timeZoneAndId : timeZoneAndIds)
-            if (timeZoneAndId.getTimeZone().equals(timeZone))
+            if (timeZoneAndId.timeZone().equals(timeZone))
                 return timeZoneAndId;
         return null;
     }

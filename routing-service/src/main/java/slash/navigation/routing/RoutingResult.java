@@ -31,28 +31,7 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class RoutingResult   {
-    private final List<NavigationPosition> positions;
-    private final DistanceAndTime distanceAndTime;
-    private final Validity validity;
+public record RoutingResult(List<NavigationPosition> positions, DistanceAndTime distanceAndTime, Validity validity) {
 
-    public RoutingResult(List<NavigationPosition> positions, DistanceAndTime distanceAndTime, Validity validity) {
-        this.positions = positions;
-        this.distanceAndTime = distanceAndTime;
-        this.validity = validity;
-    }
-
-    public List<NavigationPosition> getPositions() {
-        return positions;
-    }
-
-    public DistanceAndTime getDistanceAndTime() {
-        return distanceAndTime;
-    }
-
-    public Validity getValidity() {
-        return validity;
-    }
-
-    public enum Validity { Valid, Invalid, PointNotFound }
+    public enum Validity {Valid, Invalid, PointNotFound}
 }

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
+import static slash.navigation.common.BoundingBox.asBoundingBox;
 
 class LatitudeAndLongitudeMapDescriptor implements MapDescriptor {
     private final String mapIdentifier;
@@ -27,7 +28,7 @@ class LatitudeAndLongitudeMapDescriptor implements MapDescriptor {
         for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
             positions.add(new SimpleNavigationPosition(longitudeAndLatitude.longitude(), longitudeAndLatitude.latitude()));
         }
-        return new BoundingBox(positions);
+        return asBoundingBox(positions);
     }
 
     public BoundingBox getBoundingBox() {

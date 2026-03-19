@@ -39,9 +39,9 @@ public class FilterPredicateListCellRenderer extends DefaultListCellRenderer {
         FilterPredicate filterPredicate = (FilterPredicate) value;
         String text;
         try {
-            text = RouteConverter.getBundle().getString("filter-photos-" + filterPredicate.getName().toLowerCase());
+            text = RouteConverter.getBundle().getString("filter-photos-" + filterPredicate.name().toLowerCase());
         } catch (MissingResourceException e) {
-            text = filterPredicate.getName();
+            text = filterPredicate.name();
         }
         label.setText(text);
         return label;

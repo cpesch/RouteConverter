@@ -46,7 +46,7 @@ public class RemoteResourceImpl implements RemoteResource {
         return downloadable;
     }
 
-    public String getDescription() {
+    public String description() {
         return getDownloadable().getUri();
     }
 

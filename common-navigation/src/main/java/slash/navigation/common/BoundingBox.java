@@ -24,7 +24,6 @@ package slash.navigation.common;
 import slash.common.type.CompactCalendar;
 
 import java.util.List;
-import java.util.Objects;
 
 import static java.lang.Math.abs;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -34,13 +33,7 @@ import static slash.common.type.CompactCalendar.fromMillis;
  *
  * @author Christian Pesch
  */
-public class BoundingBox {
-    private final NavigationPosition northEast, southWest;
-
-    public BoundingBox(NavigationPosition northEast, NavigationPosition southWest) {
-        this.northEast = northEast;
-        this.southWest = southWest;
-    }
+public record BoundingBox(NavigationPosition northEast, NavigationPosition southWest) {
 
     public BoundingBox(Double longitudeNorthEast, Double latitudeNorthEast,
                        Double longitudeSouthWest, Double latitudeSouthWest) {
@@ -48,7 +41,7 @@ public class BoundingBox {
                 new SimpleNavigationPosition(longitudeSouthWest, latitudeSouthWest));
     }
 
-    public BoundingBox(List<? extends NavigationPosition> positions) {
+    public static BoundingBox asBoundingBox(List<? extends NavigationPosition> positions) {
         double maximumLongitude = -180.0, maximumLatitude = -90.0,
                 minimumLongitude = 180.0, minimumLatitude = 90.0;
         CompactCalendar maximumTime = null, minimumTime = null;
@@ -76,16 +69,7 @@ public class BoundingBox {
             if (minimumTime == null || time.before(minimumTime))
                 minimumTime = time;
         }
-        this.northEast = new SimpleNavigationPosition(maximumLongitude, maximumLatitude, maximumTime);
-        this.southWest = new SimpleNavigationPosition(minimumLongitude, minimumLatitude, minimumTime);
-    }
-
-    public NavigationPosition getNorthEast() {
-        return northEast;
-    }
-
-    public NavigationPosition getSouthWest() {
-        return southWest;
+        return new BoundingBox(new SimpleNavigationPosition(maximumLongitude, maximumLatitude, maximumTime), new SimpleNavigationPosition(minimumLongitude, minimumLatitude, minimumTime));
     }
 
     public NavigationPosition getSouthEast() {
@@ -97,8 +81,8 @@ public class BoundingBox {
     }
 
     public double getSquareSize() {
-        return (getNorthEast().getLongitude() - getSouthWest().getLongitude()) *
-                (getNorthEast().getLatitude() - getSouthWest().getLatitude());
+        return (northEast().getLongitude() - southWest().getLongitude()) *
+                (northEast().getLatitude() - southWest().getLatitude());
     }
 
     public boolean contains(NavigationPosition position) {
@@ -110,17 +94,17 @@ public class BoundingBox {
     }
 
     public boolean contains(BoundingBox boundingBox) {
-        return contains(boundingBox.getNorthEast()) && contains(boundingBox.getSouthEast()) &&
-                contains(boundingBox.getSouthWest()) && contains(boundingBox.getNorthWest());
+        return contains(boundingBox.northEast()) && contains(boundingBox.getSouthEast()) &&
+                contains(boundingBox.southWest()) && contains(boundingBox.getNorthWest());
     }
 
     public NavigationPosition getCenter() {
         double longitude = southWest.getLongitude() + northEast.getLongitude();
-        if(longitude != 0.0)
-            longitude /=2;
+        if (longitude != 0.0)
+            longitude /= 2;
         double latitude = southWest.getLatitude() + northEast.getLatitude();
         if (latitude != 0.0)
-            latitude /=2;
+            latitude /= 2;
         CompactCalendar time = null;
         if (northEast.hasTime() && southWest.hasTime()) {
             long millis = northEast.getTime().getTimeInMillis() +
@@ -128,22 +112,6 @@ public class BoundingBox {
             time = fromMillis(millis);
         }
         return new SimpleNavigationPosition(longitude, latitude, time);
-    }
-
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        BoundingBox that = (BoundingBox) o;
-
-        return Objects.equals(northEast, that.northEast) &&
-                Objects.equals(southWest, that.southWest);
-    }
-
-    public int hashCode() {
-        int result = northEast != null ? northEast.hashCode() : 0;
-        result = 31 * result + (southWest != null ? southWest.hashCode() : 0);
-        return result;
     }
 
     public String toString() {

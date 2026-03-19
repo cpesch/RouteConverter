@@ -67,22 +67,22 @@ public class RoutingPreferencesModel {
     public TravelMode getTravelMode() {
         RoutingService service = getRoutingService();
         TravelMode preferredTravelMode = service.getPreferredTravelMode();
-        String lookupName = preferences.get(TRAVEL_MODE_PREFERENCE + service.getName(), preferredTravelMode.getName());
+        String lookupName = preferences.get(TRAVEL_MODE_PREFERENCE + service.getName(), preferredTravelMode.name());
 
         for (TravelMode travelMode : service.getAvailableTravelModes()) {
-            if (lookupName.equals(travelMode.getName()))
+            if (lookupName.equals(travelMode.name()))
                 return travelMode;
         }
 
         if (!loggedFailedTravelModeWarning) {
-            log.warning(format("Failed to find travel mode %s; using preferred travel mode %s", lookupName, preferredTravelMode.getName()));
+            log.warning(format("Failed to find travel mode %s; using preferred travel mode %s", lookupName, preferredTravelMode.name()));
             loggedFailedTravelModeWarning = true;
         }
         return preferredTravelMode;
     }
 
     public void setTravelMode(TravelMode travelMode) {
-        preferences.put(TRAVEL_MODE_PREFERENCE + getRoutingService().getName(), travelMode.getName());
+        preferences.put(TRAVEL_MODE_PREFERENCE + getRoutingService().getName(), travelMode.name());
         fireChanged();
     }
 

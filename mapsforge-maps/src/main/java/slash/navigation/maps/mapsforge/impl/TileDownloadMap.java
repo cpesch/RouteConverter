@@ -96,7 +96,7 @@ public class TileDownloadMap extends LocaleResourceImpl implements LocalMap {
     }
 
     public String toString() {
-        return getClass().getSimpleName() + "[description=" + getDescription() +
+        return getClass().getSimpleName() + "[description=" + description() +
                 ", url=" + getUrl() + ", active=" + isActive() + "]";
     }
 }

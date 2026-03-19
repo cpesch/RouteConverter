@@ -126,8 +126,8 @@ public class DataSourcesUtil {
             return null;
 
         BoundingBoxType boundingBoxType = new ObjectFactory().createBoundingBoxType();
-        boundingBoxType.setNorthEast(asPositionType(boundingBox.getNorthEast()));
-        boundingBoxType.setSouthWest(asPositionType(boundingBox.getSouthWest()));
+        boundingBoxType.setNorthEast(asPositionType(boundingBox.northEast()));
+        boundingBoxType.setSouthWest(asPositionType(boundingBox.southWest()));
         return boundingBoxType;
     }
 

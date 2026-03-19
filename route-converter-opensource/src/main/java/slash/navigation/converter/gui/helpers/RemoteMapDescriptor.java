@@ -37,7 +37,7 @@ public class RemoteMapDescriptor implements MapDescriptor {
     }
 
     public String getIdentifier() {
-        return map.getDescription();
+        return map.description();
     }
 
     public BoundingBox getBoundingBox() {

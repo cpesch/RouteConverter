@@ -569,7 +569,7 @@ public class OptionsDialog extends SimpleDialog {
                     return;
                 }
                 TimeZoneAndId timeZoneAndId = (TimeZoneAndId) e.getItem();
-                r.getTimeZone().setTimeZone(timeZoneAndId.getTimeZone());
+                r.getTimeZone().setTimeZone(timeZoneAndId.timeZone());
             }
         });
 
@@ -665,16 +665,16 @@ public class OptionsDialog extends SimpleDialog {
         textFieldRoutingServicePath.setEnabled(service.isDownload());
         textFieldRoutingServicePath.setText(service.isDownload() ? service.getPath() : "");
         buttonChooseRoutingServicePath.setEnabled(service.isDownload());
-        checkBoxAvoidBridges.setEnabled(service.getAvailableTravelRestrictions().isAvoidBridges());
-        checkBoxAvoidBridges.setSelected(preferences.getTravelRestrictions().isAvoidBridges());
-        checkBoxAvoidFerries.setEnabled(service.getAvailableTravelRestrictions().isAvoidFerries());
-        checkBoxAvoidFerries.setSelected(preferences.getTravelRestrictions().isAvoidFerries());
-        checkBoxAvoidMotorways.setEnabled(service.getAvailableTravelRestrictions().isAvoidMotorways());
-        checkBoxAvoidMotorways.setSelected(preferences.getTravelRestrictions().isAvoidMotorways());
-        checkBoxAvoidTolls.setEnabled(service.getAvailableTravelRestrictions().isAvoidTolls());
-        checkBoxAvoidTolls.setSelected(preferences.getTravelRestrictions().isAvoidTolls());
-        checkBoxAvoidTunnels.setEnabled(service.getAvailableTravelRestrictions().isAvoidTunnels());
-        checkBoxAvoidTunnels.setSelected(preferences.getTravelRestrictions().isAvoidTunnels());
+        checkBoxAvoidBridges.setEnabled(service.getAvailableTravelRestrictions().avoidBridges());
+        checkBoxAvoidBridges.setSelected(preferences.getTravelRestrictions().avoidBridges());
+        checkBoxAvoidFerries.setEnabled(service.getAvailableTravelRestrictions().avoidFerries());
+        checkBoxAvoidFerries.setSelected(preferences.getTravelRestrictions().avoidFerries());
+        checkBoxAvoidMotorways.setEnabled(service.getAvailableTravelRestrictions().avoidMotorways());
+        checkBoxAvoidMotorways.setSelected(preferences.getTravelRestrictions().avoidMotorways());
+        checkBoxAvoidTolls.setEnabled(service.getAvailableTravelRestrictions().avoidTolls());
+        checkBoxAvoidTolls.setSelected(preferences.getTravelRestrictions().avoidTolls());
+        checkBoxAvoidTunnels.setEnabled(service.getAvailableTravelRestrictions().avoidTunnels());
+        checkBoxAvoidTunnels.setSelected(preferences.getTravelRestrictions().avoidTunnels());
         updateTravelModes();
     }
 
@@ -684,7 +684,7 @@ public class OptionsDialog extends SimpleDialog {
         RoutingService service = facade.getRoutingService();
         MutableComboBoxModel<TravelMode> travelModeModel = new DefaultComboBoxModel<>();
         List<TravelMode> availableTravelModes = service.getAvailableTravelModes();
-        availableTravelModes.sort(comparing(TravelMode::getName));
+        availableTravelModes.sort(comparing(TravelMode::name));
         for (TravelMode travelMode : availableTravelModes) {
             travelModeModel.addElement(travelMode);
         }

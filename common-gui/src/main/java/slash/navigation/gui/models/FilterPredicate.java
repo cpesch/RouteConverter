@@ -25,6 +25,6 @@ package slash.navigation.gui.models;
  * @author Christian Pesch
  */
 public interface FilterPredicate<E> {
-    String getName();
+    String name();
     boolean shouldInclude(E element);
 }

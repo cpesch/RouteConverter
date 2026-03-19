@@ -48,7 +48,7 @@ public class LocalMapListCellRenderer extends DefaultListCellRenderer {
             text = Application.getInstance().getContext().getBundle().getString("download-map-text");
             tooltip = Application.getInstance().getContext().getBundle().getString("download-map-tooltip");
         } else if (map != null) {
-            text = map.getDescription();
+            text = map.description();
             if(map.getType().isDownload())
                 text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
             tooltip = map.getUrl();

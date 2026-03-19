@@ -57,8 +57,8 @@ public class LengthToJLabelAdapter extends PositionsModelToDocumentAdapter {
     }
 
     private void updateLabel(DistanceAndTime distanceAndTime) {
-        labelLength.setText(distanceAndTime.getDistance() > 0 ? formatDistance(distanceAndTime.getDistance()) : "-");
-        labelDuration.setText(distanceAndTime.getTimeInMillis() > 0 ? formatDuration(distanceAndTime.getTimeInMillis()) : "-");
+        labelLength.setText(distanceAndTime.distance() > 0 ? formatDistance(distanceAndTime.distance()) : "-");
+        labelDuration.setText(distanceAndTime.timeInMillis() > 0 ? formatDuration(distanceAndTime.timeInMillis()) : "-");
     }
 
     protected void updateAdapterFromDelegate(TableModelEvent e) {

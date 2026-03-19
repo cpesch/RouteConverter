@@ -180,8 +180,8 @@ public class OverlayPositionsModel implements PositionsModel {
         double distance = 0.0;
         while (index <= endIndex) {
             DistanceAndTime distanceAndTime = distanceAndTimeAggregator.getAbsoluteDistancesAndTimes().get(index);
-            if (distanceAndTime != null && distanceAndTime.getDistance() != null)
-                distance = distanceAndTime.getDistance();
+            if (distanceAndTime != null && distanceAndTime.distance() != null)
+                distance = distanceAndTime.distance();
             if (index >= startIndex)
                 result[index - startIndex] = distance;
             index++;
@@ -198,8 +198,8 @@ public class OverlayPositionsModel implements PositionsModel {
 
         for (int i = 0; i < indices.length; i++) {
             DistanceAndTime distanceAndTime = distanceAndTimeAggregator.getAbsoluteDistancesAndTimes().get(indices[i]);
-            if (distanceAndTime != null && distanceAndTime.getDistance() != null)
-                result[i] = distanceAndTime.getDistance();
+            if (distanceAndTime != null && distanceAndTime.distance() != null)
+                result[i] = distanceAndTime.distance();
         }
         return result;
     }
@@ -213,8 +213,8 @@ public class OverlayPositionsModel implements PositionsModel {
         long time = 0;
         while (index <= endIndex) {
             DistanceAndTime distanceAndTime = distanceAndTimeAggregator.getAbsoluteDistancesAndTimes().get(index);
-            if (distanceAndTime != null && distanceAndTime.getTimeInMillis() != null)
-                time = distanceAndTime.getTimeInMillis();
+            if (distanceAndTime != null && distanceAndTime.timeInMillis() != null)
+                time = distanceAndTime.timeInMillis();
             if (index >= startIndex)
                 result[index - startIndex] = time;
             index++;
@@ -231,8 +231,8 @@ public class OverlayPositionsModel implements PositionsModel {
 
         for (int i = 0; i < indices.length; i++) {
             DistanceAndTime distanceAndTime = distanceAndTimeAggregator.getAbsoluteDistancesAndTimes().get(indices[i]);
-            if (distanceAndTime != null && distanceAndTime.getTimeInMillis() != null)
-                result[i] = distanceAndTime.getTimeInMillis();
+            if (distanceAndTime != null && distanceAndTime.timeInMillis() != null)
+                result[i] = distanceAndTime.timeInMillis();
         }
         return result;
     }
@@ -367,7 +367,7 @@ public class OverlayPositionsModel implements PositionsModel {
         if (getRoute().getCharacteristics().equals(Route)) {
             DistanceAndTime distanceAndTime = distanceAndTimeAggregator.getRelativeDistancesAndTimes().get(rowIndex);
             if(distanceAndTime != null)
-                return distanceAndTime.getDistance();
+                return distanceAndTime.distance();
         }
         return null;
     }

@@ -34,6 +34,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.common.BoundingBox.asBoundingBox;
 import static slash.navigation.gui.events.Range.revert;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 
@@ -64,7 +65,7 @@ public class AddPositionAction extends FrameAction {
         NavigationPosition second = positionsModel.getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
             return null;
-        return new BoundingBox(asList(second, position)).getCenter();
+        return asBoundingBox(asList(second, position)).getCenter();
     }
 
     private PositionAugmenter getBatchPositionAugmenter() {

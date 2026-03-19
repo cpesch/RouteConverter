@@ -96,11 +96,11 @@ public class MagellanExploristFormat extends BaseNmeaFormat {
 
     protected void writePosition(NmeaPosition position, PrintWriter writer) {
         ValueAndOrientation longitudeAsValueAndOrientation = position.getLongitudeAsValueAndOrientation();
-        String longitude = formatLongitude(longitudeAsValueAndOrientation.getValue());
-        String westOrEast = longitudeAsValueAndOrientation.getOrientation().value();
+        String longitude = formatLongitude(longitudeAsValueAndOrientation.value());
+        String westOrEast = longitudeAsValueAndOrientation.orientation().value();
         ValueAndOrientation latitudeAsValueAndOrientation = position.getLatitudeAsValueAndOrientation();
-        String latitude = formatLatitude(latitudeAsValueAndOrientation.getValue());
-        String northOrSouth = latitudeAsValueAndOrientation.getOrientation().value();
+        String latitude = formatLatitude(latitudeAsValueAndOrientation.value());
+        String northOrSouth = latitudeAsValueAndOrientation.orientation().value();
         String description = escape(position.getDescription(), SEPARATOR, ';');
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());

@@ -37,7 +37,7 @@ public class ThemeStyleListCellRenderer extends DefaultListCellRenderer {
 
         ThemeStyle themeStyle = (ThemeStyle) value;
         if(themeStyle != null) {
-            text = themeStyle.getDescription();
+            text = themeStyle.description();
             tooltip = themeStyle.getUrl();
         }
 

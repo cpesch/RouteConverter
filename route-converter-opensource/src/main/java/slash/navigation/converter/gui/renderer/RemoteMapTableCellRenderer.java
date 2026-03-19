@@ -49,7 +49,7 @@ public class RemoteMapTableCellRenderer extends AlternatingColorTableCellRendere
                 label.setHorizontalAlignment(LEFT);
             }
             case DESCRIPTION_COLUMN -> {
-                label.setText(map.getDescription());
+                label.setText(map.description());
                 label.setToolTipText(map.getUrl());
                 label.setHorizontalAlignment(LEFT);
             }

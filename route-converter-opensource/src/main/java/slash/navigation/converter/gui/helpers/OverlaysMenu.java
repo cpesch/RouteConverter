@@ -58,8 +58,8 @@ public class OverlaysMenu {
 
         JCheckBoxMenuItem item = new JCheckBoxMenuItem();
         item.setAction(new ToggleOverlayAction(appliedOverlaysModel, tileServer));
-        item.setText(tileServer.getId());
-        item.setToolTipText(tileServer.getDescription());
+        item.setText(tileServer.id());
+        item.setToolTipText(tileServer.description());
         menu.add(item);
 
         menu.setEnabled(!tileServers.isEmpty());

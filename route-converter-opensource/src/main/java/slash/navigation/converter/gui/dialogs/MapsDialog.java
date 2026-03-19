@@ -45,8 +45,6 @@ import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -111,7 +109,7 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableMaps = new TableRowSorter<>(tableAvailableOnlineMaps.getModel());
         sorterAvailableMaps.setSortsOnUpdates(true);
-        sorterAvailableMaps.setComparator(DESCRIPTION_COLUMN, (Comparator<TileDownloadMap>) (m1, m2) -> m1.getDescription().compareToIgnoreCase(m2.getDescription()));
+        sorterAvailableMaps.setComparator(DESCRIPTION_COLUMN, (Comparator<TileDownloadMap>) (m1, m2) -> m1.description().compareToIgnoreCase(m2.description()));
         sorterAvailableMaps.setComparator(ACTIVE_COLUMN, (Comparator<Boolean>) Boolean::compareTo);
         tableAvailableOnlineMaps.setRowSorter(sorterAvailableMaps);
         tableAvailableOnlineMaps.getSelectionModel().addListSelectionListener(e -> {
@@ -134,7 +132,7 @@ public class MapsDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorterAvailableOfflineMaps = new TableRowSorter<>(tableAvailableOfflineMaps.getModel());
         sorterAvailableOfflineMaps.setSortsOnUpdates(true);
-        sorterAvailableOfflineMaps.setComparator(LocalMapTableCellRenderer.DESCRIPTION_COLUMN, (Comparator<LocalMap>) (m1, m2) -> m1.getDescription().compareToIgnoreCase(m2.getDescription()));
+        sorterAvailableOfflineMaps.setComparator(LocalMapTableCellRenderer.DESCRIPTION_COLUMN, (Comparator<LocalMap>) (m1, m2) -> m1.description().compareToIgnoreCase(m2.description()));
         tableAvailableOfflineMaps.setRowSorter(sorterAvailableOfflineMaps);
         final LocalMap selectedMap = getMapsforgeMapManager().getDisplayedMapModel().getItem();
         if (selectedMap != null) {
@@ -177,7 +175,7 @@ public class MapsDialog extends SimpleDialog {
         TableRowSorter<TableModel> sorterDownloadableMaps = new TableRowSorter<>(tableDownloadableMaps.getModel());
         sorterDownloadableMaps.setSortsOnUpdates(true);
         sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.DATASOURCE_COLUMN, (Comparator<RemoteMap>) (m1, m2) -> m1.getDataSource().getName().compareToIgnoreCase(m2.getDataSource().getName()));
-        sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.DESCRIPTION_COLUMN, (Comparator<RemoteMap>) (m1, m2) -> m1.getDescription().compareToIgnoreCase(m2.getDescription()));
+        sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.DESCRIPTION_COLUMN, (Comparator<RemoteMap>) (m1, m2) -> m1.description().compareToIgnoreCase(m2.description()));
         sorterDownloadableMaps.setComparator(RemoteMapTableCellRenderer.SIZE_COLUMN, new Comparator<RemoteMap>() {
             private long getSize(RemoteMap map) {
                 Checksum checksum = map.getDownloadable().getLatestChecksum();

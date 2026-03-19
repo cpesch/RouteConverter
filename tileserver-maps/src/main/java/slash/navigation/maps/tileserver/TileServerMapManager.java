@@ -54,7 +54,7 @@ public class TileServerMapManager {
         initializeOnlineMaps();
         itemPreferencesMediator = new ItemPreferencesMediator<TileServer>(availableOverlaysModel, appliedOverlaysModel, APPLIED_OVERLAY_PREFERENCE) {
             protected String itemToString(TileServer tileServer) {
-                return tileServer.getId();
+                return tileServer.id();
             }
         };
     }

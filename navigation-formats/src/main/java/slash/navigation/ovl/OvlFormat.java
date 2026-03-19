@@ -33,6 +33,7 @@ import static java.util.Collections.singletonList;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
+import static slash.navigation.common.BoundingBox.asBoundingBox;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 import static slash.navigation.ovl.OvlSection.GROUP;
 import static slash.navigation.ovl.OvlSection.TEXT;
@@ -284,7 +285,7 @@ public class OvlFormat extends IniFileFormat<OvlRoute> implements MultipleRoutes
         writeMissingAttribute(route.getMapLage(), writer, "MapName", "Bundesrepublik 1:1 Mio");
         writeMissingAttribute(route.getMapLage(), writer, "DimmFc", "100");
         writeMissingAttribute(route.getMapLage(), writer, "ZoomFc", "100");
-        NavigationPosition center = new BoundingBox(route.getPositions()).getCenter();
+        NavigationPosition center = asBoundingBox(route.getPositions()).getCenter();
         writeMissingAttribute(route.getMapLage(), writer, "CenterLat", formatPositionAsString(center.getLatitude()));
         writeMissingAttribute(route.getMapLage(), writer, "CenterLong", formatPositionAsString(center.getLongitude()));
         writer.println(CREATOR + NAME_VALUE_SEPARATOR + GENERATED_BY);

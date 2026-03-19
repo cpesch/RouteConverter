@@ -72,8 +72,8 @@ class GraphDescriptor {
            unfortunately, files like https://download.geofabrik.de/north-america/us/alaska-latest.osm.pbf
            claim too large bounding boxes */
         return getBoundingBox() != null &&
-                !(getBoundingBox().getNorthEast().getLongitude() >= 179.9999 ||
-                        getBoundingBox().getSouthWest().getLongitude() <= -179.9999);
+                !(getBoundingBox().northEast().getLongitude() >= 179.9999 ||
+                        getBoundingBox().southWest().getLongitude() <= -179.9999);
     }
 
     public BoundingBox getBoundingBox() {

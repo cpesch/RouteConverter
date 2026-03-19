@@ -34,7 +34,7 @@ public class ThemeStyleCategoryImpl implements ThemeStyleCategory {
         this.category = category;
     }
 
-    public String getDescription() {
+    public String description() {
         return category;
     }
 

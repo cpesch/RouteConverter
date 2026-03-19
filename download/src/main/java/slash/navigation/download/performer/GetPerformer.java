@@ -230,29 +230,18 @@ public class GetPerformer implements ActionPerformer {
             download.getFile().setActualChecksum(extractChecksum(request));
     }
 
-    private static class Result {
-        public final Get request;
-        public final boolean success;
-        public final boolean notModified;
-        public final Long lastModified;
+    private record Result(Get request, boolean success, boolean notModified, Long lastModified) {
+            public Result(Get request, boolean success) {
+                this(request, success, null);
+            }
 
-        public Result(Get request, boolean success) {
-            this(request, success, null);
-        }
+            public Result(Get request, boolean success, Long lastModified) {
+                this(request, success, false, lastModified);
+            }
 
-        public Result(Get request, boolean success, Long lastModified) {
-            this(request, success, false, lastModified);
-        }
+            private Result(Get request, boolean success, boolean notModified) {
+                this(request, success, notModified, null);
+            }
 
-        private Result(Get request, boolean success, boolean notModified) {
-            this(request, success, notModified, null);
-        }
-
-        private Result(Get request, boolean success, boolean notModified, Long lastModified) {
-            this.request = request;
-            this.success = success;
-            this.notModified = notModified;
-            this.lastModified = lastModified;
-        }
     }
 }

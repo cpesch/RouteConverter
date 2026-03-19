@@ -61,6 +61,6 @@ public class DisplayMapAction extends DialogAction {
             return;
         LocalMap map = (LocalMap) table.getModel().getValueAt(table.convertRowIndexToView(selectedRow), 0);
         mapManager.getDisplayedMapModel().setItem(map);
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("map-displayed"), map.getDescription()), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("map-displayed"), map.description()), getAction());
     }
 }

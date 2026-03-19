@@ -33,7 +33,7 @@ public class MapsforgeMapViewTest {
     public void testBoundingBox() {
         BoundingBox from = new BoundingBox(new SimpleNavigationPosition(10.18587, 53.49249), new SimpleNavigationPosition(10.06767, 53.40451));
         assertEquals(from, from);
-        org.mapsforge.core.model.BoundingBox to = mapView.asBoundingBox(from);
+        org.mapsforge.core.model.BoundingBox to = mapView.asMapsforgeBoundingBox(from);
         BoundingBox roundtrip = toBoundingBox(to);
         assertEquals(roundtrip, from);
     }
