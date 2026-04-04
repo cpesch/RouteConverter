@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import slash.common.helpers.DateTimeParserFormatter;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
@@ -146,16 +147,12 @@ public class PositionHelper {
         return format("%d bpm", round(heartBeat));
     }
 
-    public static String extractPattern(DateFormat dateFormat) {
-        return dateFormat instanceof SimpleDateFormat ? ((SimpleDateFormat)dateFormat).toLocalizedPattern() : dateFormat.toString();
-    }
-
     // date
 
     public static String formatDate(CompactCalendar time, String timeZone) {
         if(time == null)
             return "?";
-        return Transfer.getDateFormat(timeZone).format(time.getTime());
+        return Transfer.getDateFormat(timeZone).format(time);
     }
 
     public static String formatDate(CompactCalendar time) {

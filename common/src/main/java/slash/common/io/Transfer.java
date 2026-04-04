@@ -20,6 +20,8 @@
 
 package slash.common.io;
 
+import slash.common.helpers.DateTimeParserFormatter;
+import slash.common.helpers.DateTimeParserFormatterFactory;
 import slash.common.type.CompactCalendar;
 
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -29,7 +31,6 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.*;
@@ -41,8 +42,6 @@ import static java.lang.Double.isNaN;
 import static java.lang.Integer.toHexString;
 import static java.lang.Math.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.text.DateFormat.MEDIUM;
-import static java.text.DateFormat.SHORT;
 import static java.util.Calendar.*;
 import static java.util.Locale.US;
 import static slash.common.type.CompactCalendar.UTC;
@@ -381,57 +380,22 @@ public class Transfer {
         return builder.toString();
     }
 
-    private static DateFormat dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
-    private static String currentDateTimeTimeZone = "";
-    private static DateFormat dateFormat = DateFormat.getDateInstance(SHORT);
-    private static String currentDateTimeZone = "";
-    private static DateFormat timeFormat = DateFormat.getTimeInstance(MEDIUM);
-    private static String currentTimeTimeZone = "";
-    private static Locale currentLocale;
+    private static final DateTimeParserFormatter dateTimeFormat = DateTimeParserFormatterFactory.createDateTimeFormat();
+    private static final DateTimeParserFormatter dateFormat = DateTimeParserFormatterFactory.createDateFormat();
+    private static final DateTimeParserFormatter timeFormat = DateTimeParserFormatterFactory.createTimeFormat();
 
-    private static void reinitializeDateFormat() {
-        dateTimeFormat = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
-        currentDateTimeTimeZone = "";
-        dateFormat = DateFormat.getDateInstance(SHORT);
-        currentDateTimeZone = "";
-        timeFormat = DateFormat.getTimeInstance(MEDIUM);
-        currentTimeTimeZone = "";
-    }
-
-    private static void checkDateFormatLocale() {
-        if (!Objects.equals(currentLocale, Locale.getDefault())) {
-            reinitializeDateFormat();
-            currentLocale = Locale.getDefault();
-        }
-    }
-
-    public synchronized static DateFormat getDateTimeFormat(String timeZonePreference) {
-        checkDateFormatLocale();
-
-        if (!currentDateTimeTimeZone.equals(timeZonePreference)) {
-            dateTimeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
-            currentDateTimeTimeZone = timeZonePreference;
-        }
+    public synchronized static DateTimeParserFormatter getDateTimeFormat(String timeZonePreference) {
+        dateTimeFormat.setZone(timeZonePreference);
         return dateTimeFormat;
     }
 
-    public synchronized static DateFormat getDateFormat(String timeZonePreference) {
-        checkDateFormatLocale();
-
-        if (!currentDateTimeZone.equals(timeZonePreference)) {
-            dateFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
-            currentDateTimeZone = timeZonePreference;
-        }
+    public synchronized static DateTimeParserFormatter getDateFormat(String timeZonePreference) {
+        dateFormat.setZone(timeZonePreference);
         return dateFormat;
     }
 
-    public synchronized static DateFormat getTimeFormat(String timeZonePreference) {
-        checkDateFormatLocale();
-
-        if (!currentTimeTimeZone.equals(timeZonePreference)) {
-            timeFormat.setTimeZone(TimeZone.getTimeZone(timeZonePreference));
-            currentTimeTimeZone = timeZonePreference;
-        }
+    public synchronized static DateTimeParserFormatter getTimeFormat(String timeZonePreference) {
+        timeFormat.setZone(timeZonePreference);
         return timeFormat;
     }
 
