@@ -32,6 +32,7 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
 import slash.navigation.converter.gui.models.TimeZoneModel;
 
+import javax.swing.*;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.logging.Logger;
@@ -198,8 +199,8 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return time != null ? formatDateTime(time) : "";
     }
 
-    private CompactCalendar parseDateTime(String stringValue) throws DateTimeParserException {
-        Calendar parsed = getDateTimeFormat().parse(stringValue);
+    private CompactCalendar parseDateTime(String stringValue, DateTimeParserFormatter formatter, CompactCalendar referenceTimestamp) throws DateTimeParserException {
+        Calendar parsed = formatter.parse(stringValue, referenceTimestamp);
         return fromMillisAndTimeZone(parsed.getTimeInMillis(), "UTC");
     }
 
@@ -208,7 +209,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                return parseDateTime(stringValue);
+                return parseDateTime(stringValue, getDateTimeFormat(), null);
             } catch (DateTimeParserException e) {
                 handleDateTimeParseException(stringValue, "date-time-format-error", getDateTimeFormat());
             }
@@ -232,8 +233,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                // TODO - das ist nicht locale safe
-                return parseDateTime(stringValue+", "+formatTime(getReferenceTime(positionTime)));
+                return parseDateTime(stringValue, getDateFormat(), getReferenceTime(positionTime));
             } catch (DateTimeParserException e) {
                 handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
             }
@@ -267,7 +267,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                return parseDateTime(formatDate(getReferenceTime(positionTime))+", "+stringValue);
+                return parseDateTime(stringValue, getTimeFormat(), getReferenceTime(positionTime));
             } catch (DateTimeParserException e) {
                 handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
             }
@@ -301,8 +301,14 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     }
 
     private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateTimeParserFormatter format) {
-        showMessageDialog(RouteConverter.getInstance().getFrame(),
-                MessageFormat.format(RouteConverter.getBundle().getString(messageBundleKey),
-                        stringValue, format.getPatternInfo()), RouteConverter.getTitle(), ERROR_MESSAGE);
+        RouteConverter instance = RouteConverter.getInstance();
+        if (instance != null) {
+            showMessageDialog(instance.getFrame(),
+                    MessageFormat.format(RouteConverter.getBundle().getString(messageBundleKey),
+                            stringValue, format.getPatternInfo()), RouteConverter.getTitle(), ERROR_MESSAGE);
+        }
+
+        // Occurs during unittests ...
+        throw new RuntimeException(stringValue+" is not a pattern: "+format.getPatternInfo());
     }
 }

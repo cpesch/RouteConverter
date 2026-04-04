@@ -47,7 +47,7 @@ public class PositionHelperTest {
     }
 
     private CompactCalendar parseDateTime(String stringValue, String timeZonePreference) throws DateTimeParserException {
-        Calendar parsed = Transfer.getDateTimeFormat(timeZonePreference).parse(stringValue);
+        Calendar parsed = Transfer.getDateTimeFormat(timeZonePreference).parse(stringValue, null);
         return fromCalendar(parsed);
     }
 

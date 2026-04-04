@@ -20,11 +20,9 @@
 
 package slash.navigation.converter.gui.panels;
 
-import junit.framework.TestCase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
@@ -272,6 +270,51 @@ public class PositionsModelCallbackImplTest {
     }
 
     @Test
+    public void testSetDateUTC_RootLocale() {
+        Locale.setDefault(Locale.ROOT);
+        timeZoneModel.setTimeZone(ZONE_UTC);
+        when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
+
+        sut.setValueAt(position, DATE_COLUMN_INDEX, "2025-01-01");
+        verify(position, atLeast(1)).getTime();
+        verifyNoMoreInteractions(position);
+        clearInvocations(position);
+
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "25-01-01", cal(2025, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "2025-1-1", cal(2025, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "25-1-1", cal(2025, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "23-8-10", cal(2023, 8, 10, 1, 2, 3));
+
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "1998-1-1", cal(1998, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "98-01-01", cal(1998, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "98-1-1", cal(1998, 1, 1, 1, 2, 3));
+
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "1945-1-1", cal(1945, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "45-01-01", cal(2045, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "45-1-1", cal(2045, 1, 1, 1, 2, 3));
+
+        runSetTimeTestStep(DATE_COLUMN_INDEX, null, null);
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "", null);
+
+        // Variant: if no value has been set yet ==> then 00:00:00 is assumed in the input time zone.
+        when(position.getTime()).thenReturn(null);
+
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "25-01-01", cal(2025, 1, 1, 0, 0, 0));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "2025-01-01", cal(2025, 1, 1, 0, 0, 0));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "2025-1-1", cal(2025, 1, 1, 0, 0, 0));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "25-1-1", cal(2025, 1, 1, 0, 0, 0));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "23-8-10", cal(2023, 8, 10, 0, 0, 0));
+
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "1998-1-1", cal(1998, 1, 1, 0, 0, 0));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "98-01-01", cal(1998, 1, 1, 0, 0, 0));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "98-1-1", cal(1998, 1, 1, 0, 0, 0));
+
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "1945-1-1", cal(1945, 1, 1, 0, 0, 0));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "45-01-01", cal(2045, 1, 1, 0, 0, 0));
+        runSetTimeTestStep(DATE_COLUMN_INDEX, "45-1-1", cal(2045, 1, 1, 0, 0, 0));
+    }
+
+    @Test
     public void testSetDateBerlin() {
         timeZoneModel.setTimeZone(ZONE_BERLIN);
         when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
@@ -321,6 +364,40 @@ public class PositionsModelCallbackImplTest {
 
     @Test
     public void testSetTimeUtc() {
+        timeZoneModel.setTimeZone(ZONE_UTC);
+        when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
+
+        sut.setValueAt(position, TIME_COLUMN_INDEX, "01:02:03");
+        verify(position, atLeast(1)).getTime();
+        verifyNoMoreInteractions(position);
+        clearInvocations(position);
+
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "1:2:3", cal(2025, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "15:25:35", cal(2025, 1, 1, 15, 25, 35));
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "15:65:78", cal(2025, 1, 1, 16, 6, 18));
+
+        // Value in summer time (even if UTC doesn't know that)
+        when(position.getTime()).thenReturn(cal(2025, 8, 1, 1, 2, 3));
+
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "1:2:3", cal(2025, 8, 1, 1, 2, 3));
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "15:25:35", cal(2025, 8, 1, 15, 25, 35));
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "15:65:78", cal(2025, 8, 1, 16, 6, 18));
+
+
+        runSetTimeTestStep(TIME_COLUMN_INDEX, null, null);
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "", null);
+
+        // Variant if no value has yet been set ==> then 1st January 1970 will be used as the date
+        when(position.getTime()).thenReturn(null);
+
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "1:2:3", cal(1970, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "15:25:35", cal(1970, 1, 1, 15, 25, 35));
+        runSetTimeTestStep(TIME_COLUMN_INDEX, "15:65:78", cal(1970, 1, 1, 16, 6, 18));
+    }
+
+    @Test
+    public void testSetTimeUtc_RootLocale() {
+        Locale.setDefault(Locale.ROOT);
         timeZoneModel.setTimeZone(ZONE_UTC);
         when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
 
@@ -444,6 +521,56 @@ public class PositionsModelCallbackImplTest {
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 1:2:3", cal(2025, 8, 1, 1, 2, 3));
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 15:25:35", cal(2025, 8, 1, 15, 25, 35));
         runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1.8.2025, 15:65:78", cal(2025, 8, 1, 16, 6, 18));
+    }
+
+    @Test
+    public void testSetDateTimeUtc_LocaleRoot() {
+        Locale.setDefault(Locale.ROOT);
+        timeZoneModel.setTimeZone(ZONE_UTC);
+
+        when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
+
+        sut.setValueAt(position, DATE_TIME_COLUMN_INDEX, "2025-01-01 01:02:03");
+        verify(position, atLeast(1)).getTime();
+        verifyNoMoreInteractions(position);
+        clearInvocations(position);
+
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "25-01-01 1:2:3", cal(2025, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "25-01-01 15:25:35", cal(2025, 1, 1, 15, 25, 35));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "25-01-01 15:65:78", cal(2025, 1, 1, 16, 6, 18));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "25-1-1 1:2:3", cal(2025, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2025-1-1 15:25:35", cal(2025, 1, 1, 15, 25, 35));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2025-1-1 15:65:78", cal(2025, 1, 1, 16, 6, 18));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "45-1-1 1:2:3", cal(2045, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1945-1-1 1:2:3", cal(1945, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "98-1-1 1:2:3", cal(1998, 1, 1, 1, 2, 3));
+
+        // Value in summer time (even if UTC doesn't know that)
+        when(position.getTime()).thenReturn(cal(2025, 8, 1, 1, 2, 3));
+
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2025-8-1 1:2:3", cal(2025, 8, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2025-8-1 15:25:35", cal(2025, 8, 1, 15, 25, 35));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2025-8-1 15:65:78", cal(2025, 8, 1, 16, 6, 18));
+
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, null, null);
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "", null);
+
+        // Variant if no value has yet been set
+        when(position.getTime()).thenReturn(null);
+
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "25-01-01 1:2:3", cal(2025, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "25-01-01 15:25:35", cal(2025, 1, 1, 15, 25, 35));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "25-01-01 15:65:78", cal(2025, 1, 1, 16, 6, 18));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "25-1-1 1:2:3", cal(2025, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2025-1-1 15:25:35", cal(2025, 1, 1, 15, 25, 35));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2025-1-1 15:65:78", cal(2025, 1, 1, 16, 6, 18));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "45-1-1 1:2:3", cal(2045, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "1945-1-1 1:2:3", cal(1945, 1, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "98-1-1 1:2:3", cal(1998, 1, 1, 1, 2, 3));
+
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2025-8-1 1:2:3", cal(2025, 8, 1, 1, 2, 3));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2025-8-1 15:25:35", cal(2025, 8, 1, 15, 25, 35));
+        runSetTimeTestStep(DATE_TIME_COLUMN_INDEX, "2025-8-1 15:65:78", cal(2025, 8, 1, 16, 6, 18));
     }
 
     @Test
