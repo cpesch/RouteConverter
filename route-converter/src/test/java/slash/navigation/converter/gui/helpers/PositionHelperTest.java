@@ -34,7 +34,7 @@ import static java.text.DateFormat.*;
 import static java.util.Locale.GERMAN;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.calendar;
-import static slash.common.type.CompactCalendar.fromCalendar;
+import static slash.common.type.CompactCalendar.*;
 
 public class PositionHelperTest {
 
@@ -48,7 +48,8 @@ public class PositionHelperTest {
 
     private CompactCalendar parseDateTime(String stringValue, String timeZonePreference) throws DateTimeParserException {
         Calendar parsed = Transfer.getDateTimeFormat(timeZonePreference).parse(stringValue, null);
-        return fromCalendar(parsed);
+        // need result in UTC
+        return fromMillis(parsed.getTimeInMillis());
     }
 
     @Test
