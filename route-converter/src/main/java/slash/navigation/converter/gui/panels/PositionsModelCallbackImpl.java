@@ -19,6 +19,8 @@
 */
 package slash.navigation.converter.gui.panels;
 
+import slash.common.helpers.DateTimeParserException;
+import slash.common.helpers.DateTimeParserFormatter;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.DegreeFormat;
@@ -30,13 +32,9 @@ import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
 import slash.navigation.converter.gui.models.TimeZoneModel;
 
-import java.text.DateFormat;
+import javax.swing.*;
 import java.text.MessageFormat;
-import java.text.ParseException;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -193,7 +191,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     }
 
     private String formatDateTime(CompactCalendar time) {
-        return getDateTimeFormat().format(time.getTime());
+        return getDateTimeFormat().format(time);
     }
 
     private String extractDateTime(NavigationPosition position) {
@@ -201,11 +199,9 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return time != null ? formatDateTime(time) : "";
     }
 
-    private CompactCalendar parseDateTime(String stringValue) throws ParseException {
-        Date parsed = getDateTimeFormat().parse(stringValue);
-        Calendar calendar = Calendar.getInstance(timeZoneModel.getTimeZone());
-        calendar.setTime(parsed);
-        return fromMillisAndTimeZone(calendar.getTimeInMillis(), "UTC");
+    private CompactCalendar parseDateTime(String stringValue, DateTimeParserFormatter formatter, CompactCalendar referenceTimestamp) throws DateTimeParserException {
+        Calendar parsed = formatter.parse(stringValue, referenceTimestamp);
+        return fromMillisAndTimeZone(parsed.getTimeInMillis(), "UTC");
     }
 
     private CompactCalendar parseDateTime(Object objectValue, String stringValue) {
@@ -213,8 +209,8 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                return parseDateTime(stringValue);
-            } catch (ParseException e) {
+                return parseDateTime(stringValue, getDateTimeFormat(), null);
+            } catch (DateTimeParserException e) {
                 handleDateTimeParseException(stringValue, "date-time-format-error", getDateTimeFormat());
             }
         }
@@ -224,7 +220,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     private String formatDate(CompactCalendar time) {
         if(time == null)
             return "?";
-        return getDateFormat().format(time.getTime());
+        return getDateFormat().format(time);
     }
 
     private String extractDate(NavigationPosition position) {
@@ -237,8 +233,8 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                return parseDateTime(stringValue+", "+formatTime(getReferenceTime(positionTime)));
-            } catch (ParseException e) {
+                return parseDateTime(stringValue, getDateFormat(), getReferenceTime(positionTime));
+            } catch (DateTimeParserException e) {
                 handleDateTimeParseException(stringValue, "date-format-error", getDateFormat());
             }
         }
@@ -258,7 +254,7 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     private String formatTime(CompactCalendar time) {
         if(time == null)
             return "?";
-        return getTimeFormat().format(time.getTime());
+        return getTimeFormat().format(time);
     }
 
     private String extractTime(NavigationPosition position) {
@@ -271,25 +267,25 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             return (CompactCalendar) objectValue;
         } else if (stringValue != null) {
             try {
-                return parseDateTime(formatDate(getReferenceTime(positionTime))+", "+stringValue);
-            } catch (ParseException e) {
+                return parseDateTime(stringValue, getTimeFormat(), getReferenceTime(positionTime));
+            } catch (DateTimeParserException e) {
                 handleDateTimeParseException(stringValue, "time-format-error", getTimeFormat());
             }
         }
         return null;
     }
 
-    private DateFormat getDateTimeFormat() {
+    private DateTimeParserFormatter getDateTimeFormat() {
         String timeZoneId = timeZoneModel.getTimeZoneId();
         return Transfer.getDateTimeFormat(timeZoneId);
     }
 
-    private DateFormat getDateFormat() {
+    private DateTimeParserFormatter getDateFormat() {
         String timeZoneId = timeZoneModel.getTimeZoneId();
         return Transfer.getDateFormat(timeZoneId);
     }
 
-    private DateFormat getTimeFormat() {
+    private DateTimeParserFormatter getTimeFormat() {
         String timeZoneId = timeZoneModel.getTimeZoneId();
         return Transfer.getTimeFormat(timeZoneId);
     }
@@ -304,9 +300,15 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
         return UnitSystem.getUnitSystemsWithPreferredUnitSystem(preferred);
     }
 
-    private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateFormat format) {
-        showMessageDialog(RouteConverter.getInstance().getFrame(),
-                MessageFormat.format(RouteConverter.getBundle().getString(messageBundleKey),
-                        stringValue, PositionHelper.extractPattern(format)), RouteConverter.getTitle(), ERROR_MESSAGE);
+    private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateTimeParserFormatter format) {
+        RouteConverter instance = RouteConverter.getInstance();
+        if (instance != null) {
+            showMessageDialog(instance.getFrame(),
+                    MessageFormat.format(RouteConverter.getBundle().getString(messageBundleKey),
+                            stringValue, format.getPatternInfo()), RouteConverter.getTitle(), ERROR_MESSAGE);
+        }
+
+        // Occurs during unittests ...
+        throw new RuntimeException(stringValue+" is not a pattern: "+format.getPatternInfo());
     }
 }

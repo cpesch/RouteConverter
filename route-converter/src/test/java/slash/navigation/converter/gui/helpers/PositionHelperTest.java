@@ -21,18 +21,20 @@
 package slash.navigation.converter.gui.helpers;
 
 import org.junit.Test;
+import slash.common.helpers.DateTimeParserException;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Calendar;
 import java.util.Date;
 
 import static java.text.DateFormat.*;
 import static java.util.Locale.GERMAN;
 import static org.junit.Assert.assertEquals;
 import static slash.common.TestCase.calendar;
-import static slash.common.type.CompactCalendar.fromDate;
+import static slash.common.type.CompactCalendar.*;
 
 public class PositionHelperTest {
 
@@ -44,13 +46,14 @@ public class PositionHelperTest {
         return defaultFormat.format(date);
     }
 
-    private CompactCalendar parseDateTime(String stringValue, String timeZonePreference) throws ParseException {
-        Date parsed = Transfer.getDateTimeFormat(timeZonePreference).parse(stringValue);
-        return fromDate(parsed);
+    private CompactCalendar parseDateTime(String stringValue, String timeZonePreference) throws DateTimeParserException {
+        Calendar parsed = Transfer.getDateTimeFormat(timeZonePreference).parse(stringValue, null);
+        // need result in UTC
+        return fromMillis(parsed.getTimeInMillis());
     }
 
     @Test
-    public void testParseTimeUTC() throws ParseException {
+    public void testParseTimeUTC() throws Exception {
         CompactCalendar expectedCal = calendar(2010, 9, 18, 3, 13, 33, 0, "UTC");
         CompactCalendar actualCal = parseDateTime(asDefaultLocaleTime("18.09.2010 03:13:33"), "UTC");
         String expected = getDateTimeInstance().format(expectedCal.getTime());
@@ -60,7 +63,7 @@ public class PositionHelperTest {
     }
 
     @Test
-    public void testParseTimeLocalTime() throws ParseException {
+    public void testParseTimeLocalTime() throws Exception {
         CompactCalendar expectedCal = calendar(2010, 9, 18, 2, 13, 32, 0, "UTC");
         CompactCalendar actualCal = parseDateTime(asDefaultLocaleTime("18.09.2010 03:13:32"), "GMT+1");
         String expected = getDateTimeInstance().format(expectedCal.getTime());
