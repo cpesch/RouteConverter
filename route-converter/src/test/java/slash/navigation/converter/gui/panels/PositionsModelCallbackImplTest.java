@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.panels;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
@@ -38,6 +39,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static org.junit.Assert.*;
 
 public class PositionsModelCallbackImplTest {
+    private static final Locale SWEDISH = new Locale("sv", "SE");
     private static final TimeZone ZONE_UTC = TimeZone.getTimeZone("UTC");
     private static final TimeZone ZONE_BERLIN = TimeZone.getTimeZone("Europe/Berlin");
 
@@ -270,9 +272,12 @@ public class PositionsModelCallbackImplTest {
     }
 
     @Test
-    public void testSetDateUTC_RootLocale() {
-        Locale.setDefault(Locale.ROOT);
+    public void testSetDateUTC_SWEDISH() {
+        Locale.setDefault(SWEDISH);
         timeZoneModel.setTimeZone(ZONE_UTC);
+
+        assertTrue(Transfer.getDateFormat(ZONE_UTC.getID()).getPatternInfo().startsWith("y-"));
+
         when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
 
         sut.setValueAt(position, DATE_COLUMN_INDEX, "2025-01-01");
@@ -396,8 +401,8 @@ public class PositionsModelCallbackImplTest {
     }
 
     @Test
-    public void testSetTimeUtc_RootLocale() {
-        Locale.setDefault(Locale.ROOT);
+    public void testSetTimeUtc_SWEDISH() {
+        Locale.setDefault(SWEDISH);
         timeZoneModel.setTimeZone(ZONE_UTC);
         when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
 
@@ -524,9 +529,11 @@ public class PositionsModelCallbackImplTest {
     }
 
     @Test
-    public void testSetDateTimeUtc_LocaleRoot() {
-        Locale.setDefault(Locale.ROOT);
+    public void testSetDateTimeUtc_LocaleSWEDISH() {
+        Locale.setDefault(SWEDISH);
         timeZoneModel.setTimeZone(ZONE_UTC);
+
+        assertTrue(Transfer.getDateFormat(ZONE_UTC.getID()).getPatternInfo().startsWith("y-"));
 
         when(position.getTime()).thenReturn(cal(2025, 1, 1, 1, 2, 3));
 

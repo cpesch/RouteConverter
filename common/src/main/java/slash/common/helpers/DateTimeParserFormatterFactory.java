@@ -16,27 +16,32 @@ public class DateTimeParserFormatterFactory {
         LEGACY_ROUTECONVERTER_LOCALE
     }
 
-    private static final Locale startupLocale = Locale.getDefault(Locale.Category.FORMAT);
+    private static final Locale startupLocale = getCurrentLocale();
     private static final FormatterType formatterType = FormatterType.LEGACY_ROUTECONVERTER_LOCALE;
 
     public static DateTimeParserFormatter createDateTimeFormat() {
         return switch(formatterType) {
-            case LEGACY_ROUTECONVERTER_LOCALE -> new LegacyParserFormatter(LegacyParserFormatter.ParserType.DATETIME, () -> Locale.getDefault(Locale.Category.FORMAT));
+            case LEGACY_ROUTECONVERTER_LOCALE -> new LegacyParserFormatter(LegacyParserFormatter.ParserType.DATETIME, () -> getCurrentLocale());
             case LEGACY_SYSTEMLOCALE -> new LegacyParserFormatter(LegacyParserFormatter.ParserType.DATETIME, () -> startupLocale);
         };
     }
 
     public static DateTimeParserFormatter createDateFormat() {
         return switch(formatterType) {
-            case LEGACY_ROUTECONVERTER_LOCALE -> new LegacyParserFormatter(LegacyParserFormatter.ParserType.DATE, () -> Locale.getDefault(Locale.Category.FORMAT));
+            case LEGACY_ROUTECONVERTER_LOCALE -> new LegacyParserFormatter(LegacyParserFormatter.ParserType.DATE, () -> getCurrentLocale());
             case LEGACY_SYSTEMLOCALE -> new LegacyParserFormatter(LegacyParserFormatter.ParserType.DATE, () -> startupLocale);
         };
     }
 
     public static DateTimeParserFormatter createTimeFormat() {
         return switch(formatterType) {
-            case LEGACY_ROUTECONVERTER_LOCALE -> new LegacyParserFormatter(LegacyParserFormatter.ParserType.TIME, () -> Locale.getDefault(Locale.Category.FORMAT));
+            case LEGACY_ROUTECONVERTER_LOCALE -> new LegacyParserFormatter(LegacyParserFormatter.ParserType.TIME, () -> getCurrentLocale());
             case LEGACY_SYSTEMLOCALE -> new LegacyParserFormatter(LegacyParserFormatter.ParserType.TIME, () -> startupLocale);
         };
+    }
+
+    private static Locale getCurrentLocale() {
+        final Locale currentLocale = Locale.getDefault(Locale.Category.FORMAT);
+        return currentLocale.equals(Locale.ROOT) ? startupLocale : currentLocale;
     }
 }
