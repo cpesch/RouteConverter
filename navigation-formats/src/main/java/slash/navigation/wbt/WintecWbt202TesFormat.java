@@ -20,15 +20,15 @@
 
 package slash.navigation.wbt;
 
-import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.Wgs84Route;
+import static java.lang.Math.abs;
+import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Calendar.YEAR;
 
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import static java.lang.Math.abs;
-import static java.nio.ByteOrder.LITTLE_ENDIAN;
-import static java.util.Calendar.YEAR;
+import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.Wgs84Route;
 
 /**
  * Reads and writes Wintec WBT-202 (.tes) files.
@@ -77,6 +77,11 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
                     position.getTime().getCalendar().get(YEAR) > 1990;
 
             if (valid && previousPosition != null) {
+				Double dist = position.calculateDistance(previousPosition);
+				if (dist != null && dist.equals(0d)) {
+					previousPosition = position;
+            		continue;
+            	}
                 Double speed = position.calculateSpeed(previousPosition);
                 valid = speed != null && speed < 1500.0 &&
                         previousPosition.getTime().getTimeInMillis() < position.getTime().getTimeInMillis();
