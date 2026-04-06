@@ -137,6 +137,11 @@ public class MapsforgeMapManager {
     public void setThemeStyles(List<ThemeStyle> themeStyles) {
         clearThemeStyles();
 
+        if (themeStyles == null || themeStyles.isEmpty()) {
+            // No theme styles to set, skip initialization
+            return;
+        }
+
         List<ThemeStyle> styles = new ArrayList<>(themeStyles);
         styles.sort(Comparator.comparing(ThemeStyle::description));
         for (ThemeStyle themeStyle : styles)

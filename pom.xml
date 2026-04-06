@@ -74,7 +74,7 @@
         <jackson-annotations.version>2.20</jackson-annotations.version>
         <jaxb-api.version>4.0.4</jaxb-api.version>
         <jaxb-impl.version>4.0.6</jaxb-impl.version>
-        <mapsforge.version>0.26.1</mapsforge.version>
+        <mapsforge.version>0.27.0</mapsforge.version>
         <slf4j.version>2.0.17</slf4j.version>
     </properties>
 
