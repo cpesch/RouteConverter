@@ -537,7 +537,6 @@ public class MapsforgeMapView extends BaseMapView {
         public Set<String> getCategories(XmlRenderThemeStyleMenu renderThemeStyleMenu) {
             Map<String, XmlRenderThemeStyleLayer> layers = renderThemeStyleMenu.getLayers();
             List<ThemeStyle> themeStyles = layers.values().stream().
-                    filter(layer -> !layer.getOverlays().isEmpty()).
                     map(layer -> (ThemeStyle) new ThemeStyleImpl(renderThemeStyleMenu, layer)).
                     toList();
             getMapManager().setThemeStyles(themeStyles);

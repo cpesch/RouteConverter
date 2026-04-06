@@ -134,13 +134,11 @@ public class MapsforgeMapManager {
         getAvailableThemeStyleCategoriesModel().clear();
     }
 
-    public void setThemeStyles(List<ThemeStyle> themeStyles) {
+    public synchronized void setThemeStyles(List<ThemeStyle> themeStyles) {
         clearThemeStyles();
 
-        if (themeStyles == null || themeStyles.isEmpty()) {
-            // No theme styles to set, skip initialization
+        if (themeStyles == null || themeStyles.isEmpty())
             return;
-        }
 
         List<ThemeStyle> styles = new ArrayList<>(themeStyles);
         styles.sort(Comparator.comparing(ThemeStyle::description));
