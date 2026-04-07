@@ -27,6 +27,7 @@ import static java.util.Calendar.YEAR;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.Wgs84Route;
 
@@ -69,31 +70,49 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
             short altitude = buffer.getShort();
             BaseNavigationPosition position = createWaypoint(time, latitude, longitude, altitude, 1, false);
 
-            boolean valid = position.getLatitude() < 90.0 && position.getLatitude() > -90.0 &&
-                    position.getLongitude() < 180.0 && position.getLongitude() > -180.0 &&
-                    position.getElevation() < 15000.0 &&
-                    abs(position.getLatitude()) > 0.00001 &&
-                    abs(position.getLongitude()) > 0.00001 &&
-                    position.getTime().getCalendar().get(YEAR) > 1990;
-
-            if (valid && previousPosition != null) {
-				Double dist = position.calculateDistance(previousPosition);
-				if (dist != null && dist.equals(0d)) {
-					previousPosition = position;
-            		continue;
-            	}
-                Double speed = position.calculateSpeed(previousPosition);
-                valid = speed != null && speed < 1500.0 &&
-                        previousPosition.getTime().getTimeInMillis() < position.getTime().getTimeInMillis();
+			if (!isValidData(position, previousPosition)) {
+				return false;
             }
-
-            if (!valid)
-                return false;
 
             previousPosition = position;
         }
         return true;
     }
+
+	boolean isValidData(BaseNavigationPosition currPos, BaseNavigationPosition prevPos) {
+		double lat = currPos.getLatitude().doubleValue();
+		double lon = currPos.getLongitude().doubleValue();
+		double elev = currPos.getElevation().doubleValue();
+		CompactCalendar time = currPos.getTime();
+		if (lat >= 90 || lat <= -90 || abs(lat) <= 0.00001) {
+			return false;
+		}
+		if (lon >= 180.0 || lon <= -180.0 || abs(lon) <= 0.00001) {
+			return false;
+		}
+		if (elev >= 15000) {
+			return false;
+		}
+		if (time.getCalendar().get(YEAR) <= 1990) {
+			return false;
+		}
+
+		if (prevPos == null) {
+			return true;
+		}
+
+		if (prevPos.getTime().getTimeInMillis() >= time.getTimeInMillis()) {
+			return false;
+		}
+
+		Double dist = currPos.calculateDistance(prevPos);
+		if (dist == null || dist.equals(Double.valueOf(0d))) {
+			return true;
+		}
+
+		Double speed = currPos.calculateSpeed(prevPos);
+		return speed != null && speed < 1500d;
+	}
 
     protected List<Wgs84Route> internalRead(ByteBuffer buffer) {
         return readPositions(buffer, 0, buffer.capacity());
