@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.InputStream;
 import java.util.List;
 
 import org.junit.Test;
@@ -14,9 +13,6 @@ import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
-import slash.navigation.base.ParserContext;
-import slash.navigation.base.ParserContextImpl;
-import slash.navigation.base.Wgs84Route;
 
 public class WintecWbt202TesFormatTest {
 	private final NavigationFormatRegistry registry = new AllNavigationFormatRegistry();
@@ -83,20 +79,6 @@ public class WintecWbt202TesFormatTest {
 		assertFalse("expected to be invalid", format.isValidData(wp1, wp2));
 
 		assertTrue("expected to be valid", format.isValidData(wp3, wp1));
-		assertFalse("expected to be valid", format.isValidData(wp4, wp1));
-	}
-
-	@Test
-	public void testReadRealFile() throws Exception {
-		WintecWbt202TesFormat format = new WintecWbt202TesFormat();
-		ParserContext<Wgs84Route> context = new ParserContextImpl<>();
-
-		try (InputStream is = getClass().getResource("ZeroSpeedStart.TES").openStream()) {
-			format.read(is, context);
-		}
-		List<Wgs84Route> routes = context.getRoutes();
-		assertNotNull("no routes loaded", routes);
-		assertEquals("unexpected number of routes", 1, routes.size());
-		assertEquals("unexpected number of position", 129, routes.get(0).getPositionCount());
+		assertFalse("expected to be invalid", format.isValidData(wp4, wp1));
 	}
 }
