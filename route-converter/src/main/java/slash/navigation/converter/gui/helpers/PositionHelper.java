@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.common.helpers.DateTimeParserFormatter;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
@@ -33,8 +32,6 @@ import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.RouteConverter;
 
 import java.io.File;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.abs;
@@ -196,8 +193,7 @@ public class PositionHelper {
         if (position instanceof Wgs84Position wgs84Position) {
             WaypointType waypointType = wgs84Position.getWaypointType();
             if (waypointType != null && (waypointType.equals(Photo) || waypointType.equals(Voice))) {
-                File file = wgs84Position.getOrigin(File.class);
-                return file;
+                return wgs84Position.getOrigin(File.class);
             }
         }
         return null;
