@@ -402,7 +402,7 @@ public class Transfer {
     public static CompactCalendar parseXMLTime(XMLGregorianCalendar calendar) {
         if (calendar == null)
             return null;
-        GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar(UTC, null, null);
+        GregorianCalendar gregorianCalendar = calendar.toGregorianCalendar();
         return fromMillis(gregorianCalendar.getTimeInMillis());
     }
 

@@ -38,6 +38,7 @@ import java.util.TimeZone;
 import static com.jcabi.matchers.RegexMatchers.matchesPattern;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static slash.common.TestCase.*;
 import static slash.common.io.Transfer.parseXMLTime;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -90,7 +91,6 @@ public class TimeZoneTest {
         assertThat(javaTime, matchesPattern("6/7/07,? 2:04.+PM"));
         Calendar parsed = parseXMLTime(xml).getCalendar();
         assertEquals(TimeZone.getTimeZone("UTC"), parsed.getTimeZone());
-        java.roll(Calendar.HOUR, 2);
         assertCalendarEquals(parsed, java);
     }
 
@@ -114,6 +114,16 @@ public class TimeZoneTest {
         GregorianCalendar java = xml.toGregorianCalendar(TimeZone.getDefault(), null, null);
         XMLGregorianCalendar formatted = Transfer.formatXMLTime(fromCalendar(java));
         assertEquals("2007-06-07T14:04:42.000Z", formatted.toXMLFormat());
+    }
+
+    @Test
+    public void testParseXMLTimeWithPositiveOffset() throws DatatypeConfigurationException {
+        // "2026-04-06T14:43:42.000+02:00" must be parsed as 12:43:42 UTC, not 14:43:42 UTC
+        XMLGregorianCalendar xml = DatatypeFactory.newInstance().newXMLGregorianCalendar("2026-04-06T14:43:42.000+02:00");
+        CompactCalendar result = parseXMLTime(xml);
+        assertNotNull(result);
+        CompactCalendar expected = calendar(2026, 4, 6, 12, 43, 42, 0);
+        assertEquals(expected.getTimeInMillis(), result.getTimeInMillis());
     }
 
     @Test
