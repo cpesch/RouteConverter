@@ -79,11 +79,11 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
         return true;
     }
 
-	boolean isValidData(BaseNavigationPosition currPos, BaseNavigationPosition prevPos) {
-		double lat = currPos.getLatitude().doubleValue();
-		double lon = currPos.getLongitude().doubleValue();
-		double elev = currPos.getElevation().doubleValue();
-		CompactCalendar time = currPos.getTime();
+	boolean isValidData(BaseNavigationPosition currentPosition, BaseNavigationPosition previousPosition) {
+		double lat = currentPosition.getLatitude();
+		double lon = currentPosition.getLongitude();
+		double elev = currentPosition.getElevation();
+		CompactCalendar time = currentPosition.getTime();
 		if (lat >= 90 || lat <= -90 || abs(lat) <= 0.00001) {
 			return false;
 		}
@@ -97,20 +97,18 @@ public class WintecWbt202TesFormat extends WintecWbt201Format {
 			return false;
 		}
 
-		if (prevPos == null) {
+		if (previousPosition == null) {
 			return true;
 		}
 
-		if (prevPos.getTime().getTimeInMillis() >= time.getTimeInMillis()) {
+		if (previousPosition.getTime().getTimeInMillis() >= time.getTimeInMillis()) {
 			return false;
 		}
-
-		Double dist = currPos.calculateDistance(prevPos);
+		Double dist = currentPosition.calculateDistance(previousPosition);
 		if (dist == null || dist.equals(Double.valueOf(0d))) {
 			return true;
 		}
-
-		Double speed = currPos.calculateSpeed(prevPos);
+		Double speed = currentPosition.calculateSpeed(previousPosition);
 		return speed != null && speed < 1500d;
 	}
 
