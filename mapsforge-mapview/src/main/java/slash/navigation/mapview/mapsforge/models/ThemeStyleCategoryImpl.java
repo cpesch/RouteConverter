@@ -22,6 +22,8 @@ package slash.navigation.mapview.mapsforge.models;
 import slash.navigation.maps.mapsforge.ThemeStyle;
 import slash.navigation.maps.mapsforge.ThemeStyleCategory;
 
+import java.util.Objects;
+
 /**
  * A category of a {@link ThemeStyle} based on a {@link String}
  *
@@ -40,5 +42,19 @@ public class ThemeStyleCategoryImpl implements ThemeStyleCategory {
 
     public String getUrl() {
         return category;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof ThemeStyleCategory that))
+            return false;
+        return Objects.equals(getUrl(), that.getUrl());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUrl());
     }
 }

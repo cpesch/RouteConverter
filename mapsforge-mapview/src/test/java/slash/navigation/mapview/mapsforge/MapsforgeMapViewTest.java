@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -67,8 +68,8 @@ public class MapsforgeMapViewTest {
     @Test
     public void testBoundingBox() {
         BoundingBox from = new BoundingBox(new SimpleNavigationPosition(10.18587, 53.49249), new SimpleNavigationPosition(10.06767, 53.40451));
-        assertEquals(from, from);
         org.mapsforge.core.model.BoundingBox to = mapView.asMapsforgeBoundingBox(from);
+        assertNotNull(to);
         BoundingBox roundtrip = toBoundingBox(to);
         assertEquals(roundtrip, from);
     }
