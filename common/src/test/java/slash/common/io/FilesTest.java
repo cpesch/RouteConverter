@@ -21,12 +21,20 @@
 package slash.common.io;
 
 import org.junit.After;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static java.io.File.createTempFile;
 import static org.junit.Assert.*;
@@ -193,5 +201,159 @@ public class FilesTest {
         CompactCalendar expected = calendar(2010, 4, 12, 13, 41, 15, 0, "UTC");
         assertEquals(expected, getLastModified(file));
         assertEquals(expected.getTimeInMillis(), file.lastModified());
+    }
+
+    @Test
+    public void testCollectFilesTerminatesOnDirectorySymlinkLoop() throws IOException {
+        Path root = java.nio.file.Files.createTempDirectory("collect-files-loop");
+        try {
+            Path route = java.nio.file.Files.createFile(root.resolve("route.gpx"));
+            Path subDirectory = java.nio.file.Files.createDirectory(root.resolve("sub"));
+            Path nestedRoute = java.nio.file.Files.createFile(subDirectory.resolve("nested.gpx"));
+            createSymbolicLinkOrSkip(subDirectory.resolve("back"), root);
+
+            List<File> collected = collectFiles(root.toFile(), ".gpx");
+            Set<String> collectedPaths = collected.stream().map(FilesTest::canonicalPath).collect(Collectors.toSet());
+
+            assertEquals(2, collected.size());
+            assertEquals(2, collectedPaths.size());
+            assertTrue(collectedPaths.contains(route.toRealPath().toString()));
+            assertTrue(collectedPaths.contains(nestedRoute.toRealPath().toString()));
+        } finally {
+            deleteRecursively(root);
+        }
+    }
+
+    @Test
+    public void testCollectFilesFollowsSymlinkedRootDirectoryOnce() throws IOException {
+        Path root = java.nio.file.Files.createTempDirectory("collect-files-symlink-root");
+        try {
+            Path route = java.nio.file.Files.createFile(root.resolve("route.gpx"));
+            Path link = root.getParent().resolve(root.getFileName() + "-link");
+            createSymbolicLinkOrSkip(link, root);
+
+            List<File> collected = collectFiles(link.toFile(), ".gpx");
+            Set<String> collectedPaths = collected.stream().map(FilesTest::canonicalPath).collect(Collectors.toSet());
+
+            assertEquals(1, collected.size());
+            assertEquals(1, collectedPaths.size());
+            assertTrue(collectedPaths.contains(route.toRealPath().toString()));
+
+            java.nio.file.Files.deleteIfExists(link);
+        } finally {
+            deleteRecursively(root);
+        }
+    }
+
+    @Test
+    public void testCollectFilesWithoutExtensionsCollectsAllFiles() throws IOException {
+        Path root = java.nio.file.Files.createTempDirectory("collect-files-all");
+        try {
+            Path route = java.nio.file.Files.createFile(root.resolve("route.gpx"));
+            Path notes = java.nio.file.Files.createFile(root.resolve("notes.txt"));
+
+            List<File> collected = collectFiles(root.toFile());
+            Set<String> collectedPaths = collected.stream().map(FilesTest::canonicalPath).collect(Collectors.toSet());
+
+            assertEquals(2, collected.size());
+            assertEquals(2, collectedPaths.size());
+            assertTrue(collectedPaths.contains(route.toRealPath().toString()));
+            assertTrue(collectedPaths.contains(notes.toRealPath().toString()));
+        } finally {
+            deleteRecursively(root);
+        }
+    }
+
+    @Test
+    public void testRecursiveDeleteDoesNotDeleteExternalDirectoryThroughSymlink() throws IOException {
+        Path root = java.nio.file.Files.createTempDirectory("recursive-delete-root");
+        Path external = java.nio.file.Files.createTempDirectory("recursive-delete-external");
+        try {
+            Path inside = java.nio.file.Files.createFile(root.resolve("inside.gpx"));
+            Path outside = java.nio.file.Files.createFile(external.resolve("outside.gpx"));
+            createSymbolicLinkOrSkip(root.resolve("external"), external);
+
+            recursiveDelete(root.toFile());
+
+            assertFalse(java.nio.file.Files.exists(root));
+            assertFalse(java.nio.file.Files.exists(inside));
+            assertTrue(java.nio.file.Files.exists(external));
+            assertTrue(java.nio.file.Files.exists(outside));
+        } finally {
+            deleteRecursively(root);
+            deleteRecursively(external);
+        }
+    }
+
+    @Test
+    public void testRecursiveDeleteDeletesOnlySymlinkedRoot() throws IOException {
+        Path target = java.nio.file.Files.createTempDirectory("recursive-delete-target");
+        Path link = target.getParent().resolve(target.getFileName() + "-link");
+        try {
+            Path route = java.nio.file.Files.createFile(target.resolve("route.gpx"));
+            createSymbolicLinkOrSkip(link, target);
+
+            recursiveDelete(link.toFile());
+
+            assertFalse(java.nio.file.Files.exists(link));
+            assertTrue(java.nio.file.Files.exists(target));
+            assertTrue(java.nio.file.Files.exists(route));
+        } finally {
+            java.nio.file.Files.deleteIfExists(link);
+            deleteRecursively(target);
+        }
+    }
+
+    @Test
+    public void testRecursiveDeleteTerminatesOnDirectorySymlinkLoop() throws IOException {
+        Path root = java.nio.file.Files.createTempDirectory("recursive-delete-loop");
+        try {
+            Path subDirectory = java.nio.file.Files.createDirectory(root.resolve("sub"));
+            java.nio.file.Files.createFile(subDirectory.resolve("nested.gpx"));
+            createSymbolicLinkOrSkip(subDirectory.resolve("back"), root);
+
+            recursiveDelete(root.toFile());
+
+            assertFalse(java.nio.file.Files.exists(root));
+        } finally {
+            deleteRecursively(root);
+        }
+    }
+
+    private static String canonicalPath(File file) {
+        try {
+            return file.getCanonicalPath();
+        } catch (IOException e) {
+            throw new AssertionError("Could not resolve canonical path for " + file, e);
+        }
+    }
+
+    private static void createSymbolicLinkOrSkip(Path link, Path target) throws IOException {
+        try {
+            java.nio.file.Files.createSymbolicLink(link, target);
+        } catch (UnsupportedOperationException | IOException | SecurityException e) {
+            Assume.assumeNoException(e);
+        }
+    }
+
+    private static void deleteRecursively(Path root) throws IOException {
+        if (root == null || !java.nio.file.Files.exists(root))
+            return;
+
+        java.nio.file.Files.walkFileTree(root, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                java.nio.file.Files.deleteIfExists(file);
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                if (exc != null)
+                    throw exc;
+                java.nio.file.Files.deleteIfExists(dir);
+                return FileVisitResult.CONTINUE;
+            }
+        });
     }
 }

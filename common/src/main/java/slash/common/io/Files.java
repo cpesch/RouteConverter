@@ -26,6 +26,7 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.LinkOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -367,21 +368,47 @@ public class Files {
                                          final boolean collectDirectories,
                                          final boolean collectFiles,
                                          final Set<String> extensions,
+                                         final Set<String> visitedDirectories,
                                          final List<File> list) {
         if (path.isFile()) {
-            if (collectFiles && extensions.contains(getExtension(path)))
+            if (collectFiles && matchesExtension(path, extensions))
                 list.add(path);
-
-        } else {
-            if (collectDirectories)
-                list.add(path);
-
-            //noinspection ResultOfMethodCallIgnored
-            path.listFiles(file -> {
-                recursiveCollect(file, collectDirectories, collectFiles, extensions, list);
-                return true;
-            });
+            return;
         }
+
+        if (!visitDirectory(path, visitedDirectories))
+            return;
+
+        if (collectDirectories)
+            list.add(path);
+
+        for (File file : listFiles(path))
+            recursiveCollect(file, collectDirectories, collectFiles, extensions, visitedDirectories, list);
+    }
+
+    private static String realPath(File path) {
+        try {
+            return path.toPath().toRealPath().toString();
+        } catch (IOException e) {
+            return path.getAbsoluteFile().toPath().normalize().toString();
+        }
+    }
+
+    private static boolean visitDirectory(File path, Set<String> visitedDirectories) {
+        return visitedDirectories.add(realPath(path));
+    }
+
+    private static boolean matchesExtension(File path, Set<String> extensions) {
+        return extensions == null || extensions.isEmpty() || extensions.contains(getExtension(path));
+    }
+
+    private static File[] listFiles(File path) {
+        File[] files = path.listFiles();
+        return files != null ? files : new File[0];
+    }
+
+    private static boolean isDirectoryNoFollow(File path) {
+        return java.nio.file.Files.isDirectory(path.toPath(), LinkOption.NOFOLLOW_LINKS);
     }
 
     /**
@@ -401,7 +428,7 @@ public class Files {
                 collect(Collectors.toSet()) : null;
 
         List<File> list = new ArrayList<>(1);
-        recursiveCollect(path, false, true, lowercase, list);
+        recursiveCollect(path, false, true, lowercase, new HashSet<>(), list);
         return list;
     }
 
@@ -438,14 +465,17 @@ public class Files {
     }
 
     public static void recursiveDelete(File path) throws IOException {
-        File[] files = path.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory())
-                    recursiveDelete(file);
-                delete(file);
-            }
+        if (!isDirectoryNoFollow(path)) {
+            delete(path);
+            return;
         }
+
+        for (File file : listFiles(path)) {
+            if (isDirectoryNoFollow(file))
+                recursiveDelete(file);
+            delete(file);
+        }
+
         delete(path);
     }
 
