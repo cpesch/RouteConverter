@@ -27,10 +27,11 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.prefs.BackingStoreException;
+import java.util.Map;
+import java.util.prefs.AbstractPreferences;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.min;
@@ -49,7 +50,7 @@ public class RecentUrlsModelTest {
 
     @Before
     public void setUp() {
-        preferences = Preferences.userRoot().node(getClass().getName()).node(UUID.randomUUID().toString());
+        preferences = new InMemoryPreferences();
         preferences.putInt(MAXIMUM_RECENT_URL_COUNT_PREFERENCE, LIMIT);
         model = new RecentUrlsModel(preferences);
         tempFiles = new ArrayList<>();
@@ -58,14 +59,13 @@ public class RecentUrlsModelTest {
     }
 
     @After
-    public void tearDown() throws BackingStoreException {
+    public void tearDown() {
         for (File file : tempFiles)
             if (file.exists())
                 assertTrue(file.delete());
         tempFiles.clear();
         model.removeAllUrls();
         assertEquals(0, model.getUrls().size());
-        preferences.removeNode();
     }
 
     private File createTempFile(String prefix, String suffix) throws IOException {
@@ -153,6 +153,63 @@ public class RecentUrlsModelTest {
             List<URL> actual = model.getUrls();
             assertEquals(expected.size(), actual.size());
             assertEquals(expected, actual);
+        }
+    }
+
+    private static class InMemoryPreferences extends AbstractPreferences {
+        private final Map<String, String> values = new HashMap<>();
+        private final Map<String, InMemoryPreferences> children = new HashMap<>();
+
+        private InMemoryPreferences() {
+            this(null, "");
+        }
+
+        private InMemoryPreferences(AbstractPreferences parent, String name) {
+            super(parent, name);
+        }
+
+        @Override
+        protected void putSpi(String key, String value) {
+            values.put(key, value);
+        }
+
+        @Override
+        protected String getSpi(String key) {
+            return values.get(key);
+        }
+
+        @Override
+        protected void removeSpi(String key) {
+            values.remove(key);
+        }
+
+        @Override
+        protected void removeNodeSpi() {
+            values.clear();
+            children.clear();
+        }
+
+        @Override
+        protected String[] keysSpi() {
+            return values.keySet().toArray(new String[0]);
+        }
+
+        @Override
+        protected String[] childrenNamesSpi() {
+            return children.keySet().toArray(new String[0]);
+        }
+
+        @Override
+        protected AbstractPreferences childSpi(String name) {
+            return children.computeIfAbsent(name, child -> new InMemoryPreferences(this, child));
+        }
+
+        @Override
+        protected void syncSpi() {
+        }
+
+        @Override
+        protected void flushSpi() {
         }
     }
 }
