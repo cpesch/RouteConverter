@@ -1447,7 +1447,6 @@ public class MapsforgeMapView extends BaseMapView {
     private class AppliedThemeListener implements ChangeListener {
         public void stateChanged(ChangeEvent e) {
             handleMapAndThemeUpdate(false, false);
-            getMapManager().clearThemeStyles();
         }
     }
 

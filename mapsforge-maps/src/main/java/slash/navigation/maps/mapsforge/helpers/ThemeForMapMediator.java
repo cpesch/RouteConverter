@@ -29,6 +29,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.io.File;
 import java.util.List;
+import java.util.Objects;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.min;
@@ -57,12 +58,13 @@ public class ThemeForMapMediator {
         mapListener = new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 LocalMap map = getDisplayedMapModel().getItem();
-                if (!map.getType().isThemed())
+                if (map == null || !map.getType().isThemed())
                     return;
 
                 String themeId = preferences.get(getMapKey(map), getMapTheme(map));
                 LocalTheme theme = getAvailableThemesModel().getItemByDescription(themeId);
-                if (theme != null)
+                LocalTheme currentTheme = getAppliedThemeModel().getItem();
+                if (theme != null && (currentTheme == null || !Objects.equals(currentTheme.getUrl(), theme.getUrl())))
                     getAppliedThemeModel().setItem(theme);
             }
         };
@@ -71,10 +73,14 @@ public class ThemeForMapMediator {
         themeListener = new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 LocalMap map = getDisplayedMapModel().getItem();
-                if (!map.getType().isThemed())
+                if (map == null || !map.getType().isThemed())
                     return;
 
-                String themeId = getAppliedThemeModel().getItem().description();
+                LocalTheme theme = getAppliedThemeModel().getItem();
+                if (theme == null)
+                    return;
+
+                String themeId = theme.description();
                 preferences.put(getMapKey(map), themeId);
                 preferences.put(getMapProviderKey(map), themeId);
             }
@@ -96,11 +102,13 @@ public class ThemeForMapMediator {
     private String getFirstTheme(LocalMap map) {
         File themesDirectory = new File(mapManager.getThemesDirectory(), map.getProvider());
         if (themesDirectory.exists()) {
-            List<File> themes = collectFiles(mapManager.getThemesDirectory(), DOT_XML);
+            List<File> themes = collectFiles(themesDirectory, DOT_XML);
             if(!themes.isEmpty())
                 return removePrefix(mapManager.getThemesDirectory(), themes.get(0));
         }
-        return getAppliedThemeModel().getItem().description();
+
+        LocalTheme theme = getAppliedThemeModel().getItem();
+        return theme != null ? theme.description() : null;
     }
 
     private ItemModel<LocalMap> getDisplayedMapModel() {
