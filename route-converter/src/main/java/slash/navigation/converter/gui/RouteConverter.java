@@ -820,6 +820,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return isMapViewAvailable() ? getMapView().getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
     }
 
+    public BoundingBox getMapBoundingBox() {
+        return isMapViewAvailable() ? getMapView().getBoundingBox() : null;
+    }
+
     public BooleanModel getShowAllPositionsAfterLoading() {
         return showAllPositionsAfterLoading;
     }

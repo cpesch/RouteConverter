@@ -57,6 +57,7 @@ public interface MapView extends PositionsSelectionModel {
     void showPositionMagnifier(List<NavigationPosition> positions);
 
     NavigationPosition getCenter();
+    BoundingBox getBoundingBox();
 
     void setSelectedPositions(List<NavigationPosition> selectedPositions);
     boolean isSupportsPrinting();

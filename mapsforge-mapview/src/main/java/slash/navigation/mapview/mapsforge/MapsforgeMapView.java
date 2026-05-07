@@ -1008,6 +1008,14 @@ public class MapsforgeMapView extends BaseMapView {
         setCenter(asLatLong(center), alwaysRecenter);
     }
 
+    public BoundingBox getBoundingBox() {
+        if (mapView == null || mapView.getWidth() <= 0 || mapView.getHeight() <= 0)
+            return null;
+
+        org.mapsforge.core.model.BoundingBox boundingBox = mapView.getBoundingBox();
+        return boundingBox != null ? toBoundingBox(boundingBox) : null;
+    }
+
     private int getZoom() {
         return mapView.getModel().mapViewPosition.getZoomLevel();
     }
