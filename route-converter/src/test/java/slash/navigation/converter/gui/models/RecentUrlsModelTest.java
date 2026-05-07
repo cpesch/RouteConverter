@@ -22,7 +22,6 @@ package slash.navigation.converter.gui.models;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
@@ -30,6 +29,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.min;
@@ -40,25 +41,31 @@ import static slash.common.io.Files.toFile;
 
 public class RecentUrlsModelTest {
     private static final int LIMIT = 10;
-    private final RecentUrlsModel model = new RecentUrlsModel(Preferences.userRoot());
+    private static final String MAXIMUM_RECENT_URL_COUNT_PREFERENCE = "maximumRecentUrlCount";
 
+    private RecentUrlsModel model;
+    private Preferences preferences;
     private List<File> tempFiles;
 
     @Before
     public void setUp() {
+        preferences = Preferences.userRoot().node(getClass().getName()).node(UUID.randomUUID().toString());
+        preferences.putInt(MAXIMUM_RECENT_URL_COUNT_PREFERENCE, LIMIT);
+        model = new RecentUrlsModel(preferences);
         tempFiles = new ArrayList<>();
         model.removeAllUrls();
         assertEquals(0, model.getUrls().size());
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws BackingStoreException {
         for (File file : tempFiles)
             if (file.exists())
                 assertTrue(file.delete());
         tempFiles.clear();
         model.removeAllUrls();
         assertEquals(0, model.getUrls().size());
+        preferences.removeNode();
     }
 
     private File createTempFile(String prefix, String suffix) throws IOException {
@@ -112,7 +119,6 @@ public class RecentUrlsModelTest {
         }
     }
 
-    @Ignore // sometimes fails on command line
     @Test
     public void testLimit() throws IOException {
         assertEquals(0, model.getUrls().size());
@@ -129,7 +135,6 @@ public class RecentUrlsModelTest {
         }
     }
 
-    @Ignore // sometimes fails on command line
     @Test
     public void testSkipNotExistentFiles() throws IOException {
         List<URL> collected = new ArrayList<>();
