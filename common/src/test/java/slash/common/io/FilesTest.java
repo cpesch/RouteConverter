@@ -213,12 +213,12 @@ public class FilesTest {
             createSymbolicLinkOrSkip(subDirectory.resolve("back"), root);
 
             List<File> collected = collectFiles(root.toFile(), ".gpx");
-            Set<String> collectedPaths = collected.stream().map(FilesTest::canonicalPath).collect(Collectors.toSet());
+            Set<Path> collectedPaths = collected.stream().map(FilesTest::realPath).collect(Collectors.toSet());
 
             assertEquals(2, collected.size());
             assertEquals(2, collectedPaths.size());
-            assertTrue(collectedPaths.contains(route.toRealPath().toString()));
-            assertTrue(collectedPaths.contains(nestedRoute.toRealPath().toString()));
+            assertTrue(collectedPaths.contains(route.toRealPath()));
+            assertTrue(collectedPaths.contains(nestedRoute.toRealPath()));
         } finally {
             deleteRecursively(root);
         }
@@ -233,11 +233,11 @@ public class FilesTest {
             createSymbolicLinkOrSkip(link, root);
 
             List<File> collected = collectFiles(link.toFile(), ".gpx");
-            Set<String> collectedPaths = collected.stream().map(FilesTest::canonicalPath).collect(Collectors.toSet());
+            Set<Path> collectedPaths = collected.stream().map(FilesTest::realPath).collect(Collectors.toSet());
 
             assertEquals(1, collected.size());
             assertEquals(1, collectedPaths.size());
-            assertTrue(collectedPaths.contains(route.toRealPath().toString()));
+            assertTrue(collectedPaths.contains(route.toRealPath()));
 
             java.nio.file.Files.deleteIfExists(link);
         } finally {
@@ -253,12 +253,12 @@ public class FilesTest {
             Path notes = java.nio.file.Files.createFile(root.resolve("notes.txt"));
 
             List<File> collected = collectFiles(root.toFile());
-            Set<String> collectedPaths = collected.stream().map(FilesTest::canonicalPath).collect(Collectors.toSet());
+            Set<Path> collectedPaths = collected.stream().map(FilesTest::realPath).collect(Collectors.toSet());
 
             assertEquals(2, collected.size());
             assertEquals(2, collectedPaths.size());
-            assertTrue(collectedPaths.contains(route.toRealPath().toString()));
-            assertTrue(collectedPaths.contains(notes.toRealPath().toString()));
+            assertTrue(collectedPaths.contains(route.toRealPath()));
+            assertTrue(collectedPaths.contains(notes.toRealPath()));
         } finally {
             deleteRecursively(root);
         }
@@ -320,11 +320,11 @@ public class FilesTest {
         }
     }
 
-    private static String canonicalPath(File file) {
+    private static Path realPath(File file) {
         try {
-            return file.getCanonicalPath();
+            return file.toPath().toRealPath();
         } catch (IOException e) {
-            throw new AssertionError("Could not resolve canonical path for " + file, e);
+            throw new AssertionError("Could not resolve real path for " + file, e);
         }
     }
 
