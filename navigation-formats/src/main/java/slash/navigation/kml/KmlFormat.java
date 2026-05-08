@@ -231,7 +231,7 @@ public abstract class KmlFormat extends BaseKmlFormat {
             if (bt747Matcher.matches()) {
                 String timeString = bt747Matcher.group(1);
                 try {
-                    Date parsed = createDateFormat(BT747_DATE).parse(timeString);
+                    Date parsed = createDateFormat(BT747_DATE, Locale.ENGLISH).parse(timeString);
                     position.setTime(fromDate(parsed));
                 } catch (ParseException e) {
                     // intentionally left empty;

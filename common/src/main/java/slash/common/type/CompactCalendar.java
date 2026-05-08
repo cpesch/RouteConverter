@@ -60,6 +60,12 @@ public class CompactCalendar {
         return simpleDateFormat;
     }
 
+    public static DateFormat createDateFormat(String pattern, Locale locale) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, locale);
+        simpleDateFormat.setTimeZone(UTC);
+        return simpleDateFormat;
+    }
+
     public static CompactCalendar parseDate(String dateString, String dateFormatString) {
         return parseDate(dateString, dateFormatString, true);
     }

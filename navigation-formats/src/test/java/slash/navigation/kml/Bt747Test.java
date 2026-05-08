@@ -23,9 +23,10 @@ package slash.navigation.kml;
 import org.junit.Test;
 import slash.common.type.CompactCalendar;
 
-import java.text.DateFormat;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.TestCase.calendar;
 
@@ -35,14 +36,20 @@ public class Bt747Test {
 
     @Test
     public void testParseTime() {
-        KmlPosition position = new KmlPosition(null, null, null, null, null, null);
-        CompactCalendar expectedCal = calendar(2010, 9, 5, 10, 11, 56);
-        format.parseTime(position, BT747_NAME, null);
-        CompactCalendar actualCal = position.getTime();
-        String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
-        String actual = DateFormat.getDateTimeInstance().format(actualCal.getTime());
-        assertEquals(expected, actual);
-        assertEquals(expectedCal, actualCal);
+        Locale defaultFormatLocale = Locale.getDefault(Locale.Category.FORMAT);
+        try {
+            Locale.setDefault(Locale.Category.FORMAT, Locale.FRANCE);
+
+            KmlPosition position = new KmlPosition(null, null, null, null, null, null);
+            CompactCalendar expectedCal = calendar(2010, 9, 5, 10, 11, 56);
+            format.parseTime(position, BT747_NAME, null);
+
+            CompactCalendar actualCal = position.getTime();
+            assertNotNull("BT747 timestamps should parse independently of the default locale", actualCal);
+            assertEquals(expectedCal, actualCal);
+        } finally {
+            Locale.setDefault(Locale.Category.FORMAT, defaultFormatLocale);
+        }
     }
 
     @Test
