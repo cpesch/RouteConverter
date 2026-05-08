@@ -213,12 +213,10 @@ public class FilesTest {
             createSymbolicLinkOrSkip(subDirectory.resolve("back"), root);
 
             List<File> collected = collectFiles(root.toFile(), ".gpx");
-            Set<Path> collectedPaths = collected.stream().map(FilesTest::realPath).collect(Collectors.toSet());
-
             assertEquals(2, collected.size());
-            assertEquals(2, collectedPaths.size());
-            assertTrue(collectedPaths.contains(route.toRealPath()));
-            assertTrue(collectedPaths.contains(nestedRoute.toRealPath()));
+            assertEquals(2, collected.stream().map(FilesTest::realPath).collect(Collectors.toSet()).size());
+            assertContainsSameFile(collected, route);
+            assertContainsSameFile(collected, nestedRoute);
         } finally {
             deleteRecursively(root);
         }
@@ -233,11 +231,9 @@ public class FilesTest {
             createSymbolicLinkOrSkip(link, root);
 
             List<File> collected = collectFiles(link.toFile(), ".gpx");
-            Set<Path> collectedPaths = collected.stream().map(FilesTest::realPath).collect(Collectors.toSet());
-
             assertEquals(1, collected.size());
-            assertEquals(1, collectedPaths.size());
-            assertTrue(collectedPaths.contains(route.toRealPath()));
+            assertEquals(1, collected.stream().map(FilesTest::realPath).collect(Collectors.toSet()).size());
+            assertContainsSameFile(collected, route);
 
             java.nio.file.Files.deleteIfExists(link);
         } finally {
@@ -253,12 +249,10 @@ public class FilesTest {
             Path notes = java.nio.file.Files.createFile(root.resolve("notes.txt"));
 
             List<File> collected = collectFiles(root.toFile());
-            Set<Path> collectedPaths = collected.stream().map(FilesTest::realPath).collect(Collectors.toSet());
-
             assertEquals(2, collected.size());
-            assertEquals(2, collectedPaths.size());
-            assertTrue(collectedPaths.contains(route.toRealPath()));
-            assertTrue(collectedPaths.contains(notes.toRealPath()));
+            assertEquals(2, collected.stream().map(FilesTest::realPath).collect(Collectors.toSet()).size());
+            assertContainsSameFile(collected, route);
+            assertContainsSameFile(collected, notes);
         } finally {
             deleteRecursively(root);
         }
@@ -326,6 +320,15 @@ public class FilesTest {
         } catch (IOException e) {
             throw new AssertionError("Could not resolve real path for " + file, e);
         }
+    }
+
+    private static void assertContainsSameFile(List<File> collected, Path expected) throws IOException {
+        for (File file : collected) {
+            if (java.nio.file.Files.isSameFile(file.toPath(), expected))
+                return;
+        }
+        fail("Expected collected files to contain " + expected.toRealPath() + " but got " +
+                collected.stream().map(File::getPath).collect(Collectors.toList()));
     }
 
     private static void createSymbolicLinkOrSkip(Path link, Path target) throws IOException {
