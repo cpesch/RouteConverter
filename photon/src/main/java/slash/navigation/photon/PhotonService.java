@@ -26,7 +26,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geojson.*;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.geocoding.GeocodingService;
+import slash.navigation.geocoding.BaseGeocodingService;
+import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.rest.Get;
 
 import java.io.IOException;
@@ -43,7 +44,7 @@ import static slash.common.io.Transfer.trim;
  * @author Christian Pesch
  */
 
-public class PhotonService implements GeocodingService {
+public class PhotonService extends BaseGeocodingService {
     private static final Preferences preferences = Preferences.userNodeForPackage(PhotonService.class);
     private static final String PHOTON_URL_PREFERENCE = "photonUrl";
 
@@ -99,11 +100,11 @@ public class PhotonService implements GeocodingService {
         return result;
     }
 
-    public List<NavigationPosition> getPositionsFor(String address) throws IOException {
+    public List<GeocodingResult> getPositionsFor(String address) throws IOException {
         FeatureCollection collection = getResultFor("/api/?q=" + encodeUri(address) + "&limit=10");
         if (collection == null)
             return null;
-        return extractPositions(collection.getFeatures());
+        return asGeocodingResults(extractPositions(collection.getFeatures()));
     }
 
     public String getAddressFor(NavigationPosition position) throws IOException {

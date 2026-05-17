@@ -71,7 +71,7 @@
         <httpclient.version>5.5.1</httpclient.version>
         <istack.version>3.0.11</istack.version>
         <jackson.version>2.21.3</jackson.version>
-        <jackson-annotations.version>2.20</jackson-annotations.version>
+        <jackson-annotations.version>2.21</jackson-annotations.version>
         <jaxb-api.version>4.0.4</jaxb-api.version>
         <jaxb-impl.version>4.0.8</jaxb-impl.version>
         <mapsforge.version>0.28.0</mapsforge.version>

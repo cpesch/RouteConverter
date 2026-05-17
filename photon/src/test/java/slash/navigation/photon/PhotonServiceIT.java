@@ -20,8 +20,8 @@
 package slash.navigation.photon;
 
 import org.junit.Test;
-import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.geocoding.GeocodingResult;
 
 import java.io.IOException;
 import java.util.List;
@@ -32,11 +32,13 @@ import static org.junit.Assert.*;
 public class PhotonServiceIT {
     private final PhotonService service = new PhotonService();
 
-    private void assertPositionsAlmostEqual(List<SimpleNavigationPosition> expected, List<NavigationPosition> actual, double tolerance) {
+    private void assertPositionsAlmostEqual(List<SimpleNavigationPosition> expected, List<GeocodingResult> actual, double tolerance) {
         assertEquals("List sizes differ", expected.size(), actual.size());
         for (int i = 0; i < expected.size(); i++) {
             SimpleNavigationPosition exp = expected.get(i);
-            NavigationPosition act = actual.get(i);
+            GeocodingResult result = actual.get(i);
+            assertEquals("Service name differs at index " + i, service.getName(), result.geocodingServiceName());
+            SimpleNavigationPosition act = (SimpleNavigationPosition) result.position();
             assertEquals("Latitude differs at index " + i, exp.getLatitude(), act.getLatitude(), tolerance);
             assertEquals("Longitude differs at index " + i, exp.getLongitude(), act.getLongitude(), tolerance);
             assertEquals("Description differs at index " + i, exp.getDescription(), act.getDescription());
@@ -50,7 +52,7 @@ public class PhotonServiceIT {
                 new SimpleNavigationPosition(10.2001313, 50.0016142, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bayern, Deutschland (highway)"),
                 new SimpleNavigationPosition(10.1999005, 50.0001319, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Bayern, Deutschland (highway)")
         );
-        List<NavigationPosition> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        List<GeocodingResult> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertPositionsAlmostEqual(expected, actual, 0.01);
     }
 

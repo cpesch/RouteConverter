@@ -24,8 +24,9 @@ import slash.common.helpers.APIKeyRegistry;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.geocoding.BaseGeocodingService;
+import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.elevation.ElevationService;
-import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.geonames.binding.Geonames;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.exception.ServiceUnavailableException;
@@ -47,7 +48,7 @@ import static slash.common.io.Transfer.trim;
  * @author Christian Pesch
  */
 
-public class GeoNamesService implements ElevationService, GeocodingService {
+public class GeoNamesService extends BaseGeocodingService implements ElevationService {
     private static final Preferences preferences = Preferences.userNodeForPackage(GeoNamesService.class);
     private static final Logger log = Logger.getLogger(GeoNamesService.class.getName());
     private static final String GEONAMES_URL_PREFERENCE = "geonamesUrl";
@@ -138,7 +139,7 @@ public class GeoNamesService implements ElevationService, GeocodingService {
         return elevation != null ? elevation.doubleValue() : null;
     }
 
-    public List<NavigationPosition> getPositionsFor(String address) {
+    public List<GeocodingResult> getPositionsFor(String address) {
         return null; // not supported
     }
 

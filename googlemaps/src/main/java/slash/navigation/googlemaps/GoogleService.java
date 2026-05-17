@@ -20,23 +20,26 @@
 
 package slash.navigation.googlemaps;
 
+import jakarta.xml.bind.JAXBException;
 import slash.common.helpers.APIKeyRegistry;
-import slash.navigation.common.*;
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.MapDescriptor;
+import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.geocoding.BaseGeocodingService;
 import slash.navigation.elevation.ElevationService;
-import slash.navigation.geocoding.GeocodingService;
+import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.exception.ServiceUnavailableException;
 
-import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import static slash.common.io.Transfer.encodeUri;
 import static slash.navigation.common.Bearing.calculateBearing;
@@ -51,7 +54,7 @@ import static slash.navigation.rest.HttpRequest.USER_AGENT;
  * @author Christian Pesch
  */
 
-public class GoogleService implements ElevationService, GeocodingService {
+public class GoogleService extends BaseGeocodingService implements ElevationService {
     private static final Logger log = Logger.getLogger(GoogleService.class.getName());
     private int overQueryLimitCount, deniedCount;
 
@@ -129,11 +132,11 @@ public class GoogleService implements ElevationService, GeocodingService {
                     return (int) (distance1 - distance2);
                 })
                 .map(GeocodeResponse.Result::getFormattedAddress)
-                .collect(Collectors.toList());
+                .toList();
         return !locations.isEmpty() ? locations.get(0) : null;
     }
 
-    public List<NavigationPosition> getPositionsFor(String address) throws IOException {
+    public List<GeocodingResult> getPositionsFor(String address) throws IOException {
         String url = getGeocodingUrl("address=" + encodeUri(address));
         Get get = get(url);
         log.info("Getting positions for " + address);
@@ -144,7 +147,7 @@ public class GoogleService implements ElevationService, GeocodingService {
                 if (geocodeResponse != null) {
                     String status = geocodeResponse.getStatus();
                     checkForError(url, status);
-                    return extractAdresses(geocodeResponse.getResult());
+                    return asGeocodingResults(extractAdresses(geocodeResponse.getResult()));
                 }
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);
@@ -174,7 +177,7 @@ public class GoogleService implements ElevationService, GeocodingService {
                     String status = elevationResponse.getStatus();
                     checkForError(url, status);
                     List<Double> elevations = extractElevations(elevationResponse.getResult());
-                    return elevations != null && !elevations.isEmpty() ? elevations.get(0) : null;
+                    return !elevations.isEmpty() ? elevations.get(0) : null;
                 }
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);

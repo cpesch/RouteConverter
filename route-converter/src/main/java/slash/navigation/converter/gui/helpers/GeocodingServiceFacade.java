@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.GeocodingService;
 
 import javax.naming.ServiceUnavailableException;
@@ -91,16 +92,17 @@ public class GeocodingServiceFacade {
         preferences.put(GEOCODING_SERVICE, service.getName());
     }
 
-    public List<NavigationPosition> getPositionsFor(String address) throws IOException, ServiceUnavailableException {
+    public List<GeocodingResult> getPositionsFor(String address) throws IOException, ServiceUnavailableException {
         return getGeocodingService().getPositionsFor(address);
     }
 
     public String getAddressFor(NavigationPosition position) throws IOException, ServiceUnavailableException {
-        return getGeocodingService().getAddressFor(position);
+        GeocodingService service = getGeocodingService();
+        return service.getAddressFor(position);
     }
 
     public NavigationPosition getPositionFor(String address) throws IOException, ServiceUnavailableException {
-        List<NavigationPosition> positions = getPositionsFor(address);
-        return positions != null && !positions.isEmpty() ? positions.get(0) : null;
+        List<GeocodingResult> results = getPositionsFor(address);
+        return results != null && !results.isEmpty() ? results.get(0).position() : null;
     }
 }

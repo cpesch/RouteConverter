@@ -20,6 +20,8 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.geocoding.BaseGeocodingService;
+import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.GeocodingService;
 
 import javax.naming.ServiceUnavailableException;
@@ -35,7 +37,7 @@ import static java.util.Arrays.sort;
  * @author Christian Pesch
  */
 
-public class AutomaticGeocodingService implements GeocodingService {
+public class AutomaticGeocodingService extends BaseGeocodingService {
     private static final Logger log = Logger.getLogger(AutomaticGeocodingService.class.getName());
     private static final String AUTOMATIC_GEOCODING_SERVICE_NAME = "Automatic";
 
@@ -57,24 +59,28 @@ public class AutomaticGeocodingService implements GeocodingService {
         return false;
     }
 
-    public List<NavigationPosition> getPositionsFor(String address) throws IOException, ServiceUnavailableException {
+    public List<GeocodingResult> getPositionsFor(String address) throws IOException, ServiceUnavailableException {
         IOException lastException = null;
+        List<GeocodingResult> results = new ArrayList<>();
 
         for (GeocodingService service : sortByBestEffort(geocodingServiceFacade.getGeocodingServices())) {
             try {
                 if(service.isOverQueryLimit())
                     continue;
 
-                List<NavigationPosition> positions = service.getPositionsFor(address);
-                if (positions != null) {
-                    log.fine("Used " + service.getName() + " to retrieve positions " + positions + " for " + address);
-                    return positions;
+                List<GeocodingResult> geocodingResults = service.getPositionsFor(address);
+                if (geocodingResults != null && !geocodingResults.isEmpty()) {
+                    results.addAll(geocodingResults);
+                    log.fine("Used " + service.getName() + " to retrieve positions " + geocodingResults + " for " + address);
                 }
 
             } catch (IOException e) {
                 lastException = e;
             }
         }
+
+        if(!results.isEmpty())
+            return results;
 
         if(lastException != null)
             throw lastException;

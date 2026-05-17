@@ -28,7 +28,8 @@ import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
-import slash.navigation.converter.gui.renderer.NavigationPositionListCellRenderer;
+import slash.navigation.converter.gui.renderer.GeocodingResultListCellRenderer;
+import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
@@ -62,7 +63,7 @@ public class FindPlaceDialog extends SimpleDialog {
     private JPanel contentPane;
     private JTextField textFieldSearch;
     private JButton buttonSearchPositions;
-    private JList<NavigationPosition> listResult;
+    private JList<GeocodingResult> listResult;
     private JButton buttonInsertPosition;
 
     public FindPlaceDialog() {
@@ -106,7 +107,7 @@ public class FindPlaceDialog extends SimpleDialog {
             }
         }, getKeyStroke(VK_ENTER, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        listResult.setCellRenderer(new NavigationPositionListCellRenderer());
+        listResult.setCellRenderer(new GeocodingResultListCellRenderer());
         listResult.setSelectionForeground(new Color(232, 232, 232));
         listResult.setSelectionBackground(new Color(0, 9 * 16 + 9, 255));
         listResult.addListSelectionListener(new ListSelectionListener() {
@@ -139,22 +140,22 @@ public class FindPlaceDialog extends SimpleDialog {
         boolean existsSelectedResult = listResult.getSelectedIndices().length > 0;
         buttonInsertPosition.setEnabled(existsSelectedResult);
         if (existsSelectedResult) {
-            List<NavigationPosition> selectedValues = listResult.getSelectedValuesList();
-            RouteConverter.getInstance().showPositionMagnifier(selectedValues);
+            List<GeocodingResult> selectedValues = listResult.getSelectedValuesList();
+            RouteConverter.getInstance().showPositionMagnifier(selectedValues.stream().map(GeocodingResult::position).toList());
         }
     }
 
     private void searchPositions() throws IOException, ServiceUnavailableException {
         RouteConverter r = RouteConverter.getInstance();
 
-        DefaultListModel<NavigationPosition> listModel = new DefaultListModel<>();
+        DefaultListModel<GeocodingResult> listModel = new DefaultListModel<>();
         listResult.setModel(listModel);
         String address = textFieldSearch.getText();
 
-        List<NavigationPosition> positions = r.getGeocodingServiceFacade().getPositionsFor(address);
-        if (positions != null) {
-            for (NavigationPosition position : positions)
-                listModel.addElement(position);
+        List<GeocodingResult> results = r.getGeocodingServiceFacade().getPositionsFor(address);
+        if (results != null) {
+            for (GeocodingResult result : results)
+                listModel.addElement(result);
 
             if (listModel.getSize() > 0) {
                 listResult.setSelectedIndex(0);
@@ -172,9 +173,9 @@ public class FindPlaceDialog extends SimpleDialog {
         int[] selectedRows = r.getConvertPanel().getPositionsView().getSelectedRows();
         int row = selectedRows.length > 0 ? selectedRows[0] : positionsModel.getRowCount();
         int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
-        List<NavigationPosition> selectedValues = listResult.getSelectedValuesList();
+        List<GeocodingResult> selectedValues = listResult.getSelectedValuesList();
         for (int i = selectedValues.size() - 1; i >= 0; i -= 1) {
-            NavigationPosition position = selectedValues.get(i);
+            NavigationPosition position = selectedValues.get(i).position();
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(),
                     position.getElevation(), null, null, position.getDescription());
 

@@ -39,13 +39,14 @@ public interface GeocodingService {
     boolean isOverQueryLimit();
 
     /**
-     * Retrieves a list of {@link NavigationPosition}s for a given address.
+     * Retrieves a list of {@link GeocodingResult}s for a given address.
      * @param address the address to geocode
-     * @return a list of {@link NavigationPosition}s for the given address
+     * @return a list of {@link GeocodingResult}s for the given address
      * @throws ServiceUnavailableException if the service is overloaded
      * @throws IOException if the request fails
      */
-    List<NavigationPosition> getPositionsFor(String address) throws IOException, ServiceUnavailableException;
+    List<GeocodingResult> getPositionsFor(String address) throws IOException, ServiceUnavailableException;
+
 
     /**
      * Retrieves an address for a given {@link NavigationPosition}.
