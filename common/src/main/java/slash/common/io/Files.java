@@ -353,17 +353,6 @@ public class Files {
         setLastModified(file, lastModified.getTimeInMillis());
     }
 
-    /**
-     * Collects files/directories with the given extension(s) in the given
-     * list. If path is a directory, it recursively descends the directory
-     * tree. If no extension is given, all files are collected.
-     *
-     * @param path               the path to collect files below
-     * @param collectDirectories decides whether directories are collected
-     * @param collectFiles       decides whether file are collected
-     * @param extensions         the extensions in lower case
-     * @param list               the list to add hits to
-     */
     private static void recursiveCollect(File path,
                                          final boolean collectDirectories,
                                          final boolean collectFiles,
@@ -371,12 +360,12 @@ public class Files {
                                          final Set<String> visitedDirectories,
                                          final List<File> list) {
         if (path.isFile()) {
-            if (collectFiles && matchesExtension(path, extensions))
+            if (collectFiles && (extensions == null || extensions.isEmpty() || extensions.contains(getExtension(path))))
                 list.add(path);
             return;
         }
 
-        if (!visitDirectory(path, visitedDirectories))
+        if (!visitedDirectories.add(realPath(path)))
             return;
 
         if (collectDirectories)
@@ -394,14 +383,6 @@ public class Files {
         }
     }
 
-    private static boolean visitDirectory(File path, Set<String> visitedDirectories) {
-        return visitedDirectories.add(realPath(path));
-    }
-
-    private static boolean matchesExtension(File path, Set<String> extensions) {
-        return extensions == null || extensions.isEmpty() || extensions.contains(getExtension(path));
-    }
-
     private static File[] listFiles(File path) {
         File[] files = path.listFiles();
         return files != null ? files : new File[0];
@@ -414,7 +395,7 @@ public class Files {
     /**
      * Collects files below the given path with the given extension(s).
      * If path is a directory, the collection recursively descends the
-     * directory tree. The extension comparison is case insensitive
+     * directory tree. The extension comparison is case-insensitive
      *
      * @param path       the path to collect files below
      * @param extensions the case insensitively compare extensions

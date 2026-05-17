@@ -53,8 +53,7 @@ public class TileServerService {
     }
 
     public void initialize() {
-        deleteOldDefaultFiles();
-
+        // only search in the root directory of the theme to avoid confusion
         java.io.File[] files = directory.listFiles((dir, name) -> name.endsWith(DOT_XML));
         if (files != null) {
             for (File file : files) {
@@ -81,13 +80,6 @@ public class TileServerService {
                 }
             }
         }
-    }
-
-    private void deleteOldDefaultFiles() {
-        java.io.File[] files = directory.listFiles((dir, name) -> name.equals("default.xml") || name.equals("default-offline.xml"));
-        if (files != null)
-            for (File file : files) 
-                file.delete();
     }
 
     private void loadMap(InputStream inputStream) throws JAXBException {

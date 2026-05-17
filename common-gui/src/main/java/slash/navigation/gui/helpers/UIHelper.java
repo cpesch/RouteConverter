@@ -23,13 +23,11 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static java.awt.Cursor.DEFAULT_CURSOR;
 import static java.awt.Cursor.WAIT_CURSOR;
 import static java.awt.dnd.DragSource.DefaultMoveDrop;
-import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
 import static slash.common.system.Platform.*;
 
@@ -41,7 +39,6 @@ import static slash.common.system.Platform.*;
 
 public class UIHelper {
     private static final Preferences preferences = userNodeForPackage(UIHelper.class);
-    private static final Logger log = getLogger(UIHelper.class.getName());
     private static final String LOOK_AND_FEEL_CLASS_PREFERENCE = "lookAndFeelClass";
 
     public static void setLookAndFeel() {
@@ -106,20 +103,10 @@ public class UIHelper {
 
     public static JFileChooser createJFileChooser() {
         if(isWindows()) {
-            // workaround
-            // https://bugs.openjdk.java.net/browse/JDK-8179014
+            // workaround for https://bugs.openjdk.java.net/browse/JDK-8179014
             UIManager.put("FileChooser.useSystemExtensionHiding", false);
         }
-
-        JFileChooser chooser;
-        try {
-            chooser = new JFileChooser();
-        } catch (Exception npe) {
-            log.info("Working around http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6210674 and 6544857 by using Metal UI and restricted file system view");
-            UIManager.getDefaults().put("FileChooserUI", "javax.swing.plaf.metal.MetalFileChooserUI");
-            chooser = new JFileChooser(new RestrictedFileSystemView());
-        }
-        return chooser;
+        return new JFileChooser();
     }
 
     public static void patchUIManager(ResourceBundle bundle, String... keys) {

@@ -39,6 +39,7 @@ import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.asDialogString;
+import static slash.common.io.Files.collectFiles;
 import static slash.navigation.download.Action.*;
 
 /**
@@ -191,12 +192,10 @@ public class DataSourceManager {
     // for {@link SnapshotCatalog}
     public static DataSourceService loadAllDataSources(java.io.File directory) throws IOException, JAXBException {
         DataSourceService result = new DataSourceService();
-        java.io.File[] files = directory.listFiles((dir, name) -> name.endsWith(DOT_XML));
-        if (files != null) {
-            for (java.io.File file : files) {
-                try (InputStream inputStream = new FileInputStream(file)) {
-                    result.load(inputStream);
-                }
+        List<File> files = collectFiles(directory, DOT_XML);
+        for (java.io.File file : files) {
+            try (InputStream inputStream = new FileInputStream(file)) {
+                result.load(inputStream);
             }
         }
         return result;

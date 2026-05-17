@@ -32,6 +32,7 @@ import java.util.List;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
 import static java.awt.datatransfer.DataFlavor.stringFlavor;
+import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.toUrls;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 
@@ -46,7 +47,7 @@ public class PanelDropHandler extends TransferHandler {
     private void openOrAdd(List<File> files) {
         RouteConverter r = RouteConverter.getInstance();
         if (r.isConvertPanelSelected()) {
-            List<File> onlyFiles = Files.collectFiles(files);
+            List<File> onlyFiles = collectFiles(files);
             r.openPositionList(toUrls(onlyFiles.toArray(new File[0])), true);
         } else if (r.isBrowsePanelSelected()) {
             r.getBrowsePanel().addFilesToCatalog(files);
@@ -76,20 +77,16 @@ public class PanelDropHandler extends TransferHandler {
         try {
             if (support.isDataFlavorSupported(stringFlavor)) {
                 Object data = transferable.getTransferData(stringFlavor);
-                if (data != null) {
-                    String url = (String) data;
-                    openOrAdd(url);
-                    return true;
-                }
+                String url = (String) data;
+                openOrAdd(url);
+                return true;
             }
 
             if (support.isDataFlavorSupported(javaFileListFlavor)) {
                 Object data = transferable.getTransferData(javaFileListFlavor);
-                if (data != null) {
-                    List<File> files = (List<File>) data;
-                    openOrAdd(files);
-                    return true;
-                }
+                List<File> files = (List<File>) data;
+                openOrAdd(files);
+                return true;
             }
         } catch (UnsupportedFlavorException | IOException e) {
             // intentionally left empty

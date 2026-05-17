@@ -45,7 +45,7 @@ import static java.util.stream.Collectors.toSet;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Files.getExtension;
+import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.removeExtension;
 import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.download.Checksum.createChecksum;
@@ -66,6 +66,7 @@ public class BRouter extends BaseRoutingService {
     private static final String PROFILES_BASE_URL_PREFERENCE = "profilesBaseUrl";
     private static final String SEGMENTS_BASE_URL_PREFERENCE = "segmentsBaseUrl";
     private static final TravelMode MOPED = new TravelMode("moped");
+    public static final String DOT_BRF = ".brf";
 
     private final DownloadManager downloadManager;
     private DataSource profiles, segments;
@@ -111,11 +112,9 @@ public class BRouter extends BaseRoutingService {
     public List<TravelMode> getAvailableTravelModes() {
         List<TravelMode> result = new ArrayList<>();
         if (getProfiles() != null) {
-            File[] files = getProfilesDirectory().listFiles((dir, name) -> getExtension(name).equals(".brf"));
-            if (files != null) {
-                for (File file : files) {
-                    result.add(new TravelMode(removeExtension(file.getName())));
-                }
+            List<File> files = collectFiles(getProfilesDirectory(), DOT_BRF);
+            for (File file : files) {
+                result.add(new TravelMode(removeExtension(file.getName())));
             }
         }
         return result;
