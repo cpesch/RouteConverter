@@ -105,11 +105,11 @@ public class PhotoPanel implements PanelInTab {
 
     private static final ComboBoxModel<FilterPredicate<NavigationPosition>> FILTER_PREDICATE_MODEL =
             new DefaultComboBoxModel<FilterPredicate<NavigationPosition>>(new FilterPredicate[]{
-            new TautologyPredicate("All"),
-            new TagStatePhotoPredicate(Tagged),
-            new TagStatePhotoPredicate(Taggable),
-            new TagStatePhotoPredicate(NotTaggable),
-    });
+                    new TautologyPredicate("All"),
+                    new TagStatePhotoPredicate(Tagged),
+                    new TagStatePhotoPredicate(Taggable),
+                    new TagStatePhotoPredicate(NotTaggable),
+            });
 
     private PositionsModel photosModel;
     private FilteringPositionsModel<NavigationPosition> filteredPhotosModel;
@@ -383,6 +383,9 @@ public class PhotoPanel implements PanelInTab {
 
     private static Method $$$cachedGetBundleMethod$$$ = null;
 
+    /**
+     * @noinspection ALL
+     */
     private String $$$getMessageFromBundle$$$(String path, String key) {
         ResourceBundle bundle;
         try {
