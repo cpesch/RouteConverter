@@ -20,6 +20,8 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
@@ -31,14 +33,29 @@ import javax.naming.ServiceUnavailableException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+import java.util.prefs.BackingStoreException;
+import java.util.prefs.Preferences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 public class GeocodingServiceFacadeTest {
+    private Preferences preferences;
+
+    @Before
+    public void setUp() {
+        preferences = Preferences.userRoot().node("/RouteConverter-test/" + getClass().getName() + "/" + UUID.randomUUID());
+    }
+
+    @After
+    public void tearDown() throws BackingStoreException {
+        preferences.removeNode();
+    }
+
     @Test
     public void returnsResultsAnnotatedWithTheirServiceName() throws IOException, ServiceUnavailableException {
-        GeocodingServiceFacade facade = new GeocodingServiceFacade();
+        GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
         GeocodingService nominatim = new TestGeocodingService("Nominatim", singletonPositions("one"));
         GeocodingService photon = new TestGeocodingService("Photon", singletonPositions("two"));
         facade.addGeocodingService(nominatim);
@@ -55,7 +72,7 @@ public class GeocodingServiceFacadeTest {
 
     @Test
     public void automaticQueriesAllGeocodingServices() throws IOException, ServiceUnavailableException {
-        GeocodingServiceFacade facade = new GeocodingServiceFacade();
+        GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
         AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
         GeocodingService geonames = new TestGeocodingService("GeoNames", singletonPositions("geonames"));
         GeocodingService nominatim = new TestGeocodingService("Nominatim", singletonPositions("nominatim"));
@@ -77,7 +94,7 @@ public class GeocodingServiceFacadeTest {
 
     @Test
     public void returnsNullWhenNoGeocodingServiceReturnsResults() throws IOException, ServiceUnavailableException {
-        GeocodingServiceFacade facade = new GeocodingServiceFacade();
+        GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
         GeocodingService nominatim = new TestGeocodingService("Nominatim", null);
         facade.addGeocodingService(nominatim);
         facade.setPreferredGeocodingService(nominatim);
@@ -90,7 +107,7 @@ public class GeocodingServiceFacadeTest {
 
     @Test
     public void getPositionForReturnsFirstResultFromSelectedService() throws IOException, ServiceUnavailableException {
-        GeocodingServiceFacade facade = new GeocodingServiceFacade();
+        GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
         GeocodingService nominatim = new TestGeocodingService("Nominatim", singletonPositions("one"));
         GeocodingService photon = new TestGeocodingService("Photon", singletonPositions("two"));
         facade.addGeocodingService(nominatim);

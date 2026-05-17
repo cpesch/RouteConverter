@@ -62,6 +62,7 @@ import static java.lang.String.CASE_INSENSITIVE_ORDER;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static slash.navigation.common.BoundingBox.asBoundingBox;
 import static slash.navigation.converter.gui.models.FindPlaceResultsModel.*;
 import static slash.navigation.gui.helpers.JTableHelper.getDefaultRowHeight;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
@@ -124,7 +125,10 @@ public class FindPlaceDialog extends SimpleDialog {
 
         tableResult.setModel(tableModel);
         tableResult.setDefaultRenderer(Object.class, new AlternatingColorTableCellRenderer());
-        tableResult.getSelectionModel().addListSelectionListener(e -> handleSearchUpdate());
+        tableResult.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting())
+                handleSearchUpdate();
+        });
         TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "longitude", "latitude", "service");
         TableColumnModel columns = tableResult.getColumnModel();
         for (int i = 0; i < columns.getColumnCount(); i++) {
@@ -186,30 +190,32 @@ public class FindPlaceDialog extends SimpleDialog {
         handleSearchUpdate();
     }
 
-
     private void handleSearchUpdate() {
+        RouteConverter r = RouteConverter.getInstance();
         boolean existsSelectedResult = tableResult.getSelectedRowCount() > 0;
         buttonInsertPosition.setEnabled(existsSelectedResult);
-        if (existsSelectedResult) {
-            List<GeocodingResult> selectedValues = getSelectedResults();
-            RouteConverter.getInstance().showPositionMagnifier(selectedValues.stream().map(GeocodingResult::position).toList());
-        } else {
-            RouteConverter.getInstance().showPositionMagnifier(null);
-        }
+        List<GeocodingResult> selectedValues = getSelectedResults();
+        if (selectedValues.isEmpty())
+            return;
+
+        List<NavigationPosition> positions = selectedValues.stream().map(GeocodingResult::position).toList();
+        r.setCenter(asBoundingBox(positions).getCenter());
     }
 
     private void searchPositions() throws IOException, ServiceUnavailableException {
         RouteConverter r = RouteConverter.getInstance();
-
         String address = textFieldSearch.getText();
-
         List<GeocodingResult> results = r.getGeocodingServiceFacade().getPositionsFor(address);
         tableModel.setResults(results);
         if (tableModel.getRowCount() > 0) {
-            tableResult.setRowSelectionInterval(0, 0);
+            tableResult.clearSelection();
             tableResult.scrollRectToVisible(tableResult.getCellRect(0, 0, true));
+        } else {
+            tableResult.clearSelection();
         }
-
+        List<NavigationPosition> positions = tableModel.getResults().stream().map(GeocodingResult::position).toList();
+        r.showPositionMagnifier(positions.isEmpty() ? null : positions);
+        handleSearchUpdate();
         savePreferences();
     }
 

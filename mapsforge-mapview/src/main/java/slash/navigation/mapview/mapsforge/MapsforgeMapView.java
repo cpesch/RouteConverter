@@ -999,13 +999,18 @@ public class MapsforgeMapView extends BaseMapView {
         return asNavigationPosition(mapView.getModel().mapViewPosition.getCenter());
     }
 
-    private void setCenter(LatLong center, boolean alwaysRecenter) {
-        if (alwaysRecenter || mapViewCallback.isRecenterAfterZooming() || !isVisible(center))
-            mapView.getModel().mapViewPosition.animateTo(center);
+    public void setCenter(NavigationPosition position) {
+        if (position != null)
+            setCenter(position, true);
     }
 
     private void setCenter(NavigationPosition center, boolean alwaysRecenter) {
         setCenter(asLatLong(center), alwaysRecenter);
+    }
+
+    private void setCenter(LatLong center, boolean alwaysRecenter) {
+        if (alwaysRecenter || mapViewCallback.isRecenterAfterZooming() || !isVisible(center))
+            mapView.getModel().mapViewPosition.animateTo(center);
     }
 
     public BoundingBox getBoundingBox() {
@@ -1335,8 +1340,6 @@ public class MapsforgeMapView extends BaseMapView {
                         .collect(Collectors.toList());
                 addLayers(icons);
                 markers.addAll(icons);
-
-                setCenter(asBoundingBox(positions).getCenter(), true);
             }
         }
     }

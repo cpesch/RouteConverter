@@ -69,6 +69,10 @@ public class FindPlaceResultsModel extends AbstractTableModel {
         return results.get(rowIndex);
     }
 
+    public List<GeocodingResult> getResults() {
+        return new ArrayList<>(results);
+    }
+
     public void setResults(List<GeocodingResult> results) {
         this.results = results != null ? new ArrayList<>(results) : Collections.emptyList();
         fireTableDataChanged();

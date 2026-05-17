@@ -852,6 +852,12 @@ public abstract class RouteConverter extends SingleFrameApplication {
         }
     }
 
+    public void setCenter(NavigationPosition position) {
+        if (isMapViewAvailable()) {
+            getMapView().setCenter(position);
+        }
+    }
+
     public List<MapViewImplementation> getAvailableMapViews() {
         return singletonList(JavaFX8);
     }
