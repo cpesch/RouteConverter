@@ -54,7 +54,7 @@ import static slash.navigation.converter.gui.models.LocalActionConstants.POINTS_
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
-import static slash.navigation.gui.helpers.JTableHelper.calculateRowHeight;
+import static slash.navigation.gui.helpers.JTableHelper.getDefaultRowHeight;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
 
 /**
@@ -150,10 +150,6 @@ public class PointOfInterestPanel implements PanelInTab {
             handleColumnVisibilityUpdate(column);
     }
 
-    private int getDefaultRowHeight() {
-        return calculateRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null));
-    }
-
     public Component getRootComponent() {
         return pointsOfInterestPanel;
     }
@@ -194,7 +190,8 @@ public class PointOfInterestPanel implements PanelInTab {
 
     private void handleColumnVisibilityUpdate(PositionTableColumn column) {
         if (column.getModelIndex() == PHOTO_COLUMN_INDEX)
-            tablePointsOfInterest.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN : getDefaultRowHeight());
+            tablePointsOfInterest.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN :
+                    getDefaultRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null)));
     }
 
     public void addAudio(Wgs84Position position, File file) {

@@ -92,7 +92,7 @@ import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
 import static slash.navigation.converter.gui.models.LocalActionConstants.CATEGORIES;
 import static slash.navigation.converter.gui.models.LocalActionConstants.ROUTES;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
-import static slash.navigation.gui.helpers.JTableHelper.calculateRowHeight;
+import static slash.navigation.gui.helpers.JTableHelper.getDefaultRowHeight;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -228,7 +228,7 @@ public class BrowsePanel implements PanelInTab {
             }
             column.setCellRenderer(cellRenderer);
         }
-        tableRoutes.setRowHeight(getDefaultRowHeight());
+        tableRoutes.setRowHeight(getDefaultRowHeight(this));
 
         browsePanel.setTransferHandler(new PanelDropHandler());
 
@@ -258,9 +258,6 @@ public class BrowsePanel implements PanelInTab {
         }, "CategoryTreeInitializer").start();
     }
 
-    private int getDefaultRowHeight() {
-        return calculateRowHeight(this, new DefaultCellEditor(new JTextField()), "Value");
-    }
 
     private String createRootFolder() {
         return getRoutesDirectory().getAbsolutePath();

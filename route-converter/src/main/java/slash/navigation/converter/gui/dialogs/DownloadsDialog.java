@@ -50,7 +50,7 @@ import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.download.DownloadTableModel.*;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
-import static slash.navigation.gui.helpers.JTableHelper.calculateRowHeight;
+import static slash.navigation.gui.helpers.JTableHelper.getDefaultRowHeight;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 
 /**
@@ -117,7 +117,7 @@ public class DownloadsDialog extends SimpleDialog {
             return d1.getLastModified().getCalendar().compareTo(d2.getLastModified().getCalendar());
         });
         tableDownloads.setRowSorter(sorter);
-        tableDownloads.setRowHeight(getDefaultRowHeight());
+        tableDownloads.setRowHeight(getDefaultRowHeight(this));
 
         final ActionManager actionManager = r.getContext().getActionManager();
         actionManager.register("restart-download", new RestartDownloadsAction(this, tableDownloads, r.getDownloadManager()));
@@ -150,9 +150,6 @@ public class DownloadsDialog extends SimpleDialog {
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
     }
 
-    private int getDefaultRowHeight() {
-        return calculateRowHeight(this, new DefaultCellEditor(new JTextField()), "Value");
-    }
 
     private void close() {
         ActionManager actionManager = RouteConverter.getInstance().getContext().getActionManager();

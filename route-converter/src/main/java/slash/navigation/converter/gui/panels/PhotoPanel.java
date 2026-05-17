@@ -78,7 +78,7 @@ import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Tagged_P
 import static slash.navigation.converter.gui.models.LocalActionConstants.PHOTOS;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
-import static slash.navigation.gui.helpers.JTableHelper.calculateRowHeight;
+import static slash.navigation.gui.helpers.JTableHelper.getDefaultRowHeight;
 import static slash.navigation.photo.TagState.*;
 
 /**
@@ -238,10 +238,6 @@ public class PhotoPanel implements PanelInTab {
             handleColumnVisibilityUpdate(column);
     }
 
-    private int getDefaultRowHeight() {
-        return calculateRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null));
-    }
-
     public Component getRootComponent() {
         return photosPanel;
     }
@@ -299,7 +295,8 @@ public class PhotoPanel implements PanelInTab {
     private void handleColumnVisibilityUpdate(PositionTableColumn column) {
         if (column.getModelIndex() == PHOTO_COLUMN_INDEX || column.getModelIndex() == EXIF_COLUMN_INDEX ||
                 column.getModelIndex() == GPS_COLUMN_INDEX)
-            tablePhotos.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN : getDefaultRowHeight());
+            tablePhotos.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN :
+                    getDefaultRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null)));
     }
 
     private FilterPredicate<NavigationPosition> getFilterPredicatePreference() {

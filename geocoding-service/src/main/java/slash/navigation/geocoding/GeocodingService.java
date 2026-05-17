@@ -47,7 +47,6 @@ public interface GeocodingService {
      */
     List<GeocodingResult> getPositionsFor(String address) throws IOException, ServiceUnavailableException;
 
-
     /**
      * Retrieves an address for a given {@link NavigationPosition}.
      * @param position the {@link NavigationPosition} to reverse geocode the address

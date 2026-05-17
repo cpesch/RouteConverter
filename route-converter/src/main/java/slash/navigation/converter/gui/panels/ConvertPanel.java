@@ -407,10 +407,6 @@ public class ConvertPanel implements PanelInTab {
         invokeLater(() -> tablePositions.requestFocus());
     }
 
-    private int getDefaultRowHeight() {
-        return calculateRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null));
-    }
-
     private void prepareForNewPositionList() {
         Application.getInstance().getContext().getUndoManager().discardAllEdits();
         RouteConverter.getInstance().getPositionAugmenter().interrupt();
@@ -975,7 +971,8 @@ public class ConvertPanel implements PanelInTab {
 
     private void handleColumnVisibilityUpdate(PositionTableColumn column) {
         if (column.getModelIndex() == PHOTO_COLUMN_INDEX)
-            tablePositions.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN : getDefaultRowHeight());
+            tablePositions.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN :
+                    getDefaultRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null)));
     }
 
     // helpers
