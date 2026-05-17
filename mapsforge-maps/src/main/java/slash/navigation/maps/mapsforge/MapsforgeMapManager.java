@@ -54,6 +54,7 @@ import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.*;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.datasources.DataSourceManager.*;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.removePrefix;
 import static slash.navigation.maps.mapsforge.models.OpenStreetMap.OPENSTREETMAP_URL;
@@ -237,7 +238,7 @@ public class MapsforgeMapManager {
 
     private File getDirectory(String preferencesPath, String directoryName) {
         java.io.File f = new java.io.File(preferencesPath);
-        if (f.exists())
+        if (!isEmpty(directoryName) && f.exists())
             return f;
         return ensureDirectory(getApplicationDirectory(directoryName).getAbsolutePath());
     }

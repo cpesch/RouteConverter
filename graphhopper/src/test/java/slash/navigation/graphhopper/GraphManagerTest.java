@@ -8,7 +8,9 @@ import slash.navigation.datasources.DataSource;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
@@ -16,15 +18,21 @@ import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.removeExtension;
 
 public class GraphManagerTest {
     private File croatia, france, franceProperties, germany, germanyGraphDirectory, hamburg;
+    private GraphManager graphManager;
+    private String originalPathPreference;
+    private final List<File> createdDirectories = new ArrayList<>();
 
     @Before
     public void setUp() throws Exception {
+        graphManager = new GraphManager(null, null, null);
+        originalPathPreference = graphManager.getPath();
         java.io.File directory = getTemporaryDirectory();
         croatia = File.createTempFile("croatia", ".pbf", directory);
         france = File.createTempFile("france", ".pbf", directory);
@@ -37,6 +45,7 @@ public class GraphManagerTest {
 
     @After
     public void tearDown() {
+        graphManager.setPath(originalPathPreference);
         assertTrue(croatia.delete());
         assertTrue(france.delete());
         assertTrue(franceProperties.delete());
@@ -44,6 +53,10 @@ public class GraphManagerTest {
         assertTrue(germany.delete());
         assertTrue(hamburg.delete());
         assertTrue(germanyGraphDirectory.delete());
+        for (File directory : createdDirectories) {
+            if (directory.exists())
+                assertTrue(directory.delete());
+        }
     }
 
     @Test
@@ -118,5 +131,71 @@ public class GraphManagerTest {
         assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, paris), descriptors.get(3));
         assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, austria), descriptors.get(4));
         assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, croatia), descriptors.get(5));
+    }
+
+    @Test
+    public void testNullDirectoryPreferenceFallsBackToApplicationDirectory() throws IOException {
+        String directoryName = "graph-manager-test-" + UUID.randomUUID();
+        GraphManager graphManager = new GraphManager(null, null, null) {
+            @Override
+            public String getPath() {
+                return null;
+            }
+        };
+
+        File directory = graphManager.getDirectory(createDataSource(directoryName));
+        createdDirectories.add(directory);
+
+        assertEquals(getApplicationDirectory(directoryName).getAbsolutePath(), directory.getAbsolutePath());
+    }
+
+    @Test
+    public void testEmptyDirectoryPreferenceFallsBackToApplicationDirectory() {
+        String directoryName = "graph-manager-test-" + UUID.randomUUID();
+        graphManager.setPath("");
+
+        File directory = graphManager.getDirectory(createDataSource(directoryName));
+        createdDirectories.add(directory);
+
+        assertEquals(getApplicationDirectory(directoryName).getAbsolutePath(), directory.getAbsolutePath());
+    }
+
+    @Test
+    public void testBlankDirectoryPreferenceFallsBackToApplicationDirectory() {
+        String directoryName = "graph-manager-test-" + UUID.randomUUID();
+        graphManager.setPath("   ");
+
+        File directory = graphManager.getDirectory(createDataSource(directoryName));
+        createdDirectories.add(directory);
+
+        assertEquals(getApplicationDirectory(directoryName).getAbsolutePath(), directory.getAbsolutePath());
+    }
+
+    @Test
+    public void testMissingDirectoryPreferenceFallsBackToApplicationDirectory() {
+        String directoryName = "graph-manager-test-" + UUID.randomUUID();
+        graphManager.setPath(new File(getTemporaryDirectory(), "missing-" + UUID.randomUUID()).getAbsolutePath());
+
+        File directory = graphManager.getDirectory(createDataSource(directoryName));
+        createdDirectories.add(directory);
+
+        assertEquals(getApplicationDirectory(directoryName).getAbsolutePath(), directory.getAbsolutePath());
+    }
+
+    @Test
+    public void testExistingDirectoryPreferenceIsUsed() {
+        File existingDirectory = ensureDirectory(new File(getTemporaryDirectory(), "graph-manager-existing-" + UUID.randomUUID()));
+        createdDirectories.add(existingDirectory);
+        graphManager.setPath(existingDirectory.getAbsolutePath());
+
+        File directory = graphManager.getDirectory(createDataSource("unused"));
+
+        assertEquals(existingDirectory.getAbsolutePath(), directory.getAbsolutePath());
+    }
+
+    private static DataSource createDataSource(String directoryName) {
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSource.getDirectory()).thenReturn(directoryName);
+        return dataSource;
     }
 }

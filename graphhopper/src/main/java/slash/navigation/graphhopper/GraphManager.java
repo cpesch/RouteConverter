@@ -40,6 +40,7 @@ import static java.util.stream.Collectors.toList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.*;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.graphhopper.PbfUtil.DOT_PBF;
 import static slash.navigation.graphhopper.PbfUtil.PROPERTIES;
 
@@ -79,11 +80,10 @@ public class GraphManager {
     }
 
     java.io.File getDirectory(DataSource dataSource) {
-        String directoryName = getPath();
-        java.io.File f = new java.io.File(directoryName);
-        if (!f.exists())
-            directoryName = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
-        return ensureDirectory(directoryName);
+        String path = getPath();
+        if (isEmpty(path) || !new java.io.File(path).exists())
+            path = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
+        return ensureDirectory(path);
     }
 
     List<java.io.File> collectPbfFiles(DataSource dataSource) {

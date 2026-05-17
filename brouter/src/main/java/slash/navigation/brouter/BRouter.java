@@ -47,6 +47,7 @@ import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
 import static slash.common.io.Files.removeExtension;
+import static slash.common.io.Transfer.isEmpty;
 import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.download.Checksum.createChecksum;
 import static slash.navigation.routing.RoutingResult.Validity.Invalid;
@@ -149,8 +150,7 @@ public class BRouter extends BaseRoutingService {
             return null;
 
         String path = getPath() + separator + dataSource.getDirectory();
-        java.io.File f = new java.io.File(path);
-        if (!f.exists())
+        if (isEmpty(path) || !new java.io.File(path).exists())
             path = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
         return ensureDirectory(path);
     }

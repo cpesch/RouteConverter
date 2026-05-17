@@ -41,6 +41,7 @@ import static java.util.stream.Collectors.toList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.removeExtension;
+import static slash.common.io.Transfer.isEmpty;
 
 /**
  * Encapsulates access to HGT files.
@@ -88,11 +89,10 @@ public class HgtFiles implements ElevationService {
     }
 
     public java.io.File getDirectory() {
-        String directoryName = getPath();
-        java.io.File f = new java.io.File(directoryName);
-        if (!f.exists())
-            directoryName = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
-        return ensureDirectory(directoryName);
+        String path = getPath();
+        if (isEmpty(path) || !new java.io.File(path).exists())
+            path = getApplicationDirectory(dataSource.getDirectory()).getAbsolutePath();
+        return ensureDirectory(path);
     }
 
     String createFileKey(double longitude, double latitude) {
