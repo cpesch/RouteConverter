@@ -536,13 +536,13 @@ public class MapsforgeMapView extends BaseMapView {
     private class MenuCallback implements XmlRenderThemeMenuCallback {
         public Set<String> getCategories(XmlRenderThemeStyleMenu renderThemeStyleMenu) {
             Map<String, XmlRenderThemeStyleLayer> layers = renderThemeStyleMenu.getLayers();
-            List<ThemeStyle> themeStyles = layers.values().stream().
-                    map(layer -> (ThemeStyle) new ThemeStyleImpl(renderThemeStyleMenu, layer)).
-                    toList();
-            getMapManager().setThemeStyles(themeStyles);
-
             String stylePreference = getMapManager().getAppliedThemeStyleModel().getItem() != null ? getMapManager().getAppliedThemeStyleModel().getItem().getUrl() : null;
             String style = stylePreference == null ? renderThemeStyleMenu.getDefaultValue() : stylePreference;
+            List<ThemeStyle> themeStyles = layers.values().stream().
+                    filter(XmlRenderThemeStyleLayer::isVisible).
+                    map(layer -> (ThemeStyle) new ThemeStyleImpl(renderThemeStyleMenu, layer)).
+                    toList();
+            getMapManager().setThemeStyles(themeStyles, style);
 
             XmlRenderThemeStyleLayer renderThemeStyleLayer = renderThemeStyleMenu.getLayer(style);
             if (THEME_STYLE_ALL.equals(stylePreference)) {

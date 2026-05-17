@@ -40,6 +40,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -97,6 +98,54 @@ public class MapsforgeMapViewTest {
                 mapManager.getAvailableThemeStylesModel().getRowCount());
     }
 
+    @Test
+    public void testInvisibleThemeStylesAreNotSelectable() throws Exception {
+        XmlRenderThemeStyleMenu renderThemeStyleMenu = mock(XmlRenderThemeStyleMenu.class);
+        XmlRenderThemeStyleLayer hiddenParent = createStyleLayer("totm-base", "Base", false, "roads");
+        XmlRenderThemeStyleLayer hiking = createStyleLayer("totm-hiking", "Hiking", true, "paths");
+        XmlRenderThemeStyleLayer cycling = createStyleLayer("totm-cycling", "Cycling", true, "cycleways");
+
+        Map<String, XmlRenderThemeStyleLayer> layers = new LinkedHashMap<>();
+        layers.put("totm-base", hiddenParent);
+        layers.put("totm-hiking", hiking);
+        layers.put("totm-cycling", cycling);
+
+        when(renderThemeStyleMenu.getLayers()).thenReturn(layers);
+        when(renderThemeStyleMenu.getDefaultValue()).thenReturn("totm-hiking");
+        when(renderThemeStyleMenu.getDefaultLanguage()).thenReturn("en");
+        when(renderThemeStyleMenu.getLayer("totm-hiking")).thenReturn(hiking);
+
+        createMenuCallback().getCategories(renderThemeStyleMenu);
+
+        assertEquals("Only visible styles should be exposed in the theme style selector", 2,
+                mapManager.getAvailableThemeStylesModel().getRowCount());
+        assertNull("Hidden layers must stay internal and not become selectable styles",
+                mapManager.getAvailableThemeStylesModel().getItemByUrl("totm-base"));
+    }
+
+    @Test
+    public void testVisibleDefaultThemeStyleRemainsSelectedAfterFiltering() throws Exception {
+        XmlRenderThemeStyleMenu renderThemeStyleMenu = mock(XmlRenderThemeStyleMenu.class);
+        XmlRenderThemeStyleLayer hiddenParent = createStyleLayer("totm-base", "Base", false, "roads");
+        XmlRenderThemeStyleLayer hiking = createStyleLayer("totm-hiking", "Hiking", true, "paths");
+        XmlRenderThemeStyleLayer cycling = createStyleLayer("totm-cycling", "Cycling", true, "cycleways");
+
+        Map<String, XmlRenderThemeStyleLayer> layers = new LinkedHashMap<>();
+        layers.put("totm-base", hiddenParent);
+        layers.put("totm-cycling", cycling);
+        layers.put("totm-hiking", hiking);
+
+        when(renderThemeStyleMenu.getLayers()).thenReturn(layers);
+        when(renderThemeStyleMenu.getDefaultValue()).thenReturn("totm-hiking");
+        when(renderThemeStyleMenu.getDefaultLanguage()).thenReturn("en");
+        when(renderThemeStyleMenu.getLayer("totm-hiking")).thenReturn(hiking);
+
+        createMenuCallback().getCategories(renderThemeStyleMenu);
+
+        assertEquals("The visible default style from the theme menu should stay selected", "totm-hiking",
+                mapManager.getAppliedThemeStyleModel().getItem().getUrl());
+    }
+
     private XmlRenderThemeMenuCallback createMenuCallback() throws Exception {
         Class<?> menuCallbackClass = Class.forName(MapsforgeMapView.class.getName() + "$MenuCallback");
         Constructor<?> constructor = menuCallbackClass.getDeclaredConstructor(MapsforgeMapView.class);
@@ -105,9 +154,14 @@ public class MapsforgeMapViewTest {
     }
 
     private XmlRenderThemeStyleLayer createStyleLayer(String id, String title, String... categories) {
+        return createStyleLayer(id, title, true, categories);
+    }
+
+    private XmlRenderThemeStyleLayer createStyleLayer(String id, String title, boolean visible, String... categories) {
         XmlRenderThemeStyleLayer layer = mock(XmlRenderThemeStyleLayer.class);
         when(layer.getId()).thenReturn(id);
         when(layer.getTitle(anyString())).thenReturn(title);
+        when(layer.isVisible()).thenReturn(visible);
         when(layer.getCategories()).thenReturn(new LinkedHashSet<>(Set.of(categories)));
         when(layer.getOverlays()).thenReturn(Collections.emptyList());
         return layer;

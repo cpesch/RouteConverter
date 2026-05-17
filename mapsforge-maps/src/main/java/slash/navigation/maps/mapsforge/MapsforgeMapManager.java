@@ -41,6 +41,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -134,7 +136,7 @@ public class MapsforgeMapManager {
         getAvailableThemeStyleCategoriesModel().clear();
     }
 
-    public synchronized void setThemeStyles(List<ThemeStyle> themeStyles) {
+    public synchronized void setThemeStyles(List<ThemeStyle> themeStyles, String preferredThemeStyleUrl) {
         clearThemeStyles();
 
         if (themeStyles == null || themeStyles.isEmpty())
@@ -146,7 +148,12 @@ public class MapsforgeMapManager {
             getAvailableThemeStylesModel().addOrUpdateItem(themeStyle);
 
         LocalTheme currentTheme = appliedThemeModel.getItem();
-        appliedThemeStyleModel.initializePreferences(currentTheme.description() + APPLIED_STYLE_PREFERENCE, themeStyles.get(0).getUrl());
+        String defaultThemeStyleUrl = themeStyles.stream().
+                map(ThemeStyle::getUrl).
+                filter(Predicate.isEqual(preferredThemeStyleUrl)).
+                findFirst().
+                orElse(themeStyles.get(0).getUrl());
+        appliedThemeStyleModel.initializePreferences(currentTheme.description() + APPLIED_STYLE_PREFERENCE, defaultThemeStyleUrl);
 
         ThemeStyle themeStyle = getAppliedThemeStyleModel().getItem();
         if (themeStyle != null) {
