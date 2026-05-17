@@ -50,11 +50,10 @@ public class JMenuHelper {
     }
 
     public static JMenu createMenu(String name) {
-        JMenu menu = new JMenu(getString(name + "-menu"));
+        JMenu menu = new JMenu();
         menu.setName(name);
-        String mnemonic = getOptionalString(name + "-menu-mnemonic");
-        if (mnemonic != null && !mnemonic.isEmpty())
-            menu.setMnemonic(mnemonic.charAt(0));
+        menu.setText(getString(name + "-menu"));
+        setMnemonic(menu, name + "-menu-mnemonic");
         return menu;
     }
 
@@ -84,6 +83,12 @@ public class JMenuHelper {
         if (ampersandIndex != -1) {
             item.setText(text.substring(0, ampersandIndex) + text.substring(ampersandIndex + 1));
             item.setDisplayedMnemonicIndex(ampersandIndex);
+        } else {
+            int mnemonicIndex = text.indexOf(mnemonic);
+            if (mnemonicIndex == -1)
+                mnemonicIndex = text.toLowerCase().indexOf(Character.toLowerCase(mnemonic));
+            if (mnemonicIndex != -1)
+                item.setDisplayedMnemonicIndex(mnemonicIndex);
         }
     }
 
