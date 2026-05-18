@@ -238,7 +238,7 @@ public class MapsforgeMapManager {
 
     private File getDirectory(String preferencesPath, String directoryName) {
         java.io.File f = new java.io.File(preferencesPath);
-        if (!isEmpty(directoryName) && f.exists())
+        if (!isEmpty(preferencesPath) && f.exists())
             return f;
         return ensureDirectory(getApplicationDirectory(directoryName).getAbsolutePath());
     }
