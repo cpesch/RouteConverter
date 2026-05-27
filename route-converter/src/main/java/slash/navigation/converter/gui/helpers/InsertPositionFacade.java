@@ -82,13 +82,17 @@ public class InsertPositionFacade {
         PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
 
         List<NavigationPosition> selectedPositions = new ArrayList<>();
-        for (int selectedRow : selectedRows)
-            selectedPositions.add(positionsModel.getPosition(selectedRow));
+        for (int selectedRow : selectedRows) {
+            NavigationPosition position = positionsModel.getPosition(selectedRow);
+            if(position.hasCoordinates())
+              selectedPositions.add(position);
+        }
 
         if (routingService.isDownload()) {
             List<LongitudeAndLatitude> longitudeAndLatitudes = new ArrayList<>();
             for (NavigationPosition position : selectedPositions) {
-                longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
+                if(position.hasCoordinates())
+                  longitudeAndLatitudes.add(new LongitudeAndLatitude(position.getLongitude(), position.getLatitude()));
             }
             DownloadFuture future = routingService.downloadRoutingDataFor(r.getMapView().getMapIdentifier(), longitudeAndLatitudes);
             if(future.isRequiresDownload())
