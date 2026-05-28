@@ -36,6 +36,7 @@ import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.maps.mapsforge.LocalMap;
+import slash.navigation.maps.mapsforge.MapsforgeMapGeocodingService;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
@@ -152,6 +153,10 @@ public class RouteConverterOpenSource extends RouteConverter {
         getGeocodingServiceFacade().addGeocodingService(service);
         getGeocodingServiceFacade().setPreferredGeocodingService(service);
 
+        getGeocodingServiceFacade().addGeocodingService(new MapsforgeMapGeocodingService(
+                () -> getMapsforgeMapManager() != null ? getMapsforgeMapManager().getDisplayedMapModel().getItem() : null,
+                this::getMapBoundingBox,
+                this::getMapCenter));
         getGeocodingServiceFacade().addGeocodingService(new GeoNamesService());
         getGeocodingServiceFacade().addGeocodingService(new NominatimService());
         getGeocodingServiceFacade().addGeocodingService(new PhotonService());
