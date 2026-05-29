@@ -25,7 +25,8 @@ import slash.common.type.CompactCalendar;
 
 import java.util.List;
 
-import static java.lang.Math.abs;
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 /**
@@ -93,9 +94,22 @@ public record BoundingBox(NavigationPosition northEast, NavigationPosition south
         return result;
     }
 
-    public boolean contains(BoundingBox boundingBox) {
-        return contains(boundingBox.northEast()) && contains(boundingBox.getSouthEast()) &&
-                contains(boundingBox.southWest()) && contains(boundingBox.getNorthWest());
+    public boolean contains(BoundingBox other) {
+        return contains(other.northEast()) && contains(other.getSouthEast()) &&
+                contains(other.southWest()) && contains(other.getNorthWest());
+    }
+
+    public BoundingBox intersect(BoundingBox other) {
+        if (other == null)
+            return this;
+
+        double east = min(northEast().getLongitude(), other.northEast().getLongitude());
+        double north = min(northEast().getLatitude(), other.northEast().getLatitude());
+        double west = max(southWest().getLongitude(), other.southWest().getLongitude());
+        double south = max(southWest().getLatitude(), other.southWest().getLatitude());
+        if (west > east || south > north)
+            return null;
+        return new BoundingBox(east, north, west, south);
     }
 
     public NavigationPosition getCenter() {

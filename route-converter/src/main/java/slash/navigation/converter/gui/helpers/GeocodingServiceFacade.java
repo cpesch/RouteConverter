@@ -84,7 +84,6 @@ public class GeocodingServiceFacade {
 
     public GeocodingService getGeocodingService() {
         String lookupServiceName = preferences.get(GEOCODING_SERVICE, preferredGeocodingService.getName());
-
         GeocodingService service = findGeocodingService(lookupServiceName);
         if (service != null)
             return service;

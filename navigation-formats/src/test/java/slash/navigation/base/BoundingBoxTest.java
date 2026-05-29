@@ -68,4 +68,26 @@ public class BoundingBoxTest {
         assertDoubleEquals(16, new BoundingBox(-2.0, -2.0, -6.0, -6.0).getSquareSize());
         assertDoubleEquals(16, new BoundingBox(6.0, 6.0, 2.0, 2.0).getSquareSize());
     }
+
+    @Test
+    public void testIntersect() {
+        BoundingBox first = new BoundingBox(10.0, 10.0, 0.0, 0.0);
+        BoundingBox second = new BoundingBox(15.0, 15.0, 5.0, 5.0);
+
+        BoundingBox intersection = first.intersect(second);
+
+        assertNotNull(intersection);
+        assertDoubleEquals(10.0, intersection.northEast().getLongitude());
+        assertDoubleEquals(10.0, intersection.northEast().getLatitude());
+        assertDoubleEquals(5.0, intersection.southWest().getLongitude());
+        assertDoubleEquals(5.0, intersection.southWest().getLatitude());
+    }
+
+    @Test
+    public void testIntersectWithNullsAndDisjointBoxes() {
+        BoundingBox boundingBox = new BoundingBox(10.0, 10.0, 0.0, 0.0);
+
+        assertSame(boundingBox, boundingBox.intersect(null));
+        assertNull(new BoundingBox(1.0, 1.0, 0.0, 0.0).intersect(new BoundingBox(3.0, 3.0, 2.0, 2.0)));
+    }
 }
