@@ -123,11 +123,13 @@ public class AutomaticGeocodingService extends BaseGeocodingService {
     private static class GeocodingServicePriorityComparator implements Comparator<GeocodingService> {
         private static final Map<String, Integer> PRIORITY = new HashMap<>();
         static {
-            PRIORITY.put("Mapsforge", 1);
-            PRIORITY.put("Google Maps", 2);
-            PRIORITY.put("Nominatim", 3);
-            PRIORITY.put("Photon", 4);
-            PRIORITY.put("GeoNames", 5);
+            PRIORITY.put("Mapsforge POI", 1);
+            PRIORITY.put("Mapsforge Map", 2);
+            PRIORITY.put("Mapsforge", 2);
+            PRIORITY.put("Google Maps", 3);
+            PRIORITY.put("Nominatim", 4);
+            PRIORITY.put("Photon", 5);
+            PRIORITY.put("GeoNames", 6);
         }
 
         private int getPriority(GeocodingService geocodingService) {

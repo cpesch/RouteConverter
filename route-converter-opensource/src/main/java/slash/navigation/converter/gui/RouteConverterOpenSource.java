@@ -43,6 +43,7 @@ import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.nominatim.NominatimService;
 import slash.navigation.photon.PhotonService;
+import slash.navigation.pois.mapsforge.MapsforgePoiGeocodingService;
 import slash.navigation.routing.Beeline;
 
 import javax.swing.*;
@@ -153,8 +154,11 @@ public class RouteConverterOpenSource extends RouteConverter {
         getGeocodingServiceFacade().addGeocodingService(service);
         getGeocodingServiceFacade().setPreferredGeocodingService(service);
 
-        getGeocodingServiceFacade().addGeocodingService(new MapsforgeMapGeocodingService(
-                () -> getMapsforgeMapManager() != null ? getMapsforgeMapManager().getDisplayedMapModel().getItem() : null,
+        getGeocodingServiceFacade().addGeocodingService(new MapsforgePoiGeocodingService(getDataSourceManager(),
+                getMapsforgeMapManager(),
+                this::getMapBoundingBox,
+                this::getMapCenter));
+        getGeocodingServiceFacade().addGeocodingService(new MapsforgeMapGeocodingService(getMapsforgeMapManager(),
                 this::getMapBoundingBox,
                 this::getMapCenter));
         getGeocodingServiceFacade().addGeocodingService(new GeoNamesService());

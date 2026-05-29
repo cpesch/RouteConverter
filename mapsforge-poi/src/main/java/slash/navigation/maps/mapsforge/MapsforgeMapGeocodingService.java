@@ -64,20 +64,20 @@ public class MapsforgeMapGeocodingService extends BaseGeocodingService {
             "tourism", "waterway"
     );
 
-    private final Supplier<LocalMap> displayedMapSupplier;
+    private final MapsforgeMapManager mapsforgeMapManager;
     private final Supplier<BoundingBox> visibleBoundsSupplier;
     private final Supplier<NavigationPosition> centerSupplier;
 
-    public MapsforgeMapGeocodingService(Supplier<LocalMap> displayedMapSupplier,
+    public MapsforgeMapGeocodingService(MapsforgeMapManager mapsforgeMapManager,
                                         Supplier<BoundingBox> visibleBoundsSupplier,
                                         Supplier<NavigationPosition> centerSupplier) {
-        this.displayedMapSupplier = displayedMapSupplier;
+        this.mapsforgeMapManager = mapsforgeMapManager;
         this.visibleBoundsSupplier = visibleBoundsSupplier;
         this.centerSupplier = centerSupplier;
     }
 
     public String getName() {
-        return "Mapsforge";
+        return "Mapsforge Map";
     }
 
     public boolean isDownload() {
@@ -122,7 +122,7 @@ public class MapsforgeMapGeocodingService extends BaseGeocodingService {
     }
 
     private MapsforgeContext getContext() {
-        LocalMap localMap = displayedMapSupplier.get();
+        LocalMap localMap = mapsforgeMapManager.getDisplayedMapModel().getItem();
         if (!(localMap instanceof MapsforgeFileMap mapsforgeFileMap))
             return null;
 
@@ -132,7 +132,7 @@ public class MapsforgeMapGeocodingService extends BaseGeocodingService {
             if (mapFile == null || mapBoundingBox == null)
                 return null;
 
-            BoundingBox visibleBounds = intersect(visibleBoundsSupplier.get(), mapBoundingBox);
+            BoundingBox visibleBounds = mapBoundingBox.intersect(visibleBoundsSupplier.get());
             return new MapsforgeContext(mapFile, mapBoundingBox, visibleBounds != null ? visibleBounds : mapBoundingBox);
         } catch (RuntimeException e) {
             log.log(Level.FINE, "Cannot access displayed Mapsforge map for geocoding", e);
@@ -349,21 +349,6 @@ public class MapsforgeMapGeocodingService extends BaseGeocodingService {
     private long countTiles(TileRange range) {
         return ((long) range.lowerRight().tileX - range.upperLeft().tileX + 1L) *
                 ((long) range.lowerRight().tileY - range.upperLeft().tileY + 1L);
-    }
-
-    private BoundingBox intersect(BoundingBox first, BoundingBox second) {
-        if (first == null)
-            return second;
-        if (second == null)
-            return first;
-
-        double east = min(first.northEast().getLongitude(), second.northEast().getLongitude());
-        double north = min(first.northEast().getLatitude(), second.northEast().getLatitude());
-        double west = max(first.southWest().getLongitude(), second.southWest().getLongitude());
-        double south = max(first.southWest().getLatitude(), second.southWest().getLatitude());
-        if (west > east || south > north)
-            return null;
-        return new BoundingBox(east, north, west, south);
     }
 
     private boolean sameBounds(BoundingBox first, BoundingBox second) {

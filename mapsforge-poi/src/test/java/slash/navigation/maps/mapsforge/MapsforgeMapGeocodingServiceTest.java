@@ -29,6 +29,7 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
+import slash.navigation.maps.item.ItemModel;
 import slash.navigation.maps.mapsforge.impl.MapsforgeFileMap;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public class MapsforgeMapGeocodingServiceTest {
 
     @Test
     public void returnsNullWhenNoDisplayedReadableMapsforgeMapExists() throws Exception {
-        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(() -> null, () -> VISIBLE_BOUNDS, () -> CENTER);
+        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(mockMapManager(null), () -> VISIBLE_BOUNDS, () -> CENTER);
 
         assertNull(service.getPositionsFor("Berlin"));
         assertNull(service.getAddressFor(CENTER));
@@ -55,7 +56,7 @@ public class MapsforgeMapGeocodingServiceTest {
 
     @Test
     public void returnsEmptyListForBlankSearchString() throws Exception {
-        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(() -> null, () -> VISIBLE_BOUNDS, () -> CENTER);
+        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(mockMapManager(null), () -> VISIBLE_BOUNDS, () -> CENTER);
 
         List<GeocodingResult> results = service.getPositionsFor("   ");
 
@@ -73,13 +74,13 @@ public class MapsforgeMapGeocodingServiceTest {
             return readResult(poi(13.80, 52.80, new Tag("name", "Outside View"), new Tag("place", "village")));
         });
 
-        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(() -> displayedMap, () -> VISIBLE_BOUNDS, () -> CENTER);
+        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(mockMapManager(displayedMap), () -> VISIBLE_BOUNDS, () -> CENTER);
         List<GeocodingResult> results = service.getPositionsFor("Outside");
 
         assertEquals(2, invocations.get());
         assertEquals(1, results.size());
         assertEquals("Outside View (village)", results.get(0).position().getDescription());
-        assertEquals("Mapsforge", results.get(0).geocodingServiceName());
+        assertEquals("Mapsforge Map", results.get(0).geocodingServiceName());
     }
 
     @Test
@@ -91,7 +92,7 @@ public class MapsforgeMapGeocodingServiceTest {
                 poi(13.4110, 52.5220, new Tag("addr:street", "Main Street"), new Tag("addr:housenumber", "1"))
         ));
 
-        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(() -> displayedMap, () -> VISIBLE_BOUNDS, () -> CENTER);
+        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(mockMapManager(displayedMap), () -> VISIBLE_BOUNDS, () -> CENTER);
 
         List<GeocodingResult> multilingual = service.getPositionsFor("Praha");
         assertEquals(1, multilingual.size());
@@ -116,7 +117,7 @@ public class MapsforgeMapGeocodingServiceTest {
         }
         when(displayedMap.getMapFile().readNamedItems(any(Tile.class), any(Tile.class))).thenReturn(readResult(pois.toArray(new PointOfInterest[0])));
 
-        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(() -> displayedMap, () -> MAP_BOUNDS, () -> CENTER);
+        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(mockMapManager(displayedMap), () -> MAP_BOUNDS, () -> CENTER);
         List<GeocodingResult> results = service.getPositionsFor("test");
 
         assertEquals(50, results.size());
@@ -132,7 +133,7 @@ public class MapsforgeMapGeocodingServiceTest {
                 poi(13.4060, 52.5060, new Tag("name", "Farther Place"), new Tag("place", "hamlet"))
         ));
 
-        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(() -> displayedMap, () -> VISIBLE_BOUNDS, () -> CENTER);
+        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(mockMapManager(displayedMap), () -> VISIBLE_BOUNDS, () -> CENTER);
         String address = service.getAddressFor(new SimpleNavigationPosition(13.4000, 52.5000));
 
         assertEquals("Near Place (hamlet)", address);
@@ -144,6 +145,15 @@ public class MapsforgeMapGeocodingServiceTest {
         when(displayedMap.getMapFile()).thenReturn(mapFile);
         when(displayedMap.getBoundingBox()).thenReturn(MAP_BOUNDS);
         return displayedMap;
+    }
+
+    @SuppressWarnings("unchecked")
+    private MapsforgeMapManager mockMapManager(LocalMap localMap) {
+        MapsforgeMapManager mapsforgeMapManager = mock(MapsforgeMapManager.class);
+        ItemModel<LocalMap> displayedMapModel = mock(ItemModel.class);
+        when(mapsforgeMapManager.getDisplayedMapModel()).thenReturn(displayedMapModel);
+        when(displayedMapModel.getItem()).thenReturn(localMap);
+        return mapsforgeMapManager;
     }
 
     private MapReadResult readResult(PointOfInterest... pois) {

@@ -147,7 +147,7 @@ public class FindPlaceDialog extends SimpleDialog {
                 column.setPreferredWidth(width);
                 column.setMaxWidth(width);
             } else if (i == GEOCODING_SERVICE_COLUMN) {
-                int width = getMaxWidth("Nominatim", 5);
+                int width = getMaxWidth("Openandromaps POI", 5);
                 column.setPreferredWidth(width);
                 column.setMaxWidth(width);
             }

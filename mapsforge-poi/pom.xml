@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>mapsforge-maps</artifactId>
+    <artifactId>mapsforge-poi</artifactId>
     <packaging>jar</packaging>
-    <name>Read mapsforge maps and themes</name>
+    <name>Read mapsforge POI databases</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
@@ -11,18 +11,6 @@
     </parent>
 
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>common-gui</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>common</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>common-navigation</artifactId>
@@ -40,20 +28,20 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>mapsforge-mbtiles</artifactId>
+            <artifactId>geocoding-service</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>rest</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>tileserver-maps</artifactId>
+            <artifactId>mapsforge-maps</artifactId>
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.mapsforge.mapsforge</groupId>
+            <artifactId>mapsforge-core</artifactId>
+            <version>${mapsforge.version}</version>
+        </dependency>
         <dependency>
             <groupId>com.github.mapsforge.mapsforge</groupId>
             <artifactId>mapsforge-map</artifactId>
@@ -66,13 +54,14 @@
         </dependency>
         <dependency>
             <groupId>com.github.mapsforge.mapsforge</groupId>
-            <artifactId>mapsforge-themes</artifactId>
+            <artifactId>mapsforge-poi</artifactId>
             <version>${mapsforge.version}</version>
         </dependency>
         <dependency>
-            <groupId>net.andreinc</groupId>
-            <artifactId>aleph</artifactId>
-            <version>${alephformatter.version}</version>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.51.0.0</version>
         </dependency>
     </dependencies>
 </project>
+

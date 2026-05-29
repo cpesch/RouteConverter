@@ -33,12 +33,16 @@ import java.util.List;
 
 public abstract class BaseGeocodingService implements GeocodingService {
     protected List<GeocodingResult> asGeocodingResults(List<NavigationPosition> positions) {
+        return asGeocodingResults(positions, getName());
+    }
+
+    protected List<GeocodingResult> asGeocodingResults(List<NavigationPosition> positions, String name) {
         if (positions == null)
             return null;
 
         List<GeocodingResult> results = new ArrayList<>(positions.size());
         for (NavigationPosition position : positions) {
-            results.add(new GeocodingResult(position, getName()));
+            results.add(new GeocodingResult(position, name));
         }
         return results;
     }

@@ -592,6 +592,7 @@
         <module>hgt</module>
         <module>kml</module>
         <module>mapsforge-maps</module>
+        <module>mapsforge-poi</module>
         <module>mapsforge-mapview</module>
         <module>mapsforge-mbtiles</module>
         <module>mapview</module>

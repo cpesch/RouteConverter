@@ -35,12 +35,13 @@ import static org.junit.Assert.assertEquals;
 
 public class AutomaticGeocodingServiceTest {
     @Test
-    public void prefersOfflineMapsforgeMapResultsBeforeOnlineResults() throws Exception {
+    public void prefersOfflineMapsforgePoiBeforeMapAndOnlineResults() throws Exception {
         Preferences preferences = Preferences.userRoot().node("/RouteConverter-test/" + getClass().getName() + "/" + UUID.randomUUID());
         try {
             GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
             AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
-            GeocodingService mapsforgeMap = new TestGeocodingService("Mapsforge", singletonPositions("offline-map"));
+            GeocodingService mapsforgePoi = new TestGeocodingService("Mapsforge POI", singletonPositions("offline-poi"));
+            GeocodingService mapsforgeMap = new TestGeocodingService("Mapsforge Map", singletonPositions("offline-map"));
             GeocodingService nominatim = new TestGeocodingService("Nominatim", singletonPositions("online"));
             GeocodingService geonames = new TestGeocodingService("GeoNames", singletonPositions("backup"));
 
@@ -48,13 +49,15 @@ public class AutomaticGeocodingServiceTest {
             facade.addGeocodingService(geonames);
             facade.addGeocodingService(nominatim);
             facade.addGeocodingService(mapsforgeMap);
+            facade.addGeocodingService(mapsforgePoi);
 
             List<GeocodingResult> results = automatic.getPositionsFor("Berlin");
 
-            assertEquals(3, results.size());
-            assertEquals("Mapsforge", results.get(0).geocodingServiceName());
-            assertEquals("Nominatim", results.get(1).geocodingServiceName());
-            assertEquals("GeoNames", results.get(2).geocodingServiceName());
+            assertEquals(4, results.size());
+            assertEquals("Mapsforge POI", results.get(0).geocodingServiceName());
+            assertEquals("Mapsforge Map", results.get(1).geocodingServiceName());
+            assertEquals("Nominatim", results.get(2).geocodingServiceName());
+            assertEquals("GeoNames", results.get(3).geocodingServiceName());
         } finally {
             preferences.removeNode();
         }
