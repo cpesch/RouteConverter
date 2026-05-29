@@ -138,12 +138,12 @@ public class ScanWebsite extends BaseDownloadTool {
     }
 
     private void scan() throws IOException, JAXBException {
-        List<String> collectedUris = collectUris();
-        log.info(format("Collected URIs: %s (%d elements)", collectedUris, collectedUris.size()));
-
         DataSource source = loadDataSource(getId());
         if (!getUrl().equals(source.getBaseUrl()) && !baseUrl.equals(source.getBaseUrl()))
             log.warning("Data source URL: " + source.getBaseUrl() + " doesn't match URL: " + getUrl());
+
+        List<String> collectedUris = collectUris();
+        log.info(format("Collected URIs: %s (%d elements)", collectedUris, collectedUris.size()));
 
         Set<String> files = collectURIs(source);
 
@@ -158,7 +158,8 @@ public class ScanWebsite extends BaseDownloadTool {
                 addUrisInChunks(source, addedUris);
             if (!removedUris.isEmpty())
                 removeUris(source, removedUris);
-        }
+        } else
+            log.warning("No data sources server password found");
 
         log.info(format("Added %d URIs, removed %d URIs out of %d URIs", addCount, removeCount, collectedUris.size()));
     }
