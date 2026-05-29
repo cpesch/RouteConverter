@@ -24,14 +24,14 @@ import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 public class MapsforgePoiGeocodingServiceTest {
 	private static final BoundingBox MAP_BOUNDS = new BoundingBox(14.0, 53.0, 13.0, 52.0);
 	private static final BoundingBox VISIBLE_BOUNDS = new BoundingBox(13.60, 52.60, 13.30, 52.30);
-	private static final NavigationPosition CENTER = new SimpleNavigationPosition(13.40, 52.50);
+	private static final NavigationPosition CENTER = MAP_BOUNDS.getCenter();
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
 	@Test
 	public void returnsNullWhenNoDisplayedMapExistsAndEmptyListForBlankSearch() throws Exception {
-		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(mockDataSourceManager(), mockMapManager(null), () -> VISIBLE_BOUNDS, () -> CENTER);
+		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(mockDataSourceManager(), mockMapManager(null), () -> VISIBLE_BOUNDS);
 		assertNull(service.getPositionsFor("Berlin"));
 		assertNull(service.getAddressFor(CENTER));
 		assertTrue(service.getPositionsFor("   ").isEmpty());
@@ -62,9 +62,10 @@ public class MapsforgePoiGeocodingServiceTest {
 	@Test
 	public void sortsByDistanceAndLimitsResults() throws Exception {
 		File poiFile = createPoiFile();
+		NavigationPosition center = MAP_BOUNDS.getCenter();
 		for (int i = 0; i < 60; i++) {
 			double offset = i * 0.001;
-			insertPoi(poiFile, i + 1, 52.50 + offset, 13.40 + offset, tags("name", "Test " + i));
+			insertPoi(poiFile, i + 1, center.getLatitude() + offset, center.getLongitude() + offset, tags("name", "Test " + i));
 		}
 		List<GeocodingResult> results = serviceFor(poiFile, MAP_BOUNDS).getPositionsFor("test");
 		assertEquals(50, results.size());
@@ -75,7 +76,7 @@ public class MapsforgePoiGeocodingServiceTest {
 	private MapsforgePoiGeocodingService serviceFor(File poiFile, BoundingBox visibleBounds) throws Exception {
 		File mapFile = new File(poiFile.getParentFile(), poiFile.getName().replaceFirst("\\.poi$", ".map"));
 		assertTrue(mapFile.createNewFile());
-		return new MapsforgePoiGeocodingService(mockDataSourceManager(), mockMapManager(new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString())), () -> visibleBounds, () -> CENTER);
+		return new MapsforgePoiGeocodingService(mockDataSourceManager(), mockMapManager(new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString())), () -> visibleBounds);
 	}
 
 	private DataSourceManager mockDataSourceManager() {

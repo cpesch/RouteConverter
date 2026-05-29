@@ -35,28 +35,24 @@ public class PositionReducerTest {
             throw new UnsupportedOperationException();
         }
         public NavigationPosition getNorthEastBounds() {
-            return asPosition(1.0, 1.0);
+            return new SimpleNavigationPosition(1.0, 1.0);
         }
 
         public NavigationPosition getSouthWestBounds() {
-            return asPosition(-1.0, -1.0);
+            return new SimpleNavigationPosition(-1.0, -1.0);
         }
 
     });
 
-    private NavigationPosition asPosition(double longitude, double latitude) {
-        return new SimpleNavigationPosition(longitude, latitude);
-    }
-
     private void filterEveryNthPosition(int positionCount, int maximumPositionCount) {
         List<NavigationPosition> positions = new ArrayList<>();
-        NavigationPosition first = asPosition(0.0, 0.0);
+        NavigationPosition first = new SimpleNavigationPosition(0.0, 0.0);
         positions.add(first);
 
         for (int i = 1; i < positionCount - 1; i++)
-            positions.add(asPosition(i, 0.0));
+            positions.add(new SimpleNavigationPosition((double) i, 0.0));
 
-        NavigationPosition last = asPosition(positionCount - 1, 0.0);
+        NavigationPosition last = new SimpleNavigationPosition((double) positionCount - 1, 0.0);
         positions.add(last);
 
         List<NavigationPosition> result = reducer.filterEveryNthPosition(positions, maximumPositionCount);
@@ -65,7 +61,7 @@ public class PositionReducerTest {
         assertEquals(first, result.get(0));
         double increment = (positionCount - 1) / (double) (maximumPositionCount - 1);
         for (int i = 1; i < maximumPositionCount - 1; i++) {
-            assertEquals(asPosition((int) (increment * i + 1.0), 0.0), result.get(i));
+            assertEquals(new SimpleNavigationPosition((double) (int) (increment * i + 1.0), 0.0), result.get(i));
         }
         assertEquals(last, result.get(maximumPositionCount - 1));
     }
@@ -84,17 +80,17 @@ public class PositionReducerTest {
     @Test
     public void testFilterVisiblePosition() {
         List<NavigationPosition> positions = new ArrayList<>();
-        NavigationPosition one = asPosition(0.0, 0.0);
+        NavigationPosition one = new SimpleNavigationPosition(0.0, 0.0);
         positions.add(one);
-        NavigationPosition two = asPosition(0.1, 0.1);
+        NavigationPosition two = new SimpleNavigationPosition(0.1, 0.1);
         positions.add(two);
-        NavigationPosition threeNotVisible = asPosition(45.0, 45.0);
+        NavigationPosition threeNotVisible = new SimpleNavigationPosition(45.0, 45.0);
         positions.add(threeNotVisible);
-        NavigationPosition fourNotVisible = asPosition(45.1, 45.1);
+        NavigationPosition fourNotVisible = new SimpleNavigationPosition(45.1, 45.1);
         positions.add(fourNotVisible);
-        NavigationPosition fiveNotVisible = asPosition(45.1, 45.1);
+        NavigationPosition fiveNotVisible = new SimpleNavigationPosition(45.1, 45.1);
         positions.add(fiveNotVisible);
-        NavigationPosition six = asPosition(0.2, 0.2);
+        NavigationPosition six = new SimpleNavigationPosition(0.2, 0.2);
         positions.add(six);
 
         List<NavigationPosition> result = reducer.filterVisiblePositions(positions, 1.0, false);
@@ -109,19 +105,19 @@ public class PositionReducerTest {
     @Test
     public void testFilterVisiblePositionIncludingFirstAndLast() {
         List<NavigationPosition> positions = new ArrayList<>();
-        NavigationPosition one = asPosition(0.0, 0.0);
+        NavigationPosition one = new SimpleNavigationPosition(0.0, 0.0);
         positions.add(one);
-        NavigationPosition two = asPosition(0.1, 0.1);
+        NavigationPosition two = new SimpleNavigationPosition(0.1, 0.1);
         positions.add(two);
-        NavigationPosition threeNotVisible = asPosition(45.0, 45.0);
+        NavigationPosition threeNotVisible = new SimpleNavigationPosition(45.0, 45.0);
         positions.add(threeNotVisible);
-        NavigationPosition fourNotVisible = asPosition(45.1, 45.1);
+        NavigationPosition fourNotVisible = new SimpleNavigationPosition(45.1, 45.1);
         positions.add(fourNotVisible);
-        NavigationPosition fiveNotVisible = asPosition(45.1, 45.1);
+        NavigationPosition fiveNotVisible = new SimpleNavigationPosition(45.1, 45.1);
         positions.add(fiveNotVisible);
-        NavigationPosition six = asPosition(0.2, 0.2);
+        NavigationPosition six = new SimpleNavigationPosition(0.2, 0.2);
         positions.add(six);
-        NavigationPosition seven = asPosition(0.3, 0.3);
+        NavigationPosition seven = new SimpleNavigationPosition(0.3, 0.3);
         positions.add(seven);
 
         List<NavigationPosition> result = reducer.filterVisiblePositions(positions, 1.0, true);

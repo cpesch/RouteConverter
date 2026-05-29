@@ -36,13 +36,13 @@ import slash.navigation.gui.notifications.NotificationManager;
 import slash.navigation.hgt.HgtFiles;
 import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.maps.mapsforge.LocalMap;
-import slash.navigation.maps.mapsforge.MapsforgeMapGeocodingService;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.nominatim.NominatimService;
 import slash.navigation.photon.PhotonService;
+import slash.navigation.pois.mapsforge.MapsforgeMapGeocodingService;
 import slash.navigation.pois.mapsforge.MapsforgePoiGeocodingService;
 import slash.navigation.routing.Beeline;
 
@@ -155,12 +155,9 @@ public class RouteConverterOpenSource extends RouteConverter {
         getGeocodingServiceFacade().setPreferredGeocodingService(service);
 
         getGeocodingServiceFacade().addGeocodingService(new MapsforgePoiGeocodingService(getDataSourceManager(),
-                getMapsforgeMapManager(),
-                this::getMapBoundingBox,
-                this::getMapCenter));
+                getMapsforgeMapManager(), this::getMapBoundingBox));
         getGeocodingServiceFacade().addGeocodingService(new MapsforgeMapGeocodingService(getMapsforgeMapManager(),
-                this::getMapBoundingBox,
-                this::getMapCenter));
+                this::getMapBoundingBox));
         getGeocodingServiceFacade().addGeocodingService(new GeoNamesService());
         getGeocodingServiceFacade().addGeocodingService(new NominatimService());
         getGeocodingServiceFacade().addGeocodingService(new PhotonService());
