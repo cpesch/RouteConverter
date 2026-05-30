@@ -11,6 +11,7 @@ import org.mapsforge.map.reader.MapFile;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +32,7 @@ public class MapsforgeMapLookupTest {
         MapFile mapFile = mock(MapFile.class);
         MapsforgeMapLookup lookup = new MapsforgeMapLookup();
 
-        List<NavigationPosition> results = lookup.search(mapFile, normalize("Berlin"), null, CENTER);
+        List<CategorizedNavigationPosition> results = lookup.search(mapFile, normalize("Berlin"), null, CENTER);
 
         assertNotNull(results);
         assertTrue(results.isEmpty());
@@ -48,13 +49,15 @@ public class MapsforgeMapLookupTest {
         ));
         MapsforgeMapLookup lookup = new MapsforgeMapLookup();
 
-        List<NavigationPosition> multilingual = lookup.search(mapFile, normalize("Praha"), VISIBLE_BOUNDS, CENTER);
+        List<CategorizedNavigationPosition> multilingual = lookup.search(mapFile, normalize("Praha"), VISIBLE_BOUNDS, CENTER);
         assertEquals(1, multilingual.size());
-        assertEquals("Praha (city)", multilingual.get(0).getDescription());
+        assertEquals("Praha", multilingual.get(0).getDescription());
+        assertEquals("city", categoryOf(multilingual.get(0)));
 
-        List<NavigationPosition> category = lookup.search(mapFile, normalize("fuel"), VISIBLE_BOUNDS, CENTER);
+        List<CategorizedNavigationPosition> category = lookup.search(mapFile, normalize("fuel"), VISIBLE_BOUNDS, CENTER);
         assertEquals(1, category.size());
         assertEquals("fuel", category.get(0).getDescription());
+        assertNull(categoryOf(category.get(0)));
 
         assertTrue(lookup.search(mapFile, normalize("Main Street"), VISIBLE_BOUNDS, CENTER).isEmpty());
     }
@@ -70,7 +73,7 @@ public class MapsforgeMapLookupTest {
         when(mapFile.readNamedItems(any(Tile.class), any(Tile.class))).thenReturn(readResult(pois.toArray(new PointOfInterest[0])));
         MapsforgeMapLookup lookup = new MapsforgeMapLookup();
 
-        List<NavigationPosition> results = lookup.search(mapFile, normalize("test"), MAP_BOUNDS, CENTER);
+        List<CategorizedNavigationPosition> results = lookup.search(mapFile, normalize("test"), MAP_BOUNDS, CENTER);
 
         assertEquals(50, results.size());
         assertEquals("Test 0", results.get(0).getDescription());
@@ -101,12 +104,13 @@ public class MapsforgeMapLookupTest {
         )));
         MapsforgeMapLookup lookup = new MapsforgeMapLookup();
 
-        List<NavigationPosition> results = lookup.search(mapFile, normalize("Label"), VISIBLE_BOUNDS, CENTER);
+        List<CategorizedNavigationPosition> results = lookup.search(mapFile, normalize("Label"), VISIBLE_BOUNDS, CENTER);
 
         assertEquals(1, results.size());
         assertEquals(labelPosition.longitude, results.get(0).getLongitude(), 0.0);
         assertEquals(labelPosition.latitude, results.get(0).getLatitude(), 0.0);
-        assertEquals("Label Way (residential)", results.get(0).getDescription());
+        assertEquals("Label Way", results.get(0).getDescription());
+        assertEquals("residential", categoryOf(results.get(0)));
     }
 
     @Test
@@ -118,12 +122,17 @@ public class MapsforgeMapLookupTest {
         )));
         MapsforgeMapLookup lookup = new MapsforgeMapLookup();
 
-        List<NavigationPosition> results = lookup.search(mapFile, normalize("Geometry"), VISIBLE_BOUNDS, CENTER);
+        List<CategorizedNavigationPosition> results = lookup.search(mapFile, normalize("Geometry"), VISIBLE_BOUNDS, CENTER);
 
         assertEquals(1, results.size());
         assertEquals(geometryPoint.longitude, results.get(0).getLongitude(), 0.0);
         assertEquals(geometryPoint.latitude, results.get(0).getLatitude(), 0.0);
-        assertEquals("Geometry Way (service)", results.get(0).getDescription());
+        assertEquals("Geometry Way", results.get(0).getDescription());
+        assertEquals("service", categoryOf(results.get(0)));
+    }
+
+    private String categoryOf(NavigationPosition position) {
+        return position instanceof CategorizedNavigationPosition categorized ? categorized.getCategory() : null;
     }
 
     private MapReadResult readResult(PointOfInterest... pois) {

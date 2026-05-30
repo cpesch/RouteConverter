@@ -17,27 +17,18 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-
-package slash.navigation.converter.gui.renderer;
+package slash.navigation.geocoding;
 
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.geocoding.GeocodingResult;
-
-import javax.swing.*;
-import java.awt.*;
 
 /**
- * Renders geocoding results including the name of the service that produced them.
+ * A navigation position with an optional category in addition to the description.
  *
  * @author Christian Pesch
  */
-public class GeocodingResultListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        GeocodingResult result = (GeocodingResult) value;
-        NavigationPosition position = result.getPosition();
-        label.setText(result.getGeocodingServiceName() + ": " + position.getDescription() + " @ " + position.getLongitude() + "," + position.getLatitude());
-        return label;
-    }
+public interface CategorizedNavigationPosition extends NavigationPosition {
+    String getCategory();
+
+    void setCategory(String category);
 }
 

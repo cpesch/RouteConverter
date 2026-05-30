@@ -23,6 +23,7 @@ import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
+import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
 
 import java.io.IOException;
 import java.util.List;
@@ -56,7 +57,7 @@ public class GoogleServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<GeocodingResult> expected = singletonList(
-                new GeocodingResult(new SimpleNavigationPosition(10.2004268, 50.0010792, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany"), service.getName())
+                new GeocodingResult(new SimpleCategorizedNavigationPosition(10.2004268, 50.0010792, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany", "route"), service.getName())
         );
         List<GeocodingResult> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);

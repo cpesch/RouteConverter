@@ -25,9 +25,10 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geojson.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.BaseGeocodingService;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
+import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
 import slash.navigation.rest.Get;
 
 import java.io.IOException;
@@ -85,19 +86,29 @@ public class PhotonService extends BaseGeocodingService {
         return null;
     }
 
-    private List<NavigationPosition> extractPositions(List<Feature> features) {
-        List<NavigationPosition> result = new ArrayList<>(features.size());
+    private List<CategorizedNavigationPosition> extractPositions(List<Feature> features) {
+        List<CategorizedNavigationPosition> result = new ArrayList<>(features.size());
         for (Feature feature : features) {
-            GeoJsonObject geometry = feature.getGeometry();
-            if (!(geometry instanceof Point point))
-                continue;
-
-            LngLatAlt lngLatAlt = point.getCoordinates();
-            String type = feature.getProperty("osm_key");
-            result.add(new SimpleNavigationPosition(lngLatAlt.getLongitude(), lngLatAlt.getLatitude(), null,
-                    getDisplayName(feature) + " (" + type + ")"));
+            CategorizedNavigationPosition position = extractPosition(feature);
+            if (position != null)
+                result.add(position);
         }
         return result;
+    }
+
+    CategorizedNavigationPosition extractPosition(Feature feature) {
+        GeoJsonObject geometry = feature.getGeometry();
+        if (!(geometry instanceof Point point))
+            return null;
+
+        LngLatAlt lngLatAlt = point.getCoordinates();
+        String type = getProperty(feature, "type");
+        if(type.isEmpty())
+            type = getProperty(feature, "osm_value");
+        if(type.isEmpty())
+            type = getProperty(feature, "osm_key");
+        return new SimpleCategorizedNavigationPosition(lngLatAlt.getLongitude(), lngLatAlt.getLatitude(), null,
+                getDisplayName(feature), type.isEmpty() ? null : type);
     }
 
     public List<GeocodingResult> getPositionsFor(String address) throws IOException {

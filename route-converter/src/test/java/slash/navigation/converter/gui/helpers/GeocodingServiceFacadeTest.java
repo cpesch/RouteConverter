@@ -24,10 +24,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.BaseGeocodingService;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.GeocodingService;
+import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
 
 import javax.naming.ServiceUnavailableException;
 import java.io.IOException;
@@ -66,8 +67,8 @@ public class GeocodingServiceFacadeTest {
         List<GeocodingResult> results = facade.getPositionsFor("Berlin");
 
         assertEquals(1, results.size());
-        assertEquals("Nominatim", results.get(0).geocodingServiceName());
-        assertEquals("one", results.get(0).position().getDescription());
+        assertEquals("Nominatim", results.get(0).getGeocodingServiceName());
+        assertEquals("one", results.get(0).getPosition().getDescription());
     }
 
     @Test
@@ -87,9 +88,9 @@ public class GeocodingServiceFacadeTest {
         List<GeocodingResult> results = facade.getPositionsFor("Berlin");
 
         assertEquals(3, results.size());
-        assertEquals("Nominatim", results.get(0).geocodingServiceName());
-        assertEquals("Photon", results.get(1).geocodingServiceName());
-        assertEquals("GeoNames", results.get(2).geocodingServiceName());
+        assertEquals("Nominatim", results.get(0).getGeocodingServiceName());
+        assertEquals("Photon", results.get(1).getGeocodingServiceName());
+        assertEquals("GeoNames", results.get(2).getGeocodingServiceName());
     }
 
     @Test
@@ -120,17 +121,17 @@ public class GeocodingServiceFacadeTest {
         assertEquals("one", position.getDescription());
     }
 
-    private List<NavigationPosition> singletonPositions(String description) {
-        List<NavigationPosition> positions = new ArrayList<>();
-        positions.add(new SimpleNavigationPosition(1.0, 2.0, null, description));
+    private List<CategorizedNavigationPosition> singletonPositions(String description) {
+        List<CategorizedNavigationPosition> positions = new ArrayList<>();
+        positions.add(new SimpleCategorizedNavigationPosition(1.0, 2.0, null, description, null));
         return positions;
     }
 
     private static class TestGeocodingService extends BaseGeocodingService {
         private final String name;
-        private final List<NavigationPosition> positions;
+        private final List<CategorizedNavigationPosition> positions;
 
-        private TestGeocodingService(String name, List<NavigationPosition> positions) {
+        private TestGeocodingService(String name, List<CategorizedNavigationPosition> positions) {
             this.name = name;
             this.positions = positions;
         }

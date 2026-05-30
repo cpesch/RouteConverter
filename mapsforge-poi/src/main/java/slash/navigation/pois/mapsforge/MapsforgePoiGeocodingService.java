@@ -23,6 +23,7 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.geocoding.BaseGeocodingService;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
@@ -80,7 +81,7 @@ public class MapsforgePoiGeocodingService extends BaseGeocodingService {
             return null;
 
         NavigationPosition center = context.mapBoundingBox().getCenter();
-        List<NavigationPosition> positions = lookup.search(poiFile.file(), query, context.visibleBounds(), center);
+        List<CategorizedNavigationPosition> positions = lookup.search(poiFile.file(), query, context.visibleBounds(), center);
         if (positions.isEmpty() && !Objects.equals(context.visibleBounds(), context.mapBoundingBox()))
             positions = lookup.search(poiFile.file(), query, context.mapBoundingBox(), center);
         return asGeocodingResults(positions, poiFile.dataSourceName());

@@ -22,7 +22,6 @@ package slash.navigation.pois.mapsforge;
 import org.mapsforge.core.model.LatLong;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
 
 import java.util.Locale;
 
@@ -41,13 +40,6 @@ final class MapsforgeGeocodingHelper {
         return value.trim().toLowerCase(Locale.ROOT).replace('_', ' ');
     }
 
-    static NavigationPosition toPosition(LatLong latLong) {
-        return toPosition(latLong, null);
-    }
-
-    static NavigationPosition toPosition(LatLong latLong, String description) {
-        return new SimpleNavigationPosition(latLong.longitude, latLong.latitude, null, description);
-    }
 
     static LatLong toLatLong(NavigationPosition position) {
         if (position == null || !position.hasCoordinates())

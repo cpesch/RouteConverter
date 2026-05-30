@@ -96,8 +96,8 @@ public interface NavigationPosition {
      * supposed you are proceeding on a great circle route from A to B and end up at D, perhaps
      * ending off course.
      *
-     * http://williams.best.vwh.net/avform.htm#XTE
-     * http://www.movable-type.co.uk/scripts/latlong.html
+     * <a href="http://williams.best.vwh.net/avform.htm#XTE">...</a>
+     * <a href="http://www.movable-type.co.uk/scripts/latlong.html">...</a>
      *
      * @param pointA the first point determining the line between pointA and pointB
      * @param pointB the second point determining the line between pointA and pointB

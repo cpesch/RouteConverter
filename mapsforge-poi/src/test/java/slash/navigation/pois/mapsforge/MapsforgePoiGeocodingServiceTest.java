@@ -10,6 +10,7 @@ import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.helpers.DataSourceService;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.maps.item.ItemModel;
 import slash.navigation.maps.mapsforge.LocalMap;
@@ -65,12 +66,21 @@ public class MapsforgePoiGeocodingServiceTest {
 
 		List<GeocodingResult> outside = service.getPositionsFor("Outside");
 		assertEquals(1, outside.size());
-		assertEquals("Outside View (village)", outside.get(0).position().getDescription());
-		assertEquals("test", outside.get(0).geocodingServiceName());
+		assertEquals("Outside View", outside.get(0).getPosition().getDescription());
+		assertEquals("village", categoryOf(outside.get(0).getPosition()));
+		assertEquals("test", outside.get(0).getGeocodingServiceName());
 
-		assertEquals("Praha (city)", service.getPositionsFor("Praha").get(0).position().getDescription());
-		assertEquals("Prague (city)", service.getPositionsFor("Prag").get(0).position().getDescription());
-		assertEquals("Tankstelle (fuel)", service.getPositionsFor("fuel").get(0).position().getDescription());
+		GeocodingResult nameVariant = service.getPositionsFor("Praha").get(0);
+		assertEquals("Praha", nameVariant.getPosition().getDescription());
+		assertEquals("city", categoryOf(nameVariant.getPosition()));
+
+		GeocodingResult partialName = service.getPositionsFor("Prag").get(0);
+		assertEquals("Prague", partialName.getPosition().getDescription());
+		assertEquals("city", categoryOf(partialName.getPosition()));
+
+		GeocodingResult category = service.getPositionsFor("fuel").get(0);
+		assertEquals("Tankstelle", category.getPosition().getDescription());
+		assertEquals("fuel", categoryOf(category.getPosition()));
 		assertTrue(service.getPositionsFor("Main Street").isEmpty());
 		assertEquals("Near Place (hamlet)", service.getAddressFor(new SimpleNavigationPosition(13.4000, 52.5000)));
 	}
@@ -86,13 +96,17 @@ public class MapsforgePoiGeocodingServiceTest {
 		}
 		List<GeocodingResult> results = serviceFor(dataSourceDirectory, MAP_BOUNDS).getPositionsFor("test");
 		assertEquals(50, results.size());
-		assertEquals("Test 0", results.get(0).position().getDescription());
-		assertEquals("Test 49", results.get(49).position().getDescription());
+		assertEquals("Test 0", results.get(0).getPosition().getDescription());
+		assertEquals("Test 49", results.get(49).getPosition().getDescription());
 	}
 
 	private MapsforgePoiGeocodingService serviceFor(String dataSourceDirectory, BoundingBox visibleBounds) throws Exception {
 		File mapFile = temporaryFolder.newFile("test.map");
 		return new MapsforgePoiGeocodingService(mockDataSourceManager(dataSourceDirectory), mockMapManager(new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString())), () -> visibleBounds);
+	}
+
+	private String categoryOf(NavigationPosition position) {
+		return position instanceof CategorizedNavigationPosition categorized ? categorized.getCategory() : null;
 	}
 
 	private DataSourceManager mockDataSourceManager() {

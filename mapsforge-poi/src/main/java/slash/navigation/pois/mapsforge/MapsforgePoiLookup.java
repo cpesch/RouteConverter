@@ -27,6 +27,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Download;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 
 import java.io.File;
 import java.io.IOException;
@@ -149,12 +150,12 @@ class MapsforgePoiLookup {
         return null;
     }
 
-    List<NavigationPosition> search(File poiFile, String query, BoundingBox bounds, NavigationPosition center) throws IOException {
+    List<CategorizedNavigationPosition> search(File poiFile, String query, BoundingBox bounds, NavigationPosition center) throws IOException {
         List<PoiMatch> matches = searchMatches(poiFile, bounds, query, center, true, true);
         if (matches.isEmpty())
             matches = searchMatches(poiFile, bounds, query, center, true, false);
 
-        List<NavigationPosition> result = new ArrayList<>(min(matches.size(), MAX_RESULTS));
+        List<CategorizedNavigationPosition> result = new ArrayList<>(min(matches.size(), MAX_RESULTS));
         for (PoiMatch match : matches) {
             result.add(match.position());
             if (result.size() >= MAX_RESULTS)
@@ -214,7 +215,8 @@ class MapsforgePoiLookup {
                     if (!requireQueryMatch && !MapsforgeTagMatcher.hasUsefulDescription(tags, categories))
                         continue;
 
-                    matches.add(toPoiMatch(toPosition(latLong), latLong, tags, categories, tagMatch, reference));
+                    CategorizedNavigationPosition position = buildDescriptionAndCategory(latLong, tags, categories, tagMatch, "Unnamed POI");
+                    matches.add(toPoiMatch(position, latLong, reference));
                 }
             }
         } catch (SQLException e) {
@@ -228,10 +230,8 @@ class MapsforgePoiLookup {
         return DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
     }
 
-    private PoiMatch toPoiMatch(NavigationPosition position, LatLong point, List<Tag> tags, List<String> categories,
-                               Match tagMatch, NavigationPosition reference) {
-        String description = buildDescription(tags, categories, tagMatch, "Unnamed POI");
-        position.setDescription(description);
+    private PoiMatch toPoiMatch(CategorizedNavigationPosition position, LatLong point, NavigationPosition reference) {
+        String description = buildDescription(position.getDescription(), position.getCategory());
         return new PoiMatch(position, description, distanceMeters(reference, point));
     }
 
@@ -259,7 +259,7 @@ class MapsforgePoiLookup {
     private record PoiDescriptor(File localFile, slash.navigation.datasources.File remoteFile, BoundingBox boundingBox, String dataSourceName) {
     }
 
-    private record PoiMatch(NavigationPosition position, String description, double distanceMeters) {
+    private record PoiMatch(CategorizedNavigationPosition position, String description, double distanceMeters) {
     }
 }
 

@@ -110,6 +110,6 @@ public class GeocodingServiceFacade {
 
     public NavigationPosition getPositionFor(String address) throws IOException, ServiceUnavailableException {
         List<GeocodingResult> results = getPositionsFor(address);
-        return results != null && !results.isEmpty() ? results.get(0).position() : null;
+        return results != null && !results.isEmpty() ? results.get(0).getPosition() : null;
     }
 }

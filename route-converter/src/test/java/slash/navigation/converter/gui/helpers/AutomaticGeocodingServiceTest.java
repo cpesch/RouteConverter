@@ -21,10 +21,11 @@ package slash.navigation.converter.gui.helpers;
 
 import org.junit.Test;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.BaseGeocodingService;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.GeocodingService;
+import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,26 +55,26 @@ public class AutomaticGeocodingServiceTest {
             List<GeocodingResult> results = automatic.getPositionsFor("Berlin");
 
             assertEquals(4, results.size());
-            assertEquals("Mapsforge POI", results.get(0).geocodingServiceName());
-            assertEquals("Mapsforge Map", results.get(1).geocodingServiceName());
-            assertEquals("Nominatim", results.get(2).geocodingServiceName());
-            assertEquals("GeoNames", results.get(3).geocodingServiceName());
+            assertEquals("Mapsforge POI", results.get(0).getGeocodingServiceName());
+            assertEquals("Mapsforge Map", results.get(1).getGeocodingServiceName());
+            assertEquals("Nominatim", results.get(2).getGeocodingServiceName());
+            assertEquals("GeoNames", results.get(3).getGeocodingServiceName());
         } finally {
             preferences.removeNode();
         }
     }
 
-    private List<NavigationPosition> singletonPositions(String description) {
-        List<NavigationPosition> positions = new ArrayList<>();
-        positions.add(new SimpleNavigationPosition(1.0, 2.0, null, description));
+    private List<CategorizedNavigationPosition> singletonPositions(String description) {
+        List<CategorizedNavigationPosition> positions = new ArrayList<>();
+        positions.add(new SimpleCategorizedNavigationPosition(1.0, 2.0, null, description, null));
         return positions;
     }
 
     private static class TestGeocodingService extends BaseGeocodingService {
         private final String name;
-        private final List<NavigationPosition> positions;
+        private final List<CategorizedNavigationPosition> positions;
 
-        private TestGeocodingService(String name, List<NavigationPosition> positions) {
+        private TestGeocodingService(String name, List<CategorizedNavigationPosition> positions) {
             this.name = name;
             this.positions = positions;
         }

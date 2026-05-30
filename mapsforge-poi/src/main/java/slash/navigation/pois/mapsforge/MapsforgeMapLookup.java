@@ -20,7 +20,6 @@
 package slash.navigation.pois.mapsforge;
 
 import org.mapsforge.core.model.LatLong;
-import org.mapsforge.core.model.Tag;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.datastore.MapReadResult;
@@ -29,6 +28,7 @@ import org.mapsforge.map.datastore.Way;
 import org.mapsforge.map.reader.MapFile;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -54,9 +54,9 @@ class MapsforgeMapLookup {
     static final int REVERSE_LOOKUP_RADIUS_METERS = 1000;
     private static final int TILE_SIZE = 256;
 
-    List<NavigationPosition> search(MapFile mapFile, String query, BoundingBox bounds, NavigationPosition center) {
+    List<CategorizedNavigationPosition> search(MapFile mapFile, String query, BoundingBox bounds, NavigationPosition center) {
         List<FeatureMatch> matches = searchMatches(mapFile, bounds, query, center, true);
-        List<NavigationPosition> result = new ArrayList<>(min(matches.size(), MAX_RESULTS));
+        List<CategorizedNavigationPosition> result = new ArrayList<>(min(matches.size(), MAX_RESULTS));
         for (FeatureMatch match : matches) {
             result.add(match.position());
             if (result.size() >= MAX_RESULTS)
@@ -100,14 +100,14 @@ class MapsforgeMapLookup {
                 continue;
 
             Match tagMatch = findMatch(poi.tags, emptyList(), query, false);
-            NavigationPosition position = toPosition(poi.position, buildDescription(poi.tags, emptyList(), tagMatch, "Unnamed feature"));
+            CategorizedNavigationPosition position = buildDescriptionAndCategory(poi.position, poi.tags, emptyList(), tagMatch, "Unnamed feature");
             if (!bounds.contains(position))
                 continue;
 
             if (requireQueryMatch && tagMatch == null)
                 continue;
 
-            matches.add(toFeatureMatch(position, poi.position, poi.tags, tagMatch, reference));
+            matches.add(toFeatureMatch(position, poi.position, reference));
         }
     }
 
@@ -119,21 +119,19 @@ class MapsforgeMapLookup {
                 continue;
 
             Match tagMatch = findMatch(way.tags, emptyList(), query, false);
-            NavigationPosition position = toPosition(point, buildDescription(way.tags, emptyList(), tagMatch, "Unnamed feature"));
+            CategorizedNavigationPosition position = buildDescriptionAndCategory(point, way.tags, emptyList(), tagMatch, "Unnamed feature");
             if (!bounds.contains(position))
                 continue;
 
             if (requireQueryMatch && tagMatch == null)
                 continue;
 
-            matches.add(toFeatureMatch(position, point, way.tags, tagMatch, reference));
+            matches.add(toFeatureMatch(position, point, reference));
         }
     }
 
-    private FeatureMatch toFeatureMatch(NavigationPosition position, LatLong point, List<Tag> tags,
-                                        Match tagMatch, NavigationPosition reference) {
-        String description = buildDescription(tags, emptyList(), tagMatch, "Unnamed feature");
-        position.setDescription(description);
+    private FeatureMatch toFeatureMatch(CategorizedNavigationPosition position, LatLong point, NavigationPosition reference) {
+        String description = buildDescription(position.getDescription(), position.getCategory());
         return new FeatureMatch(position, description, distanceMeters(reference, point));
     }
 
@@ -185,7 +183,7 @@ class MapsforgeMapLookup {
     private record TileRange(Tile upperLeft, Tile lowerRight) {
     }
 
-    private record FeatureMatch(NavigationPosition position, String description, double distanceMeters) {
+    private record FeatureMatch(CategorizedNavigationPosition position, String description, double distanceMeters) {
     }
 }
 

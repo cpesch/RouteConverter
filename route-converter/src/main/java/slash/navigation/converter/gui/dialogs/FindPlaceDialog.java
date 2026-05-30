@@ -30,7 +30,6 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.models.FindPlaceResultsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.AlternatingColorTableCellRenderer;
-import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.LatitudeColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.LongitudeColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
@@ -86,6 +85,7 @@ public class FindPlaceDialog extends SimpleDialog {
         super(RouteConverter.getInstance().getFrame(), "find-place");
         setTitle(RouteConverter.getBundle().getString("find-place-title"));
         setContentPane(contentPane);
+        contentPane.setPreferredSize(new Dimension(900, 540));
 
         setMnemonic(buttonSearchPositions, "search-position-mnemonic");
         buttonSearchPositions.addActionListener(new DialogAction(this) {
@@ -129,13 +129,15 @@ public class FindPlaceDialog extends SimpleDialog {
             if (!e.getValueIsAdjusting())
                 handleSearchUpdate();
         });
-        TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "longitude", "latitude", "service");
+        TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "category", "longitude", "latitude", "service");
         TableColumnModel columns = tableResult.getColumnModel();
         for (int i = 0; i < columns.getColumnCount(); i++) {
             TableColumn column = columns.getColumn(i);
             column.setHeaderRenderer(headerRenderer);
-            if (i == NAME_COLUMN) {
-                column.setCellRenderer(new DescriptionColumnTableCellEditor());
+            if (i == CATEGORY_COLUMN) {
+                int width = getMaxWidth("charging_station", 4);
+                column.setPreferredWidth(width);
+                column.setMaxWidth(width);
             } else if (i == LONGITUDE_COLUMN) {
                 column.setCellRenderer(new LongitudeColumnTableCellEditor());
                 int width = getMaxWidth("-180.1234567", 5);
@@ -154,10 +156,8 @@ public class FindPlaceDialog extends SimpleDialog {
         }
         TableRowSorter<TableModel> sorter = new TableRowSorter<>(tableModel);
         sorter.setSortsOnUpdates(true);
-        sorter.setComparator(NAME_COLUMN, Comparator.comparing((NavigationPosition position) -> {
-            String description = position.getDescription();
-            return description != null ? description : "";
-        }, CASE_INSENSITIVE_ORDER));
+        sorter.setComparator(NAME_COLUMN, CASE_INSENSITIVE_ORDER);
+        sorter.setComparator(CATEGORY_COLUMN, Comparator.nullsFirst(CASE_INSENSITIVE_ORDER));
         sorter.setComparator(LONGITUDE_COLUMN, Comparator.comparingDouble((NavigationPosition position) -> {
             Double longitude = position.getLongitude();
             return longitude != null ? longitude : Double.NEGATIVE_INFINITY;
@@ -198,7 +198,7 @@ public class FindPlaceDialog extends SimpleDialog {
         if (selectedValues.isEmpty())
             return;
 
-        List<NavigationPosition> positions = selectedValues.stream().map(GeocodingResult::position).toList();
+        List<NavigationPosition> positions = selectedValues.stream().<NavigationPosition>map(GeocodingResult::getPosition).toList();
         r.setCenter(asBoundingBox(positions).getCenter());
     }
 
@@ -213,7 +213,7 @@ public class FindPlaceDialog extends SimpleDialog {
         } else {
             tableResult.clearSelection();
         }
-        List<NavigationPosition> positions = tableModel.getResults().stream().map(GeocodingResult::position).toList();
+        List<NavigationPosition> positions = tableModel.getResults().stream().<NavigationPosition>map(GeocodingResult::getPosition).toList();
         r.showPositionMagnifier(positions.isEmpty() ? null : positions);
         handleSearchUpdate();
         savePreferences();
@@ -228,7 +228,7 @@ public class FindPlaceDialog extends SimpleDialog {
         int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
         List<GeocodingResult> selectedValues = getSelectedResults();
         for (int i = selectedValues.size() - 1; i >= 0; i -= 1) {
-            NavigationPosition position = selectedValues.get(i).position();
+            NavigationPosition position = selectedValues.get(i).getPosition();
             positionsModel.add(insertRow, position.getLongitude(), position.getLatitude(),
                     position.getElevation(), null, null, position.getDescription());
 

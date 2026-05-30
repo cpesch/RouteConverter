@@ -28,6 +28,7 @@ import org.mapsforge.map.datastore.PointOfInterest;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.maps.item.ItemModel;
 import slash.navigation.maps.mapsforge.LocalMap;
@@ -94,8 +95,9 @@ public class MapsforgeMapGeocodingServiceTest {
 
         assertEquals(2, invocations.get());
         assertEquals(1, results.size());
-        assertEquals("Outside View (village)", results.get(0).position().getDescription());
-        assertEquals("Mapsforge Map", results.get(0).geocodingServiceName());
+        assertEquals("Outside View", results.get(0).getPosition().getDescription());
+        assertEquals("village", categoryOf(results.get(0).getPosition()));
+        assertEquals("Mapsforge Map", results.get(0).getGeocodingServiceName());
     }
 
     @Test
@@ -111,11 +113,13 @@ public class MapsforgeMapGeocodingServiceTest {
 
         List<GeocodingResult> multilingual = service.getPositionsFor("Praha");
         assertEquals(1, multilingual.size());
-        assertEquals("Praha (city)", multilingual.get(0).position().getDescription());
+        assertEquals("Praha", multilingual.get(0).getPosition().getDescription());
+        assertEquals("city", categoryOf(multilingual.get(0).getPosition()));
 
         List<GeocodingResult> category = service.getPositionsFor("fuel");
         assertEquals(1, category.size());
-        assertEquals("fuel", category.get(0).position().getDescription());
+        assertEquals("fuel", category.get(0).getPosition().getDescription());
+        assertNull(categoryOf(category.get(0).getPosition()));
 
         List<GeocodingResult> ignored = service.getPositionsFor("Main Street");
         assertNotNull(ignored);
@@ -136,8 +140,8 @@ public class MapsforgeMapGeocodingServiceTest {
         List<GeocodingResult> results = service.getPositionsFor("test");
 
         assertEquals(50, results.size());
-        assertEquals("Test 0", results.get(0).position().getDescription());
-        assertEquals("Test 49", results.get(49).position().getDescription());
+        assertEquals("Test 0", results.get(0).getPosition().getDescription());
+        assertEquals("Test 49", results.get(49).getPosition().getDescription());
     }
 
     @Test
@@ -161,6 +165,10 @@ public class MapsforgeMapGeocodingServiceTest {
         when(displayedMap.getMapFile()).thenReturn(mapFile);
         when(displayedMap.getBoundingBox()).thenReturn(MAP_BOUNDS);
         return displayedMap;
+    }
+
+    private String categoryOf(NavigationPosition position) {
+        return position instanceof CategorizedNavigationPosition categorized ? categorized.getCategory() : null;
     }
 
     @SuppressWarnings("unchecked")

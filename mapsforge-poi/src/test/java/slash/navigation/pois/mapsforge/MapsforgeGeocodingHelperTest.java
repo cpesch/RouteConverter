@@ -17,11 +17,6 @@ public class MapsforgeGeocodingHelperTest {
         assertNotNull(latLong);
         assertEquals(52.5, latLong.latitude, 0.0);
         assertEquals(13.4, latLong.longitude, 0.0);
-
-        NavigationPosition converted = MapsforgeGeocodingHelper.toPosition(latLong, "Berlin");
-        assertEquals(13.4, converted.getLongitude(), 0.0);
-        assertEquals(52.5, converted.getLatitude(), 0.0);
-        assertEquals("Berlin", converted.getDescription());
     }
 
     @Test

@@ -22,6 +22,7 @@ package slash.navigation.nominatim;
 import org.junit.Test;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
+import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
 
 import java.io.IOException;
 import java.util.List;
@@ -35,9 +36,9 @@ public class NominatimServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<GeocodingResult> expected = asList(
-                new GeocodingResult(new SimpleNavigationPosition(10.1989557, 50.0001865, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland (residential)"), service.getName()),
-                new GeocodingResult(new SimpleNavigationPosition(10.2002039, 50.0015498, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland (living_street)"), service.getName()),
-                new GeocodingResult(new SimpleNavigationPosition(10.1999037, 50.0001189, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland (service)"), service.getName())
+                new GeocodingResult(new SimpleCategorizedNavigationPosition(10.1989557, 50.0001865, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland", "residential"), service.getName()),
+                new GeocodingResult(new SimpleCategorizedNavigationPosition(10.2002039, 50.0015498, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland", "living_street"), service.getName()),
+                new GeocodingResult(new SimpleCategorizedNavigationPosition(10.1999037, 50.0001189, null, "B\u00fchlstra\u00dfe, Grafenrheinfeld, Landkreis Schweinfurt, Bayern, 97506, Deutschland", "service"), service.getName())
         );
         List<GeocodingResult> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);

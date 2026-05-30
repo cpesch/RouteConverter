@@ -23,6 +23,7 @@ import org.mapsforge.map.reader.MapFile;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.geocoding.BaseGeocodingService;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
@@ -81,7 +82,7 @@ public class MapsforgeMapGeocodingService extends BaseGeocodingService {
             return null;
 
         NavigationPosition center = context.mapBoundingBox().getCenter();
-        List<NavigationPosition> positions = lookup.search(context.mapFile(), query, context.visibleBounds(), center);
+        List<CategorizedNavigationPosition> positions = lookup.search(context.mapFile(), query, context.visibleBounds(), center);
         if (positions.isEmpty() && !Objects.equals(context.visibleBounds(), context.mapBoundingBox()))
             positions = lookup.search(context.mapFile(), query, context.mapBoundingBox(), center);
         return asGeocodingResults(positions);

@@ -34,9 +34,10 @@ import java.util.List;
  */
 public class FindPlaceResultsModel extends AbstractTableModel {
     public static final int NAME_COLUMN = 0;
-    public static final int LONGITUDE_COLUMN = 1;
-    public static final int LATITUDE_COLUMN = 2;
-    public static final int GEOCODING_SERVICE_COLUMN = 3;
+    public static final int CATEGORY_COLUMN = 1;
+    public static final int LONGITUDE_COLUMN = 2;
+    public static final int LATITUDE_COLUMN = 3;
+    public static final int GEOCODING_SERVICE_COLUMN = 4;
 
     private List<GeocodingResult> results = Collections.emptyList();
 
@@ -45,24 +46,34 @@ public class FindPlaceResultsModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 4;
+        return 5;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
         GeocodingResult result = getResult(rowIndex);
         return switch (columnIndex) {
-            case NAME_COLUMN, LONGITUDE_COLUMN, LATITUDE_COLUMN -> result.position();
-            case GEOCODING_SERVICE_COLUMN -> result.geocodingServiceName();
+            case NAME_COLUMN -> extractDisplayDescription(result);
+            case CATEGORY_COLUMN -> extractCategory(result);
+            case LONGITUDE_COLUMN, LATITUDE_COLUMN -> result.getPosition();
+            case GEOCODING_SERVICE_COLUMN -> result.getGeocodingServiceName();
             default -> null;
         };
     }
 
     public Class<?> getColumnClass(int columnIndex) {
         return switch (columnIndex) {
-            case NAME_COLUMN, LONGITUDE_COLUMN, LATITUDE_COLUMN -> NavigationPosition.class;
-            case GEOCODING_SERVICE_COLUMN -> String.class;
+            case LONGITUDE_COLUMN, LATITUDE_COLUMN -> NavigationPosition.class;
+            case NAME_COLUMN, CATEGORY_COLUMN, GEOCODING_SERVICE_COLUMN -> String.class;
             default -> Object.class;
         };
+    }
+
+    private String extractDisplayDescription(GeocodingResult result) {
+        return result.getPosition() != null ? result.getPosition().getDescription() : null;
+    }
+
+    private String extractCategory(GeocodingResult result) {
+        return result.getPosition() != null ? result.getPosition().getCategory() : null;
     }
 
     public GeocodingResult getResult(int rowIndex) {

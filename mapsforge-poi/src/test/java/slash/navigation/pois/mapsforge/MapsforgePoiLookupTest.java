@@ -8,6 +8,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.helpers.DataSourceService;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 
 import java.io.File;
 import java.sql.*;
@@ -41,17 +42,20 @@ public class MapsforgePoiLookupTest {
         insertPoi(poiFile, 3, 52.5220, 13.4110, tags("addr:street", "Main Street", "addr:housenumber", "1"));
         MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
 
-        List<NavigationPosition> nameVariant = lookup.search(poiFile, normalize("Praha"), VISIBLE_BOUNDS, CENTER);
+        List<CategorizedNavigationPosition> nameVariant = lookup.search(poiFile, normalize("Praha"), VISIBLE_BOUNDS, CENTER);
         assertEquals(1, nameVariant.size());
-        assertEquals("Praha (city)", nameVariant.get(0).getDescription());
+        assertEquals("Praha", nameVariant.get(0).getDescription());
+        assertEquals("city", categoryOf(nameVariant.get(0)));
 
-        List<NavigationPosition> partialName = lookup.search(poiFile, normalize("Prag"), VISIBLE_BOUNDS, CENTER);
+        List<CategorizedNavigationPosition> partialName = lookup.search(poiFile, normalize("Prag"), VISIBLE_BOUNDS, CENTER);
         assertEquals(1, partialName.size());
-        assertEquals("Prague (city)", partialName.get(0).getDescription());
+        assertEquals("Prague", partialName.get(0).getDescription());
+        assertEquals("city", categoryOf(partialName.get(0)));
 
-        List<NavigationPosition> category = lookup.search(poiFile, normalize("fuel"), VISIBLE_BOUNDS, CENTER);
+        List<CategorizedNavigationPosition> category = lookup.search(poiFile, normalize("fuel"), VISIBLE_BOUNDS, CENTER);
         assertEquals(1, category.size());
-        assertEquals("Tankstelle (fuel)", category.get(0).getDescription());
+        assertEquals("Tankstelle", category.get(0).getDescription());
+        assertEquals("fuel", categoryOf(category.get(0)));
 
         assertTrue(lookup.search(poiFile, normalize("Main Street"), VISIBLE_BOUNDS, CENTER).isEmpty());
     }
@@ -77,7 +81,7 @@ public class MapsforgePoiLookupTest {
         }
         MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
 
-        List<NavigationPosition> results = lookup.search(poiFile, normalize("test"), MAP_BOUNDS, CENTER);
+        List<CategorizedNavigationPosition> results = lookup.search(poiFile, normalize("test"), MAP_BOUNDS, CENTER);
 
         assertEquals(50, results.size());
         assertEquals("Test 0", results.get(0).getDescription());
@@ -88,6 +92,10 @@ public class MapsforgePoiLookupTest {
         DataSourceManager dataSourceManager = mock(DataSourceManager.class);
         when(dataSourceManager.getDataSourceService()).thenReturn(new DataSourceService());
         return dataSourceManager;
+    }
+
+    private String categoryOf(NavigationPosition position) {
+        return position instanceof CategorizedNavigationPosition categorized ? categorized.getCategory() : null;
     }
 
     private File createPoiFile() throws Exception {

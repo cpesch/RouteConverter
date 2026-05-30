@@ -21,9 +21,10 @@
 package slash.navigation.nominatim;
 
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.geocoding.BaseGeocodingService;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
+import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
 import slash.navigation.nominatim.reverse.AddresspartsType;
 import slash.navigation.nominatim.reverse.ReversegeocodeType;
 import slash.navigation.nominatim.search.PlaceType;
@@ -86,13 +87,18 @@ public class NominatimService extends BaseGeocodingService {
         return null;
     }
 
-    private List<NavigationPosition> extractPositions(List<PlaceType> placeTypes) {
-        List<NavigationPosition> result = new ArrayList<>(placeTypes.size());
+    private List<CategorizedNavigationPosition> extractPositions(List<PlaceType> placeTypes) {
+        List<CategorizedNavigationPosition> result = new ArrayList<>(placeTypes.size());
         for (PlaceType placeType : placeTypes) {
-            result.add(new SimpleNavigationPosition(placeType.getLon().doubleValue(), placeType.getLat().doubleValue(),
-                    null, placeType.getDisplayName() + " (" + placeType.getType() + ")"));
+            result.add(extractPosition(placeType));
         }
         return result;
+    }
+
+    CategorizedNavigationPosition extractPosition(PlaceType placeType) {
+        String type = trim(placeType.getType());
+        return new SimpleCategorizedNavigationPosition(placeType.getLon().doubleValue(), placeType.getLat().doubleValue(),
+                null, placeType.getDisplayName(), type);
     }
 
     public List<GeocodingResult> getPositionsFor(String address) throws IOException {

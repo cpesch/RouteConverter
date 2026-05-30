@@ -19,7 +19,10 @@
 */
 package slash.navigation.pois.mapsforge;
 
+import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tag;
+import slash.navigation.geocoding.CategorizedNavigationPosition;
+import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
 
 import java.util.Collection;
 import java.util.List;
@@ -77,7 +80,8 @@ final class MapsforgeTagMatcher {
         return firstNameVariant(tags) != null || firstCategoryValue(tags, categories) != null;
     }
 
-    static String buildDescription(List<Tag> tags, Collection<String> categories, MapsforgeTagMatcher.Match match, String unnamedFallback) {
+    static CategorizedNavigationPosition buildDescriptionAndCategory(LatLong position, List<Tag> tags, Collection<String> categories,
+                                                                    MapsforgeTagMatcher.Match match, String unnamedFallback) {
         String matchedName = match != null && match.tag() != null && isNameTag(match.tag()) ? match.tag().value : null;
         String primaryName = firstNameValue(tags);
         if (primaryName == null)
@@ -92,9 +96,22 @@ final class MapsforgeTagMatcher {
             label = unnamedFallback;
 
         String category = firstCategoryValue(tags, categories);
-        if (category != null && !category.equalsIgnoreCase(label))
-            return label + " (" + category + ")";
-        return label;
+        if (category != null && category.equalsIgnoreCase(label))
+            category = null;
+        Double longitude = position != null ? position.longitude : null;
+        Double latitude = position != null ? position.latitude : null;
+        return new SimpleCategorizedNavigationPosition(longitude, latitude, null, label, category);
+    }
+
+    static String buildDescription(List<Tag> tags, Collection<String> categories, MapsforgeTagMatcher.Match match, String unnamedFallback) {
+        CategorizedNavigationPosition position = buildDescriptionAndCategory(null, tags, categories, match, unnamedFallback);
+        return buildDescription(position.getDescription(), position.getCategory());
+    }
+
+    static String buildDescription(String description, String category) {
+        if (category != null)
+            return description + " (" + category + ")";
+        return description;
     }
 
     private static boolean doesNotMatch(String value, String query, boolean exactOnly) {
