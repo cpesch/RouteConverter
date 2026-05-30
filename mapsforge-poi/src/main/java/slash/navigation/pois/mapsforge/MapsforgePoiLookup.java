@@ -27,11 +27,9 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Download;
-import slash.navigation.maps.mapsforge.LocalMap;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
@@ -65,11 +63,7 @@ class MapsforgePoiLookup {
         this.dataSourceManager = dataSourceManager;
     }
 
-    PoiFile findPoiFile(BoundingBox mapBoundingBox, LocalMap localMap) {
-        PoiFile sibling = findSiblingPoiFile(localMap);
-        if (sibling != null)
-            return sibling;
-
+    PoiFile findPoiFile(BoundingBox mapBoundingBox) {
         List<PoiDescriptor> descriptors = findPoiDescriptors(mapBoundingBox);
         if (descriptors.isEmpty())
             return null;
@@ -84,23 +78,7 @@ class MapsforgePoiLookup {
         Download download = dataSourceManager.queueForDownload(descriptor.remoteFile().getDataSource(), descriptor.remoteFile());
         dataSourceManager.getDownloadManager().waitForCompletion(singletonList(download));
         File file = createFile(descriptor.remoteFile());
-        return file.exists() ? new PoiFile(file, dataSourceName(descriptor.remoteFile().getDataSource())) : null;
-    }
-
-    private PoiFile findSiblingPoiFile(LocalMap localMap) {
-        try {
-            if (localMap == null || localMap.getUrl() == null || !localMap.getUrl().startsWith("file:"))
-                return null;
-
-            File mapFile = new File(URI.create(localMap.getUrl()));
-            String name = mapFile.getName();
-            int dot = name.lastIndexOf('.');
-            File poiFile = new File(mapFile.getParentFile(), (dot != -1 ? name.substring(0, dot) : name) + DOT_POI);
-            return poiFile.exists() && poiFile.isFile() ? new PoiFile(poiFile, dataSourceName(localMap)) : null;
-        } catch (RuntimeException e) {
-            log.log(Level.FINE, "Cannot determine sibling POI file", e);
-            return null;
-        }
+        return file.exists() ? new PoiFile(file, descriptor.dataSourceName()) : null;
     }
 
     private List<PoiDescriptor> findPoiDescriptors(BoundingBox bounds) {
@@ -108,7 +86,7 @@ class MapsforgePoiLookup {
         for (DataSource dataSource : dataSourceManager.getDataSourceService().getDataSources()) {
             for (slash.navigation.datasources.File file : dataSource.getFiles()) {
                 if (DOT_POI.equals(getExtension(file.getUri())) && matches(file.getBoundingBox(), bounds))
-                    descriptors.add(new PoiDescriptor(null, file, file.getBoundingBox(), dataSourceName(dataSource)));
+                    descriptors.add(new PoiDescriptor(null, file, file.getBoundingBox(), dataSource.getName()));
             }
         }
         descriptors.sort((d1, d2) -> {
@@ -134,7 +112,7 @@ class MapsforgePoiLookup {
             for (File file : collectFiles(getApplicationDirectory(dataSource.getDirectory()), DOT_POI)) {
                 BoundingBox fileBounds = readBounds(file);
                 if (matches(fileBounds, bounds))
-                    result.add(new PoiDescriptor(file, null, fileBounds, dataSourceName(dataSource)));
+                    result.add(new PoiDescriptor(file, null, fileBounds, dataSource.getName()));
                 files.add(file);
             }
         }
@@ -148,13 +126,6 @@ class MapsforgePoiLookup {
         return new ArrayList<>(result);
     }
 
-    private String dataSourceName(DataSource dataSource) {
-        return dataSource != null && dataSource.getName() != null ? dataSource.getName() : "Mapsforge POI";
-    }
-
-    private String dataSourceName(LocalMap localMap) {
-        return localMap != null && localMap.getProvider() != null ? localMap.getProvider() : "Mapsforge POI";
-    }
 
     private File createFile(Downloadable downloadable) {
         return new File(getApplicationDirectory(downloadable.getDataSource().getDirectory()), downloadable.getUri());
@@ -163,14 +134,7 @@ class MapsforgePoiLookup {
     private boolean matches(BoundingBox fileBounds, BoundingBox queryBounds) {
         if (fileBounds == null || queryBounds == null)
             return true;
-        return intersects(fileBounds, queryBounds) || fileBounds.contains(queryBounds.getCenter()) || queryBounds.contains(fileBounds.getCenter());
-    }
-
-    private boolean intersects(BoundingBox first, BoundingBox second) {
-        return first.southWest().getLongitude() <= second.northEast().getLongitude() &&
-                first.northEast().getLongitude() >= second.southWest().getLongitude() &&
-                first.southWest().getLatitude() <= second.northEast().getLatitude() &&
-                first.northEast().getLatitude() >= second.southWest().getLatitude();
+        return fileBounds.intersect(queryBounds) != null || fileBounds.contains(queryBounds.getCenter()) || queryBounds.contains(fileBounds.getCenter());
     }
 
     private BoundingBox readBounds(File file) {
@@ -294,7 +258,6 @@ class MapsforgePoiLookup {
 
     private record PoiDescriptor(File localFile, slash.navigation.datasources.File remoteFile, BoundingBox boundingBox, String dataSourceName) {
     }
-
 
     private record PoiMatch(NavigationPosition position, String description, double distanceMeters) {
     }

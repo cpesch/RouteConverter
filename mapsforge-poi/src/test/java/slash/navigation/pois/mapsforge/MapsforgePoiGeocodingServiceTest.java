@@ -1,12 +1,15 @@
 package slash.navigation.pois.mapsforge;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
+import slash.navigation.datasources.helpers.DataSourceService;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.maps.item.ItemModel;
 import slash.navigation.maps.mapsforge.LocalMap;
@@ -15,10 +18,15 @@ import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Files.recursiveDelete;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
+import static java.util.Collections.emptyList;
 import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 
 public class MapsforgePoiGeocodingServiceTest {
@@ -28,6 +36,13 @@ public class MapsforgePoiGeocodingServiceTest {
 
 	@Rule
 	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	private final List<File> directoriesToDelete = new ArrayList<>();
+
+	@After
+	public void deletePoiDirectories() throws Exception {
+		for (File directory : directoriesToDelete)
+			recursiveDelete(directory);
+	}
 
 	@Test
 	public void returnsNullWhenNoDisplayedMapExistsAndEmptyListForBlankSearch() throws Exception {
@@ -39,13 +54,14 @@ public class MapsforgePoiGeocodingServiceTest {
 
 	@Test
 	public void searchesPoiDatabaseWithVisibleFallbackNamesCategoriesAndReverseLookup() throws Exception {
-		File poiFile = createPoiFile();
+		String dataSourceDirectory = createDataSourceDirectory();
+		File poiFile = createPoiFile(dataSourceDirectory);
 		insertPoi(poiFile, 1, 52.8000, 13.8000, tags("name", "Outside View", "place", "village"));
 		insertPoi(poiFile, 2, 52.5200, 13.4050, tags("name", "Prague", "name:cs", "Praha", "place", "city"));
 		insertPoi(poiFile, 3, 52.5210, 13.4100, tags("name", "Tankstelle"), "fuel");
 		insertPoi(poiFile, 4, 52.5220, 13.4110, tags("addr:street", "Main Street", "addr:housenumber", "1"));
 		insertPoi(poiFile, 5, 52.5005, 13.4005, tags("name", "Near Place", "place", "hamlet"));
-		MapsforgePoiGeocodingService service = serviceFor(poiFile, VISIBLE_BOUNDS);
+		MapsforgePoiGeocodingService service = serviceFor(dataSourceDirectory, VISIBLE_BOUNDS);
 
 		List<GeocodingResult> outside = service.getPositionsFor("Outside");
 		assertEquals(1, outside.size());
@@ -61,26 +77,40 @@ public class MapsforgePoiGeocodingServiceTest {
 
 	@Test
 	public void sortsByDistanceAndLimitsResults() throws Exception {
-		File poiFile = createPoiFile();
+		String dataSourceDirectory = createDataSourceDirectory();
+		File poiFile = createPoiFile(dataSourceDirectory);
 		NavigationPosition center = MAP_BOUNDS.getCenter();
 		for (int i = 0; i < 60; i++) {
 			double offset = i * 0.001;
 			insertPoi(poiFile, i + 1, center.getLatitude() + offset, center.getLongitude() + offset, tags("name", "Test " + i));
 		}
-		List<GeocodingResult> results = serviceFor(poiFile, MAP_BOUNDS).getPositionsFor("test");
+		List<GeocodingResult> results = serviceFor(dataSourceDirectory, MAP_BOUNDS).getPositionsFor("test");
 		assertEquals(50, results.size());
 		assertEquals("Test 0", results.get(0).position().getDescription());
 		assertEquals("Test 49", results.get(49).position().getDescription());
 	}
 
-	private MapsforgePoiGeocodingService serviceFor(File poiFile, BoundingBox visibleBounds) throws Exception {
-		File mapFile = new File(poiFile.getParentFile(), poiFile.getName().replaceFirst("\\.poi$", ".map"));
-		assertTrue(mapFile.createNewFile());
-		return new MapsforgePoiGeocodingService(mockDataSourceManager(), mockMapManager(new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString())), () -> visibleBounds);
+	private MapsforgePoiGeocodingService serviceFor(String dataSourceDirectory, BoundingBox visibleBounds) throws Exception {
+		File mapFile = temporaryFolder.newFile("test.map");
+		return new MapsforgePoiGeocodingService(mockDataSourceManager(dataSourceDirectory), mockMapManager(new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString())), () -> visibleBounds);
 	}
 
 	private DataSourceManager mockDataSourceManager() {
-		return mock(DataSourceManager.class);
+		return mockDataSourceManager(null);
+	}
+
+	private DataSourceManager mockDataSourceManager(String dataSourceDirectory) {
+		DataSourceManager dataSourceManager = mock(DataSourceManager.class);
+		DataSourceService dataSourceService = new DataSourceService();
+		if (dataSourceDirectory != null) {
+			DataSource dataSource = mock(DataSource.class);
+			when(dataSource.getDirectory()).thenReturn(dataSourceDirectory);
+			when(dataSource.getName()).thenReturn("test");
+			when(dataSource.getFiles()).thenReturn(emptyList());
+			dataSourceService.getDataSources().add(dataSource);
+		}
+		when(dataSourceManager.getDataSourceService()).thenReturn(dataSourceService);
+		return dataSourceManager;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -92,8 +122,14 @@ public class MapsforgePoiGeocodingServiceTest {
 		return mapsforgeMapManager;
 	}
 
-	private File createPoiFile() throws Exception {
-		File file = temporaryFolder.newFile("test.poi");
+	private String createDataSourceDirectory() {
+		String directory = "test-pois/" + UUID.randomUUID();
+		directoriesToDelete.add(getApplicationDirectory(directory));
+		return directory;
+	}
+
+	private File createPoiFile(String dataSourceDirectory) throws Exception {
+		File file = new File(getApplicationDirectory(dataSourceDirectory), "test.poi");
 		try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath()); Statement statement = connection.createStatement()) {
 			statement.executeUpdate("CREATE TABLE poi_index (id INTEGER, lat REAL, lon REAL, PRIMARY KEY (id))");
 			statement.executeUpdate("CREATE TABLE poi_data (id INTEGER, data TEXT, PRIMARY KEY (id))");

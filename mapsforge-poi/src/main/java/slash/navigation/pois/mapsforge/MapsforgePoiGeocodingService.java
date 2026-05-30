@@ -75,7 +75,7 @@ public class MapsforgePoiGeocodingService extends BaseGeocodingService {
         if (context == null)
             return null;
 
-        MapsforgePoiLookup.PoiFile poiFile = lookup.findPoiFile(context.mapBoundingBox(), context.localMap());
+        MapsforgePoiLookup.PoiFile poiFile = lookup.findPoiFile(context.mapBoundingBox());
         if (poiFile == null)
             return null;
 
@@ -94,7 +94,7 @@ public class MapsforgePoiGeocodingService extends BaseGeocodingService {
         if (context == null)
             return null;
 
-        MapsforgePoiLookup.PoiFile poiFile = lookup.findPoiFile(context.mapBoundingBox(), context.localMap());
+        MapsforgePoiLookup.PoiFile poiFile = lookup.findPoiFile(context.mapBoundingBox());
         if (poiFile == null)
             return null;
 
@@ -108,10 +108,9 @@ public class MapsforgePoiGeocodingService extends BaseGeocodingService {
             return null;
 
         BoundingBox visibleBounds = mapBoundingBox.intersect(visibleBoundsSupplier.get());
-        return new PoiContext(mapBoundingBox, visibleBounds != null ? visibleBounds : mapBoundingBox, localMap);
+        return new PoiContext(mapBoundingBox, visibleBounds != null ? visibleBounds : mapBoundingBox);
     }
 
-
-    private record PoiContext(BoundingBox mapBoundingBox, BoundingBox visibleBounds, LocalMap localMap) {
+    private record PoiContext(BoundingBox mapBoundingBox, BoundingBox visibleBounds) {
     }
 }

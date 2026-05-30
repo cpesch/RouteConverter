@@ -35,6 +35,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.util.Collections.emptyList;
+import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 import static slash.navigation.pois.mapsforge.MapsforgeGeocodingHelper.normalize;
 
 /**
@@ -99,7 +100,7 @@ public class MapsforgeMapGeocodingService extends BaseGeocodingService {
 
     private MapContext getContext() {
         LocalMap localMap = mapsforgeMapManager.getDisplayedMapModel().getItem();
-        if (!(localMap instanceof MapsforgeFileMap mapsforgeFileMap))
+        if (localMap == null || localMap.getType() != Mapsforge || !(localMap instanceof MapsforgeFileMap mapsforgeFileMap))
             return null;
 
         try {

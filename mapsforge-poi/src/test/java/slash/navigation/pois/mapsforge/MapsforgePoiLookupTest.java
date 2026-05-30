@@ -8,8 +8,6 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.helpers.DataSourceService;
-import slash.navigation.maps.mapsforge.LocalMap;
-import slash.navigation.maps.mapsforge.MapType;
 
 import java.io.File;
 import java.sql.*;
@@ -18,7 +16,6 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 import static slash.navigation.pois.mapsforge.MapsforgeGeocodingHelper.normalize;
 
 public class MapsforgePoiLookupTest {
@@ -34,19 +31,6 @@ public class MapsforgePoiLookupTest {
         assertEquals("", normalize(null));
         assertEquals("", normalize("   "));
         assertEquals("new york", normalize(" New_York "));
-    }
-
-    @Test
-    public void findsSiblingPoiFileForDisplayedLocalMap() throws Exception {
-        File mapFile = temporaryFolder.newFile("berlin.map");
-        File poiFile = temporaryFolder.newFile("berlin.poi");
-        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
-
-        MapsforgePoiLookup.PoiFile result = lookup.findPoiFile(MAP_BOUNDS, new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString(), "test provider"));
-
-        assertNotNull(result);
-        assertEquals(poiFile, result.file());
-        assertEquals("test provider", result.dataSourceName());
     }
 
     @Test
@@ -145,19 +129,6 @@ public class MapsforgePoiLookupTest {
             builder.append(keyValues[i]).append('=').append(keyValues[i + 1]);
         }
         return builder.toString();
-    }
-
-    private record TestLocalMap(BoundingBox boundingBox, String url, String provider) implements LocalMap {
-        public MapType getType() { return Mapsforge; }
-        public String getProvider() { return provider; }
-        public Integer getZoomLevelMin() { return null; }
-        public Integer getZoomLevelMax() { return null; }
-        public BoundingBox getBoundingBox() { return boundingBox; }
-        public String getCopyrightText() { return null; }
-        public void close() { }
-        public void delete() { }
-        public String description() { return "test"; }
-        public String getUrl() { return url; }
     }
 }
 

@@ -42,6 +42,8 @@ import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static slash.navigation.maps.mapsforge.MapType.MBTiles;
+import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 
 public class MapsforgeMapGeocodingServiceTest {
     private static final BoundingBox MAP_BOUNDS = new BoundingBox(14.0, 53.0, 13.0, 52.0);
@@ -64,6 +66,17 @@ public class MapsforgeMapGeocodingServiceTest {
 
         assertNotNull(results);
         assertTrue(results.isEmpty());
+    }
+
+    @Test
+    public void returnsNullWhenDisplayedMapTypeIsNotMapsforge() throws Exception {
+        MapsforgeFileMap displayedMap = mockDisplayedMap();
+        when(displayedMap.getType()).thenReturn(MBTiles);
+        MapsforgeMapGeocodingService service = new MapsforgeMapGeocodingService(mockMapManager(displayedMap), () -> VISIBLE_BOUNDS);
+
+        assertNull(service.getPositionsFor("Berlin"));
+        assertNull(service.getAddressFor(CENTER));
+        verify(displayedMap, never()).getMapFile();
     }
 
     @Test
@@ -144,6 +157,7 @@ public class MapsforgeMapGeocodingServiceTest {
     private MapsforgeFileMap mockDisplayedMap() {
         MapsforgeFileMap displayedMap = mock(MapsforgeFileMap.class);
         org.mapsforge.map.reader.MapFile mapFile = mock(org.mapsforge.map.reader.MapFile.class);
+        when(displayedMap.getType()).thenReturn(Mapsforge);
         when(displayedMap.getMapFile()).thenReturn(mapFile);
         when(displayedMap.getBoundingBox()).thenReturn(MAP_BOUNDS);
         return displayedMap;
