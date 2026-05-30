@@ -55,6 +55,7 @@ public class GetRangePerformer implements ActionPerformer {
 
     public void run() throws IOException {
         Get request = new Get(getDownload().getUrl());
+        request.setCacheControlNoCache();
         request.setRange(0L, RANGE_END_INDEX);
         if (getDownload().getETag() != null)
             request.setIfNoneMatch(getDownload().getETag());
@@ -75,11 +76,11 @@ public class GetRangePerformer implements ActionPerformer {
         });
 
         if (request.isNotModified()) {
-            updateDownload(getDownload(), request);
+            updateDownload(getDownload(), request, false);
             downloadExecutor.notModified();
 
         } else if (request.isSuccessful()) {
-            updateDownload(getDownload(), request);
+            updateDownload(getDownload(), request, false);
             downloadExecutor.succeeded();
 
         } else

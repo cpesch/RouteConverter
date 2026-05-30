@@ -39,6 +39,7 @@ import static slash.navigation.rest.RFC2616.parseDate;
 public abstract class ReadRequest extends HttpRequest {
     public ReadRequest(HttpUriRequestBase method) {
         super(method);
+        setHeader(ACCEPT, "*/*");
     }
 
     public boolean getAcceptByteRanges() throws IOException {
@@ -64,6 +65,11 @@ public abstract class ReadRequest extends HttpRequest {
 
     public String getETag() throws IOException {
         return getHeader(ETAG);
+    }
+
+    public void setCacheControlNoCache() {
+        setHeader(CACHE_CONTROL, "no-cache");
+        setHeader(PRAGMA, "no-cache");
     }
 
 

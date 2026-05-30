@@ -81,6 +81,7 @@ public class GetPerformer implements ActionPerformer {
         log.info(format("Resuming bytes %d-%d from %s", fileSize, contentLength, getDownload().getUrl()));
 
         Get request = new Get(getDownload().getUrl());
+        request.setCacheControlNoCache();
         request.setRange(fileSize, contentLength);
 
         return request.execute(new HttpClientResponseHandler<Result>() {
@@ -104,6 +105,7 @@ public class GetPerformer implements ActionPerformer {
         log.info(format("Downloading %d bytes from %s with ETag %s", contentLength, getDownload().getUrl(), getDownload().getETag()));
 
         Get request = new Get(getDownload().getUrl());
+        request.setCacheControlNoCache();
         if (new Validator(getDownload()).isExistsTargets() && getDownload().getETag() != null)
             request.setIfNoneMatch(getDownload().getETag());
 
@@ -136,11 +138,11 @@ public class GetPerformer implements ActionPerformer {
             result = download();
 
         if (result.notModified) {
-            updateDownload(getDownload(),  result.request);
+            updateDownload(getDownload(), result.request, false);
             downloadExecutor.notModified();
 
         } else if (result.success) {
-            updateDownload(getDownload(),  result.request);
+            updateDownload(getDownload(), result.request, false);
 
             if(!getDownload().getTempFile().exists())
                 downloadExecutor.downloadFailed();
@@ -221,13 +223,14 @@ public class GetPerformer implements ActionPerformer {
         return new Checksum(request.getLastModified() != null ? fromMillis(request.getLastModified()) : null, request.getContentLength(), null);
     }
 
-    static void updateDownload(Download download, ReadRequest request) throws IOException {
+    static void updateDownload(Download download, ReadRequest request, boolean updateActualChecksum) throws IOException {
         download.setETag(request.getETag());
-        if (download.getFile().getFile().exists()) {
+        if (updateActualChecksum || !download.getFile().getFile().exists()) {
+            download.getFile().setActualChecksum(extractChecksum(request));
+        } else {
             Validator validator = new Validator(download);
             validator.calculateChecksums();
-        } else
-            download.getFile().setActualChecksum(extractChecksum(request));
+        }
     }
 
     private record Result(Get request, boolean success, boolean notModified, Long lastModified) {

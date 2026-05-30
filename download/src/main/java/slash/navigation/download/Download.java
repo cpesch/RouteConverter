@@ -161,7 +161,7 @@ public class Download {
     private static final Set<State> DOWNLOADED = new HashSet<>(asList(NotModified, Succeeded));
     private static final Set<Action> COPY = new HashSet<>(singletonList(Copy));
 
-    private Checksum getChecksum() {
+    public Checksum getChecksum() {
         return DOWNLOADED.contains(getState()) && COPY.contains(getAction()) && file.getActualChecksum() != null ?
                 file.getActualChecksum() : file.getExpectedChecksum();
     }

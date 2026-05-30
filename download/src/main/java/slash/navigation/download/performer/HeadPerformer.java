@@ -49,6 +49,7 @@ public class HeadPerformer implements ActionPerformer {
 
     public void run() throws IOException {
         Head request = new Head(getDownload().getUrl());
+        request.setCacheControlNoCache();
         if (getDownload().getETag() != null)
             request.setIfNoneMatch(getDownload().getETag());
 
@@ -56,11 +57,11 @@ public class HeadPerformer implements ActionPerformer {
         log.info(format("HEAD for %s returned with status code %s and body %s", getDownload().getUrl(), request.getStatusCode(), body));
 
         if (request.isNotModified()) {
-            updateDownload(getDownload(), request);
+            updateDownload(getDownload(), request, true);
             downloadExecutor.notModified();
 
         } else if (request.isSuccessful()) {
-            updateDownload(getDownload(), request);
+            updateDownload(getDownload(), request, true);
             downloadExecutor.succeeded();
 
         } else

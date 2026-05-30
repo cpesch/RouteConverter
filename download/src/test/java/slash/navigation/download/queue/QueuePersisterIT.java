@@ -16,9 +16,12 @@ import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.type.CompactCalendar.now;
+import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.Action.Flatten;
 import static slash.navigation.download.State.Downloading;
+import static slash.navigation.download.State.Succeeded;
 
 public class QueuePersisterIT {
     private final QueuePersister persister = new QueuePersister();
@@ -49,7 +52,7 @@ public class QueuePersisterIT {
 
     @Test
     public void testSaveAndLoadNow() throws IOException {
-        persister.save(queueFile, new ArrayList<Download>());
+        persister.save(queueFile, new ArrayList<>());
 
         List<Download> result = persister.load(queueFile);
         assertEquals(new ArrayList<Download>(), result);
@@ -65,6 +68,25 @@ public class QueuePersisterIT {
 
         List<Download> result = persister.load(queueFile);
         assertEquals(downloads, result);
+    }
+
+    @Test
+    public void testSaveAndLoadSucceededCopyUsesActualChecksum() throws IOException {
+        Checksum expected = new Checksum(fromMillis(1780069700000L), 22336L, "oldSha1");
+        Checksum actual = new Checksum(fromMillis(1780069800000L), 54774L, "newSha1");
+        FileAndChecksum fileAndChecksum = new FileAndChecksum(fileTarget, expected);
+        fileAndChecksum.setActualChecksum(actual);
+
+        List<Download> downloads = new ArrayList<>();
+        downloads.add(new Download("description", "url", Copy, fileAndChecksum, null,
+                "etag", Succeeded, tempFile));
+        persister.save(queueFile, downloads);
+
+        List<Download> result = persister.load(queueFile);
+        Checksum persisted = result.get(0).getFile().getExpectedChecksum();
+        assertEquals(actual.getLastModified().getTimeInMillis(), persisted.getLastModified().getTimeInMillis());
+        assertEquals(actual.getContentLength(), persisted.getContentLength());
+        assertEquals(actual.getSHA1(), persisted.getSHA1());
     }
 
     private Checksum createChecksum() {

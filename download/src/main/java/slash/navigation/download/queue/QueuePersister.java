@@ -116,7 +116,7 @@ public class QueuePersister {
 
     private DownloadableType asDownloadableType(Download download) {
         DownloadableType downloadableType = new ObjectFactory().createDownloadableType();
-        downloadableType.setChecksum(asChecksumType(download.getFile().getExpectedChecksum()));
+        downloadableType.setChecksum(asChecksumType(download.getChecksum()));
         downloadableType.setTarget(download.getFile().getFile().getPath());
         List<FragmentType> fragmentTypes = asFragmentTypes(download.getFragments());
         if (fragmentTypes != null)
