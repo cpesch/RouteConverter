@@ -33,13 +33,13 @@ public class MapsforgeTagMatcherTest {
         List<Tag> tags = List.of(new Tag("name", "Tankstelle"));
         MapsforgeTagMatcher.Match match = MapsforgeTagMatcher.findMatch(tags, List.of("fuel"), "fuel", true);
         LatLong point = new LatLong(52.5, 13.4);
-        CategorizedNavigationPosition descriptionAndCategory =
+        CategorizedNavigationPosition position =
                 MapsforgeTagMatcher.buildDescriptionAndCategory(point, tags, List.of("fuel"), match, "Unnamed POI");
 
-        assertEquals(13.4, descriptionAndCategory.getLongitude(), 0.0);
-        assertEquals(52.5, descriptionAndCategory.getLatitude(), 0.0);
-        assertEquals("Tankstelle", descriptionAndCategory.getDescription());
-        assertEquals("fuel", descriptionAndCategory.getCategory());
+        assertEquals(13.4, position.getLongitude(), 0.0);
+        assertEquals(52.5, position.getLatitude(), 0.0);
+        assertEquals("Tankstelle", position.getDescription());
+        assertEquals("fuel", position.getCategory());
         assertEquals("Tankstelle (fuel)", MapsforgeTagMatcher.buildDescription(tags, List.of("fuel"), match, "Unnamed POI"));
     }
 
@@ -48,13 +48,13 @@ public class MapsforgeTagMatcherTest {
         List<Tag> tags = List.of(new Tag("name", "Prague"), new Tag("name:cs", "Praha"), new Tag("place", "city"));
         MapsforgeTagMatcher.Match match = MapsforgeTagMatcher.findMatch(tags, emptyList(), "praha", true);
         LatLong point = new LatLong(50.087, 14.421);
-        CategorizedNavigationPosition descriptionAndCategory =
+        CategorizedNavigationPosition position =
                 MapsforgeTagMatcher.buildDescriptionAndCategory(point, tags, emptyList(), match, "Unnamed feature");
 
-        assertEquals(14.421, descriptionAndCategory.getLongitude(), 0.0);
-        assertEquals(50.087, descriptionAndCategory.getLatitude(), 0.0);
-        assertEquals("Praha", descriptionAndCategory.getDescription());
-        assertEquals("city", descriptionAndCategory.getCategory());
+        assertEquals(14.421, position.getLongitude(), 0.0);
+        assertEquals(50.087, position.getLatitude(), 0.0);
+        assertEquals("Praha", position.getDescription());
+        assertEquals("city", position.getCategory());
         assertEquals("Praha (city)", MapsforgeTagMatcher.buildDescription(tags, emptyList(), match, "Unnamed feature"));
     }
 
@@ -63,13 +63,13 @@ public class MapsforgeTagMatcherTest {
         List<Tag> tags = List.of(new Tag("amenity", "fuel"));
         MapsforgeTagMatcher.Match match = MapsforgeTagMatcher.findMatch(tags, emptyList(), "fuel", true);
         LatLong point = new LatLong(48.137, 11.575);
-        CategorizedNavigationPosition descriptionAndCategory =
+        CategorizedNavigationPosition position =
                 MapsforgeTagMatcher.buildDescriptionAndCategory(point, tags, emptyList(), match, "Unnamed feature");
 
-        assertEquals(11.575, descriptionAndCategory.getLongitude(), 0.0);
-        assertEquals(48.137, descriptionAndCategory.getLatitude(), 0.0);
-        assertEquals("fuel", descriptionAndCategory.getDescription());
-        assertNull(descriptionAndCategory.getCategory());
+        assertEquals(11.575, position.getLongitude(), 0.0);
+        assertEquals(48.137, position.getLatitude(), 0.0);
+        assertEquals("fuel", position.getDescription());
+        assertNull(position.getCategory());
         assertEquals("fuel", MapsforgeTagMatcher.buildDescription(tags, emptyList(), match, "Unnamed feature"));
     }
 
