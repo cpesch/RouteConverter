@@ -8,6 +8,11 @@
         <datasource id="id3"/>
     </edition>
     <datasource id="id1" name="name1" baseUrl="http://local1/1/" directory="dir1">
+        <source url="http://local1/index.html" level="2">
+            <include>*.data</include>
+            <include>*.zip</include>
+            <exclude>*/skip.data</exclude>
+        </source>
         <file uri="x/y/z.data">
             <checksum contentLength="1" lastModified="2011-01-01T01:01:01Z" sha1="a"/>
             <fragment key="a">
@@ -20,6 +25,7 @@
         </file>
     </datasource>
     <datasource id="id2" name="name2" baseUrl="http://local2/2/" directory="dir2/dir3">
+        <source/>
         <file uri="z/y/x.data">
             <checksum contentLength="1" lastModified="2011-01-01T01:01:01Z" sha1="a"/>
             <fragment key="c">

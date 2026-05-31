@@ -59,10 +59,11 @@
     <xsd:complexType name="datasourceType">
         <xsd:annotation>
             <xsd:documentation>
-                a datasource contains an id, a name, and optionally a href, a base url, a directory, files, themes and maps
+                a datasource contains an id, a name, and optionally a href, a base url, a directory, an optional source for scan and mirror automation, files, themes and maps
             </xsd:documentation>
         </xsd:annotation>
         <xsd:sequence>
+            <xsd:element name="source" type="sourceType" minOccurs="0"/>
             <xsd:element name="file" type="fileType" minOccurs="0" maxOccurs="unbounded">
                 <xsd:unique name="unique-file-uri">
                     <xsd:selector xpath="file"/>
@@ -88,6 +89,22 @@
         <xsd:attribute name="baseUrl" type="xsd:string"/>
         <xsd:attribute name="directory" type="xsd:string"/>
         <xsd:attribute name="action" type="actionType"/>
+    </xsd:complexType>
+
+    <xsd:complexType name="sourceType">
+        <xsd:annotation>
+            <xsd:documentation>
+                a source describes scan and mirror automation for a datasource.
+                presence enables both phases. url is optional and defaults to the datasource baseUrl.
+                include and exclude carry glob patterns used by both scan filtering and wget --accept / post-wget cleanup.
+            </xsd:documentation>
+        </xsd:annotation>
+        <xsd:sequence>
+            <xsd:element name="include" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+            <xsd:element name="exclude" type="xsd:string" minOccurs="0" maxOccurs="unbounded"/>
+        </xsd:sequence>
+        <xsd:attribute name="url" type="xsd:string"/>
+        <xsd:attribute name="level" type="xsd:int"/>
     </xsd:complexType>
 
     <xsd:complexType name="fragmentType">

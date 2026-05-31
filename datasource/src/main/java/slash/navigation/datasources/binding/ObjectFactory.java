@@ -122,10 +122,18 @@ public class ObjectFactory {
 
     /**
      * Create an instance of {@link MapType }
-     * 
+     *
      */
     public MapType createMapType() {
         return new MapType();
+    }
+
+    /**
+     * Create an instance of {@link SourceType }
+     *
+     */
+    public SourceType createSourceType() {
+        return new SourceType();
     }
 
     /**

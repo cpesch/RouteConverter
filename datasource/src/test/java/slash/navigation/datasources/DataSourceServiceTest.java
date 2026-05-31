@@ -28,8 +28,10 @@ import slash.navigation.download.Checksum;
 
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static slash.common.TestCase.calendar;
 
 public class DataSourceServiceTest {
@@ -144,5 +146,31 @@ public class DataSourceServiceTest {
         checkFiles(service.getDataSourceByUrlPrefix(baseUrl1).getFiles(), "x/y/z.data", "a");
         checkFiles(service.getDataSourceByUrlPrefix(baseUrl3).getFiles());
         checkFiles(service.getDataSourceByUrlPrefix(baseUrl2).getFiles(), "x/y/z.data", "a", "z/y/x.data", "a");
+    }
+
+    @Test
+    public void testSourceWithAttributesAndChildren() {
+        Source source = service.getDataSourceByUrlPrefix("http://local1/1/").getSource();
+        assertNotNull(source);
+        assertEquals("http://local1/index.html", source.getUrl());
+        assertEquals(Integer.valueOf(2), source.getLevel());
+        assertEquals(asList("*.data", "*.zip"), source.getIncludes());
+        assertEquals(asList("*/skip.data"), source.getExcludes());
+    }
+
+    @Test
+    public void testEmptySource() {
+        Source source = service.getDataSourceByUrlPrefix("http://local2/2/").getSource();
+        assertNotNull(source);
+        assertNull(source.getUrl());
+        assertNull(source.getLevel());
+        assertEquals(0, source.getIncludes().size());
+        assertEquals(0, source.getExcludes().size());
+    }
+
+    @Test
+    public void testAbsentSource() {
+        Source source = service.getDataSourceByUrlPrefix("http://local3/3/").getSource();
+        assertNull(source);
     }
 }

@@ -18,18 +18,19 @@ import java.util.List;
 
 /**
  * 
- *                 a datasource contains an id, a name, and optionally a href, a base url, a directory, files, themes and maps
- *             
- * 
+ *                 a datasource contains an id, a name, and optionally a href, a base url, a directory, an optional source for scan and mirror automation, files, themes and maps
+ *
+ *
  * <p>Java class for datasourceType complex type.
- * 
+ *
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ *
  * <pre>
  * &lt;complexType name="datasourceType"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
+ *         &lt;element name="source" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}sourceType" minOccurs="0"/&gt;
  *         &lt;element name="file" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}fileType" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element name="map" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}mapType" maxOccurs="unbounded" minOccurs="0"/&gt;
  *         &lt;element name="theme" type="{http://api.routeconverter.com/v1/schemas/datasource-catalog}themeType" maxOccurs="unbounded" minOccurs="0"/&gt;
@@ -44,17 +45,19 @@ import java.util.List;
  *   &lt;/complexContent&gt;
  * &lt;/complexType&gt;
  * </pre>
- * 
- * 
+ *
+ *
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "datasourceType", propOrder = {
+    "source",
     "file",
     "map",
     "theme"
 })
 public class DatasourceType {
 
+    protected SourceType source;
     protected List<FileType> file;
     protected List<MapType> map;
     protected List<ThemeType> theme;
@@ -70,6 +73,30 @@ public class DatasourceType {
     protected String directory;
     @XmlAttribute(name = "action")
     protected ActionType action;
+
+    /**
+     * Gets the value of the source property.
+     *
+     * @return
+     *     possible object is
+     *     {@link SourceType }
+     *
+     */
+    public SourceType getSource() {
+        return source;
+    }
+
+    /**
+     * Sets the value of the source property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link SourceType }
+     *
+     */
+    public void setSource(SourceType value) {
+        this.source = value;
+    }
 
     /**
      * Gets the value of the file property.

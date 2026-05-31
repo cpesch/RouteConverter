@@ -36,6 +36,8 @@ public interface DataSource {
     String getDirectory();
     String getAction();
 
+    Source getSource();
+
     List<File> getFiles();
     List<Map> getMaps();
     List<Theme> getThemes();

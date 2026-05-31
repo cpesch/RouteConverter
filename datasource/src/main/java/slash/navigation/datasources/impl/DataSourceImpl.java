@@ -23,6 +23,7 @@ import slash.navigation.datasources.*;
 import slash.navigation.datasources.binding.DatasourceType;
 import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.MapType;
+import slash.navigation.datasources.binding.SourceType;
 import slash.navigation.datasources.binding.ThemeType;
 import slash.navigation.download.Checksum;
 
@@ -87,6 +88,11 @@ public class DataSourceImpl implements DataSource {
 
     public String getAction() {
         return datasourceType.getAction().value();
+    }
+
+    public Source getSource() {
+        SourceType sourceType = datasourceType.getSource();
+        return sourceType != null ? new SourceImpl(sourceType) : null;
     }
 
     public List<File> getFiles() {
