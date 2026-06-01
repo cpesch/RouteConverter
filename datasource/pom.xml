@@ -29,4 +29,32 @@
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <id>generate-datasource-bindings</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/main/doc/datasource-catalog.xsd</source>
+                            </sources>
+                            <packageName>slash.navigation.datasources.binding</packageName>
+                            <outputDirectory>${project.build.directory}/generated-sources/jaxb</outputDirectory>
+                            <clearOutputDir>true</clearOutputDir>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
