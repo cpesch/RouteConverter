@@ -119,6 +119,9 @@ public class SnapshotCatalog extends BaseDownloadTool {
     }
 
     public static void main(String[] args) throws Exception {
+        // Server backward-compat (RouteConverter 3.3): include <source> in fetched XML.
+        // See download-tools/SCAN_CLIENT.md → "Server backward-compat".
+        System.setProperty(DataSourceManager.INCLUDE_SOURCE_PROPERTY, "true");
         new SnapshotCatalog().run(args);
         exit(0);
     }

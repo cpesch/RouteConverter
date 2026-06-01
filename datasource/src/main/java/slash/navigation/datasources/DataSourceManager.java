@@ -55,6 +55,19 @@ public class DataSourceManager {
     private static final String EDITIONS_URI = V1 + EDITIONS + "/";
     public static final String DATASOURCES_URI = V1 + "datasources/";
     public static final String FORMAT_XML = "?format=xml";
+    /**
+     * Server backward-compat (RouteConverter 3.3): the server strips {@code <source>}
+     * from {@code /v1/datasources/<id>.xml} by default to keep older JAXB bindings happy.
+     * Server-side tools (SnapshotCatalog, UpdateCatalog, MigrateCatalogSources) set
+     * the system property {@code rc.includeSource=true} so the URL builder appends
+     * {@code &includeSource=true} and the server returns the full document.
+     * See {@code download-tools/SCAN_CLIENT.md} → "Server backward-compat".
+     */
+    public static final String INCLUDE_SOURCE_PROPERTY = "rc.includeSource";
+
+    private static String formatXmlWithSource() {
+        return Boolean.getBoolean(INCLUDE_SOURCE_PROPERTY) ? FORMAT_XML + "&includeSource=true" : FORMAT_XML;
+    }
     public static final String DOT_MAP = ".map";
     public static final String DOT_MBTILES = ".mbtiles";
     public static final String DOT_XML = ".xml";
@@ -172,7 +185,7 @@ public class DataSourceManager {
     public void downloadDataSources(List<DataSource> dataSources, java.io.File directory) {
         List<Download> downloads = new ArrayList<>();
         for (DataSource dataSource : dataSources) {
-            String datasourceUrl = dataSource.getHref() + FORMAT_XML;
+            String datasourceUrl = dataSource.getHref() + formatXmlWithSource();
             java.io.File file = new java.io.File(directory, dataSource.getId() + DOT_XML);
             Download download = downloadManager.queueForDownload("Datasource: " + dataSource.getId(),
                     datasourceUrl, Copy, new FileAndChecksum(file, null), null);
