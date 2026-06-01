@@ -126,11 +126,36 @@ public class GraphManagerTest {
         List<GraphDescriptor> descriptors = graphManager.getRemoteGraphDescriptors();
         assertEquals(6, descriptors.size());
         assertEquals(new GraphDescriptor(GraphManager.GraphType.ZIP, null, zip), descriptors.get(0));
-        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, france), descriptors.get(1));
-        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, germany), descriptors.get(2));
-        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, paris), descriptors.get(3));
+        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, paris), descriptors.get(1));
+        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, france), descriptors.get(2));
+        assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, germany), descriptors.get(3));
         assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, austria), descriptors.get(4));
         assertEquals(new GraphDescriptor(GraphManager.GraphType.PBF, null, croatia), descriptors.get(5));
+    }
+
+    @Test
+    public void testRemoteComparatorUsesTotalOrderForContainedAndIncomparableBoundingBoxes() {
+        slash.navigation.datasources.File france = mock(slash.navigation.datasources.File.class);
+        when(france.getUri()).thenReturn("france.pbf");
+        when(france.getBoundingBox()).thenReturn(new BoundingBox(1.0, 1.0, -1.0, -1.0));
+
+        slash.navigation.datasources.File paris = mock(slash.navigation.datasources.File.class);
+        when(paris.getUri()).thenReturn("paris.pbf");
+        when(paris.getBoundingBox()).thenReturn(new BoundingBox(0.2, 0.2, -0.2, -0.2));
+
+        slash.navigation.datasources.File germany = mock(slash.navigation.datasources.File.class);
+        when(germany.getUri()).thenReturn("germany.pbf");
+        when(germany.getBoundingBox()).thenReturn(new BoundingBox(20.0, 20.0, 5.0, 5.0));
+
+        GraphDescriptor descriptorFrance = new GraphDescriptor(GraphManager.GraphType.PBF, null, france);
+        GraphDescriptor descriptorParis = new GraphDescriptor(GraphManager.GraphType.PBF, null, paris);
+        GraphDescriptor descriptorGermany = new GraphDescriptor(GraphManager.GraphType.PBF, null, germany);
+
+        GraphManager.GraphDescriptorComparator comparator = new GraphManager.GraphDescriptorComparator();
+
+        assertTrue(comparator.compare(descriptorParis, descriptorFrance) < 0);
+        assertTrue(comparator.compare(descriptorFrance, descriptorGermany) < 0);
+        assertTrue(comparator.compare(descriptorParis, descriptorGermany) < 0);
     }
 
     @Test

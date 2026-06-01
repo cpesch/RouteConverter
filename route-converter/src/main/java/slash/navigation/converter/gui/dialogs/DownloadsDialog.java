@@ -106,7 +106,7 @@ public class DownloadsDialog extends SimpleDialog {
             }
 
             public int compare(Download d1, Download d2) {
-                return (int) (getSize(d1) - getSize(d2));
+                return Long.compare(getSize(d1), getSize(d2));
             }
         });
         sorter.setComparator(DATE_COLUMN, (Comparator<Download>) (d1, d2) -> {

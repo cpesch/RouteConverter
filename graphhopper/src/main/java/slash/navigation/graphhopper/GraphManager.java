@@ -177,6 +177,8 @@ public class GraphManager {
             3. when bounding box missing: by uri alphabetically
         */
         public int compare(GraphDescriptor g1, GraphDescriptor g2) {
+            if (g1 == g2 || g1.equals(g2))
+                return 0;
             return internalCompare(g1, g2);
         }
 
@@ -186,17 +188,37 @@ public class GraphManager {
                 return order;
 
             if (g1.getBoundingBox() == null && g2.getBoundingBox() != null)
-                return 10;
+                return 1;
             if (g1.getBoundingBox() != null && g2.getBoundingBox() == null)
-                return -10;
+                return -1;
             if (g1.getBoundingBox() == null && g2.getBoundingBox() == null)
-                return g1.getRemoteFile().getUri().compareTo(g2.getRemoteFile().getUri());
+                return compareByIdentifier(g1, g2);
 
-            if (g1.getBoundingBox().contains(g2.getBoundingBox()))
-                return 20;
-            if (g2.getBoundingBox().contains(g1.getBoundingBox()))
-                return -20;
-            return 0; // (int) (g1.getBoundingBox().getSquareSize() - g2.getBoundingBox().getSquareSize());
+            boolean g1ContainsG2 = g1.getBoundingBox().contains(g2.getBoundingBox());
+            boolean g2ContainsG1 = g2.getBoundingBox().contains(g1.getBoundingBox());
+            if (g1ContainsG2 != g2ContainsG1)
+                return g1ContainsG2 ? 1 : -1;
+
+            int squareSize = Double.compare(g1.getBoundingBox().getSquareSize(), g2.getBoundingBox().getSquareSize());
+            if(squareSize != 0)
+                return squareSize;
+
+            return compareByIdentifier(g1, g2);
+        }
+
+        private int compareByIdentifier(GraphDescriptor g1, GraphDescriptor g2) {
+            String identifier1 = getIdentifier(g1);
+            String identifier2 = getIdentifier(g2);
+            int result = identifier1.compareToIgnoreCase(identifier2);
+            return result != 0 ? result : identifier1.compareTo(identifier2);
+        }
+
+        private String getIdentifier(GraphDescriptor graphDescriptor) {
+            if (graphDescriptor.getRemoteFile() != null)
+                return graphDescriptor.getRemoteFile().getUri();
+            if (graphDescriptor.getLocalFile() != null)
+                return graphDescriptor.getLocalFile().getAbsolutePath();
+            return "";
         }
     }
 }

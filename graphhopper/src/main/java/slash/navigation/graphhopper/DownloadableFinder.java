@@ -27,6 +27,7 @@ import slash.navigation.graphhopper.GraphManager.GraphDescriptorComparator;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -43,6 +44,24 @@ import static java.util.stream.Collectors.toSet;
 
 class DownloadableFinder {
     private static final Logger log = Logger.getLogger(DownloadableFinder.class.getName());
+    private static final Comparator<GraphDescriptor> PREFERRED_GRAPH_DESCRIPTOR_COMPARATOR = (d1, d2) -> {
+        // prefer local files over downloads
+        if(d1.getLocalFile() != null && d2.getLocalFile() == null)
+            return -1;
+        if(d1.getLocalFile() == null && d2.getLocalFile() != null)
+            return 1;
+
+        if(d1.equals(d2))
+            return 0;
+
+        // prefer descriptors with trustworthy bounding boxes
+        if(d1.hasValidBoundingBox() && !d2.hasValidBoundingBox())
+            return -1;
+        if(!d1.hasValidBoundingBox() && d2.hasValidBoundingBox())
+            return 1;
+
+        return new GraphDescriptorComparator().compare(d1, d2);
+    };
     private final GraphManager graphManager;
 
     public DownloadableFinder(GraphManager graphManager) {
@@ -75,21 +94,7 @@ class DownloadableFinder {
                 .flatMap(mapDescriptor -> getGraphDescriptorsFor(mapDescriptor).stream())
                 .collect(toSet());
         List<GraphDescriptor> result = new ArrayList<>(graphDescriptors.stream().toList());
-        result.sort((d1, d2) -> {
-            // prefer local files over downloads
-            if(d1.getLocalFile() != null && d2.getLocalFile() == null)
-                return -1;
-            if(d1.getLocalFile() == null && d2.getLocalFile() != null)
-                return 1;
-
-            if(d1.equals(d2))
-                return 0;
-            if(!d1.hasValidBoundingBox())
-                return -1;
-            if(!d2.hasValidBoundingBox())
-                return 1;
-            return d1.getBoundingBox().contains(d2.getBoundingBox()) ? -1 : 1;
-        });
+        result.sort(PREFERRED_GRAPH_DESCRIPTOR_COMPARATOR);
         log.info(format("Found %d graph descriptors: %s for %d map descriptors: %s", result.size(), result, mapDescriptors.size(), mapDescriptors));
         return result;
     }

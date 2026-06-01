@@ -128,7 +128,7 @@ public class ThemesDialog extends SimpleDialog {
             }
 
             public int compare(RemoteTheme t1, RemoteTheme t2) {
-                return (int) (getSize(t1) - getSize(t2));
+                return Long.compare(getSize(t1), getSize(t2));
             }
         });
         tableDownloadableThemes.setRowSorter(sorterResources);

@@ -183,7 +183,7 @@ public class MapsDialog extends SimpleDialog {
             }
 
             public int compare(RemoteMap m1, RemoteMap m2) {
-                return (int) (getSize(m1) - getSize(m2));
+                return Long.compare(getSize(m1), getSize(m2));
             }
         });
         tableDownloadableMaps.setRowSorter(sorterDownloadableMaps);
