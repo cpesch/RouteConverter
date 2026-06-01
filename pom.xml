@@ -581,7 +581,6 @@
         <module>coverage-report</module>
         <module>datasource</module>
         <module>download</module>
-        <module>download-gui</module>
         <module>download-tools</module>
         <module>elevation-service</module>
         <module>feedback</module>
