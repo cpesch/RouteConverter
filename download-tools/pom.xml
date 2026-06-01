@@ -105,6 +105,50 @@
                     </execution>
 
                     <execution>
+                        <id>MirrorCatalog</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>MirrorCatalog</finalName>
+                            <transformers>
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <Specification-Title>MirrorCatalog for ${project.name}</Specification-Title>
+                                        <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
+                                        <Specification-Vendor>Christian Pesch</Specification-Vendor>
+                                        <Implementation-Version>${maven.build.timestamp}</Implementation-Version>
+                                        <Main-Class>slash.navigation.download.tools.MirrorCatalog</Main-Class>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                            <filters>
+                                <filter>
+                                    <artifact>*:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.inf</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.txt</exclude>
+                                        <exclude>META-INF/DEPENDENCIES*</exclude>
+                                        <exclude>META-INF/LICENSE*</exclude>
+                                        <exclude>META-INF/NOTICE*</exclude>
+                                        <exclude>META-INF/jb/</exclude>
+                                        <exclude>META-INF/maven/</exclude>
+                                        <exclude>META-INF/services/</exclude>
+                                        <exclude>META-INF/versions/</exclude>
+                                        <exclude>mozilla/*</exclude>
+                                        <exclude>*.html</exclude>
+                                        <exclude>external.xpt</exclude>
+                                        <exclude>version.txt</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+
+                    <execution>
                         <id>UpdateCatalog</id>
                         <phase>package</phase>
                         <goals>
