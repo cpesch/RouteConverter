@@ -44,10 +44,11 @@ public class WgetCommandBuilderTest {
     public void buildsWithIncludesAndLevel() {
         DataSource ds = dataSource("brouter-profiles", "http://brouter.de/brouter/profiles2/",
                 source(null, 1, List.of("*.brf", "*.dat"), emptyList()), emptyList());
+        java.nio.file.Path mirrorRoot = Paths.get("/m");
 
-        List<String> cmd = builder.buildCommand(ds, ds.getSource(), Paths.get("/m"));
+        List<String> cmd = builder.buildCommand(ds, ds.getSource(), mirrorRoot);
 
-        assertEquals(List.of("wget", "-m", "-np", "-e", "robots=off", "--wait", "1", "-P", "/m",
+        assertEquals(List.of("wget", "-m", "-np", "-e", "robots=off", "--wait", "1", "-P", mirrorRoot.toString(),
                 "-l", "1", "--accept", "*.brf", "--accept", "*.dat",
                 "http://brouter.de/brouter/profiles2/"), cmd);
     }

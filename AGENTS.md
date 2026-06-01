@@ -29,15 +29,29 @@ Server hosts `https://api.routeconverter.com/` — **not in this repo**. This re
 - `ScanWebsite` — crawls HTML index, populates `<file>/<map>/<theme>` URIs.
 - `UpdateCatalog` — pushes metadata (checksums, bounding boxes) back to server.
 
-## 5. GPL header on every Java file
+## Repository implementation conventions
+
+### 5. GPL header on every Java file
 
 Every `.java` file under `slash.navigation.*` starts with the GPL boilerplate. Copy it verbatim from a sibling file. `@author Christian Pesch` line is convention.
 
-## 6. Plural Java getters for repeated XML elements
+### 6. Plural Java getters for repeated XML elements
 
 XML element `<include>` (singular, repeated). JAXB binding field `include` returns `List<String>`. Interface getter is `getIncludes()` (plural). Follow this idiom — see `Source.getIncludes()` vs `SourceType.getInclude()`.
 
-## 7. Agent working process
+### 7. IntelliJ GUI Designer: don't hand-edit `$$$setupUI$$$`
+
+A `*.form` file is the canonical layout source; the matching `$$$setupUI$$$` block in the Java file is regenerated from it. Hand edits to the Java block drift from the form and are overwritten on next regen. To change layout, edit the `.form` in IntelliJ. To hide a widget without touching the layout, call `setVisible(false)` at runtime.
+
+### 8. `./mvnw -pl <module>` needs `-am`
+
+Without `-am` ("also make"), sibling-module dependencies fail to resolve with cached "could not find artifact slash.navigation:X" errors. Always pass `-am` when building or testing a single module. Add `-U` to bust the negative dependency cache after dependency changes.
+
+### 9. Use real JAXB binding objects in tests, not mock interfaces
+
+When testing code that consumes `DataSource` / `Source` / `File` / `Map` / `Theme`, construct real binding objects (`new ObjectFactory().createDatasourceType()`, set fields, wrap in `new DataSourceImpl(...)`). Mocking the interfaces explodes into hand-rolled stubs covering 10+ methods (e.g. `getDownloadable`, `getFragmentBySHA1`) that the test doesn't care about. Real bindings are zero-arg and let tests focus on the field combinations under exercise — see `WgetCommandBuilderTest` for the pattern.
+
+## 10. Agent working process
 
 - Continue autonomously when the next step is reversible and strongly implied by repository context.
 - Do not stop for review unless there is a real product, compatibility, or architectural decision to make.
@@ -49,4 +63,5 @@ XML element `<include>` (singular, repeated). JAXB binding field `include` retur
   - `docs/` for issue notes, proposals, migration plans, and design records
   - conversation-only for temporary exploration
 - Prefer durable documentation in `docs/` with numbered, issue-like filenames when creating new long-lived notes.
+
 
