@@ -97,6 +97,10 @@ public abstract class HttpRequest {
         clientBuilder.setUserAgent(userAgent);
     }
 
+    public void setResponseTimeoutSeconds(int seconds) {
+        requestConfigBuilder.setResponseTimeout(seconds, SECONDS);
+    }
+
     protected void setHeader(String name, String value) {
         getMethod().setHeader(name, value);
     }
