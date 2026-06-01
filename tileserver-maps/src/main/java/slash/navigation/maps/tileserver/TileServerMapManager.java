@@ -105,13 +105,13 @@ public class TileServerMapManager {
         invokeInAwtEventQueue(() -> {
             for (MapServerType type : tileServerService.getMaps())
                 availableMapsModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
-                        type.getUrlPattern(), type.getHost(), formatBoolean(type.getActive()),
+                        type.getUrlPattern(), type.getHost(), formatBoolean(type.isActive()),
                         formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
                         type.getCopyright(), retrieveCopyrightText(type.getCopyright())));
 
             for (OverlayServerType type : tileServerService.getOverlays())
                 availableOverlaysModel.addOrUpdateItem(new TileServer(type.getId(), type.getName(),
-                        type.getUrlPattern(), type.getHost(), formatBoolean(type.getActive()),
+                        type.getUrlPattern(), type.getHost(), formatBoolean(type.isActive()),
                         formatInt(type.getMinZoom()), formatInt(type.getMaxZoom()),
                         type.getCopyright(), retrieveCopyrightText(type.getCopyright())));
         });
