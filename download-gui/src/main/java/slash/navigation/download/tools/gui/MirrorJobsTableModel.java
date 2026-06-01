@@ -30,7 +30,7 @@ import java.util.List;
  */
 public class MirrorJobsTableModel extends AbstractTableModel {
     private static final String[] COLUMN_NAMES = {
-            "ID", "Snapshot", "Files", "Maps", "Themes", "Items", "Size", "Mirror URL", "Status"
+            "ID", "Description", "Files", "Maps", "Themes", "Items", "Size", "Mirror URL", "Status"
     };
     private final List<MirrorJobRow> rows = new ArrayList<>();
 

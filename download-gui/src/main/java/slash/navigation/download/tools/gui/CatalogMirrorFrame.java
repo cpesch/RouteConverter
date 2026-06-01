@@ -28,10 +28,13 @@ import slash.navigation.download.tools.helpers.GlobToRegex;
 import slash.navigation.download.tools.helpers.WgetCommandBuilder;
 
 import javax.swing.*;
+import javax.swing.RowSorter.SortKey;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -55,6 +58,7 @@ import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
+import static javax.swing.SortOrder.ASCENDING;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
@@ -77,6 +81,7 @@ public class CatalogMirrorFrame extends JFrame {
     private JButton buttonBrowseSnapshotDirectory;
     private JTextField textFieldMirrorDirectory;
     private JButton buttonBrowseMirrorDirectory;
+    private JLabel labelJobFile;
     private JTextField textFieldJobFile;
     private JButton buttonBrowseJobFile;
     private JButton buttonReload;
@@ -113,6 +118,7 @@ public class CatalogMirrorFrame extends JFrame {
         textFieldMirrorDirectory.setText(preferences.get(PREFERENCE_MIRROR_DIRECTORY, DEFAULT_MIRROR_DIRECTORY));
         // legacy mirror-jobs-file row stays in the generated layout but is no longer used;
         // scan + mirror config now comes from each datasource <source> element in the snapshot.
+        labelJobFile.setVisible(false);
         textFieldJobFile.setVisible(false);
         buttonBrowseJobFile.setVisible(false);
         textAreaDetails.setEditable(false);
@@ -126,6 +132,7 @@ public class CatalogMirrorFrame extends JFrame {
         tableJobs.setSelectionMode(MULTIPLE_INTERVAL_SELECTION);
         tableJobs.setAutoCreateRowSorter(true);
         tableJobs.setFillsViewportHeight(true);
+        tableJobs.getRowSorter().setSortKeys(List.of(new SortKey(0, ASCENDING)));
         tableJobs.getSelectionModel().addListSelectionListener(e -> {
             if (!e.getValueIsAdjusting())
                 updateDetails();
@@ -153,9 +160,17 @@ public class CatalogMirrorFrame extends JFrame {
         };
         sizeRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
         tableJobs.getColumnModel().getColumn(6).setCellRenderer(sizeRenderer);
+
+        for (int column : new int[]{2, 3, 4}) {
+            TableColumn tableColumn = tableJobs.getColumnModel().getColumn(column);
+            tableColumn.setPreferredWidth(55);
+            tableColumn.setMaxWidth(70);
+        }
     }
 
     private void configureActions() {
+        contentPane.registerKeyboardAction(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)),
+                KeyStroke.getKeyStroke("ESCAPE"), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         buttonBrowseSnapshotDirectory.addActionListener(e -> chooseDirectory(textFieldSnapshotDirectory, "Choose snapshot directory"));
         buttonBrowseMirrorDirectory.addActionListener(e -> chooseDirectory(textFieldMirrorDirectory, "Choose mirror directory"));
         buttonReload.addActionListener(e -> reloadData());
@@ -466,9 +481,9 @@ public class CatalogMirrorFrame extends JFrame {
         panel1.add(buttonBrowseSnapshotDirectory, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER,
                 GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        label2.setText("Mirror jobs file");
-        panel1.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+        labelJobFile = new JLabel();
+        labelJobFile.setText("Mirror jobs file");
+        panel1.add(labelJobFile, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldJobFile = new JTextField();
         panel1.add(textFieldJobFile, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER,
