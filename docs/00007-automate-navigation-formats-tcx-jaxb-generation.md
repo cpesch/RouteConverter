@@ -6,7 +6,7 @@ Automate JAXB binding generation for `navigation-formats` TCX schemas
 
 ## Status
 
-Proposed on June 1, 2026.
+Implemented on June 3, 2026.
 
 ## Goal
 
@@ -44,14 +44,24 @@ This is still tractable, but it is materially larger than the LMX/FPL opportunit
 
 That makes it a better standalone follow-up note than bundling it into the simpler `navigation-formats` action.
 
-## Proposed implementation
+## Implemented changes
 
-1. add TCX JAXB generation to `navigation-formats/pom.xml`
-2. generate bindings for both TCX schema versions during `generate-sources`
-3. preserve package names `slash.navigation.tcx.binding1` and `slash.navigation.tcx.binding2`
-4. remove the committed generated Java files from both binding directories
-5. verify the TCX format classes still compile without caller-side rewrites
-6. validate parsing and serialization behavior with the current TCX tests
+1. added TCX JAXB generation to `navigation-formats/pom.xml`
+2. generate bindings for both TCX schema versions during `generate-sources` into `target/generated-sources/jaxb`
+3. preserved package names `slash.navigation.tcx.binding1` and `slash.navigation.tcx.binding2`
+4. removed the committed generated Java files from both TCX binding directories
+5. verified the existing TCX format and utility classes compile unchanged against the generated bindings
+6. added focused JAXB compatibility coverage in `navigation-formats/src/test/java/slash/navigation/tcx/TcxUtilTest.java`
+7. explicitly verified current extension handling stays compatible by round-tripping extension elements through the generated `ExtensionsT#getAny()` lists
+
+## Extension schema handling
+
+The standalone extension schemas remain under `navigation-formats/src/main/doc/tcx/`, but they are not imported by either `TrainingCenterDatabase` schema.
+
+That means the current binding model continues to represent extension payloads through the lax `xsd:any` lists in `Extensions_t`, which is exactly how the previously committed generated classes behaved. The implementation keeps that behavior unchanged and validates it with focused tests using extension elements from:
+
+- `navigation-formats/src/main/doc/tcx/ActivityExtensionv1.xsd`
+- `navigation-formats/src/main/doc/tcx/ActivityExtensionv2.xsd`
 
 ## Validation plan
 
@@ -61,7 +71,7 @@ Minimum validation:
 cd /Users/christian.pesch/IdeaProjects/RouteConverter
 source ~/.sdkman/bin/sdkman-init.sh
 sdk use java 17.0.19-tem
-./mvnw -pl navigation-formats -am -DskipTests compile
+./mvnw -pl navigation-formats -am -U -DskipTests compile
 ```
 
 Suggested focused tests:
@@ -70,7 +80,16 @@ Suggested focused tests:
 cd /Users/christian.pesch/IdeaProjects/RouteConverter
 source ~/.sdkman/bin/sdkman-init.sh
 sdk use java 17.0.19-tem
-./mvnw -pl navigation-formats -am -Dskip.integration.tests=true -Dtest=slash.navigation.tcx.TcxFormatTest test
+./mvnw -pl navigation-formats -am -U -Dskip.integration.tests=true -Dtest=slash.navigation.tcx.TcxFormatTest,slash.navigation.tcx.TcxUtilTest -Dsurefire.failIfNoSpecifiedTests=false test
+```
+
+Full non-integration module validation used during implementation:
+
+```zsh
+cd /Users/christian.pesch/IdeaProjects/RouteConverter
+source ~/.sdkman/bin/sdkman-init.sh
+sdk use java 17.0.19-tem
+./mvnw -pl navigation-formats -am -U -Dskip.integration.tests=true test
 ```
 
 ## Compatibility checks
@@ -83,7 +102,7 @@ Reviewers should confirm:
 - TCX read/write behavior remains stable for current tests and fixtures
 - extension schema handling is explicitly verified during implementation
 
-## Suggested next step after approval
+## Result
 
-Attempt this only after the lower-risk `navigation-formats` LMX/FPL automation is in place, since the TCX setup is broader and will benefit from an already-proven multi-schema generation pattern.
+`navigation-formats` now generates TCX v1 and v2 bindings directly from the checked-in XSDs during the build, the committed generated sources are gone, the existing TCX reader/writer code compiles unchanged, focused tests confirm both schema-version compatibility and current extension round-tripping behavior, and the full non-integration `navigation-formats` test suite passed after the migration.
 

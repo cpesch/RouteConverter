@@ -210,6 +210,38 @@
                             <encoding>UTF-8</encoding>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>generate-tcx1-bindings</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/main/doc/tcx/TrainingCenterDatabasev1.xsd</source>
+                            </sources>
+                            <packageName>slash.navigation.tcx.binding1</packageName>
+                            <outputDirectory>${project.build.directory}/generated-sources/jaxb</outputDirectory>
+                            <clearOutputDir>false</clearOutputDir>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-tcx2-bindings</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/main/doc/tcx/TrainingCenterDatabasev2.xsd</source>
+                            </sources>
+                            <packageName>slash.navigation.tcx.binding2</packageName>
+                            <outputDirectory>${project.build.directory}/generated-sources/jaxb</outputDirectory>
+                            <clearOutputDir>false</clearOutputDir>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
