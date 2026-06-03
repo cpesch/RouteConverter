@@ -25,7 +25,7 @@
     <repositories>
         <repository>
             <id>routeconverter-thirdparty</id>
-            <url>https://subversion.routeconverter.com/public/RouteThirdParty</url>
+            <url>https://mvn.routeconverter.com/</url>
         </repository>
         <repository>
             <id>jitpack.io</id>
@@ -36,7 +36,7 @@
     <pluginRepositories>
         <pluginRepository>
             <id>routeconverter-thirdparty</id>
-            <url>https://subversion.routeconverter.com/public/RouteThirdParty</url>
+            <url>https://mvn.routeconverter.com/</url>
         </pluginRepository>
     </pluginRepositories>
 
