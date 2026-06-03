@@ -32,14 +32,7 @@
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>routeconverter-thirdparty</id>
-            <url>https://mvn.routeconverter.com/</url>
-        </pluginRepository>
-    </pluginRepositories>
-
+    
     <distributionManagement>
         <repository>
             <id>routeconverter-release</id>
