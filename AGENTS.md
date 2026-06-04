@@ -51,7 +51,17 @@ Without `-am` ("also make"), sibling-module dependencies fail to resolve with ca
 
 When testing code that consumes `DataSource` / `Source` / `File` / `Map` / `Theme`, construct real binding objects (`new ObjectFactory().createDatasourceType()`, set fields, wrap in `new DataSourceImpl(...)`). Mocking the interfaces explodes into hand-rolled stubs covering 10+ methods (e.g. `getDownloadable`, `getFragmentBySHA1`) that the test doesn't care about. Real bindings are zero-arg and let tests focus on the field combinations under exercise — see `WgetCommandBuilderTest` for the pattern.
 
-## 10. Agent working process
+### 10. Be explicit about integration-test naming and scope
+
+The repository currently distinguishes between small deterministic tests and integration-style tests, but naming must stay aligned with the Maven configuration.
+
+- If a test is intended to run as part of the normal integration-test flow, its filename must match the configured Failsafe convention.
+- When changing the convention, prefer updating Maven includes deliberately rather than silently introducing a second naming scheme.
+- Hermetic integration tests (temporary files, sample data, multi-module interactions without live services) are good candidates for normal coverage runs.
+- External live-service tests (real HTTP services, externally hosted files, credentials, mutable remote state) must stay opt-in and must not be assumed to run in normal coverage builds.
+- When adding or reviewing `*IT`-style tests, classify them explicitly as hermetic or external so coverage expectations stay clear.
+
+## 11. Agent working process
 
 - Continue autonomously when the next step is reversible and strongly implied by repository context.
 - Do not stop for review unless there is a real product, compatibility, or architectural decision to make.

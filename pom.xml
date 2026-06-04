@@ -299,6 +299,7 @@
                     <!-- When using '@Category( MyUnitTest.class)': MyUnitTest</groups>-->
                     <skipTests>${skip.unit.tests}</skipTests>
                     <excludes>
+                        <exclude>**/*IT.java</exclude>
                         <exclude>**/*IntegrationTest.java</exclude>
                     </excludes>
                     <!-- optional: works also when skipped -->
@@ -320,6 +321,7 @@
                         <configuration>
                             <skipTests>${skip.integration.tests}</skipTests>
                             <includes>
+                                <include>**/*IT.java</include>
                                 <include>**/*IntegrationTest.java</include>
                             </includes>
                             <!-- When using '@Categrory('MyIntegrationtest'): <groups>MyIntegrationTest</groups>-->
