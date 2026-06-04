@@ -30,7 +30,7 @@ import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.removeExtension;
 import static slash.common.io.Transfer.decodeUri;
 
-public class TempFileIT {
+public class TempFileTest {
     private static final String DEFAULT_PREFIX = "route";
     private static final String DEFAULT_SUFFIX = ".file";
     private static final String A_PREFIX = "nice route";
@@ -99,3 +99,4 @@ public class TempFileIT {
         assertTrue(file.getName().length() > A_PREFIX.length() + A_SUFFIX.length());
     }
 }
+

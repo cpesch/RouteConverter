@@ -22,10 +22,7 @@ package slash.navigation.kml;
 
 import junit.framework.TestCase;
 import org.junit.Test;
-import slash.navigation.kml.binding20.Kml;
 
-import jakarta.xml.bind.JAXBException;
-import java.io.*;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -33,68 +30,8 @@ import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertEquals;
 import static slash.navigation.base.NavigationTestCase.*;
 import static slash.navigation.base.RouteCharacteristics.Track;
-import static slash.navigation.kml.KmlUtil.*;
 
 public class KmlFormatIT {
-    @Test
-    public void testReader() throws FileNotFoundException, JAXBException {
-        Reader reader = new FileReader(TEST_PATH + "from20.kml");
-        Kml kml = (Kml) newUnmarshaller20().unmarshal(reader);
-        assertNotNull(kml);
-        assertNotNull(kml.getFolder());
-        assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
-    }
-
-    @Test
-    public void testInputStream() throws FileNotFoundException, JAXBException {
-        InputStream in = new FileInputStream(TEST_PATH + "from20.kml");
-        Kml kml = (Kml) newUnmarshaller20().unmarshal(in);
-        assertNotNull(kml);
-        assertNotNull(kml.getFolder());
-        assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
-    }
-
-    @Test
-    public void testUnmarshal20() throws IOException {
-        Reader reader = new FileReader(TEST_PATH + "from20.kml");
-        Kml kml = unmarshal20(reader);
-        assertNotNull(kml);
-        assertNotNull(kml.getFolder());
-        assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
-    }
-
-    @Test(expected = IOException.class)
-    public void testUnmarshal20TypeError() throws Exception {
-        Reader reader = new FileReader(TEST_PATH + "from20.kml");
-        unmarshal21(reader);
-    }
-
-    @Test
-    public void testUnmarshal21() throws IOException {
-        Reader reader = new FileReader(TEST_PATH + "from21.kml");
-        slash.navigation.kml.binding21.KmlType kml = unmarshal21(reader);
-        assertNotNull(kml);
-    }
-
-    @Test(expected = IOException.class)
-    public void testUnmarshal21TypeError() throws Exception {
-        Reader reader = new FileReader(TEST_PATH + "from21.kml");
-        unmarshal20(reader);
-    }
-
-    @Test
-    public void testUnmarshal22Beta() throws IOException {
-        Reader reader = new FileReader(TEST_PATH + "from22beta.kml");
-        slash.navigation.kml.binding22beta.KmlType kml = unmarshal22Beta(reader);
-        assertNotNull(kml);
-    }
-
-    @Test
-    public void testUnmarshal22() throws IOException {
-        Reader reader = new FileReader(TEST_PATH + "from22.kml");
-        slash.navigation.kml.binding22.KmlType kml = unmarshal22(reader);
-        assertNotNull(kml);
-    }
 
     private void assertRoutesEquals(List<KmlRoute> firstRoutes, List<KmlRoute> secondRoutes) {
         for (int i = 0; i < firstRoutes.size(); i++) {

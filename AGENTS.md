@@ -59,6 +59,7 @@ The repository currently distinguishes between small deterministic tests and int
 - When changing the convention, prefer updating Maven includes deliberately rather than silently introducing a second naming scheme.
 - Hermetic integration tests (temporary files, sample data, multi-module interactions without live services) are good candidates for normal coverage runs.
 - External live-service tests (real HTTP services, externally hosted files, credentials, mutable remote state) must stay opt-in and must not be assumed to run in normal coverage builds.
+- For routine coverage-related integration runs, prefer the hermetic Maven profiles over the broader live-service-capable ones.
 - When adding or reviewing `*IT`-style tests, classify them explicitly as hermetic or external so coverage expectations stay clear.
 
 ## 11. Agent working process

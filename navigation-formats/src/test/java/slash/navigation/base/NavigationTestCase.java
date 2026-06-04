@@ -79,12 +79,62 @@ import static slash.navigation.base.BaseNavigationFormat.GENERATED_BY;
 import static slash.navigation.base.RouteCharacteristics.*;
 
 public abstract class NavigationTestCase extends TestCase {
-    public static final String ROUTE_PATH = System.getProperty("samples", "navigation-formats-samples" + separator + "src") + separator;
+    public static final String ROUTE_PATH = resolveRoutePath();
     public static final String TEST_PATH = ROUTE_PATH + "test" + separator;
     public static final String SAMPLE_PATH = ROUTE_PATH + "samples" + separator;
 
     static {
         JAXBHelper.setCacheContexts(true);
+    }
+
+    private static String resolveRoutePath() {
+        String configuredSamples = System.getProperty("samples");
+        if (configuredSamples != null && !configuredSamples.trim().isEmpty())
+            return appendSeparator(configuredSamples);
+
+        String[] sampleDirectories = {
+                "navigation-formats-samples",
+                ".." + separator + "navigation-formats-samples"
+        };
+
+        for (String sampleDirectory : sampleDirectories) {
+            String routePath = findRoutePath(new File(sampleDirectory));
+            if (routePath != null)
+                return routePath;
+        }
+
+        return appendSeparator("navigation-formats-samples" + separator + "src");
+    }
+
+    private static String findRoutePath(File directory) {
+        if (hasTestAndSampleDirectories(directory))
+            return appendSeparator(directory.getPath());
+
+        File[] children = directory.listFiles();
+        if (children == null)
+            return null;
+
+        File fallback = null;
+        for (File child : children) {
+            if (hasTestAndSampleDirectories(child)) {
+                if ("src".equals(child.getName()))
+                    return appendSeparator(child.getPath());
+                if (fallback == null)
+                    fallback = child;
+            }
+        }
+
+        return fallback != null ? appendSeparator(fallback.getPath()) : null;
+    }
+
+    private static boolean hasTestAndSampleDirectories(File directory) {
+        return directory.isDirectory() &&
+                new File(directory, "test").isDirectory() &&
+                new File(directory, "samples").isDirectory();
+    }
+
+    private static String appendSeparator(String path) {
+        return path.endsWith(separator) ? path : path + separator;
     }
 
     public static void assertDescriptionEquals(List<String> expected, List<String> was) {
