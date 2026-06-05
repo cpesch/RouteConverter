@@ -85,7 +85,7 @@ import static slash.navigation.base.BaseNavigationFormat.GENERATED_BY;
 import static slash.navigation.base.RouteCharacteristics.*;
 
 public abstract class NavigationTestCase extends TestCase {
-    private static final Pattern LOCAL_ROUTE_SAMPLE_REFERENCE = Pattern.compile("file:///CWD/\\.\\./RouteSamples/trunk/(test|samples)/([^\\r\\n\"<]+)");
+    private static final Pattern LOCAL_ROUTE_SAMPLE_REFERENCE = Pattern.compile("file:///CWD/\\.\\./rc-samples/trunk/(test|samples)/([^\\r\\n\"<]+)");
 
     public static final String ROUTE_PATH = resolveRoutePath();
     public static final String TEST_PATH = ROUTE_PATH + "test" + separator;
@@ -125,7 +125,8 @@ public abstract class NavigationTestCase extends TestCase {
         File fallback = null;
         for (File child : children) {
             if (hasTestAndSampleDirectories(child)) {
-                if ("src".equals(child.getName()))
+                // prefer "src-rc*" directories (private full sample set) over "src" (public subset)
+                if (child.getName().startsWith("src-rc"))
                     return appendSeparator(child.getPath());
                 if (fallback == null)
                     fallback = child;

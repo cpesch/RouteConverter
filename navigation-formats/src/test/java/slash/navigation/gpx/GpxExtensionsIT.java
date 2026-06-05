@@ -36,7 +36,7 @@ import static slash.common.io.InputOutput.readFileToString;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.readGpxFile;
 
-public class GpxExtensionsTest {
+public class GpxExtensionsIT {
 
     private GpxRoute readRoute(String fileName) throws Exception {
         List<GpxRoute> routes = readGpxFile(new Gpx11Format(), fileName);

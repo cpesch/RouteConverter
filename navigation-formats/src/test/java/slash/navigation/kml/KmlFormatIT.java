@@ -47,7 +47,7 @@ public class KmlFormatIT {
         Files.copy(directSource, directTarget, StandardCopyOption.REPLACE_EXISTING);
         directTarget.toFile().deleteOnExit();
 
-        String href = "file:///CWD/../RouteSamples/trunk/test/" + directFileName;
+        String href = "file:///CWD/../rc-samples/trunk/test/" + directFileName;
         String networkLink = Files.readString(Path.of(TEST_PATH, networkLinkFileName), StandardCharsets.UTF_8)
                 .replace(href, directTarget.toUri().toString());
         Path networkLinkTarget = temporaryDirectory.resolve(networkLinkFileName);

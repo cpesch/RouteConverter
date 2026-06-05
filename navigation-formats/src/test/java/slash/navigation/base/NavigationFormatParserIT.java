@@ -21,6 +21,8 @@
 package slash.navigation.base;
 
 import org.junit.Test;
+import slash.navigation.itn.TomTom5RouteFormat;
+import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.url.GoogleMapsUrlFormat;
 
@@ -223,5 +225,48 @@ public class NavigationFormatParserIT {
         assertEquals(NmnUrlFormat.class, result.getFormat().getClass());
         ParserResult plainResult = read(TEST_PATH + "from-nmn-plain.txt");
         assertEquals(NmnUrlFormat.class, plainResult.getFormat().getClass());
+    }
+
+    @Test
+    public void testNavigationFileParserListener() throws IOException {
+        final NavigationFormat[] found = new NavigationFormat[1];
+        found[0] = null;
+        NavigationFormatParserListener listener = new NavigationFormatParserListener() {
+            public void reading(NavigationFormat<BaseRoute> format) {
+                found[0] = format;
+            }
+        };
+        try {
+            parser.addNavigationFileParserListener(listener);
+            read(TEST_PATH + "from.itn");
+            assertEquals(TomTom5RouteFormat.class, found[0].getClass());
+            found[0] = null;
+            parser.removeNavigationFileParserListener(listener);
+            read(TEST_PATH + "from.itn");
+            assertNull(found[0]);
+        } finally {
+            parser.removeNavigationFileParserListener(listener);
+        }
+    }
+
+    @Test
+    public void testReadWithFormatList() throws IOException {
+        List<NavigationFormat> formats = new ArrayList<>();
+        ParserResult result1 = parser.read(new File(TEST_PATH + "from.itn"), formats);
+        assertFalse(result1.isSuccessful());
+
+        formats.add(new TomTom5RouteFormat());
+        ParserResult result2 = parser.read(new File(TEST_PATH + "from.itn"), formats);
+        assertTrue(result2.isSuccessful());
+        assertEquals(46, result2.getTheRoute().getPositions().size());
+        assertEquals(1, result2.getAllRoutes().size());
+        assertEquals(result2.getFormat().getClass(), TomTom5RouteFormat.class);
+
+        formats.add(new TomTom8RouteFormat());
+        ParserResult result3 = parser.read(new File(TEST_PATH + "from.itn"), formats);
+        assertTrue(result3.isSuccessful());
+        assertEquals(46, result3.getTheRoute().getPositions().size());
+        assertEquals(1, result3.getAllRoutes().size());
+        assertEquals(result3.getFormat().getClass(), TomTom5RouteFormat.class);
     }
 }

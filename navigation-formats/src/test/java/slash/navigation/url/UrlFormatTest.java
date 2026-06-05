@@ -51,7 +51,7 @@ public class UrlFormatTest {
             "http://www.routeconverter.de/catalog/files/63/ don't care\n" +
             "http://some.other.url/ don't care\n";
 
-    private static final String FILE = "file:///CWD/../RouteSamples/trunk/test/from11.gpx";
+    private static final String FILE = "file:///CWD/../rc-samples/trunk/test/from11.gpx";
 
     private final UrlFormat format = new UrlFormat();
     private final NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());

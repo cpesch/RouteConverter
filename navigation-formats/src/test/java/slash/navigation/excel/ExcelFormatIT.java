@@ -30,7 +30,7 @@ import static junit.framework.TestCase.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.calendar;
 
-public class ExcelFormatTest {
+public class ExcelFormatIT {
     private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
     // ae oe ue sz AE OE UE
     private static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
