@@ -20,16 +20,72 @@
 package slash.navigation.excel;
 
 import org.junit.Test;
-import slash.common.type.CompactCalendar;
+import slash.navigation.base.*;
+
+import java.io.File;
+import java.io.IOException;
 
 import static junit.framework.TestCase.assertEquals;
-import static slash.common.TestCase.calendar;
+import static junit.framework.TestCase.assertNotNull;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
+import static slash.navigation.base.NavigationTestCase.calendar;
 
 public class ExcelFormatTest {
+    private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+    // ae oe ue sz AE OE UE
+    private static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
+
+    private void checkAllRoutes(ParserResult result) {
+        assertEquals(3, result.getAllRoutes().size());
+        assertEquals("Data", result.getAllRoutes().get(0).getName());
+        assertEquals("Englisch", result.getAllRoutes().get(1).getName());
+        assertEquals("Deutsch", result.getAllRoutes().get(2).getName());
+    }
+
+    private void checkRoute(BaseRoute route) {
+        assertEquals(3, route.getPositionCount());
+        BaseNavigationPosition first = route.getPosition(0);
+        assertEquals(8.485303333333333, first.getLongitude());
+        assertEquals(50.241125, first.getLatitude());
+        assertEquals(654.6, first.getElevation());
+        assertEquals(6.1, first.getSpeed());
+        assertEquals(calendar(2017, 12, 14, 18, 38, 12), first.getTime());
+        assertEquals("Positionsname", first.getDescription());
+        BaseNavigationPosition second = route.getPosition(1);
+        assertEquals(88.4853034, second.getLongitude());
+        assertEquals(-50.2411251, second.getLatitude());
+        assertEquals(654.7, second.getElevation());
+        assertEquals(0.1, second.getSpeed());
+        assertEquals(calendar(2017, 12, 14, 18, 39, 42), second.getTime());
+        assertEquals(UMLAUTS, second.getDescription());
+        BaseNavigationPosition third = route.getPosition(2);
+        assertEquals(8.4853035, third.getLongitude());
+        assertEquals(50.2411252, third.getLatitude());
+        assertEquals(654.8, third.getElevation());
+        assertEquals(-2.345, third.getSpeed());
+        assertEquals(calendar(2017, 12, 14, 18, 40, 59), third.getTime());
+        assertEquals("#\"\u00A7$%&/", third.getDescription());
+    }
+
     @Test
-    public void testSetAndGetTime() {
-        CompactCalendar time = calendar(2018, 1, 21, 19, 35, 44, 33);
-        ExcelPosition position = new ExcelPosition(1.0, 2.0, 3.0, 4.0, time, "five");
-        assertEquals(time, position.getTime());
+    public void testReadXls() throws IOException {
+        File source = new File(TEST_PATH + "from.xls");
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        assertEquals(MicrosoftExcel97Format.class, result.getFormat().getClass());
+        checkAllRoutes(result);
+        for (BaseRoute route : result.getAllRoutes())
+            checkRoute(route);
+    }
+
+    @Test
+    public void testReadXlsx() throws IOException {
+        File source = new File(TEST_PATH + "from.xlsx");
+        ParserResult result = parser.read(source);
+        assertNotNull(result);
+        assertEquals(MicrosoftExcel2008Format.class, result.getFormat().getClass());
+        checkAllRoutes(result);
+        for (BaseRoute route : result.getAllRoutes())
+            checkRoute(route);
     }
 }

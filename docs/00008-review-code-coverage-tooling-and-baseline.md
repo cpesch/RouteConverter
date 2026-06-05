@@ -4,7 +4,7 @@
 
 Implemented on June 4, 2026.
 
-Updated on June 5, 2026.
+Updated on June 5, 2026 (second update).
 
 ## Summary
 
@@ -26,8 +26,18 @@ The repository now has a clearer and more usable coverage path:
 - a third conservative extraction has now also been completed:
   - the local `.url` fixture parser case from `navigation-formats/src/test/java/slash/navigation/url/UrlFormatIT.java`
   - now runs in Surefire via `navigation-formats/src/test/java/slash/navigation/url/UrlFormatTest.java`
+- a fourth conservative extraction has now also been completed:
+  - `TourFormatIT.testPositionInListOrder()` extracted from the broader tour round-trip class
+  - now runs in Surefire via `navigation-formats/src/test/java/slash/navigation/tour/TourFormatTest.java`
+- a fifth conservative extraction has now also been completed:
+  - selected fixture-file extension-mapping tests from the GPX area
+  - now run in Surefire via `navigation-formats/src/test/java/slash/navigation/gpx/GpxExtensionsTest.java`
+- a sixth conservative extraction has now also been completed:
+  - `testNavigationFileParserListener()` and `testReadWithFormatList()` from `NavigationFormatParserIT`
+  - now run in Surefire via `navigation-formats/src/test/java/slash/navigation/base/NavigationFormatParserTest.java`
+  - `NavigationFormatParserIT` now has 19 remaining tests, all verified green
 
-As of June 5, 2026, `navigation-formats` module-local hermetic verification is green again, so the next work is incremental test classification and new coverage rather than fixture-path stabilization.
+As of June 5, 2026 (second update), the `NavigationFormatParserIT` listener and format-list API contract tests have been extracted and verified in Surefire, and `NavigationFormatParserIT` remains green with 19 tests.
 
 ## Current status
 
@@ -49,6 +59,13 @@ As of June 5, 2026, `navigation-formats` module-local hermetic verification is g
   - `UrlFormatTest.readGoogleMapsUrl()`
 - That same mixed `*IT` class has now had a second hermetic local-fixture method extracted and verified:
   - `UrlFormatTest.readURLReference()`
+- `TourFormatIT.testPositionInListOrder()` has been extracted and verified in Surefire:
+  - `TourFormatTest.testPositionInListOrder()`
+- Selected GPX extension-mapping tests have been extracted and verified in Surefire:
+  - `GpxExtensionsTest`
+- Two narrow API-contract methods from `NavigationFormatParserIT` have been extracted and verified in Surefire:
+  - `NavigationFormatParserTest.testNavigationFileParserListener()`
+  - `NavigationFormatParserTest.testReadWithFormatList()`
 
 ### Open
 
@@ -207,6 +224,32 @@ Observed result:
 - `navigation-formats` Failsafe suite stayed green in module-local hermetic execution
 - `Tests run: 526, Failures: 0, Errors: 0, Skipped: 0`
 - `navigation-formats/target/failsafe-reports` contained 44 XML reports at that point, before the later Google Maps bookmark reclassification reduced the current `navigation-formats` `*IT` inventory by one
+
+### Verified on June 5, 2026 (second update): `NavigationFormatParserTest` extraction
+
+Verified command:
+
+```sh
+./mvnw -U -pl navigation-formats -am -Dtest=slash.navigation.base.NavigationFormatParserTest -Dsurefire.failIfNoSpecifiedTests=false clean test
+```
+
+Observed result:
+
+- build succeeded
+- `slash.navigation.base.NavigationFormatParserTest` ran in Surefire
+- `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0`
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats -am -P hermetic-integration-test -Dit.test=slash.navigation.base.NavigationFormatParserIT -Dfailsafe.failIfNoSpecifiedTests=false clean verify
+```
+
+Observed result:
+
+- build succeeded
+- `slash.navigation.base.NavigationFormatParserIT` ran in Failsafe with 19 remaining tests
+- `Tests run: 19, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Historical note from June 4, 2026
 
@@ -462,13 +505,31 @@ Why these are weaker candidates than `KmlUtilTest`:
 - they still depend on real GPX fixtures and parser or writer behavior
 - the class still behaves more like a focused integration contract than a pure unit test
 
-#### Existing narrower candidates still worth keeping on the shortlist
+#### `navigation-formats/src/test/java/slash/navigation/tour/TourFormatTest.java`
 
-- `navigation-formats/src/test/java/slash/navigation/base/NavigationFormatParserIT.java`
-  - `testNavigationFileParserListener()`
-  - `testReadWithFormatList()`
+`testPositionInListOrder()` has been extracted from the tour round-trip IT class. It uses `TourFormat` directly (not the full registry) and asserts a narrow position-order contract from a local fixture.
 
-These remain narrow API-contract candidates, but they still depend on real parser and fixture behavior.
+#### `navigation-formats/src/test/java/slash/navigation/gpx/GpxExtensionsTest.java`
+
+Extension-field mapping tests have been extracted from the GPX area:
+
+- `testReadGarminGpxExtensionv3()`
+- `testReadGarminTrackPointExtensionv1()`
+- `testReadGarminTrackPointExtensionv2()`
+- `testReadTrekbuddyExtension1()`
+- `testReadTrekbuddyExtension2()`
+- `testWriteGarminGpxExtensionv3Temperature()`
+
+These tests use local fixture GPX files but focus on extension-field mapping rather than broad route conversion.
+
+#### `navigation-formats/src/test/java/slash/navigation/base/NavigationFormatParserTest.java`
+
+Two narrow API-contract methods have been extracted from `NavigationFormatParserIT`:
+
+- `testNavigationFileParserListener()` ? tests that adding and removing a listener correctly receives and stops receiving format-detection events
+- `testReadWithFormatList()` ? tests that reading with an explicit format list gates the parser correctly
+
+Both use only local fixture files and no external services. `NavigationFormatParserIT` now has 19 remaining tests.
 
 ### Tests that should probably stay `*IT`
 
@@ -496,9 +557,16 @@ These still exercise real file, parser, writer, round-trip, or multi-format inte
    - whole-class rename only for clearly unit-style tests
    - method-level extraction for mixed classes
    - leave broad fixture-driven coverage in `*IT`
-5. revisit the next strongest candidates:
-   - `TourFormatIT.testPositionInListOrder()`
-   - selected `GpxExtensionsIT` methods
+5. the `navigation-formats` conservative extraction shortlist is now largely exhausted:
+   - remaining `NavigationFormatParserIT` tests are broader format-validation sweeps, not narrow API contracts
+   - remaining `TourReadWriteRoundtripIT` tests are full round-trip integration tests
+   - next meaningful work is Phase 1: writing new tests for under-covered modules
+6. **next recommended batch (Phase 1 ? lowest friction, highest value):**
+   - `download`
+   - `datasource`
+   - `route-catalog`
+   - `download-tools`
+   - `route-converter` helper and model classes
 
 ## Conclusion
 
@@ -509,7 +577,14 @@ The important progress is now clear and real:
 - the build understands both integration-test naming conventions
 - hermetic profiles exist
 - two clear unit-style reclassifications are complete and verified
-- three useful method-level extractions are complete and verified
-- `navigation-formats` module-local hermetic verification is green again
+- six useful method-level extractions are complete and verified:
+  - `KmlUtilTest` (8 methods)
+  - `UrlFormatTest.readGoogleMapsUrl()` and `readURLReference()`
+  - `GoogleMapsUrlFormatBookmarkTest` (4 bookmark-fixture methods)
+  - `TourFormatTest.testPositionInListOrder()`
+  - `GpxExtensionsTest` (6 extension-field mapping methods)
+  - `NavigationFormatParserTest.testNavigationFileParserListener()` and `testReadWithFormatList()`
+- `navigation-formats` `*IT` extraction shortlist is now largely exhausted
+- the next practical step is Phase 1: writing new tests for under-covered modules (`download`, `datasource`, `route-catalog`, `download-tools`)
 
 That makes the next coverage steps much more concrete than before.

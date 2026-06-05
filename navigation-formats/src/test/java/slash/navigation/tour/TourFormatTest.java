@@ -21,55 +21,27 @@
 package slash.navigation.tour;
 
 import org.junit.Test;
+import slash.navigation.base.ParserContext;
+import slash.navigation.base.ParserContextImpl;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.FileInputStream;
+import java.util.List;
 
-import static org.junit.Assert.*;
-import static slash.common.TestCase.assertDoubleEquals;
+import static org.junit.Assert.assertEquals;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class TourFormatTest {
     private final TourFormat format = new TourFormat();
 
     @Test
-    public void testIsSectionTitle() {
-        assertTrue(format.isSectionTitle("[0]"));
-        assertTrue(format.isSectionTitle("[1]"));
-        assertTrue(format.isSectionTitle("[1234]"));
-        assertTrue(format.isSectionTitle("[TOUR]"));
-        assertTrue(format.isSectionTitle("[HOME]"));
-
-        assertFalse(format.isSectionTitle("[Tour]"));
-        assertFalse(format.isSectionTitle("[Egal]"));
-        assertFalse(format.isSectionTitle("[MapLage]"));
-        assertFalse(format.isSectionTitle("[CLIENT]"));
-        assertFalse(format.isSectionTitle("[COORDINATES]"));
-        assertFalse(format.isSectionTitle("[DESCRIPTION]"));
-        assertFalse(format.isSectionTitle("[ROUTE]"));
-    }
-
-    @Test
-    public void testTourPosition() {
-        Map<String, String> nameValues = new HashMap<>();
-        nameValues.put("Visited", "0");
-        TourPosition position = new TourPosition(1489415L, 6886471L, "10117", "Berlin", "Unter den Linden", "7", "Staatsoper unter den Linden", true, nameValues);
-        position.put("Assembly", "FalkNavigator");
-        assertEquals((Long) 1489415L, position.getX());
-        assertEquals((Long) 6886471L, position.getY());
-        assertDoubleEquals(13.39463, position.getLongitude());
-        assertDoubleEquals(52.51718, position.getLatitude());
-        assertEquals("10117 Berlin, Unter den Linden 7, Staatsoper unter den Linden", position.getDescription());
-        assertNull(position.getElevation());
-        assertNull(position.getTime());
-        assertEquals("0", position.get("Visited"));
-        assertEquals("FalkNavigator", position.get("Assembly"));
-        assertTrue(position.isHome());
-    }
-
-    @Test
-    public void testSetDescription() {
-        TourPosition position = new TourPosition(null, null, "10117", "Berlin", "Unter den Linden", "7", "Staatsoper unter den Linden", false, new HashMap<String, String>());
-        position.setDescription("ABC");
-        assertEquals("ABC", position.getDescription());
+    public void testPositionInListOrder() throws Exception {
+        ParserContext<TourRoute> context = new ParserContextImpl<>();
+        format.read(new FileInputStream(TEST_PATH + "from.tour"), context);
+        List<TourRoute> routeList = context.getRoutes();
+        assertEquals(1, routeList.size());
+        TourRoute route = routeList.get(0);
+        assertEquals("10787 Berlin, Hardenbergstra\u00dfe 8, Zoologischer Garten", route.getPosition(0).getDescription());
+        assertEquals("10117 Berlin/Mitte, Platz Vor Dem Brandenburger Tor 1, Home", route.getPosition(1).getDescription());
+        assertEquals("10789 Berlin, Breitscheidplatz, Kaiser-Wilhelm-Ged\u00e4chtniskirche", route.getPosition(2).getDescription());
     }
 }

@@ -27,8 +27,8 @@ import java.io.IOException;
 
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.ReadWriteBase.readWriteRoundtrip;
-import static slash.navigation.itn.TomTomRouteFormatIT.checkPlaceNamesWithUmlauts;
-import static slash.navigation.itn.TomTomRouteFormatIT.checkUmlauts;
+import static slash.navigation.itn.TomTomRouteFormatTest.checkPlaceNamesWithUmlauts;
+import static slash.navigation.itn.TomTomRouteFormatTest.checkUmlauts;
 
 public class TomTomRouteReadWriteRoundtripIT {
     @Test

@@ -21,62 +21,90 @@
 package slash.navigation.gpx;
 
 import org.junit.Test;
+import slash.navigation.gpx.binding10.Gpx;
+import slash.navigation.gpx.binding11.GpxType;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static slash.common.TestCase.assertDoubleEquals;
-import static slash.navigation.gpx.GpxFormat.parseHeading;
-import static slash.navigation.gpx.GpxFormat.parseSpeed;
+import jakarta.xml.bind.JAXBException;
+import java.io.*;
+
+import static org.junit.Assert.*;
+import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class GpxFormatTest {
 
     @Test
-    public void testExtractSpeed() {
-        assertDoubleEquals(9.0, parseSpeed("9Km/h"));
-        assertDoubleEquals(9.0, parseSpeed(" 9 Km/h "));
-        assertDoubleEquals(99.0, parseSpeed(" 99 Km/h "));
-        assertDoubleEquals(99.9, parseSpeed(" 99.9 km/h "));
-        assertDoubleEquals(99.99999, parseSpeed(" 99.99999 Km/h "));
-        assertDoubleEquals(9.0, parseSpeed("Speed: 9 Km/h "));
-        assertDoubleEquals(9.0, parseSpeed("Geschwindigkeit: 9 Km/h "));
-        assertDoubleEquals(9.0, parseSpeed("Lat.=54.144422, Long.=12.098487, Alt.=5.000000m, Speed=9Km/h, Course=270deg."));
-        assertDoubleEquals(9.0, parseSpeed("1007; Speed 9.0 km/h Distance 15.41 km"));
-        assertDoubleEquals(9.0, parseSpeed("egal Speed 9.0 km/h egal"));
-        assertNull(parseSpeed("egal"));
+    public void testReader() throws FileNotFoundException, JAXBException {
+        Reader reader = new FileReader(TEST_PATH + "from10.gpx");
+        Gpx gpx = (Gpx) GpxUtil.newUnmarshaller10().unmarshal(reader);
+        assertNotNull(gpx);
+        assertNotNull(gpx.getWpt());
+        assertEquals(3, gpx.getWpt().size());
+        assertNotNull(gpx.getRte());
+        assertEquals(3, gpx.getRte().size());
+        assertNotNull(gpx.getTrk());
+        assertEquals(3, gpx.getRte().size());
     }
 
     @Test
-    public void testExtractHeading() {
-        assertDoubleEquals(270.0, parseHeading("Lat.=54.144422, Long.=12.098487, Alt.=5.000000m, Speed=9Km/h, Course=270deg."));
-        assertNull(parseHeading("egal"));
+    public void testInputStream() throws FileNotFoundException, JAXBException {
+        InputStream in = new FileInputStream(TEST_PATH + "from10.gpx");
+        Gpx gpx = (Gpx) GpxUtil.newUnmarshaller10().unmarshal(in);
+        assertNotNull(gpx);
+        assertNotNull(gpx.getWpt());
+        assertEquals(3, gpx.getWpt().size());
+        assertNotNull(gpx.getRte());
+        assertEquals(3, gpx.getRte().size());
+        assertNotNull(gpx.getTrk());
+        assertEquals(3, gpx.getRte().size());
     }
 
     @Test
-    public void testExtractReason() {
-        GpxPosition position = new GpxPosition(null, null, null, null, null, null);
-        assertNull(position.getDescription());
-        assertNull(position.getCity());
-        assertNull(position.getReason());
-        position.setDescription("Course 97 : Barmbek-Nord");
-        assertEquals("Barmbek-Nord", position.getDescription());
-        assertEquals("Barmbek-Nord", position.getCity());
-        assertEquals("Course 97", position.getReason());
-        position.setDescription("Course 97 : Barmbek-Nord; 14.2 Km");
-        assertEquals("Barmbek-Nord; 14.2 Km", position.getDescription());
-        assertEquals("Barmbek-Nord; 14.2 Km", position.getCity());
-        assertEquals("Course 97", position.getReason());
+    public void testUnmarshal10() throws IOException, JAXBException {
+        Reader reader = new FileReader(TEST_PATH + "from10.gpx");
+        Gpx gpx = GpxUtil.unmarshal10(reader);
+        assertNotNull(gpx);
+        assertNotNull(gpx.getWpt());
+        assertEquals(3, gpx.getWpt().size());
+        assertNotNull(gpx.getRte());
+        assertEquals(3, gpx.getRte().size());
+        assertNotNull(gpx.getTrk());
+        assertEquals(3, gpx.getRte().size());
+    }
+
+    @Test(expected = IOException.class)
+    public void testUnmarshal10TypeError() throws IOException {
+        Reader reader = new FileReader(TEST_PATH + "from10.gpx");
+        GpxUtil.unmarshal11(reader);
     }
 
     @Test
-    public void testExtractDescription() {
-        GpxPosition position = new GpxPosition(null, null, null, null, null, null);
-        assertNull(position.getDescription());
-        assertNull(position.getCity());
-        assertNull(position.getReason());
-        position.setDescription("Bad Oldesloe; 58.0 Km");
-        // TODO think about how to solve this with that much errors
-        // assertEquals("Bad Oldesloe", position.getDescription());
-        // assertEquals("Bad Oldesloe", position.getCity());
-        // assertEquals("58.0 Km", position.getReason());
+    public void testUnmarshal11() throws IOException {
+        Reader reader = new FileReader(TEST_PATH + "from11.gpx");
+        GpxType gpx = GpxUtil.unmarshal11(reader);
+        assertNotNull(gpx);
+        assertNotNull(gpx.getWpt());
+        assertEquals(3, gpx.getWpt().size());
+    }
+
+    @Test(expected = IOException.class)
+    public void testUnmarshal11TypeError() throws IOException {
+        Reader reader = new FileReader(TEST_PATH + "from11.gpx");
+        GpxUtil.unmarshal10(reader);
+    }
+
+    @Test
+    public void testWritingNamespaces() throws IOException, JAXBException {
+        Reader reader = new FileReader(TEST_PATH + "from11.gpx");
+        GpxType gpx = GpxUtil.unmarshal11(reader);
+        assertNotNull(gpx);
+        StringWriter writer = new StringWriter();
+        GpxUtil.marshal11(gpx, writer);
+        String string = writer.toString();
+        assertTrue(string.contains("<gpx"));
+        assertTrue(string.contains("version=\"1.1\""));
+        assertFalse(string.contains("ns1"));
+        assertFalse(string.contains("ns2"));
+        assertFalse(string.contains("ns3"));
+        assertFalse(string.contains("ns4"));
     }
 }

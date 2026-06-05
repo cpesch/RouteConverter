@@ -36,7 +36,7 @@ import static slash.common.io.InputOutput.readFileToString;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 import static slash.navigation.base.NavigationTestCase.readGpxFile;
 
-public class GpxExtensionsIT {
+public class GpxExtensionsTest {
 
     private GpxRoute readRoute(String fileName) throws Exception {
         List<GpxRoute> routes = readGpxFile(new Gpx11Format(), fileName);
@@ -121,3 +121,4 @@ public class GpxExtensionsIT {
         assertTrue(after.contains("<gpxx:Temperature>19.8</gpxx:Temperature>"));
     }
 }
+
