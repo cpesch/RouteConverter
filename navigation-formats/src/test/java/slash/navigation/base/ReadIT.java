@@ -69,7 +69,8 @@ public class ReadIT {
         readFiles(extension, new TestFileCallback() {
             @SuppressWarnings({"unchecked"})
             public void test(File file) throws IOException {
-                ParserResult result = parser.read(file, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(file.getName())));
+                File readableFile = createHermeticSampleFile(file);
+                ParserResult result = parser.read(readableFile, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(file.getName())));
                 assertNotNull(result);
                 assertTrue("Cannot read route from " + file, result.isSuccessful());
                 assertNotNull(result.getFormat());

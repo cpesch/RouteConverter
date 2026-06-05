@@ -1,8 +1,29 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+
 package slash.navigation.url;
 
 import org.junit.Test;
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.NavigationTestCase;
 import slash.navigation.base.ParserResult;
 import slash.navigation.gpx.Gpx11Format;
 
@@ -35,7 +56,7 @@ public class UrlFormatIT {
 
     @Test
     public void readURLReference() throws IOException {
-        ParserResult result = parser.read(new File(TEST_PATH + "from-gpx.url"));
+        ParserResult result = parser.read(NavigationTestCase.createHermeticSampleFile(new File(TEST_PATH + "from-gpx.url")));
         assertNotNull(result);
         assertEquals(4, result.getAllRoutes().size());
         assertEquals(3, result.getTheRoute().getPositionCount());

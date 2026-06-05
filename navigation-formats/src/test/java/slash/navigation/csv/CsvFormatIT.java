@@ -24,16 +24,42 @@ import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
+import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.TestCase.calendar;
+import static slash.navigation.common.UnitConversion.kiloMeterToNauticMiles;
+import static slash.navigation.common.UnitConversion.meterToFeets;
 import static slash.navigation.base.NavigationTestCase.TEST_PATH;
 
 public class CsvFormatIT {
     private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
     // ae oe ue sz AE OE UE
     private static final String UMLAUTS = "\u00E4\u00F6\u00FC\u00DF\u00C4\u00D6\u00DC";
+
+    private File createFlightradar24File() throws IOException {
+        Path file = Files.createTempFile("from-flightradar24-", ".csv");
+        file.toFile().deleteOnExit();
+        String content = """
+                Timestamp,UTC,Callsign,Position,Altitude,Speed,Direction
+                1513280280,2017-12-14T19:38:00Z,Positionsname,"50.241125,8.4853033",%s,%s,0
+                1513280340,2017-12-14T19:39:00Z,%s,"-50.2411251,88.4853034",%s,%s,0
+                1513280400,2017-12-14T19:40:00Z,"#""§$%%&/","50.2411252,8.4853035",%s,%s,0
+                """.formatted(
+                formatDoubleAsString(meterToFeets(654.6)),
+                formatDoubleAsString(kiloMeterToNauticMiles(6.1)),
+                UMLAUTS,
+                formatDoubleAsString(meterToFeets(654.7)),
+                formatDoubleAsString(kiloMeterToNauticMiles(0.1)),
+                formatDoubleAsString(meterToFeets(654.8)),
+                formatDoubleAsString(kiloMeterToNauticMiles(-2.3)));
+        Files.writeString(file, content, StandardCharsets.UTF_8);
+        return file.toFile();
+    }
 
     private void checkRoute(BaseRoute route) {
         assertEquals(3, route.getPositionCount());
@@ -107,7 +133,7 @@ public class CsvFormatIT {
 
     @Test
     public void testReadFlightradar24() throws IOException {
-        File source = new File(TEST_PATH + "from-flightradar24.csv");
+        File source = createFlightradar24File();
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertEquals(Flightradar24Format.class, result.getFormat().getClass());

@@ -23,6 +23,11 @@ package slash.navigation.kml;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -32,6 +37,28 @@ import static slash.navigation.base.NavigationTestCase.*;
 import static slash.navigation.base.RouteCharacteristics.Track;
 
 public class KmlFormatIT {
+
+    private List<KmlRoute> readNetworkLinkedKmlFile(BaseKmlFormat format, String directFileName, String networkLinkFileName) throws Exception {
+        Path temporaryDirectory = Files.createTempDirectory("kml-network-link-");
+        temporaryDirectory.toFile().deleteOnExit();
+
+        Path directSource = Path.of(TEST_PATH, directFileName);
+        Path directTarget = temporaryDirectory.resolve(directFileName);
+        Files.copy(directSource, directTarget, StandardCopyOption.REPLACE_EXISTING);
+        directTarget.toFile().deleteOnExit();
+
+        String href = "file:///CWD/../RouteSamples/trunk/test/" + directFileName;
+        String networkLink = Files.readString(Path.of(TEST_PATH, networkLinkFileName), StandardCharsets.UTF_8)
+                .replace(href, directTarget.toUri().toString());
+        Path networkLinkTarget = temporaryDirectory.resolve(networkLinkFileName);
+        Files.writeString(networkLinkTarget, networkLink, StandardCharsets.UTF_8);
+        networkLinkTarget.toFile().deleteOnExit();
+
+        List<KmlRoute> directRoute = readKmlFile(format, directTarget.toFile().getAbsolutePath());
+        List<KmlRoute> networkLinkRoute = readKmlFile(format, networkLinkTarget.toFile().getAbsolutePath());
+        assertRoutesEquals(directRoute, networkLinkRoute);
+        return networkLinkRoute;
+    }
 
     private void assertRoutesEquals(List<KmlRoute> firstRoutes, List<KmlRoute> secondRoutes) {
         for (int i = 0; i < firstRoutes.size(); i++) {
@@ -88,23 +115,17 @@ public class KmlFormatIT {
 
     @Test
     public void testDirectVsNetworklink20() throws Exception {
-        List<KmlRoute> directRoute = readKmlFile(new Kml20Format(), TEST_PATH + "from20.kml");
-        List<KmlRoute> networkLinkRoute = readKmlFile(new Kml20Format(), TEST_PATH + "from20nwlink.kml");
-        assertRoutesEquals(directRoute, networkLinkRoute);
+        readNetworkLinkedKmlFile(new Kml20Format(), "from20.kml", "from20nwlink.kml");
     }
 
     @Test
     public void testDirectVsNetworklink21() throws Exception {
-        List<KmlRoute> directRoute = readKmlFile(new Kml21Format(), TEST_PATH + "from21.kml");
-        List<KmlRoute> networkLinkRoute = readKmlFile(new Kml21Format(), TEST_PATH + "from21nwlink.kml");
-        assertRoutesEquals(directRoute, networkLinkRoute);
+        readNetworkLinkedKmlFile(new Kml21Format(), "from21.kml", "from21nwlink.kml");
     }
 
     @Test
     public void testDirectVsNetworklink22() throws Exception {
-        List<KmlRoute> directRoute = readKmlFile(new Kml22Format(), TEST_PATH + "from22.kml");
-        List<KmlRoute> networkLinkRoute = readKmlFile(new Kml22Format(), TEST_PATH + "from22nwlink.kml");
-        assertRoutesEquals(directRoute, networkLinkRoute);
+        readNetworkLinkedKmlFile(new Kml22Format(), "from22.kml", "from22nwlink.kml");
     }
 
     @Test
