@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static slash.navigation.base.NavigationTestCase.SAMPLE_PATH;
 
-public class GoogleMapsUrlFormatIT {
+public class GoogleMapsUrlFormatBookmarkTest {
 
     private void checkBookmark(String name) throws IOException {
         File source = new File(SAMPLE_PATH + name);
@@ -40,7 +40,7 @@ public class GoogleMapsUrlFormatIT {
         assertNotNull(result);
         assertEquals(GoogleMapsUrlFormat.class, result.getFormat().getClass());
         assertEquals(1, result.getAllRoutes().size());
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        BaseRoute<? extends BaseNavigationPosition, ?> route = result.getTheRoute();
         assertEquals(9, route.getPositionCount());
         NavigationPosition position = route.getPositions().get(route.getPositionCount() - 1);
         assertEquals("W Irlo Bronson Mem Hwy/US-192 W", position.getDescription());

@@ -4,7 +4,7 @@
 
 Implemented on June 4, 2026.
 
-Planned on June 4, 2026.
+Updated on June 5, 2026.
 
 ## Summary
 
@@ -20,8 +20,14 @@ The repository now has a clearer and more usable coverage path:
   - now `route-catalog/src/test/java/slash/navigation/routes/remote/TempFileTest.java`
 - the first method-level extraction from a broader `*IT` class has also been completed:
   - unmarshalling-only KML helper tests now live in `navigation-formats/src/test/java/slash/navigation/kml/KmlUtilTest.java`
+- a second conservative extraction has now also been completed:
+  - the literal Google Maps parser case from `navigation-formats/src/test/java/slash/navigation/url/UrlFormatIT.java`
+  - now runs in Surefire via `navigation-formats/src/test/java/slash/navigation/url/UrlFormatTest.java`
+- a third conservative extraction has now also been completed:
+  - the local `.url` fixture parser case from `navigation-formats/src/test/java/slash/navigation/url/UrlFormatIT.java`
+  - now runs in Surefire via `navigation-formats/src/test/java/slash/navigation/url/UrlFormatTest.java`
 
-The main remaining blocker is still `navigation-formats` integration coverage, especially fixture-path handling during module-local hermetic runs.
+As of June 5, 2026, `navigation-formats` module-local hermetic verification is green again, so the next work is incremental test classification and new coverage rather than fixture-path stabilization.
 
 ## Current status
 
@@ -39,13 +45,16 @@ The main remaining blocker is still `navigation-formats` integration coverage, e
   - `TempFileTest` now runs in Surefire
 - One mixed `*IT` class has already had narrow helper tests extracted and verified:
   - `KmlUtilTest`
+- A second mixed `*IT` class has had its clearest narrow method extracted and verified:
+  - `UrlFormatTest.readGoogleMapsUrl()`
+- That same mixed `*IT` class has now had a second hermetic local-fixture method extracted and verified:
+  - `UrlFormatTest.readURLReference()`
 
 ### Open
 
 - A broad hermetic whole-reactor run is still not a reliable green baseline.
-- `navigation-formats` still needs stabilization before the hermetic path can be treated as the routine repository-wide coverage job.
-- In particular, `KmlFormatIT` currently fails in module-local hermetic execution because fixture paths resolve to `navigation-formats-samples/src/...` relative to the module working directory and those files are not found there.
 - The hermetic vs external classification is good enough to guide work now, but more `*IT` classes can still be split or renamed gradually.
+- The next `navigation-formats` work is now about conservative extraction choices, not emergency fixture-path repair.
 
 ## Coverage architecture and recommendation
 
@@ -127,23 +136,81 @@ Observed result:
 - `slash.navigation.routes.remote.TempFileTest` ran in Surefire
 - `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0`
 
-### Verified on June 4, 2026: current `KmlFormatIT` blocker
+### Verified on June 5, 2026: `UrlFormatTest` extraction follow-up
 
 Verified command:
 
 ```sh
-./mvnw -U -pl navigation-formats -am -P hermetic-integration-test -Dit.test=slash.navigation.kml.KmlFormatIT -Dfailsafe.failIfNoSpecifiedTests=false clean verify
+./mvnw -U -pl navigation-formats -am -Dtest=slash.navigation.url.UrlFormatTest,slash.navigation.url.GoogleMapsUrlFormatTest -Dsurefire.failIfNoSpecifiedTests=false clean test
 ```
 
 Observed result:
 
-- build failed
-- `slash.navigation.kml.KmlFormatIT` produced fixture lookup errors
-- representative failures include missing files under:
-  - `navigation-formats-samples/src/test/...`
-  - `navigation-formats-samples/src/samples/...`
+- build succeeded
+- `slash.navigation.url.UrlFormatTest` ran in Surefire with the extracted `readGoogleMapsUrl()` coverage
+- `slash.navigation.url.GoogleMapsUrlFormatTest` remained green
+- `Tests run: 24, Failures: 0, Errors: 0, Skipped: 0`
 
-This is the clearest currently verified reason that `navigation-formats` still blocks a reliable module-local hermetic baseline.
+### Verified on June 5, 2026: second `UrlFormatTest` extraction
+
+Verified command:
+
+```sh
+./mvnw -U -pl navigation-formats -am -Dtest=slash.navigation.url.UrlFormatTest -Dsurefire.failIfNoSpecifiedTests=false clean test
+```
+
+Observed result:
+
+- build succeeded
+- `slash.navigation.url.UrlFormatTest` now also runs the extracted `readURLReference()` coverage in Surefire
+- `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on June 5, 2026: remaining `UrlFormatIT` after second extraction
+
+Verified command:
+
+```sh
+./mvnw -U -pl navigation-formats -am -P hermetic-integration-test -Dit.test=slash.navigation.url.UrlFormatIT -Dfailsafe.failIfNoSpecifiedTests=false clean verify
+```
+
+Observed result:
+
+- build succeeded
+- `slash.navigation.url.UrlFormatIT` now contains only the live RouteConverter URL case
+- `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on June 5, 2026: narrowed `UrlFormatIT`
+
+Verified command:
+
+```sh
+./mvnw -U -pl navigation-formats -am -P hermetic-integration-test -Dit.test=slash.navigation.url.UrlFormatIT -Dfailsafe.failIfNoSpecifiedTests=false clean verify
+```
+
+Observed result:
+
+- build succeeded
+- `slash.navigation.url.UrlFormatIT` now contains only the remaining broader cases
+- `Tests run: 2, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on June 5, 2026: module-local hermetic `navigation-formats`
+
+Verified command:
+
+```sh
+./mvnw -U -pl navigation-formats -am -P hermetic-integration-test verify
+```
+
+Observed result:
+
+- build succeeded
+- `navigation-formats` Failsafe suite stayed green in module-local hermetic execution
+- `Tests run: 526, Failures: 0, Errors: 0, Skipped: 0`
+- `navigation-formats/target/failsafe-reports` contained 44 XML reports at that point, before the later Google Maps bookmark reclassification reduced the current `navigation-formats` `*IT` inventory by one
+
+### Historical note from June 4, 2026
+
+The earlier `KmlFormatIT` fixture-path failure that originally blocked the module-local hermetic baseline is now superseded by the June 5 green verification above.
 
 ### Operational caveat about `-Dit.test=...`
 
@@ -255,7 +322,7 @@ If the goal is the next practical coverage increment, the best first batch is st
 
 | Module | `*IT` count |
 |---|---:|
-| `navigation-formats` | 44 |
+| `navigation-formats` | 43 |
 | `route-catalog` | 5 |
 | `download` | 2 |
 | `feedback` | 2 |
@@ -272,7 +339,7 @@ If the goal is the next practical coverage increment, the best first batch is st
 
 - `download`: `QueuePersisterIT`
 - `route-catalog`: `LocalCategoryIT`
-- `navigation-formats`: broad sample-data and round-trip suites reviewed so far, subject to current path-fix work
+- `navigation-formats`: broad sample-data and round-trip suites reviewed so far; module-local hermetic verification is green as of June 5
 
 ### Clearly external `*IT` tests
 
@@ -325,49 +392,38 @@ This is now the clearest completed method-level extraction from a broader `*IT` 
 
 These tests now use in-memory XML documents and fit naturally in a Surefire unit-test class.
 
-### Additional conservative candidates identified in the current review
+#### `navigation-formats/src/test/java/slash/navigation/url/UrlFormatTest.java`
 
-#### `navigation-formats/src/test/java/slash/navigation/url/UrlFormatIT.java`
+The clearest narrow method from `UrlFormatIT` has now been extracted into Surefire:
 
-This is now one of the clearest remaining mixed classes.
+- `readGoogleMapsUrl()`
 
-- `readRouteCatalogUrl()` should stay external or opt-in because it reads a live RouteConverter URL.
-- `readGoogleMapsUrl()` looks unit-style:
-  - parses a literal Google Maps URL string
-  - no live service contract is asserted
-  - no sample-file sweep or round-trip is involved
-- `readURLReference()` is a weaker candidate:
-  - still narrow and parser-focused
-  - but it depends on the `.url` fixture behavior and needs confirmation of the intended local fixture setup
+This keeps the literal Google Maps URL parser-registry assertion in a small `*Test` class while leaving the live RouteConverter URL and local `.url` fixture coverage in `UrlFormatIT`.
 
-Recommendation:
+#### `navigation-formats/src/test/java/slash/navigation/url/GoogleMapsUrlFormatBookmarkTest.java`
 
-- strongest next extraction candidate from this class is `readGoogleMapsUrl()`
-- if the `.url` fixture remains intentionally local and stable, `readURLReference()` may belong in the same smaller `*Test` class later
-
-#### `navigation-formats/src/test/java/slash/navigation/url/GoogleMapsUrlFormatIT.java`
-
-All four current methods are plausible unit-style candidates:
+The former bookmark-fixture parser contract coverage from `GoogleMapsUrlFormatIT` has now been reclassified into Surefire as a dedicated `*Test` class.
 
 - `testOriginalBookmark()`
 - `testBookmarkWrittenByFirefox()`
 - `testBookmarkWrittenByIE()`
 - `testBookmarkWrittenByOpera()`
 
-Reason:
+This keeps the local `.url` fixture variants together in one narrow parser-contract class without leaving them in Failsafe.
 
-- each method exercises one narrow parsing behavior around browser bookmark URL variations
-- no network calls are visible in the test
-- the assertions are format-specific rather than broad integration-flow assertions
+### Additional conservative candidates identified in the current review
 
-Why this is still only a candidate:
+#### `navigation-formats/src/test/java/slash/navigation/url/UrlFormatIT.java`
 
-- the class still relies on real sample bookmark files and the full parser entry point
-- it is closer to a parser contract test than a pure in-memory unit test
+This class is no longer mixed in the same way as before; its hermetic local-fixture case has now been extracted.
+
+- `readRouteCatalogUrl()` should stay external or opt-in because it reads a live RouteConverter URL.
 
 Recommendation:
 
-- this is a good candidate for a future `GoogleMapsUrlFormatTest` if the parser entry can remain stable enough for Surefire use
+- `readGoogleMapsUrl()` is complete in `UrlFormatTest`
+- `readURLReference()` is also complete in `UrlFormatTest`
+- keep the remaining live RouteConverter URL coverage in `UrlFormatIT`
 
 #### `navigation-formats/src/test/java/slash/navigation/tour/TourFormatIT.java`
 
@@ -435,14 +491,12 @@ These still exercise real file, parser, writer, round-trip, or multi-format inte
 
 1. keep `00008` as the single coverage planning note
 2. use `test-all-hermetic` for routine module-level coverage work where possible
-3. fix `navigation-formats` fixture-path handling before treating the hermetic path as a broad baseline
+3. keep the now-green `navigation-formats` hermetic module run as a verified baseline and re-check it after each extraction batch
 4. continue the conservative rename or extraction strategy:
    - whole-class rename only for clearly unit-style tests
    - method-level extraction for mixed classes
    - leave broad fixture-driven coverage in `*IT`
-5. after the path issue is fixed, revisit the next strongest candidates:
-   - `UrlFormatIT.readGoogleMapsUrl()`
-   - `GoogleMapsUrlFormatIT`
+5. revisit the next strongest candidates:
    - `TourFormatIT.testPositionInListOrder()`
    - selected `GpxExtensionsIT` methods
 
@@ -454,8 +508,8 @@ The important progress is now clear and real:
 
 - the build understands both integration-test naming conventions
 - hermetic profiles exist
-- one clear unit-style reclassification is complete and verified
-- one useful method-level extraction is complete and verified
-- the next real blocker is no longer abstract tooling work, but stabilizing `navigation-formats` fixture handling for hermetic integration runs
+- two clear unit-style reclassifications are complete and verified
+- three useful method-level extractions are complete and verified
+- `navigation-formats` module-local hermetic verification is green again
 
 That makes the next coverage steps much more concrete than before.

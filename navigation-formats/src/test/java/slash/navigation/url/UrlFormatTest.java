@@ -21,10 +21,20 @@
 package slash.navigation.url;
 
 import org.junit.Test;
+import slash.navigation.base.AllNavigationFormatRegistry;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.NavigationTestCase;
+import slash.navigation.base.ParserResult;
+import slash.navigation.gpx.Gpx11Format;
+
+import java.io.File;
+import java.io.IOException;
 
 import static org.junit.Assert.*;
+import static slash.common.TestCase.assertEquals;
 
 public class UrlFormatTest {
+    private static final String GOOGLE_MAPS_ROUTE_URL = "http://maps.google.de/maps?f=d&saddr=Hamburg%2FUhlenhorst&daddr=Hauptstra%C3%9Fe%2FL160+to:53.588429,10.419159+to:Breitenfelde%2FNeuenlande&hl=de&geocode=%3BFVy1MQMdDoudAA%3B%3B&mra=dpe&mrcr=0&mrsp=2&sz=11&via=1,2&sll=53.582575,10.30528&sspn=0.234798,0.715485&ie=UTF8&z=11";
     private static final String GOOGLE_MAPS_EMAIL = "Betreff: Route nach/zu Riehler Strasse 190 50735 Koeln (Google Maps)\n" +
             "\n" +
             "> Routenplaner\n" +
@@ -44,6 +54,25 @@ public class UrlFormatTest {
     private static final String FILE = "file:///CWD/../RouteSamples/trunk/test/from11.gpx";
 
     private final UrlFormat format = new UrlFormat();
+    private final NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
+
+    @Test
+    public void readGoogleMapsUrl() throws IOException {
+        ParserResult result = parser.read(GOOGLE_MAPS_ROUTE_URL);
+        assertNotNull(result);
+        assertEquals(1, result.getAllRoutes().size());
+        assertEquals(4, result.getTheRoute().getPositionCount());
+        assertEquals(GoogleMapsUrlFormat.class, result.getFormat().getClass());
+    }
+
+    @Test
+    public void readURLReference() throws IOException {
+        ParserResult result = parser.read(NavigationTestCase.createHermeticSampleFile(new File(NavigationTestCase.TEST_PATH + "from-gpx.url")));
+        assertNotNull(result);
+        assertEquals(4, result.getAllRoutes().size());
+        assertEquals(3, result.getTheRoute().getPositionCount());
+        assertEquals(Gpx11Format.class, result.getFormat().getClass());
+    }
 
     @Test
     public void testFindGoogleMapsURLFromEmail() {
