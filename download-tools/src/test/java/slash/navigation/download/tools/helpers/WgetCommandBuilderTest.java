@@ -21,19 +21,14 @@ package slash.navigation.download.tools.helpers;
 
 import org.junit.Test;
 import slash.navigation.datasources.DataSource;
-import slash.navigation.datasources.Source;
-import slash.navigation.datasources.binding.DatasourceType;
-import slash.navigation.datasources.binding.FileType;
-import slash.navigation.datasources.binding.MapType;
-import slash.navigation.datasources.binding.ObjectFactory;
-import slash.navigation.datasources.binding.SourceType;
-import slash.navigation.datasources.impl.DataSourceImpl;import java.nio.file.Paths;
+import slash.navigation.datasources.binding.*;
+import slash.navigation.datasources.impl.DataSourceImpl;
+
+import java.nio.file.Paths;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class WgetCommandBuilderTest {
 
