@@ -1,7 +1,6 @@
 name: Build Windows JRE
 
-# Build the stripped Windows JRE once (jlink + trim per
-# RouteConverterWindowsBundle/build-jre.bat), publish to
+# Build the stripped Windows JRE once (jlink + trim), publish to
 # https://static.routeconverter.com/build/windows/jre-<version>-x64-stripped.zip
 # alongside a .sha256 sidecar.
 #
@@ -27,7 +26,6 @@ on:
   push:
     branches: [master]
     paths:
-      - 'route-converter-build/build-jre.bat'
       - 'route-converter-build/pom.xml'
       - '.github/workflows/build-windows-jre.yml'
 
@@ -62,7 +60,7 @@ jobs:
           distribution: temurin
           java-version: ${{ steps.jdk.outputs.version }}
 
-      - name: jlink stripped JRE (port of build-jre.bat)
+      - name: jlink stripped JRE
         shell: cmd
         env:
           VER: ${{ steps.jdk.outputs.version }}
@@ -85,7 +83,17 @@ jobs:
           if exist %OUT%\lib\client rmdir /s /q %OUT%\lib\client
           if exist %OUT%\lib\server rmdir /s /q %OUT%\lib\server
           if exist %OUT%\conf\security\policy\README.txt del /q %OUT%\conf\security\policy\README.txt
-          dir %OUT%
+
+      - name: Show full JRE tree
+        shell: bash
+        env:
+          VER: ${{ steps.jdk.outputs.version }}
+        run: |
+          find "jre-${VER}" -print
+          echo "--- summary ---"
+          echo "files: $(find "jre-${VER}" -type f | wc -l)"
+          echo "dirs:  $(find "jre-${VER}" -type d | wc -l)"
+          echo "bytes: $(du -sb "jre-${VER}" | awk '{print $1}')"
 
       - name: Zip + sha256
         id: pack
