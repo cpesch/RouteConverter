@@ -153,10 +153,12 @@ jobs:
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO:     ${{ github.repository }}
           TAG:      ${{ steps.ver.outputs.tag }}
           VERSION:  ${{ steps.ver.outputs.version }}
         run: |
           gh release create "$TAG" artefacts/* \
+            --repo "$REPO" \
             --title "RouteConverter $VERSION" \
             --generate-notes \
             --verify-tag

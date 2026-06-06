@@ -122,12 +122,14 @@ jobs:
       - name: Update rolling 'prerelease' GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO:     ${{ github.repository }}
         run: |
           tag=prerelease
           # Delete previous release + tag so the asset set is replaced
           # rather than accumulating duplicates.
-          gh release delete "$tag" --yes --cleanup-tag || true
+          gh release delete "$tag" --repo "$REPO" --yes --cleanup-tag || true
           gh release create "$tag" artefacts/* \
+            --repo "$REPO" \
             --title "Rolling prerelease ($(date -u +%Y-%m-%d))" \
             --notes "Automated build of master @ ${GITHUB_SHA::7}." \
             --prerelease \
