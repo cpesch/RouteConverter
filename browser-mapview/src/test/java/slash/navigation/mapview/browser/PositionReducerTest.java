@@ -21,13 +21,16 @@
 package slash.navigation.mapview.browser;
 
 import org.junit.Test;
+import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
+import static slash.navigation.base.RouteCharacteristics.*;
 
 public class PositionReducerTest {
     private final PositionReducer reducer = new PositionReducer(new PositionReducer.Callback() {
@@ -104,6 +107,7 @@ public class PositionReducerTest {
 
     @Test
     public void testFilterVisiblePositionIncludingFirstAndLast() {
+        // ...existing test...
         List<NavigationPosition> positions = new ArrayList<>();
         NavigationPosition one = new SimpleNavigationPosition(0.0, 0.0);
         positions.add(one);
@@ -128,5 +132,77 @@ public class PositionReducerTest {
         assertEquals(fiveNotVisible, result.get(3));
         assertEquals(six, result.get(4));
         assertEquals(seven, result.get(5));
+    }
+
+    // ---- getMaximumSegmentLength ----
+
+    @Test
+    public void testGetMaximumSegmentLengthRoute() {
+        assertTrue(reducer.getMaximumSegmentLength(Route) > 0);
+    }
+
+    @Test
+    public void testGetMaximumSegmentLengthTrack() {
+        assertTrue(reducer.getMaximumSegmentLength(Track) > 0);
+    }
+
+    @Test
+    public void testGetMaximumSegmentLengthWaypoints() {
+        assertTrue(reducer.getMaximumSegmentLength(Waypoints) > 0);
+    }
+
+    // ---- clear / hasFilteredVisibleArea / isWithinVisibleArea ----
+
+    @Test
+    public void testHasFilteredVisibleAreaFalseInitially() {
+        PositionReducer fresh = new PositionReducer(new PositionReducer.Callback() {
+            public int getZoom() { return 10; }
+            public NavigationPosition getNorthEastBounds() { return new SimpleNavigationPosition(1.0, 1.0); }
+            public NavigationPosition getSouthWestBounds() { return new SimpleNavigationPosition(-1.0, -1.0); }
+        });
+        assertFalse(fresh.hasFilteredVisibleArea());
+    }
+
+    @Test
+    public void testIsWithinVisibleAreaReturnsTrueWhenNoFilterApplied() {
+        PositionReducer fresh = new PositionReducer(new PositionReducer.Callback() {
+            public int getZoom() { return 10; }
+            public NavigationPosition getNorthEastBounds() { return new SimpleNavigationPosition(1.0, 1.0); }
+            public NavigationPosition getSouthWestBounds() { return new SimpleNavigationPosition(-1.0, -1.0); }
+        });
+        // no visible area set -> isWithinVisibleArea always returns true
+        assertTrue(fresh.isWithinVisibleArea(new BoundingBox(new SimpleNavigationPosition(0.0, 0.0), new SimpleNavigationPosition(0.0, 0.0))));
+    }
+
+    @Test
+    public void testClearResetsVisibleArea() {
+        PositionReducer r = new PositionReducer(new PositionReducer.Callback() {
+            public int getZoom() { return 5; }
+            public NavigationPosition getNorthEastBounds() { return new SimpleNavigationPosition(1.0, 1.0); }
+            public NavigationPosition getSouthWestBounds() { return new SimpleNavigationPosition(-1.0, -1.0); }
+        });
+        // Just verify clear() ensures hasFilteredVisibleArea() is false afterward (initial state or after clear)
+        r.clear();
+        assertFalse(r.hasFilteredVisibleArea());
+    }
+
+    // ---- filterPositionsWithoutCoordinates (implicitly via reducePositions) ----
+
+    @Test
+    public void testFilterPositionsWithoutCoordinatesViaReduce() {
+        PositionReducer r = new PositionReducer(new PositionReducer.Callback() {
+            public int getZoom() { return 10; }
+            public NavigationPosition getNorthEastBounds() { return new SimpleNavigationPosition(1.0, 1.0); }
+            public NavigationPosition getSouthWestBounds() { return new SimpleNavigationPosition(-1.0, -1.0); }
+        });
+        List<NavigationPosition> positions = new ArrayList<>();
+        positions.add(new SimpleNavigationPosition(0.0, 0.0));
+        positions.add(new SimpleNavigationPosition(null, null));  // no coordinates
+        positions.add(new SimpleNavigationPosition(0.1, 0.1));
+
+        // With 3 input positions reduced to those with coordinates, result is ? 3
+        List<NavigationPosition> result = r.reducePositions(positions, Waypoints, false);
+        for (NavigationPosition pos : result)
+            assertTrue("all result positions should have coordinates", pos.hasCoordinates());
     }
 }
