@@ -1,0 +1,133 @@
+name: Prerelease
+
+# Build prerelease artefacts on every push to master + nightly + manual,
+# publish to prerelease.routeconverter.com (anon-read static vhost) and the
+# rolling `prerelease` GitHub Release.
+#
+# Infra: bootstrap-server/12-public-release-vhosts.sh provisions the
+# rc-release-deploy SSH user + restricted-rsync wrapper that only accepts
+# writes into /var/www/prerelease/.
+#
+# See rc-meta/docs/00018-release-automation-3.4.md Phase 2.
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: prerelease
+  cancel-in-progress: true
+
+permissions:
+  contents: write   # for the rolling GH Release
+
+jobs:
+  build-linux-mac:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '17'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build
+        run: ./mvnw --batch-mode -Prouteconverter clean package
+      - name: Stage artefacts
+        run: |
+          mkdir -p artefacts
+          cp RouteConverterLinuxOpenSource/target/RouteConverterLinuxOpenSource.* artefacts/
+          cp RouteConverterMacOpenSource/target/RouteConverterMacOpenSource.jar artefacts/
+          cp RouteConverterMacOpenSource/target/RouteConverterMacOpenSource-app.zip artefacts/
+          cp RouteConverterCmdLine/target/RouteConverterCmdLine.* artefacts/
+          # TimeAlbumPro Linux/Mac — parity with legacy prerelease.sh.
+          cp TimeAlbumProLinux/target/TimeAlbumProLinux.* artefacts/
+          cp TimeAlbumProMac/target/TimeAlbumProMac.jar artefacts/
+          cp TimeAlbumProMac/target/TimeAlbumProMac-app.zip artefacts/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prerelease-linux-mac
+          path: artefacts/
+          retention-days: 7
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '17'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build
+        run: ./mvnw.cmd --batch-mode -Prouteconverter clean package
+        shell: cmd
+      - name: Stage artefacts
+        shell: bash
+        run: |
+          mkdir -p artefacts
+          cp RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.* artefacts/
+          cp TimeAlbumProWindows/target/TimeAlbumProWindows.* artefacts/
+          # NOTE: RouteConverterWindowsBundle, TimeAlbumProWindowsBundle and
+          # the RouteConverterPortable Installer still build on the legacy
+          # Windows VM (.bat files). Roadmap item 2 moves them to
+          # windows-latest; until then the prerelease set is OpenSource-only
+          # on the Windows side.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: prerelease-windows
+          path: artefacts/
+          retention-days: 7
+
+  publish:
+    needs: [build-linux-mac, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: incoming
+      - name: Flatten
+        run: |
+          mkdir -p artefacts
+          find incoming -mindepth 2 -type f -exec mv -t artefacts/ {} +
+          ls -la artefacts/
+      - name: Configure SSH
+        env:
+          DEPLOY_KEY: ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+      - name: Rsync to prerelease.routeconverter.com
+        env:
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          rsync -av --omit-dir-times --no-perms \
+            artefacts/ \
+            "rc-release-deploy@${DEPLOY_HOST}:/var/www/prerelease/"
+      - name: Update rolling 'prerelease' GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          tag=prerelease
+          # Delete previous release + tag so the asset set is replaced
+          # rather than accumulating duplicates.
+          gh release delete "$tag" --yes --cleanup-tag || true
+          gh release create "$tag" artefacts/* \
+            --title "Rolling prerelease ($(date -u +%Y-%m-%d))" \
+            --notes "Automated build of master @ ${GITHUB_SHA::7}." \
+            --prerelease \
+            --target master
