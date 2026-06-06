@@ -24,6 +24,13 @@
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
         <!-- workaround for https://issues.apache.org/jira/browse/MASSEMBLY-603 -->
         <maven.build.timestamp.clone>${maven.build.timestamp}</maven.build.timestamp.clone>
+        <!-- Single source of truth for the bundled Temurin JDK / jlinked JRE
+             patch version. Consumed by RouteConverterWindowsBundle (via NSI
+             resource filtering, ${jre.version}), TimeAlbumProWindowsBundle
+             (likewise), build-jre.bat (findstr), and the
+             build-windows-jre / prerelease / release GitHub workflows
+             (grep on this pom). -->
+        <jre.version>17.0.15</jre.version>
    </properties>
 
     <build>

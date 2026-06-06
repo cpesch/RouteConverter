@@ -21,13 +21,14 @@ on:
   workflow_dispatch:
     inputs:
       jdk_version:
-        description: 'Temurin JDK version (e.g. 17.0.15)'
-        required: true
-        default: '17.0.15'
+        description: 'Override Temurin JDK version (blank = read jre.version from route-converter-build/pom.xml)'
+        required: false
+        default: ''
   push:
     branches: [master]
     paths:
       - 'RouteConverterWindowsBundle/build-jre.bat'
+      - 'route-converter-build/pom.xml'
       - '.github/workflows/build-windows-jre.yml'
 
 concurrency:
@@ -44,13 +45,15 @@ jobs:
         id: jdk
         shell: bash
         run: |
-          # Manual dispatch overrides; push reads from build-jre.bat to avoid
-          # version drift between the .bat and the workflow.
+          # Manual dispatch input overrides; otherwise read the canonical
+          # property from route-converter-build/pom.xml.
           if [[ -n "${{ inputs.jdk_version }}" ]]; then
             ver="${{ inputs.jdk_version }}"
           else
-            ver=$(grep -oE 'jdk-[0-9.]+' RouteConverterWindowsBundle/build-jre.bat | head -1 | sed 's/jdk-//')
+            ver=$(sed -nE 's|.*<jre\.version>([^<]+)</jre\.version>.*|\1|p' \
+                  route-converter-build/pom.xml | head -1)
           fi
+          [[ -n "$ver" ]] || { echo "::error::failed to resolve JDK version"; exit 1; }
           echo "version=$ver" >> "$GITHUB_OUTPUT"
           echo "JDK version: $ver"
 

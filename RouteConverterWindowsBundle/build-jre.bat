@@ -1,7 +1,13 @@
 @echo off
 
-set JDK=jdk-17.0.15
-set JRE=jre-17.0.15
+REM Single source of truth = jre.version property in
+REM ..\route-converter-build\pom.xml. Parse "<jre.version>X.Y.Z</jre.version>"
+REM with findstr+for (tokens=3 delims=<>).
+for /f "tokens=3 delims=<>" %%a in ('findstr "jre.version" ..\route-converter-build\pom.xml') do set JREVER=%%a
+if "%JREVER%"=="" ( echo Failed to read jre.version from pom & exit /b 1 )
+set JDK=jdk-%JREVER%
+set JRE=jre-%JREVER%
+echo Using JDK=%JDK% JRE=%JRE%
 
 echo Cleaning
 rmdir /s /q %JRE%

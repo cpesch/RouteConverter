@@ -6,7 +6,7 @@ SilentInstall silent
 RequestExecutionLevel user
 ShowInstDetails hide
 
-!define JRE "17.0.15"
+!define JRE "${jre.version}"
 !define JRE_PATH "..\jre-${JRE}"
 OutFile "RouteConverterWindowsBundle.exe"
 

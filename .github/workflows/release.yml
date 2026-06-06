@@ -68,15 +68,25 @@ jobs:
 
   build-windows:
     runs-on: windows-latest
-    env:
-      JRE_VERSION: '17.0.15'
-      JRE_BASE:    'jre-17.0.15-x64-stripped'
     steps:
       - uses: actions/checkout@v5
+
+      - name: Resolve JRE version from pom (single source of truth)
+        id: jre
+        shell: bash
+        run: |
+          ver=$(sed -nE 's|.*<jre\.version>([^<]+)</jre\.version>.*|\1|p' \
+                route-converter-build/pom.xml | head -1)
+          [[ -n "$ver" ]] || { echo "::error::failed to resolve jre.version"; exit 1; }
+          echo "version=$ver"          >> "$GITHUB_OUTPUT"
+          echo "base=jre-$ver-x64-stripped" >> "$GITHUB_OUTPUT"
+          echo "JRE_VERSION=$ver"             >> "$GITHUB_ENV"
+          echo "JRE_BASE=jre-$ver-x64-stripped" >> "$GITHUB_ENV"
+
       - uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: '17.0.15'
+          java-version: ${{ steps.jre.outputs.version }}
       - uses: actions/cache@v5
         with:
           path: ~/.m2
