@@ -156,27 +156,29 @@ jobs:
                             -UseBasicParsing
           & "C:\Program Files\7-Zip\7z.exe" x pa-installer\installer.paf.exe -opa-installer\extracted -y | Out-Null
 
-      - name: Build RouteConverterPortable .paf.exe
+      - name: Locate PortableApps.comInstaller.exe
+        id: pa-locate
         shell: pwsh
         run: |
-          $ErrorActionPreference = 'Stop'
           $exe = (Get-ChildItem pa-installer\extracted -Recurse -Filter 'PortableApps.comInstaller.exe' |
                   Select-Object -First 1).FullName
-          if (-not $exe) {
-            Write-Host "--- full pa-installer\extracted tree ---"
-            Get-ChildItem pa-installer\extracted -Recurse | Format-Table FullName
-            throw "PortableApps.comInstaller.exe not found"
-          }
-          $tree = "$(Get-Location)\RouteConverterPortable\target\classes\RouteConverterPortable"
-          if (-not (Test-Path $tree)) { throw "Portable tree not found at $tree" }
-          Write-Host "Running: $exe $tree"
-          & $exe $tree
-          Write-Host "Installer exit code: $LASTEXITCODE"
-          Get-ChildItem RouteConverterPortable -Recurse -Include '*.paf.exe' |
-            Format-Table FullName, Length
-          $paf = Get-ChildItem RouteConverterPortable -Recurse -Include '*.paf.exe' |
-                 Select-Object -First 1
-          if (-not $paf) { throw "No .paf.exe produced" }
+          if (-not $exe) { throw "PortableApps.comInstaller.exe not found" }
+          "exe=$exe" >> $env:GITHUB_OUTPUT
+
+      - name: Build RouteConverterPortable .paf.exe
+        shell: cmd
+        env:
+          INSTALLER_EXE: ${{ steps.pa-locate.outputs.exe }}
+        run: |
+          set TREE=%CD%\RouteConverterPortable\target\classes\RouteConverterPortable
+          if not exist "%TREE%" ( echo Portable tree not found at "%TREE%" & exit /b 1 )
+          echo Running: "%INSTALLER_EXE%" "%TREE%"
+          "%INSTALLER_EXE%" "%TREE%"
+          echo Installer exit code: %ERRORLEVEL%
+          dir /B "%CD%\RouteConverterPortable\target\classes" | findstr /I "\.paf\.exe$" || (
+            echo No .paf.exe produced
+            exit /b 1
+          )
 
       - name: Stage artefacts
         shell: bash
