@@ -27,7 +27,7 @@ on:
   push:
     branches: [master]
     paths:
-      - 'RouteConverterWindowsBundle/build-jre.bat'
+      - 'route-converter-build/build-jre.bat'
       - 'route-converter-build/pom.xml'
       - '.github/workflows/build-windows-jre.yml'
 
