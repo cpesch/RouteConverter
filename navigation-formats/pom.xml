@@ -172,6 +172,37 @@
         </dependency>
     </dependencies>
 
+    <profiles>
+        <!-- Automatically activated when src-rc-samples is available (local dev machine).
+             Removes the *IT.java Surefire exclusion so fixture-dependent integration tests
+             run alongside unit tests during 'mvn test'. On CI, src-rc-samples is absent,
+             the profile stays inactive, and *IT tests remain excluded. -->
+        <profile>
+            <id>local-with-samples</id>
+            <activation>
+                <file>
+                    <exists>../navigation-formats-samples/src-rc-samples</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <configuration combine.self="override">
+                            <skipTests>${skip.unit.tests}</skipTests>
+                            <forkCount>1.5C</forkCount>
+                            <includes>
+                                <include>**/*Test.java</include>
+                                <include>**/*IT.java</include>
+                            </includes>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <build>
         <plugins>
             <plugin>
