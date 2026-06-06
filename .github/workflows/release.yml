@@ -1,0 +1,162 @@
+name: Release
+
+# Tag-triggered release build. Runs when a tag matching v<MAJOR>.<MINOR>
+# (or v<MAJOR>.<MINOR>.<PATCH>) is pushed. Builds RouteConverter +
+# TimeAlbumPro OpenSource artefacts, publishes them to:
+#
+#   1. static.routeconverter.com/downloads/release/
+#      (overwrites the previous release; existing symlinks keep stable URLs)
+#   2. static.routeconverter.com/downloads/previous-releases/<version>/
+#      (archive with Mac *-app.zip renamed to *.app.zip per legacy ritual)
+#   3. GitHub Release v<version> on cpesch/RouteConverter (auto-generated
+#      notes from PR titles since the previous tag)
+#
+# Out of scope for this workflow (still maintainer-local for the 3.4 cut):
+#   - mvn release:prepare / release:perform (Sonatype + GPG signing)
+#   - mvn site, mvn javadoc:aggregate, javadoc.sh
+#   - Windows VM .bat builds (RouteConverterWindowsBundle,
+#     TimeAlbumProWindowsBundle, RouteConverterPortable Installer)
+#   - Nacharbeit (RouteConverter.xml, release notes on www, forum,
+#     Latest Versions)
+#
+# See rc-meta/docs/00018-release-automation-3.4.md Phase 3.
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # for the GH Release
+
+jobs:
+  build-linux-mac:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '17'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build
+        run: ./mvnw --batch-mode -Prouteconverter clean package
+      - name: Stage artefacts
+        run: |
+          mkdir -p artefacts
+          cp RouteConverterLinuxOpenSource/target/RouteConverterLinuxOpenSource.* artefacts/
+          cp RouteConverterMacOpenSource/target/RouteConverterMacOpenSource.jar artefacts/
+          cp RouteConverterMacOpenSource/target/RouteConverterMacOpenSource-app.zip artefacts/
+          cp RouteConverterCmdLine/target/RouteConverterCmdLine.* artefacts/
+          cp TimeAlbumProLinux/target/TimeAlbumProLinux.* artefacts/
+          cp TimeAlbumProMac/target/TimeAlbumProMac.jar artefacts/
+          cp TimeAlbumProMac/target/TimeAlbumProMac-app.zip artefacts/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-linux-mac
+          path: artefacts/
+          retention-days: 30
+
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: '17'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build
+        shell: cmd
+        run: ./mvnw.cmd --batch-mode -Prouteconverter clean package
+      - name: Stage artefacts
+        shell: bash
+        run: |
+          mkdir -p artefacts
+          cp RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.* artefacts/
+          cp TimeAlbumProWindows/target/TimeAlbumProWindows.* artefacts/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-windows
+          path: artefacts/
+          retention-days: 30
+
+  publish:
+    needs: [build-linux-mac, build-windows]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve version from tag
+        id: ver
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          VERSION="${TAG#v}"
+          echo "tag=$TAG"         >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        with:
+          path: incoming
+      - name: Flatten artefacts
+        run: |
+          mkdir -p artefacts
+          find incoming -mindepth 2 -type f -exec mv -t artefacts/ {} +
+          ls -la artefacts/
+      - name: Build previous-releases archive (apply *-app.zip rename)
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          mkdir -p "previous-releases/$VERSION"
+          cp artefacts/* "previous-releases/$VERSION/"
+          # Legacy ritual: rename Mac app bundles in the archive only.
+          for stem in RouteConverterMacOpenSource TimeAlbumProMac; do
+            src="previous-releases/$VERSION/$stem-app.zip"
+            dst="previous-releases/$VERSION/$stem.app.zip"
+            [[ -f "$src" ]] && mv "$src" "$dst"
+          done
+          ls -la "previous-releases/$VERSION/"
+      - name: Configure SSH
+        env:
+          DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+      - name: Rsync to static.routeconverter.com/downloads/release/
+        env:
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          rsync -av --omit-dir-times --no-perms \
+            artefacts/ \
+            "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/downloads/release/"
+      - name: Rsync to static.routeconverter.com/downloads/previous-releases/<v>/
+        env:
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          rsync -av --omit-dir-times --no-perms \
+            "previous-releases/$VERSION/" \
+            "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/downloads/previous-releases/$VERSION/"
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG:      ${{ steps.ver.outputs.tag }}
+          VERSION:  ${{ steps.ver.outputs.version }}
+        run: |
+          gh release create "$TAG" artefacts/* \
+            --title "RouteConverter $VERSION" \
+            --generate-notes \
+            --verify-tag
