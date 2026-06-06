@@ -264,3 +264,41 @@ jobs:
             --title "RouteConverter $VERSION" \
             --generate-notes \
             --verify-tag
+
+  publish-javadoc:
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17.0.15'
+      - uses: actions/cache@v5
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: mvn javadoc:aggregate
+        # mvn site is heavyweight (DependencyCheck#2222 etc) — only need
+        # the aggregated javadoc for static.routeconverter.com/javadoc/.
+        run: ./mvnw --batch-mode -Prouteconverter -DskipTests install javadoc:aggregate
+
+      - name: Configure SSH
+        env:
+          DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+
+      - name: Rsync to static.routeconverter.com/javadoc/
+        env:
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          rsync -av --delete --omit-dir-times --no-perms \
+            target/site/apidocs/ \
+            "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/javadoc/"
