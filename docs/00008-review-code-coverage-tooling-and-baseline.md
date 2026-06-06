@@ -6,7 +6,7 @@ Implemented on June 4, 2026.
 
 Updated on June 5, 2026 (second update).
 
-Updated on June 6, 2026 (Phase 1 start ? `download` module unit tests).
+Updated on June 6, 2026 (Phase 1 complete ? 137 new unit tests across 5 modules).
 
 ## Summary
 
@@ -40,6 +40,19 @@ The repository now has a clearer and more usable coverage path:
   - `NavigationFormatParserIT` now has 19 remaining tests, all verified green
 
 As of June 5, 2026 (second update), the `NavigationFormatParserIT` listener and format-list API contract tests have been extracted and verified in Surefire, and `NavigationFormatParserIT` remains green with 19 tests.
+
+As of June 6, 2026 (Phase 1 complete), 137 new unit tests have been added across all 5 Phase 1 modules. All tests are hermetic (no network, no live services) and run in Surefire. Phase 1 is closed.
+
+### Phase 1 test inventory (June 6, 2026)
+
+| Module | New tests | Commits | Key classes covered |
+|---|---:|---|---|
+| `download` | 55 | `5571cc85b`, `ae70a698b` | `Checksum`, `Download`, `DownloadExecutorComparator`, `Validator` |
+| `datasource` | 24 | `ae70a698b` | `DataSourceImpl`, `DownloadableImpl`, `FragmentImpl` |
+| `route-catalog` | 20 | `afdf4f209` | `DirectoryFileFilter`, `LocalRoute`, `RouteComparator` |
+| `download-tools` | 14 | `e2f17392a` | `DownloadableType`, `AnchorFilter` branches, `WgetCommandBuilder` edge cases |
+| `route-converter` | 24 | `91181e1a2` | `DateTimeComparator`, `DescriptionComparator`, `TautologyPredicate`, `PointOfInterestPositionPredicate`, `TagStatePhotoPredicate` |
+| **Total** | **137** | | |
 
 As of June 6, 2026, Phase 1 has started. Three new unit test classes have been added to the `download` module covering pure-logic behavior:
 
@@ -80,8 +93,8 @@ All 44 tests pass in Surefire (`Tests run: 44, Failures: 0, Errors: 0, Skipped: 
 ### Open
 
 - A broad hermetic whole-reactor run is still not a reliable green baseline.
-- The hermetic vs external classification is good enough to guide work now, but more `*IT` classes can still be split or renamed gradually.
-- The next `navigation-formats` work is now about conservative extraction choices, not emergency fixture-path repair.
+- Phase 1 is **complete** ? all 5 planned modules have new unit tests (137 tests total, all green).
+- Phase 2 is the next target: format and conversion logic in `navigation-formats`, `gpx`, `kml`, `common-navigation`.
 
 ## Coverage architecture and recommendation
 
@@ -345,19 +358,19 @@ The current baseline snapshot retained from the earlier aggregate coverage run i
 
 ### Phased plan
 
-1. **Phase 0 - keep the baseline easy to run**
+1. **Phase 0 - keep the baseline easy to run** ?
    - keep aggregate reporting easy to reproduce locally
    - do not add failing global thresholds yet
-2. **Phase 0.5 - fix execution and classification before writing many new tests**
+2. **Phase 0.5 - fix execution and classification before writing many new tests** ?
    - keep Surefire and Failsafe aligned with both naming conventions
    - prefer hermetic profiles for routine coverage work
-3. **Phase 1 - highest-value, lowest-friction gains**
-   - `download`
-   - `datasource`
-   - `route-catalog`
-   - `download-tools`
-   - `common`
-4. **Phase 2 - format and conversion logic**
+3. **Phase 1 - highest-value, lowest-friction gains** ? COMPLETE (June 6, 2026 ? 137 new tests)
+   - `download` ? ? 55 tests (`Checksum`, `Download`, `DownloadExecutorComparator`, `Validator`)
+   - `datasource` ? ? 24 tests (`DataSourceImpl`, `DownloadableImpl`, `FragmentImpl`)
+   - `route-catalog` ? ? 20 tests (`DirectoryFileFilter`, `LocalRoute`, `RouteComparator`)
+   - `download-tools` ? ? 14 tests (`DownloadableType`, `AnchorFilter`, `WgetCommandBuilder`)
+   - `route-converter` helper and model classes ? ? 24 tests (comparators, predicates)
+4. **Phase 2 - format and conversion logic** ? NEXT
    - `navigation-formats`
    - `gpx`
    - `kml`
@@ -373,15 +386,12 @@ The current baseline snapshot retained from the earlier aggregate coverage run i
    - otherwise exclude packaging-style modules from future gates deliberately
 7. **Phase 5 - add gradual, module-specific quality gates only after the baseline improves**
 
-### Recommended first implementation batch
+### Recommended next batch (Phase 2)
 
-If the goal is the next practical coverage increment, the best first batch is still:
-
-1. `download`
-2. `datasource`
-3. `route-catalog`
-4. `download-tools`
-5. `route-converter` helper and model classes
+- `navigation-formats`: pure format-logic helpers (e.g. coordinate parsing, number formatting utilities)
+- `gpx`: GPX format model helpers
+- `kml`: KML format model helpers
+- `common-navigation`: position math, distance calculations, `BoundingBox`
 
 ## `*IT` inventory and current classification
 
@@ -585,12 +595,18 @@ These still exercise real file, parser, writer, round-trip, or multi-format inte
    - remaining `NavigationFormatParserIT` tests are broader format-validation sweeps, not narrow API contracts
    - remaining `TourReadWriteRoundtripIT` tests are full round-trip integration tests
    - next meaningful work is Phase 1: writing new tests for under-covered modules
-6. **next recommended batch (Phase 1 ? lowest friction, highest value):**
-   - `download`
-   - `datasource`
-   - `route-catalog`
-   - `download-tools`
-   - `route-converter` helper and model classes
+6. **Phase 1 complete (June 6, 2026):**
+   - `download` ? 55 tests
+   - `datasource` ? 24 tests
+   - `route-catalog` ? 20 tests
+   - `download-tools` ? 14 tests
+   - `route-converter` helper and model classes ? 24 tests
+   - **137 new tests total, all passing in Surefire**
+7. **next recommended batch (Phase 2 ? format and conversion logic):**
+   - `navigation-formats`
+   - `gpx`
+   - `kml`
+   - `common-navigation`
 
 ## Conclusion
 
@@ -609,6 +625,7 @@ The important progress is now clear and real:
   - `GpxExtensionsTest` (6 extension-field mapping methods)
   - `NavigationFormatParserTest.testNavigationFileParserListener()` and `testReadWithFormatList()`
 - `navigation-formats` `*IT` extraction shortlist is now largely exhausted
-- the next practical step is Phase 1: writing new tests for under-covered modules (`download`, `datasource`, `route-catalog`, `download-tools`)
+- **Phase 1 is complete**: 137 new unit tests added across `download`, `datasource`, `route-catalog`, `download-tools`, `route-converter` ? all hermetic, all green in Surefire
+- **Phase 2** is the next target: format and conversion logic in `navigation-formats`, `gpx`, `kml`, `common-navigation`
 
 That makes the next coverage steps much more concrete than before.
