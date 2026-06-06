@@ -38,7 +38,7 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Resolve JDK version
         id: jdk
@@ -54,7 +54,7 @@ jobs:
           echo "version=$ver" >> "$GITHUB_OUTPUT"
           echo "JDK version: $ver"
 
-      - uses: actions/setup-java@v4
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: ${{ steps.jdk.outputs.version }}
@@ -97,7 +97,7 @@ jobs:
           cat "${base}.zip.sha256"
           echo "base=$base" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: stripped-jre
           path: |
@@ -109,7 +109,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v5
         with:
           name: stripped-jre
           path: artefacts/
