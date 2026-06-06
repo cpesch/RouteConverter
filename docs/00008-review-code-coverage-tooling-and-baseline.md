@@ -300,63 +300,65 @@ Use normal module/profile runs and generated Failsafe reports to verify that ext
 
 ## Current aggregate baseline snapshot
 
-### Baseline (June 4, 2026) vs. after Phase 1 (June 6, 2026)
+### Baseline (June 4, 2026) vs. after Phase 1 (June 6, 2026) vs. after Phase 3 (June 6, 2026)
 
-| Metric | Covered (baseline) | Missed (baseline) | Coverage (baseline) | Coverage (after Phase 1) |
-|---|---:|---:|---:|---:|
-| Instruction | 33,355 | 186,936 | 15.14% | **35.01%** |
-| Branch | 2,606 | 12,612 | 17.12% | **37.60%** |
-| Line | 7,438 | 41,483 | 15.20% | **34.86%** |
-| Complexity | 3,049 | 20,993 | 12.68% | **28.86%** |
-| Method | 2,178 | 14,202 | 13.30% | **29.01%** |
-| Class | 467 | 1,547 | 23.19% | **40.12%** |
+| Metric | Covered (baseline) | Missed (baseline) | Coverage (baseline) | Coverage (after Phase 1) | Coverage (after Phase 3) |
+|---|---:|---:|---:|---:|---:|
+| Instruction | 33,355 | 186,936 | 15.14% | **35.01%** | **35.52%** |
+| Branch | 2,606 | 12,612 | 17.12% | **37.60%** | **38.17%** |
+| Line | 7,438 | 41,483 | 15.20% | **34.86%** | **35.27%** |
+| Complexity | 3,049 | 20,993 | 12.68% | **28.86%** | **29.29%** |
+| Method | 2,178 | 14,202 | 13.30% | **29.01%** | **29.40%** |
+| Class | 467 | 1,547 | 23.19% | **40.12%** | **40.42%** |
 
 Phase 1 measurement was taken on June 6, 2026 via `./mvnw -U -pl coverage-report -am -Dskip.integration.tests=true verify` (Surefire unit tests only, no integration tests). The very large jump from ~15% to ~35% instruction coverage reflects a combination of the 137 new Phase 1 unit tests and the existing test suite that was already covered.
+
+Phase 3 measurement was taken on June 6, 2026 via `./mvnw -pl coverage-report -am -Dskip.integration.tests=true -Dmaven.test.failure.ignore=true verify` (Surefire unit tests only). Covers all 274 tests added in Phases 1?3 (137 + 87 + 50).
 
 ## Module observations and planning priorities
 
 ### Stronger modules already worth preserving
 
-| Module | Line coverage (baseline) | Line coverage (after Phase 1) |
-|---|---:|---:|
-| `common-navigation` | 78.39% | **85.30%** |
-| `geocoding-service` | 74.29% | 74.29% |
-| `common` | 50.24% | **56.59%** |
-| `photon` | 44.44% | 44.44% |
-| `browser-mapview` | 38.00% | 38.00% |
-| `mapsforge-maps` | 36.85% | 36.85% |
-| `tileserver-maps` | 35.44% | 35.44% |
-| `datasource` | 31.52% | **44.12%** |
-| `graphhopper` | 29.05% | 29.05% |
-| `navigation-formats` | 25.81% | **76.42%** |
+| Module | Line coverage (baseline) | Line coverage (after Phase 1) | Line coverage (after Phase 3) |
+|---|---:|---:|---:|
+| `common-navigation` | 78.39% | **85.30%** | **93.37%** |
+| `geocoding-service` | 74.29% | 74.29% | 74.29% |
+| `common` | 50.24% | **56.59%** | 56.59% |
+| `photon` | 44.44% | 44.44% | 44.44% |
+| `browser-mapview` | 38.00% | 38.00% | **65.33%** |
+| `mapsforge-maps` | 36.85% | 36.85% | 36.85% |
+| `tileserver-maps` | 35.44% | 35.44% | 35.44% |
+| `datasource` | 31.52% | **44.12%** | 44.12% |
+| `graphhopper` | 29.05% | 29.05% | 29.05% |
+| `navigation-formats` | 25.81% | **76.42%** | **76.47%** |
 
 ### Important low-coverage modules
 
-| Module | Line coverage (baseline) | Line coverage (after Phase 1) | Observation |
-|---|---:|---:|---|
-| `route-converter` | 3.58% | **3.85%** | Essential application logic, many classes, coverage far below importance |
-| `download` | 5.44% | **26.16%** | Core download behavior is barely covered |
-| `route-catalog` | 6.08% | **10.64%** | Catalog client behavior is essential but lightly covered |
-| `gpx` | 22.67% | **45.66%** | Important format support with no direct tests in this module |
-| `kml` | 2.14% | **13.60%** | Very large surface area with almost no direct module coverage |
-| `download-tools` | 16.14% | **18.34%** | Tooling exists but key behaviors are still lightly exercised |
-| `mapsforge-mapview` | 13.78% | 13.78% | Important UI-adjacent behavior with limited tests |
-| `common-gui` | 18.04% | 18.04% | Shared GUI logic is under-covered |
+| Module | Line coverage (baseline) | Line coverage (after Phase 1) | Line coverage (after Phase 3) | Observation |
+|---|---:|---:|---:|---|
+| `route-converter` | 3.58% | **3.85%** | **4.78%** | Essential application logic, many classes, coverage far below importance |
+| `download` | 5.44% | **26.16%** | 26.16% | Core download behavior is barely covered |
+| `route-catalog` | 6.08% | **10.64%** | 10.64% | Catalog client behavior is essential but lightly covered |
+| `gpx` | 22.67% | **45.66%** | **45.83%** | Important format support with no direct tests in this module |
+| `kml` | 2.14% | **13.60%** | 13.60% | Very large surface area with almost no direct module coverage |
+| `download-tools` | 16.14% | **18.34%** | 18.34% | Tooling exists but key behaviors are still lightly exercised |
+| `mapsforge-mapview` | 13.78% | 13.78% | 13.78% | Important UI-adjacent behavior with limited tests |
+| `common-gui` | 18.04% | 18.04% | 18.04% | Shared GUI logic is under-covered |
 
 ### Zero-coverage or near-zero modules
 
-| Module | Line coverage (baseline) | Line coverage (after Phase 1) | Comment |
-|---|---:|---:|---|
-| `elevation-service` | 0.00% | 0.00% | tiny interface module |
-| `feedback` | 0.00% | 0.00% | very small module |
-| `mapsforge-mbtiles` | 0.00% | 0.00% | no direct tests |
-| `profileview` | 0.00% | 0.00% | no direct tests |
-| `proxy-tools` | 0.00% | 0.00% | very small utility module |
-| `route-converter-cmdline` | 0.00% | 0.00% | wrapper or entrypoint module |
-| `route-converter-opensource` | 0.00% | 0.00% | packaging or wrapper module |
-| `route-converter-tools` | 0.00% | 0.00% | tooling wrapper module |
-| `time-album-pro` | 0.00% | 0.00% | tiny module |
-| `mapview` | 0.65% | 0.65% | shared abstraction layer with little direct exercise |
+| Module | Line coverage (baseline) | Line coverage (after Phase 1) | Line coverage (after Phase 3) | Comment |
+|---|---:|---:|---:|---|
+| `elevation-service` | 0.00% | 0.00% | 0.00% | tiny interface module |
+| `feedback` | 0.00% | 0.00% | 0.00% | very small module |
+| `mapsforge-mbtiles` | 0.00% | 0.00% | 0.00% | no direct tests |
+| `profileview` | 0.00% | 0.00% | 0.00% | no direct tests |
+| `proxy-tools` | 0.00% | 0.00% | 0.00% | very small utility module |
+| `route-converter-cmdline` | 0.00% | 0.00% | 0.00% | wrapper or entrypoint module |
+| `route-converter-opensource` | 0.00% | 0.00% | 0.00% | packaging or wrapper module |
+| `route-converter-tools` | 0.00% | 0.00% | 0.00% | tooling wrapper module |
+| `time-album-pro` | 0.00% | 0.00% | 0.00% | tiny module |
+| `mapview` | 0.65% | 0.65% | 0.65% | shared abstraction layer with little direct exercise |
 
 ### Phased plan
 
