@@ -159,13 +159,24 @@ jobs:
       - name: Build RouteConverterPortable .paf.exe
         shell: pwsh
         run: |
+          $ErrorActionPreference = 'Stop'
           $exe = (Get-ChildItem pa-installer\extracted -Recurse -Filter 'PortableApps.comInstaller.exe' |
                   Select-Object -First 1).FullName
-          if (-not $exe) { Write-Error "PortableApps.comInstaller.exe not found"; exit 1 }
+          if (-not $exe) {
+            Write-Host "--- full pa-installer\extracted tree ---"
+            Get-ChildItem pa-installer\extracted -Recurse | Format-Table FullName
+            throw "PortableApps.comInstaller.exe not found"
+          }
           $tree = "$(Get-Location)\RouteConverterPortable\target\classes\RouteConverterPortable"
+          if (-not (Test-Path $tree)) { throw "Portable tree not found at $tree" }
+          Write-Host "Running: $exe $tree"
           & $exe $tree
-          Get-ChildItem RouteConverterPortable\target\classes -Filter '*.paf.exe' |
+          Write-Host "Installer exit code: $LASTEXITCODE"
+          Get-ChildItem RouteConverterPortable -Recurse -Include '*.paf.exe' |
             Format-Table FullName, Length
+          $paf = Get-ChildItem RouteConverterPortable -Recurse -Include '*.paf.exe' |
+                 Select-Object -First 1
+          if (-not $paf) { throw "No .paf.exe produced" }
 
       - name: Stage artefacts
         shell: bash
