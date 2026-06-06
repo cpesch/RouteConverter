@@ -21,6 +21,7 @@ package slash.navigation.download.tools.helpers;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,5 +74,34 @@ public class AnchorFilterTest {
         String URI = "page.html";
         String ZIP_URI = "page.zip";
         assertEquals(singletonList(URI), filter.filterAnchors(ABSOLUTE_URL, asList(URI, ZIP_URI), null, null, createSet(".*\\.zip")));
+    }
+
+    @Test
+    public void testStripsDotSlashPrefix() {
+        String BASE = "http://www.routeconverter.com/";
+        // "./page.html" should become "page.html" and pass through
+        assertEquals(singletonList("page.html"), filter.filterAnchors(BASE, singletonList("./page.html"), null, null, null));
+    }
+
+    @Test
+    public void testStripsQueryString() {
+        String BASE = "http://www.routeconverter.com/";
+        // "file.zip?v=1" should become "file.zip"
+        assertEquals(singletonList("file.zip"), filter.filterAnchors(BASE, singletonList("file.zip?v=1"), null, null, null));
+    }
+
+    @Test
+    public void testFiltersParentPathAnchors() {
+        String BASE = "http://www.routeconverter.com/sub/";
+        // ".." relative anchors should be excluded
+        assertEquals(new ArrayList<>(), filter.filterAnchors(BASE, singletonList("../other.html"), null, null, null));
+    }
+
+    @Test
+    public void testStripsBaseUrlPrefixFromAbsoluteUrl() {
+        String BASE = "http://example.com/files/";
+        String FULL = BASE + "germany.zip";
+        // the full absolute URL should be relativised to "germany.zip"
+        assertEquals(singletonList("germany.zip"), filter.filterAnchors(BASE, singletonList(FULL), null, null, null));
     }
 }

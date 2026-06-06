@@ -27,13 +27,12 @@ import slash.navigation.datasources.binding.FileType;
 import slash.navigation.datasources.binding.MapType;
 import slash.navigation.datasources.binding.ObjectFactory;
 import slash.navigation.datasources.binding.SourceType;
-import slash.navigation.datasources.impl.DataSourceImpl;
-
-import java.nio.file.Paths;
+import slash.navigation.datasources.impl.DataSourceImpl;import java.nio.file.Paths;
 import java.util.List;
 
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class WgetCommandBuilderTest {
@@ -78,6 +77,45 @@ public class WgetCommandBuilderTest {
     public void formatCommandQuotesGlobArgs() {
         List<String> cmd = List.of("wget", "--accept", "*.zip", "https://example.com/");
         assertEquals("wget --accept '*.zip' https://example.com/", builder.formatCommand(cmd));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void buildCommandThrowsWhenSourceIsNull() {
+        DataSource ds = dataSource("id1", "http://example.com/", null, emptyList());
+        builder.buildCommand(ds, null, Paths.get("/m"));
+    }
+
+    @Test
+    public void buildCommandOmitsLevelWhenNotSet() {
+        DataSource ds = dataSource("id1", "http://example.com/",
+                source(null, null, List.of("*.zip"), emptyList()), emptyList());
+        List<String> cmd = builder.buildCommand(ds, ds.getSource(), Paths.get("/m"));
+        assertFalse(cmd.contains("-l"));
+    }
+
+    @Test
+    public void buildCommandFallsBackToBaseUrlWhenSourceUrlIsBlank() {
+        DataSource ds = dataSource("id1", "http://base.example.com/",
+                source("   ", null, List.of("*.zip"), emptyList()), emptyList());
+        List<String> cmd = builder.buildCommand(ds, ds.getSource(), Paths.get("/m"));
+        assertEquals("http://base.example.com/", cmd.get(cmd.size() - 1));
+    }
+
+    @Test
+    public void derivesAcceptsFromMapExtensions() {
+        ObjectFactory factory = new ObjectFactory();
+        DatasourceType type = factory.createDatasourceType();
+        type.setId("ds");
+        type.setBaseUrl("https://example.com/");
+        MapType mapType = factory.createMapType();
+        mapType.setUri("world/europe.map");
+        type.getMap().add(mapType);
+        DataSource ds = new DataSourceImpl(type);
+        SourceType src = source(null, null, emptyList(), emptyList());
+        type.setSource(src);
+
+        java.util.Set<String> accepts = builder.resolveAccepts(ds, ds.getSource());
+        assertTrue(accepts.contains("*.map"));
     }
 
     private DataSource dataSource(String id, String baseUrl, SourceType source, List<String> fileUris) {
