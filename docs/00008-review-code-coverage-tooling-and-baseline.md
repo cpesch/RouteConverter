@@ -382,16 +382,31 @@ Phase 3 measurement was taken on June 6, 2026 via `./mvnw -pl coverage-report -a
 5. **Phase 3 - application-level non-UI behavior** ? COMPLETE (June 6, 2026 ? 50 new tests)
    - `browser-mapview` ? ? 16 tests (`ColorHelper` 9, `PositionReducer` 7 additions: `getMaximumSegmentLength`, `clear`/`hasFilteredVisibleArea`/`isWithinVisibleArea`, `filterPositionsWithoutCoordinates`)
    - `route-converter` ? ? 34 tests (`PositionHelper` 17 additions: `formatTime`/`formatSize`/`formatDate`/`extract*`; `TreePathStringConversion` 6; `AutomaticElevationService` 11: accessors + priority ordering)
-6. **Phase 4 - decide low-value module policy explicitly** ? NEXT
-   - add lightweight smoke tests where behavior matters
-   - otherwise exclude packaging-style modules from future gates deliberately
-7. **Phase 5 - add gradual, module-specific quality gates only after the baseline improves**
+6. **Phase 4 - decide low-value module policy explicitly** ? COMPLETE (June 6, 2026 ? 16 new tests)
+   - `route-converter-tools` ? ? 7 tests (`OrderedPropertiesTest`: put/get, overwrite, remove, insertion-order for `keys()` and `getKeys()`, empty initial state)
+   - `mapview` ? ? 9 tests (`PositionColumnValuesTest` 4: constructors, previous-values lifecycle; `ColorModelTest` 5: default color, round-trip via Preferences, change-listener fire and removal)
+   - Packaging/entrypoint modules classified and documented in "Zero-coverage module classification" section (see below)
+7. **Phase 5 - add gradual, module-specific quality gates only after the baseline improves** ? NEXT
+   - define per-module minimum line-coverage thresholds for the modules that now have meaningful coverage
+   - configure JaCoCo `check` goal with `BUNDLE` rules for the strongest modules first
+   - exclude the explicitly classified packaging modules from the check rules
 
-### Recommended next batch (Phase 4)
+### Zero-coverage module classification (Phase 4 outcome)
 
-- Decide which zero-coverage modules (`profileview`, `proxy-tools`, `route-converter-cmdline`, `route-converter-opensource`, `time-album-pro`, `mapview`) are packaging/wrapper modules that should be explicitly excluded from future gates
-- Add lightweight smoke tests for the non-trivial ones (e.g. `mapview` interface layer)
-- Document the exclusion policy in the doc so coverage thresholds only apply to meaningful modules
+| Module | Type | Tests added | Reason |
+|---|---|---|---|
+| `elevation-service` | Interface only | none | Single Java interface with no implementation logic; exclude from gates |
+| `feedback` | External service client | none | `RouteFeedback` calls live server; behaviour covered by external `*IT` tests |
+| `mapsforge-mbtiles` | Database renderer | none | All 5 classes require an MBTiles SQLite file at runtime; exclude from unit gates |
+| `profileview` | Swing chart UI | none | All 10 classes are Swing chart or JFreeChart wrappers; exclude from unit gates |
+| `proxy-tools` | Utility runner | none | Single `CheckProxy` class with a `main()` entry point; tooling wrapper |
+| `route-converter-cmdline` | Entry point | none | 3 files: `main()`, format registry, help formatter; packaging wrapper |
+| `route-converter-opensource` | Application variant | none | 27 Swing-dependent classes wiring the open-source map view; packaging layer |
+| `route-converter-tools` | Build tool | **7 tests** | `OrderedProperties` has real insertion-order semantics worth a regression guard |
+| `time-album-pro` | Entry point | none | Single `TimeAlbumPro` class with a `main()` entry point; packaging wrapper |
+| `mapview` | Shared model layer | **9 tests** | `PositionColumnValues` and `ColorModel` have logic independent of Swing rendering |
+
+**Policy**: when adding JaCoCo `check` rules in Phase 5, exclude `elevation-service`, `feedback`, `mapsforge-mbtiles`, `profileview`, `proxy-tools`, `route-converter-cmdline`, `route-converter-opensource`, and `time-album-pro` from minimum-coverage thresholds. Apply thresholds to `route-converter-tools` and `mapview`.
 
 ## `*IT` inventory and current classification
 
