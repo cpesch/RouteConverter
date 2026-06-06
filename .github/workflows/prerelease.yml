@@ -1,12 +1,13 @@
 name: Prerelease
 
 # Build prerelease artefacts on every push to master + nightly + manual,
-# publish to prerelease.routeconverter.com (anon-read static vhost) and the
+# publish to static.routeconverter.com/downloads/prereleases/ and the
 # rolling `prerelease` GitHub Release.
 #
-# Infra: bootstrap-server/12-public-release-vhosts.sh provisions the
+# Infra: bootstrap-server/12-release-deploy-user.sh provisions the
 # rc-release-deploy SSH user + restricted-rsync wrapper that only accepts
-# writes into /var/www/prerelease/.
+# writes into /var/www/routeconverter.com/static/downloads/{prereleases,
+# release,previous-releases}/.
 #
 # See rc-meta/docs/00018-release-automation-3.4.md Phase 2.
 
@@ -111,13 +112,13 @@ jobs:
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
-      - name: Rsync to prerelease.routeconverter.com
+      - name: Rsync to static.routeconverter.com/downloads/prereleases/
         env:
           DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
         run: |
           rsync -av --omit-dir-times --no-perms \
             artefacts/ \
-            "rc-release-deploy@${DEPLOY_HOST}:/var/www/prerelease/"
+            "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/downloads/prereleases/"
       - name: Update rolling 'prerelease' GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
