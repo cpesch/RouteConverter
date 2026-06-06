@@ -56,10 +56,17 @@ jobs:
           INSTALLER_URL: ${{ inputs.installer_url }}
         run: |
           New-Item -ItemType Directory -Force -Path pa-installer | Out-Null
-          # The redirect endpoint returns a temporary URL; -MaximumRedirection chases it.
+          # portableapps.com returns 403 to the default PowerShell user-agent.
+          # Use a Firefox UA + manual Referer to look like a browser hit.
+          $headers = @{
+            'User-Agent' = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:128.0) Gecko/20100101 Firefox/128.0'
+            'Accept'     = 'application/octet-stream, */*'
+            'Referer'    = 'https://portableapps.com/apps/development/portableapps.com_installer'
+          }
           Invoke-WebRequest -Uri $env:INSTALLER_URL `
                             -OutFile pa-installer\installer.paf.exe `
                             -MaximumRedirection 10 `
+                            -Headers $headers `
                             -UseBasicParsing
           Get-Item pa-installer\installer.paf.exe | Format-List Length, FullName
 
