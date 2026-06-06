@@ -53,4 +53,23 @@
             <version>${jackson.version}</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>check-coverage</id>
+                        <goals><goal>check</goal></goals>
+                        <configuration>
+                            <!-- photon has no unit tests (only PhotonServiceIT); skip until own tests are added -->
+                            <skip>true</skip>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
