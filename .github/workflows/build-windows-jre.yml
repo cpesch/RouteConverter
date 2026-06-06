@@ -1,0 +1,127 @@
+name: Build Windows JRE
+
+# Build the stripped Windows JRE once (jlink + trim per
+# RouteConverterWindowsBundle/build-jre.bat), publish to
+# https://static.routeconverter.com/build/windows/jre-<version>-x64-stripped.zip
+# alongside a .sha256 sidecar.
+#
+# Both RouteConverterWindowsBundle.nsi and TimeAlbumProWindowsBundle.nsi
+# reference ..\jre-17.0.15 — same JRE serves both. Bundle workflows
+# (prerelease.yml / release.yml on the Windows bundle path, TBD) download
+# this artefact from static.routeconverter.com, verify sha256, extract
+# into both bundle dirs, then makensis.
+#
+# Triggers:
+#   workflow_dispatch — manual rebuild
+#   push paths — automatic when the jlink recipe changes
+#
+# Plan: rc-meta docs/00018-release-automation-3.4.md Phase 5.4 prerequisite.
+
+on:
+  workflow_dispatch:
+    inputs:
+      jdk_version:
+        description: 'Temurin JDK version (e.g. 17.0.15)'
+        required: true
+        default: '17.0.15'
+  push:
+    branches: [master]
+    paths:
+      - 'RouteConverterWindowsBundle/build-jre.bat'
+      - '.github/workflows/build-windows-jre.yml'
+
+concurrency:
+  group: build-windows-jre
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve JDK version
+        id: jdk
+        shell: bash
+        run: |
+          # Manual dispatch overrides; push reads from build-jre.bat to avoid
+          # version drift between the .bat and the workflow.
+          if [[ -n "${{ inputs.jdk_version }}" ]]; then
+            ver="${{ inputs.jdk_version }}"
+          else
+            ver=$(grep -oE 'jdk-[0-9.]+' RouteConverterWindowsBundle/build-jre.bat | head -1 | sed 's/jdk-//')
+          fi
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "JDK version: $ver"
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ steps.jdk.outputs.version }}
+
+      - name: jlink stripped JRE (port of build-jre.bat)
+        shell: cmd
+        env:
+          VER: ${{ steps.jdk.outputs.version }}
+        run: |
+          set OUT=jre-%VER%
+          if exist %OUT% rmdir /s /q %OUT%
+          "%JAVA_HOME%\bin\jlink" ^
+            --module-path "%JAVA_HOME%\jmods" ^
+            --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.unsupported ^
+            --output %OUT% ^
+            --strip-debug --compress 2 --no-header-files --no-man-pages
+          if exist %OUT%\legal rmdir /s /q %OUT%\legal
+          if exist %OUT%\release del /q %OUT%\release
+          if exist %OUT%\bin\javaw.exe del /q %OUT%\bin\javaw.exe
+          if exist %OUT%\bin\keytool.exe del /q %OUT%\bin\keytool.exe
+          if exist %OUT%\bin\kinit.exe del /q %OUT%\bin\kinit.exe
+          if exist %OUT%\bin\klist.exe del /q %OUT%\bin\klist.exe
+          if exist %OUT%\bin\ktab.exe del /q %OUT%\bin\ktab.exe
+          if exist %OUT%\bin\client rmdir /s /q %OUT%\bin\client
+          if exist %OUT%\lib\client rmdir /s /q %OUT%\lib\client
+          if exist %OUT%\lib\server rmdir /s /q %OUT%\lib\server
+          if exist %OUT%\conf\security\policy\README.txt del /q %OUT%\conf\security\policy\README.txt
+          dir %OUT%
+
+      - name: Zip + sha256
+        id: pack
+        shell: bash
+        env:
+          VER: ${{ steps.jdk.outputs.version }}
+        run: |
+          base="jre-${VER}-x64-stripped"
+          (cd "jre-${VER}" && 7z a -tzip -mx=9 "../${base}.zip" . >/dev/null)
+          sha256sum "${base}.zip" | awk -v f="${base}.zip" '{print $1"  "f}' > "${base}.zip.sha256"
+          ls -la "${base}.zip" "${base}.zip.sha256"
+          cat "${base}.zip.sha256"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.pack.outputs.base }}
+          path: |
+            ${{ steps.pack.outputs.base }}.zip
+            ${{ steps.pack.outputs.base }}.zip.sha256
+          retention-days: 30
+
+      - name: Configure SSH
+        env:
+          DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+
+      - name: Rsync to static.routeconverter.com/build/windows/
+        env:
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+          BASE:        ${{ steps.pack.outputs.base }}
+        shell: bash
+        run: |
+          rsync -av --omit-dir-times --no-perms \
+            "${BASE}.zip" "${BASE}.zip.sha256" \
+            "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/build/windows/"
