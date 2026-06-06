@@ -377,23 +377,19 @@ Phase 1 measurement was taken on June 6, 2026 via `./mvnw -U -pl coverage-report
    - `gpx` ? ? 12 tests (`GpxUtilTest`: marshal/unmarshal round-trips for GPX 1.0 and 1.1, `toXml`, `NamespaceFilter`)
    - `common-navigation` ? ? 58 tests (`TransformUtil` 12, `SimpleNavigationPosition` 21, `ValueAndOrientation` 11, `DistanceAndTime` 14)
    - `navigation-formats` ? already at 76.42% after Phase 1; deferred to Phase 3 focus
-5. **Phase 3 - application-level non-UI behavior** ? NEXT
-   - `route-converter`
-   - `mapsforge-mapview`
-   - `common-gui`
-   - `browser-mapview`
-   - `tileserver-maps`
-6. **Phase 4 - decide low-value module policy explicitly**
+5. **Phase 3 - application-level non-UI behavior** ? COMPLETE (June 6, 2026 ? 50 new tests)
+   - `browser-mapview` ? ? 16 tests (`ColorHelper` 9, `PositionReducer` 7 additions: `getMaximumSegmentLength`, `clear`/`hasFilteredVisibleArea`/`isWithinVisibleArea`, `filterPositionsWithoutCoordinates`)
+   - `route-converter` ? ? 34 tests (`PositionHelper` 17 additions: `formatTime`/`formatSize`/`formatDate`/`extract*`; `TreePathStringConversion` 6; `AutomaticElevationService` 11: accessors + priority ordering)
+6. **Phase 4 - decide low-value module policy explicitly** ? NEXT
    - add lightweight smoke tests where behavior matters
    - otherwise exclude packaging-style modules from future gates deliberately
 7. **Phase 5 - add gradual, module-specific quality gates only after the baseline improves**
 
-### Recommended next batch (Phase 3)
+### Recommended next batch (Phase 4)
 
-- `route-converter`: more model and service helpers beyond the Phase 1 comparators/predicates
-- `kml` / `gpx`: deeper format-logic coverage (e.g. non-trivial placemark/waypoint round-trips, extension bindings)
-- `mapsforge-mapview`: non-UI helpers and model classes
-- `common-gui`: shared GUI logic that does not require a display
+- Decide which zero-coverage modules (`profileview`, `proxy-tools`, `route-converter-cmdline`, `route-converter-opensource`, `time-album-pro`, `mapview`) are packaging/wrapper modules that should be explicitly excluded from future gates
+- Add lightweight smoke tests for the non-trivial ones (e.g. `mapview` interface layer)
+- Document the exclusion policy in the doc so coverage thresholds only apply to meaningful modules
 
 ## `*IT` inventory and current classification
 
