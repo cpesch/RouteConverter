@@ -99,29 +99,35 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.pack.outputs.base }}
+          name: stripped-jre
           path: |
             ${{ steps.pack.outputs.base }}.zip
             ${{ steps.pack.outputs.base }}.zip.sha256
           retention-days: 30
 
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: stripped-jre
+          path: artefacts/
+      - name: Inspect artefacts
+        run: ls -la artefacts/
       - name: Configure SSH
         env:
           DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
           DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
-        shell: bash
         run: |
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
-
       - name: Rsync to static.routeconverter.com/build/windows/
         env:
           DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
-          BASE:        ${{ steps.pack.outputs.base }}
-        shell: bash
         run: |
           rsync -av --omit-dir-times --no-perms \
-            "${BASE}.zip" "${BASE}.zip.sha256" \
+            artefacts/ \
             "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/build/windows/"
