@@ -135,6 +135,38 @@ jobs:
         working-directory: TimeAlbumProWindowsBundle
         run: makensis "target\TimeAlbumPro.nsi"
 
+      - name: Cache PortableApps.com Installer
+        id: pa-cache
+        uses: actions/cache@v5
+        with:
+          path: pa-installer/extracted
+          key: pa-installer-v1
+
+      - name: Download + extract PortableApps.com Installer (cache miss only)
+        if: steps.pa-cache.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path pa-installer\extracted | Out-Null
+          # portableapps.com 403s GH Actions IPs even with browser UA;
+          # mirror the .paf.exe on our static vhost.
+          Invoke-WebRequest -Uri 'https://static.routeconverter.com/build/windows/PortableApps.comInstaller.paf.exe' `
+                            -OutFile pa-installer\installer.paf.exe `
+                            -MaximumRedirection 5 `
+                            -UseBasicParsing
+          # NSIS self-extractor — 7z handles it.
+          & "C:\Program Files\7-Zip\7z.exe" x pa-installer\installer.paf.exe -opa-installer\extracted -y | Out-Null
+
+      - name: Build RouteConverterPortable .paf.exe
+        shell: pwsh
+        run: |
+          $exe = (Get-ChildItem pa-installer\extracted -Recurse -Filter 'PortableApps.comInstaller.exe' |
+                  Select-Object -First 1).FullName
+          if (-not $exe) { Write-Error "PortableApps.comInstaller.exe not found"; exit 1 }
+          $tree = "$(Get-Location)\RouteConverterPortable\target\classes\RouteConverterPortable"
+          & $exe $tree
+          Get-ChildItem RouteConverterPortable\target\classes -Filter '*.paf.exe' |
+            Format-Table FullName, Length
+
       - name: Stage artefacts
         shell: bash
         run: |
@@ -143,9 +175,7 @@ jobs:
           cp TimeAlbumProWindows/target/TimeAlbumProWindows.* artefacts/
           cp RouteConverterWindowsBundle/target/RouteConverterWindowsBundle*.exe artefacts/
           cp TimeAlbumProWindowsBundle/target/TimeAlbumProWindowsBundle*.exe artefacts/
-          # NOTE: RouteConverterPortable Installer still builds on the legacy
-          # Windows VM (PortableApps.com Installer via Google Drive Start.exe).
-          # Phase 5.4c will port that when CLI invocation is verified headless.
+          cp RouteConverterPortable/target/classes/RouteConverterPortable*.paf.exe artefacts/
           ls -la artefacts/
 
       - uses: actions/upload-artifact@v5
