@@ -372,12 +372,12 @@ Phase 1 measurement was taken on June 6, 2026 via `./mvnw -U -pl coverage-report
    - `route-catalog` ? ? 20 tests (`DirectoryFileFilter`, `LocalRoute`, `RouteComparator`)
    - `download-tools` ? ? 14 tests (`DownloadableType`, `AnchorFilter`, `WgetCommandBuilder`)
    - `route-converter` helper and model classes ? ? 24 tests (comparators, predicates)
-4. **Phase 2 - format and conversion logic** ? NEXT
-   - `navigation-formats`
-   - `gpx`
-   - `kml`
-   - `common-navigation`
-5. **Phase 3 - application-level non-UI behavior**
+4. **Phase 2 - format and conversion logic** ? COMPLETE (June 6, 2026 ? 87 new tests)
+   - `kml` ? ? 17 tests (`KmlUtilTest`: marshal/unmarshal round-trips for all 4 KML dialect versions + namespace constants)
+   - `gpx` ? ? 12 tests (`GpxUtilTest`: marshal/unmarshal round-trips for GPX 1.0 and 1.1, `toXml`, `NamespaceFilter`)
+   - `common-navigation` ? ? 58 tests (`TransformUtil` 12, `SimpleNavigationPosition` 21, `ValueAndOrientation` 11, `DistanceAndTime` 14)
+   - `navigation-formats` ? already at 76.42% after Phase 1; deferred to Phase 3 focus
+5. **Phase 3 - application-level non-UI behavior** ? NEXT
    - `route-converter`
    - `mapsforge-mapview`
    - `common-gui`
@@ -388,12 +388,12 @@ Phase 1 measurement was taken on June 6, 2026 via `./mvnw -U -pl coverage-report
    - otherwise exclude packaging-style modules from future gates deliberately
 7. **Phase 5 - add gradual, module-specific quality gates only after the baseline improves**
 
-### Recommended next batch (Phase 2)
+### Recommended next batch (Phase 3)
 
-- `navigation-formats`: pure format-logic helpers (e.g. coordinate parsing, number formatting utilities)
-- `gpx`: GPX format model helpers
-- `kml`: KML format model helpers
-- `common-navigation`: position math, distance calculations, `BoundingBox`
+- `route-converter`: more model and service helpers beyond the Phase 1 comparators/predicates
+- `kml` / `gpx`: deeper format-logic coverage (e.g. non-trivial placemark/waypoint round-trips, extension bindings)
+- `mapsforge-mapview`: non-UI helpers and model classes
+- `common-gui`: shared GUI logic that does not require a display
 
 ## `*IT` inventory and current classification
 
