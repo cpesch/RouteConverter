@@ -81,7 +81,11 @@ jobs:
 
       - name: Pin NSIS 3.11
         shell: pwsh
-        run: choco install nsis --version=3.11 --no-progress -y
+        run: |
+          choco install nsis --version=3.11 --no-progress -y
+          # choco doesn't refresh PATH for subsequent steps; export the
+          # install dir so `makensis` resolves in later cmd / bash steps.
+          Add-Content $env:GITHUB_PATH "C:\Program Files (x86)\NSIS"
 
       - name: Cache stripped JRE
         id: jre-cache
