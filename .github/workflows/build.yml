@@ -25,7 +25,7 @@ jobs:
       - name: Show Maven version
         run: mvn --version
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots verify
+        run: mvn --batch-mode -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
 
   prerelease:
     runs-on: windows-latest
@@ -49,7 +49,7 @@ jobs:
       - name: Show Maven version
         run: mvn --version
       - name: Build with Maven
-        run: mvn --batch-mode --update-snapshots verify
+        run: mvn --batch-mode -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
       - uses: actions/upload-artifact@v5
         with:
           name: RouteConverter Windows Prerelease built with Java ${{ matrix.java }}

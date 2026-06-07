@@ -50,6 +50,10 @@
         <itCoverageAgent />
         <failsafe.hermetic.excludes>**/__never__.java</failsafe.hermetic.excludes>
 
+        <!-- Fallback for local builds. CI workflows override at invocation
+             time with -Dmaven.build.number=${{ github.run_number }}. -->
+        <maven.build.number>0</maven.build.number>
+
         <java.version>17</java.version>
         <maven.version>[3.5.4,)</maven.version>
 
@@ -247,11 +251,6 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>3.6.1</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>3.2.1</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>

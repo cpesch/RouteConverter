@@ -34,29 +34,13 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
-                <inherited>false</inherited>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>create</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <buildNumberPropertyName>maven.build.number</buildNumberPropertyName>
-                    <format>{0,number}</format>
-                    <items>
-                        <item>buildNumber0</item>
-                    </items>
-                    <doCheck>false</doCheck>
-                    <doUpdate>false</doUpdate>
-                    <getRevisionOnlyOnce>true</getRevisionOnlyOnce>
-                </configuration>
-            </plugin>
+            <!-- buildnumber-maven-plugin removed 2026-06-07: previously read
+                 buildNumber0 from buildNumber.properties on disk and required
+                 a `git checkout` of that file after every mvn release:prepare
+                 invocation. ${maven.build.number} is now set at mvn invocation
+                 time by the GitHub Actions workflows via
+                 -Dmaven.build.number=${{ github.run_number }}; root pom
+                 declares a 0 fallback for local builds. -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>

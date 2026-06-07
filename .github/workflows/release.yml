@@ -51,7 +51,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Build
-        run: ./mvnw --batch-mode -Prouteconverter clean package
+        run: ./mvnw --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} clean package
       - name: Stage artefacts
         run: |
           mkdir -p artefacts
@@ -97,7 +97,7 @@ jobs:
 
       - name: Build (incl. bundle modules, resource-filters .nsi)
         shell: cmd
-        run: ./mvnw.cmd --batch-mode -Prouteconverter clean package
+        run: ./mvnw.cmd --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} clean package
 
       - name: Pin NSIS 3.11
         shell: pwsh
@@ -290,8 +290,9 @@ jobs:
         # empty <p> tags that JDK 17 doclint rejects as errors. We accept
         # the warnings — the rendered javadoc is still useful.
         run: |
-          ./mvnw --batch-mode -Prouteconverter -DskipTests install
+          ./mvnw --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} -DskipTests install
           ./mvnw --batch-mode javadoc:aggregate \
+            -Dmaven.build.number=${{ github.run_number }} \
             -Dmaven.javadoc.failOnError=false \
             -Dadditionalparam=-Xdoclint:none \
             -Ddoclint=none
