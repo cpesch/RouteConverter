@@ -58,12 +58,8 @@ jobs:
                   route-converter-build/pom.xml | head -1)
           fi
           [[ -n "$ver" ]] || { echo "::error::failed to resolve JDK version"; exit 1; }
-          # Major feature digit for the JAVA_HOME_<major>_<arch> env-var names
-          # that setup-java populates (e.g. JAVA_HOME_17_ARM64).
-          major="${ver%%.*}"
-          echo "version=$ver"  >> "$GITHUB_OUTPUT"
-          echo "major=$major"  >> "$GITHUB_OUTPUT"
-          echo "JDK version: $ver  major: $major"
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "JDK version: $ver"
 
       - name: Install Temurin JDK (aarch64)
         uses: actions/setup-java@v5
@@ -71,6 +67,13 @@ jobs:
           distribution: temurin
           java-version: ${{ steps.jdk.outputs.version }}
           architecture: aarch64
+      - name: Capture aarch64 JAVA_HOME
+        id: jdk-aarch64
+        shell: bash
+        run: |
+          [[ -d "$JAVA_HOME/jmods" ]] || { echo "::error::aarch64 jmods missing at $JAVA_HOME"; exit 1; }
+          echo "home=$JAVA_HOME" >> "$GITHUB_OUTPUT"
+          echo "aarch64 JAVA_HOME: $JAVA_HOME"
 
       - name: Install Temurin JDK (x64)
         uses: actions/setup-java@v5
@@ -78,30 +81,33 @@ jobs:
           distribution: temurin
           java-version: ${{ steps.jdk.outputs.version }}
           architecture: x64
+      - name: Capture x64 JAVA_HOME
+        id: jdk-x64
+        shell: bash
+        run: |
+          [[ -d "$JAVA_HOME/jmods" ]] || { echo "::error::x64 jmods missing at $JAVA_HOME"; exit 1; }
+          echo "home=$JAVA_HOME" >> "$GITHUB_OUTPUT"
+          echo "x64 JAVA_HOME: $JAVA_HOME"
 
       - name: jlink stripped JREs (both arches)
         shell: bash
         env:
-          VER:   ${{ steps.jdk.outputs.version }}
-          MAJOR: ${{ steps.jdk.outputs.major }}
+          VER:           ${{ steps.jdk.outputs.version }}
+          AARCH64_HOME:  ${{ steps.jdk-aarch64.outputs.home }}
+          X64_HOME:      ${{ steps.jdk-x64.outputs.home }}
         run: |
           set -euo pipefail
 
-          # Host jlink (arm64 native) does the work. Cross-target by
+          # Host jlink = arm64 native (the runner's arch). Cross-target by
           # pointing --module-path at the target arch's jmods. The output
           # Runtime contains target-arch binaries verbatim from those jmods.
-          HOST_JLINK="$JAVA_HOME/bin/jlink"
+          HOST_JLINK="$AARCH64_HOME/bin/jlink"
 
           for arch in aarch64 x64; do
             case "$arch" in
-              aarch64) jmods_var="JAVA_HOME_${MAJOR}_ARM64" ;;
-              x64)     jmods_var="JAVA_HOME_${MAJOR}_X64"   ;;
+              aarch64) jmods_home="$AARCH64_HOME" ;;
+              x64)     jmods_home="$X64_HOME"    ;;
             esac
-            jmods_home="${!jmods_var:-}"
-            [[ -n "$jmods_home" && -d "$jmods_home/jmods" ]] || {
-              echo "::error::missing jmods for $arch (expected $jmods_var = $jmods_home)"
-              exit 1
-            }
             echo "--- jlink $arch from $jmods_home ---"
 
             OUT="jre-${VER}-${arch}"
