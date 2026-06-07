@@ -30,6 +30,15 @@ jobs:
         run: mvn --version
       - name: Build with Maven
         run: mvn --batch-mode -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
+      # Upload coverage once per build (Java 17 only — avoid 3x duplicate
+      # uploads from the matrix). Replaces the Travis `after_success` curl
+      # that uploaded via the codecov bash script.
+      - name: Upload coverage to Codecov
+        if: matrix.java == 17
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          fail_ci_if_error: false
 
   prerelease:
     runs-on: windows-latest
