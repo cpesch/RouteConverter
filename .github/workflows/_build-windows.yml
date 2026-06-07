@@ -1,0 +1,174 @@
+name: _build-windows
+
+# Reusable workflow: builds RouteConverter + TimeAlbumPro OpenSource
+# artefacts on windows-latest, plus the two NSIS bundle .exes and the
+# RouteConverterPortable .paf.exe. Uploads everything as a workflow
+# artefact.
+#
+# Inputs from the caller cover the artefact name + retention; everything
+# else (JRE version, NSIS pin, installer URLs) is resolved inside.
+#
+# Called by:
+#   - prerelease.yml (artefact-name: prerelease-windows)
+#   - release.yml    (artefact-name: release-windows)
+#
+# See rc-meta/docs/00018-release-automation-3.4.md Phase 5.2.
+
+on:
+  workflow_call:
+    inputs:
+      artefact-name:
+        description: 'Name for the uploaded workflow artefact'
+        required: true
+        type: string
+      retention-days:
+        description: 'Retention in days for the workflow artefact'
+        required: false
+        type: number
+        default: 7
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Resolve JRE version from pom (single source of truth)
+        id: jre
+        shell: bash
+        run: |
+          ver=$(sed -nE 's|.*<jre\.version>([^<]+)</jre\.version>.*|\1|p' \
+                route-converter-build/pom.xml | head -1)
+          [[ -n "$ver" ]] || { echo "::error::failed to resolve jre.version"; exit 1; }
+          echo "version=$ver"                     >> "$GITHUB_OUTPUT"
+          echo "base=jre-$ver-x64-stripped"       >> "$GITHUB_OUTPUT"
+          echo "JRE_VERSION=$ver"                 >> "$GITHUB_ENV"
+          echo "JRE_BASE=jre-$ver-x64-stripped"   >> "$GITHUB_ENV"
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ steps.jre.outputs.version }}
+      - uses: actions/cache@v5
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Build (incl. bundle modules, resource-filters .nsi)
+        shell: cmd
+        run: ./mvnw.cmd --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} clean package
+
+      - name: Pin NSIS 3.11
+        shell: pwsh
+        run: |
+          choco install nsis --version=3.11 --no-progress -y
+          # choco doesn't refresh PATH for subsequent steps; export the
+          # install dir so `makensis` resolves in later cmd / bash steps.
+          Add-Content $env:GITHUB_PATH "C:\Program Files (x86)\NSIS"
+
+      - name: Cache stripped JRE
+        id: jre-cache
+        uses: actions/cache@v5
+        with:
+          path: jre-cache
+          key: ${{ env.JRE_BASE }}-v1
+
+      - name: Download stripped JRE (cache miss only)
+        if: steps.jre-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p jre-cache
+          cd jre-cache
+          curl -fsSLO "https://static.routeconverter.com/build/windows/${JRE_BASE}.zip"
+          curl -fsSLO "https://static.routeconverter.com/build/windows/${JRE_BASE}.zip.sha256"
+          sha256sum -c "${JRE_BASE}.zip.sha256"
+
+      - name: Extract JRE into both bundle modules
+        shell: bash
+        run: |
+          for m in RouteConverterWindowsBundle TimeAlbumProWindowsBundle; do
+            rm -rf "$m/jre-${JRE_VERSION}"
+            unzip -q "jre-cache/${JRE_BASE}.zip" -d "$m/jre-${JRE_VERSION}"
+          done
+          ls RouteConverterWindowsBundle/jre-${JRE_VERSION}/bin/java.exe
+          ls TimeAlbumProWindowsBundle/jre-${JRE_VERSION}/bin/java.exe
+
+      - name: makensis RouteConverterWindowsBundle
+        shell: cmd
+        working-directory: RouteConverterWindowsBundle
+        run: makensis "target\RouteConverter.nsi"
+
+      - name: makensis TimeAlbumProWindowsBundle
+        shell: cmd
+        working-directory: TimeAlbumProWindowsBundle
+        run: makensis "target\TimeAlbumPro.nsi"
+
+      - name: Cache PortableApps.com Installer
+        id: pa-cache
+        uses: actions/cache@v5
+        with:
+          path: pa-installer/extracted
+          key: pa-installer-v1
+
+      - name: Download + extract PortableApps.com Installer (cache miss only)
+        if: steps.pa-cache.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path pa-installer\extracted | Out-Null
+          # portableapps.com 403s GH Actions IPs even with browser UA;
+          # mirror the .paf.exe on our static vhost.
+          Invoke-WebRequest -Uri 'https://static.routeconverter.com/build/windows/PortableApps.comInstaller.paf.exe' `
+                            -OutFile pa-installer\installer.paf.exe `
+                            -MaximumRedirection 5 `
+                            -UseBasicParsing
+          # NSIS self-extractor — 7z handles it.
+          & "C:\Program Files\7-Zip\7z.exe" x pa-installer\installer.paf.exe -opa-installer\extracted -y | Out-Null
+
+      - name: Locate PortableApps.comInstaller.exe
+        id: pa-locate
+        shell: pwsh
+        run: |
+          $exe = (Get-ChildItem pa-installer\extracted -Recurse -Filter 'PortableApps.comInstaller.exe' |
+                  Select-Object -First 1).FullName
+          if (-not $exe) {
+            Write-Host "--- full pa-installer\extracted tree ---"
+            Get-ChildItem pa-installer\extracted -Recurse | Format-Table FullName
+            throw "PortableApps.comInstaller.exe not found"
+          }
+          Write-Host "found: $exe"
+          "exe=$exe" >> $env:GITHUB_OUTPUT
+
+      - name: Build RouteConverterPortable .paf.exe
+        # cmd shell matches the smoke run that proved this works
+        # (PowerShell did not block on the installer; $LASTEXITCODE was empty).
+        shell: cmd
+        env:
+          INSTALLER_EXE: ${{ steps.pa-locate.outputs.exe }}
+        run: |
+          set TREE=%CD%\RouteConverterPortable\target\classes\RouteConverterPortable
+          if not exist "%TREE%" ( echo Portable tree not found at "%TREE%" & exit /b 1 )
+          echo Running: "%INSTALLER_EXE%" "%TREE%"
+          "%INSTALLER_EXE%" "%TREE%"
+          echo Installer exit code: %ERRORLEVEL%
+          dir /B "%CD%\RouteConverterPortable\target\classes" | findstr /I "\.paf\.exe$" || (
+            echo No .paf.exe produced
+            exit /b 1
+          )
+
+      - name: Stage artefacts
+        shell: bash
+        run: |
+          mkdir -p artefacts
+          cp RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.* artefacts/
+          cp TimeAlbumProWindows/target/TimeAlbumProWindows.* artefacts/
+          cp RouteConverterWindowsBundle/target/RouteConverterWindowsBundle*.exe artefacts/
+          cp TimeAlbumProWindowsBundle/target/TimeAlbumProWindowsBundle*.exe artefacts/
+          cp RouteConverterPortable/target/classes/RouteConverterPortable*.paf.exe artefacts/
+          ls -la artefacts/
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: ${{ inputs.artefact-name }}
+          path: artefacts/
+          retention-days: ${{ inputs.retention-days }}

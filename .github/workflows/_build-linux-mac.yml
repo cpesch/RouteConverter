@@ -1,0 +1,57 @@
+name: _build-linux-mac
+
+# Reusable workflow: builds RouteConverter + TimeAlbumPro OpenSource
+# artefacts on ubuntu-latest, stages them, uploads as a workflow artefact.
+#
+# Called by:
+#   - prerelease.yml (artefact-name: prerelease-linux-mac)
+#   - release.yml    (artefact-name: release-linux-mac)
+#
+# See rc-meta/docs/00018-release-automation-3.4.md Phase 5.2.
+
+on:
+  workflow_call:
+    inputs:
+      artefact-name:
+        description: 'Name for the uploaded workflow artefact'
+        required: true
+        type: string
+      retention-days:
+        description: 'Retention in days for the workflow artefact'
+        required: false
+        type: number
+        default: 7
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: '17'
+      - uses: actions/cache@v5
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build
+        # github.run_number is the CALLER workflow's run number — same
+        # value the inline jobs used before Phase 5.2.
+        run: ./mvnw --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} clean package
+      - name: Stage artefacts
+        run: |
+          mkdir -p artefacts
+          cp RouteConverterLinuxOpenSource/target/RouteConverterLinuxOpenSource.* artefacts/
+          cp RouteConverterMacOpenSource/target/RouteConverterMacOpenSource.jar artefacts/
+          cp RouteConverterMacOpenSource/target/RouteConverterMacOpenSource-app.zip artefacts/
+          cp RouteConverterCmdLine/target/RouteConverterCmdLine.* artefacts/
+          cp TimeAlbumProLinux/target/TimeAlbumProLinux.* artefacts/
+          cp TimeAlbumProMac/target/TimeAlbumProMac.jar artefacts/
+          cp TimeAlbumProMac/target/TimeAlbumProMac-app.zip artefacts/
+      - uses: actions/upload-artifact@v5
+        with:
+          name: ${{ inputs.artefact-name }}
+          path: artefacts/
+          retention-days: ${{ inputs.retention-days }}
