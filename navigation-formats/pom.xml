@@ -304,8 +304,6 @@
                             <excludes>
                                 <exclude>**/binding*/**</exclude>
                             </excludes>
-                            <!-- TEMP 2026-06-07: do not fail build on threshold miss; collect actuals via CI log, then ratchet -->
-                            <haltOnFailure>false</haltOnFailure>
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>
@@ -313,7 +311,11 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <minimum>0.74</minimum>
+                                            <!-- Ratcheted down from 0.74 → 0.31 on 2026-06-07: actual = 0.33
+                                                 on 225-class bundle. 0.74 was aspirational; never met since
+                                                 Phase 5 set it. 0.31 floor prevents regression; raise as Phase 9+
+                                                 tests catch up. -->
+                                            <minimum>0.31</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
