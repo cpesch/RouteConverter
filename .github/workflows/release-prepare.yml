@@ -4,47 +4,81 @@ name: Release prepare
 # `mvn release:prepare` + `git push --follow-tags` ritual.
 #
 # What it does:
-#   1. mvn release:prepare → tags the release + bumps master to the next
+#   1. Validate inputs (regex on release_version + development_version).
+#   2. mvn release:prepare → tags the release + bumps master to the next
 #      development version + auto-pushes both commits and the tag.
-#   2. cuts and pushes a <version>-maintenance branch.
-#   3. fires a Gitea repository_dispatch so rc-site bumps the
-#      Program_Version / Program_Release_{Year,Month,Day} fields in
-#      RouteConverter.xml + RouteConverter_de.xml.
+#      Push uses RC_RELEASE_PUSH_TOKEN (a fine-grained PAT), NOT the
+#      workflow-issued GITHUB_TOKEN — the latter does not trigger
+#      downstream workflows, so the tag push would leave release.yml
+#      silently un-fired.
+#   3. cuts and pushes a <version>-maintenance branch.
+#   4. Clones rc-site via Gitea PAT, bumps catalog XMLs, commits, pushes.
+#      (Previously fired a Gitea repository_dispatch into a separate
+#      rc-site/.gitea/workflows/catalog-bump.yml — collapsed into this
+#      workflow per Phase 5.8 plan-review O2 on 2026-06-07.)
 #
-# Tag push from step 1 fires release.yml automatically — that workflow
-# builds + publishes the artefacts; nothing more here.
+# Tag push from step 2 fires release.yml automatically.
 #
-# See rc-meta/docs/00018-release-automation-3.4.md Phase 4 automation.
+# See rc-meta/docs/00018-release-automation-3.4.md Phase 4 automation
+# and rc-meta/docs/00017-maintainer-runbook.md §9 for the one-time
+# secret-provisioning steps.
 
 on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: 'Release version, plain (e.g. 3.5)'
+        description: 'Release version, plain (e.g. 3.5). No `v` prefix.'
         required: true
       development_version:
-        description: 'Next development version (e.g. 3.6-SNAPSHOT)'
+        description: 'Next development version (e.g. 3.6-SNAPSHOT). Must end -SNAPSHOT.'
         required: true
       dry_run:
-        description: 'Dry-run only (no commits, no tag, no push)'
+        description: 'Dry-run only (no commits, no tag, no push, no catalog bump)'
         type: boolean
         default: false
 
 permissions:
   contents: write
 
+# Two rapid invocations would otherwise collide on a pom that has
+# already advanced to the next-dev version. Queue them; never cancel.
+concurrency:
+  group: release-prepare
+  cancel-in-progress: false
+
 env:
-  # Opt into Node.js 24 for JavaScript actions (actions/{checkout,setup-java,upload-artifact,download-artifact,cache}@v5 still ship Node 20 binaries as of 2026-06-07). GH forces Node 24 default on 2026-06-16.
+  # Opt into Node.js 24 for JavaScript actions (actions/{checkout,setup-java,
+  # upload-artifact,download-artifact,cache}@v5 still ship Node 20 binaries
+  # as of 2026-06-07). GH forces Node 24 default on 2026-06-16.
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   prepare:
     runs-on: ubuntu-latest
     steps:
+      - name: Validate inputs
+        run: |
+          rv='${{ inputs.release_version }}'
+          dv='${{ inputs.development_version }}'
+          [[ "$rv" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?$ ]] || {
+            echo "::error::release_version must be MAJOR.MINOR[.PATCH], no v prefix. Got: $rv"
+            exit 1
+          }
+          [[ "$dv" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)?-SNAPSHOT$ ]] || {
+            echo "::error::development_version must end in -SNAPSHOT. Got: $dv"
+            exit 1
+          }
+          echo "ok: release=$rv  development=$dv"
+
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0      # release-plugin needs full history + tags
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # RC_RELEASE_PUSH_TOKEN: fine-grained PAT scoped
+          # `contents:write` on cpesch/RouteConverter only. Required
+          # because pushes made under GITHUB_TOKEN do NOT trigger
+          # downstream workflows — release.yml would silently skip
+          # the tag push.
+          token: ${{ secrets.RC_RELEASE_PUSH_TOKEN }}
 
       - uses: actions/setup-java@v5
         with:
@@ -92,25 +126,34 @@ jobs:
           find . -name '*.releaseBackup' -delete
           rm -f release.properties
 
-      - name: fire rc-site catalog-bump dispatch
+      - name: Bump catalog XMLs on rc-site
         if: inputs.dry_run != true
         env:
           GITEA_TOKEN: ${{ secrets.RC_SITE_DISPATCH_TOKEN }}
           GITEA_HOST:  ${{ secrets.RC_SITE_GITEA_HOST }}
+          VERSION:     ${{ inputs.release_version }}
         run: |
-          # Gitea repository_dispatch — same shape as GitHub's API.
-          # Server-side workflow on rc-site listens for event_type
-          # `catalog-bump` and runs a small commit that updates
-          # static/downloads/RouteConverter{,_de}.xml.
-          curl --fail-with-body -sS \
-            -X POST \
-            -H "Authorization: token $GITEA_TOKEN" \
-            -H 'Accept: application/json' \
-            -H 'Content-Type: application/json' \
-            "https://$GITEA_HOST/api/v1/repos/rc/rc-site/dispatches" \
-            -d '{
-              "event_type": "catalog-bump",
-              "client_payload": {
-                "version": "${{ inputs.release_version }}"
-              }
-            }'
+          set -euo pipefail
+          cd "$(mktemp -d)"
+          git clone --depth 1 \
+            "https://x-access-token:${GITEA_TOKEN}@${GITEA_HOST}/rc/rc-site.git" .
+          git config user.name  'github-actions[bot]'
+          git config user.email 'release-prepare@routeconverter.com'
+          today_year=$(date +%Y)
+          today_month=$(date +%m)
+          today_day=$(date +%d)
+          for f in static/downloads/RouteConverter.xml static/downloads/RouteConverter_de.xml; do
+            sed -i -E \
+              -e "s|<Program_Version>[^<]+</Program_Version>|<Program_Version>${VERSION}</Program_Version>|" \
+              -e "s|<Program_Release_Year>[^<]+</Program_Release_Year>|<Program_Release_Year>${today_year}</Program_Release_Year>|" \
+              -e "s|<Program_Release_Month>[^<]+</Program_Release_Month>|<Program_Release_Month>${today_month}</Program_Release_Month>|" \
+              -e "s|<Program_Release_Day>[^<]+</Program_Release_Day>|<Program_Release_Day>${today_day}</Program_Release_Day>|" \
+              "$f"
+          done
+          if git diff --quiet; then
+            echo "rc-site catalog XMLs already at ${VERSION} — no bump needed"
+            exit 0
+          fi
+          git add static/downloads/RouteConverter.xml static/downloads/RouteConverter_de.xml
+          git commit -m "downloads: bump catalog XMLs to ${VERSION} ($(date -I))"
+          git push origin main
