@@ -1,6 +1,5 @@
 [![Build Status](https://travis-ci.com/cpesch/RouteConverter.svg?branch=master)](https://travis-ci.com/cpesch/RouteConverter)
 [![Test Coverage](https://codecov.io/gh/cpesch/RouteConverter/branch/master/graph/badge.svg)](https://codecov.io/gh/cpesch/RouteConverter)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.github.cpesch.slash/RouteConverter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.github.cpesch.slash/RouteConverter)
 <a href="https://hosted.weblate.org/engage/routeconverter/?utm_source=widget"><img src="https://hosted.weblate.org/widgets/routeconverter/-/svg-badge.svg" alt="Translation status"/></a>
 
 What is RouteConverter?

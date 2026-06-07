@@ -32,19 +32,11 @@
             <url>https://jitpack.io</url>
         </repository>
     </repositories>
-    
-    <distributionManagement>
-        <repository>
-            <id>routeconverter-release</id>
-            <name>RouteConverter Release Repository</name>
-            <url>scpexe://www.routeconverter.com:/downloads/release</url>
-        </repository>
-        <snapshotRepository>
-            <id>routeconverter-prerelease</id>
-            <name>RouteConverter Prerelease Snapshot Repository</name>
-            <url>scpexe://www.routeconverter.com:/downloads/prerelease</url>
-        </snapshotRepository>
-    </distributionManagement>
+
+    <!-- No <distributionManagement>: this project does not publish to Maven
+         Central or any Maven repository. Releases ship as raw .exe / .jar /
+         .app.zip files via release.yml's rsync to static.routeconverter.com,
+         not as Maven artefacts. See rc-meta/docs/00018-release-automation-3.4.md. -->
 
     <scm>
         <connection>scm:git:https://github.com/cpesch/RouteConverter</connection>
@@ -118,11 +110,12 @@
 
     <build>
         <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh-external</artifactId>
-                <version>2.6</version>
-            </extension>
+            <!-- wagon-ssh-external dropped 2026-06-07: previously powered
+                 mvn deploy via scpexe; no longer used (no Maven repo
+                 publish). -->
+
+            <!-- SCM extensions stay: maven-release-plugin (release:prepare)
+                 uses them to tag + push. -->
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
                 <artifactId>wagon-scm</artifactId>
