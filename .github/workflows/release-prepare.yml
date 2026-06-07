@@ -1,0 +1,106 @@
+name: Release prepare
+
+# Manually-triggered workflow that replaces the maintainer's local
+# `mvn release:prepare` + `git push --follow-tags` ritual.
+#
+# What it does:
+#   1. mvn release:prepare → tags the release + bumps master to the next
+#      development version + auto-pushes both commits and the tag.
+#   2. cuts and pushes a <version>-maintenance branch.
+#   3. fires a Gitea repository_dispatch so rc-site bumps the
+#      Program_Version / Program_Release_{Year,Month,Day} fields in
+#      RouteConverter.xml + RouteConverter_de.xml.
+#
+# Tag push from step 1 fires release.yml automatically — that workflow
+# builds + publishes the artefacts; nothing more here.
+#
+# See rc-meta/docs/00018-release-automation-3.4.md Phase 4 automation.
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_version:
+        description: 'Release version, plain (e.g. 3.5)'
+        required: true
+      development_version:
+        description: 'Next development version (e.g. 3.6-SNAPSHOT)'
+        required: true
+      dry_run:
+        description: 'Dry-run only (no commits, no tag, no push)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0      # release-plugin needs full history + tags
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: '17'
+
+      - uses: actions/cache@v5
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: git identity (commits authored by the workflow bot)
+        run: |
+          git config user.name  'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: mvn release:prepare
+        run: |
+          DRY=""
+          if [[ '${{ inputs.dry_run }}' == 'true' ]]; then DRY='-DdryRun=true'; fi
+          ./mvnw --batch-mode release:prepare $DRY \
+            -DautoVersionSubmodules=true \
+            -Dresume=false \
+            -DreleaseVersion='${{ inputs.release_version }}' \
+            -DdevelopmentVersion='${{ inputs.development_version }}' \
+            -Dtag='${{ inputs.release_version }}'
+
+      - name: cut <version>-maintenance branch
+        if: inputs.dry_run != true
+        run: |
+          BR='${{ inputs.release_version }}-maintenance'
+          git checkout -b "$BR" '${{ inputs.release_version }}'
+          git push -u origin "$BR"
+
+      - name: clean up release-plugin leftovers
+        if: always()
+        run: |
+          find . -name '*.releaseBackup' -delete
+          rm -f release.properties
+
+      - name: fire rc-site catalog-bump dispatch
+        if: inputs.dry_run != true
+        env:
+          GITEA_TOKEN: ${{ secrets.RC_SITE_DISPATCH_TOKEN }}
+          GITEA_HOST:  ${{ secrets.RC_SITE_GITEA_HOST }}
+        run: |
+          # Gitea repository_dispatch — same shape as GitHub's API.
+          # Server-side workflow on rc-site listens for event_type
+          # `catalog-bump` and runs a small commit that updates
+          # static/downloads/RouteConverter{,_de}.xml.
+          curl --fail-with-body -sS \
+            -X POST \
+            -H "Authorization: token $GITEA_TOKEN" \
+            -H 'Accept: application/json' \
+            -H 'Content-Type: application/json' \
+            "https://$GITEA_HOST/api/v1/repos/rc/rc-site/dispatches" \
+            -d '{
+              "event_type": "catalog-bump",
+              "client_payload": {
+                "version": "${{ inputs.release_version }}"
+              }
+            }'
