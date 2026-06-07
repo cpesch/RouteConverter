@@ -59,6 +59,11 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
       - name: mvn release:prepare
+        # -Darguments passes flags to the forked Maven invocation that
+        # release:prepare spawns for `clean verify`. Skip jacoco's
+        # coverage check (separate concern from cutting a release) and
+        # the slow integration tests (release workflow doesn't gate on
+        # them — `build.yml` already runs the full matrix on every push).
         run: |
           DRY=""
           if [[ '${{ inputs.dry_run }}' == 'true' ]]; then DRY='-DdryRun=true'; fi
@@ -67,7 +72,8 @@ jobs:
             -Dresume=false \
             -DreleaseVersion='${{ inputs.release_version }}' \
             -DdevelopmentVersion='${{ inputs.development_version }}' \
-            -Dtag='${{ inputs.release_version }}'
+            -Dtag='${{ inputs.release_version }}' \
+            -Darguments='-Djacoco.skip=true -DskipITs'
 
       - name: cut <version>-maintenance branch
         if: inputs.dry_run != true
