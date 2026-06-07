@@ -1,0 +1,174 @@
+name: Verify cut
+
+# Post-cut smoke test. Triggers when release.yml completes (success or
+# failure — failure path is the more interesting one). Checks:
+#   1. GH Release for the tag exists + has the expected asset set.
+#   2. Each asset URL serves HTTP 200 on static.routeconverter.com.
+#   3. The catalog XML at static.routeconverter.com/downloads/RouteConverter.xml
+#      reports the new version.
+#   4. RouteConverterWindowsOpenSource.exe's PE FileVersion carries the
+#      expected MAJOR.MINOR.0.<run_number> shape.
+#
+# Failures here ping ntfy (rc-meta factory/notify/) so the maintainer
+# learns of a half-shipped release before the next user does.
+#
+# See rc-meta/docs/00018-release-automation-3.4.md plan-review M2.
+
+on:
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+
+permissions:
+  contents: read
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve tag from triggering release run
+        id: ctx
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # workflow_run.event triggers when release.yml fires on a tag
+          # push; the head_branch is the tag name (no `v` prefix per
+          # convention).
+          TAG='${{ github.event.workflow_run.head_branch }}'
+          CONCLUSION='${{ github.event.workflow_run.conclusion }}'
+          echo "tag=$TAG"               >> "$GITHUB_OUTPUT"
+          echo "conclusion=$CONCLUSION" >> "$GITHUB_OUTPUT"
+          echo "release run tag=$TAG conclusion=$CONCLUSION"
+
+      - name: Sanity-check release.yml succeeded
+        # If the upstream Release workflow failed, fail loudly here so
+        # the notify step at the end runs.
+        if: steps.ctx.outputs.conclusion != 'success'
+        run: |
+          echo "::error::Release run conclusion=${{ steps.ctx.outputs.conclusion }} (not success). Stopping verify-cut."
+          exit 1
+
+      - name: Verify GH Release assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG:      ${{ steps.ctx.outputs.tag }}
+          REPO:     ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          # Canonical assets the release ships; 14 today.
+          expected=(
+            RouteConverterCmdLine.jar
+            RouteConverterLinuxOpenSource.jar
+            RouteConverterMacOpenSource-app.zip
+            RouteConverterMacOpenSource.jar
+            RouteConverterWindowsBundle.exe
+            RouteConverterWindowsOpenSource.exe
+            RouteConverterWindowsOpenSource.jar
+            RouteConverterPortable.paf.exe
+            TimeAlbumProLinux.jar
+            TimeAlbumProMac-app.zip
+            TimeAlbumProMac.jar
+            TimeAlbumProWindows.exe
+            TimeAlbumProWindows.jar
+            TimeAlbumProWindowsBundle.exe
+          )
+          actual=$(gh release view "$TAG" --repo "$REPO" --json assets --jq '.assets[].name' | sort)
+          missing=()
+          for name in "${expected[@]}"; do
+            # Match either exact or with version suffix (paf.exe is the
+            # only one that may carry a version suffix, but release.yml
+            # strips it; check exact).
+            if ! grep -qxF "$name" <<< "$actual"; then
+              missing+=("$name")
+            fi
+          done
+          if [[ ${#missing[@]} -gt 0 ]]; then
+            echo "::error::missing assets on GH Release $TAG:"
+            printf '  %s\n' "${missing[@]}"
+            exit 1
+          fi
+          echo "all 14 GH Release assets present"
+
+      - name: Verify static.routeconverter.com assets serve
+        env:
+          TAG: ${{ steps.ctx.outputs.tag }}
+        run: |
+          set -euo pipefail
+          base=https://static.routeconverter.com/downloads/release
+          # The same canonical set; ditto for previous-releases/<TAG>/.
+          for f in RouteConverterCmdLine.jar RouteConverterLinuxOpenSource.jar \
+                   RouteConverterMacOpenSource.jar RouteConverterMacOpenSource-app.zip \
+                   RouteConverterWindowsBundle.exe RouteConverterWindowsOpenSource.exe \
+                   RouteConverterWindowsOpenSource.jar RouteConverterPortable.paf.exe \
+                   TimeAlbumProLinux.jar TimeAlbumProMac.jar TimeAlbumProMac-app.zip \
+                   TimeAlbumProWindows.exe TimeAlbumProWindows.jar TimeAlbumProWindowsBundle.exe; do
+            code=$(curl -sI -o /dev/null -w '%{http_code}' "${base}/${f}")
+            if [[ "$code" != "200" ]]; then
+              echo "::error::${base}/${f} returned HTTP $code"
+              exit 1
+            fi
+          done
+          echo "all 14 release/ URLs return 200"
+          # Spot-check previous-releases archive
+          arch_base=https://static.routeconverter.com/downloads/previous-releases/${TAG}
+          code=$(curl -sI -o /dev/null -w '%{http_code}' "${arch_base}/RouteConverterCmdLine.jar")
+          [[ "$code" == "200" ]] || { echo "::error::previous-releases archive missing: $arch_base"; exit 1; }
+          echo "previous-releases/${TAG}/ archive present"
+
+      - name: Verify catalog XML reports new version
+        env:
+          TAG: ${{ steps.ctx.outputs.tag }}
+        run: |
+          set -euo pipefail
+          xml_ver=$(curl -sf https://static.routeconverter.com/downloads/RouteConverter.xml \
+                    | sed -nE 's|.*<Program_Version>([^<]+)</Program_Version>.*|\1|p' | head -1)
+          if [[ "$xml_ver" != "$TAG" ]]; then
+            echo "::warning::catalog XML reports Program_Version=$xml_ver, expected $TAG. (Prod may need: cd /var/www/routeconverter.com && git pull.)"
+            # Warn, not fail — prod-pull lag is a known-and-tolerated gap
+            # until M1 (Django-served catalog) lands.
+          else
+            echo "catalog XML reports $TAG ✓"
+          fi
+
+      - name: Verify Windows .exe PE FileVersion
+        env:
+          TAG: ${{ steps.ctx.outputs.tag }}
+        run: |
+          set -euo pipefail
+          pip install --quiet pefile
+          curl -sfLo /tmp/rcwin.exe \
+            https://static.routeconverter.com/downloads/release/RouteConverterWindowsOpenSource.exe
+          cat > /tmp/pe-version.py <<'PY'
+          import pefile, sys
+          pe = pefile.PE('/tmp/rcwin.exe')
+          for fi in pe.FileInfo[0]:
+              if fi.Key.decode() == 'StringFileInfo':
+                  for st in fi.StringTable:
+                      for k, v in st.entries.items():
+                          if k == b'FileVersion':
+                              print(v.decode())
+                              sys.exit(0)
+          sys.exit(1)
+          PY
+          got=$(python3 /tmp/pe-version.py)
+          # FileVersion format: "<v> <build_number> <YYYY-MM-DD HH:MM:SS>"
+          # E.g. "3.5 142 2026-06-07 09:42:11"
+          if [[ "$got" == "$TAG "* ]]; then
+            echo "PE FileVersion: '$got' ✓"
+          else
+            echo "::error::PE FileVersion '$got' does not start with '$TAG '"
+            exit 1
+          fi
+
+      - name: ntfy on failure
+        if: failure()
+        env:
+          TAG: ${{ steps.ctx.outputs.tag }}
+        run: |
+          # ntfy.routeconverter.com is the factory's push channel.
+          # No auth on the publish endpoint (anon-write topic).
+          curl -fsS -X POST -d "verify-cut FAILED for $TAG — see GitHub Actions run ${{ github.run_id }}" \
+            https://ntfy.routeconverter.com/factory || true

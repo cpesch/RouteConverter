@@ -30,13 +30,26 @@ env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
+  # Skip release-prepare's two [maven-release-plugin] commits — the
+  # pre-tag commit is the canonical 3.x release (covered by release.yml on
+  # the tag push) and the post-tag commit is the next-dev bump (no point
+  # building a prerelease of an empty version bump). Otherwise burns
+  # ~10 min of CI per cut on duplicate work. See rc-meta docs/00018 5.8.
   build-linux-mac:
+    if: |
+      github.event_name != 'push'
+      || github.actor != 'github-actions[bot]'
+      || !startsWith(github.event.head_commit.message, '[maven-release-plugin]')
     uses: ./.github/workflows/_build-linux-mac.yml
     with:
       artefact-name: prerelease-linux-mac
       retention-days: 7
 
   build-windows:
+    if: |
+      github.event_name != 'push'
+      || github.actor != 'github-actions[bot]'
+      || !startsWith(github.event.head_commit.message, '[maven-release-plugin]')
     uses: ./.github/workflows/_build-windows.yml
     with:
       artefact-name: prerelease-windows
