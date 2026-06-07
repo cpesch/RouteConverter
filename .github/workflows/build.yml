@@ -62,7 +62,11 @@ jobs:
       - name: Show Maven version
         run: mvn --version
       - name: Build with Maven
-        run: mvn --batch-mode -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
+        # Quote the -D: pwsh (default windows-latest shell) tokenizes
+        # `.build.number` as member-access, splitting the arg into
+        # `-Dmaven` + `.build.number=NNN` → mvn sees the latter as a
+        # lifecycle phase and dies.
+        run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" --update-snapshots verify
       - uses: actions/upload-artifact@v5
         with:
           name: RouteConverter Windows Prerelease built with Java ${{ matrix.java }}
