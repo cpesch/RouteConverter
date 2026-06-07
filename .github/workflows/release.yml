@@ -85,6 +85,18 @@ jobs:
             done
           done
           ls -la "previous-releases/$VERSION/"
+      - name: Drop version suffix from Portable in artefacts/ (release-only)
+        run: |
+          # Portable Installer is the only artefact whose build-step output
+          # carries the version + build number in the filename
+          # (RouteConverterPortable_<v>_-<build>.paf.exe). The previous-releases
+          # archive above keeps the versioned name for traceability; the
+          # release/ + GH Release copies use the stable short name so
+          # public links don't need to change per release.
+          for f in artefacts/RouteConverterPortable_*.paf.exe; do
+            [[ -f "$f" ]] && mv "$f" artefacts/RouteConverterPortable.paf.exe
+          done
+          ls -la artefacts/
       - name: Configure SSH
         env:
           DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}

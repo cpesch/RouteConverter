@@ -50,6 +50,16 @@ jobs:
           mkdir -p artefacts
           find incoming -mindepth 2 -type f -exec mv -t artefacts/ {} +
           ls -la artefacts/
+      - name: Drop version suffix from Portable in artefacts/
+        run: |
+          # Portable Installer build output carries the version + build
+          # number in the filename. prereleases/ serves a stable short
+          # name so public/automated download URLs don't churn per build.
+          # Build number stays inside the .paf.exe metadata.
+          for f in artefacts/RouteConverterPortable_*.paf.exe; do
+            [[ -f "$f" ]] && mv "$f" artefacts/RouteConverterPortable.paf.exe
+          done
+          ls -la artefacts/
       - name: Configure SSH
         env:
           DEPLOY_KEY: ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
