@@ -8,6 +8,12 @@ name: Build Mac JRE
 # _build-linux-mac.yml — curl + sha256 verify + unzip into
 # target/Runtime-<arch>, then maven-assembly-plugin produces per-arch app zips.
 #
+# Single macos-latest (arm64) runner cross-jlinks both arches: jlink is
+# cross-platform — it bundles the jmods' native binaries into the output
+# Runtime regardless of the host arch. setup-java is called twice with
+# architecture: aarch64 + x64, populating JAVA_HOME_17_ARM64 + JAVA_HOME_17_X64.
+# Avoids macos-13 (Intel) runner queue (10–60 min waits, deprecated).
+#
 # Triggers:
 #   workflow_dispatch — manual rebuild
 #   push paths — automatic when the jlink recipe changes
@@ -37,15 +43,7 @@ env:
 
 jobs:
   build:
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - arch: x64
-            runner: macos-13
-          - arch: aarch64
-            runner: macos-latest
-    runs-on: ${{ matrix.runner }}
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v5
 
@@ -60,66 +58,103 @@ jobs:
                   route-converter-build/pom.xml | head -1)
           fi
           [[ -n "$ver" ]] || { echo "::error::failed to resolve JDK version"; exit 1; }
-          echo "version=$ver" >> "$GITHUB_OUTPUT"
-          echo "JDK version: $ver"
+          # Major feature digit for the JAVA_HOME_<major>_<arch> env-var names
+          # that setup-java populates (e.g. JAVA_HOME_17_ARM64).
+          major="${ver%%.*}"
+          echo "version=$ver"  >> "$GITHUB_OUTPUT"
+          echo "major=$major"  >> "$GITHUB_OUTPUT"
+          echo "JDK version: $ver  major: $major"
 
-      - uses: actions/setup-java@v5
+      - name: Install Temurin JDK (aarch64)
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: ${{ steps.jdk.outputs.version }}
+          architecture: aarch64
 
-      - name: jlink stripped JRE
+      - name: Install Temurin JDK (x64)
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ steps.jdk.outputs.version }}
+          architecture: x64
+
+      - name: jlink stripped JREs (both arches)
         shell: bash
         env:
-          VER:  ${{ steps.jdk.outputs.version }}
-          ARCH: ${{ matrix.arch }}
+          VER:   ${{ steps.jdk.outputs.version }}
+          MAJOR: ${{ steps.jdk.outputs.major }}
         run: |
-          OUT="jre-${VER}-${ARCH}"
-          rm -rf "$OUT"
-          "$JAVA_HOME/bin/jlink" \
-            --module-path "$JAVA_HOME/jmods" \
-            --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.unsupported \
-            --output "$OUT" \
-            --strip-debug --compress 2 --no-header-files --no-man-pages
-          rm -rf "$OUT/legal"
-          rm -f  "$OUT/release"
-          rm -f  "$OUT/bin/keytool"
-          rm -f  "$OUT/conf/security/policy/README.txt"
-          rm -f  "$OUT/lib/server/Xusage.txt"
+          set -euo pipefail
 
-      - name: Show full JRE tree
+          # Host jlink (arm64 native) does the work. Cross-target by
+          # pointing --module-path at the target arch's jmods. The output
+          # Runtime contains target-arch binaries verbatim from those jmods.
+          HOST_JLINK="$JAVA_HOME/bin/jlink"
+
+          for arch in aarch64 x64; do
+            case "$arch" in
+              aarch64) jmods_var="JAVA_HOME_${MAJOR}_ARM64" ;;
+              x64)     jmods_var="JAVA_HOME_${MAJOR}_X64"   ;;
+            esac
+            jmods_home="${!jmods_var:-}"
+            [[ -n "$jmods_home" && -d "$jmods_home/jmods" ]] || {
+              echo "::error::missing jmods for $arch (expected $jmods_var = $jmods_home)"
+              exit 1
+            }
+            echo "--- jlink $arch from $jmods_home ---"
+
+            OUT="jre-${VER}-${arch}"
+            rm -rf "$OUT"
+            "$HOST_JLINK" \
+              --module-path "$jmods_home/jmods" \
+              --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.unsupported \
+              --output "$OUT" \
+              --strip-debug --compress 2 --no-header-files --no-man-pages
+            rm -rf "$OUT/legal"
+            rm -f  "$OUT/release"
+            rm -f  "$OUT/bin/keytool"
+            rm -f  "$OUT/conf/security/policy/README.txt"
+            rm -f  "$OUT/lib/server/Xusage.txt"
+          done
+
+      - name: Show full JRE trees
         shell: bash
         env:
-          VER:  ${{ steps.jdk.outputs.version }}
-          ARCH: ${{ matrix.arch }}
+          VER: ${{ steps.jdk.outputs.version }}
         run: |
-          OUT="jre-${VER}-${ARCH}"
-          find "$OUT" -print
-          echo "--- summary ---"
-          echo "files: $(find "$OUT" -type f | wc -l)"
-          echo "dirs:  $(find "$OUT" -type d | wc -l)"
-          echo "bytes: $(du -sk "$OUT" | awk '{print $1*1024}')"
+          for arch in aarch64 x64; do
+            OUT="jre-${VER}-${arch}"
+            echo "=== $OUT ==="
+            find "$OUT" -print
+            echo "--- summary ---"
+            echo "files: $(find "$OUT" -type f | wc -l)"
+            echo "dirs:  $(find "$OUT" -type d | wc -l)"
+            echo "bytes: $(du -sk "$OUT" | awk '{print $1*1024}')"
+          done
 
-      - name: Zip + sha256
-        id: pack
+      - name: Zip + sha256 (both arches)
         shell: bash
         env:
-          VER:  ${{ steps.jdk.outputs.version }}
-          ARCH: ${{ matrix.arch }}
+          VER: ${{ steps.jdk.outputs.version }}
         run: |
-          base="jre-${VER}-${ARCH}-stripped"
-          (cd "jre-${VER}-${ARCH}" && zip -9 -r "../${base}.zip" . >/dev/null)
-          shasum -a 256 "${base}.zip" | awk -v f="${base}.zip" '{print $1"  "f}' > "${base}.zip.sha256"
-          ls -la "${base}.zip" "${base}.zip.sha256"
-          cat "${base}.zip.sha256"
-          echo "base=$base" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          for arch in aarch64 x64; do
+            base="jre-${VER}-${arch}-stripped"
+            (cd "jre-${VER}-${arch}" && zip -9 -r "../${base}.zip" . >/dev/null)
+            shasum -a 256 "${base}.zip" | awk -v f="${base}.zip" '{print $1"  "f}' > "${base}.zip.sha256"
+            ls -la "${base}.zip" "${base}.zip.sha256"
+            cat "${base}.zip.sha256"
+          done
 
       - uses: actions/upload-artifact@v5
         with:
-          name: stripped-jre-${{ matrix.arch }}
+          name: stripped-jre
           path: |
-            ${{ steps.pack.outputs.base }}.zip
-            ${{ steps.pack.outputs.base }}.zip.sha256
+            jre-${{ steps.jdk.outputs.version }}-aarch64-stripped.zip
+            jre-${{ steps.jdk.outputs.version }}-aarch64-stripped.zip.sha256
+            jre-${{ steps.jdk.outputs.version }}-x64-stripped.zip
+            jre-${{ steps.jdk.outputs.version }}-x64-stripped.zip.sha256
           retention-days: 30
 
   publish:
@@ -128,8 +163,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v5
         with:
-          pattern: stripped-jre-*
-          merge-multiple: true
+          name: stripped-jre
           path: artefacts/
       - name: Inspect artefacts
         run: ls -la artefacts/
