@@ -1,19 +1,5 @@
 # Release notes
 
-Curated user-facing release notes for RouteConverter. One section per
-shipped version, newest at the top.
-
-The GitHub Release body for each tag (`gh release view <version>`)
-auto-lists merged PRs from `--generate-notes`; this file holds the
-maintainer's curated copy that the auto-list doesn't replace.
-
-Authoring template + Phase 4b distribution map (where each block goes —
-WordPress, forum, Latest Versions widget, RouteConverter.xml catalog)
-live in the maintainer-private `rc-content` repo at
-`release-notes/TEMPLATE.md`.
-
----
-
 ## 3.4 — 2026-06-07
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.4
@@ -57,7 +43,6 @@ Stale-Download-Vermeidung und einige kleinere UI-Verbesserungen.
 
 ### Changes
 
-- Build now runs on Java 25 (Java 17 stays the runtime floor).
 - Third-party Maven artefacts are now served from `mvn.routeconverter.com`
   (was the legacy SVN-hosted repo).
 - "Find places" opens with Cmd-F on macOS.
@@ -95,17 +80,6 @@ Stale-Download-Vermeidung und einige kleinere UI-Verbesserungen.
 
 | OS | File | URL |
 |---|---|---|
-| Windows | `RouteConverterWindowsOpenSource.exe` | https://static.routeconverter.com/downloads/RouteConverterWindows.exe |
-| Windows (Bundle, includes JRE) | `RouteConverterWindowsBundle.exe` | https://static.routeconverter.com/downloads/RouteConverterWindowsBundle.exe |
-| Windows (Portable) | `RouteConverterPortable.paf.exe` | https://static.routeconverter.com/downloads/RouteConverterPortable.paf.exe |
-| Linux | `RouteConverterLinuxOpenSource.jar` | https://static.routeconverter.com/downloads/RouteConverterLinux.jar |
-| Mac | `RouteConverterMacOpenSource-app.zip` | https://static.routeconverter.com/downloads/RouteConverterMac.zip |
-| Mac (jar) | `RouteConverterMacOpenSource.jar` | https://static.routeconverter.com/downloads/RouteConverterMacOpenSource.jar |
-| CmdLine | `RouteConverterCmdLine.jar` | https://static.routeconverter.com/downloads/RouteConverterCmdLine.jar |
-| TimeAlbumPro (Win) | `TimeAlbumProWindows.exe` | https://static.routeconverter.com/downloads/TimeAlbumProWindows.exe |
-| TimeAlbumPro (Win Bundle) | `TimeAlbumProWindowsBundle.exe` | https://static.routeconverter.com/downloads/TimeAlbumProWindowsBundle.exe |
-| TimeAlbumPro (Linux) | `TimeAlbumProLinux.jar` | https://static.routeconverter.com/downloads/TimeAlbumProLinux.jar |
-| TimeAlbumPro (Mac) | `TimeAlbumProMac-app.zip` | https://static.routeconverter.com/downloads/TimeAlbumProMac.zip |
 | Archive | All artefacts for 3.4 | https://static.routeconverter.com/downloads/previous-releases/3.4/ |
 | API docs | Aggregated Javadoc 3.4 | https://static.routeconverter.com/javadoc/3.4/ |
 
