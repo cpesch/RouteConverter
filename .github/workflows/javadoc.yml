@@ -1,0 +1,64 @@
+name: Publish Javadoc
+
+# Standalone javadoc publisher. Separate from release.yml so we can
+# re-publish (e.g. after a pom doclint fix) without re-tagging the
+# release, and so a javadoc build failure cannot block the main
+# release pipeline.
+#
+# Triggers:
+#   - workflow_dispatch (manual)
+#   - push paths-filter on pom.xml + java sources (auto-refresh master
+#     snapshot under static/javadoc/master/)
+#
+# See rc-meta/docs/00018-release-automation-3.4.md Phase 5.5.
+
+on:
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Subdir under static/javadoc/ (e.g. "3.4", "master"). Defaults to "master".'
+        required: false
+        default: master
+  push:
+    branches: [master]
+    paths:
+      - '**/*.java'
+      - '**/pom.xml'
+
+concurrency:
+  group: javadoc-${{ github.event.inputs.target || 'master' }}
+  cancel-in-progress: true
+
+jobs:
+  publish-javadoc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: zulu
+          java-version: '17'
+      - uses: actions/cache@v5
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Aggregate javadoc
+        run: ./mvnw --batch-mode -DskipTests install javadoc:aggregate
+      - name: Configure SSH
+        env:
+          DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+      - name: Rsync to static/javadoc/<target>/
+        env:
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+          TARGET:      ${{ github.event.inputs.target || 'master' }}
+        run: |
+          rsync -av --delete --omit-dir-times --no-perms \
+            target/site/apidocs/ \
+            "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/javadoc/${TARGET}/"
