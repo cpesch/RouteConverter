@@ -1,7 +1,7 @@
 name: Release
 
-# Tag-triggered release build. Runs when a tag matching v<MAJOR>.<MINOR>
-# (or v<MAJOR>.<MINOR>.<PATCH>) is pushed. Builds RouteConverter +
+# Tag-triggered release build. Runs when a tag matching <MAJOR>.<MINOR>
+# (or <MAJOR>.<MINOR>.<PATCH>) is pushed — no `v` prefix. Builds RouteConverter +
 # TimeAlbumPro OpenSource artefacts, publishes them to:
 #
 #   1. static.routeconverter.com/downloads/release/
@@ -24,8 +24,10 @@ name: Release
 on:
   push:
     tags:
-      - 'v[0-9]+.[0-9]+'
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+      # Tag format is plain `<MAJOR>.<MINOR>[.<PATCH>]`, no `v` prefix
+      # (project convention pre-dates Phase 3 — see rc-meta AGENTS.md).
+      - '[0-9]+.[0-9]+'
+      - '[0-9]+.[0-9]+.[0-9]+'
 
 concurrency:
   group: release-${{ github.ref }}
@@ -203,8 +205,9 @@ jobs:
       - name: Resolve version from tag
         id: ver
         run: |
+          # Tag = plain version, no `v` prefix.
           TAG="${GITHUB_REF_NAME}"
-          VERSION="${TAG#v}"
+          VERSION="${TAG}"
           echo "tag=$TAG"         >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
       - uses: actions/download-artifact@v5
