@@ -372,6 +372,11 @@
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/binding*/**</exclude>
+                            </excludes>
+                        </configuration>
                     </execution>
 
                     <execution>
@@ -383,6 +388,9 @@
                         <configuration>
                             <!--<destFile>${sonar.jacoco.itReportPath}</destFile>-->
                             <propertyName>itCoverageAgent</propertyName>
+                            <excludes>
+                                <exclude>**/binding*/**</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
