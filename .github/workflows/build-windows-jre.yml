@@ -4,11 +4,8 @@ name: Build Windows JRE
 # https://static.routeconverter.com/build/windows/jre-<version>-x64-stripped.zip
 # alongside a .sha256 sidecar.
 #
-# Both RouteConverterWindowsBundle.nsi and TimeAlbumProWindowsBundle.nsi
-# reference ..\jre-17.0.15 — same JRE serves both. Bundle workflows
-# (prerelease.yml / release.yml on the Windows bundle path, TBD) download
-# this artefact from static.routeconverter.com, verify sha256, extract
-# into both bundle dirs, then makensis.
+# RouteConverterMacOpenSource and TimeAlbumProMac assemblies consume these
+# verify sha256, extract into both bundle dirs, then makensis.
 #
 # Triggers:
 #   workflow_dispatch — manual rebuild

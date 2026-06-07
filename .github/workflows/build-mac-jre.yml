@@ -8,9 +8,6 @@ name: Build Mac JRE
 # _build-linux-mac.yml — curl + sha256 verify + unzip into
 # target/Runtime-<arch>, then maven-assembly-plugin produces per-arch app zips.
 #
-# Mirror of build-windows-jre.yml. Module list + reduce steps copied from the
-# retired RouteConverterMacOpenSource/build-jre.sh.
-#
 # Triggers:
 #   workflow_dispatch — manual rebuild
 #   push paths — automatic when the jlink recipe changes
