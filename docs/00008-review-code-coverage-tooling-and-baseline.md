@@ -10,6 +10,8 @@ Updated on June 6, 2026 (Phase 1 complete ? 137 new unit tests across 5 modules;
 
 Updated on June 6, 2026 (Phase 5 complete ? JaCoCo `check` gates added to 8 modules with per-module thresholds).
 
+Updated on June 6, 2026 (Phase 5 measurement ? aggregate coverage re-measured after all phases; `photon/pom.xml` invalid JaCoCo check execution removed).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -302,20 +304,22 @@ Use normal module/profile runs and generated Failsafe reports to verify that ext
 
 ## Current aggregate baseline snapshot
 
-### Baseline (June 4, 2026) vs. after Phase 1 (June 6, 2026) vs. after Phase 3 (June 6, 2026)
+### Baseline (June 4, 2026) vs. after Phase 1 (June 6, 2026) vs. after Phase 3 (June 6, 2026) vs. after Phase 5 (June 6, 2026)
 
-| Metric | Covered (baseline) | Missed (baseline) | Coverage (baseline) | Coverage (after Phase 1) | Coverage (after Phase 3) |
-|---|---:|---:|---:|---:|---:|
-| Instruction | 33,355 | 186,936 | 15.14% | **35.01%** | **35.52%** |
-| Branch | 2,606 | 12,612 | 17.12% | **37.60%** | **38.17%** |
-| Line | 7,438 | 41,483 | 15.20% | **34.86%** | **35.27%** |
-| Complexity | 3,049 | 20,993 | 12.68% | **28.86%** | **29.29%** |
-| Method | 2,178 | 14,202 | 13.30% | **29.01%** | **29.40%** |
-| Class | 467 | 1,547 | 23.19% | **40.12%** | **40.42%** |
+| Metric | Covered (baseline) | Missed (baseline) | Coverage (baseline) | Coverage (after Phase 1) | Coverage (after Phase 3) | Coverage (after Phase 5) |
+|---|---:|---:|---:|---:|---:|---:|
+| Instruction | 33,355 | 186,936 | 15.14% | **35.01%** | **35.52%** | **35.60%** |
+| Branch | 2,606 | 12,612 | 17.12% | **37.60%** | **38.17%** | **38.19%** |
+| Line | 7,438 | 41,483 | 15.20% | **34.86%** | **35.27%** | **35.19%** |
+| Complexity | 3,049 | 20,993 | 12.68% | **28.86%** | **29.29%** | **29.39%** |
+| Method | 2,178 | 14,202 | 13.30% | **29.01%** | **29.40%** | **29.54%** |
+| Class | 467 | 1,547 | 23.19% | **40.12%** | **40.42%** | **40.62%** |
 
 Phase 1 measurement was taken on June 6, 2026 via `./mvnw -U -pl coverage-report -am -Dskip.integration.tests=true verify` (Surefire unit tests only, no integration tests). The very large jump from ~15% to ~35% instruction coverage reflects a combination of the 137 new Phase 1 unit tests and the existing test suite that was already covered.
 
 Phase 3 measurement was taken on June 6, 2026 via `./mvnw -pl coverage-report -am -Dskip.integration.tests=true -Dmaven.test.failure.ignore=true verify` (Surefire unit tests only). Covers all 274 tests added in Phases 1?3 (137 + 87 + 50).
+
+Phase 5 measurement was taken on June 6, 2026 via `./mvnw -pl coverage-report -am -Dskip.integration.tests=true -Dmaven.test.failure.ignore=true verify` after fixing an invalid JaCoCo check execution in `photon/pom.xml` (`<skip>true</skip>` without rules caused build failure). Phase 5 added no new tests ? the instruction, branch, complexity, method, and class counters all increased slightly due to Phase 4 tests (`mapview`: 21.57%, `route-converter-tools`: 12.64%). The slight LINE decrease (35.27% ? 35.19%) compared with Phase 3 is due to pre-existing Surefire test failures in `navigation-formats` (`GoogleMapsUrlFormatBookmarkTest` and `UrlFormatTest.readURLReference` had fixture file-not-found errors that slightly reduce covered lines in that run).
 
 ## Module observations and planning priorities
 
