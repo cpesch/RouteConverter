@@ -283,7 +283,15 @@ jobs:
       - name: mvn javadoc:aggregate
         # mvn site is heavyweight (DependencyCheck#2222 etc) — only need
         # the aggregated javadoc for static.routeconverter.com/javadoc/.
-        run: ./mvnw --batch-mode -Prouteconverter -DskipTests install javadoc:aggregate
+        # -Xdoclint:none + failOnError=false: JAXB-generated sources have
+        # empty <p> tags that JDK 17 doclint rejects as errors. We accept
+        # the warnings — the rendered javadoc is still useful.
+        run: |
+          ./mvnw --batch-mode -Prouteconverter -DskipTests install
+          ./mvnw --batch-mode javadoc:aggregate \
+            -Dmaven.javadoc.failOnError=false \
+            -Dadditionalparam=-Xdoclint:none \
+            -Ddoclint=none
 
       - name: Configure SSH
         env:
