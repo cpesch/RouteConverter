@@ -5,20 +5,20 @@ name: Publish Javadoc
 # release, and so a javadoc build failure cannot block the main
 # release pipeline.
 #
+# Javadoc is NOT versioned on the host: we always overwrite the single
+# top-level static/javadoc/ tree. Per-version retention is the GH
+# Release artefact set; nobody links to /javadoc/<version>/ from the
+# website. (Decision 2026-06-07.)
+#
 # Triggers:
 #   - workflow_dispatch (manual)
-#   - push paths-filter on pom.xml + java sources (auto-refresh master
-#     snapshot under static/javadoc/master/)
+#   - push paths-filter on pom.xml + java sources (auto-refresh on
+#     master changes)
 #
 # See rc-meta/docs/00018-release-automation-3.4.md Phase 5.5.
 
 on:
   workflow_dispatch:
-    inputs:
-      target:
-        description: 'Subdir under static/javadoc/ (e.g. "3.4", "master"). Defaults to "master".'
-        required: false
-        default: master
   push:
     branches: [master]
     paths:
@@ -26,7 +26,7 @@ on:
       - '**/pom.xml'
 
 concurrency:
-  group: javadoc-${{ github.event.inputs.target || 'master' }}
+  group: javadoc
   cancel-in-progress: true
 
 jobs:
@@ -54,11 +54,10 @@ jobs:
           printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
-      - name: Rsync to static/javadoc/<target>/
+      - name: Rsync to static/javadoc/
         env:
           DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
-          TARGET:      ${{ github.event.inputs.target || 'master' }}
         run: |
           rsync -av --delete --omit-dir-times --no-perms \
             target/site/apidocs/ \
-            "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/javadoc/${TARGET}/"
+            "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/javadoc/"
