@@ -1,53 +1,53 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.1"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.1 http://maven.apache.org/xsd/assembly-2.1.1.xsd">
-    <id>app</id>
+    <id>x64-app</id>
     <formats>
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>target/Runtime/</directory>
+            <directory>target/Runtime-x64/</directory>
             <includes>
                 <include>**/*</include>
             </includes>
-            <outputDirectory>/RouteConverter.app/Contents/</outputDirectory>
+            <outputDirectory>/TimeAlbumPro.app/Contents/</outputDirectory>
         </fileSet>
     </fileSets>
     <files>
         <file>
-            <source>src/main/app-resources/Java/RouteConverterOpenSource.cfg</source>
-            <outputDirectory>/RouteConverter.app/Contents/Java/</outputDirectory>
+            <source>src/main/app-resources/Java/TimeAlbumPro.cfg</source>
+            <outputDirectory>/TimeAlbumPro.app/Contents/Java/</outputDirectory>
             <filtered>true</filtered>
             <lineEnding>lf</lineEnding>
         </file>
         <file>
-            <source>src/main/app-resources/MacOS/RouteConverterOpenSource</source>
-            <outputDirectory>/RouteConverter.app/Contents/MacOS/</outputDirectory>
+            <source>src/main/app-resources/MacOS/TimeAlbumPro</source>
+            <outputDirectory>/TimeAlbumPro.app/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
         </file>
         <file>
             <source>src/main/app-resources/MacOS/libapplauncher.dylib</source>
-            <outputDirectory>/RouteConverter.app/Contents/MacOS/</outputDirectory>
+            <outputDirectory>/TimeAlbumPro.app/Contents/MacOS/</outputDirectory>
         </file>
         <file>
-            <source>src/main/app-resources/Resources/RouteConverter.icns</source>
-            <outputDirectory>/RouteConverter.app/Contents/Resources/</outputDirectory>
+            <source>src/main/app-resources/Resources/TimeAlbumPro.icns</source>
+            <outputDirectory>/TimeAlbumPro.app/Contents/Resources/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/Resources/InfoPlist.strings</source>
-            <outputDirectory>/RouteConverter.app/Contents/Resources/German.lproj/</outputDirectory>
+            <outputDirectory>/TimeAlbumPro.app/Contents/Resources/German.lproj/</outputDirectory>
         </file>
         <file>
             <source>src/main/app-resources/Info.plist</source>
-            <outputDirectory>/RouteConverter.app/Contents/</outputDirectory>
+            <outputDirectory>/TimeAlbumPro.app/Contents/</outputDirectory>
             <filtered>true</filtered>
             <lineEnding>lf</lineEnding>
         </file>
         <file>
-            <source>target/RouteConverterMacOpenSource.jar</source>
-            <outputDirectory>/RouteConverter.app/Contents/Java/</outputDirectory>
+            <source>target/TimeAlbumProMac.jar</source>
+            <outputDirectory>/TimeAlbumPro.app/Contents/Java/</outputDirectory>
         </file>
     </files>
 </assembly>

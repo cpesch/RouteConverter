@@ -76,10 +76,13 @@ jobs:
           mkdir -p "previous-releases/$VERSION"
           cp artefacts/* "previous-releases/$VERSION/"
           # Legacy ritual: rename Mac app bundles in the archive only.
+          # Dual-arch (Phase 5.4f): rename per arch suffix.
           for stem in RouteConverterMacOpenSource TimeAlbumProMac; do
-            src="previous-releases/$VERSION/$stem-app.zip"
-            dst="previous-releases/$VERSION/$stem.app.zip"
-            [[ -f "$src" ]] && mv "$src" "$dst"
+            for arch in x64 aarch64; do
+              src="previous-releases/$VERSION/$stem-$arch-app.zip"
+              dst="previous-releases/$VERSION/$stem-$arch.app.zip"
+              [[ -f "$src" ]] && mv "$src" "$dst"
+            done
           done
           ls -la "previous-releases/$VERSION/"
       - name: Configure SSH

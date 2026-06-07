@@ -36,20 +36,49 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Resolve JRE version
+        id: jre
+        run: |
+          ver=$(sed -nE 's|.*<jre\.version>([^<]+)</jre\.version>.*|\1|p' \
+                route-converter-build/pom.xml | head -1)
+          [[ -n "$ver" ]] || { echo "::error::failed to resolve jre.version"; exit 1; }
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "JRE version: $ver"
+      - name: Fetch hosted Mac JREs (x64 + aarch64)
+        env:
+          VER: ${{ steps.jre.outputs.version }}
+        run: |
+          set -euo pipefail
+          base_url=https://static.routeconverter.com/build/mac
+          for arch in x64 aarch64; do
+            zip="jre-${VER}-${arch}-stripped.zip"
+            curl -fsSL -o "$zip"        "${base_url}/${zip}"
+            curl -fsSL -o "${zip}.sha256" "${base_url}/${zip}.sha256"
+            sha256sum -c "${zip}.sha256"
+            for mod in RouteConverterMacOpenSource TimeAlbumProMac; do
+              mkdir -p "${mod}/target/Runtime-${arch}"
+              unzip -q "$zip" -d "${mod}/target/Runtime-${arch}"
+            done
+            rm -f "$zip" "${zip}.sha256"
+          done
       - name: Build
         # github.run_number is the CALLER workflow's run number — same
         # value the inline jobs used before Phase 5.2.
-        run: ./mvnw --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} clean package
+        # No `clean` — runner is ephemeral; `clean` would also wipe the
+        # Runtime-<arch> dirs unpacked from the hosted Mac JREs above.
+        run: ./mvnw --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} package
       - name: Stage artefacts
         run: |
           mkdir -p artefacts
           cp RouteConverterLinuxOpenSource/target/RouteConverterLinuxOpenSource.* artefacts/
           cp RouteConverterMacOpenSource/target/RouteConverterMacOpenSource.jar artefacts/
-          cp RouteConverterMacOpenSource/target/RouteConverterMacOpenSource-app.zip artefacts/
+          cp RouteConverterMacOpenSource/target/RouteConverterMacOpenSource-x64-app.zip artefacts/
+          cp RouteConverterMacOpenSource/target/RouteConverterMacOpenSource-aarch64-app.zip artefacts/
           cp RouteConverterCmdLine/target/RouteConverterCmdLine.* artefacts/
           cp TimeAlbumProLinux/target/TimeAlbumProLinux.* artefacts/
           cp TimeAlbumProMac/target/TimeAlbumProMac.jar artefacts/
-          cp TimeAlbumProMac/target/TimeAlbumProMac-app.zip artefacts/
+          cp TimeAlbumProMac/target/TimeAlbumProMac-x64-app.zip artefacts/
+          cp TimeAlbumProMac/target/TimeAlbumProMac-aarch64-app.zip artefacts/
       - uses: actions/upload-artifact@v5
         with:
           name: ${{ inputs.artefact-name }}

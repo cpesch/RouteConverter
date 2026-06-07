@@ -1,0 +1,150 @@
+name: Build Mac JRE
+
+# Build the stripped Mac JRE (jlink + trim) for both architectures, publish to
+# https://static.routeconverter.com/build/mac/jre-<version>-<arch>-stripped.zip
+# alongside a .sha256 sidecar.
+#
+# RouteConverterMacOpenSource and TimeAlbumProMac assemblies consume these via
+# _build-linux-mac.yml — curl + sha256 verify + unzip into
+# target/Runtime-<arch>, then maven-assembly-plugin produces per-arch app zips.
+#
+# Mirror of build-windows-jre.yml. Module list + reduce steps copied from the
+# retired RouteConverterMacOpenSource/build-jre.sh.
+#
+# Triggers:
+#   workflow_dispatch — manual rebuild
+#   push paths — automatic when the jlink recipe changes
+#
+# Plan: rc-meta docs/00018-release-automation-3.4.md Phase 5.4e.
+
+on:
+  workflow_dispatch:
+    inputs:
+      jdk_version:
+        description: 'Override Temurin JDK version (blank = read jre.version from route-converter-build/pom.xml)'
+        required: false
+        default: ''
+  push:
+    branches: [master]
+    paths:
+      - 'route-converter-build/pom.xml'
+      - '.github/workflows/build-mac-jre.yml'
+
+concurrency:
+  group: build-mac-jre
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: x64
+            runner: macos-13
+          - arch: aarch64
+            runner: macos-latest
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Resolve JDK version
+        id: jdk
+        shell: bash
+        run: |
+          if [[ -n "${{ inputs.jdk_version }}" ]]; then
+            ver="${{ inputs.jdk_version }}"
+          else
+            ver=$(sed -nE 's|.*<jre\.version>([^<]+)</jre\.version>.*|\1|p' \
+                  route-converter-build/pom.xml | head -1)
+          fi
+          [[ -n "$ver" ]] || { echo "::error::failed to resolve JDK version"; exit 1; }
+          echo "version=$ver" >> "$GITHUB_OUTPUT"
+          echo "JDK version: $ver"
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ steps.jdk.outputs.version }}
+
+      - name: jlink stripped JRE
+        shell: bash
+        env:
+          VER:  ${{ steps.jdk.outputs.version }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          OUT="jre-${VER}-${ARCH}"
+          rm -rf "$OUT"
+          "$JAVA_HOME/bin/jlink" \
+            --module-path "$JAVA_HOME/jmods" \
+            --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.unsupported \
+            --output "$OUT" \
+            --strip-debug --compress 2 --no-header-files --no-man-pages
+          rm -rf "$OUT/legal"
+          rm -f  "$OUT/release"
+          rm -f  "$OUT/bin/keytool"
+          rm -f  "$OUT/conf/security/policy/README.txt"
+          rm -f  "$OUT/lib/server/Xusage.txt"
+
+      - name: Show full JRE tree
+        shell: bash
+        env:
+          VER:  ${{ steps.jdk.outputs.version }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          OUT="jre-${VER}-${ARCH}"
+          find "$OUT" -print
+          echo "--- summary ---"
+          echo "files: $(find "$OUT" -type f | wc -l)"
+          echo "dirs:  $(find "$OUT" -type d | wc -l)"
+          echo "bytes: $(du -sk "$OUT" | awk '{print $1*1024}')"
+
+      - name: Zip + sha256
+        id: pack
+        shell: bash
+        env:
+          VER:  ${{ steps.jdk.outputs.version }}
+          ARCH: ${{ matrix.arch }}
+        run: |
+          base="jre-${VER}-${ARCH}-stripped"
+          (cd "jre-${VER}-${ARCH}" && zip -9 -r "../${base}.zip" . >/dev/null)
+          shasum -a 256 "${base}.zip" | awk -v f="${base}.zip" '{print $1"  "f}' > "${base}.zip.sha256"
+          ls -la "${base}.zip" "${base}.zip.sha256"
+          cat "${base}.zip.sha256"
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: stripped-jre-${{ matrix.arch }}
+          path: |
+            ${{ steps.pack.outputs.base }}.zip
+            ${{ steps.pack.outputs.base }}.zip.sha256
+          retention-days: 30
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v5
+        with:
+          pattern: stripped-jre-*
+          merge-multiple: true
+          path: artefacts/
+      - name: Inspect artefacts
+        run: ls -la artefacts/
+      - name: Configure SSH
+        env:
+          DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+      - name: Rsync to static.routeconverter.com/build/mac/
+        env:
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          rsync -av --omit-dir-times --no-perms \
+            artefacts/ \
+            "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/build/mac/"

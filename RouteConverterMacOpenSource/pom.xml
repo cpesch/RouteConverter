@@ -76,45 +76,35 @@
             </plugin>
 
             <plugin>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>unpack</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.openjdk.java</groupId>
-                                    <artifactId>jlink-routeconverter-opensource</artifactId>
-                                    <version>17.0.9</version>
-                                    <type>zip</type>
-                                    <classifier>osx</classifier>
-                                    <outputDirectory>${project.basedir}/target/Runtime</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>x64</id>
                         <phase>package</phase>
                         <goals>
                             <goal>single</goal>
                         </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${basedir}/src/main/assembly/macos-x64.xml</descriptor>
+                            </descriptors>
+                            <finalName>RouteConverterMacOpenSource</finalName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>aarch64</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${basedir}/src/main/assembly/macos-aarch64.xml</descriptor>
+                            </descriptors>
+                            <finalName>RouteConverterMacOpenSource</finalName>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <descriptors>
-                        <descriptor>${basedir}/src/main/assembly/macos.xml</descriptor>
-                    </descriptors>
-                    <finalName>RouteConverterMacOpenSource</finalName>
-                </configuration>
             </plugin>
         </plugins>
     </build>
