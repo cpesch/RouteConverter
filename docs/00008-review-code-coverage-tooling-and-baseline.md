@@ -12,6 +12,8 @@ Updated on June 6, 2026 (Phase 5 complete ? JaCoCo `check` gates added to 8 modu
 
 Updated on June 6, 2026 (Phase 5 measurement ? aggregate coverage re-measured after all phases; `photon/pom.xml` invalid JaCoCo check execution removed).
 
+Updated on June 7, 2026 (Phase 6 ? 39 new unit tests across `kml` and `route-catalog`; JaCoCo gates confirmed green for `photon`, `kml`, and `route-catalog`).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -629,13 +631,18 @@ These still exercise real file, parser, writer, round-trip, or multi-format inte
    - remaining `NavigationFormatParserIT` tests are broader format-validation sweeps, not narrow API contracts
    - remaining `TourReadWriteRoundtripIT` tests are full round-trip integration tests
    - next meaningful work is Phase 1: writing new tests for under-covered modules
-6. **Phase 1 complete (June 6, 2026):**
-   - `download` ? 55 tests
-   - `datasource` ? 24 tests
-   - `route-catalog` ? 20 tests
-   - `download-tools` ? 14 tests
-   - `route-converter` helper and model classes ? 24 tests
-   - **137 new tests total, all passing in Surefire**
+- **Phase 1 complete (June 6, 2026):**
+    - `download` ? 55 tests
+    - `datasource` ? 24 tests
+    - `route-catalog` ? 20 tests
+    - `download-tools` ? 14 tests
+    - `route-converter` helper and model classes ? 24 tests
+    - **137 new tests total, all passing in Surefire**
+7. **Phase 6 (June 7, 2026) ? binding coverage and LocalCategory operations:**
+    - `kml` ? +20 tests (`KmlBinding21Test`: `KmlType`, `FeatureType`, `PointType`, `LineStringType`, `FolderType`, `DocumentType`, `LookAtType` accessors + 3 full round-trip tests via binding21 objects)
+    - `route-catalog` ? +19 tests (`LocalCategoryTest`: `create`, `delete`, `update`, `createRoute(File)`, `createRoute(url)`, `getRoutes`, `equals/hashCode/toString`)
+    - **39 new tests, all passing in Surefire**
+    - JaCoCo gates confirmed green for `photon` (35% threshold), `kml` (8% threshold), `route-catalog` (no explicit threshold yet)
 7. **next recommended batch (Phase 2 ? format and conversion logic):**
    - `navigation-formats`
    - `gpx`

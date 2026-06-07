@@ -1,59 +1,224 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
 package slash.navigation.photon;
 
 import org.geojson.Feature;
 import org.geojson.Point;
+import org.geojson.Polygon;
 import org.junit.Test;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
+/**
+ * Unit tests for {@link PhotonService}: extractPosition, getDisplayName, getProperty branches.
+ *
+ * @author Christian Pesch
+ */
 public class PhotonServiceTest {
-	private final PhotonService service = new PhotonService();
+    private final PhotonService service = new PhotonService();
 
-	@Test
-	public void extractsCategorizedPositionUsingPhotonType() {
-		Feature feature = new Feature();
-		feature.setGeometry(new Point(13.4050, 52.5200));
-		feature.setProperty("name", "Berlin");
-		feature.setProperty("city", "Berlin");
-		feature.setProperty("country", "Deutschland");
-		feature.setProperty("type", "city");
+    // ---- helpers ----
 
-		CategorizedNavigationPosition position = service.extractPosition(feature);
+    private static Feature pointFeature(double lon, double lat) {
+        Feature f = new Feature();
+        f.setGeometry(new Point(lon, lat));
+        return f;
+    }
 
-		assertEquals(13.4050, position.getLongitude(), 0.0);
-		assertEquals(52.5200, position.getLatitude(), 0.0);
-		assertEquals("Berlin, Berlin, Deutschland", position.getDescription());
-		assertEquals("city", position.getCategory());
-	}
+    // ---- extractPosition: geometry variants ----
 
-	@Test
-	public void fallsBackToOsmValueThenOsmKeyForPhotonCategory() {
-		Feature feature = new Feature();
-		feature.setGeometry(new Point(13.4050, 52.5200));
-		feature.setProperty("name", "Checkpoint");
-		feature.setProperty("osm_value", "bus_stop");
+    @Test
+    public void returnsNullForNullGeometry() {
+        assertNull(service.extractPosition(new Feature()));
+    }
 
-		CategorizedNavigationPosition position = service.extractPosition(feature);
+    @Test
+    public void returnsNullForNonPointGeometry() {
+        Feature f = new Feature();
+        f.setGeometry(new Polygon());
+        assertNull(service.extractPosition(f));
+    }
 
-		assertEquals("bus_stop", position.getCategory());
+    @Test
+    public void returnsPositionForPoint() {
+        Feature f = pointFeature(13.405, 52.520);
+        CategorizedNavigationPosition pos = service.extractPosition(f);
+        assertNotNull(pos);
+        assertEquals(13.405, pos.getLongitude(), 0.0001);
+        assertEquals(52.520, pos.getLatitude(), 0.0001);
+    }
 
-		Feature fallbackFeature = new Feature();
-		fallbackFeature.setGeometry(new Point(13.4050, 52.5200));
-		fallbackFeature.setProperty("name", "Unnamed");
-		fallbackFeature.setProperty("osm_key", "highway");
+    // ---- extractPosition: type resolution ----
 
-		CategorizedNavigationPosition fallbackPosition = service.extractPosition(fallbackFeature);
+    @Test
+    public void usesTypeProperty() {
+        Feature f = pointFeature(1.0, 2.0);
+        f.setProperty("type", "city");
+        assertEquals("city", service.extractPosition(f).getCategory());
+    }
 
-		assertEquals("highway", fallbackPosition.getCategory());
-	}
+    @Test
+    public void fallsBackToOsmValueWhenTypeEmpty() {
+        Feature f = pointFeature(1.0, 2.0);
+        f.setProperty("osm_value", "bus_stop");
+        assertEquals("bus_stop", service.extractPosition(f).getCategory());
+    }
 
-	@Test
-	public void returnsNullForNonPointPhotonFeatures() {
-		Feature feature = new Feature();
+    @Test
+    public void fallsBackToOsmKeyWhenTypeAndOsmValueEmpty() {
+        Feature f = pointFeature(1.0, 2.0);
+        f.setProperty("osm_key", "highway");
+        assertEquals("highway", service.extractPosition(f).getCategory());
+    }
 
-		assertNull(service.extractPosition(feature));
-	}
+    @Test
+    public void categoryIsNullWhenAllTypeFieldsEmpty() {
+        Feature f = pointFeature(1.0, 2.0);
+        assertNull(service.extractPosition(f).getCategory());
+    }
+
+    // ---- getDisplayName: various combinations exercised via extractPosition ----
+
+    @Test
+    public void displayNameWithAllFields() {
+        Feature f = pointFeature(13.405, 52.520);
+        f.setProperty("name", "Berlin");
+        f.setProperty("postcode", "10115");
+        f.setProperty("city", "Berlin");
+        f.setProperty("state", "Berlin");
+        f.setProperty("country", "Deutschland");
+        f.setProperty("type", "city");
+        CategorizedNavigationPosition pos = service.extractPosition(f);
+        String desc = pos.getDescription();
+        assertTrue("should contain name", desc.contains("Berlin"));
+        assertTrue("should contain postcode", desc.contains("10115"));
+        assertTrue("should contain country", desc.contains("Deutschland"));
+    }
+
+    @Test
+    public void displayNameNameOnlyTrimsTrailingCommaSpace() {
+        // name="Test", all others empty: "Test, " -> trailing ", " -> "Test"
+        Feature f = pointFeature(1.0, 2.0);
+        f.setProperty("name", "Test");
+        assertEquals("Test", service.extractPosition(f).getDescription());
+    }
+
+    @Test
+    public void displayNamePostcodeAndCity() {
+        // no name, postcode + city -> "12345 Hamburg"
+        Feature f = pointFeature(1.0, 2.0);
+        f.setProperty("postcode", "12345");
+        f.setProperty("city", "Hamburg");
+        assertEquals("12345 Hamburg", service.extractPosition(f).getDescription());
+    }
+
+    @Test
+    public void displayNameCityAndCountry() {
+        // no name, no postcode, city + country -> " Berlin, Germany" (leading space from city branch)
+        Feature f = pointFeature(1.0, 2.0);
+        f.setProperty("city", "Berlin");
+        f.setProperty("country", "Germany");
+        String desc = service.extractPosition(f).getDescription();
+        assertTrue("should contain city", desc.contains("Berlin"));
+        assertTrue("should contain country", desc.contains("Germany"));
+    }
+
+    @Test
+    public void displayNameNameAndState() {
+        // name + state, no other fields
+        Feature f = pointFeature(1.0, 2.0);
+        f.setProperty("name", "Town");
+        f.setProperty("state", "Bavaria");
+        String desc = service.extractPosition(f).getDescription();
+        assertTrue("should contain name", desc.contains("Town"));
+        assertTrue("should contain state", desc.contains("Bavaria"));
+    }
+
+    @Test
+    public void displayNameNameAndCityCollapseDoubleSpace() {
+        // name="A", city="B" -> "A,  B" -> replaceAll -> "A, B"
+        Feature f = pointFeature(1.0, 2.0);
+        f.setProperty("name", "A");
+        f.setProperty("city", "B");
+        String desc = service.extractPosition(f).getDescription();
+        assertFalse("double space should be collapsed", desc.contains("  "));
+        assertEquals("A, B", desc);
+    }
+
+    @Test
+    public void displayNameAllEmpty() {
+        Feature f = pointFeature(1.0, 2.0);
+        assertEquals("", service.extractPosition(f).getDescription());
+    }
+
+    @Test
+    public void displayNameCountryOnly() {
+        Feature f = pointFeature(1.0, 2.0);
+        f.setProperty("country", "France");
+        String desc = service.extractPosition(f).getDescription();
+        assertTrue("should contain country", desc.contains("France"));
+    }
+
+    // ---- original tests (preserved) ----
+
+    @Test
+    public void extractsCategorizedPositionUsingPhotonType() {
+        Feature feature = new Feature();
+        feature.setGeometry(new Point(13.4050, 52.5200));
+        feature.setProperty("name", "Berlin");
+        feature.setProperty("city", "Berlin");
+        feature.setProperty("country", "Deutschland");
+        feature.setProperty("type", "city");
+
+        CategorizedNavigationPosition position = service.extractPosition(feature);
+
+        assertEquals(13.4050, position.getLongitude(), 0.0);
+        assertEquals(52.5200, position.getLatitude(), 0.0);
+        assertEquals("Berlin, Berlin, Deutschland", position.getDescription());
+        assertEquals("city", position.getCategory());
+    }
+
+    @Test
+    public void fallsBackToOsmValueThenOsmKeyForPhotonCategory() {
+        Feature feature = new Feature();
+        feature.setGeometry(new Point(13.4050, 52.5200));
+        feature.setProperty("name", "Checkpoint");
+        feature.setProperty("osm_value", "bus_stop");
+
+        CategorizedNavigationPosition position = service.extractPosition(feature);
+        assertEquals("bus_stop", position.getCategory());
+
+        Feature fallbackFeature = new Feature();
+        fallbackFeature.setGeometry(new Point(13.4050, 52.5200));
+        fallbackFeature.setProperty("name", "Unnamed");
+        fallbackFeature.setProperty("osm_key", "highway");
+
+        CategorizedNavigationPosition fallbackPosition = service.extractPosition(fallbackFeature);
+        assertEquals("highway", fallbackPosition.getCategory());
+    }
+
+    @Test
+    public void returnsNullForNonPointPhotonFeatures() {
+        Feature feature = new Feature();
+        assertNull(service.extractPosition(feature));
+    }
 }
 
