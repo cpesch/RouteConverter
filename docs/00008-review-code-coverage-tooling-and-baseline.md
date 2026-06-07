@@ -18,6 +18,8 @@ Updated on June 7, 2026 (Phase 6 ? 39 new unit tests across `kml` and `route-cat
 
 Updated on June 7, 2026 (Phase 7 ? 130 new unit tests across 7 modules: `routing-service`, `geocoding-service`, `common`, `common-navigation`, `common-gui`, `rest`; all green in Surefire; JaCoCo gate added to `routing-service` at 50% line threshold).
 
+Updated on June 7, 2026 (Phase 8 ? 50 new unit tests across `navigation-formats`: `GoPalUtil` (binding3 round-trip), `ViaMichelinUtil`, `Nmn7Util`, `NavigonCruiserUtil`, `GkPosition`, `MercatorPosition`; all green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -672,9 +674,14 @@ These still exercise real file, parser, writer, round-trip, or multi-format inte
     - `rest` ? 14 tests: `SimpleCredentials`, `DuplicateNameException`, `ForbiddenException`, `UnAuthorizedException`, `ServiceUnavailableException`
     - **116 new tests, all passing in Surefire** (130 including common-navigation Batch C which ran inside routing-service and geocoding-service builds)
     - JaCoCo gate added to `routing-service` at 50% line threshold
-9. **next recommended batch (Phase 8 ? navigation-formats JAXB util round-trips and position classes):**
-   - `GoPalUtil`, `ViaMichelinUtil`, `Nmn7Util`, `NavigonCruiserUtil` ? marshal/unmarshal round-trips
-   - `GkPosition`, `MercatorPosition` ? coordinate conversion accessors and equals/hashCode
+9. **Phase 8 (June 7, 2026) ? navigation-formats JAXB util round-trips and position classes:**
+    - `GoPalUtilTest` (gopal package) ? binding3 unmarshal, marshal, round-trip: 5 tests
+    - `ViaMichelinUtilTest` ? unmarshal, marshal, round-trip: 5 tests
+    - `Nmn7UtilTest` (nmn package) ? unmarshal, marshal, round-trip: 7 tests
+    - `NavigonCruiserUtilTest` (nmn package) ? JSON unmarshal, marshal, round-trip: 7 tests
+    - `GkPositionTest` ? construct from lon/lat, right/height, round-trip, asGkPosition, equals/hashCode: 12 tests
+    - `MercatorPositionTest` ? construct from lon/lat, X/Y, null coords, round-trip, setters, equals/hashCode: 14 tests
+    - **50 new tests, all passing in Surefire**
 
 ## Conclusion
 
