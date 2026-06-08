@@ -80,7 +80,7 @@ public class TileDownloadMap extends LocaleResourceImpl implements LocalMap {
     }
 
     public BoundingBox getBoundingBox() {
-        throw new UnsupportedOperationException();
+        return null;
     }
 
     public AbstractTileSource getTileSource() {
