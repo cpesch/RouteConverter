@@ -20,7 +20,7 @@ name: Release prepare
 # Tag push from step 2 fires release.yml automatically.
 #
 # See rc-meta/docs/00018-release-automation-3.4.md Phase 4 automation
-# and rc-meta/docs/00017-maintainer-runbook.md §9 for the one-time
+# and rc-meta/docs/00026.3-open-tasks.md MR-§9 for the one-time
 # secret-provisioning steps.
 
 on:
