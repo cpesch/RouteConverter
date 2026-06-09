@@ -128,6 +128,7 @@ public class RouteFeedback {
         Post request = new Post(errorReportUrl, credentials);
         request.addString("log", logOutput);
         request.addString("description", description);
+        request.addString("locale", getDefault().toString());
         if (file != null)
             request.addFile("file", file);
 
@@ -156,7 +157,7 @@ public class RouteFeedback {
         request.addString("javaBits", javaBits);
         request.addString("javaVersion", javaVersion);
         request.addString("javaFxVersion", javaFxVersion);
-        request.addString("locale", getDefault().getLanguage());
+        request.addString("locale", getDefault().toString());
         request.addString("osArch", osArch);
         request.addString("osName", osName);
         request.addString("osVersion", osVersion);
