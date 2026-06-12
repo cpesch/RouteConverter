@@ -166,4 +166,19 @@ jobs:
           fi
           git add static/downloads/RouteConverter.xml static/downloads/RouteConverter_de.xml
           git commit -m "downloads: bump catalog XMLs to ${VERSION} ($(date -I))"
-          git push origin main
+          # The Gitea host (strato) intermittently hits a PID/TasksMax cap;
+          # its pre-receive hook then dies with
+          #   runtime/cgo: pthread_create failed: Resource temporarily unavailable
+          # → SIGABRT → "pre-receive hook declined". That's transient host
+          # exhaustion, not a bad push — retry with backoff before failing
+          # the release. See rc-meta/docs/00025 + diag-tasksmax.sh.
+          for attempt in 1 2 3 4 5; do
+            if git push origin main; then
+              echo "catalog push ok (attempt ${attempt})"
+              exit 0
+            fi
+            echo "::warning::catalog push failed (attempt ${attempt}/5) — strato may be PID-capped; retrying"
+            sleep $(( attempt * 15 ))
+          done
+          echo "::error::catalog push still failing after 5 attempts — check strato PID/TasksMax cap (rc-meta/docs/00025)"
+          exit 1
