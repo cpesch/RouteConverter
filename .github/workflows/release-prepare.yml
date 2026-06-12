@@ -96,6 +96,16 @@ jobs:
           git config user.name  'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
+      - name: rewrite SSH github URLs to HTTPS
+        # pom <developerConnection> is scm:git:git@github.com:... (SSH).
+        # release-plugin pushes via developerConnection, but the runner
+        # has no SSH key — only the token-backed HTTPS extraheader from
+        # actions/checkout. Rewrite SSH→HTTPS so the push reuses that
+        # token. Without this the push dies: "git@github.com: Permission
+        # denied (publickey)". pom stays SSH for the maintainer's local
+        # release:prepare fallback.
+        run: git config url.'https://github.com/'.insteadOf 'git@github.com:'
+
       - name: mvn release:prepare
         # -Darguments passes flags to the forked Maven invocation that
         # release:prepare spawns for `clean verify`. Skip jacoco's
