@@ -158,6 +158,32 @@ public class DownloadManagerIT {
         assertEquals(EXPECTED, actual);
     }
 
+    @Test
+    public void testServer304YieldsNotModifiedWithoutOverwritingTarget() throws IOException {
+        // api.routeconverter.com /v1 catalog endpoints honor conditional GET: the second
+        // download sends If-None-Match from the stored ETag and the server returns 304, so
+        // the existing target is kept and the download resolves as NotModified.
+        assertTrue(target.delete());
+        String url = "https://api.routeconverter.com/v1/datasources/graphhopper/?format=xml";
+
+        Download first = manager.queueForDownload("graphhopper descriptor", url, Copy,
+                new FileAndChecksum(target, null), null);
+        waitFor(first, Succeeded);
+        assertEquals(Succeeded, first.getState());
+        assertNotNull(first.getETag());
+
+        long lengthAfterFirst = target.length();
+        long lastModifiedAfterFirst = target.lastModified();
+
+        Download second = manager.queueForDownload("graphhopper descriptor", url, Copy,
+                new FileAndChecksum(target, null), null);
+        waitFor(second, NotModified);
+        assertEquals(NotModified, second.getState());
+        // target untouched by the 304
+        assertEquals(lengthAfterFirst, target.length());
+        assertEquals(lastModifiedAfterFirst, target.lastModified());
+    }
+
     @Ignore
     @Test
     public void testSetLastModifiedForLocalFiles() {
