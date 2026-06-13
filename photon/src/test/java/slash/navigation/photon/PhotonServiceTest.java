@@ -19,12 +19,19 @@
 */
 package slash.navigation.photon;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.geojson.Feature;
+import org.geojson.FeatureCollection;
 import org.geojson.LngLatAlt;
 import org.geojson.Point;
 import org.geojson.Polygon;
 import org.junit.Test;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -230,6 +237,75 @@ public class PhotonServiceTest {
     public void returnsNullForNonPointPhotonFeatures() {
         Feature feature = new Feature();
         assertNull(service.extractPosition(feature));
+    }
+
+    // ---- asFeatureCollection: JSON parsing (replaces geojson-jackson binding) ----
+
+    private static JsonNode node(String json) throws IOException {
+        return new ObjectMapper().readTree(json);
+    }
+
+    @Test
+    public void asFeatureCollectionNullRoot() {
+        assertNull(service.asFeatureCollection(null));
+    }
+
+    @Test
+    public void asFeatureCollectionWrongType() throws IOException {
+        assertNull(service.asFeatureCollection(node("{\"type\":\"Point\"}")));
+    }
+
+    @Test
+    public void asFeatureCollectionMissingFeaturesArray() throws IOException {
+        FeatureCollection collection = service.asFeatureCollection(node("{\"type\":\"FeatureCollection\"}"));
+        assertNotNull(collection);
+        assertTrue(collection.getFeatures().isEmpty());
+    }
+
+    @Test
+    public void asFeatureCollectionParsesPointAndProperties() throws IOException {
+        String json = "{\"type\":\"FeatureCollection\",\"features\":[" +
+                "{\"type\":\"Feature\"," +
+                "\"geometry\":{\"type\":\"Point\",\"coordinates\":[13.405,52.520,33.0]}," +
+                "\"properties\":{\"name\":\"Berlin\",\"osm_id\":240109189,\"importance\":0.87," +
+                "\"isComplete\":true,\"extent\":[13.0,52.0,14.0,53.0]," +
+                "\"address\":{\"city\":\"Berlin\"},\"nothing\":null}}" +
+                "]}";
+        FeatureCollection collection = service.asFeatureCollection(node(json));
+        assertNotNull(collection);
+        assertEquals(1, collection.getFeatures().size());
+
+        Feature feature = collection.getFeatures().get(0);
+        Point point = (Point) feature.getGeometry();
+        assertEquals(13.405, point.getCoordinates().getLongitude(), 0.0001);
+        assertEquals(52.520, point.getCoordinates().getLatitude(), 0.0001);
+        assertEquals(33.0, point.getCoordinates().getAltitude(), 0.0001);
+
+        assertEquals("Berlin", feature.getProperty("name"));
+        assertEquals(Long.valueOf(240109189L), feature.getProperty("osm_id"));
+        assertEquals(0.87, (Double) feature.getProperty("importance"), 0.0001);
+        assertEquals(Boolean.TRUE, feature.getProperty("isComplete"));
+        assertNull(feature.getProperty("nothing"));
+
+        List<?> extent = feature.getProperty("extent");
+        assertEquals(4, extent.size());
+        Map<?, ?> address = feature.getProperty("address");
+        assertEquals("Berlin", address.get("city"));
+    }
+
+    @Test
+    public void asFeatureCollectionSkipsNonObjectFeatureAndNonPointGeometry() throws IOException {
+        String json = "{\"type\":\"FeatureCollection\",\"features\":[" +
+                "42," +
+                "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Polygon\",\"coordinates\":[]}}," +
+                "{\"type\":\"Feature\",\"geometry\":{\"type\":\"Point\",\"coordinates\":[1.0]}}" +
+                "]}";
+        FeatureCollection collection = service.asFeatureCollection(node(json));
+        assertNotNull(collection);
+        // non-object (42) skipped; the two malformed-geometry features become geometry-less features
+        assertEquals(2, collection.getFeatures().size());
+        assertNull(collection.getFeatures().get(0).getGeometry());
+        assertNull(collection.getFeatures().get(1).getGeometry());
     }
 }
 

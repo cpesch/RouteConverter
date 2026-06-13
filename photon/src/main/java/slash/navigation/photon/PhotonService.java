@@ -87,7 +87,7 @@ public class PhotonService extends BaseGeocodingService {
         return null;
     }
 
-    private FeatureCollection asFeatureCollection(JsonNode root) {
+    FeatureCollection asFeatureCollection(JsonNode root) {
         if (root == null || !"FeatureCollection".equals(root.path("type").asText()))
             return null;
 
