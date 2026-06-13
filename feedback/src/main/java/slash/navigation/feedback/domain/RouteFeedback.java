@@ -142,9 +142,10 @@ public class RouteFeedback {
     }
 
     public String getUpdateCheckUrl(String version, long startTime) {
-        if(version.equals("?"))
-            version = "unknown";
-        return apiUrl + UPDATE_CHECK_URI + getDefault().getLanguage() + "/" + version + "/" + startTime + "/";
+        // Offer the latest release on the download page (lets the user pick OS/architecture).
+        // The version/startTime are no longer encoded into the URL; the page always serves the
+        // latest stable build from releases.routeconverter.com.
+        return "https://www.routeconverter.com/downloads/";
     }
 
     public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,
