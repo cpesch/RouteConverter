@@ -3,7 +3,8 @@ name: Verify cut
 # Post-cut smoke test. Triggers when release.yml completes (success or
 # failure — failure path is the more interesting one). Checks:
 #   1. GH Release for the tag exists + has the expected asset set.
-#   2. Each asset URL serves HTTP 200 on static.routeconverter.com.
+#   2. Each asset URL serves HTTP 200 on releases.routeconverter.com,
+#      and old static.routeconverter.com download URLs 301 there.
 #   3. The catalog XML at static.routeconverter.com/downloads/RouteConverter.xml
 #      reports the new version.
 #   4. RouteConverterWindowsOpenSource.exe's PE FileVersion carries the
@@ -92,12 +93,12 @@ jobs:
           fi
           echo "all 14 GH Release assets present"
 
-      - name: Verify static.routeconverter.com assets serve
+      - name: Verify releases.routeconverter.com assets serve
         env:
           TAG: ${{ steps.ctx.outputs.tag }}
         run: |
           set -euo pipefail
-          base=https://static.routeconverter.com/downloads/release
+          base=https://releases.routeconverter.com/latest
           # The same canonical set; ditto for previous-releases/<TAG>/.
           for f in RouteConverterCmdLine.jar RouteConverterLinuxOpenSource.jar \
                    RouteConverterMacOpenSource.jar RouteConverterMacOpenSource-app.zip \
@@ -111,9 +112,16 @@ jobs:
               exit 1
             fi
           done
-          echo "all 14 release/ URLs return 200"
+          echo "all 14 latest/ URLs return 200"
+          # Old static.routeconverter.com download URLs must 301 to releases.routeconverter.com.
+          rc=$(curl -sI -o /dev/null -w '%{http_code} %{redirect_url}' \
+               "https://static.routeconverter.com/downloads/release/RouteConverterWindowsBundle.exe")
+          case "$rc" in
+            301\ *releases.routeconverter.com/latest/RouteConverterWindowsBundle.exe) echo "old→new 301 redirect ✓" ;;
+            *) echo "::error::expected 301 to releases.routeconverter.com/latest, got: $rc"; exit 1 ;;
+          esac
           # Spot-check previous-releases archive
-          arch_base=https://static.routeconverter.com/downloads/previous-releases/${TAG}
+          arch_base=https://releases.routeconverter.com/previous-releases/${TAG}
           code=$(curl -sI -o /dev/null -w '%{http_code}' "${arch_base}/RouteConverterCmdLine.jar")
           [[ "$code" == "200" ]] || { echo "::error::previous-releases archive missing: $arch_base"; exit 1; }
           echo "previous-releases/${TAG}/ archive present"
@@ -140,7 +148,7 @@ jobs:
           set -euo pipefail
           pip install --quiet pefile
           curl -sfLo /tmp/rcwin.exe \
-            https://static.routeconverter.com/downloads/release/RouteConverterWindowsOpenSource.exe
+            https://releases.routeconverter.com/latest/RouteConverterWindowsOpenSource.exe
           cat > /tmp/pe-version.py <<'PY'
           import pefile, sys
           pe = pefile.PE('/tmp/rcwin.exe')
