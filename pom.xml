@@ -550,7 +550,11 @@
             <dependency>
                 <groupId>de.grundid.opendatalab</groupId>
                 <artifactId>geojson-jackson</artifactId>
-                <version>3.0</version>
+                <!-- Pinned to 1.14: 3.0 breaks GeoJSON read (empty positions ->
+                     IndexOutOfBounds in ConvertIT.testConvertGeoJsonToGpx) and
+                     loses coordinate precision on write
+                     (ReadWriteRoundtripIT.testGeoJsonReadWriteRoundtrip). -->
+                <version>1.14</version>
                 <exclusions>
                     <exclusion>
                         <groupId>com.fasterxml.jackson.core</groupId>
