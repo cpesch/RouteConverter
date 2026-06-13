@@ -44,6 +44,7 @@ import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
 import static slash.navigation.converter.gui.RouteConverter.getPreferences;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowser;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForRouteConverterForum;
 
 /**
  * Knows how to retrieve the information which is the latest version.
@@ -54,6 +55,7 @@ public class UpdateChecker {
     private static final Logger log = Logger.getLogger(UpdateChecker.class.getName());
     private static final String START_COUNT_PREFERENCE = "startCount";
     private static final String START_TIME_PREFERENCE = "startTime";
+    private static final String SKIP_VERSION_PREFERENCE = "skipUpdateVersion";
     private final RouteFeedback routeFeedback;
 
     static {
@@ -72,6 +74,14 @@ public class UpdateChecker {
 
     private static long getStartTime() {
         return getPreferences().getLong(START_TIME_PREFERENCE, currentTimeMillis());
+    }
+
+    private static String getSkippedVersion() {
+        return getPreferences().get(SKIP_VERSION_PREFERENCE, "");
+    }
+
+    private static void setSkippedVersion(String version) {
+        getPreferences().put(SKIP_VERSION_PREFERENCE, version);
     }
 
     public UpdateResult check() {
@@ -97,31 +107,57 @@ public class UpdateChecker {
     }
 
     /**
+     * A JLabel rendered as a clickable hyperlink that runs the given action when clicked.
+     */
+    private static JLabel createLink(String text, Runnable onClick) {
+        JLabel link = new JLabel("<html><a href=\"\">" + text + "</a></html>");
+        link.setAlignmentX(Component.LEFT_ALIGNMENT);
+        link.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        link.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                onClick.run();
+            }
+        });
+        return link;
+    }
+
+    /**
      * Shows an informational dialog with the given message and a clickable link below it.
      * The link (not a Yes/No prompt) is the call to action, to foster updates.
      */
     private void showUpdateMessage(Window window, String message, String url) {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.add(new JLabel("<html>" + message.replace("\n", "<br>") + "</html>"), BorderLayout.NORTH);
-        JLabel link = new JLabel("<html><a href=\"\">" + url + "</a></html>");
-        link.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        link.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                startBrowser(window, url);
-            }
-        });
-        panel.add(link, BorderLayout.SOUTH);
-
+        panel.add(createLink(url, () -> startBrowser(window, url)), BorderLayout.SOUTH);
         showMessageDialog(window, panel, RouteConverter.getTitle(), INFORMATION_MESSAGE);
     }
 
     private void offerRouteConverterUpdate(Window window, UpdateResult result) {
+        String latestVersion = result.getLatestRouteConverterVersion();
         String downloadUrl = routeFeedback.getUpdateCheckUrl(result.getMyRouteConverterVersion(), getStartTime());
         String message = format(RouteConverter.getBundle().getString("confirm-routeconverter-update"),
                 result.getMyRouteConverterVersion(),
                 RouteConverter.getInstance().getEdition(),
-                result.getLatestRouteConverterVersion());
-        showUpdateMessage(window, message, downloadUrl);
+                latestVersion);
+
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        JLabel messageLabel = new JLabel("<html>" + message.replace("\n", "<br>") + "</html>");
+        messageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(messageLabel);
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(createLink(RouteConverter.getBundle().getString("update-whats-new"),
+                () -> startBrowserForRouteConverterForum(window)));
+        panel.add(createLink(downloadUrl, () -> startBrowser(window, downloadUrl)));
+        panel.add(Box.createVerticalStrut(10));
+        JCheckBox skipVersion = new JCheckBox(format(RouteConverter.getBundle().getString("update-skip-version"), latestVersion));
+        skipVersion.setAlignmentX(Component.LEFT_ALIGNMENT);
+        panel.add(skipVersion);
+
+        showMessageDialog(window, panel, RouteConverter.getTitle(), INFORMATION_MESSAGE);
+
+        if (skipVersion.isSelected())
+            setSkippedVersion(latestVersion);
     }
 
     private void noUpdateAvailable(Window window) {
@@ -142,7 +178,8 @@ public class UpdateChecker {
 
         new Thread(() -> {
             final UpdateResult result = check();
-            if (result.existsLaterRouteConverterVersion()) {
+            if (result.existsLaterRouteConverterVersion()
+                    && !result.getLatestRouteConverterVersion().equals(getSkippedVersion())) {
                 invokeLater(() -> offerRouteConverterUpdate(window, result));
 
             } else if (result.existsLaterJavaVersion()) {
