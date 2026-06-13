@@ -122,9 +122,9 @@ public class LegacyParserFormatterTIMETest {
         expectedCal.setTimeZone(zone);
 
         final Calendar refValue = Calendar.getInstance(ZONE_UTC);
-        refValue.set(Calendar.DAY_OF_MONTH, expectedCal.get(Calendar.DAY_OF_MONTH));
-        refValue.set(Calendar.MONTH, expectedCal.get(Calendar.MONTH));
-        refValue.set(Calendar.YEAR, expectedCal.get(Calendar.YEAR));
+        refValue.clear(); // drop nondeterministic current time-of-day that can roll the reference date across midnight
+        refValue.set(expectedCal.get(Calendar.YEAR), expectedCal.get(Calendar.MONTH),
+                expectedCal.get(Calendar.DAY_OF_MONTH), 12, 0, 0); // noon avoids midnight rollover in any zone
 
         Calendar result = sut.parse(toParse, CompactCalendar.fromCalendar(refValue));
 
