@@ -17,19 +17,10 @@
     </fileSets>
     <files>
         <file>
-            <source>src/main/app-resources/Java/TimeAlbumPro.cfg</source>
-            <outputDirectory>/TimeAlbumPro.app/Contents/Java/</outputDirectory>
-            <filtered>true</filtered>
-            <lineEnding>lf</lineEnding>
-        </file>
-        <file>
             <source>src/main/app-resources/MacOS/TimeAlbumPro</source>
             <outputDirectory>/TimeAlbumPro.app/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
-        </file>
-        <file>
-            <source>src/main/app-resources/MacOS/libapplauncher.dylib</source>
-            <outputDirectory>/TimeAlbumPro.app/Contents/MacOS/</outputDirectory>
+            <lineEnding>lf</lineEnding>
         </file>
         <file>
             <source>src/main/app-resources/Resources/TimeAlbumPro.icns</source>

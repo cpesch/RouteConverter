@@ -17,19 +17,10 @@
     </fileSets>
     <files>
         <file>
-            <source>src/main/app-resources/Java/RouteConverterOpenSource.cfg</source>
-            <outputDirectory>/RouteConverter.app/Contents/Java/</outputDirectory>
-            <filtered>true</filtered>
-            <lineEnding>lf</lineEnding>
-        </file>
-        <file>
             <source>src/main/app-resources/MacOS/RouteConverterOpenSource</source>
             <outputDirectory>/RouteConverter.app/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
-        </file>
-        <file>
-            <source>src/main/app-resources/MacOS/libapplauncher.dylib</source>
-            <outputDirectory>/RouteConverter.app/Contents/MacOS/</outputDirectory>
+            <lineEnding>lf</lineEnding>
         </file>
         <file>
             <source>src/main/app-resources/Resources/RouteConverter.icns</source>
