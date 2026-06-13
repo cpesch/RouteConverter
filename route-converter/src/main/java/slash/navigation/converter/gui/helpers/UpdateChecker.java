@@ -24,7 +24,10 @@ import slash.common.system.Version;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.feedback.domain.RouteFeedback;
 
+import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -93,17 +96,33 @@ public class UpdateChecker {
         return result;
     }
 
-    private void offerRouteConverterUpdate(Window window, UpdateResult result) {
-        int confirm = showConfirmDialog(window,
-                format(RouteConverter.getBundle().getString("confirm-routeconverter-update"),
-                        result.getMyRouteConverterVersion(),
-                        RouteConverter.getInstance().getEdition(),
-                        result.getLatestRouteConverterVersion()),
-                RouteConverter.getTitle(), YES_NO_OPTION);
-        if (confirm == YES_OPTION)
-            startBrowser(window, routeFeedback.getUpdateCheckUrl(result.getMyRouteConverterVersion(), getStartTime()));
+    /**
+     * Shows an informational dialog with the given message and a clickable link below it.
+     * The link (not a Yes/No prompt) is the call to action, to foster updates.
+     */
+    private void showUpdateMessage(Window window, String message, String url) {
+        JPanel panel = new JPanel(new BorderLayout(0, 10));
+        panel.add(new JLabel("<html>" + message.replace("\n", "<br>") + "</html>"), BorderLayout.NORTH);
+        JLabel link = new JLabel("<html><a href=\"\">" + url + "</a></html>");
+        link.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        link.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                startBrowser(window, url);
+            }
+        });
+        panel.add(link, BorderLayout.SOUTH);
+
+        showMessageDialog(window, panel, RouteConverter.getTitle(), INFORMATION_MESSAGE);
     }
 
+    private void offerRouteConverterUpdate(Window window, UpdateResult result) {
+        String downloadUrl = routeFeedback.getUpdateCheckUrl(result.getMyRouteConverterVersion(), getStartTime());
+        String message = format(RouteConverter.getBundle().getString("confirm-routeconverter-update"),
+                result.getMyRouteConverterVersion(),
+                RouteConverter.getInstance().getEdition(),
+                result.getLatestRouteConverterVersion());
+        showUpdateMessage(window, message, downloadUrl);
+    }
 
     private void noUpdateAvailable(Window window) {
         showMessageDialog(window, format(RouteConverter.getBundle().getString("no-update-available"),
@@ -112,11 +131,9 @@ public class UpdateChecker {
     }
 
     private void offerJavaUpdate(Window window, UpdateResult result) {
-        int confirm = showConfirmDialog(window,
-                format(RouteConverter.getBundle().getString("confirm-java-update"), result.getMyJavaVersion(), result.getLatestJavaVersion()),
-                RouteConverter.getTitle(), YES_NO_OPTION);
-        if (confirm == YES_OPTION)
-            startBrowser(window, "https://java.com/download/");
+        String message = format(RouteConverter.getBundle().getString("confirm-java-update"),
+                result.getMyJavaVersion(), result.getLatestJavaVersion());
+        showUpdateMessage(window, message, "https://adoptium.net/de/temurin/releases?version=17");
     }
 
     public void implicitCheck(final Window window) {
