@@ -103,7 +103,7 @@
                            <jre>
                                <path>%JAVA_HOME%;%PATH%</path>
                                <minVersion>17</minVersion>
-                               <maxHeapSize>1024</maxHeapSize>
+                               <runtimeBits>64</runtimeBits>
                            </jre>
                            <versionInfo>
                                <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>

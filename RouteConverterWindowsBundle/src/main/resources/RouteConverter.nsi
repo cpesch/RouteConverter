@@ -7,13 +7,16 @@ RequestExecutionLevel user
 ShowInstDetails hide
 
 !define JRE "${jre.version}"
-!define JRE_PATH "..\jre-${JRE}"
+; build-time source of the bundled JRE (relative to this .nsi in target/)
+!define JRE_SRC "..\jre-${JRE}"
+; runtime extraction target (persisted across launches, namespaced under LocalAppData)
+!define JRE_DIR "$LOCALAPPDATA\RouteConverter\jre-${JRE}"
 OutFile "RouteConverterWindowsBundle.exe"
 
 Icon "RouteConverter.ico"
 VIProductVersion ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0.${maven.build.number}
 VIAddVersionKey ProductName "RouteConverter"
-VIAddVersionKey LegalCopyright "Copyright (c) 2008-2025 Christian Pesch"
+VIAddVersionKey LegalCopyright "Copyright (c) 2008-${current.year} Christian Pesch"
 VIAddVersionKey FileDescription "RouteConverter for Windows bundled with JRE"
 VIAddVersionKey FileVersion ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0.${maven.build.number}
 VIAddVersionKey ProductVersion "${project.version} / OpenJRE ${JRE} (x64)"
@@ -23,14 +26,14 @@ VIAddVersionKey OriginalFilename "RouteConverter.exe"
 Section
   SetOverwrite off
 
-  SetOutPath "$TEMP\${JRE_PATH}"
-  File /r "${JRE_PATH}\*"
+  SetOutPath "${JRE_DIR}"
+  File /r "${JRE_SRC}\*"
 
   InitPluginsDir
   SetOutPath $PluginsDir
   File "RouteConverterWindowsOpenSource.jar"
   SetOutPath $TEMP
   ${GetParameters} $R0
-  nsExec::Exec '"$TEMP\${JRE_PATH}\bin\java.exe" -server -jar $PluginsDir\RouteConverterWindowsOpenSource.jar $R0'
+  nsExec::Exec '"${JRE_DIR}\bin\java.exe" -server -jar $PluginsDir\RouteConverterWindowsOpenSource.jar $R0'
   RMDir /r $PluginsDir
 SectionEnd

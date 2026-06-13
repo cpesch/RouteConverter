@@ -51,6 +51,17 @@
                             <goal>parse-version</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>current-year</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                        <configuration>
+                            <name>current.year</name>
+                            <pattern>yyyy</pattern>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
