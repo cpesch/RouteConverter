@@ -31,7 +31,6 @@
         <dependency>
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
-            <classifier>stripped</classifier>
         </dependency>
     </dependencies>
 </project>

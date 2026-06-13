@@ -61,7 +61,6 @@
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>forms-rt</artifactId>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>net.sf.kxml</groupId>

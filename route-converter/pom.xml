@@ -142,12 +142,10 @@
         <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>forms-rt</artifactId>
-            <classifier>stripped</classifier>
         </dependency>
         <dependency>
             <groupId>javax.help</groupId>
             <artifactId>javahelp</artifactId>
-            <classifier>stripped</classifier>
         </dependency>
     </dependencies>
 </project>

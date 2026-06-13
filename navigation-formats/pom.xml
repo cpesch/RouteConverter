@@ -25,7 +25,7 @@
     </repositories>
 
     <properties>
-        <poi.version>5.5.0</poi.version>
+        <poi.version>5.5.1</poi.version>
     </properties>
 
     <dependencies>
@@ -79,8 +79,7 @@
         <dependency>
             <groupId>com.garmin</groupId>
             <artifactId>fit</artifactId>
-            <version>21.176.00</version>
-            <classifier>stripped</classifier>
+            <version>21.205.0</version>
         </dependency>
         <dependency>
             <groupId>de.grundid.opendatalab</groupId>
@@ -97,7 +96,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
             <version>${poi.version}</version>
-            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -117,7 +115,6 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>${poi.version}</version>
-            <classifier>stripped</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>com.github.virtuald</groupId>
@@ -156,7 +153,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml-lite</artifactId>
-            <version>5.5.0</version>
+            <version>5.5.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.xmlbeans</groupId>
@@ -168,7 +165,6 @@
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
             <version>5.3.0</version>
-            <classifier>stripped</classifier>
         </dependency>
     </dependencies>
 
