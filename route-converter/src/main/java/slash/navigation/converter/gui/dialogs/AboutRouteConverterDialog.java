@@ -30,6 +30,9 @@ import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -61,6 +64,9 @@ public class AboutRouteConverterDialog extends SimpleDialog {
     private JButton buttonClose;
     private JLabel labelRouteConverterVersion;
     private JLabel labelJavaVersion;
+    private JLabel labelOperatingSystem;
+    private JButton buttonCopySystemInfo;
+    private JLabel labelReportProblem;
     private JLabel labelCp;
 
     public AboutRouteConverterDialog() {
@@ -71,21 +77,9 @@ public class AboutRouteConverterDialog extends SimpleDialog {
 
         final RouteConverter r = RouteConverter.getInstance();
 
-        labelAbout.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                startBrowserForRouteConverter(r.getFrame());
-            }
-        });
-        labelResources.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                startBrowserForRouteConverterResources(r.getFrame());
-            }
-        });
-        labelContact.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent me) {
-                startBrowserForRouteConverterForum(r.getFrame());
-            }
-        });
+        enableLink(labelAbout, () -> startBrowserForRouteConverter(r.getFrame()));
+        enableLink(labelResources, () -> startBrowserForRouteConverterResources(r.getFrame()));
+        enableLink(labelContact, () -> startBrowserForRouteConverterForum(r.getFrame()));
 
         String username = RouteConverter.getInstance().getUserNamePreference();
         if (username != null) {
@@ -95,12 +89,23 @@ public class AboutRouteConverterDialog extends SimpleDialog {
 
         String featuredTo = getFeature("featured-to");
         if (featuredTo != null) {
-            labelFeature.setText(format(RouteConverter.getBundle().getString("featured-to"), featuredTo));
+            labelFeature.setText(format(RouteConverter.getBundle().getString("featured-to"), maskEmailAddresses(featuredTo)));
             labelFeature.setVisible(true);
         }
 
         labelRouteConverterVersion.setText(RouteConverter.getTitle());
         labelJavaVersion.setText(Platform.getJava());
+        labelOperatingSystem.setText(Platform.getPlatform());
+
+        labelReportProblem.setText("<html><a href=\"\">" +
+                RouteConverter.getBundle().getString("about-report-problem") + "</a></html>");
+        enableLink(labelReportProblem, () -> new SendErrorReportDialog().showWithPreferences());
+
+        buttonCopySystemInfo.addActionListener(new DialogAction(this) {
+            public void run() {
+                copySystemInfo();
+            }
+        });
 
         setMnemonic(buttonClose, "close-mnemonic");
         buttonClose.addActionListener(new DialogAction(this) {
@@ -125,6 +130,39 @@ public class AboutRouteConverterDialog extends SimpleDialog {
 
     private void close() {
         dispose();
+    }
+
+    /**
+     * Turns a JLabel into a keyboard-accessible, clickable link: hand cursor, focusable,
+     * and activated by mouse click or Enter/Space.
+     */
+    private static void enableLink(JLabel label, Runnable action) {
+        label.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        label.setFocusable(true);
+        label.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                action.run();
+            }
+        });
+        label.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER || e.getKeyCode() == KeyEvent.VK_SPACE)
+                    action.run();
+            }
+        });
+    }
+
+    private static void copySystemInfo() {
+        String info = RouteConverter.getTitle() + "\n" + Platform.getJava() + "\n" + Platform.getPlatform();
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(info), null);
+    }
+
+    /**
+     * Masks the local part of any e-mail address (keeps the first character and the domain)
+     * so it is not fully exposed in screenshots or screen-shares.
+     */
+    static String maskEmailAddresses(String text) {
+        return text.replaceAll("([\\w.+-])[\\w.+-]*(@[\\w.-]+)", "$1***$2");
     }
 
     {
@@ -167,7 +205,7 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         final JSeparator separator1 = new JSeparator();
         panel1.add(separator1, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel3, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-routeconverter-version"));
@@ -181,6 +219,23 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         labelJavaVersion = new JLabel();
         labelJavaVersion.setText("?");
         panel3.add(labelJavaVersion, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        this.$$$loadLabelText$$$(label3, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-os-version"));
+        panel3.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelOperatingSystem = new JLabel();
+        labelOperatingSystem.setText("?");
+        panel3.add(labelOperatingSystem, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridLayoutManager(1, 3, new Insets(6, 0, 0, 0), -1, -1));
+        panel3.add(panel4, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonCopySystemInfo = new JButton();
+        this.$$$loadButtonText$$$(buttonCopySystemInfo, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-copy-system-info"));
+        panel4.add(buttonCopySystemInfo, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelReportProblem = new JLabel();
+        this.$$$loadLabelText$$$(labelReportProblem, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-report-problem"));
+        panel4.add(labelReportProblem, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        panel4.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         labelUserName = new JLabel();
         labelUserName.setText("");
         labelUserName.setVisible(false);

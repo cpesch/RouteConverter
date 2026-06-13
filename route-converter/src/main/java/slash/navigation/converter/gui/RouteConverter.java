@@ -134,7 +134,14 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public static String getTitle() {
         Version version = parseVersionFromManifest();
-        return MessageFormat.format(getBundle().getString("title"), RouteConverter.getInstance().getEdition(), version.getVersion(), version.getDate());
+        String edition = RouteConverter.getInstance().getEdition();
+        String number = version.getVersion();
+        if ("?".equals(number))
+            number = "(local build)";
+        String date = version.getDate();
+        if ("?".equals(date))
+            return MessageFormat.format(getBundle().getString("title-without-date"), edition, number);
+        return MessageFormat.format(getBundle().getString("title"), edition, number, date);
     }
 
     protected String getProduct() {
