@@ -30,10 +30,6 @@ concurrency:
   group: build-windows-jre
   cancel-in-progress: true
 
-env:
-  # Opt into Node.js 24 for JavaScript actions (actions/{checkout,setup-java,upload-artifact,download-artifact,cache}@v5 still ship Node 20 binaries as of 2026-06-07). GH forces Node 24 default on 2026-06-16.
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 jobs:
   build:
     runs-on: windows-latest
@@ -109,7 +105,7 @@ jobs:
           cat "${base}.zip.sha256"
           echo "base=$base" >> "$GITHUB_OUTPUT"
 
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v7
         with:
           name: stripped-jre
           path: |
@@ -121,7 +117,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v8
         with:
           name: stripped-jre
           path: artefacts/

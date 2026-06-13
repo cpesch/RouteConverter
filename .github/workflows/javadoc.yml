@@ -29,10 +29,6 @@ concurrency:
   group: javadoc
   cancel-in-progress: true
 
-env:
-  # Opt into Node.js 24 for JavaScript actions (actions/{checkout,setup-java,upload-artifact,download-artifact,cache}@v5 still ship Node 20 binaries as of 2026-06-07). GH forces Node 24 default on 2026-06-16.
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-
 jobs:
   publish-javadoc:
     runs-on: ubuntu-latest
