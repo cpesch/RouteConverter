@@ -19,8 +19,10 @@
 */
 package slash.navigation.geojson;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.geojson.*;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
@@ -72,14 +74,14 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
-        GeoJsonObject object = new ObjectMapper().readValue(reader, GeoJsonObject.class);
-        if (object instanceof FeatureCollection featureCollection) {
-            List<Wgs84Position> positions = process(featureCollection);
+        JsonNode root = new ObjectMapper().readTree(reader);
+        if (root != null && "FeatureCollection".equals(root.path("type").asText())) {
+            List<Wgs84Position> positions = process(root.path("features"));
             if (!positions.isEmpty()) {
                 context.appendRoute(new Wgs84Route(this, Waypoints, "FeatureCollection", positions));
             }
         } else
-            log.warning("Reading GeoJSON object " + object + " is not supported.");
+            log.warning("Reading GeoJSON object " + root + " is not supported.");
     }
 
     private CompactCalendar parseTime(String string) {
@@ -87,40 +89,58 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
         return time != null ? CompactCalendar.fromCalendar(time) : null;
     }
 
-    private List<Wgs84Position> process(FeatureCollection featureCollection) {
+    private List<Wgs84Position> process(JsonNode features) {
         List<Wgs84Position> result = new ArrayList<>();
-        for (Feature feature : featureCollection.getFeatures()) {
-            GeoJsonObject geometry = feature.getGeometry();
-            if (geometry instanceof Point point) {
-                String name = trim(feature.getProperty(NAME));
-                String address = trim(feature.getProperty(ADDRESS));
+        if (!features.isArray())
+            return result;
 
-                // Bewertung.json uses a location object
-                Map<String, String> location = feature.getProperty(LOCATION);
-                if (location != null) {
-                    name = trim(location.get(NAME));
-                    address = trim(location.get(ADDRESS));
-                }
-
-                Double elevation = point.getCoordinates().getAltitude();
-                if (isEmpty(elevation))
-                    elevation = null;
-
-                CompactCalendar time = parseTime(trim(feature.getProperty(DATE)));
-
-                result.add(new Wgs84Position(point.getCoordinates().getLongitude(),
-                        point.getCoordinates().getLatitude(), elevation,
-                        null, time, asDescription(name, address)));
-            } else
+        for (JsonNode feature : features) {
+            JsonNode geometry = feature.path("geometry");
+            if (!"Point".equals(geometry.path("type").asText())) {
                 log.warning("Reading Geometry object " + geometry + " is not supported.");
+                continue;
+            }
+
+            JsonNode coordinates = geometry.path("coordinates");
+            if (!coordinates.isArray() || coordinates.size() < 2 ||
+                    !coordinates.get(0).isNumber() || !coordinates.get(1).isNumber()) {
+                log.warning("Reading coordinates " + coordinates + " is not supported.");
+                continue;
+            }
+
+            JsonNode properties = feature.path("properties");
+            String name = trim(text(properties.get(NAME)));
+            String address = trim(text(properties.get(ADDRESS)));
+
+            // Bewertungen.json and GespeicherteOrte.json use a location object
+            JsonNode location = properties.get(LOCATION);
+            if (location != null && location.isObject()) {
+                name = trim(text(location.get(NAME)));
+                address = trim(text(location.get(ADDRESS)));
+            }
+
+            Double elevation = coordinates.size() > 2 && coordinates.get(2).isNumber() ? coordinates.get(2).doubleValue() : null;
+            if (isEmpty(elevation))
+                elevation = null;
+
+            CompactCalendar time = parseTime(trim(text(properties.get(DATE))));
+
+            result.add(new Wgs84Position(coordinates.get(0).doubleValue(),
+                    coordinates.get(1).doubleValue(), elevation,
+                    null, time, asDescription(name, address)));
         }
         return result;
     }
 
-    private Feature createFeature(Wgs84Position position) {
-        Feature feature = new Feature();
+    private String text(JsonNode node) {
+        return node != null && !node.isNull() ? node.asText() : null;
+    }
 
-        Map<String, Object> properties = new HashMap<>();
+    private ObjectNode createFeature(ObjectMapper mapper, Wgs84Position position) {
+        ObjectNode feature = mapper.createObjectNode();
+        feature.put("type", "Feature");
+
+        ObjectNode properties = mapper.createObjectNode();
         if (position.getDescription() != null) {
             String name = asName(position.getDescription());
             if (name != null)
@@ -133,19 +153,18 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
             String date = formatDate(position.getTime());
             properties.put(DATE, date);
         }
-        feature.setProperties(properties);
+        feature.set("properties", properties);
 
-        LngLatAlt coordinates = new LngLatAlt();
-        if (position.getElevation() != null)
-            coordinates.setAltitude(position.getElevation());
-        if (position.getLatitude() != null)
-            coordinates.setLatitude(position.getLatitude());
+        ObjectNode geometry = mapper.createObjectNode();
+        geometry.put("type", "Point");
+        ArrayNode coordinates = geometry.putArray("coordinates");
         if (position.getLongitude() != null)
-            coordinates.setLongitude(position.getLongitude());
-
-        Point point = new Point();
-        point.setCoordinates(coordinates);
-        feature.setGeometry(point);
+            coordinates.add(position.getLongitude());
+        if (position.getLatitude() != null)
+            coordinates.add(position.getLatitude());
+        if (position.getElevation() != null)
+            coordinates.add(position.getElevation());
+        feature.set("geometry", geometry);
 
         return feature;
     }
@@ -155,13 +174,15 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
-        FeatureCollection featureCollection = new FeatureCollection();
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode featureCollection = mapper.createObjectNode();
+        featureCollection.put("type", "FeatureCollection");
+        ArrayNode features = featureCollection.putArray("features");
         List<Wgs84Position> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);
-            featureCollection.add(createFeature(position));
+            features.add(createFeature(mapper, position));
         }
-        ObjectMapper mapper = new ObjectMapper();
         if (preferences.getBoolean("prettyPrintXml", true))
             mapper.enable(INDENT_OUTPUT);
         mapper.writeValue(writer, featureCollection);
