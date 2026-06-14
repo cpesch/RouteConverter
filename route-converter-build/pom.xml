@@ -29,7 +29,7 @@
              TimeAlbumProWindowsBundle (via NSI resource filtering,
              ${jre.version}), and the build-windows-jre / prerelease /
              release GitHub workflows (grep on this pom). -->
-        <jre.version>17.0.15</jre.version>
+        <jre.version>17.0.19</jre.version>
    </properties>
 
     <build>
