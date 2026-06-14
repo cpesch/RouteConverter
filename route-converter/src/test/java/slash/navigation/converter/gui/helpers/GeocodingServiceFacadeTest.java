@@ -50,8 +50,13 @@ public class GeocodingServiceFacadeTest {
     }
 
     @After
-    public void tearDown() throws BackingStoreException {
-        preferences.removeNode();
+    public void tearDown() {
+        try {
+            preferences.removeNode();
+        } catch (BackingStoreException e) {
+            // ignore flaky java.util.prefs file-lock contention on the userRoot backing store;
+            // the node lives under a random UUID and does not affect other tests
+        }
     }
 
     @Test
