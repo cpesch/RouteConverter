@@ -66,7 +66,7 @@ jobs:
           if exist %OUT% rmdir /s /q %OUT%
           "%JAVA_HOME%\bin\jlink" ^
             --module-path "%JAVA_HOME%\jmods" ^
-            --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.unsupported ^
+            --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.net,jdk.unsupported ^
             --output %OUT% ^
             --strip-debug --compress 2 --no-header-files --no-man-pages
           if exist %OUT%\legal rmdir /s /q %OUT%\legal
