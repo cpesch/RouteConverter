@@ -1,0 +1,32 @@
+# Single source of truth for the bundled stripped JRE module set.
+#
+# Consumed by:
+#   .github/workflows/build-mac-jre.yml      (jlink --add-modules)
+#   .github/workflows/build-windows-jre.yml  (jlink --add-modules)
+#   scripts/verify-runtime.sh                (jdeps superset gate + verify JRE)
+#
+# One module per line. Blank lines and '#' comments ignored. The build steps
+# collapse this to a comma list. Keep it minimal: every module here is shipped
+# weight, but a module the app needs at runtime yet missing here = a runtime
+# NoClassDefFoundError that tests on a full JDK never see.
+#
+# When jdeps starts requiring a new module (e.g. httpclient5 5.6 pulled in
+# jdk.net via TCP keepalive in 2026-06), verify-runtime.sh fails the build and
+# points here. Add the module, rebuild the JREs.
+
+java.base
+java.compiler
+java.datatransfer
+java.desktop
+java.logging
+java.management
+java.naming
+java.prefs
+java.scripting
+java.security.jgss
+java.sql
+java.xml
+java.xml.crypto
+jdk.crypto.ec
+jdk.net
+jdk.unsupported

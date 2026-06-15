@@ -31,6 +31,7 @@ on:
     branches: [master]
     paths:
       - 'route-converter-build/pom.xml'
+      - 'scripts/jre-modules.txt'
       - '.github/workflows/build-mac-jre.yml'
 
 concurrency:
@@ -85,12 +86,24 @@ jobs:
           echo "home=$JAVA_HOME" >> "$GITHUB_OUTPUT"
           echo "x64 JAVA_HOME: $JAVA_HOME"
 
+      - name: Resolve module list
+        id: modules
+        shell: bash
+        run: |
+          # single source of truth shared with build-windows-jre.yml and
+          # scripts/verify-runtime.sh -- one module per line, '#'/blank ignored
+          list=$(grep -vE '^[[:space:]]*#|^[[:space:]]*$' scripts/jre-modules.txt | tr -d '[:blank:]' | paste -sd, -)
+          [[ -n "$list" ]] || { echo "::error::empty module list from scripts/jre-modules.txt"; exit 1; }
+          echo "list=$list" >> "$GITHUB_OUTPUT"
+          echo "modules: $list"
+
       - name: jlink stripped JREs (both arches)
         shell: bash
         env:
           VER:           ${{ steps.jdk.outputs.version }}
           AARCH64_HOME:  ${{ steps.jdk-aarch64.outputs.home }}
           X64_HOME:      ${{ steps.jdk-x64.outputs.home }}
+          MODULES:       ${{ steps.modules.outputs.list }}
         run: |
           set -euo pipefail
 
@@ -110,7 +123,7 @@ jobs:
             rm -rf "$OUT"
             "$HOST_JLINK" \
               --module-path "$jmods_home/jmods" \
-              --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.net,jdk.unsupported \
+              --add-modules "$MODULES" \
               --output "$OUT" \
               --strip-debug --compress 2 --no-header-files --no-man-pages
             rm -rf "$OUT/legal"

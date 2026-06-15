@@ -67,6 +67,16 @@ jobs:
         # No `clean` — runner is ephemeral; `clean` would also wipe the
         # Runtime-<arch> dirs unpacked from the hosted Mac JREs above.
         run: ./mvnw --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} package
+      - name: Verify runtime on stripped JRE (class-load gate)
+        # Reproduces the minimized-JRE condition from scripts/jre-modules.txt and
+        # fails the build on a ClassNotFoundException/NoClassDefFoundError that a
+        # full-JDK unit test never sees (e.g. httpclient5 5.6 needing jdk.net,
+        # 2026-06). The Linux fat jar carries the same dependency set as the Mac
+        # and Windows bundles, so this one cheap ubuntu run gates all three.
+        run: |
+          scripts/verify-runtime.sh \
+            RouteConverterLinuxOpenSource/target/RouteConverterLinuxOpenSource.jar \
+            RouteConverterCmdLine/target/RouteConverterCmdLine.jar
       - name: Stage artefacts
         run: |
           mkdir -p artefacts
