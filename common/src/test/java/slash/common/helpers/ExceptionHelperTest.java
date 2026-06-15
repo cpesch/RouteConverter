@@ -32,6 +32,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.ExceptionHelper.getMessageWithCauses;
+import static slash.common.helpers.ExceptionHelper.getRootCause;
 import static slash.common.helpers.ExceptionHelper.isComputerOffline;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 
@@ -104,6 +106,36 @@ public class ExceptionHelperTest {
         assertNotNull(trace);
         assertTrue(trace.contains("RuntimeException"));
         assertTrue(trace.contains("test exception"));
+    }
+
+    @Test
+    public void testGetRootCauseUnwrapsToDeepestCause() {
+        Throwable root = new NoClassDefFoundError("jdk/net/Sockets");
+        Throwable wrapper = new ExceptionInInitializerError(root);
+        assertEquals(root, getRootCause(wrapper));
+    }
+
+    @Test
+    public void testGetRootCauseOfPlainThrowableIsItself() {
+        Throwable ex = new RuntimeException("plain");
+        assertEquals(ex, getRootCause(ex));
+    }
+
+    @Test
+    public void testGetMessageWithCausesRendersWholeChain() {
+        Throwable root = new NoClassDefFoundError("jdk/net/Sockets");
+        Throwable wrapper = new ExceptionInInitializerError(root);
+        String message = getMessageWithCauses(wrapper);
+        assertTrue(message.contains("ExceptionInInitializerError"));
+        assertTrue(message.contains("caused by"));
+        assertTrue(message.contains("NoClassDefFoundError"));
+        assertTrue(message.contains("jdk/net/Sockets"));
+    }
+
+    @Test
+    public void testGetMessageWithCausesOfSingleThrowable() {
+        String message = getMessageWithCauses(new IllegalStateException("boom"));
+        assertEquals("IllegalStateException: boom", message);
     }
 }
 

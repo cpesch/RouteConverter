@@ -8,12 +8,13 @@
 # httpclient5 5.6 -> jdk.net). This script reproduces the stripped-runtime
 # condition on any runner and fails the build before users see the dialog.
 #
-# Five checks (idea #1-#5 from the 2026-06 jdk.net post-mortem):
+# Checks (ideas from the 2026-06 jdk.net post-mortem):
 #   #1 jdeps module gate     -- modules the fat jar actually references
 #   #2 module superset check -- those modules must be a subset of jre-modules.txt
 #   #5 jdeps --missing-deps   -- classes referenced but absent (over-stripped libs)
 #   #4 forced-init sweep      -- Class.forName(.,true,.) under a stripped JRE
 #   #3 end-to-end smoke       -- run RouteConverterCmdLine on the stripped JRE
+#   #6 GUI boot smoke         -- boot the Swing app under a virtual display
 #
 # The stripped verify-JRE is jlinked here from scripts/jre-modules.txt -- the
 # same list the shipped Mac/Windows JREs use -- so a missing module fails
@@ -141,6 +142,43 @@ if [[ -n "$cmdline_jar" && -f "$cmdline_jar" ]]; then
 else
   echo
   echo "==> [#3] no cmdline-jar argument; skipping end-to-end smoke"
+fi
+
+# ---- #6: GUI boot smoke on the stripped JRE ---------------------------------
+# The fat jar is the Swing app; #3/#4 are headless and miss GUI-only static
+# init (the failing dialog was a GUI path). Boot the real frame under a virtual
+# display, hold it for a few seconds, and fail on a class-load/init error.
+echo
+echo "==> [#6] GUI boot smoke on the stripped JRE"
+gui_seconds="${GUI_SMOKE_SECONDS:-30}"
+runner=()
+if command -v xvfb-run >/dev/null; then
+  runner=(xvfb-run -a)
+elif [[ -n "${DISPLAY:-}" ]]; then
+  runner=()
+else
+  echo "::warning::no xvfb-run and no \$DISPLAY; skipping #6 GUI smoke"
+  gui_seconds=""
+fi
+if [[ -n "$gui_seconds" ]]; then
+  gui_log="$work/gui.log"
+  set +e
+  timeout --signal=TERM "$gui_seconds" \
+    "${runner[@]}" "$verify_jre/bin/java" -jar "$fat_jar" >"$gui_log" 2>&1
+  rc=$?
+  set -e
+  if grep -qE "NoClassDefFoundError|ExceptionInInitializerError|Could not initialize class|Exception in thread" "$gui_log"; then
+    echo "::error::GUI boot hit a class-load/init error on the stripped JRE:"
+    grep -nE "NoClassDefFoundError|ExceptionInInitializerError|Could not initialize class|Exception in thread" "$gui_log" | head -10 | sed 's/^/    /'
+    fail=1
+  elif [[ "$rc" -eq 124 || "$rc" -eq 143 || "$rc" -eq 0 ]]; then
+    # 124/143 = held until the timeout killed it (booted fine); 0 = clean exit
+    echo "    OK: GUI booted on the stripped JRE and ran ${gui_seconds}s without an init error"
+  else
+    echo "::error::GUI exited unexpectedly (rc=$rc) on the stripped JRE; last lines:"
+    tail -15 "$gui_log" | sed 's/^/    /'
+    fail=1
+  fi
 fi
 
 echo

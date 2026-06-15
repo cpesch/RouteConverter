@@ -34,7 +34,8 @@ import static java.lang.String.format;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.ExceptionHelper.getMessageWithCauses;
+import static slash.common.helpers.ExceptionHelper.getRootCause;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -70,7 +71,7 @@ public class RouteServiceOperator {
             public void run() {
                 log.severe(format("Error while operating on RouteConverter service: %s, %s", t, printStackTrace(t)));
                 showMessageDialog(frame,
-                        MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), t.getClass(), getLocalizedMessage(t)),
+                        MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"), getRootCause(t).getClass(), getMessageWithCauses(t)),
                         frame.getTitle(), JOptionPane.WARNING_MESSAGE);
             }
         });
