@@ -67,11 +67,16 @@ public class WindowHelper {
     }
 
     public static void handleThrowable(Class clazz, ActionEvent e, Throwable throwable) {
-        String stacktrace = isComputerOffline(throwable) ? "" : printStackTrace(throwable);
-        log.severe(format("Unhandled throwable in action %s from event %s: %s, %s", clazz.getName(), e, getLocalizedMessage(throwable), stacktrace));
+        boolean offline = isComputerOffline(throwable);
+        String stacktrace = offline ? "" : printStackTrace(throwable);
+        // for a wrapped/opaque failure show the whole cause chain (the real
+        // fault is often hidden behind a generic outer exception); keep the
+        // friendly single-line message when the computer is simply offline
+        String message = offline ? getLocalizedMessage(throwable) : getMessageWithCauses(throwable);
+        log.severe(format("Unhandled throwable in action %s from event %s: %s, %s", clazz.getName(), e, message, stacktrace));
         showMessageDialog(getFrame(),
                 MessageFormat.format(Application.getInstance().getContext().getBundle().
-                        getString("unhandled-throwable-error"), clazz.getName(), getLocalizedMessage(throwable), stacktrace),
+                        getString("unhandled-throwable-error"), clazz.getName(), message, stacktrace),
                 getFrame().getTitle(), ERROR_MESSAGE);
     }
 }

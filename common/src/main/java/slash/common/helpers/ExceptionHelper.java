@@ -43,7 +43,12 @@ public class ExceptionHelper {
         if (isComputerOffline(throwable))
             return "Your computer is not connected to the Internet and\n" +
                     "cannot access " + throwable.getMessage() + ".";
-        return throwable.getLocalizedMessage() != null ? throwable.getLocalizedMessage() : throwable.toString();
+        if (throwable.getLocalizedMessage() != null)
+            return throwable.getLocalizedMessage();
+        // a wrapper without its own message (e.g. ExceptionInInitializerError)
+        // would otherwise display just its class name; fall back to the root
+        Throwable root = getRootCause(throwable);
+        return root.getLocalizedMessage() != null ? root.getLocalizedMessage() : root.toString();
     }
 
     /**

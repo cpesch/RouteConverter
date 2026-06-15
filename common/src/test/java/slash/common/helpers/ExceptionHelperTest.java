@@ -137,5 +137,19 @@ public class ExceptionHelperTest {
         String message = getMessageWithCauses(new IllegalStateException("boom"));
         assertEquals("IllegalStateException: boom", message);
     }
+
+    @Test
+    public void testGetLocalizedMessageKeepsTopLevelMessageWhenPresent() {
+        Throwable root = new NoClassDefFoundError("jdk/net/Sockets");
+        Throwable wrapper = new IllegalStateException("outer message", root);
+        assertEquals("outer message", getLocalizedMessage(wrapper));
+    }
+
+    @Test
+    public void testGetLocalizedMessageFallsBackToRootWhenTopLevelHasNoMessage() {
+        Throwable root = new NoClassDefFoundError("jdk/net/Sockets");
+        Throwable wrapper = new ExceptionInInitializerError(root);  // no own message
+        assertEquals("jdk/net/Sockets", getLocalizedMessage(wrapper));
+    }
 }
 
