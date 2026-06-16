@@ -41,7 +41,6 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializeFeatures;
 import static slash.feature.client.Feature.initializePreferences;
-import static slash.navigation.converter.gui.RouteConverter.AUTOMATIC_UPDATE_CHECK_PREFERENCE;
 import static slash.navigation.converter.gui.RouteConverter.getPreferences;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowser;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForRouteConverterForum;
@@ -173,9 +172,6 @@ public class UpdateChecker {
     }
 
     public void implicitCheck(final Window window) {
-        if (!getPreferences().getBoolean(AUTOMATIC_UPDATE_CHECK_PREFERENCE, true))
-            return;
-
         new Thread(() -> {
             final UpdateResult result = check();
             if (result.existsLaterRouteConverterVersion()
