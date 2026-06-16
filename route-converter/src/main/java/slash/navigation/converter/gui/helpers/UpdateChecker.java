@@ -24,10 +24,13 @@ import slash.common.system.Version;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.feedback.domain.RouteFeedback;
 
+import com.sun.management.OperatingSystemMXBean;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -79,6 +82,31 @@ public class UpdateChecker {
         return getPreferences().get(SKIP_VERSION_PREFERENCE, "");
     }
 
+    private static String getMaxMemory() {
+        return Long.toString(Runtime.getRuntime().maxMemory());
+    }
+
+    private static String getTotalMemory() {
+        try {
+            OperatingSystemMXBean bean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
+            return Long.toString(bean.getTotalMemorySize());
+        } catch (Throwable t) {
+            return "?";
+        }
+    }
+
+    private static String getScreenResolution() {
+        try {
+            if (!GraphicsEnvironment.isHeadless()) {
+                Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+                return (int) size.getWidth() + "x" + (int) size.getHeight();
+            }
+        } catch (Throwable t) {
+            // ignore and fall through
+        }
+        return "?";
+    }
+
     private static void setSkippedVersion(String version) {
         getPreferences().put(SKIP_VERSION_PREFERENCE, version);
     }
@@ -93,10 +121,12 @@ public class UpdateChecker {
                     getStartCount(),
                     myJavaVersion,
                     System.getProperty("sun.arch.data.model"),
-                    System.getProperty("javafx.runtime.version", "?"),
                     System.getProperty("os.name"),
                     System.getProperty("os.version"),
                     System.getProperty("os.arch"),
+                    getMaxMemory(),
+                    getTotalMemory(),
+                    getScreenResolution(),
                     getStartTime());
             result.setParameters(parameters);
         } catch (Throwable t) {

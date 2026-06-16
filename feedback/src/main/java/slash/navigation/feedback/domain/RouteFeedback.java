@@ -149,19 +149,22 @@ public class RouteFeedback {
     }
 
     public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,
-                                 String javaVersion, String javaBits, String javaFxVersion,
+                                 String javaVersion, String javaBits,
                                  String osName, String osVersion, String osArch,
+                                 String javaMaxMemory, String osTotalMemory, String screenResolution,
                                  long startTime) throws IOException {
         log.fine("Checking for update for version " + routeConverterVersion);
         Post request = new Post(apiUrl + UPDATE_CHECK_URI, credentials);
         request.addString("id", valueOf(startTime));
         request.addString("javaBits", javaBits);
         request.addString("javaVersion", javaVersion);
-        request.addString("javaFxVersion", javaFxVersion);
+        request.addString("javaMaxMemory", javaMaxMemory);
         request.addString("locale", getDefault().toString());
         request.addString("osArch", osArch);
         request.addString("osName", osName);
+        request.addString("osTotalMemory", osTotalMemory);
         request.addString("osVersion", osVersion);
+        request.addString("screenResolution", screenResolution);
         request.addString("rcStartCount", Long.toString(startCount));
         request.addString("rcVersion", routeConverterVersion);
         request.addString("rcBits", routeConverterBits);
