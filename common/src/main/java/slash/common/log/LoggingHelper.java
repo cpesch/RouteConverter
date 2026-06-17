@@ -126,6 +126,25 @@ public class LoggingHelper {
         return logAsString;
     }
 
+    /**
+     * Truncates the log file to zero length and resumes logging into it. Called
+     * after an error report has been sent to the server so the next report does
+     * not re-send log lines that were already submitted (a single appended log
+     * otherwise accumulates several sessions across program updates).
+     */
+    public void clearLogFile() {
+        logAsDefault();
+
+        File logFile = getLogFile();
+        try (FileWriter ignored = new FileWriter(logFile, false)) {
+            // opening in non-append mode truncates the file to zero length
+        } catch (IOException e) {
+            System.err.println("Cannot clear log file " + logFile + ": " + e);
+        }
+
+        logToFile();
+    }
+
     private static final Filter FILTER = record ->
             record.getLoggerName().startsWith("slash") ||
                     record.getLoggerName().startsWith("com.graphhopper") ||

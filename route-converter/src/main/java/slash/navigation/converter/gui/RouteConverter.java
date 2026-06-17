@@ -677,6 +677,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
             public void run() throws IOException {
                 getRouteServiceOperator().getRouteFeedback().sendErrorReport(log, description, file);
+                // clear the log only after a successful send so a later report
+                // does not re-submit the same lines
+                LoggingHelper.getInstance().clearLogFile();
             }
         });
     }
