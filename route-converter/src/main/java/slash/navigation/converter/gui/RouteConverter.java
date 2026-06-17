@@ -41,6 +41,7 @@ import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
+import slash.navigation.download.Checksum;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.Application;
@@ -1345,10 +1346,17 @@ public abstract class RouteConverter extends SingleFrameApplication {
     protected abstract void updateRoutingServices();
 
     protected void downloadDependencies() {
-        if (isMac() || isWindows())
+        if (isMac() || isWindows()) {
+            File directory = getApplicationDirectory("thirdparty/gpsbabel");
+            File executable = new File(directory, isWindows() ? "gpsbabel.exe" : "gpsbabel");
+            // content length + SHA-1 of the extracted gpsbabel binary; last modified omitted (timezone-dependent)
+            Checksum checksum = isWindows()
+                    ? new Checksum(null, 1903616L, "5EA41DED616F17DCC2B52C5C86C82B9211592A61")
+                    : new Checksum(null, 2634236L, "A985795384A707228697FB29F23FF6F74F4EE40D");
             getDownloadManager().executeDownload("GPSBabel for " + getOperationSystem(),
                     "https://static.routeconverter.com/thirdparty/" + "gpsbabel-" + getOperationSystem() + ".zip",
-                    Extract, getApplicationDirectory("thirdparty/gpsbabel"), null);
+                    Extract, directory, singletonList(new FileAndChecksum(executable, checksum)), null);
+        }
     }
 
     protected abstract void scanLocalMapsAndThemes();

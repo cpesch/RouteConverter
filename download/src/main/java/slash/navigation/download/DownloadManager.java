@@ -371,7 +371,11 @@ public class DownloadManager {
     private static final Set<State> SUCCESSFUL = new HashSet<>(asList(NotModified, Succeeded));
 
     public void executeDownload(String description, String url, Action action, File file, Runnable invokeAfterSuccessfulDownloadRunnable) {
-        Download download = queueForDownload(description, url, action, new FileAndChecksum(file, null), null);
+        executeDownload(description, url, action, file, null, invokeAfterSuccessfulDownloadRunnable);
+    }
+
+    public void executeDownload(String description, String url, Action action, File file, List<FileAndChecksum> fragments, Runnable invokeAfterSuccessfulDownloadRunnable) {
+        Download download = queueForDownload(description, url, action, new FileAndChecksum(file, null), fragments);
         if(!file.exists()) {
             waitForCompletion(singletonList(download));
 
