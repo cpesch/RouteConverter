@@ -29,6 +29,10 @@
 #                    (default: third-party library roots; app GUI classes are
 #                    covered by the #3 smoke instead, to avoid opening windows)
 #   STRICT_MISSING   1 = fail on #5 jdeps --missing-deps findings (default warn)
+#   STRICT_MODULES   1 = fail on #2 when the fat jar references a module absent
+#                    from jre-modules.txt (default 0 -- advisory, because jdeps
+#                    over-approximates on a fat jar and reports dead/optional
+#                    references the app never executes; #3/#4 are the real gates)
 #
 set -euo pipefail
 
@@ -41,6 +45,7 @@ sample_gpx="${3:-}"
 mr_version="${MR_VERSION:-17}"
 init_prefixes="${INIT_PREFIXES:-org.apache.,org.sqlite.,com.sun.,jakarta.,net.java.dev.jna.,org.mozilla.,com.fasterxml.,com.google.}"
 strict_missing="${STRICT_MISSING:-0}"
+strict_modules="${STRICT_MODULES:-0}"
 
 [[ -f "$fat_jar" ]]      || { echo "::error::fat jar not found: $fat_jar"; exit 2; }
 [[ -f "$modules_file" ]] || { echo "::error::module list not found: $modules_file"; exit 2; }
@@ -80,7 +85,13 @@ for m in "${req_arr[@]}"; do
   esac
 done
 if ((${#extras[@]})); then
-  echo "::warning::fat jar references module(s) not shipped: ${extras[*]} (dead refs unless #4/#3 fail)"
+  if [[ "$strict_modules" == "1" ]]; then
+    echo "::error::jdeps requires module(s) absent from jre-modules.txt: ${extras[*]}"
+    echo "::error::the shipped stripped JRE lacks them -> runtime NoClassDefFoundError; add them to jre-modules.txt and rebuild the Mac/Windows JREs"
+    fail=1
+  else
+    echo "::warning::fat jar references module(s) not shipped: ${extras[*]} (dead refs unless #4/#3 fail; set STRICT_MODULES=1 to gate)"
+  fi
 else
   echo "    OK: every referenced module is shipped"
 fi
