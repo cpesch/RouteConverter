@@ -21,6 +21,7 @@ package slash.navigation.mapview.mapsforge;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
@@ -30,8 +31,11 @@ import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -41,6 +45,7 @@ import java.util.Set;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -165,5 +170,49 @@ public class MapsforgeMapViewTest {
         when(layer.getCategories()).thenReturn(new LinkedHashSet<>(Set.of(categories)));
         when(layer.getOverlays()).thenReturn(Collections.emptyList());
         return layer;
+    }
+
+    // --- background map failure modes ----------------------------------------
+    // setBackgroundMap builds new MapFile(file) first; a corrupt or missing file makes the
+    // mapsforge header check throw before any Swing-heavy code, and the catch must log + null
+    // the layer instead of letting the exception escape on the EDT (which left a blank map with
+    // nothing logged -- error report 1311).
+
+    @Test
+    public void testMapFileRejectsTruncatedGarbage() throws IOException {
+        File corrupt = File.createTempFile("not-a-map", ".map");
+        corrupt.deleteOnExit();
+        Files.write(corrupt.toPath(), "this is not a mapsforge binary map file".getBytes());
+        assertThrows(RuntimeException.class, () -> new MapFile(corrupt));
+    }
+
+    @Test
+    public void testMapFileRejectsMissingFile() {
+        File missing = new File(System.getProperty("java.io.tmpdir"), "missing-" + System.nanoTime() + ".map");
+        assertThrows(RuntimeException.class, () -> new MapFile(missing));
+    }
+
+    @Test
+    public void testSetBackgroundMapWithCorruptFileDoesNotThrowAndClearsLayer() throws Exception {
+        File corrupt = File.createTempFile("not-a-map", ".map");
+        corrupt.deleteOnExit();
+        Files.write(corrupt.toPath(), "this is not a mapsforge binary map file".getBytes());
+
+        mapView.setBackgroundMap(corrupt); // must not throw
+        assertNull(backgroundLayerOf(mapView));
+    }
+
+    @Test
+    public void testSetBackgroundMapWithMissingFileDoesNotThrowAndClearsLayer() throws Exception {
+        File missing = new File(System.getProperty("java.io.tmpdir"), "missing-" + System.nanoTime() + ".map");
+
+        mapView.setBackgroundMap(missing); // must not throw
+        assertNull(backgroundLayerOf(mapView));
+    }
+
+    private static Object backgroundLayerOf(MapsforgeMapView mapView) throws Exception {
+        Field field = MapsforgeMapView.class.getDeclaredField("backgroundLayer");
+        field.setAccessible(true);
+        return field.get(mapView);
     }
 }
