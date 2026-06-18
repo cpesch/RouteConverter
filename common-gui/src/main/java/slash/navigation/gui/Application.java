@@ -100,6 +100,15 @@ public abstract class Application {
     }
 
     public static <T extends Application> void launch(final Class<T> applicationClass, final List<String> bundleNames, final String[] args) {
+        // Last-resort net: since Java 7 the EDT routes uncaught exceptions to the
+        // thread's handler, which falls back to this default. Without it, a throw
+        // in an invokeLater/background runnable (e.g. the async map/profile view
+        // setup) died on System.err and never reached the log file or an error
+        // report — a blank/half-built UI with nothing to diagnose. Now every
+        // uncaught exception, on any thread, lands in the RC log.
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
+                log.log(SEVERE, format("Uncaught exception in thread %s", thread.getName()), throwable));
+
         Runnable doCreateAndShowGUI = () -> {
             try {
                 setLookAndFeel();
