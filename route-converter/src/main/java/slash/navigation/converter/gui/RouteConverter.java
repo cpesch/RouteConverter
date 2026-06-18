@@ -217,17 +217,25 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     // application lifecycle callbacks
 
+    private long startupStartMillis;
+
     protected void startup() {
-        long start = System.currentTimeMillis();
+        startupStartMillis = System.currentTimeMillis();
         initializeLogging();
         checkJavaPrequisites();
         checkForGoogleMapsAPIKey();
         show();
         checkForMissingTranslator();
         updateChecker.implicitCheck(getFrame());
-        // Bookends the "Started ..." banner: if this line is missing from a log,
-        // synchronous startup hung (e.g. on the EDT) before the frame was ready.
-        log.info(format("RouteConverter startup completed in %d ms", System.currentTimeMillis() - start));
+        // show() returns once the synchronous bring-up is done, but the frame and
+        // map/profile views are realized later on the EDT — see the "frame shown"
+        // and "map and profile view ready" timings logged from those callbacks.
+        // A missing line here means synchronous startup itself hung.
+        log.info(format("Synchronous startup completed %d ms after start", millisSinceStartup()));
+    }
+
+    private long millisSinceStartup() {
+        return System.currentTimeMillis() - startupStartMillis;
     }
 
     protected void checkJavaPrequisites() {
@@ -328,7 +336,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private void openFrame() {
         createFrame(getTitle(), "/slash/navigation/converter/gui/" + getProduct() + ".png", contentPane, null, new FrameMenu().createMenuBar());
         new ApplicationMenu().addApplicationMenuItems();
-        new Thread(() -> invokeLater(() -> openFrame(contentPane)), "FrameOpener").start();
+        new Thread(() -> invokeLater(() -> {
+            openFrame(contentPane);
+            log.info(format("Frame shown %d ms after startup", millisSinceStartup()));
+        }), "FrameOpener").start();
     }
 
     private void openMapAndProfileView() {
@@ -347,12 +358,16 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
         invokeLater(() -> {
             setMapView(getMapViewPreference());
+            log.info(format("Map view ready %d ms after startup", millisSinceStartup()));
 
             invokeLater(() -> {
                 openProfileView();
 
                 adjustDividersForScreenMovement();
-                invokeLater(this::initializeDividerListeners);
+                invokeLater(() -> {
+                    initializeDividerListeners();
+                    log.info(format("Map and profile view ready %d ms after startup", millisSinceStartup()));
+                });
             });
         });
     }
