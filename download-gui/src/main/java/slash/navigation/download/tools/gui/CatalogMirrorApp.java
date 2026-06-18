@@ -19,23 +19,41 @@
 */
 package slash.navigation.download.tools.gui;
 
+import slash.navigation.gui.SingleFrameApplication;
+import slash.navigation.gui.actions.ExitAction;
+
 import javax.swing.*;
+import java.awt.*;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Starts the catalog mirror desktop app.
  *
  * @author Christian Pesch
  */
-public class CatalogMirrorApp {
+public class CatalogMirrorApp extends SingleFrameApplication {
+    private CatalogMirrorFrame mirror;
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            try {
-                UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-            } catch (Exception e) {
-                // intentionally left empty
-            }
-            new CatalogMirrorFrame().setVisible(true);
-        });
+        launch(CatalogMirrorApp.class, emptyList(), args);
+    }
+
+    protected void startup() {
+        getContext().getActionManager().register("exit", new ExitAction());
+
+        mirror = new CatalogMirrorFrame();
+        frame = new JFrame("RouteConverter Catalog Mirror");
+        frame.setContentPane(mirror.getContentPane());
+        frame.setMinimumSize(new Dimension(980, 720));
+        openFrame(mirror.getContentPane());
+        mirror.setFrame(frame);
+        mirror.reloadData();
+    }
+
+    protected void shutdown() {
+        mirror.savePreferences();
+        super.shutdown();
     }
 }
 

@@ -34,7 +34,6 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -60,14 +59,13 @@ import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
 import static javax.swing.SortOrder.ASCENDING;
 import static javax.swing.SwingUtilities.invokeLater;
-import static javax.swing.WindowConstants.EXIT_ON_CLOSE;
 
 /**
  * Desktop UI for snapshot-based mirroring jobs.
  *
  * @author Christian Pesch
  */
-public class CatalogMirrorFrame extends JFrame {
+public class CatalogMirrorFrame {
     private static final String DEFAULT_SNAPSHOT_DIRECTORY = getProperty("user.home") + "/.routeconverter/snapshot-api.routeconverter.com";
     private static final String DEFAULT_MIRROR_DIRECTORY = "/Volumes/5TB Mirror/Mirrors";
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -98,19 +96,20 @@ public class CatalogMirrorFrame extends JFrame {
     private final WgetCommandBuilder commandBuilder = new WgetCommandBuilder();
     private SwingWorker<Void, String> runningWorker;
 
-    public CatalogMirrorFrame() {
-        setTitle("RouteConverter Catalog Mirror");
-        setContentPane(contentPane);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setMinimumSize(new Dimension(980, 720));
-        setPreferredSize(new Dimension(1280, 820));
-        setLocationByPlatform(true);
+    private JFrame frame;
 
+    public CatalogMirrorFrame() {
         configureDefaults();
         configureTable();
         configureActions();
-        reloadData();
-        pack();
+    }
+
+    public JPanel getContentPane() {
+        return contentPane;
+    }
+
+    public void setFrame(JFrame frame) {
+        this.frame = frame;
     }
 
     private void configureDefaults() {
@@ -169,8 +168,6 @@ public class CatalogMirrorFrame extends JFrame {
     }
 
     private void configureActions() {
-        contentPane.registerKeyboardAction(e -> dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)),
-                KeyStroke.getKeyStroke("ESCAPE"), JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
         buttonBrowseSnapshotDirectory.addActionListener(e -> chooseDirectory(textFieldSnapshotDirectory, "Choose snapshot directory"));
         buttonBrowseMirrorDirectory.addActionListener(e -> chooseDirectory(textFieldMirrorDirectory, "Choose mirror directory"));
         buttonReload.addActionListener(e -> reloadData());
@@ -183,16 +180,16 @@ public class CatalogMirrorFrame extends JFrame {
         chooser.setDialogTitle(title);
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
         chooser.setAcceptAllFileFilterUsed(false);
-        if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+        if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION)
             target.setText(chooser.getSelectedFile().getAbsolutePath());
     }
 
-    private void savePreferences() {
+    public void savePreferences() {
         preferences.put(PREFERENCE_SNAPSHOT_DIRECTORY, textFieldSnapshotDirectory.getText().trim());
         preferences.put(PREFERENCE_MIRROR_DIRECTORY, textFieldMirrorDirectory.getText().trim());
     }
 
-    private void reloadData() {
+    public void reloadData() {
         if (isRunning())
             return;
 
@@ -216,7 +213,7 @@ public class CatalogMirrorFrame extends JFrame {
             labelSummary.setText("Could not load data: " + e.getMessage());
             textAreaDetails.setText("");
             appendLog("ERROR: " + e.getMessage());
-            showMessageDialog(this, e.getMessage(), "Load failed", ERROR_MESSAGE);
+            showMessageDialog(frame, e.getMessage(), "Load failed", ERROR_MESSAGE);
         }
     }
 
@@ -231,7 +228,7 @@ public class CatalogMirrorFrame extends JFrame {
 
         int[] selectedRows = tableJobs.getSelectedRows();
         if (selectedRows.length == 0) {
-            showMessageDialog(this, "Please select at least one mirror job.", "No selection", INFORMATION_MESSAGE);
+            showMessageDialog(frame, "Please select at least one mirror job.", "No selection", INFORMATION_MESSAGE);
             return;
         }
 
@@ -259,7 +256,7 @@ public class CatalogMirrorFrame extends JFrame {
             if (!Files.exists(mirrorDirectory))
                 Files.createDirectories(mirrorDirectory);
         } catch (IOException e) {
-            showMessageDialog(this, e.getMessage(), "Invalid mirror directory", ERROR_MESSAGE);
+            showMessageDialog(frame, e.getMessage(), "Invalid mirror directory", ERROR_MESSAGE);
             return;
         }
 
