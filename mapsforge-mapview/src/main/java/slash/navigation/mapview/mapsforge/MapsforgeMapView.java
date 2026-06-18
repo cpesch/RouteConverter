@@ -431,10 +431,21 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     public void setBackgroundMap(File backgroundMap) {
-        backgroundLayer = createTileRendererLayer(new MapFile(backgroundMap), backgroundMap.getName());
-        LocalTheme theme = getMapManager().getAppliedThemeModel().getItem();
-        backgroundLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
-        handleBackground();
+        long length = backgroundMap.length();
+        try {
+            // new MapFile validates the mapsforge header, so a truncated or
+            // wrong-content file (e.g. a stale world.map that never re-downloaded)
+            // throws here. Without this guard the exception escaped silently on
+            // the EDT and the map just stayed blank with nothing in the log.
+            backgroundLayer = createTileRendererLayer(new MapFile(backgroundMap), backgroundMap.getName());
+            LocalTheme theme = getMapManager().getAppliedThemeModel().getItem();
+            backgroundLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
+            handleBackground();
+            log.info(format("Loaded background map %s (%d bytes)", backgroundMap, length));
+        } catch (Exception e) {
+            backgroundLayer = null;
+            log.severe(format("Cannot load background map %s (%d bytes): %s", backgroundMap, length, e));
+        }
     }
 
     public void updateMapAndThemesAfterDirectoryScanning() {
