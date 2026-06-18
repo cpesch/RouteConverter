@@ -22,7 +22,9 @@ package slash.navigation.download;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -65,6 +67,9 @@ public class DownloadManagerStateMachineTest {
     private static final String ENTRY_BODY = "Lorem ipsum dolor sit amet, consectetur adipisicing elit";
     private static final String PLAIN_BODY = "0123456789ABCDEFGHIJ0123456789ABCDEFGHIJ"; // 40 bytes
     private static final String ETAG = "\"state-machine\"";
+
+    @Rule
+    public final Timeout testTimeout = Timeout.seconds(30);
 
     private HttpServer server;
     private final AtomicInteger bodiesServed = new AtomicInteger();
