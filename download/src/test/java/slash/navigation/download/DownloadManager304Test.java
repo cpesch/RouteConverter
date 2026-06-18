@@ -29,15 +29,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static slash.common.io.InputOutput.readFileToString;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.State.NotModified;
+import static slash.navigation.download.State.Outdated;
 import static slash.navigation.download.State.Succeeded;
 
 /**
@@ -119,6 +122,32 @@ public class DownloadManager304Test {
         assertEquals(1, bodiesServed.get());
         assertEquals(lengthAfterFirst, target.length());
         assertEquals(lastModifiedAfterFirst, target.lastModified());
+        assertEquals(BODY, readFileToString(target));
+    }
+
+    @Test
+    public void testOutdatedFileDropsETagSoReDownloadIsUnconditional() throws IOException {
+        // first download stores the ETag and a valid target
+        Checksum expected = new Checksum(null, (long) BODY.length(), null);
+        Download download = manager.queueForDownload("resource", url(), Copy, new FileAndChecksum(target, expected), null);
+        manager.waitForCompletion(singletonList(download));
+        assertEquals(Succeeded, download.getState());
+        assertNotNull(download.getETag());
+        assertEquals(1, bodiesServed.get());
+
+        // corrupt the target on disk so its checksum no longer matches the expected one
+        Files.writeString(target.toPath(), "corrupt local content of a different length");
+
+        // scan detects the mismatch, marks the download Outdated and drops the now-stale ETag
+        manager.scanForOutdatedFilesInQueue();
+        assertEquals(Outdated, download.getState());
+        assertNull(download.getETag());
+
+        // re-download must send no If-None-Match -> server answers 200 and overwrites the corrupt file
+        Download second = manager.queueForDownload("resource", url(), Copy, new FileAndChecksum(target, expected), null);
+        manager.waitForCompletion(singletonList(second));
+        assertEquals(Succeeded, second.getState());
+        assertEquals(2, bodiesServed.get());
         assertEquals(BODY, readFileToString(target));
     }
 }

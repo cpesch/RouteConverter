@@ -307,6 +307,10 @@ public class DownloadManager {
                 if (!validator.isChecksumsValid()) {
                     log.info("Found outdated download " + download);
 
+                    // drop the ETag so the re-download issues an unconditional GET:
+                    // a corrupt/outdated local file must be re-fetched, otherwise the
+                    // conditional request keeps returning 304 and the file is never replaced
+                    download.setETag(null);
                     download.setState(Outdated);
                     getModel().updateDownload(download);
 
