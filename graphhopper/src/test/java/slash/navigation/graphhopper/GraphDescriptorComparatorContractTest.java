@@ -160,7 +160,7 @@ public class GraphDescriptorComparatorContractTest {
         double minLon = -180 + random.nextInt(300);
         double minLat = -80 + random.nextInt(140);
         double width = 1 + random.nextInt(60);
-        double height = 1 + random.nextInt(60);
+        double height = 1 + random.nextInt(Math.max(1, (int) Math.min(60, 90 - minLat)));
         return new BoundingBox(minLon + width, minLat + height, minLon, minLat);
     }
 

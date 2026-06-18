@@ -98,10 +98,9 @@ public class GpxFormatNegativeTest {
     public void testValidButEmptyGpx11ReturnsNoRoutesWithoutThrowing() throws IOException {
         List<GpxRoute> routes = read(new Gpx11Format(),
                 "<?xml version=\"1.0\"?><gpx version=\"1.1\" creator=\"test\" xmlns=\"http://www.topografix.com/GPX/1/1\"></gpx>");
-        // no tracks/routes/waypoints -> no usable route, but no exception
-        if (routes != null)
-            for (GpxRoute route : routes)
-                assertEquals(0, route.getPositionCount());
+        assertNotNull(routes);
+        for (GpxRoute route : routes)
+            assertEquals(0, route.getPositionCount());
     }
 
     @Test
