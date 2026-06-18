@@ -218,12 +218,16 @@ public abstract class RouteConverter extends SingleFrameApplication {
     // application lifecycle callbacks
 
     protected void startup() {
+        long start = System.currentTimeMillis();
         initializeLogging();
         checkJavaPrequisites();
         checkForGoogleMapsAPIKey();
         show();
         checkForMissingTranslator();
         updateChecker.implicitCheck(getFrame());
+        // Bookends the "Started ..." banner: if this line is missing from a log,
+        // synchronous startup hung (e.g. on the EDT) before the frame was ready.
+        log.info(format("RouteConverter startup completed in %d ms", System.currentTimeMillis() - start));
     }
 
     protected void checkJavaPrequisites() {
