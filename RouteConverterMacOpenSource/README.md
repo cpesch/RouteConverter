@@ -22,5 +22,5 @@ To rebuild the hosted JRE (e.g. after bumping `<jre.version>`):
 trigger `Build Mac JRE` via `workflow_dispatch`, or push a change to
 `route-converter-build/pom.xml` on `master`.
 
-Phase 5.4e/f in [rc-meta/docs/00018-release-automation-3.4.md](
-https://github.com/cpesch/rc-meta/blob/main/docs/00018-release-automation-3.4.md).
+Phase 5.4e/f in [rc-meta/specs/00018-release-automation-3.4.md](
+https://github.com/cpesch/rc-meta/blob/main/specs/00018-release-automation-3.4.md).

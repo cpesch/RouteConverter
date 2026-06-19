@@ -13,7 +13,7 @@ name: Verify cut
 # Failures here ping ntfy (rc-meta factory/notify/) so the maintainer
 # learns of a half-shipped release before the next user does.
 #
-# See rc-meta/docs/00018-release-automation-3.4.md plan-review M2.
+# See rc-meta/specs/00018-release-automation-3.4.md plan-review M2.
 
 on:
   workflow_run:

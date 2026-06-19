@@ -11,7 +11,7 @@ name: Build Windows JRE
 #   workflow_dispatch — manual rebuild
 #   push paths — automatic when the jlink recipe changes
 #
-# Plan: rc-meta docs/00018-release-automation-3.4.md Phase 5.4 prerequisite.
+# Plan: rc-meta specs/00018-release-automation-3.4.md Phase 5.4 prerequisite.
 
 on:
   workflow_dispatch:

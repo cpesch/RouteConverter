@@ -6,7 +6,7 @@ Automate JAXB binding generation for `datasource`
 
 ## Suggested issue / docs filename pattern
 
-- current long-lived docs note: `docs/00001-automate-datasource-jaxb-generation.md`
+- current long-lived docs note: `specs/00001-automate-datasource-jaxb-generation.md`
 - if a GitHub issue number exists later: `docs/issue-<number>-automate-datasource-jaxb-generation.md`
 
 ## Status

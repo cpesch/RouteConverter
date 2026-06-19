@@ -19,8 +19,8 @@ name: Release prepare
 #
 # Tag push from step 2 fires release.yml automatically.
 #
-# See rc-meta/docs/00018-release-automation-3.4.md Phase 4 automation
-# and rc-meta/docs/00026.3-open-tasks.md MR-§9 for the one-time
+# See rc-meta/specs/00018-release-automation-3.4.md Phase 4 automation
+# and rc-meta/specs/00026.3-open-tasks.md MR-§9 for the one-time
 # secret-provisioning steps.
 
 on:
@@ -165,7 +165,7 @@ jobs:
           #   runtime/cgo: pthread_create failed: Resource temporarily unavailable
           # → SIGABRT → "pre-receive hook declined". That's transient host
           # exhaustion, not a bad push — retry with backoff before failing
-          # the release. See rc-meta/docs/00025 + diag-tasksmax.sh.
+          # the release. See rc-meta/specs/00025 + diag-tasksmax.sh.
           for attempt in 1 2 3 4 5; do
             if git push origin main; then
               echo "catalog push ok (attempt ${attempt})"
@@ -174,5 +174,5 @@ jobs:
             echo "::warning::catalog push failed (attempt ${attempt}/5) — strato may be PID-capped; retrying"
             sleep $(( attempt * 15 ))
           done
-          echo "::error::catalog push still failing after 5 attempts — check strato PID/TasksMax cap (rc-meta/docs/00025)"
+          echo "::error::catalog push still failing after 5 attempts — check strato PID/TasksMax cap (rc-meta/specs/00025)"
           exit 1

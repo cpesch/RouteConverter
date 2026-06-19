@@ -36,7 +36,7 @@
     <!-- No <distributionManagement>: this project does not publish to Maven
          Central or any Maven repository. Releases ship as raw .exe / .jar /
          .app.zip files via release.yml's rsync to static.routeconverter.com,
-         not as Maven artefacts. See rc-meta/docs/00018-release-automation-3.4.md. -->
+         not as Maven artefacts. See rc-meta/specs/00018-release-automation-3.4.md. -->
 
     <scm>
         <connection>scm:git:https://github.com/cpesch/RouteConverter</connection>
