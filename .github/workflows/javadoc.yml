@@ -15,7 +15,7 @@ name: Publish Javadoc
 #   - push paths-filter on pom.xml + java sources (auto-refresh on
 #     master changes)
 #
-# See rc-meta/docs/00018-release-automation-3.4.md Phase 5.5.
+# See rc-meta/specs/00018-release-automation-3.4.md Phase 5.5.
 
 on:
   workflow_dispatch:

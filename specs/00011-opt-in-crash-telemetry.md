@@ -117,7 +117,7 @@ build it speculatively.
   no new vendor or SDK. POST JSON to a `static.routeconverter.com` / service
   endpoint.
   - **Auth:** sign reports with the existing HMAC / `GH_WEBHOOK_SECRET` prior
-    art (docs/00041 webhook canary). The endpoint rate-limits and size-caps to
+    art (specs/00041 webhook canary). The endpoint rate-limits and size-caps to
     blunt the open-POST spam/DoS vector.
   - **Offline:** reuse the Phase 1 spool as the send queue - persist unsent
     reports, flush on the next online launch, drop after a cap. Never retry
@@ -151,7 +151,7 @@ build it speculatively.
 ## Related
 
 - `scripts/verify-runtime.sh` - the build-time gate this complements.
-- `docs/00009-reduce-bundle-size-generically.md` - bundle/stripping context.
-- `docs/00041-factory-reliability-hardening.md` (rc-meta) - HMAC / webhook
+- `specs/00009-reduce-bundle-size-generically.md` - bundle/stripping context.
+- `specs/00041-factory-reliability-hardening.md` (rc-meta) - HMAC / webhook
   secret prior art reused for Phase 2 endpoint auth.
 - `ExceptionHelper.getRootCause` / `getMessageWithCauses` - reused for payloads.

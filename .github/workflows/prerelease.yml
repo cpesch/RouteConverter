@@ -9,7 +9,7 @@ name: Prerelease
 # writes into /var/www/routeconverter.com/static/downloads/{prereleases,
 # release,previous-releases}/.
 #
-# See rc-meta/docs/00018-release-automation-3.4.md Phase 2.
+# See rc-meta/specs/00018-release-automation-3.4.md Phase 2.
 
 on:
   push:
@@ -30,7 +30,7 @@ jobs:
   # pre-tag commit is the canonical 3.x release (covered by release.yml on
   # the tag push) and the post-tag commit is the next-dev bump (no point
   # building a prerelease of an empty version bump). Otherwise burns
-  # ~10 min of CI per cut on duplicate work. See rc-meta docs/00018 5.8.
+  # ~10 min of CI per cut on duplicate work. See rc-meta specs/00018 5.8.
   build-linux-mac:
     if: |
       github.event_name != 'push'

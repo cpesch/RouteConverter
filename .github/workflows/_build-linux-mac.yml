@@ -7,7 +7,7 @@ name: _build-linux-mac
 #   - prerelease.yml (artefact-name: prerelease-linux-mac)
 #   - release.yml    (artefact-name: release-linux-mac)
 #
-# See rc-meta/docs/00018-release-automation-3.4.md Phase 5.2.
+# See rc-meta/specs/00018-release-automation-3.4.md Phase 5.2.
 
 on:
   workflow_call:

@@ -19,7 +19,7 @@ name: Release
 #   - Nacharbeit (RouteConverter.xml, release notes on www, forum,
 #     Latest Versions)
 #
-# See rc-meta/docs/00018-release-automation-3.4.md Phase 3.
+# See rc-meta/specs/00018-release-automation-3.4.md Phase 3.
 
 on:
   push:
