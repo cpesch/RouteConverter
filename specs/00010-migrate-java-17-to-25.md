@@ -6,9 +6,11 @@ Open. Created June 13, 2026 (originally targeting Java 21). Revised June 20, 202
 to target **Java 25** — see "Decision: 25, not 21" below. Tracks GitHub issue
 \#110 ("write a spec for bumping the bundled Java runtime").
 
-`RELEASE_NOTES.md` already announces "the build moves to Java 25", but the
-version pins below are still on 17. **This spec closes that gap** — it is the
-work the release note is promising.
+`RELEASE_NOTES.md` already announces "the build moves to Java 25" — that is the
+**build JDK** (knob 1). The bytecode target and bundled JRE (knobs 2–3) are
+still 17. This spec extends the move to all three so the build JDK and the
+runtime RouteConverter actually ships on are one LTS, instead of a
+build-on-25 / ship-on-17 split.
 
 ## The three Java knobs (don't conflate them)
 
@@ -16,8 +18,9 @@ A "Java version" in this project is really three independent settings:
 
 1. **Build JDK** — the JDK that compiles the code (CI `actions/setup-java`,
    local sdkman). Currently `17` / `17.0.19` in every workflow.
-2. **Bytecode target** — `<java.version>17</java.version>` in root `pom.xml`
-   (`--release`). This is the **minimum runtime** a BYO-JDK user (Linux) needs.
+2. **Bytecode target** — `<java.version>17</java.version>` in root `pom.xml`,
+   feeding maven-compiler `<source>`/`<target>` (not `<release>` — see
+   Optimizations). This is the **minimum runtime** a BYO-JDK user (Linux) needs.
 3. **Bundled jlink JRE** — `<jre.version>17.0.19</jre.version>` in
    `route-converter-build/pom.xml`. The stripped runtime shipped *inside* the
    Mac `.app` and the Windows bundle/portable. This is the version end users on
@@ -25,14 +28,28 @@ A "Java version" in this project is really three independent settings:
 
 This migration moves all three to 25.
 
+**Constraint: all three must be the same version.** Because the compiler uses
+`<source>`/`<target>` (not `<release>` — see Optimizations), building on a newer
+JDK than the target does *not* prevent the compiler from emitting calls to APIs
+that exist only in the newer JDK. So a "build on 25, target+ship 17" split is
+**not safe** — it can silently produce bytecode/API references that fail on the
+17 JRE (`UnsupportedClassVersionError` / `NoSuchMethodError` at runtime, not
+caught at compile time). Build JDK, bytecode target, and bundled JRE therefore
+move together, atomically, to the same 25.x line. (Adopting `<release>` would
+relax this and permit a build-ahead split — but that is the Optimization, not
+the default.) This also means there is **no safe mechanical-only sub-slice** to
+hand to the factory: the JRE bump forces the hosted-JRE publish + native-bundle
+smoke, which are human/CI steps a context-only minion cannot perform.
+
 ## Decision: 25, not 21
 
 The original plan (June 13) targeted Java 21. Superseded — go straight to 25:
 
 - **It is the current LTS** (Sep 2025), longest support runway. Targeting 21
   now would force a *second* bump to 25 within a year.
-- **The maintainer already committed to it** — `RELEASE_NOTES.md` says the build
-  runs on Java 25. This spec makes the pins match.
+- **The build is already standardizing on it** — `RELEASE_NOTES.md` moves the
+  build JDK to Java 25. Shipping a 25 JRE keeps build and runtime aligned;
+  shipping 21 would mean a build-on-25 / ship-on-21 split.
 - **End-user functionality is identical.** RouteConverter is a mature Swing app;
   it exposes no new *language* features to users. The 17→25 difference is
   runtime-internal (GC, JIT, FFM, security-manager removal). So the choice is
@@ -76,12 +93,14 @@ needs a *new* module surfaces only as a runtime `NoClassDefFound` at startup —
 stripped JRE). Precedent: httpclient5 5.6 needed `jdk.net`. Before shipping,
 re-derive the required module set against JDK 25 (`jdeps --print-module-deps` on
 the full dependency set, or `jlink --suggest-providers`) and smoke-launch every
-stripped bundle, watching for `NoClassDefFound`/`ClassNotFoundException`.
+stripped bundle with the existing `scripts/verify-runtime.sh`, watching for
+`NoClassDefFound`/`ClassNotFoundException`.
 
 ## Risks / things to check
 
-- **Removed/deprecated JDK internals.** Java 17->25 removed the Security Manager
-  (JEP 486) and is deprecating `sun.misc.Unsafe` memory access (23+). Audit deps
+- **Removed/deprecated JDK internals.** Java 17->25 permanently disabled the
+  Security Manager (JEP 486, JDK 24) and deprecated `sun.misc.Unsafe` memory
+  access for removal (JEP 471, JDK 23). Audit deps
   for use of either: JAXB/`jaxb-impl`, POI, jfreechart, jna, sqlite-jdbc,
   Garmin FIT, mapsforge native bits.
 - **Strong encapsulation** tightened further across 17 -> 25. The Mac launcher
@@ -93,12 +112,22 @@ stripped bundle, watching for `NoClassDefFound`/`ClassNotFoundException`.
 - Coordinate with [00009](00009-reduce-bundle-size-generically.md): both touch
   the hosted jlink JRE artifacts — do them together if possible.
 
+## Optimizations (optional, fold into this bump)
+
+- The compiler is wired with `<source>`/`<target>` (`${java.version}`). Consider
+  switching to `<release>${java.version}</release>`: `--release` validates code
+  against the *target* JDK's API, catching accidental use of APIs newer than the
+  floor — which `source`/`target` silently allows once the build JDK (25) is
+  ahead of the target. One-line change, removes a latent footgun now that build
+  JDK and target diverge.
+
 ## Acceptance criteria
 
 - All modules compile and test green on Java 25 (fallback: 21, if a validated
   blocker forces it — record which dep/module and why in this file).
 - jlink `--add-modules` list re-validated against JDK 25; no
-  `NoClassDefFound`/`ClassNotFoundException` at startup on any stripped bundle.
+  `NoClassDefFound`/`ClassNotFoundException` at startup on any stripped bundle
+  (`scripts/verify-runtime.sh` green on all three platform/arch combos).
 - Hosted JREs republished at the new 25.x version for all three platform/arch
   combos (Mac x64, Mac aarch64, Windows x64).
 - Every shipped artifact launches: Mac `.app` (x64 + aarch64), Windows unbundled
@@ -107,4 +136,6 @@ stripped bundle, watching for `NoClassDefFound`/`ClassNotFoundException`.
 - No new module-access warnings/errors at startup.
 - Installer/JRE size delta vs 17 measured and recorded (expected: a few MB; not
   a blocker either way).
-- `RELEASE_NOTES.md`'s "build moves to Java 25" now matches the actual pins.
+- Build JDK, bytecode target, and bundled JRE all on the same 25.x line — no
+  build-vs-ship split; `RELEASE_NOTES.md`'s Java 25 claim now holds for the
+  shipped runtime, not just the build.
