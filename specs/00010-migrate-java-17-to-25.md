@@ -21,8 +21,9 @@ A "Java version" in this project is really three independent settings:
 2. **Bytecode target** — `<java.version>17</java.version>` in root `pom.xml`,
    feeding maven-compiler `<source>`/`<target>` (not `<release>` — see
    Optimizations). This is the **minimum runtime** a BYO-JDK user (Linux) needs.
-3. **Bundled jlink JRE** — `<jre.version>17.0.19</jre.version>` in
-   `route-converter-build/pom.xml`. The stripped runtime shipped *inside* the
+3. **Bundled jlink JRE** — `<jre.version>17.0.19</jre.version>` in the root
+   `pom.xml` `<properties>` (was `route-converter-build/pom.xml` until spec 00045
+   folded that module into root). The stripped runtime shipped *inside* the
    Mac `.app` and the Windows bundle/portable. This is the version end users on
    Mac/Windows actually run on.
 
@@ -67,13 +68,14 @@ floor, 25 is the goal.
 
 ## Scope of the change
 
-1. `route-converter-build/pom.xml`: `<jre.version>17.0.19</jre.version>` -> a
+1. root `pom.xml`: `<jre.version>17.0.19</jre.version>` -> a
    25.x build; rebuild + publish the hosted stripped/jlink JREs
    (`jre-<ver>-{x64,aarch64}-stripped.zip` for Mac, `jre-<ver>-x64-stripped.zip`
    for Windows) via `build-mac-jre.yml` / `build-windows-jre.yml`.
 2. Root `pom.xml`: `<java.version>17</java.version>` -> `25`.
-3. launch4j `<minVersion>` 17 -> 25 in `RouteConverterWindowsOpenSource/pom.xml`
-   and `TimeAlbumProWindows/pom.xml`.
+3. ~~launch4j `<minVersion>` 17 -> 25~~ — **obsolete:** spec 00044 dropped launch4j
+   (bundled-JRE `.exe` only) and renamed the module to `RouteConverterWindows`.
+   No needs-Java `.exe`, so no launch4j `<minVersion>` to bump.
 4. CI workflows: `actions/setup-java` `java-version` `17` -> `25` in
    `_build-linux-mac.yml`, `javadoc.yml`, `release-prepare.yml`, and the pinned
    `17.0.19` in `release.yml`; confirm `build.yml` `distribution: 'zulu'` ships a
