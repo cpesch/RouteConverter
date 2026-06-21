@@ -115,8 +115,9 @@ jobs:
         if: ${{ inputs.sign }}
         run: |
           mkdir -p to-sign
-          cp RouteConverterLinux/target/RouteConverterLinux.jar  to-sign/
+          cp RouteConverterLinux/target/RouteConverterLinux.jar     to-sign/
           cp RouteConverterCmdLine/target/RouteConverterCmdLine.jar to-sign/
+          cp TimeAlbumProLinux/target/TimeAlbumProLinux.jar         to-sign/
 
       - name: Upload unsigned jars (SignPath input)
         if: ${{ inputs.sign }}
@@ -143,8 +144,9 @@ jobs:
       - name: Overlay signed jars into artefacts/
         if: ${{ inputs.sign }}
         run: |
-          cp signed-jars/RouteConverterLinux.jar   artefacts/
-          cp signed-jars/RouteConverterCmdLine.jar artefacts/
+          cp signed-jars/RouteConverterLinux.jar     artefacts/
+          cp signed-jars/RouteConverterCmdLine.jar   artefacts/
+          cp signed-jars/TimeAlbumProLinux.jar       artefacts/
 
       - uses: actions/upload-artifact@v7
         with:
