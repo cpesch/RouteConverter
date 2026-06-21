@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>route-converter-gui</artifactId>
     <packaging>jar</packaging>
-    <name>RouteConverter base package</name>
+    <name>Code shared by all RouteConverter GUI modules</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
