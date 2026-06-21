@@ -88,13 +88,16 @@ public class DownloadManagerStateMachineTest {
         server.createContext("/archive.zip", exchange -> {
             String ifNoneMatch = exchange.getRequestHeaders().getFirst("If-None-Match");
             exchange.getResponseHeaders().add("ETag", ETAG);
+            // Increment counters BEFORE writing the body: with Content-Length set the client
+            // can complete the download (and the test's waitForCompletion can return) the moment
+            // it has read the body, racing the handler thread if the counter bumped afterwards.
             if (ETAG.equals(ifNoneMatch)) {
                 conditional304.incrementAndGet();
                 exchange.sendResponseHeaders(304, -1);
             } else {
+                bodiesServed.incrementAndGet();
                 exchange.sendResponseHeaders(200, zipBytes.length);
                 try (OutputStream out = exchange.getResponseBody()) { out.write(zipBytes); }
-                bodiesServed.incrementAndGet();
             }
             exchange.close();
         });
@@ -108,14 +111,14 @@ public class DownloadManagerStateMachineTest {
                 System.arraycopy(body, start, remainder, 0, remainder.length);
                 exchange.getResponseHeaders().add("Content-Range",
                         "bytes " + start + "-" + (body.length - 1) + "/" + body.length);
+                partialServed.incrementAndGet();
                 exchange.sendResponseHeaders(206, remainder.length);
                 try (OutputStream out = exchange.getResponseBody()) { out.write(remainder); }
-                partialServed.incrementAndGet();
             } else {
                 exchange.getResponseHeaders().add("ETag", ETAG);
+                bodiesServed.incrementAndGet();
                 exchange.sendResponseHeaders(200, body.length);
                 try (OutputStream out = exchange.getResponseBody()) { out.write(body); }
-                bodiesServed.incrementAndGet();
             }
             exchange.close();
         });
@@ -128,9 +131,9 @@ public class DownloadManagerStateMachineTest {
                 conditional304.incrementAndGet();
                 exchange.sendResponseHeaders(304, -1);
             } else {
+                bodiesServed.incrementAndGet();
                 exchange.sendResponseHeaders(200, body.length);
                 try (OutputStream out = exchange.getResponseBody()) { out.write(body); }
-                bodiesServed.incrementAndGet();
             }
             exchange.close();
         });
