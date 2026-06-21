@@ -80,8 +80,11 @@ jobs:
         run: |
           mkdir -p jre-cache
           cd jre-cache
-          curl -fsSLO "https://static.routeconverter.com/build/windows/${JRE_BASE}.zip"
-          curl -fsSLO "https://static.routeconverter.com/build/windows/${JRE_BASE}.zip.sha256"
+          # --retry-all-errors so a mid-transfer "connection reset by peer"
+          # (curl exit 35) is retried, not just connection-refused errors.
+          curl_opts=(-fsSLO --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 30)
+          curl "${curl_opts[@]}" "https://static.routeconverter.com/build/windows/${JRE_BASE}.zip"
+          curl "${curl_opts[@]}" "https://static.routeconverter.com/build/windows/${JRE_BASE}.zip.sha256"
           sha256sum -c "${JRE_BASE}.zip.sha256"
 
       - name: Extract JRE into both bundle modules
@@ -121,6 +124,8 @@ jobs:
           Invoke-WebRequest -Uri 'https://static.routeconverter.com/build/windows/PortableApps.comInstaller.paf.exe' `
                             -OutFile pa-installer\installer.paf.exe `
                             -MaximumRedirection 5 `
+                            -MaximumRetryCount 5 `
+                            -RetryIntervalSec 5 `
                             -UseBasicParsing
           # NSIS self-extractor — 7z handles it.
           & "C:\Program Files\7-Zip\7z.exe" x pa-installer\installer.paf.exe -opa-installer\extracted -y | Out-Null
