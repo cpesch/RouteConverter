@@ -46,6 +46,7 @@ jobs:
       - uses: actions/download-artifact@v8
         with:
           path: incoming
+          pattern: prerelease-*
       - name: Flatten
         run: |
           mkdir -p artefacts

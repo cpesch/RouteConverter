@@ -204,7 +204,7 @@ jobs:
         id: unsigned
         uses: actions/upload-artifact@v7
         with:
-          name: ${{ inputs.artefact-name }}-unsigned
+          name: unsigned-${{ inputs.artefact-name }}
           path: artefacts/
           retention-days: ${{ inputs.retention-days }}
 
