@@ -226,6 +226,27 @@ jobs:
         shell: bash
         run: cp -f artefacts-signed/* artefacts/
 
+      - name: Verify installer signatures
+        if: ${{ inputs.sign }}
+        shell: pwsh
+        # SignPath passes files not listed in the artifact config through
+        # UNSIGNED without failing the request, so assert a signature is
+        # actually present. Test cert won't chain to a trusted root → don't
+        # require Status=Valid, just SignerCertificate present.
+        run: |
+          $files = @('RouteConverterWindows.exe','TimeAlbumProWindows.exe','RouteConverterPortable.paf.exe')
+          $fail = $false
+          foreach ($f in $files) {
+            $sig = Get-AuthenticodeSignature "artefacts\$f"
+            if ($sig.SignerCertificate -and $sig.Status -ne 'NotSigned') {
+              Write-Host "OK  $f signed by $($sig.SignerCertificate.Subject) [status=$($sig.Status)]"
+            } else {
+              Write-Host "::error::$f is NOT signed (status=$($sig.Status)) — check the SignPath 'windows-installers' artifact config includes it"
+              $fail = $true
+            }
+          }
+          if ($fail) { exit 1 }
+
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.artefact-name }}

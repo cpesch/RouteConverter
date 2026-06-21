@@ -148,6 +148,23 @@ jobs:
           cp signed-jars/RouteConverterCmdLine.jar   artefacts/
           cp signed-jars/TimeAlbumProLinux.jar       artefacts/
 
+      - name: Verify jar signatures
+        if: ${{ inputs.sign }}
+        # SignPath passes files not listed in the `jars` artifact config
+        # through UNSIGNED without failing the request — gate on the actual
+        # signature so a config gap can't ship an unsigned jar silently.
+        run: |
+          fail=0
+          for j in RouteConverterLinux.jar RouteConverterCmdLine.jar TimeAlbumProLinux.jar; do
+            if jarsigner -verify "artefacts/$j" | grep -q '^jar verified\.'; then
+              echo "OK  $j signed"
+            else
+              echo "::error::$j is NOT signed — check the SignPath 'jars' artifact config includes it"
+              fail=1
+            fi
+          done
+          [[ $fail -eq 0 ]]
+
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.artefact-name }}
