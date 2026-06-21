@@ -187,8 +187,10 @@ jobs:
           # Portable build output is versioned (RouteConverterPortable_<v>_-<build>.paf.exe);
           # publish to the stable short name HERE so signing + downstream use an
           # exact filename. The callers' own version-drop steps are now redundant.
-          cp RouteConverterPortable/target/classes/RouteConverterPortable*.paf.exe \
-             artefacts/RouteConverterPortable.paf.exe
+          shopt -s nullglob
+          paf=(RouteConverterPortable/target/classes/RouteConverterPortable*.paf.exe)
+          [[ ${#paf[@]} -eq 1 ]] || { echo "::error::expected exactly 1 Portable .paf.exe, got ${#paf[@]}: ${paf[*]}"; exit 1; }
+          cp "${paf[0]}" artefacts/RouteConverterPortable.paf.exe
           ls -la artefacts/
 
       # --- SignPath Authenticode signing (rc-meta specs/00043) ---------------
