@@ -1,16 +1,5 @@
 name: Prerelease
 
-# Build prerelease artefacts on every push to master + nightly + manual,
-# publish to static.routeconverter.com/downloads/prereleases/ and the
-# rolling `prerelease` GitHub Release.
-#
-# Infra: bootstrap-server/12-release-deploy-user.sh provisions the
-# rc-release-deploy SSH user + restricted-rsync wrapper that only accepts
-# writes into /var/www/routeconverter.com/static/downloads/{prereleases,
-# release,previous-releases}/.
-#
-# See rc-meta/specs/00018-release-automation-3.4.md Phase 2.
-
 on:
   push:
     branches: [master]
@@ -23,14 +12,9 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write   # for the rolling GH Release
+  contents: write
 
 jobs:
-  # Skip release-prepare's two [maven-release-plugin] commits — the
-  # pre-tag commit is the canonical 3.x release (covered by release.yml on
-  # the tag push) and the post-tag commit is the next-dev bump (no point
-  # building a prerelease of an empty version bump). Otherwise burns
-  # ~10 min of CI per cut on duplicate work. See rc-meta specs/00018 5.8.
   build-linux-mac:
     if: |
       github.event_name != 'push'
@@ -40,6 +24,8 @@ jobs:
     with:
       artefact-name: prerelease-linux-mac
       retention-days: 7
+      sign: true
+    secrets: inherit
 
   build-windows:
     if: |
@@ -50,6 +36,8 @@ jobs:
     with:
       artefact-name: prerelease-windows
       retention-days: 7
+      sign: true
+    secrets: inherit
 
   publish:
     needs: [build-linux-mac, build-windows]
@@ -62,16 +50,6 @@ jobs:
         run: |
           mkdir -p artefacts
           find incoming -mindepth 2 -type f -exec mv -t artefacts/ {} +
-          ls -la artefacts/
-      - name: Drop version suffix from Portable in artefacts/
-        run: |
-          # Portable Installer build output carries the version + build
-          # number in the filename. prereleases/ serves a stable short
-          # name so public/automated download URLs don't churn per build.
-          # Build number stays inside the .paf.exe metadata.
-          for f in artefacts/RouteConverterPortable_*.paf.exe; do
-            [[ -f "$f" ]] && mv "$f" artefacts/RouteConverterPortable.paf.exe
-          done
           ls -la artefacts/
       - name: Configure SSH
         env:
@@ -95,8 +73,6 @@ jobs:
           REPO:     ${{ github.repository }}
         run: |
           tag=prerelease
-          # Delete previous release + tag so the asset set is replaced
-          # rather than accumulating duplicates.
           gh release delete "$tag" --repo "$REPO" --yes --cleanup-tag || true
           gh release create "$tag" artefacts/* \
             --repo "$REPO" \

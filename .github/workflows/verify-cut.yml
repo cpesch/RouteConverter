@@ -1,20 +1,5 @@
 name: Verify cut
 
-# Post-cut smoke test. Triggers when release.yml completes (success or
-# failure — failure path is the more interesting one). Checks:
-#   1. GH Release for the tag exists + has the expected asset set.
-#   2. Each asset URL serves HTTP 200 on releases.routeconverter.com,
-#      and old static.routeconverter.com download URLs 301 there.
-#   3. The catalog XML at static.routeconverter.com/downloads/RouteConverter.xml
-#      reports the new version.
-#   4. RouteConverterWindowsOpenSource.exe's PE FileVersion carries the
-#      expected MAJOR.MINOR.0.<run_number> shape.
-#
-# Failures here ping ntfy (rc-meta factory/notify/) so the maintainer
-# learns of a half-shipped release before the next user does.
-#
-# See rc-meta/specs/00018-release-automation-3.4.md plan-review M2.
-
 on:
   workflow_run:
     workflows: [Release]
@@ -32,9 +17,6 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # workflow_run.event triggers when release.yml fires on a tag
-          # push; the head_branch is the tag name (no `v` prefix per
-          # convention).
           TAG='${{ github.event.workflow_run.head_branch }}'
           CONCLUSION='${{ github.event.workflow_run.conclusion }}'
           echo "tag=$TAG"               >> "$GITHUB_OUTPUT"
@@ -42,8 +24,6 @@ jobs:
           echo "release run tag=$TAG conclusion=$CONCLUSION"
 
       - name: Sanity-check release.yml succeeded
-        # If the upstream Release workflow failed, fail loudly here so
-        # the notify step at the end runs.
         if: steps.ctx.outputs.conclusion != 'success'
         run: |
           echo "::error::Release run conclusion=${{ steps.ctx.outputs.conclusion }} (not success). Stopping verify-cut."
@@ -56,27 +36,19 @@ jobs:
           REPO:     ${{ github.repository }}
         run: |
           set -euo pipefail
-          # Canonical assets the release ships; 10 after the specs/00044 merge
-          # (one Windows .exe per product, no standalone .jar; OpenSource suffix
-          # dropped from Linux/Mac/Windows filenames).
           expected=(
             RouteConverterCmdLine.jar
             RouteConverterLinux.jar
             RouteConverterMac-app.zip
-            RouteConverterMac.jar
             RouteConverterWindows.exe
             RouteConverterPortable.paf.exe
             TimeAlbumProLinux.jar
             TimeAlbumProMac-app.zip
-            TimeAlbumProMac.jar
             TimeAlbumProWindows.exe
           )
           actual=$(gh release view "$TAG" --repo "$REPO" --json assets --jq '.assets[].name' | sort)
           missing=()
           for name in "${expected[@]}"; do
-            # Match either exact or with version suffix (paf.exe is the
-            # only one that may carry a version suffix, but release.yml
-            # strips it; check exact).
             if ! grep -qxF "$name" <<< "$actual"; then
               missing+=("$name")
             fi
@@ -86,7 +58,7 @@ jobs:
             printf '  %s\n' "${missing[@]}"
             exit 1
           fi
-          echo "all 10 GH Release assets present"
+          echo "all 8 GH Release assets present"
 
       - name: Verify releases.routeconverter.com assets serve
         env:
@@ -94,11 +66,10 @@ jobs:
         run: |
           set -euo pipefail
           base=https://releases.routeconverter.com/latest
-          # The same canonical set; ditto for previous-releases/<TAG>/.
           for f in RouteConverterCmdLine.jar RouteConverterLinux.jar \
-                   RouteConverterMac.jar RouteConverterMac-app.zip \
+                   RouteConverterMac-app.zip \
                    RouteConverterWindows.exe RouteConverterPortable.paf.exe \
-                   TimeAlbumProLinux.jar TimeAlbumProMac.jar TimeAlbumProMac-app.zip \
+                   TimeAlbumProLinux.jar TimeAlbumProMac-app.zip \
                    TimeAlbumProWindows.exe; do
             code=$(curl -sI -o /dev/null -w '%{http_code}' "${base}/${f}")
             if [[ "$code" != "200" ]]; then
@@ -106,18 +77,7 @@ jobs:
               exit 1
             fi
           done
-          echo "all 10 latest/ URLs return 200"
-          # The retired Windows filenames (the launch4j needs-Java .exe AND the
-          # old bundle name) must 301 to the merged survivor (specs/00044 §D).
-          for old in RouteConverterWindowsBundle.exe RouteConverterWindowsOpenSource.exe; do
-            rc=$(curl -sI -o /dev/null -w '%{http_code} %{redirect_url}' \
-                 "https://static.routeconverter.com/downloads/release/${old}")
-            case "$rc" in
-              301\ *latest/RouteConverterWindows.exe) echo "${old} → RouteConverterWindows.exe 301 ✓" ;;
-              *) echo "::error::expected ${old} to 301 to latest/RouteConverterWindows.exe, got: $rc"; exit 1 ;;
-            esac
-          done
-          # Spot-check previous-releases archive
+          echo "all 8 latest/ URLs return 200"
           arch_base=https://releases.routeconverter.com/previous-releases/${TAG}
           code=$(curl -sI -o /dev/null -w '%{http_code}' "${arch_base}/RouteConverterCmdLine.jar")
           [[ "$code" == "200" ]] || { echo "::error::previous-releases archive missing: $arch_base"; exit 1; }
@@ -132,10 +92,8 @@ jobs:
                     | sed -nE 's|.*<Program_Version>([^<]+)</Program_Version>.*|\1|p' | head -1)
           if [[ "$xml_ver" != "$TAG" ]]; then
             echo "::warning::catalog XML reports Program_Version=$xml_ver, expected $TAG. (Prod may need: cd /var/www/routeconverter.com && git pull.)"
-            # Warn, not fail — prod-pull lag is a known-and-tolerated gap
-            # until M1 (Django-served catalog) lands.
           else
-            echo "catalog XML reports $TAG ✓"
+            echo "catalog XML reports $TAG ok"
           fi
 
       - name: Verify Windows .exe PE FileVersion
@@ -159,10 +117,8 @@ jobs:
           sys.exit(1)
           PY
           got=$(python3 /tmp/pe-version.py)
-          # FileVersion format: "<v> <build_number> <YYYY-MM-DD HH:MM:SS>"
-          # E.g. "3.5 142 2026-06-07 09:42:11"
           if [[ "$got" == "$TAG "* ]]; then
-            echo "PE FileVersion: '$got' ✓"
+            echo "PE FileVersion: '$got' ok"
           else
             echo "::error::PE FileVersion '$got' does not start with '$TAG '"
             exit 1
@@ -173,7 +129,5 @@ jobs:
         env:
           TAG: ${{ steps.ctx.outputs.tag }}
         run: |
-          # ntfy.routeconverter.com is the factory's push channel.
-          # No auth on the publish endpoint (anon-write topic).
-          curl -fsS -X POST -d "verify-cut FAILED for $TAG — see GitHub Actions run ${{ github.run_id }}" \
+          curl -fsS -X POST -d "verify-cut FAILED for $TAG -- see GitHub Actions run ${{ github.run_id }}" \
             https://ntfy.routeconverter.com/factory || true

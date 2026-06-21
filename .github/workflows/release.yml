@@ -1,31 +1,8 @@
 name: Release
 
-# Tag-triggered release build. Runs when a tag matching <MAJOR>.<MINOR>
-# (or <MAJOR>.<MINOR>.<PATCH>) is pushed — no `v` prefix. Builds RouteConverter +
-# TimeAlbumPro OpenSource artefacts, publishes them to:
-#
-#   1. static.routeconverter.com/downloads/release/
-#      (overwrites the previous release; existing symlinks keep stable URLs)
-#   2. static.routeconverter.com/downloads/previous-releases/<version>/
-#      (archive with Mac *-app.zip renamed to *.app.zip per legacy ritual)
-#   3. GitHub Release v<version> on cpesch/RouteConverter (auto-generated
-#      notes from PR titles since the previous tag)
-#
-# Out of scope for this workflow (still maintainer-local for the 3.4 cut):
-#   - mvn release:prepare / release:perform (Sonatype + GPG signing)
-#   - mvn site, mvn javadoc:aggregate, javadoc.sh
-#   - Windows VM .bat builds (RouteConverterWindowsBundle,
-#     TimeAlbumProWindowsBundle, RouteConverterPortable Installer)
-#   - Nacharbeit (RouteConverter.xml, release notes on www, forum,
-#     Latest Versions)
-#
-# See rc-meta/specs/00018-release-automation-3.4.md Phase 3.
-
 on:
   push:
     tags:
-      # Tag format is plain `<MAJOR>.<MINOR>[.<PATCH>]`, no `v` prefix
-      # (project convention pre-dates Phase 3 — see rc-meta AGENTS.md).
       - '[0-9]+.[0-9]+'
       - '[0-9]+.[0-9]+.[0-9]+'
 
@@ -34,7 +11,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: write   # for the GH Release
+  contents: write
 
 jobs:
   build-linux-mac:
@@ -42,12 +19,16 @@ jobs:
     with:
       artefact-name: release-linux-mac
       retention-days: 30
+      sign: true
+    secrets: inherit
 
   build-windows:
     uses: ./.github/workflows/_build-windows.yml
     with:
       artefact-name: release-windows
       retention-days: 30
+      sign: true
+    secrets: inherit
 
   publish:
     needs: [build-linux-mac, build-windows]
@@ -56,7 +37,6 @@ jobs:
       - name: Resolve version from tag
         id: ver
         run: |
-          # Tag = plain version, no `v` prefix.
           TAG="${GITHUB_REF_NAME}"
           VERSION="${TAG}"
           echo "tag=$TAG"         >> "$GITHUB_OUTPUT"
@@ -75,8 +55,6 @@ jobs:
         run: |
           mkdir -p "previous-releases/$VERSION"
           cp artefacts/* "previous-releases/$VERSION/"
-          # Legacy ritual: rename Mac app bundles in the archive only.
-          # Dual-arch (Phase 5.4f): rename per arch suffix.
           for stem in RouteConverterMac TimeAlbumProMac; do
             for arch in x64 aarch64; do
               src="previous-releases/$VERSION/$stem-$arch-app.zip"
@@ -85,18 +63,6 @@ jobs:
             done
           done
           ls -la "previous-releases/$VERSION/"
-      - name: Drop version suffix from Portable in artefacts/ (release-only)
-        run: |
-          # Portable Installer is the only artefact whose build-step output
-          # carries the version + build number in the filename
-          # (RouteConverterPortable_<v>_-<build>.paf.exe). The previous-releases
-          # archive above keeps the versioned name for traceability; the
-          # release/ + GH Release copies use the stable short name so
-          # public links don't need to change per release.
-          for f in artefacts/RouteConverterPortable_*.paf.exe; do
-            [[ -f "$f" ]] && mv "$f" artefacts/RouteConverterPortable.paf.exe
-          done
-          ls -la artefacts/
       - name: Configure SSH
         env:
           DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
@@ -150,11 +116,6 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
 
       - name: mvn javadoc:aggregate
-        # mvn site is heavyweight (DependencyCheck#2222 etc) — only need
-        # the aggregated javadoc for static.routeconverter.com/javadoc/.
-        # -Xdoclint:none + failOnError=false: JAXB-generated sources have
-        # empty <p> tags that JDK 17 doclint rejects as errors. We accept
-        # the warnings — the rendered javadoc is still useful.
         run: |
           ./mvnw --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} -DskipTests install
           ./mvnw --batch-mode javadoc:aggregate \
