@@ -19,6 +19,8 @@
 */
 package slash.navigation.brouter;
 
+import btools.expressions.BExpressionMetaData;
+import btools.mapaccess.PhysicalFile;
 import btools.router.*;
 import slash.navigation.common.*;
 import slash.navigation.datasources.DataSource;
@@ -68,6 +70,8 @@ public class BRouter extends BaseRoutingService {
     private static final String SEGMENTS_BASE_URL_PREFERENCE = "segmentsBaseUrl";
     private static final TravelMode MOPED = new TravelMode("moped");
     public static final String DOT_BRF = ".brf";
+    public static final String DOT_RD5 = ".rd5";
+    private static final String LOOKUPS_DAT = "lookups.dat";
 
     private final DownloadManager downloadManager;
     private DataSource profiles, segments;
@@ -103,6 +107,53 @@ public class BRouter extends BaseRoutingService {
             writer.close();
         } catch (FileNotFoundException e) {
             log.severe(format("Error while writing storage config: %s", getLocalizedMessage(e)));
+        }
+
+        removeOutdatedSegments();
+    }
+
+    /**
+     * Reads the lookup version bundled with the BRouter library (from {@code lookups.dat}) and
+     * removes any locally cached {@code .rd5} segment whose embedded lookup version differs. Such
+     * segments predate a BRouter format bump and would otherwise make routing fail hard with
+     * "lookup version mismatch (old rd5?)". Removed segments still present in the catalog are
+     * re-downloaded so coverage the user had before is restored.
+     */
+    void removeOutdatedSegments() {
+        File lookups = new File(getProfilesDirectory(), LOOKUPS_DAT);
+        if (!lookups.exists())
+            return;
+
+        int expectedVersion;
+        try {
+            BExpressionMetaData meta = new BExpressionMetaData();
+            meta.readMetaData(lookups);
+            expectedVersion = meta.lookupVersion;
+        } catch (Exception e) {
+            log.warning(format("Cannot read lookup version from %s: %s", lookups, getLocalizedMessage(e)));
+            return;
+        }
+
+        for (File file : collectFiles(getSegmentsDirectory(), DOT_RD5)) {
+            int version;
+            try {
+                version = PhysicalFile.checkVersionIntegrity(file);
+            } catch (Exception e) {
+                log.warning(format("Cannot read lookup version from segment %s: %s", file, getLocalizedMessage(e)));
+                continue;
+            }
+            if (version == expectedVersion)
+                continue;
+
+            log.warning(format("Removing outdated BRouter segment %s with lookup version %d (expected %d)", file, version, expectedVersion));
+            if (!file.delete()) {
+                log.warning(format("Cannot delete outdated BRouter segment %s", file));
+                continue;
+            }
+
+            Downloadable downloadable = getSegments().getDownloadable(file.getName());
+            if (downloadable != null)
+                downloadSegment(downloadable);
         }
     }
 
@@ -182,7 +233,7 @@ public class BRouter extends BaseRoutingService {
         int lon = lonDegree - 180 - lonMod5;
         int lat = latDegree - 90 - latMod5;
 
-        return format("%s%d_%s%d.rd5",
+        return format("%s%d_%s%d" + DOT_RD5,
                 lon < 0 ? "W" : "E",
                 lon < 0 ? -lon : lon,
                 lat < 0 ? "S" : "N",
