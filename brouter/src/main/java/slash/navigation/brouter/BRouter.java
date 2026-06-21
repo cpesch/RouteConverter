@@ -116,8 +116,8 @@ public class BRouter extends BaseRoutingService {
      * Reads the lookup version bundled with the BRouter library (from {@code lookups.dat}) and
      * removes any locally cached {@code .rd5} segment whose embedded lookup version differs. Such
      * segments predate a BRouter format bump and would otherwise make routing fail hard with
-     * "lookup version mismatch (old rd5?)". Removed segments still present in the catalog are
-     * re-downloaded so coverage the user had before is restored.
+     * "lookup version mismatch (old rd5?)". Removed segments are re-downloaded on demand by the
+     * regular routing path, so this method only deletes and never starts a download itself.
      */
     void removeOutdatedSegments() {
         File lookups = new File(getProfilesDirectory(), LOOKUPS_DAT);
@@ -146,14 +146,8 @@ public class BRouter extends BaseRoutingService {
                 continue;
 
             log.warning(format("Removing outdated BRouter segment %s with lookup version %d (expected %d)", file, version, expectedVersion));
-            if (!file.delete()) {
+            if (!file.delete())
                 log.warning(format("Cannot delete outdated BRouter segment %s", file));
-                continue;
-            }
-
-            Downloadable downloadable = getSegments().getDownloadable(file.getName());
-            if (downloadable != null)
-                downloadSegment(downloadable);
         }
     }
 

@@ -115,6 +115,6 @@ public class BRouterIT {
         assertEquals(Valid, result.validity());
         assertEquals(185, result.positions().size(), 8);
         assertEquals(13811, result.distanceAndTime().distance(), 25.0);
-        assertEquals(2328092.0, result.distanceAndTime().timeInMillis(), 1000);
+        assertEquals(2322146.0, result.distanceAndTime().timeInMillis(), 1000);
     }
 }

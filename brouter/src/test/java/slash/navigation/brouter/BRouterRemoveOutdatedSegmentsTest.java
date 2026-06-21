@@ -61,7 +61,6 @@ public class BRouterRemoveOutdatedSegmentsTest {
         when(profiles.getDirectory()).thenReturn(DIRECTORY);
         DataSource segments = mock(DataSource.class);
         when(segments.getDirectory()).thenReturn(DIRECTORY);
-        // getDownloadable() defaults to null, so no re-download is attempted (downloadManager is null)
 
         router = new BRouter(null);
         router.setProfilesAndSegments(profiles, segments);
