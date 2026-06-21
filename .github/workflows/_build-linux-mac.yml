@@ -50,10 +50,13 @@ jobs:
         run: |
           set -euo pipefail
           base_url=https://static.routeconverter.com/build/mac
+          # --retry-all-errors so a mid-transfer "connection reset by peer"
+          # (curl exit 35) is retried, not just connection-refused errors.
+          curl_opts=(-fsSL --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 30)
           for arch in x64 aarch64; do
             zip="jre-${VER}-${arch}-stripped.zip"
-            curl -fsSL -o "$zip"        "${base_url}/${zip}"
-            curl -fsSL -o "${zip}.sha256" "${base_url}/${zip}.sha256"
+            curl "${curl_opts[@]}" -o "$zip"        "${base_url}/${zip}"
+            curl "${curl_opts[@]}" -o "${zip}.sha256" "${base_url}/${zip}.sha256"
             sha256sum -c "${zip}.sha256"
             for mod in RouteConverterMacOpenSource TimeAlbumProMac; do
               mkdir -p "${mod}/target/Runtime-${arch}"
