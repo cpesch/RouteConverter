@@ -153,7 +153,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter</artifactId>
+            <artifactId>route-converter-gui</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
@@ -163,7 +163,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>route-converter-opensource</artifactId>
+            <artifactId>route-converter</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

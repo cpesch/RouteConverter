@@ -40,7 +40,7 @@ jobs:
         id: jre
         run: |
           ver=$(sed -nE 's|.*<jre\.version>([^<]+)</jre\.version>.*|\1|p' \
-                route-converter-build/pom.xml | head -1)
+                pom.xml | head -1)
           [[ -n "$ver" ]] || { echo "::error::failed to resolve jre.version"; exit 1; }
           echo "version=$ver" >> "$GITHUB_OUTPUT"
           echo "JRE version: $ver"

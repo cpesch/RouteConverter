@@ -5,9 +5,9 @@
     <name>TimeAlbum Pro for Linux</name>
     <parent>
         <groupId>slash.navigation</groupId>
-        <artifactId>route-converter-build</artifactId>
+        <artifactId>RouteConverter</artifactId>
         <version>3.5-SNAPSHOT</version>
-        <relativePath>../route-converter-build/pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <build>
