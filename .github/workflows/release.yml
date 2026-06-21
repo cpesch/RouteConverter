@@ -77,7 +77,7 @@ jobs:
           cp artefacts/* "previous-releases/$VERSION/"
           # Legacy ritual: rename Mac app bundles in the archive only.
           # Dual-arch (Phase 5.4f): rename per arch suffix.
-          for stem in RouteConverterMacOpenSource TimeAlbumProMac; do
+          for stem in RouteConverterMac TimeAlbumProMac; do
             for arch in x64 aarch64; do
               src="previous-releases/$VERSION/$stem-$arch-app.zip"
               dst="previous-releases/$VERSION/$stem-$arch.app.zip"

@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>RouteConverterMacOpenSource</artifactId>
+    <artifactId>RouteConverterLinux</artifactId>
     <packaging>jar</packaging>
-    <name>RouteConverter for Mac OS X</name>
+    <name>RouteConverter for Linux</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -22,7 +22,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <finalName>RouteConverterMacOpenSource</finalName>
+                            <outputFile>target/RouteConverterLinux.jar</outputFile>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
@@ -30,7 +30,7 @@
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
-                                        <Implementation-Vendor>Mac</Implementation-Vendor>
+                                        <Implementation-Vendor>Linux</Implementation-Vendor>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverterOpenSource</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
@@ -70,38 +70,6 @@
                                     </excludes>
                                 </filter>
                             </filters>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>x64</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${basedir}/src/main/assembly/macos-x64.xml</descriptor>
-                            </descriptors>
-                            <finalName>RouteConverterMacOpenSource</finalName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>aarch64</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${basedir}/src/main/assembly/macos-aarch64.xml</descriptor>
-                            </descriptors>
-                            <finalName>RouteConverterMacOpenSource</finalName>
                         </configuration>
                     </execution>
                 </executions>

@@ -641,14 +641,12 @@
         <module>time-album-pro</module>
 
         <module>RouteConverterCmdLine</module>
-        <module>RouteConverterLinuxOpenSource</module>
-        <module>RouteConverterMacOpenSource</module>
-        <module>RouteConverterWindowsBundle</module>
-        <module>RouteConverterWindowsOpenSource</module>
+        <module>RouteConverterLinux</module>
+        <module>RouteConverterMac</module>
+        <module>RouteConverterWindows</module>
         <module>RouteConverterPortable</module>
         <module>TimeAlbumProLinux</module>
         <module>TimeAlbumProMac</module>
         <module>TimeAlbumProWindows</module>
-        <module>TimeAlbumProWindowsBundle</module>
     </modules>
 </project>
