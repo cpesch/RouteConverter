@@ -64,5 +64,7 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: RouteConverter Windows Prerelease built with Java ${{ matrix.java }}
-          path: RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.exe
+          # The needs-Java launch4j .exe is gone (specs/00044); this PR-smoke
+          # build runs `mvn verify` (no NSIS), so upload the shaded launcher jar.
+          path: RouteConverterWindows/target/RouteConverterWindows.jar
           overwrite: true

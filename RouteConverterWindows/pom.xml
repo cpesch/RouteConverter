@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>RouteConverterLinuxOpenSource</artifactId>
+    <artifactId>RouteConverterWindows</artifactId>
     <packaging>jar</packaging>
-    <name>RouteConverter for Linux</name>
+    <name>RouteConverter for Windows bundled with JRE</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -10,7 +10,27 @@
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
+    <!--
+      Merge of the former RouteConverterWindowsOpenSource (shaded launcher jar)
+      and RouteConverterWindowsBundle (NSIS installer that embeds a jlink JRE),
+      per specs/00044. shade produces the launcher jar RouteConverterWindows.jar
+      (a build intermediate consumed by RouteConverterPortable + embedded by the
+      NSI — not published); the resource-filtered RouteConverter.nsi drives the
+      bundled installer in CI (makensis), which emits RouteConverterWindows.exe.
+      The old launch4j needs-Java .exe is dropped; the OpenSource suffix is gone
+      from both the module and the published filenames.
+    -->
     <build>
+        <resources>
+            <!-- Filter RouteConverter.nsi (${jre.version}, version, build number)
+                 into target/ for makensis. -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <targetPath>${basedir}/target</targetPath>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -22,7 +42,7 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <outputFile>target/RouteConverterLinuxOpenSource.jar</outputFile>
+                            <outputFile>target/RouteConverterWindows.jar</outputFile>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                                     <manifestEntries>
@@ -30,7 +50,7 @@
                                         <Specification-Version>${project.version}-${maven.build.number}</Specification-Version>
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
-                                        <Implementation-Vendor>Linux</Implementation-Vendor>
+                                        <Implementation-Vendor>Windows</Implementation-Vendor>
                                         <Main-Class>slash.navigation.converter.gui.RouteConverterOpenSource</Main-Class>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>

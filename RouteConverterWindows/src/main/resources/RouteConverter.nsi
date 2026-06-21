@@ -11,7 +11,7 @@ ShowInstDetails hide
 !define JRE_SRC "..\jre-${JRE}"
 ; runtime extraction target (persisted across launches, namespaced under LocalAppData)
 !define JRE_DIR "$LOCALAPPDATA\RouteConverter\jre-${JRE}"
-OutFile "RouteConverterWindowsBundle.exe"
+OutFile "RouteConverterWindows.exe"
 
 Icon "RouteConverter.ico"
 VIProductVersion ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0.${maven.build.number}
@@ -31,9 +31,9 @@ Section
 
   InitPluginsDir
   SetOutPath $PluginsDir
-  File "RouteConverterWindowsOpenSource.jar"
+  File "RouteConverterWindows.jar"
   SetOutPath $TEMP
   ${GetParameters} $R0
-  nsExec::Exec '"${JRE_DIR}\bin\java.exe" -server -jar $PluginsDir\RouteConverterWindowsOpenSource.jar $R0'
+  nsExec::Exec '"${JRE_DIR}\bin\java.exe" -server -jar $PluginsDir\RouteConverterWindows.jar $R0'
   RMDir /r $PluginsDir
 SectionEnd

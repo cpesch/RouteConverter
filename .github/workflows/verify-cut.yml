@@ -56,22 +56,20 @@ jobs:
           REPO:     ${{ github.repository }}
         run: |
           set -euo pipefail
-          # Canonical assets the release ships; 14 today.
+          # Canonical assets the release ships; 10 after the specs/00044 merge
+          # (one Windows .exe per product, no standalone .jar; OpenSource suffix
+          # dropped from Linux/Mac/Windows filenames).
           expected=(
             RouteConverterCmdLine.jar
-            RouteConverterLinuxOpenSource.jar
-            RouteConverterMacOpenSource-app.zip
-            RouteConverterMacOpenSource.jar
-            RouteConverterWindowsBundle.exe
-            RouteConverterWindowsOpenSource.exe
-            RouteConverterWindowsOpenSource.jar
+            RouteConverterLinux.jar
+            RouteConverterMac-app.zip
+            RouteConverterMac.jar
+            RouteConverterWindows.exe
             RouteConverterPortable.paf.exe
             TimeAlbumProLinux.jar
             TimeAlbumProMac-app.zip
             TimeAlbumProMac.jar
             TimeAlbumProWindows.exe
-            TimeAlbumProWindows.jar
-            TimeAlbumProWindowsBundle.exe
           )
           actual=$(gh release view "$TAG" --repo "$REPO" --json assets --jq '.assets[].name' | sort)
           missing=()
@@ -88,7 +86,7 @@ jobs:
             printf '  %s\n' "${missing[@]}"
             exit 1
           fi
-          echo "all 14 GH Release assets present"
+          echo "all 10 GH Release assets present"
 
       - name: Verify releases.routeconverter.com assets serve
         env:
@@ -97,26 +95,28 @@ jobs:
           set -euo pipefail
           base=https://releases.routeconverter.com/latest
           # The same canonical set; ditto for previous-releases/<TAG>/.
-          for f in RouteConverterCmdLine.jar RouteConverterLinuxOpenSource.jar \
-                   RouteConverterMacOpenSource.jar RouteConverterMacOpenSource-app.zip \
-                   RouteConverterWindowsBundle.exe RouteConverterWindowsOpenSource.exe \
-                   RouteConverterWindowsOpenSource.jar RouteConverterPortable.paf.exe \
+          for f in RouteConverterCmdLine.jar RouteConverterLinux.jar \
+                   RouteConverterMac.jar RouteConverterMac-app.zip \
+                   RouteConverterWindows.exe RouteConverterPortable.paf.exe \
                    TimeAlbumProLinux.jar TimeAlbumProMac.jar TimeAlbumProMac-app.zip \
-                   TimeAlbumProWindows.exe TimeAlbumProWindows.jar TimeAlbumProWindowsBundle.exe; do
+                   TimeAlbumProWindows.exe; do
             code=$(curl -sI -o /dev/null -w '%{http_code}' "${base}/${f}")
             if [[ "$code" != "200" ]]; then
               echo "::error::${base}/${f} returned HTTP $code"
               exit 1
             fi
           done
-          echo "all 14 latest/ URLs return 200"
-          # Old static.routeconverter.com download URLs must 301 to releases.routeconverter.com.
-          rc=$(curl -sI -o /dev/null -w '%{http_code} %{redirect_url}' \
-               "https://static.routeconverter.com/downloads/release/RouteConverterWindowsBundle.exe")
-          case "$rc" in
-            301\ *releases.routeconverter.com/latest/RouteConverterWindowsBundle.exe) echo "old→new 301 redirect ✓" ;;
-            *) echo "::error::expected 301 to releases.routeconverter.com/latest, got: $rc"; exit 1 ;;
-          esac
+          echo "all 10 latest/ URLs return 200"
+          # The retired Windows filenames (the launch4j needs-Java .exe AND the
+          # old bundle name) must 301 to the merged survivor (specs/00044 §D).
+          for old in RouteConverterWindowsBundle.exe RouteConverterWindowsOpenSource.exe; do
+            rc=$(curl -sI -o /dev/null -w '%{http_code} %{redirect_url}' \
+                 "https://static.routeconverter.com/downloads/release/${old}")
+            case "$rc" in
+              301\ *latest/RouteConverterWindows.exe) echo "${old} → RouteConverterWindows.exe 301 ✓" ;;
+              *) echo "::error::expected ${old} to 301 to latest/RouteConverterWindows.exe, got: $rc"; exit 1 ;;
+            esac
+          done
           # Spot-check previous-releases archive
           arch_base=https://releases.routeconverter.com/previous-releases/${TAG}
           code=$(curl -sI -o /dev/null -w '%{http_code}' "${arch_base}/RouteConverterCmdLine.jar")
@@ -145,7 +145,7 @@ jobs:
           set -euo pipefail
           pip install --quiet pefile
           curl -sfLo /tmp/rcwin.exe \
-            https://releases.routeconverter.com/latest/RouteConverterWindowsOpenSource.exe
+            https://releases.routeconverter.com/latest/RouteConverterWindows.exe
           cat > /tmp/pe-version.py <<'PY'
           import pefile, sys
           pe = pefile.PE('/tmp/rcwin.exe')

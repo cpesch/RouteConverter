@@ -19,10 +19,10 @@
             </resource>
 
             <resource>
-                <directory>${basedir}/../RouteConverterWindowsOpenSource/target</directory>
+                <directory>${basedir}/../RouteConverterWindows/target</directory>
                 <targetPath>RouteConverterPortable/App/RouteConverter</targetPath>
                 <includes>
-                    <include>RouteConverterWindowsOpenSource.jar</include>
+                    <include>RouteConverterWindows.jar</include>
                 </includes>
             </resource>
 
@@ -40,7 +40,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>RouteConverterWindowsOpenSource</artifactId>
+            <artifactId>RouteConverterWindows</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

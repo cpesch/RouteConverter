@@ -90,21 +90,21 @@ jobs:
       - name: Extract JRE into both bundle modules
         shell: bash
         run: |
-          for m in RouteConverterWindowsBundle TimeAlbumProWindowsBundle; do
+          for m in RouteConverterWindows TimeAlbumProWindows; do
             rm -rf "$m/jre-${JRE_VERSION}"
             unzip -q "jre-cache/${JRE_BASE}.zip" -d "$m/jre-${JRE_VERSION}"
           done
-          ls RouteConverterWindowsBundle/jre-${JRE_VERSION}/bin/java.exe
-          ls TimeAlbumProWindowsBundle/jre-${JRE_VERSION}/bin/java.exe
+          ls RouteConverterWindows/jre-${JRE_VERSION}/bin/java.exe
+          ls TimeAlbumProWindows/jre-${JRE_VERSION}/bin/java.exe
 
-      - name: makensis RouteConverterWindowsBundle
+      - name: makensis RouteConverterWindows
         shell: cmd
-        working-directory: RouteConverterWindowsBundle
+        working-directory: RouteConverterWindows
         run: makensis "target\RouteConverter.nsi"
 
-      - name: makensis TimeAlbumProWindowsBundle
+      - name: makensis TimeAlbumProWindows
         shell: cmd
-        working-directory: TimeAlbumProWindowsBundle
+        working-directory: TimeAlbumProWindows
         run: makensis "target\TimeAlbumPro.nsi"
 
       - name: Cache PortableApps.com Installer
@@ -165,10 +165,10 @@ jobs:
         shell: bash
         run: |
           mkdir -p artefacts
-          cp RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.* artefacts/
-          cp TimeAlbumProWindows/target/TimeAlbumProWindows.* artefacts/
-          cp RouteConverterWindowsBundle/target/RouteConverterWindowsBundle*.exe artefacts/
-          cp TimeAlbumProWindowsBundle/target/TimeAlbumProWindowsBundle*.exe artefacts/
+          # One bundled .exe per product (the merged module's makensis output).
+          # The shaded launcher jar is a build intermediate only — not published.
+          cp RouteConverterWindows/target/RouteConverterWindows.exe artefacts/
+          cp TimeAlbumProWindows/target/TimeAlbumProWindows.exe artefacts/
           cp RouteConverterPortable/target/classes/RouteConverterPortable*.paf.exe artefacts/
           ls -la artefacts/
 

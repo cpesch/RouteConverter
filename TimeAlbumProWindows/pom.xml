@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>TimeAlbumProWindows</artifactId>
     <packaging>jar</packaging>
-    <name>TimeAlbum Pro for Windows</name>
+    <name>TimeAlbum Pro for Windows bundled with JRE</name>
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>route-converter-build</artifactId>
@@ -10,7 +10,25 @@
         <relativePath>../route-converter-build/pom.xml</relativePath>
     </parent>
 
+    <!--
+      Merge of the former TimeAlbumProWindows (shaded launcher jar) and
+      TimeAlbumProWindowsBundle (NSIS installer that embeds a jlink JRE), per
+      specs/00044. shade produces TimeAlbumProWindows.jar; the resource-filtered
+      TimeAlbumPro.nsi drives the bundled installer in CI (makensis). The old
+      launch4j needs-Java .exe is dropped; CI publishes the NSIS output as
+      TimeAlbumProWindows.exe (the kept survivor filename).
+    -->
     <build>
+        <resources>
+            <!-- Filter TimeAlbumPro.nsi (${jre.version}, version, build number)
+                 into target/ for makensis. -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <targetPath>${basedir}/target</targetPath>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -76,49 +94,6 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-               <groupId>com.akathist.maven.plugins.launch4j</groupId>
-               <artifactId>launch4j-maven-plugin</artifactId>
-               <executions>
-                   <execution>
-                        <phase>package</phase>
-                       <goals>
-                           <goal>launch4j</goal>
-                       </goals>
-                       <configuration>
-                           <headerType>gui</headerType>
-                           <outfile>target/TimeAlbumProWindows.exe</outfile>
-                           <jar>target/TimeAlbumProWindows.jar</jar>
-                           <errTitle>TimeAlbumPro</errTitle>
-                           <icon>src/main/app-resources/TimeAlbumPro.ico</icon>
-                           <splash>
-                               <file>src/main/app-resources/TimeAlbumProSplashScreen.bmp</file>
-                               <timeout>10</timeout>
-                           </splash>
-                           <classPath>
-                               <mainClass>slash.navigation.converter.gui.TimeAlbumPro</mainClass>
-                           </classPath>
-                           <jre>
-                               <path>%JAVA_HOME%;%PATH%</path>
-                               <minVersion>17</minVersion>
-                               <runtimeBits>64</runtimeBits>
-                           </jre>
-                           <versionInfo>
-                               <fileVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</fileVersion>
-                               <txtFileVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtFileVersion>
-                               <fileDescription>TimeAlbum Pro displays, modifies and converts Columbus GPS data</fileDescription>
-                               <copyright>Christian Pesch</copyright>
-                               <productName>TimeAlbumPro</productName>
-                               <productVersion>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${maven.build.number}.0</productVersion>
-                               <txtProductVersion>${project.version} ${maven.build.number} ${maven.build.timestamp.clone}</txtProductVersion>
-                               <internalName>TimeAlbum Pro for Windows Executable</internalName>
-                               <originalFilename>TimeAlbumProWindows.exe</originalFilename>
-                           </versionInfo>
-                       </configuration>
-                   </execution>
-               </executions>
             </plugin>
         </plugins>
     </build>

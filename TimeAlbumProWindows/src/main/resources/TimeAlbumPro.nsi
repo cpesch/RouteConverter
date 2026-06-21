@@ -11,7 +11,7 @@ ShowInstDetails hide
 !define JRE_SRC "..\jre-${JRE}"
 ; runtime extraction target (persisted across launches, namespaced under LocalAppData)
 !define JRE_DIR "$LOCALAPPDATA\TimeAlbumPro\jre-${JRE}"
-OutFile "TimeAlbumProWindowsBundle.exe"
+OutFile "TimeAlbumProWindows.exe"
 
 Icon "TimeAlbumPro.ico"
 VIProductVersion ${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.0.${maven.build.number}

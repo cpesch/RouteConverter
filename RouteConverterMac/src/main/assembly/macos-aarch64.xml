@@ -1,14 +1,14 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.1"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.1 http://maven.apache.org/xsd/assembly-2.1.1.xsd">
-    <id>x64-app</id>
+    <id>aarch64-app</id>
     <formats>
         <format>zip</format>
     </formats>
     <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
-            <directory>target/Runtime-x64/</directory>
+            <directory>target/Runtime-aarch64/</directory>
             <includes>
                 <include>**/*</include>
             </includes>
@@ -37,7 +37,7 @@
             <lineEnding>lf</lineEnding>
         </file>
         <file>
-            <source>target/RouteConverterMacOpenSource.jar</source>
+            <source>target/RouteConverterMac.jar</source>
             <outputDirectory>/RouteConverter.app/Contents/Java/</outputDirectory>
         </file>
     </files>
