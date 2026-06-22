@@ -1,0 +1,18 @@
+# SignPath GitHub origin-verification policy — release-signing (production).
+#
+# Without an origin policy, anyone holding the submitter API token can get an
+# artifact signed. This locks production signing to builds that actually ran on
+# GitHub-hosted runners (the project's hard constraint — self-hosted voids OSS
+# eligibility, see rc-meta specs/00043). Extend with branch_rulesets once the
+# prod cert is live if tighter provenance is wanted.
+#
+# Path convention: .signpath/policies/<project-slug>/<signing-policy-slug>.yml
+# Schema: https://docs.signpath.io/trusted-build-systems/github
+#
+# Scoped to release-signing ONLY (currently CSR-pending, signs nothing yet) so a
+# schema mistake cannot break the live test-signing pipeline. VALIDATE in the
+# SignPath UI before flipping the release workflow to release-signing — a
+# malformed policy rejects signing requests.
+github-policies:
+  runners:
+    require_github_hosted: true
