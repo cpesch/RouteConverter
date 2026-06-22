@@ -98,7 +98,6 @@ jobs:
         run: |
           mkdir -p artefacts
           cp RouteConverterLinux/target/RouteConverterLinux.* artefacts/
-          # Mac .jar is a build intermediate the .app.zip embeds — not published.
           cp RouteConverterMac/target/RouteConverterMac-x64-app.zip artefacts/
           cp RouteConverterMac/target/RouteConverterMac-aarch64-app.zip artefacts/
           cp RouteConverterCmdLine/target/RouteConverterCmdLine.* artefacts/
