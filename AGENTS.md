@@ -1,78 +1,93 @@
-# AGENTS.md
+# AGENTS.md — RouteConverter
 
-Essential context for agents working in this repository.
+RouteConverter is a free GPS tool to display, edit, and convert routes, tracks,
+and waypoints across ~70 formats — a Java Swing desktop app (plus a command-line
+build and the TimeAlbumPro sibling). This file orients contributors (human or AI)
+working in this repository.
 
-## 1. Java via sdkman, not system
+Maintainer: **cpesch** (GitHub).
 
-`java` / `javac` are not on `PATH` by default. Before any `mvn` call:
+## Build & test
+
+Java 17, Maven via the bundled wrapper:
 
 ```sh
-source ~/.sdkman/bin/sdkman-init.sh && sdk use java 17.0.19-tem
+# macOS/Linux: java is often not on PATH — activate a JDK 17 first, e.g. sdkman:
+source ~/.sdkman/bin/sdkman-init.sh && sdk use java 17   # pin may vary; `ls ~/.sdkman/candidates/java/`
+
+./mvnw --batch-mode verify                 # full build + tests + coverage
+./mvnw --batch-mode -pl <module> -am test  # one module (-am pulls sibling deps; add -U after dep changes)
 ```
 
-Project targets Java 17.
+CI runs the test matrix on **Java 17, 21, 25** plus a Windows smoke build.
+The bundled-JRE version is the single source of truth `<jre.version>` in the root
+`pom.xml` — keep it in sync with the CI `setup-java` version on JDK bumps.
 
-## 2. Datasource schema location
+## Module layout
 
-Single source of truth for the catalog wire format:
-[datasource/src/main/doc/datasource-catalog.xsd](datasource/src/main/doc/datasource-catalog.xsd)
+Reactor modules are in the root `pom.xml`. Roughly:
 
-Namespace: `http://api.routeconverter.com/v1/schemas/datasource-catalog`.
+- **Libraries** — `navigation-formats` (the format engine), `gpx`, `kml`,
+  `common`, `common-gui`, `download`, `routing-service`, `elevation-service`,
+  `mapsforge-*`/`mapview` (map rendering), `geocoding-service`, … 
+- **App bases** — `route-converter-gui` (shared GUI base, the Weblate target
+  holding `RouteConverter_*.properties`), `route-converter` (RouteConverter app),
+  `time-album-pro` (TimeAlbumPro app).
+- **Platform builds** — `RouteConverter{Windows,Mac,Linux,Portable,CmdLine}`,
+  `TimeAlbumPro{Windows,Mac,Linux}` (produce the installers/jars).
+- **Catalog tooling** — `download-tools/` (`SnapshotCatalog`, `ScanWebsite`,
+  `UpdateCatalog`); wire schema in
+  [`datasource/src/main/doc/datasource-catalog.xsd`](datasource/src/main/doc/datasource-catalog.xsd)
+  (namespace `http://api.routeconverter.com/v1/schemas/datasource-catalog`).
 
-## 3. Server is a separate codebase
+The catalog **server** (`https://api.routeconverter.com/`) is a separate codebase;
+this repo defines the wire schema + client tools. Server-side changes need
+coordination with that codebase.
 
-Server hosts `https://api.routeconverter.com/` — **not in this repo**. This repo defines the wire schema + client tools. Server-side changes require coordination (see [download-tools/SCAN_SERVER.md](download-tools/SCAN_SERVER.md)).
+## Code conventions
 
-## 4. Three catalog tools in `download-tools/`
+- **GPL header on every `.java`** under `slash.navigation.*` — copy verbatim from
+  a sibling; the `@author Christian Pesch` line is convention.
+- **Plural getters for repeated XML elements.** A repeated singular element
+  `<include>` (JAXB field `include` → `List<String>`) gets getter `getIncludes()`.
+  Cf. `Source.getIncludes()` vs `SourceType.getInclude()`.
+- **IntelliJ GUI Designer: edit the `.form`, not `$$$setupUI$$$`.** The `.form` is
+  the canonical layout; the generated Java block is overwritten on regen. Hide a
+  widget at runtime with `setVisible(false)`.
+- **Tests use real JAXB binding objects, not mocked interfaces.** Construct
+  `new ObjectFactory().create…()` + `new DataSourceImpl(...)` — see
+  `WgetCommandBuilderTest`. Mocking the interfaces explodes into stub sprawl.
+- **Integration tests: classify hermetic vs external.** Hermetic ITs (temp files,
+  sample data, no live services) run in normal coverage; live-service ITs (real
+  HTTP, credentials, remote state) stay opt-in. Keep filenames aligned with the
+  Failsafe convention; change Maven includes deliberately, don't add a second
+  naming scheme.
+- **Small, focused diffs**; match the surrounding style.
+- **Translations go through Weblate** — don't hand-edit `RouteConverter_*.properties`;
+  `weblate*` / `translations*` branches are bot-managed.
+- **Release tags are plain `MAJOR.MINOR[.PATCH]`**, no `v` prefix.
 
-- `SnapshotCatalog` — pulls server XMLs into local snapshot.
-- `ScanWebsite` — crawls HTML index, populates `<file>/<map>/<theme>` URIs.
-- `UpdateCatalog` — pushes metadata (checksums, bounding boxes) back to server.
+## Contributing
 
-## Repository implementation conventions
+1. Fork, branch, open a PR against `master`.
+2. **A human reviews and merges every PR** — no auto-merge. Automated review bots
+   may comment; that's advisory.
+3. Keep the CI matrix green; never commit secrets.
 
-### 5. GPL header on every Java file
+## CI & releases
 
-Every `.java` file under `slash.navigation.*` starts with the GPL boilerplate. Copy it verbatim from a sibling file. `@author Christian Pesch` line is convention.
+GitHub Actions builds + tests on push/PR. Tagged releases (and the rolling
+prerelease) publish installers + jars to `static.routeconverter.com`; Windows
+installers are Authenticode-signed and the standalone jars jar-signed via SignPath
+Foundation, in CI — contributors need no signing credentials.
 
-### 6. Plural Java getters for repeated XML elements
+## Notes for AI agents
 
-XML element `<include>` (singular, repeated). JAXB binding field `include` returns `List<String>`. Interface getter is `getIncludes()` (plural). Follow this idiom — see `Source.getIncludes()` vs `SourceType.getInclude()`.
-
-### 7. IntelliJ GUI Designer: don't hand-edit `$$$setupUI$$$`
-
-A `*.form` file is the canonical layout source; the matching `$$$setupUI$$$` block in the Java file is regenerated from it. Hand edits to the Java block drift from the form and are overwritten on next regen. To change layout, edit the `.form` in IntelliJ. To hide a widget without touching the layout, call `setVisible(false)` at runtime.
-
-### 8. `./mvnw -pl <module>` needs `-am`
-
-Without `-am` ("also make"), sibling-module dependencies fail to resolve with cached "could not find artifact slash.navigation:X" errors. Always pass `-am` when building or testing a single module. Add `-U` to bust the negative dependency cache after dependency changes.
-
-### 9. Use real JAXB binding objects in tests, not mock interfaces
-
-When testing code that consumes `DataSource` / `Source` / `File` / `Map` / `Theme`, construct real binding objects (`new ObjectFactory().createDatasourceType()`, set fields, wrap in `new DataSourceImpl(...)`). Mocking the interfaces explodes into hand-rolled stubs covering 10+ methods (e.g. `getDownloadable`, `getFragmentBySHA1`) that the test doesn't care about. Real bindings are zero-arg and let tests focus on the field combinations under exercise — see `WgetCommandBuilderTest` for the pattern.
-
-### 10. Be explicit about integration-test naming and scope
-
-The repository currently distinguishes between small deterministic tests and integration-style tests, but naming must stay aligned with the Maven configuration.
-
-- If a test is intended to run as part of the normal integration-test flow, its filename must match the configured Failsafe convention.
-- When changing the convention, prefer updating Maven includes deliberately rather than silently introducing a second naming scheme.
-- Hermetic integration tests (temporary files, sample data, multi-module interactions without live services) are good candidates for normal coverage runs.
-- External live-service tests (real HTTP services, externally hosted files, credentials, mutable remote state) must stay opt-in and must not be assumed to run in normal coverage builds.
-- For routine coverage-related integration runs, prefer the hermetic Maven profiles over the broader live-service-capable ones.
-- When adding or reviewing `*IT`-style tests, classify them explicitly as hermetic or external so coverage expectations stay clear.
-
-## 11. Agent working process
-
-- Continue autonomously when the next step is reversible and strongly implied by repository context.
-- Do not stop for review unless there is a real product, compatibility, or architectural decision to make.
-- When presenting options, always include a recommendation and briefly explain why it is preferred.
-- Treat user corrections on naming, file placement, scope, and documentation style as standing preferences for the rest of the task.
-- When recurring workflow or collaboration improvements become clear during a task, propose them explicitly and ask whether they should be added to `AGENTS.md`.
-- Classify written output explicitly:
-  - `AGENTS.md` for stable agent instructions
-  - `docs/` for issue notes, proposals, migration plans, and design records
-  - conversation-only for temporary exploration
-- Prefer durable documentation in `docs/` with numbered, issue-like filenames when creating new long-lived notes.
-
-
+- Continue autonomously when the next step is reversible and strongly implied by
+  repo context; stop only for real product/compatibility/architecture decisions.
+- Always offer a recommendation when presenting options, and say why.
+- Treat maintainer corrections on naming/placement/scope/style as standing
+  preferences for the rest of the task.
+- Durable notes go in `specs/` (numbered, issue-like filenames, e.g.
+  `00010-migrate-java-17-to-25.md`); stable agent instructions go here;
+  temporary exploration stays in conversation.
