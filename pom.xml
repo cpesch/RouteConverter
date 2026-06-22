@@ -335,6 +335,36 @@
         </pluginManagement>
 
         <plugins>
+            <!-- Spotless (opt-in: no execution binding, so it never runs on a
+                 normal build). Run `mvn spotless:check` to verify or
+                 `mvn spotless:apply` to fix. ratchetFrom limits formatting to
+                 files changed vs origin/master, so the legacy tree is untouched
+                 and only new/modified code is normalized (git fetch-depth 0 in
+                 CI). licenseHeader auto-applies the GPL header ($YEAR preserves
+                 each file's existing copyright year). -->
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>3.7.0</version>
+                <configuration>
+                    <ratchetFrom>origin/master</ratchetFrom>
+                    <encoding>Cp1252</encoding>
+                    <java>
+                        <includes>
+                            <include>src/main/java/**/*.java</include>
+                            <include>src/test/java/**/*.java</include>
+                        </includes>
+                        <licenseHeader>
+                            <file>${maven.multiModuleProjectDirectory}/spotless/license-header.txt</file>
+                        </licenseHeader>
+                        <removeUnusedImports/>
+                        <importOrder/>
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
+                    </java>
+                </configuration>
+            </plugin>
+
             <!-- Folded here from route-converter-build/pom.xml (spec 00045).
                  Version pinned in pluginManagement above. Executions live in
                  <plugins> (not pluginManagement) so they actually run for every
