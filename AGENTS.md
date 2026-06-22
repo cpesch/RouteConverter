@@ -5,7 +5,8 @@ and waypoints across more than 110 formats — a Java Swing desktop app (plus a
 command-line build). This file orients contributors (human or AI) working in this
 repository.
 
-Maintainer: **cpesch** (GitHub).
+Maintainer: **cpesch** (GitHub). Licensed under the **GNU GPL v2** — contributions
+ship under the GPL (hence the per-file header below).
 
 ## Build & test
 
@@ -17,7 +18,16 @@ source ~/.sdkman/bin/sdkman-init.sh && sdk use java 17   # pin may vary; `ls ~/.
 
 ./mvnw --batch-mode verify                 # full build + tests + coverage
 ./mvnw --batch-mode -pl <module> -am test  # one module (-am pulls sibling deps; add -U after dep changes)
+
+# run the app (build the runnable Linux jar, then launch it):
+./mvnw --batch-mode -pl RouteConverterLinux -am package
+java -jar RouteConverterLinux/target/RouteConverterLinux.jar
 ```
+
+Integration tests are split by Maven profile: `./mvnw -Phermetic-integration-test verify`
+runs only the hermetic ITs (the default coverage set); the live-service ITs
+(`*ServiceIT`, `DownloadManagerIT`, `RemoteRouteIT`, …) need network/credentials and
+run via `-Pintegration-test` / `-Ptest-all`.
 
 CI runs the test matrix on **Java 17, 21, 25** plus a Windows smoke build.
 The bundled-JRE version is the single source of truth `<jre.version>` in the root
@@ -64,6 +74,9 @@ coordination with that codebase.
 - **Release tags are plain `MAJOR.MINOR[.PATCH]`**, no `v` prefix.
 
 ## Contributing
+
+Bugs and feature requests: [github.com/cpesch/RouteConverter/issues](https://github.com/cpesch/RouteConverter/issues)
+(the desktop app also feeds error reports back to the maintainer). To send a change:
 
 1. Fork, branch, open a PR against `master`.
 2. **A human reviews and merges every PR** — no auto-merge. Automated review bots
