@@ -21,6 +21,20 @@ on:
         required: false
         type: number
         default: 7
+      sign:
+        description: 'Submit standalone jars to SignPath for jar-signing'
+        required: false
+        type: boolean
+        default: false
+      signing-policy-slug:
+        description: 'SignPath signing policy (test-signing | release-signing)'
+        required: false
+        type: string
+        default: test-signing
+    secrets:
+      # Submitter-only token; cert stays in the SignPath HSM. specs/00043.
+      SIGNPATH_API_TOKEN:
+        required: false
 
 jobs:
   build:
@@ -90,6 +104,66 @@ jobs:
           cp TimeAlbumProLinux/target/TimeAlbumProLinux.* artefacts/
           cp TimeAlbumProMac/target/TimeAlbumProMac-x64-app.zip artefacts/
           cp TimeAlbumProMac/target/TimeAlbumProMac-aarch64-app.zip artefacts/
+      # --- SignPath jar-signing (rc-meta specs/00043) ------------------------
+      # Sign ONLY the standalone downloadable jars. Submit them in isolation
+      # so the `jars` artifact config has no unlisted .tar.gz / .app.zip to
+      # reject, then overlay the signed jars back into artefacts/ before the
+      # single final upload. sign=false skips straight to the upload unchanged.
+
+      - name: Collect jars for signing
+        if: ${{ inputs.sign }}
+        run: |
+          mkdir -p to-sign
+          cp RouteConverterLinux/target/RouteConverterLinux.jar     to-sign/
+          cp RouteConverterCmdLine/target/RouteConverterCmdLine.jar to-sign/
+          cp TimeAlbumProLinux/target/TimeAlbumProLinux.jar         to-sign/
+
+      - name: Upload unsigned jars (SignPath input)
+        if: ${{ inputs.sign }}
+        id: unsigned
+        uses: actions/upload-artifact@v7
+        with:
+          name: unsigned-jars-${{ inputs.artefact-name }}
+          path: to-sign/
+          retention-days: ${{ inputs.retention-days }}
+
+      - name: Submit signing request to SignPath
+        if: ${{ inputs.sign }}
+        uses: signpath/github-action-submit-signing-request@v2
+        with:
+          api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
+          organization-id: ${{ vars.SIGNPATH_ORG_ID }}
+          project-slug: RouteConverter
+          signing-policy-slug: ${{ inputs.signing-policy-slug }}
+          artifact-configuration-slug: jars
+          github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
+          wait-for-completion: true
+          output-artifact-directory: signed-jars
+
+      - name: Overlay signed jars into artefacts/
+        if: ${{ inputs.sign }}
+        run: |
+          cp signed-jars/RouteConverterLinux.jar     artefacts/
+          cp signed-jars/RouteConverterCmdLine.jar   artefacts/
+          cp signed-jars/TimeAlbumProLinux.jar       artefacts/
+
+      - name: Verify jar signatures
+        if: ${{ inputs.sign }}
+        # SignPath passes files not listed in the `jars` artifact config
+        # through UNSIGNED without failing the request — gate on the actual
+        # signature so a config gap can't ship an unsigned jar silently.
+        run: |
+          fail=0
+          for j in RouteConverterLinux.jar RouteConverterCmdLine.jar TimeAlbumProLinux.jar; do
+            if jarsigner -verify "artefacts/$j" | grep -q '^jar verified\.'; then
+              echo "OK  $j signed"
+            else
+              echo "::error::$j is NOT signed — check the SignPath 'jars' artifact config includes it"
+              fail=1
+            fi
+          done
+          [[ $fail -eq 0 ]]
+
       - uses: actions/upload-artifact@v7
         with:
           name: ${{ inputs.artefact-name }}
