@@ -1,9 +1,9 @@
 # AGENTS.md — RouteConverter
 
 RouteConverter is a free GPS tool to display, edit, and convert routes, tracks,
-and waypoints across ~70 formats — a Java Swing desktop app (plus a command-line
-build and the TimeAlbumPro sibling). This file orients contributors (human or AI)
-working in this repository.
+and waypoints across more than 110 formats — a Java Swing desktop app (plus a
+command-line build). This file orients contributors (human or AI) working in this
+repository.
 
 Maintainer: **cpesch** (GitHub).
 
@@ -31,14 +31,9 @@ Reactor modules are in the root `pom.xml`. Roughly:
   `common`, `common-gui`, `download`, `routing-service`, `elevation-service`,
   `mapsforge-*`/`mapview` (map rendering), `geocoding-service`, … 
 - **App bases** — `route-converter-gui` (shared GUI base, the Weblate target
-  holding `RouteConverter_*.properties`), `route-converter` (RouteConverter app),
-  `time-album-pro` (TimeAlbumPro app).
-- **Platform builds** — `RouteConverter{Windows,Mac,Linux,Portable,CmdLine}`,
-  `TimeAlbumPro{Windows,Mac,Linux}` (produce the installers/jars).
-- **Catalog tooling** — `download-tools/` (`SnapshotCatalog`, `ScanWebsite`,
-  `UpdateCatalog`); wire schema in
-  [`datasource/src/main/doc/datasource-catalog.xsd`](datasource/src/main/doc/datasource-catalog.xsd)
-  (namespace `http://api.routeconverter.com/v1/schemas/datasource-catalog`).
+  holding `RouteConverter_*.properties`) and `route-converter` (the app).
+- **Platform builds** — `RouteConverter{Windows,Mac,Linux,Portable,CmdLine}`
+  (produce the installers/jars).
 
 The catalog **server** (`https://api.routeconverter.com/`) is a separate codebase;
 this repo defines the wire schema + client tools. Server-side changes need
@@ -63,8 +58,9 @@ coordination with that codebase.
   Failsafe convention; change Maven includes deliberately, don't add a second
   naming scheme.
 - **Small, focused diffs**; match the surrounding style.
-- **Translations go through Weblate** — don't hand-edit `RouteConverter_*.properties`;
-  `weblate*` / `translations*` branches are bot-managed.
+- **Translations go through Weblate** ([hosted.weblate.org/projects/routeconverter](https://hosted.weblate.org/projects/routeconverter/))
+  — don't hand-edit `RouteConverter_*.properties`; `weblate*` / `translations*`
+  branches are bot-managed.
 - **Release tags are plain `MAJOR.MINOR[.PATCH]`**, no `v` prefix.
 
 ## Contributing
