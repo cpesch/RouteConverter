@@ -1,9 +1,5 @@
 name: Lint workflows
 
-# Lints all GitHub Actions workflow files (incl. reusable-workflow input/secret
-# names and the shellcheck'd `run:` blocks) so input/secret mismatches are caught
-# before merge — the class of bug behind the earlier publish-artifact collision.
-
 on:
   push:
     paths: ['.github/workflows/**']
@@ -21,8 +17,4 @@ jobs:
       - name: actionlint
         uses: docker://rhysd/actionlint:1.7.12
         with:
-          # shellcheck integration disabled here: it's run locally instead
-          # (info-level SC2086 nits in existing workflows would otherwise gate
-          # CI). This job focuses on workflow correctness — input/secret names,
-          # expressions, reusable-workflow wiring.
           args: -shellcheck= -color

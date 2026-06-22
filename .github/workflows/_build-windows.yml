@@ -37,8 +37,6 @@ on:
         type: string
         default: test-signing
     secrets:
-      # Submitter-only token: can request a sign, cannot extract the cert
-      # (cert stays in the SignPath HSM). See rc-meta specs/00043.
       SIGNPATH_API_TOKEN:
         required: false
 
@@ -184,20 +182,11 @@ jobs:
           # The shaded launcher jar is a build intermediate only — not published.
           cp RouteConverterWindows/target/RouteConverterWindows.exe artefacts/
           cp TimeAlbumProWindows/target/TimeAlbumProWindows.exe artefacts/
-          # Portable build output is versioned (RouteConverterPortable_<v>_-<build>.paf.exe);
-          # publish to the stable short name HERE so signing + downstream use an
-          # exact filename. The callers' own version-drop steps are now redundant.
           shopt -s nullglob
           paf=(RouteConverterPortable/target/classes/RouteConverterPortable*.paf.exe)
           [[ ${#paf[@]} -eq 1 ]] || { echo "::error::expected exactly 1 Portable .paf.exe, got ${#paf[@]}: ${paf[*]}"; exit 1; }
           cp "${paf[0]}" artefacts/RouteConverterPortable.paf.exe
           ls -la artefacts/
-
-      # --- SignPath Authenticode signing (rc-meta specs/00043) ---------------
-      # artefacts/ holds only the three installers under exact short names, all
-      # to be signed. Submit the dir, overlay the signed copies back, then a
-      # single final upload. sign=false (PRs, forks without the secret) skips
-      # straight to the upload unchanged.
 
       - name: Upload unsigned installers (SignPath input)
         if: ${{ inputs.sign }}
@@ -229,10 +218,6 @@ jobs:
       - name: Verify installer signatures
         if: ${{ inputs.sign }}
         shell: pwsh
-        # SignPath passes files not listed in the artifact config through
-        # UNSIGNED without failing the request, so assert a signature is
-        # actually present. Test cert won't chain to a trusted root → don't
-        # require Status=Valid, just SignerCertificate present.
         run: |
           $files = @('RouteConverterWindows.exe','TimeAlbumProWindows.exe','RouteConverterPortable.paf.exe')
           $fail = $false

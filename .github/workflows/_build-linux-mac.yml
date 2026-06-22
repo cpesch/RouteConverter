@@ -32,7 +32,6 @@ on:
         type: string
         default: test-signing
     secrets:
-      # Submitter-only token; cert stays in the SignPath HSM. specs/00043.
       SIGNPATH_API_TOKEN:
         required: false
 
@@ -104,12 +103,6 @@ jobs:
           cp TimeAlbumProLinux/target/TimeAlbumProLinux.* artefacts/
           cp TimeAlbumProMac/target/TimeAlbumProMac-x64-app.zip artefacts/
           cp TimeAlbumProMac/target/TimeAlbumProMac-aarch64-app.zip artefacts/
-      # --- SignPath jar-signing (rc-meta specs/00043) ------------------------
-      # Sign ONLY the standalone downloadable jars. Submit them in isolation
-      # so the `jars` artifact config has no unlisted .tar.gz / .app.zip to
-      # reject, then overlay the signed jars back into artefacts/ before the
-      # single final upload. sign=false skips straight to the upload unchanged.
-
       - name: Collect jars for signing
         if: ${{ inputs.sign }}
         run: |
@@ -149,9 +142,6 @@ jobs:
 
       - name: Verify jar signatures
         if: ${{ inputs.sign }}
-        # SignPath passes files not listed in the `jars` artifact config
-        # through UNSIGNED without failing the request — gate on the actual
-        # signature so a config gap can't ship an unsigned jar silently.
         run: |
           fail=0
           for j in RouteConverterLinux.jar RouteConverterCmdLine.jar TimeAlbumProLinux.jar; do
