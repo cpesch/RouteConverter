@@ -211,4 +211,53 @@ public class TransferTest {
         String result = formatSize(3_000_000_000_000L);
         assertTrue("should contain TByte", result.contains("TByte"));
     }
+
+    @Test
+    public void testFormatSizeZero() {
+        assertEquals("0 Bytes", formatSize(0L));
+    }
+
+    @Test
+    public void testFormatSizeBytesExact() {
+        assertEquals("500 Bytes", formatSize(500L));
+    }
+
+    @Test
+    public void testFormatSizeBoundaryStaysBytes() {
+        // exactly 2 * 1024 is NOT greater than 2 * 1024 -> still Bytes
+        assertEquals("2048 Bytes", formatSize(2048L));
+    }
+
+    @Test
+    public void testFormatSizeKiloBytesExact() {
+        // 3000 / 1024 = 2.93..; rounded with +0.5 -> 3
+        assertEquals("3 kByte", formatSize(3000L));
+    }
+
+    @Test
+    public void testFormatSizeRoundsUpOnHalf() {
+        // 3 * 1024 = 3072 -> 3.0 + 0.5 = 3.5 -> rounds to 4
+        assertEquals("4 kByte", formatSize(3072L));
+    }
+
+    @Test
+    public void testFormatSizeMegaBytesExact() {
+        assertEquals("5 MByte", formatSize(5_000_000L));
+    }
+
+    @Test
+    public void testFormatSizeGigaBytesExact() {
+        assertEquals("5 GByte", formatSize(5_000_000_000L));
+    }
+
+    @Test
+    public void testFormatSizeTeraBytesExact() {
+        assertEquals("5 TByte", formatSize(5_000_000_000_000L));
+    }
+
+    @Test
+    public void testFormatTimeBeyondOneDayNotWrapped() {
+        // 25h 01m 01s -> hours are not capped at 24
+        assertEquals("25:01:01", formatTime(fromMillis(90_061_000L)));
+    }
 }
