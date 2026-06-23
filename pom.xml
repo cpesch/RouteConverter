@@ -262,7 +262,11 @@
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.3.1</version>
                     <configuration>
-                        <encoding>UTF-8</encoding>
+                        <!-- ISO-8859-1 (byte-identity) so resource *filtering* of
+                             binary resources (e.g. RouteConverterPortable.exe) round-trips
+                             every byte; UTF-8 throws MalformedInputException on binaries.
+                             Text resources: .java=UTF-8 (compiler), .properties=UTF-8 below. -->
+                        <encoding>ISO-8859-1</encoding>
                         <propertiesEncoding>UTF-8</propertiesEncoding>
                     </configuration>
                 </plugin>
