@@ -59,6 +59,7 @@ import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.*;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Files.asDialogString;
+import static slash.common.io.Transfer.formatSize;
 import static slash.common.io.Files.removeExtension;
 import static slash.navigation.download.Action.Extract;
 import static slash.navigation.graphhopper.PbfUtil.lookupGraphDirectory;
@@ -382,7 +383,7 @@ public class GraphHopper extends BaseRoutingService {
                 int confirm = showConfirmDialog(null,
                         "Do you want to download the routing data\n" +
                                 file.getUri() + "\n" +
-                                "with a size of " + (size != null ? size / (1024 * 1024) : "a large number of ") + " MBytes?",
+                                "with a size of " + formatSize(size) + "?",
                         "GraphHopper", YES_NO_OPTION);
                 if (confirm == YES_OPTION)
                     return true;

@@ -59,7 +59,7 @@ import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.text.MessageFormat.format;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static slash.navigation.gui.helpers.UIHelper.formatSize;
+import static slash.common.io.Transfer.formatSize;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.scrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;

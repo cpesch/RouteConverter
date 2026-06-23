@@ -453,4 +453,29 @@ public class Transfer {
         }
         return buffer.toString();
     }
+
+    public static String formatSize(Long size) {
+        if (size == null)
+            return "?";
+
+        String[] units = {"Bytes", "kByte", "MByte", "GByte", "TByte"};
+        int index = 0;
+        long unit = 1;
+        while (index < units.length - 1 && size > 2 * unit * 1024) {
+            unit *= 1024;
+            index++;
+        }
+        long value = index == 0 ? size : round(size / (double) unit + 0.5);
+        return String.format("%d %s", value, units[index]);
+    }
+
+    public static String formatTime(CompactCalendar time) {
+        if (time == null)
+            return "?";
+        long totalSeconds = time.getTimeInMillis() / 1000;
+        long hours = totalSeconds / 3600;
+        long minutes = (totalSeconds % 3600) / 60;
+        long seconds = totalSeconds % 60;
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
 }

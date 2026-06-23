@@ -26,7 +26,7 @@ import slash.navigation.maps.mapsforge.RemoteResource;
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.gui.helpers.UIHelper.formatSize;
+import static slash.common.io.Transfer.formatSize;
 
 /**
  * Renders the table cells of the downloadable {@link RemoteMap} table.

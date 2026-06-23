@@ -50,8 +50,8 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import static java.lang.System.getProperty;
-import static slash.navigation.gui.helpers.UIHelper.formatSize;
-import static slash.navigation.gui.helpers.UIHelper.formatTime;
+import static slash.common.io.Transfer.formatSize;
+import static slash.common.io.Transfer.formatTime;
 import static java.nio.file.Files.isDirectory;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.INFORMATION_MESSAGE;

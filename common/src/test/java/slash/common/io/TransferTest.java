@@ -24,8 +24,10 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.io.Transfer.*;
+import static slash.common.type.CompactCalendar.fromMillis;
 
 public class TransferTest {
     @Test
@@ -132,5 +134,81 @@ public class TransferTest {
         String expected = "%2eA%2fB%5cC%3aD." + umlauts;
         assertEquals(expected, encodeFileName(original));
         assertEquals(original, decodeUri(expected));
+    }
+
+    // ---- formatTime ----
+
+    @Test
+    public void testFormatTimeNull() {
+        assertEquals("?", formatTime(null));
+    }
+
+    @Test
+    public void testFormatTimeZero() {
+        // 0 millis = 00:00:00
+        assertEquals("00:00:00", formatTime(fromMillis(0L)));
+    }
+
+    @Test
+    public void testFormatTimeOneHour() {
+        // 3600 seconds = 1 hour
+        assertEquals("01:00:00", formatTime(fromMillis(3_600_000L)));
+    }
+
+    @Test
+    public void testFormatTimeOneMinuteFiveSeconds() {
+        // 65 seconds
+        assertEquals("00:01:05", formatTime(fromMillis(65_000L)));
+    }
+
+    @Test
+    public void testFormatTimeFormat() {
+        // format should always be HH:MM:SS
+        String result = formatTime(fromMillis(3_661_000L));
+        assertTrue("should match HH:MM:SS", result.matches("\\d{2}:\\d{2}:\\d{2}"));
+    }
+
+    // ---- formatSize ----
+
+    @Test
+    public void testFormatSizeNull() {
+        assertEquals("?", formatSize(null));
+    }
+
+    @Test
+    public void testFormatSizeBytes() {
+        String result = formatSize(500L);
+        assertTrue("should contain Bytes", result.contains("Bytes"));
+    }
+
+    @Test
+    public void testFormatSizeKiloBytes() {
+        String result = formatSize(3_000L);
+        assertTrue("should contain kByte", result.contains("kByte"));
+    }
+
+    @Test
+    public void testFormatSizeMegaBytes() {
+        String result = formatSize(3_000_000L);
+        assertTrue("should contain MByte", result.contains("MByte"));
+    }
+
+    @Test
+    public void testFormatSizeExactlyTwoKiloByteBoundary() {
+        // 2 * 1024 = 2048 -> should be kByte
+        String result = formatSize(2049L);
+        assertTrue("2049 bytes should display as kByte", result.contains("kByte"));
+    }
+
+    @Test
+    public void testFormatSizeGigaBytes() {
+        String result = formatSize(3_000_000_000L);
+        assertTrue("should contain GByte", result.contains("GByte"));
+    }
+
+    @Test
+    public void testFormatSizeTeraBytes() {
+        String result = formatSize(3_000_000_000_000L);
+        assertTrue("should contain TByte", result.contains("TByte"));
     }
 }

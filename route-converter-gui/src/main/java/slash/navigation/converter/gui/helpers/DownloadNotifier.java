@@ -28,7 +28,7 @@ import javax.swing.*;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-import static slash.navigation.gui.helpers.UIHelper.formatSize;
+import static slash.common.io.Transfer.formatSize;
 
 /**
  * Shows notifications via the {@link NotificationManager} upon {@link DownloadListener} events on {@link Download}s.

@@ -24,7 +24,6 @@ import java.awt.*;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
-import slash.common.type.CompactCalendar;
 
 import static java.awt.Cursor.DEFAULT_CURSOR;
 import static java.awt.Cursor.WAIT_CURSOR;
@@ -130,47 +129,5 @@ public class UIHelper {
         }
         int width = fontMetrics.stringWidth(string);
         return width + extraWidth;
-    }
-
-    private static final long KILO_BYTE = 1024;
-    private static final long MEGA_BYTE = KILO_BYTE * KILO_BYTE;
-    private static final long GIGA_BYTE = MEGA_BYTE * KILO_BYTE;
-    private static final long TERA_BYTE = GIGA_BYTE * KILO_BYTE;
-
-    private static long toNextUnit(Long size, long nextUnit) {
-        return Math.round(size / (double) nextUnit + 0.5);
-    }
-
-    public static String formatSize(Long size) {
-        if (size == null)
-            return "?";
-
-        String unit;
-        if (size > 2 * TERA_BYTE) {
-            size = toNextUnit(size, TERA_BYTE);
-            unit = "TByte";
-        } else if (size > 2 * GIGA_BYTE) {
-            size = toNextUnit(size, GIGA_BYTE);
-            unit = "GByte";
-        } else if (size > 2 * MEGA_BYTE) {
-            size = toNextUnit(size, MEGA_BYTE);
-            unit = "MByte";
-        } else if (size > 2 * KILO_BYTE) {
-            size = toNextUnit(size, KILO_BYTE);
-            unit = "kByte";
-        } else {
-            unit = "Bytes";
-        }
-        return String.format("%d %s", size, unit);
-    }
-
-    public static String formatTime(CompactCalendar time) {
-        if (time == null)
-            return "?";
-        long totalSeconds = time.getTimeInMillis() / 1000;
-        long hours = totalSeconds / 3600;
-        long minutes = (totalSeconds % 3600) / 60;
-        long seconds = totalSeconds % 60;
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }
