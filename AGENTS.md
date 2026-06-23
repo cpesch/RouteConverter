@@ -33,6 +33,12 @@ CI runs the test matrix on **Java 17, 21, 25** plus a Windows smoke build.
 The bundled-JRE version is the single source of truth `<jre.version>` in the root
 `pom.xml` — keep it in sync with the CI `setup-java` version on JDK bumps.
 
+Source is **UTF-8** (compiler / surefire / javadoc / `propertiesEncoding`). The one
+exception: the **maven-resources-plugin `<encoding>` stays `ISO-8859-1`** — resource
+*filtering* also runs over binary resources (e.g. `RouteConverterPortable.exe`), and a
+multi-byte encoding throws `MalformedInputException` on binary bytes. Don't "helpfully"
+flip it to UTF-8.
+
 ## Module layout
 
 Reactor modules are in the root `pom.xml`. Roughly:
