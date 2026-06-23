@@ -45,6 +45,13 @@ Reactor modules are in the root `pom.xml`. Roughly:
 - **Platform builds** — `RouteConverter{Windows,Mac,Linux,Portable,CmdLine}`
   (produce the installers/jars).
 
+**Layering.** Non-GUI utilities live in `common` (e.g. `Transfer` — the
+byte-size/time formatters `formatSize`/`formatTime`); GUI helpers live in
+`common-gui` (e.g. `UIHelper` — `chooseDirectory`, look-and-feel). Routing,
+format and service modules depend on `common`, **not** `common-gui` — don't pull
+GUI dependencies down into them (a shared formatter needed by a non-GUI module
+belongs in `common`, not `UIHelper`).
+
 The catalog **server** (`https://api.routeconverter.com/`) is a separate codebase;
 this repo defines the wire schema + client tools. Server-side changes need
 coordination with that codebase.
