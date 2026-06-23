@@ -83,22 +83,22 @@ public class BcrPositionTest {
     public void testSetDescriptionStructuredParsesZipAndCity() {
         BcrPosition pos = new BcrPosition(HAMBURG_X, HAMBURG_Y, NO_ALTITUDE_DEFINED, null);
         // BCR pattern: zipCode,city,street,0,
-        pos.setDescription("20095,Hamburg,Mönckebergstraße,0,");
+        pos.setDescription("20095,Hamburg,MÃ¶nckebergstraÃŸe,0,");
         assertEquals("20095", pos.getZipCode());
         assertEquals("Hamburg", pos.getCity());
-        assertEquals("Mönckebergstraße", pos.getStreet());
+        assertEquals("MÃ¶nckebergstraÃŸe", pos.getStreet());
         assertFalse(pos.isUnstructured());
     }
 
     @Test
     public void testGetDescriptionWithZipAndCityAndStreet() {
         BcrPosition pos = new BcrPosition(HAMBURG_X, HAMBURG_Y, NO_ALTITUDE_DEFINED, null);
-        pos.setDescription("20095,Hamburg,Mönckebergstraße,0,");
+        pos.setDescription("20095,Hamburg,MÃ¶nckebergstraÃŸe,0,");
         String desc = pos.getDescription();
         assertNotNull(desc);
         assertTrue(desc.contains("Hamburg"));
         assertTrue(desc.contains("20095"));
-        assertTrue(desc.contains("Mönckebergstraße"));
+        assertTrue(desc.contains("MÃ¶nckebergstraÃŸe"));
     }
 
     // --- setDescription clears structured fields ---

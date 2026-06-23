@@ -39,7 +39,7 @@ public class GeoNamesUtilTest {
 
         assertNotNull(geonames);
         assertEquals(10, geonames.getGeoname().size());
-        assertEquals("Gr‰salp", geonames.getGeoname().get(0).getName());
+        assertEquals("Gr√§salp", geonames.getGeoname().get(0).getName());
         assertEquals("Austria", geonames.getGeoname().get(0).getCountryName());
         assertNull(geonames.getStatus());
     }

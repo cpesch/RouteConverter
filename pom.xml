@@ -78,6 +78,8 @@
 
         <java.version>17</java.version>
         <maven.version>[3.5.4,)</maven.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <alephformatter.version>0.1.1</alephformatter.version>
         <httpclient.version>5.6.1</httpclient.version>
@@ -178,7 +180,7 @@
                     <configuration>
                         <source>${java.version}</source>
                         <target>${java.version}</target>
-                        <encoding>Cp1252</encoding>
+                        <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -260,8 +262,8 @@
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.3.1</version>
                     <configuration>
-                        <encoding>ISO-8859-15</encoding>
-                        <propertiesEncoding>ISO-8859-15</propertiesEncoding>
+                        <encoding>UTF-8</encoding>
+                        <propertiesEncoding>UTF-8</propertiesEncoding>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -348,7 +350,7 @@
                 <version>3.7.0</version>
                 <configuration>
                     <ratchetFrom>origin/master</ratchetFrom>
-                    <encoding>Cp1252</encoding>
+                    <encoding>UTF-8</encoding>
                     <java>
                         <includes>
                             <include>src/main/java/**/*.java</include>
@@ -489,7 +491,7 @@
                 <configuration>
                     <doctitle>RouteConverter ${project.version} API</doctitle>
                     <windowtitle>RouteConverter ${project.version} API</windowtitle>
-                    <encoding>Cp1252</encoding>
+                    <encoding>UTF-8</encoding>
                     <header>Conversion API</header>
                     <bottom>Created by Christian Pesch</bottom>
                     <detectLinks>true</detectLinks>

@@ -166,7 +166,7 @@ public class RouteCalculationsTest {
 
     @Test
     public void testExtrapolateTimeProjectsBeyondLastPoint() {
-        // before at t=0, pred at t=1000 (1° lon apart); next point 1° further should get t?2000
+        // before at t=0, pred at t=1000 (1Â° lon apart); next point 1Â° further should get t?2000
         Wgs84Position before = posWithTime(10.0, 50.0, 0L);
         Wgs84Position pred = posWithTime(11.0, 50.0, 1000L);
         Wgs84Position next = pos(12.0, 50.0);

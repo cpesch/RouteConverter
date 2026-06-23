@@ -100,7 +100,7 @@ public class InputOutputTest {
     @Test
     public void testReadFileToStringUtf8() throws IOException {
         File file = temporaryFolder.newFile("utf8.txt");
-        String content = "Zürich ? München";
+        String content = "ZÃ¼rich ? MÃ¼nchen";
         try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8)) {
             fw.write(content);
         }

@@ -48,7 +48,7 @@ public class CsvFormatIT {
                 Timestamp,UTC,Callsign,Position,Altitude,Speed,Direction
                 1513280280,2017-12-14T19:38:00Z,Positionsname,"50.241125,8.4853033",%s,%s,0
                 1513280340,2017-12-14T19:39:00Z,%s,"-50.2411251,88.4853034",%s,%s,0
-                1513280400,2017-12-14T19:40:00Z,"#""ง$%%&/","50.2411252,8.4853035",%s,%s,0
+                1513280400,2017-12-14T19:40:00Z,"#""ยง$%%&/","50.2411252,8.4853035",%s,%s,0
                 """.formatted(
                 formatDoubleAsString(meterToFeets(654.6)),
                 formatDoubleAsString(kiloMeterToNauticMiles(6.1)),
