@@ -1,77 +1,81 @@
+# RouteConverter
+
 [![Test Coverage](https://codecov.io/gh/cpesch/RouteConverter/branch/master/graph/badge.svg)](https://codecov.io/gh/cpesch/RouteConverter)
-<a href="https://hosted.weblate.org/engage/routeconverter/?utm_source=widget"><img src="https://hosted.weblate.org/widgets/routeconverter/-/svg-badge.svg" alt="Translation status"/></a>
+[![Translation status](https://hosted.weblate.org/widgets/routeconverter/-/svg-badge.svg)](https://hosted.weblate.org/engage/routeconverter/)
+[![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0-blue.svg)](LICENSE-GPL.txt)
+[![Java 17](https://img.shields.io/badge/Java-17-orange.svg)](https://adoptium.net/)
 
-What is RouteConverter?
-=======================
+**RouteConverter** is a popular, free open-source tool to **display, edit, enrich and
+convert** GPS routes, tracks and waypoints across **80+ formats** (GPX, KML, NMEA,
+TomTom, Garmin, and many more). It's a cross-platform Java/Swing desktop app with a
+map view, plus a command-line tool.
 
-RouteConverter is a popular open source tool to display, edit, enrich and convert
-routes, tracks and waypoints licensed under the GNU Public License.
-See http://www.routeconverter.com/about/ for details about features, supported formats
-and languages, screenshots, frequently asked questions and how you can help.
+🌐 **[routeconverter.com](https://www.routeconverter.com/)** — features, screenshots,
+supported formats, FAQ, and downloads.
 
-Downloads
-=========
+## Download
 
-Stable releases are available at http://www.routeconverter.com/releases/
+- **Stable releases:** https://www.routeconverter.com/releases/
+- **Prereleases (frequent):** https://www.routeconverter.com/prereleases/
 
-Prereleases are frequently offered at http://www.routeconverter.com/prereleases/
+The **Windows** (`.exe`) and **macOS** (`.app`) downloads bundle a Java runtime —
+nothing else to install. The **Linux** build ships as a runnable `.jar` that needs
+**Java 17 or later** installed on your system.
 
-If you want to contribute
-=========================
+## Build & run from source
 
-Patches and pull requests are always welcome. If you minimize your diff, it's more
-likely that your contribution will be applied to the code base. Please stick to the
-code standards and formatting that you run across. And don't forget to add tests for
-your changes ;-)
+You need **JDK 17** (e.g. from [Adoptium](https://adoptium.net/)). Maven comes
+bundled via the wrapper — no separate install.
 
-CONTRIBUTORS.txt provides a list of the people who helped developing RouteConverter.
+```sh
+git clone git@github.com:cpesch/RouteConverter.git
+cd RouteConverter
 
-How to develop for RouteConverter
-=================================
+./mvnw clean package          # full build + tests
 
-1. Install a recent Java SDK, version 8 or later, from http://www.oracle.com/technetwork/java/javase/downloads/
+# run the desktop app (build that module first):
+./mvnw -pl RouteConverterLinux -am package
+java -jar RouteConverterLinux/target/RouteConverterLinux.jar
 
-2. Clone RouteConverter from github:
-   
-       git clone git@github.com:cpesch/RouteConverter.git
+# …or the command-line converter:
+java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
+```
 
-3. Open RouteConverter sources in an Integrated Development Environment (IDE)
+> On macOS/Linux, if `java` isn't on your `PATH`, activate a JDK 17 first
+> (e.g. via [sdkman](https://sdkman.io/): `sdk use java 17`).
 
-   IntelliJ
-   * Install IntelliJ IDEA Community Edition from http://www.jetbrains.com/idea/download/
-   * Choose "File/Open Project..." and the root pom.xml.
-   * In "Preferences/GUI Designer" choose "Generate GUI to Java source code" and disable 
-     "Automatically copy form runtime classes to the output directory"
+CI builds and tests on **Java 17, 21 and 25** plus a Windows smoke build.
 
-   Eclipse
-   * Install Eclipse IDE for Java Developers from http://www.eclipse.org/downloads/
-   * Install m2eclipse from http://m2eclipse.sonatype.org/sites/m2e/
-   * Choose "File/Import..." and "General/Maven Projects" and the root directory.
+## Contributing
 
-   NetBeans
-   * Install NetBeans IDE Java SE from http://netbeans.org/downloads/
-   * Install Git via "My NetBeans > Install Plugins"
-   * Choose "Open Project..." and the root directory.
+Contributions are very welcome — bug fixes, new formats, UI improvements,
+translations. 🎉
 
-4. Let JAVA_HOME refer to the Java SDK
-   
-       set JAVA_HOME=c:\Programm Files\Java\jdk1.8.0_271
+- **Pull requests:** fork, branch, and open a PR against `master`. Keep your diff
+  small and focused, match the surrounding code style, and add tests for your
+  change. A maintainer reviews and merges every PR.
+- **Conventions:** see [`AGENTS.md`](AGENTS.md) for the project layout, module
+  layering, build/test commands, and code conventions (GPL header, JAXB test
+  objects, IntelliJ GUI Designer `.form` files, …).
+- **Translations** go through Weblate, not direct edits:
+  [hosted.weblate.org/projects/routeconverter](https://hosted.weblate.org/projects/routeconverter/).
+- **Issues:** https://github.com/cpesch/RouteConverter/issues
 
-   Put JAVA_HOME into your PATH
+Contributors are listed in [`CONTRIBUTORS.txt`](CONTRIBUTORS.txt).
 
-       set %PATH%=%JAVA_HOME%:%PATH%
+### IDE setup (IntelliJ IDEA)
 
-5. Build RouteConverter with the Maven wrapper
-    
-       mvnw clean package
+1. **File → Open…** the root `pom.xml`.
+2. **Settings → Editor → GUI Designer:** choose *"Generate GUI into: Java source
+   code"* and disable *"Automatically copy form runtime classes…"*. Layout is
+   edited in the `.form` files, not the generated `$$$setupUI$$$` blocks.
 
-6. Run RouteConverter
-    
-       java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
-       java -jar RouteConverterLinuxOpenSource/target/RouteConverterLinuxOpenSource.jar
-       java -jar RouteConverterMacOpenSource/target/RouteConverterMacOpenSource.jar
-       java -jar RouteConverterWindowsOpenSource/target/RouteConverterWindowsOpenSource.jar
+Eclipse (m2e) and NetBeans work too — import the root `pom.xml` as a Maven project.
 
-Have fun!
+## License
 
-Christian
+RouteConverter is licensed under the **GNU General Public License v2** — see
+[`LICENSE-GPL.txt`](LICENSE-GPL.txt). By contributing, you agree your code ships
+under the GPL.
+
+Have fun! — Christian Pesch ([@cpesch](https://github.com/cpesch))
