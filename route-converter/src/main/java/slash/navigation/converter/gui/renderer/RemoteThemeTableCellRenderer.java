@@ -25,7 +25,7 @@ import slash.navigation.maps.mapsforge.RemoteTheme;
 import javax.swing.*;
 import java.awt.*;
 
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatSize;
+import static slash.navigation.gui.helpers.UIHelper.formatSize;
 import static slash.navigation.converter.gui.renderer.RemoteMapTableCellRenderer.getContentLength;
 
 /**

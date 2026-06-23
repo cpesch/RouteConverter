@@ -25,7 +25,7 @@ import slash.navigation.common.NavigationPosition;
 
 import javax.swing.*;
 
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
+import static slash.navigation.gui.helpers.UIHelper.formatTime;
 
 /**
  * Renders the time column of the positions table.

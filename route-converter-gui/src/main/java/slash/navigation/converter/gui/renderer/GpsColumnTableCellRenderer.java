@@ -30,6 +30,7 @@ import java.awt.*;
 import java.text.MessageFormat;
 
 import static slash.navigation.converter.gui.helpers.PositionHelper.*;
+import static slash.navigation.gui.helpers.UIHelper.formatTime;
 import static slash.navigation.photo.TagState.*;
 
 /**

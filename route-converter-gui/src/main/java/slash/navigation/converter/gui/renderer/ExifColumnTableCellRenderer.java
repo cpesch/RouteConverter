@@ -34,7 +34,7 @@ import java.util.Map;
 
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatDate;
-import static slash.navigation.converter.gui.helpers.PositionHelper.formatTime;
+import static slash.navigation.gui.helpers.UIHelper.formatTime;
 
 /**
  * Renders the EXIF column of the photos table.

@@ -54,9 +54,6 @@ public class PositionHelper {
     private static final double maximumDistanceDisplayedInSmallUnit = preferences.getDouble("maximumDistanceDisplayedInSmallUnit", 10000.0);
     private static final double maximumDistanceDisplayedWithFraction = preferences.getDouble("maximumDistanceDisplayedWithFraction", 200.0);
 
-    private static final int KILO_BYTE = 1024;
-    private static final int MEGA_BYTE = KILO_BYTE * KILO_BYTE;
-
     public static String formatDistance(Double distance) {
         // don't use isEmpty(distance) here since a 0.0 makes sense to display
         if (distance == null || distance <= 0.0)
@@ -151,39 +148,6 @@ public class PositionHelper {
 
     public static String formatDate(CompactCalendar time) {
         return formatDate(time, RouteConverter.getInstance().getTimeZone().getTimeZoneId());
-    }
-
-    // time
-
-    public static String formatTime(CompactCalendar time) {
-        if(time == null)
-            return "?";
-        long totalSeconds = time.getTimeInMillis() / 1000;
-        long hours = totalSeconds / 3600;
-        long minutes = (totalSeconds % 3600) / 60;
-        long seconds = totalSeconds % 60;
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
-    }
-
-    private static long toNextUnit(Long size, long nextUnit) {
-        return round(size / (double) nextUnit + 0.5);
-    }
-
-    public static String formatSize(Long size) {
-        if(size == null)
-            return "?";
-
-        String unit;
-        if (size > 2 * MEGA_BYTE) {
-            size = toNextUnit(size, MEGA_BYTE);
-            unit = "MByte";
-        } else if (size > 2 * KILO_BYTE) {
-            size = toNextUnit(size, KILO_BYTE);
-            unit = "kByte";
-        } else {
-            unit = "Bytes";
-        }
-        return format("%d %s", size, unit);
     }
 
     public static File extractFile(NavigationPosition position) {
