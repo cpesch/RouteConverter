@@ -21,6 +21,7 @@ package slash.navigation.gui.helpers;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.File;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
@@ -107,6 +108,20 @@ public class UIHelper {
             UIManager.put("FileChooser.useSystemExtensionHiding", false);
         }
         return new JFileChooser();
+    }
+
+    public static File chooseDirectory(Component parent, String title, String currentPath) {
+        JFileChooser chooser = createJFileChooser();
+        chooser.setDialogTitle(title);
+        if (currentPath != null && !currentPath.isEmpty())
+            chooser.setSelectedFile(new File(currentPath));
+        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        chooser.setAcceptAllFileFilterUsed(false);
+        if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION)
+            return null;
+        File selected = chooser.getSelectedFile();
+        return selected == null || selected.getName().isEmpty() ? null : selected;
     }
 
     public static void patchUIManager(ResourceBundle bundle, String... keys) {

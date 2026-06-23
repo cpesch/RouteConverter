@@ -85,6 +85,7 @@ import static slash.navigation.converter.gui.helpers.ExternalPrograms.*;
 import static slash.navigation.converter.gui.models.FixMapMode.*;
 import static slash.navigation.googlemaps.GoogleMapsServer.*;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
+import static slash.navigation.gui.helpers.UIHelper.chooseDirectory;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
 
 /**
@@ -698,42 +699,16 @@ public class OptionsDialog extends SimpleDialog {
 
     private void chooseMapPath() {
         RouteConverter r = RouteConverter.getInstance();
-        JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(getBundle().getString("choose-map-path"));
-        chooser.setSelectedFile(new File(r.getMapView().getMapsPath()));
-        chooser.setFileSelectionMode(DIRECTORIES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        int open = chooser.showOpenDialog(r.getFrame());
-        if (open != APPROVE_OPTION) {
-            return;
-        }
-
-        File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().isEmpty()) {
-            return;
-        }
-
-        textFieldMapsPath.setText(selected.getAbsolutePath());
+        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-map-path"), r.getMapView().getMapsPath());
+        if (directory != null)
+            textFieldMapsPath.setText(directory.getAbsolutePath());
     }
 
     private void chooseThemePath() {
         RouteConverter r = RouteConverter.getInstance();
-        JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(getBundle().getString("choose-theme-path"));
-        chooser.setSelectedFile(new File(r.getMapView().getThemesPath()));
-        chooser.setFileSelectionMode(DIRECTORIES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        int open = chooser.showOpenDialog(r.getFrame());
-        if (open != APPROVE_OPTION) {
-            return;
-        }
-
-        File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().isEmpty()) {
-            return;
-        }
-
-        textFieldThemesPath.setText(selected.getAbsolutePath());
+        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-theme-path"), r.getMapView().getThemesPath());
+        if (directory != null)
+            textFieldThemesPath.setText(directory.getAbsolutePath());
     }
 
     private void chooseBabelPath() {
@@ -757,42 +732,16 @@ public class OptionsDialog extends SimpleDialog {
 
     private void chooseRoutingServicePath() {
         RouteConverter r = RouteConverter.getInstance();
-        JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(getBundle().getString("choose-routing-service-path"));
-        chooser.setSelectedFile(new File(r.getRoutingServiceFacade().getRoutingService().getPath()));
-        chooser.setFileSelectionMode(DIRECTORIES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        int open = chooser.showOpenDialog(r.getFrame());
-        if (open != APPROVE_OPTION) {
-            return;
-        }
-
-        File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().isEmpty()) {
-            return;
-        }
-
-        textFieldRoutingServicePath.setText(selected.getAbsolutePath());
+        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-routing-service-path"), r.getRoutingServiceFacade().getRoutingService().getPath());
+        if (directory != null)
+            textFieldRoutingServicePath.setText(directory.getAbsolutePath());
     }
 
     private void chooseElevationServicePath() {
         RouteConverter r = RouteConverter.getInstance();
-        JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(getBundle().getString("choose-elevation-service-path"));
-        chooser.setSelectedFile(new File(r.getElevationServiceFacade().getElevationService().getPath()));
-        chooser.setFileSelectionMode(DIRECTORIES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        int open = chooser.showOpenDialog(r.getFrame());
-        if (open != APPROVE_OPTION) {
-            return;
-        }
-
-        File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().isEmpty()) {
-            return;
-        }
-
-        textFieldElevationServicePath.setText(selected.getAbsolutePath());
+        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-elevation-service-path"), r.getElevationServiceFacade().getElevationService().getPath());
+        if (directory != null)
+            textFieldElevationServicePath.setText(directory.getAbsolutePath());
     }
 
     private void close() {

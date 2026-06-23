@@ -43,6 +43,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import slash.common.type.CompactCalendar;
+import slash.navigation.gui.helpers.UIHelper;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.prefs.Preferences;
@@ -174,12 +176,9 @@ public class CatalogMirrorFrame {
     }
 
     private void chooseDirectory(JTextField target, String title) {
-        JFileChooser chooser = new JFileChooser(target.getText());
-        chooser.setDialogTitle(title);
-        chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        chooser.setAcceptAllFileFilterUsed(false);
-        if (chooser.showOpenDialog(frame) == JFileChooser.APPROVE_OPTION)
-            target.setText(chooser.getSelectedFile().getAbsolutePath());
+        File directory = UIHelper.chooseDirectory(frame, title, target.getText());
+        if (directory != null)
+            target.setText(directory.getAbsolutePath());
     }
 
     public void savePreferences() {
