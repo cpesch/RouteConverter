@@ -92,4 +92,16 @@ public class UIHelperTest {
         String result = formatSize(2049L);
         assertTrue("2049 bytes should display as kByte", result.contains("kByte"));
     }
+
+    @Test
+    public void testFormatSizeGigaBytes() {
+        String result = formatSize(3_000_000_000L);
+        assertTrue("should contain GByte", result.contains("GByte"));
+    }
+
+    @Test
+    public void testFormatSizeTeraBytes() {
+        String result = formatSize(3_000_000_000_000L);
+        assertTrue("should contain TByte", result.contains("TByte"));
+    }
 }

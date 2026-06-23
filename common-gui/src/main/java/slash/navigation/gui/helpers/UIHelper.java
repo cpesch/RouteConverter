@@ -132,8 +132,10 @@ public class UIHelper {
         return width + extraWidth;
     }
 
-    private static final int KILO_BYTE = 1024;
-    private static final int MEGA_BYTE = KILO_BYTE * KILO_BYTE;
+    private static final long KILO_BYTE = 1024;
+    private static final long MEGA_BYTE = KILO_BYTE * KILO_BYTE;
+    private static final long GIGA_BYTE = MEGA_BYTE * KILO_BYTE;
+    private static final long TERA_BYTE = GIGA_BYTE * KILO_BYTE;
 
     private static long toNextUnit(Long size, long nextUnit) {
         return Math.round(size / (double) nextUnit + 0.5);
@@ -144,7 +146,13 @@ public class UIHelper {
             return "?";
 
         String unit;
-        if (size > 2 * MEGA_BYTE) {
+        if (size > 2 * TERA_BYTE) {
+            size = toNextUnit(size, TERA_BYTE);
+            unit = "TByte";
+        } else if (size > 2 * GIGA_BYTE) {
+            size = toNextUnit(size, GIGA_BYTE);
+            unit = "GByte";
+        } else if (size > 2 * MEGA_BYTE) {
             size = toNextUnit(size, MEGA_BYTE);
             unit = "MByte";
         } else if (size > 2 * KILO_BYTE) {
