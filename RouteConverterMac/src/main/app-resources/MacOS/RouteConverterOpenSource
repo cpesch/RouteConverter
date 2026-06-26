@@ -11,9 +11,19 @@
 # Silicon machines without it.
 #
 DIR="$(cd "$(dirname "$0")/.." && pwd)"
+#
+# Strip the download quarantine flag from the whole bundle before launching.
+# The bundled JRE (Contents/bin/java + its dylibs) is Developer-ID signed by
+# Temurin but NOT notarized. On Apple Silicon a quarantined, un-notarized
+# binary that this script execs is SIGKILLed by the kernel ("Killed: 9") even
+# after the user approves the Gatekeeper prompt -- that approval covers the
+# bundle, not bin/java exec'd as a child process. Clearing com.apple.quarantine
+# lets the signed JRE start. Best-effort: needs write access to the bundle
+# (true under ~/Downloads or /Applications); a no-op once already cleared.
+/usr/bin/xattr -dr com.apple.quarantine "$(cd "$DIR/.." && pwd)" 2>/dev/null || true
 exec "$DIR/bin/java" \
   -Xdock:name=RouteConverter \
   -Xdock:icon="$DIR/Resources/RouteConverter.icns" \
   --add-exports java.desktop/com.apple.eawt=ALL-UNNAMED \
   -Xmx1024m \
-  -jar "$DIR/Java/RouteConverterMacOpenSource.jar" "$@"
+  -jar "$DIR/Java/RouteConverterMac.jar" "$@"
