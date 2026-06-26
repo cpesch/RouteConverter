@@ -15,8 +15,8 @@ supported formats, FAQ, and downloads.
 
 ## Download
 
-- **Stable releases:** https://www.routeconverter.com/releases/
-- **Prereleases (frequent):** https://www.routeconverter.com/prereleases/
+- **Stable releases:** https://releases.routeconverter.com/latest/
+- **Prereleases (frequent):** https://releases.routeconverter.com/prerelease/
 
 The **Windows** (`.exe`) and **macOS** (`.app`) downloads bundle a Java runtime —
 nothing else to install. The **Linux** build ships as a runnable `.jar` that needs

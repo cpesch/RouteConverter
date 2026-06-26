@@ -142,10 +142,10 @@ public class RouteFeedback {
     }
 
     public String getUpdateCheckUrl(String version, long startTime) {
-        // Offer the latest release on the download page (lets the user pick OS/architecture).
-        // The version/startTime are no longer encoded into the URL; the page always serves the
+        // Offer the latest release directory (lets the user pick OS/architecture).
+        // The version/startTime are no longer encoded into the URL; the host always serves the
         // latest stable build from releases.routeconverter.com.
-        return "https://www.routeconverter.com/downloads/";
+        return "https://releases.routeconverter.com/latest/";
     }
 
     public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,

@@ -80,7 +80,7 @@ Stale-Download-Vermeidung und einige kleinere UI-Verbesserungen.
 
 | OS | File | URL |
 |---|---|---|
-| Archive | All artefacts for 3.4 | https://static.routeconverter.com/downloads/previous-releases/3.4/ |
+| Archive | All artefacts for 3.4 | https://releases.routeconverter.com/previous-releases/3.4/ |
 | API docs | Aggregated Javadoc (always current release) | https://static.routeconverter.com/javadoc/ |
 
 ### Acknowledgements
