@@ -98,10 +98,25 @@ Bugs and feature requests: [github.com/cpesch/RouteConverter/issues](https://git
 
 ## CI & releases
 
-GitHub Actions builds + tests on push/PR. Tagged releases (and the rolling
-prerelease) publish installers + jars to `static.routeconverter.com`; Windows
-installers are Authenticode-signed and the standalone jars jar-signed via SignPath
-Foundation, in CI — contributors need no signing credentials.
+GitHub Actions builds + tests on push/PR. Windows installers are Authenticode-signed
+and the standalone jars jar-signed via SignPath Foundation, in CI — contributors need
+no signing credentials.
+
+**Publishing.** Tagged releases (`release.yml`) and the rolling prerelease
+(`prerelease.yml`) each (a) `rsync` the artefacts over SSH to the download host and
+(b) create/refresh a GitHub Release; javadoc is rsynced by `javadoc.yml`. Deploy auth
+is the `rc-release-deploy@$RC_RELEASE_DEPLOY_HOST` account via the ed25519 key in
+secret `RC_RELEASE_DEPLOY_SSH_KEY` (host in `RC_RELEASE_DEPLOY_HOST`). Targets under
+`/var/www/routeconverter.com/static/`: prerelease → `downloads/prereleases/`, release
+→ `downloads/release/` + `downloads/previous-releases/<version>/`, javadoc →
+`javadoc/`. The canonical download host is **`releases.routeconverter.com`**
+(`/latest`, `/prerelease`, `/previous-releases/<v>/`) — an Apache vhost serving that
+static tree; javadoc lives at `static.routeconverter.com/javadoc/`.
+
+An rsync `Permission denied (publickey)` is an **infra-side** break of the deploy key
+(rotated `RC_RELEASE_DEPLOY_SSH_KEY`, or the server's `authorized_keys` for
+`rc-release-deploy`), not a repo bug — fix the key, then re-run the failed job; the
+builds need not repeat.
 
 ## Notes for AI agents
 
