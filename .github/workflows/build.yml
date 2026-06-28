@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 17, 21, 25 ]
+        java: [ 21, 25 ]
     name: Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v5
@@ -26,9 +26,9 @@ jobs:
         run: mvn --version
       - name: Build with Maven
         run: mvn --batch-mode -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
-      # Upload coverage once per build (Java 17 only — avoid 3x duplicate uploads from the matrix)
+      # Upload coverage once per build (Java 21 only — avoid duplicate uploads from the matrix)
       - name: Upload coverage to Codecov
-        if: matrix.java == 17
+        if: matrix.java == 21
         uses: codecov/codecov-action@v5.5.5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -38,7 +38,7 @@ jobs:
     runs-on: windows-latest
     strategy:
       matrix:
-        java: [ 17 ]
+        java: [ 21 ]
     name: Java ${{ matrix.java }} on Windows
     steps:
       - uses: actions/checkout@v5

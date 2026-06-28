@@ -29,7 +29,7 @@ runs only the hermetic ITs (the default coverage set); the live-service ITs
 (`*ServiceIT`, `DownloadManagerIT`, `RemoteRouteIT`, …) need network/credentials and
 run via `-Pintegration-test` / `-Ptest-all`.
 
-CI runs the test matrix on **Java 17, 21, 25** plus a Windows smoke build.
+CI runs the test matrix on **Java 21, 25** (21 is the minimum) plus a Windows smoke build.
 The bundled-JRE version is the single source of truth `<jre.version>` in the root
 `pom.xml` — keep it in sync with the CI `setup-java` version on JDK bumps.
 

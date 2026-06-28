@@ -2,9 +2,45 @@
 
 ## Status
 
-Open. Created June 13, 2026 (originally targeting Java 21). Revised June 20, 2026
-to target **Java 25** — see "Decision: 25, not 21" below. Tracks GitHub issue
+In progress. Created June 13, 2026 (originally targeting Java 21). Revised June 20,
+2026 to target **Java 25** — see "Decision: 25, not 21" below. Tracks GitHub issue
 \#110 ("write a spec for bumping the bundled Java runtime").
+
+**June 28, 2026 — landed the 21 floor (knobs 2+3 + CI + docs).** Maintainer chose
+the safe floor (21), not 25, for this round. Done in-repo and validated on a local
+JDK 21 build (bytecode major 65 confirmed; `mvn clean test` failure set identical
+to the JDK 17 baseline — only pre-existing env-dependent `*IT`/URL tests fail,
+none introduced by the bump):
+
+- root `pom.xml`: `<java.version>` 17→21, `<jre.version>` 17.0.19→21.0.11, and the
+  compiler switched from `<source>`/`<target>` to `<release>` (the optimization
+  below — now material because the matrix still builds on 25 above a 21 floor).
+- CI: `build.yml` matrix `[17,21,25]`→`[21,25]` (17 can't javac-target 21) and the
+  Windows smoke `[17]`→`[21]`; codecov upload gate `==17`→`==21`;
+  `release-prepare.yml`/`javadoc.yml`/`_build-linux-mac.yml` build JDK `'17'`→`'21'`;
+  `release.yml` pin `'17.0.19'`→`'21.0.11'`. The `build-{mac,windows}-jre.yml` /
+  `_build-windows.yml` derive the version from `<jre.version>` and follow automatically.
+- docs: `RELEASE_NOTES.md` (EN+DE) Java 25→21; `AGENTS.md` + `README.md` matrix
+  drop 17. (README/AGENTS user-facing 17→21 already shipped in #115.)
+
+**jlink re-validation (JDK 21).** `jdeps --print-module-deps` against 21 matches the
+curated `scripts/jre-modules.txt` except it flags `jdk.management`, pulled in by
+`UpdateChecker.getTotalMemory()` casting to `com.sun.management.OperatingSystemMXBean`.
+That call is wrapped in `catch (Throwable) { return "?"; }`, so on the stripped JRE
+(which omits `jdk.management`) it degrades silently to "?" rather than crashing —
+a **pre-existing** gap, identical on 17 and 21, not introduced by this bump. No new
+module is *required* at startup. Left the module list unchanged; restoring the
+total-memory telemetry field by adding `jdk.management` is a separate minor decision.
+
+**Remaining (gated CI/human, not doable locally):**
+- Republish the hosted stripped JREs at **21.0.11** via `build-mac-jre.yml` /
+  `build-windows-jre.yml` (Mac x64+aarch64, Windows x64). Until then, release/bundle
+  builds that fetch `jre-21.0.11-*-stripped.zip` will 404.
+- Smoke-launch every bundle (Mac `.app` x64+aarch64, Windows `.exe`/bundle/portable,
+  Linux) with `scripts/verify-runtime.sh`; confirm `java -version` reports 21.0.11
+  and no startup `NoClassDefFound`.
+- **25 is still the eventual goal** — repeat knobs 1–3 against 25 once the 21 floor
+  is proven in production.
 
 `RELEASE_NOTES.md` already announces "the build moves to Java 25" — that is the
 **build JDK** (knob 1). The bytecode target and bundled JRE (knobs 2–3) are

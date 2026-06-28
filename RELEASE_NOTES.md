@@ -12,7 +12,7 @@ POI databases and a Mapsforge geocoding service in FindPlace. The Find
 Places dialog has been rebuilt with a sortable table, queries every
 configured geocoding service in parallel, and shows the category and type
 of each POI in a dedicated column. Under the hood the build moves to
-Java 25 and the third-party repository now lives at
+Java 21 and the third-party repository now lives at
 `mvn.routeconverter.com`. Plus the usual round of fixes — timezone
 handling for tracks with an offset, WBT-202 tracks that start at zero
 distance, stale-download avoidance, and a number of smaller UI polish
@@ -25,7 +25,7 @@ Die Online Services nutzen jetzt Mapsforge- und OpenAndroMaps-POI-Datenbanken
 sowie einen Mapsforge-Geocoding-Dienst in FindPlace. Der Find-Places-Dialog
 wurde neu aufgebaut — sortierbare Tabelle, parallele Abfrage aller
 konfigurierten Geocoding-Dienste, eigene Spalte für Kategorie und Typ jedes
-POIs. Unter der Haube läuft der Build mit Java 25, das Drittanbieter-Repo
+POIs. Unter der Haube läuft der Build mit Java 21, das Drittanbieter-Repo
 liegt jetzt auf `mvn.routeconverter.com`. Dazu die üblichen Korrekturen:
 Zeitzonen mit Offset, WBT-202-Tracks mit Null-Distanz am Anfang,
 Stale-Download-Vermeidung und einige kleinere UI-Verbesserungen.

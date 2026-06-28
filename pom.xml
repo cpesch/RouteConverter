@@ -74,9 +74,9 @@
              TimeAlbumProWindows (via NSI resource filtering, ${jre.version}),
              and the build-windows-jre / build-mac-jre / prerelease / release
              GitHub workflows (grep on this pom). -->
-        <jre.version>17.0.19</jre.version>
+        <jre.version>21.0.11</jre.version>
 
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <maven.version>[3.5.4,)</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -178,8 +178,10 @@
                     <artifactId>maven-compiler-plugin</artifactId>
                     <version>3.14.1</version>
                     <configuration>
-                        <source>${java.version}</source>
-                        <target>${java.version}</target>
+                        <!-- release (not source/target): validates against the target JDK's
+                             API, so a build on a newer JDK (matrix 25) can't silently emit
+                             references to APIs absent from the Java 21 floor. See specs/00010. -->
+                        <release>${java.version}</release>
                         <encoding>UTF-8</encoding>
                     </configuration>
                 </plugin>
