@@ -61,7 +61,8 @@ public class GpxUtil {
                 slash.navigation.gpx.osmand.ObjectFactory.class,
                 slash.navigation.gpx.trackpoint1.ObjectFactory.class,
                 slash.navigation.gpx.trackpoint2.ObjectFactory.class,
-                slash.navigation.gpx.trip1.ObjectFactory.class);
+                slash.navigation.gpx.trip1.ObjectFactory.class,
+                slash.navigation.gpx.trekbuddy.ObjectFactory.class);
     }
 
     private static Unmarshaller newUnmarshaller11() {
