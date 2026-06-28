@@ -184,6 +184,49 @@ public class GpxUtilTest {
         assertEquals("nmea:course should bind to a JAXBElement<BigDecimal>", new BigDecimal("270.0"), course);
     }
 
+    // ---- every registered extension ObjectFactory must produce a live binding ----
+
+    private static String gpx11WithTrkptExtension(String prefix, String namespace, String elementXml) {
+        return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"ext-test\">" +
+                "<trk><trkseg>" +
+                "<trkpt lat=\"48.0\" lon=\"11.0\">" +
+                "<extensions xmlns:" + prefix + "=\"" + namespace + "\">" + elementXml + "</extensions>" +
+                "</trkpt>" +
+                "</trkseg></trk>" +
+                "</gpx>";
+    }
+
+    private static boolean trkptExtensionBindsTo(GpxType type, String namespace, String localName) {
+        List<Object> any = type.getTrk().get(0).getTrkseg().get(0).getTrkpt().get(0).getExtensions().getAny();
+        for (Object o : any)
+            if (o instanceof JAXBElement) {
+                javax.xml.namespace.QName name = ((JAXBElement<?>) o).getName();
+                if (namespace.equals(name.getNamespaceURI()) && localName.equals(name.getLocalPart()))
+                    return true;
+            }
+        return false;
+    }
+
+    @Test
+    public void testAllTopLevelExtensionBindingsAreRegistered() throws IOException {
+        // namespace, xmlns prefix, element XML, top-level element local name (one per ObjectFactory in newContext11)
+        String[][] cases = {
+                {GARMIN_EXTENSIONS_3_NAMESPACE_URI, "gpxx", "<gpxx:TrackPointExtension/>", "TrackPointExtension"},
+                {GARMIN_TRACKPOINT_EXTENSIONS_1_NAMESPACE_URI, "tpx1", "<tpx1:TrackPointExtension/>", "TrackPointExtension"},
+                {GARMIN_TRACKPOINT_EXTENSIONS_2_NAMESPACE_URI, "tpx2", "<tpx2:TrackPointExtension/>", "TrackPointExtension"},
+                {GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI, "trp", "<trp:Trip/>", "Trip"},
+                {TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI, "nmea", "<nmea:speed>12.5</nmea:speed>", "speed"},
+        };
+        for (String[] c : cases) {
+            String namespace = c[0], prefix = c[1], elementXml = c[2], localName = c[3];
+            GpxType type = unmarshal11(gpx11WithTrkptExtension(prefix, namespace, elementXml));
+            assertNotNull(type);
+            assertTrue(localName + " in " + namespace + " must bind to a JAXBElement (ObjectFactory registered in newContext11), not fall back to a DOM Element",
+                    trkptExtensionBindsTo(type, namespace, localName));
+        }
+    }
+
     @Test
     public void testTrekbuddyNmeaExtensionsRoundTrip() throws IOException, JAXBException {
         String gpx =
