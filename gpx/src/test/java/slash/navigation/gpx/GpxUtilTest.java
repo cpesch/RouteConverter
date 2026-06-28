@@ -322,6 +322,88 @@ public class GpxUtilTest {
         assertNotNull("split_type binds to its enum", splitType);
     }
 
+    // ---- garmin TripExtensions v1 (trip1) ----
+
+    @Test
+    public void testTrip1TripBindsAndRoundTrips() throws IOException, JAXBException {
+        String gpx =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"trip1-test\" " +
+                "xmlns:trp=\"http://www.garmin.com/xmlschemas/TripExtensions/v1\">" +
+                "<rte>" +
+                "<extensions><trp:Trip><trp:TransportationMode>Automotive</trp:TransportationMode></trp:Trip></extensions>" +
+                "<rtept lat=\"48.0\" lon=\"11.0\"/>" +
+                "</rte>" +
+                "</gpx>";
+        GpxType type = unmarshal11(gpx);
+        String mode = null;
+        for (Object o : type.getRte().get(0).getExtensions().getAny()) {
+            if (o instanceof JAXBElement) {
+                Object v = ((JAXBElement<?>) o).getValue();
+                if (v instanceof slash.navigation.gpx.trip1.TripExtensionT trip)
+                    mode = trip.getTransportationMode();
+            }
+        }
+        assertEquals("trp:Trip must bind to TripExtensionT (trip1 registered)", "Automotive", mode);
+
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshal11(type, out);
+        String xml = out.toString(StandardCharsets.UTF_8);
+        assertTrue("round-trip preserves the TripExtensions namespace", xml.contains(GARMIN_TRIP_EXTENSIONS_1_NAMESPACE_URI));
+        assertTrue("round-trip preserves TransportationMode", xml.contains("Automotive"));
+    }
+
+    @Test
+    public void testRealGarminBasecampBindsTripAndRoutePointExtensions() throws IOException {
+        // from-garmin-basecamp.gpx is a real "Garmin Desktop App" export (GPSBabel reference).
+        GpxType type;
+        try (java.io.InputStream in = getClass().getResourceAsStream("/from-garmin-basecamp.gpx")) {
+            assertNotNull("from-garmin-basecamp.gpx must be on the test classpath", in);
+            type = unmarshal11(in);
+        }
+        String calcMode = null;
+        boolean routePointExtension = false;
+        for (slash.navigation.gpx.binding11.WptType rtept : type.getRte().get(0).getRtept()) {
+            for (Object o : rtept.getExtensions().getAny()) {
+                if (o instanceof JAXBElement) {
+                    Object v = ((JAXBElement<?>) o).getValue();
+                    if (v instanceof slash.navigation.gpx.trip1.ViaPointExtensionT vp)
+                        calcMode = vp.getCalculationMode();
+                    else if (v instanceof slash.navigation.gpx.garmin3.RoutePointExtensionT)
+                        routePointExtension = true;
+                }
+            }
+        }
+        assertEquals("trp:ViaPoint binds to ViaPointExtensionT (trip1)", "FasterTime", calcMode);
+        assertTrue("gpxx:RoutePointExtension binds to RoutePointExtensionT (garmin3)", routePointExtension);
+    }
+
+    @Test
+    public void testRealGarminTrackPointExtensionV2Binds() throws IOException {
+        GpxType type;
+        try (java.io.InputStream in = getClass().getResourceAsStream("/from-garmin-trackpoint.gpx")) {
+            assertNotNull("from-garmin-trackpoint.gpx must be on the test classpath", in);
+            type = unmarshal11(in);
+        }
+        Short hr = null, cad = null;
+        Double atemp = null;
+        slash.navigation.gpx.binding11.WptType trkpt =
+                type.getTrk().get(0).getTrkseg().get(0).getTrkpt().get(0);
+        for (Object o : trkpt.getExtensions().getAny()) {
+            if (o instanceof JAXBElement) {
+                Object v = ((JAXBElement<?>) o).getValue();
+                if (v instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT tpx) {
+                    hr = tpx.getHr();
+                    cad = tpx.getCad();
+                    atemp = tpx.getAtemp();
+                }
+            }
+        }
+        assertEquals("gpxtpx:hr binds", Short.valueOf((short) 118), hr);
+        assertEquals("gpxtpx:cad binds", Short.valueOf((short) 84), cad);
+        assertEquals("gpxtpx:atemp binds", Double.valueOf(21.0), atemp);
+    }
+
     @Test
     public void testTrekbuddyNmeaExtensionsRoundTrip() throws IOException, JAXBException {
         String gpx =

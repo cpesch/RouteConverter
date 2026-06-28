@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Garmin TrackPointExtension v2 (gpxtpx) sample, modelled on real device/Strava
+     exports (http://www.garmin.com/xmlschemas/TrackPointExtension/v2): per-trackpoint
+     heart rate, cadence and air temperature. -->
+<gpx version="1.1" creator="from-garmin-trackpoint"
+     xmlns="http://www.topografix.com/GPX/1/1"
+     xmlns:gpxtpx="http://www.garmin.com/xmlschemas/TrackPointExtension/v2">
+  <trk>
+    <name>ride</name>
+    <trkseg>
+      <trkpt lat="48.137200" lon="11.575500">
+        <ele>520.0</ele>
+        <time>2025-05-01T08:00:00Z</time>
+        <extensions>
+          <gpxtpx:TrackPointExtension>
+            <gpxtpx:atemp>21</gpxtpx:atemp>
+            <gpxtpx:hr>118</gpxtpx:hr>
+            <gpxtpx:cad>84</gpxtpx:cad>
+          </gpxtpx:TrackPointExtension>
+        </extensions>
+      </trkpt>
+      <trkpt lat="48.137350" lon="11.575800">
+        <ele>521.2</ele>
+        <time>2025-05-01T08:00:05Z</time>
+        <extensions>
+          <gpxtpx:TrackPointExtension>
+            <gpxtpx:atemp>21</gpxtpx:atemp>
+            <gpxtpx:hr>122</gpxtpx:hr>
+            <gpxtpx:cad>86</gpxtpx:cad>
+          </gpxtpx:TrackPointExtension>
+        </extensions>
+      </trkpt>
+    </trkseg>
+  </trk>
+</gpx>
