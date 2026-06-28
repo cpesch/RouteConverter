@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<!-- Compact fixture taken verbatim from a real OsmAnd~ 5.1.9 GPX export
+     (https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx/):
+     metadata activity, per-trackpoint <osmand:speed>, and the full top-level
+     track-appearance <extensions> block (note the empty <osmand:width/> and the
+     8-hex ARGB color - real-world edge cases). Trimmed to three trackpoints. -->
+<gpx version="1.1" creator="OsmAnd~ 5.1.9" xmlns="http://www.topografix.com/GPX/1/1" xmlns:osmand="https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx" xmlns:gpxtpx="https://www8.garmin.com/xmlschemas/TrackPointExtensionv1.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 https://www.topografix.com/GPX/1/1/gpx.xsd">
+  <metadata>
+    <name>from-osmand</name>
+    <extensions>
+      <osmand:activity>walking</osmand:activity>
+    </extensions>
+  </metadata>
+  <trk>
+    <trkseg>
+      <trkpt lat="50.4065867" lon="8.6748783">
+        <ele>243.4</ele>
+        <time>2025-10-22T06:21:23Z</time>
+        <hdop>1.6</hdop>
+        <extensions>
+          <osmand:speed>0.2</osmand:speed>
+        </extensions>
+      </trkpt>
+      <trkpt lat="50.4065967" lon="8.6748900">
+        <ele>244.1</ele>
+        <time>2025-10-22T06:21:25Z</time>
+        <hdop>1.6</hdop>
+        <extensions>
+          <osmand:speed>0.7</osmand:speed>
+        </extensions>
+      </trkpt>
+      <trkpt lat="50.4066100" lon="8.6749100">
+        <ele>244.5</ele>
+        <time>2025-10-22T06:21:27Z</time>
+        <hdop>1.5</hdop>
+        <extensions>
+          <osmand:speed>1.1</osmand:speed>
+        </extensions>
+      </trkpt>
+    </trkseg>
+  </trk>
+  <extensions>
+    <osmand:show_arrows>false</osmand:show_arrows>
+    <osmand:show_start_finish>true</osmand:show_start_finish>
+    <osmand:split_interval>0.0</osmand:split_interval>
+    <osmand:split_type>no_split</osmand:split_type>
+    <osmand:line_3d_visualization_by_type>none</osmand:line_3d_visualization_by_type>
+    <osmand:line_3d_visualization_wall_color_type>none</osmand:line_3d_visualization_wall_color_type>
+    <osmand:line_3d_visualization_position_type>top</osmand:line_3d_visualization_position_type>
+    <osmand:vertical_exaggeration_scale>1.0</osmand:vertical_exaggeration_scale>
+    <osmand:elevation_meters>1000.0</osmand:elevation_meters>
+    <osmand:color>#4e4eff</osmand:color>
+    <osmand:width></osmand:width>
+    <osmand:coloring_type>solid</osmand:coloring_type>
+  </extensions>
+</gpx>

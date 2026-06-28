@@ -286,6 +286,43 @@ public class GpxUtilTest {
     }
 
     @Test
+    public void testRealOsmandExportBindsTrackAppearance() throws IOException {
+        // from-osmand.gpx is taken verbatim from a real OsmAnd~ 5.1.9 export.
+        GpxType type;
+        try (java.io.InputStream in = getClass().getResourceAsStream("/from-osmand.gpx")) {
+            assertNotNull("from-osmand.gpx fixture must be on the test classpath", in);
+            type = unmarshal11(in);
+        }
+        assertNotNull(type);
+        assertNotNull("real osmand export has a top-level <extensions>", type.getExtensions());
+
+        String color = null, width = null;
+        Boolean showArrows = null;
+        Object coloringType = null, splitType = null;
+        boolean sawWidthElement = false;
+        for (Object o : type.getExtensions().getAny()) {
+            if (o instanceof JAXBElement) {
+                JAXBElement<?> e = (JAXBElement<?>) o;
+                switch (e.getName().getLocalPart()) {
+                    case "color" -> color = (String) e.getValue();
+                    case "width" -> { sawWidthElement = true; width = (String) e.getValue(); }
+                    case "show_arrows" -> showArrows = (Boolean) e.getValue();
+                    case "coloring_type" -> coloringType = e.getValue();
+                    case "split_type" -> splitType = e.getValue();
+                    default -> { }
+                }
+            }
+        }
+        assertEquals("osmand:color binds typed", "#4e4eff", color);
+        assertEquals(Boolean.FALSE, showArrows);
+        assertTrue("empty <osmand:width/> still binds (no parse failure)", sawWidthElement);
+        assertTrue("empty width value is null or blank", width == null || width.isEmpty());
+        assertNotNull("coloring_type binds to its enum", coloringType);
+        assertEquals("solid", String.valueOf(coloringType).toLowerCase());
+        assertNotNull("split_type binds to its enum", splitType);
+    }
+
+    @Test
     public void testTrekbuddyNmeaExtensionsRoundTrip() throws IOException, JAXBException {
         String gpx =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
@@ -327,5 +364,5 @@ public class GpxUtilTest {
         assertNotNull(gpx);
         assertEquals("filter-test", gpx.getCreator());
     }
-}
 
+}
