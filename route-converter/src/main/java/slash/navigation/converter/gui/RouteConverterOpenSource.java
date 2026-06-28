@@ -247,11 +247,29 @@ public class RouteConverterOpenSource extends RouteConverter {
     protected void installBackgroundMap() {
         final File file = new File(getApplicationDirectory("maps/routeconverter"), "world.map");
         getDownloadManager().executeDownload("RouteConverter Background Map", "https://static.routeconverter.com/maps/world.map", Copy, file,
-                () -> invokeLater(() -> {
-                    MapView mapView = getMapView();
-                    if (mapView instanceof MapsforgeMapView)
-                        ((MapsforgeMapView) mapView).setBackgroundMap(file);
-                }));
+                () -> applyBackgroundMapWhenReady(file, 50));
+    }
+
+    /**
+     * The map view is created asynchronously on the EDT during startup, so this download
+     * callback can run before {@link #getMapView()} exists. The previous one-shot check then
+     * silently dropped the background map for the whole session (no setBackgroundMap, no log).
+     * Retry on the EDT until the {@link MapsforgeMapView} is available (bounded) instead of
+     * racing its creation. A non-Mapsforge map view (e.g. online) has no background map.
+     */
+    private void applyBackgroundMapWhenReady(File file, int attemptsLeft) {
+        invokeLater(() -> {
+            MapView mapView = getMapView();
+            if (mapView instanceof MapsforgeMapView) {
+                ((MapsforgeMapView) mapView).setBackgroundMap(file);
+            } else if (mapView == null && attemptsLeft > 0) {
+                Timer timer = new Timer(200, e -> applyBackgroundMapWhenReady(file, attemptsLeft - 1));
+                timer.setRepeats(false);
+                timer.start();
+            } else if (mapView == null) {
+                log.warning("Map view not available after waiting; background map " + file + " not installed");
+            }
+        });
     }
 
     protected void scanRemoteMapsAndThemes() {
