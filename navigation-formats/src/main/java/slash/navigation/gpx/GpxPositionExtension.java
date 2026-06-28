@@ -94,8 +94,6 @@ public class GpxPositionExtension {
                     Object anyValue = jaxbElement.getValue();
                     if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                         result = formatDouble(trackPoint.getCourse());
-                    } else if (anyValue instanceof slash.navigation.gpx.osmand.TrackPointExtensionsType trackPoint) {
-                        result = formatDouble(trackPoint.getHeading());
                     }
 
                 } else if (any instanceof Element element) {
@@ -122,9 +120,6 @@ public class GpxPositionExtension {
                 Object anyValue = jaxbElement.getValue();
                 if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                     trackPoint.setCourse(formatHeading(heading));
-                    foundHeading = true;
-                } else if (anyValue instanceof slash.navigation.gpx.osmand.TrackPointExtensionsType trackPoint) {
-                    trackPoint.setHeading(formatHeading(heading));
                     foundHeading = true;
                 }
 
@@ -154,8 +149,6 @@ public class GpxPositionExtension {
                     Object anyValue = jaxbElement.getValue();
                     if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                         result = msToKmh(trackPoint.getSpeed());
-                    } else if (anyValue instanceof slash.navigation.gpx.osmand.TrackPointExtensionsType trackPoint) {
-                        result = formatDouble(trackPoint.getSpeed());
                     }
 
                 } else if (any instanceof Element element) {
@@ -182,9 +175,6 @@ public class GpxPositionExtension {
                 Object anyValue = jaxbElement.getValue();
                 if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
                     trackPoint.setSpeed(formatSpeedAsDouble(kmhToMs(speed)));
-                    foundSpeed = true;
-                } else if (anyValue instanceof slash.navigation.gpx.osmand.TrackPointExtensionsType trackPoint) {
-                    trackPoint.setSpeed(formatSpeed(kmhToMs(speed)));
                     foundSpeed = true;
                 }
 

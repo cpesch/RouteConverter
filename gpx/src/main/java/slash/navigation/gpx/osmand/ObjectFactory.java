@@ -84,26 +84,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link TrackPointExtensionsType }
-     * 
-     * @return
-     *     the new instance of {@link TrackPointExtensionsType }
-     */
-    public TrackPointExtensionsType createTrackPointExtensionsType() {
-        return new TrackPointExtensionsType();
-    }
-
-    /**
-     * Create an instance of {@link RoutePointExtensionsType }
-     * 
-     * @return
-     *     the new instance of {@link RoutePointExtensionsType }
-     */
-    public RoutePointExtensionsType createRoutePointExtensionsType() {
-        return new RoutePointExtensionsType();
-    }
-
-    /**
      * Create an instance of {@link RouteType }
      * 
      * @return

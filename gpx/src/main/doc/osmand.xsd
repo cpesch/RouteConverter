@@ -111,22 +111,8 @@
         </xsd:sequence>
     </xsd:complexType>
 
-    <!-- Legacy: OsmAnd actually writes per-trackpoint speed/heading UNQUALIFIED
-         (no osmand namespace), so these types are not used for binding; retained
-         only because the generated classes are still referenced in code. -->
-    <xsd:complexType name="TrackPointExtensionsType">
-        <xsd:sequence>
-            <xsd:element name="speed" type="xsd:decimal" minOccurs="0"/>
-            <xsd:element name="heading" type="xsd:decimal" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
-
-    <xsd:complexType name="RoutePointExtensionsType">
-        <xsd:sequence>
-            <xsd:element name="profile" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="trkpt_idx" type="xsd:nonNegativeInteger" minOccurs="0"/>
-        </xsd:sequence>
-    </xsd:complexType>
+    <!-- Note: OsmAnd writes per-trackpoint speed/heading UNQUALIFIED (no osmand
+         namespace), so they are intentionally not modelled here. -->
 
     <!-- Route Type -->
     <xsd:complexType name="RouteType">
