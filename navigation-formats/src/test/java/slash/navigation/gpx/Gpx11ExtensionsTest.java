@@ -33,6 +33,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
@@ -641,5 +642,199 @@ public class Gpx11ExtensionsTest {
         GpxPosition position2 = getFirstPositionOfFirstRoute(routes2);
         assertEquals(Short.valueOf("64"), position2.getHeartBeat());
         assertEquals(new HashSet<>(singletonList(TrackPoint2)), position2.getPositionExtension().getExtensionTypes());
+    }
+
+    // ---- mergeExtensions / removeEmptyExtensions (multi-extension coexistence) ----
+
+    private void addExtension(WptType wpt, Object element) {
+        if (wpt.getExtensions() == null)
+            wpt.setExtensions(gpx11Factory.createExtensionsType());
+        wpt.getExtensions().getAny().add(element);
+    }
+
+    @Test
+    public void testMergeExtensionsMergesGarmin3AndTrackpoint1IntoTrackpoint2() {
+        WptType wpt = createWptType();
+        slash.navigation.gpx.trackpoint2.TrackPointExtensionT tp2 = trackpoint2Factory.createTrackPointExtensionT();
+        tp2.setCourse(new BigDecimal("90"));
+        addExtension(wpt, trackpoint2Factory.createTrackPointExtension(tp2));
+        slash.navigation.gpx.garmin3.TrackPointExtensionT g3 = garmin3Factory.createTrackPointExtensionT();
+        g3.setTemperature(7.5);
+        g3.setDepth(3.0);
+        addExtension(wpt, garmin3Factory.createTrackPointExtension(g3));
+        slash.navigation.gpx.trackpoint1.TrackPointExtensionT tp1 = trackpoint1Factory.createTrackPointExtensionT();
+        tp1.setHr((short) 140);
+        tp1.setCad((short) 90);
+        tp1.setAtemp(9.0);
+        addExtension(wpt, trackpoint1Factory.createTrackPointExtension(tp1));
+
+        GpxPositionExtension pe = new GpxPositionExtension(wpt);
+        assertEquals(new HashSet<>(asList(Garmin3, TrackPoint1, TrackPoint2)), pe.getExtensionTypes());
+
+        pe.mergeExtensions();
+
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), pe.getExtensionTypes());
+        assertDoubleEquals(7.5, tp2.getAtemp());        // garmin3 temperature merged first, wins atemp
+        assertDoubleEquals(3.0, tp2.getDepth());        // garmin3 depth merged
+        assertEquals(Short.valueOf((short) 140), tp2.getHr());  // trackpoint1 hr merged
+        assertEquals(Short.valueOf((short) 90), tp2.getCad());  // trackpoint1 cad merged
+    }
+
+    @Test
+    public void testMergeExtensionsNoopForSingleExtension() {
+        WptType wpt = createWptType();
+        slash.navigation.gpx.trackpoint2.TrackPointExtensionT tp2 = trackpoint2Factory.createTrackPointExtensionT();
+        tp2.setCourse(new BigDecimal("1"));
+        addExtension(wpt, trackpoint2Factory.createTrackPointExtension(tp2));
+
+        GpxPositionExtension pe = new GpxPositionExtension(wpt);
+        pe.mergeExtensions();   // getExtensionTypes().size() == 1 -> return
+
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), pe.getExtensionTypes());
+    }
+
+    @Test
+    public void testMergeExtensionsNoopForNullExtensions() {
+        GpxPositionExtension pe = new GpxPositionExtension(createWptType());
+        pe.mergeExtensions();   // extensions == null -> return
+        assertTrue(pe.getExtensionTypes().isEmpty());
+    }
+
+    @Test
+    public void testMergeExtensionsNoopWhenNoTrackpoint2() {
+        WptType wpt = createWptType();
+        slash.navigation.gpx.garmin3.TrackPointExtensionT g3 = garmin3Factory.createTrackPointExtensionT();
+        g3.setTemperature(5.0);
+        addExtension(wpt, garmin3Factory.createTrackPointExtension(g3));
+        slash.navigation.gpx.trackpoint1.TrackPointExtensionT tp1 = trackpoint1Factory.createTrackPointExtensionT();
+        tp1.setHr((short) 120);
+        addExtension(wpt, trackpoint1Factory.createTrackPointExtension(tp1));
+
+        GpxPositionExtension pe = new GpxPositionExtension(wpt);
+        pe.mergeExtensions();   // trackpoint2 == null -> return, nothing merged/removed
+
+        assertEquals(new HashSet<>(asList(Garmin3, TrackPoint1)), pe.getExtensionTypes());
+    }
+
+    @Test
+    public void testRemoveEmptyExtensionsClearsAllEmpty() {
+        WptType wpt = createWptType();
+        addExtension(wpt, garmin3Factory.createTrackPointExtension(garmin3Factory.createTrackPointExtensionT()));
+        addExtension(wpt, trackpoint1Factory.createTrackPointExtension(trackpoint1Factory.createTrackPointExtensionT()));
+        addExtension(wpt, trackpoint2Factory.createTrackPointExtension(trackpoint2Factory.createTrackPointExtensionT()));
+
+        GpxPositionExtension pe = new GpxPositionExtension(wpt);
+        pe.removeEmptyExtensions();
+
+        assertNull("all-empty extensions removed and container cleared", wpt.getExtensions());
+    }
+
+    @Test
+    public void testRemoveEmptyExtensionsKeepsNonEmpty() {
+        WptType wpt = createWptType();
+        slash.navigation.gpx.trackpoint2.TrackPointExtensionT tp2 = trackpoint2Factory.createTrackPointExtensionT();
+        tp2.setCourse(new BigDecimal("123"));
+        addExtension(wpt, trackpoint2Factory.createTrackPointExtension(tp2));
+        addExtension(wpt, garmin3Factory.createTrackPointExtension(garmin3Factory.createTrackPointExtensionT())); // empty
+
+        GpxPositionExtension pe = new GpxPositionExtension(wpt);
+        pe.removeEmptyExtensions();   // garmin3 empty removed, trackpoint2 kept (non-empty)
+
+        assertNotNull(wpt.getExtensions());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), pe.getExtensionTypes());
+    }
+
+    @Test
+    public void testRemoveEmptyExtensionsNoopForNullExtensions() {
+        WptType wpt = createWptType();
+        new GpxPositionExtension(wpt).removeEmptyExtensions();   // extensions == null -> return
+        assertNull(wpt.getExtensions());
+    }
+
+    // ---- heart beat read/update across existing extension types (not just create-new) ----
+
+    @Test
+    public void testGetHeartBeatFromTrackpoint1() {
+        WptType wpt = createWptType();
+        slash.navigation.gpx.trackpoint1.TrackPointExtensionT tp1 = trackpoint1Factory.createTrackPointExtensionT();
+        tp1.setHr((short) 142);
+        addExtension(wpt, trackpoint1Factory.createTrackPointExtension(tp1));
+        assertEquals(Short.valueOf((short) 142), new GpxPositionExtension(wpt).getHeartBeat());
+    }
+
+    @Test
+    public void testGetHeartBeatFromTrackpoint2() {
+        WptType wpt = createWptType();
+        slash.navigation.gpx.trackpoint2.TrackPointExtensionT tp2 = trackpoint2Factory.createTrackPointExtensionT();
+        tp2.setHr((short) 143);
+        addExtension(wpt, trackpoint2Factory.createTrackPointExtension(tp2));
+        assertEquals(Short.valueOf((short) 143), new GpxPositionExtension(wpt).getHeartBeat());
+    }
+
+    @Test
+    public void testSetHeartBeatUpdatesExistingTrackpoint1() {
+        WptType wpt = createWptType();
+        slash.navigation.gpx.trackpoint1.TrackPointExtensionT tp1 = trackpoint1Factory.createTrackPointExtensionT();
+        tp1.setHr((short) 100);
+        addExtension(wpt, trackpoint1Factory.createTrackPointExtension(tp1));
+
+        GpxPositionExtension pe = new GpxPositionExtension(wpt);
+        pe.setHeartBeat((short) 150);
+
+        assertEquals(Short.valueOf((short) 150), tp1.getHr());                        // updated in place
+        assertEquals(new HashSet<>(singletonList(TrackPoint1)), pe.getExtensionTypes()); // no new trackpoint2 created
+    }
+
+    @Test
+    public void testSetHeartBeatUpdatesExistingTrackpoint2() {
+        WptType wpt = createWptType();
+        slash.navigation.gpx.trackpoint2.TrackPointExtensionT tp2 = trackpoint2Factory.createTrackPointExtensionT();
+        tp2.setHr((short) 100);
+        addExtension(wpt, trackpoint2Factory.createTrackPointExtension(tp2));
+
+        GpxPositionExtension pe = new GpxPositionExtension(wpt);
+        pe.setHeartBeat((short) 155);
+
+        assertEquals(Short.valueOf((short) 155), tp2.getHr());
+        assertEquals(new HashSet<>(singletonList(TrackPoint2)), pe.getExtensionTypes());
+    }
+
+    @Test
+    public void testGetAndSetHeartBeatViaDomHrElement() throws Exception {
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"dom-hr\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<extensions><hr>120</hr></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        GpxPosition position = getFirstPositionOfFirstRoute(readGpx(source));
+        assertEquals("hr read from a plain DOM element", Short.valueOf((short) 120), position.getHeartBeat());
+
+        position.setHeartBeat((short) 133);
+        assertEquals("hr updated in the existing DOM element", Short.valueOf((short) 133), position.getHeartBeat());
+    }
+
+    @Test
+    public void testReadAndUpdateHeadingSpeedTemperatureViaDomElements() throws Exception {
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"dom-values\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<extensions><course>270.0</course><speed>5.0</speed><temperature>21.5</temperature></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        GpxPosition position = getFirstPositionOfFirstRoute(readGpx(source));
+
+        // read from plain DOM elements (course -> heading, speed, temperature)
+        assertDoubleEquals(270.0, position.getHeading());
+        assertNotNull("speed read from a DOM element", position.getSpeed());
+        assertDoubleEquals(21.5, position.getTemperature());
+
+        // update the existing DOM elements in place and read back (round-trip)
+        position.setHeading(180.0);
+        position.setSpeed(36.0);
+        position.setTemperature(10.0);
+        assertDoubleEquals(180.0, position.getHeading());
+        assertDoubleEquals(36.0, position.getSpeed());
+        assertDoubleEquals(10.0, position.getTemperature());
     }
 }
