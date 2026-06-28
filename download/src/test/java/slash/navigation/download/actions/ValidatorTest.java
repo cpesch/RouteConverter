@@ -23,9 +23,12 @@ package slash.navigation.download.actions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import slash.common.type.CompactCalendar;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.FileAndChecksum;
+
+import static slash.common.type.CompactCalendar.fromMillis;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -176,6 +179,34 @@ public class ValidatorTest {
 
         Validator v = new Validator(d);
         assertFalse(v.isChecksumsValid());
+    }
+
+    // --- "locally later than remote" heuristic must not override an authoritative SHA-1 (spec 00054) ---
+
+    @Test
+    public void checksumsInvalidWhenSHA1MismatchesEvenIfLocalIsNewer() throws IOException {
+        // expected carries a known (wrong) SHA-1 and an older last-modified time, so the local file
+        // looks "later than remote". A corrupt-but-newer file must still be flagged invalid.
+        CompactCalendar older = fromMillis(target.lastModified() - 100000L);
+        Checksum expected = new Checksum(older, target.length(), "wrong-sha1");
+        FileAndChecksum fac = new FileAndChecksum(target, expected);
+        Download d = new Download("desc", "http://example.com/f", Copy, fac, null);
+
+        Validator v = new Validator(d);
+        assertFalse(v.isChecksumsValid());
+    }
+
+    @Test
+    public void checksumsValidWhenLocalNewerAndNoSHA1() throws IOException {
+        // no authoritative SHA-1 in expected: the "locally later than remote" heuristic still rescues
+        // a content-length mismatch, preserving the loop-avoidance behavior for a legitimately newer file.
+        CompactCalendar older = fromMillis(target.lastModified() - 100000L);
+        Checksum expected = new Checksum(older, target.length() + 999L, null);
+        FileAndChecksum fac = new FileAndChecksum(target, expected);
+        Download d = new Download("desc", "http://example.com/f", Copy, fac, null);
+
+        Validator v = new Validator(d);
+        assertTrue(v.isChecksumsValid());
     }
 
     // --- expectedChecksumIsCurrentChecksum ---

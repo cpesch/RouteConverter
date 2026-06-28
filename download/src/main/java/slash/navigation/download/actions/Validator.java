@@ -112,11 +112,14 @@ public class Validator {
         if (actual == null)
             return false;
 
-        boolean localLaterThanRemote = file.getActualChecksum().laterThan(file.getExpectedChecksum());
+        boolean sha1Known = expected.getSHA1() != null;
+        // a newer local file is treated as valid (avoids endless re-downloads) for 2 reasons:
+        // - this was the very first download after a file update and this process updated the checksum on the server
+        // - the checksum on the server was updated but in the download queue there is still the checksum from the first download
+        // but an authoritative SHA-1 must never be overridden this way: a corrupt local file that
+        // happens to carry a newer last-modified time would otherwise escape detection forever
+        boolean localLaterThanRemote = !sha1Known && file.getActualChecksum().laterThan(file.getExpectedChecksum());
         if (localLaterThanRemote)
-            // 2 reasons:
-            // - this was the very first download after a file update and this process updated the checksum on the server
-            // - the checksum on the server was updated but in the download queue there is still the checksum from the first download
             log.info(format("%s is locally later than remote", file.getFile()));
 
         boolean lastModifiedEquals = expected.getLastModified() == null ||
