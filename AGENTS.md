@@ -10,11 +10,11 @@ ship under the GPL (hence the per-file header below).
 
 ## Build & test
 
-Java 17, Maven via the bundled wrapper:
+Java 21, Maven via the bundled wrapper:
 
 ```sh
-# macOS/Linux: java is often not on PATH — activate a JDK 17 first, e.g. sdkman:
-source ~/.sdkman/bin/sdkman-init.sh && sdk use java 17   # pin may vary; `ls ~/.sdkman/candidates/java/`
+# macOS/Linux: java is often not on PATH — activate a JDK 21 first, e.g. sdkman:
+source ~/.sdkman/bin/sdkman-init.sh && sdk use java 21   # pin may vary; `ls ~/.sdkman/candidates/java/`
 
 ./mvnw --batch-mode verify                 # full build + tests + coverage
 ./mvnw --batch-mode -pl <module> -am test  # one module (-am pulls sibling deps; add -U after dep changes)

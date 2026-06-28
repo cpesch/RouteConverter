@@ -3,7 +3,7 @@
 [![Test Coverage](https://codecov.io/gh/cpesch/RouteConverter/branch/master/graph/badge.svg)](https://codecov.io/gh/cpesch/RouteConverter)
 [![Translation status](https://hosted.weblate.org/widgets/routeconverter/-/svg-badge.svg)](https://hosted.weblate.org/engage/routeconverter/)
 [![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0-blue.svg)](LICENSE-GPL.txt)
-[![Java 17](https://img.shields.io/badge/Java-17-orange.svg)](https://adoptium.net/)
+[![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/)
 
 **RouteConverter** is a popular, free open-source tool to **display, edit, enrich and
 convert** GPS routes, tracks and waypoints across **80+ formats** (GPX, KML, NMEA,
@@ -20,11 +20,11 @@ supported formats, FAQ, and downloads.
 
 The **Windows** (`.exe`) and **macOS** (`.app`) downloads bundle a Java runtime —
 nothing else to install. The **Linux** build ships as a runnable `.jar` that needs
-**Java 17 or later** installed on your system.
+**Java 21 or later** installed on your system.
 
 ## Build & run from source
 
-You need **JDK 17** (e.g. from [Adoptium](https://adoptium.net/)). Maven comes
+You need **JDK 21** (e.g. from [Adoptium](https://adoptium.net/)). Maven comes
 bundled via the wrapper — no separate install.
 
 ```sh
@@ -41,8 +41,8 @@ java -jar RouteConverterLinux/target/RouteConverterLinux.jar
 java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
 ```
 
-> On macOS/Linux, if `java` isn't on your `PATH`, activate a JDK 17 first
-> (e.g. via [sdkman](https://sdkman.io/): `sdk use java 17`).
+> On macOS/Linux, if `java` isn't on your `PATH`, activate a JDK 21 first
+> (e.g. via [sdkman](https://sdkman.io/): `sdk use java 21`).
 
 CI builds and tests on **Java 17, 21 and 25** plus a Windows smoke build.
 
