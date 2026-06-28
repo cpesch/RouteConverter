@@ -78,7 +78,7 @@ public class GetPerformer implements ActionPerformer {
 
         long fileSize = getDownload().getTempFile().length();
         Long contentLength = getDownload().getFile().getExpectedChecksum() != null ? getDownload().getFile().getExpectedChecksum().getContentLength() : null;
-        log.info(format("Resuming bytes %d-%d from %s", fileSize, contentLength, getDownload().getUrl()));
+        log.info(format("Resuming bytes %d-%s from %s", fileSize, contentLength != null ? contentLength.toString() : "?", getDownload().getUrl()));
 
         Get request = new Get(getDownload().getUrl());
         request.setCacheControlNoCache();
@@ -102,7 +102,7 @@ public class GetPerformer implements ActionPerformer {
         downloadExecutor.updateState(Downloading);
 
         Long contentLength = getDownload().getFile().getExpectedChecksum() != null ? getDownload().getFile().getExpectedChecksum().getContentLength() : null;
-        log.info(format("Downloading %d bytes from %s with ETag %s", contentLength, getDownload().getUrl(), getDownload().getETag()));
+        log.info(format("Downloading %s from %s with ETag %s", contentLength != null ? contentLength + " bytes" : "an unknown number of bytes", getDownload().getUrl(), getDownload().getETag()));
 
         Get request = new Get(getDownload().getUrl());
         request.setCacheControlNoCache();
