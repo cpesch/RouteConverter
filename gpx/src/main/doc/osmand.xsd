@@ -5,59 +5,115 @@
             elementFormDefault="qualified"
             attributeFormDefault="unqualified">
 
-    <!-- OsmAnd Extensions Type - used inside GPX 1.1 <extensions> elements -->
+    <!--
+        OsmAnd writes its extension elements DIRECTLY inside a GPX 1.1 <extensions>
+        block (no wrapper element), e.g.
+
+            <extensions>
+                <osmand:color>#4e4eff</osmand:color>
+                <osmand:width>bold</osmand:width>
+            </extensions>
+
+        GPX <extensions> is xs:any/@XmlAnyElement(lax=true), so each osmand element
+        must be a GLOBAL element declaration to bind to a typed JAXBElement instead
+        of a generic DOM Element. They are therefore declared globally below and
+        referenced (not re-declared locally) by the container types.
+
+        Note: OsmAnd's per-trackpoint speed/heading are written UNQUALIFIED
+        (<speed>/<heading>, no osmand namespace), so they are intentionally NOT
+        part of this schema.
+        See https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx/
+    -->
+
+    <!-- ============================ Global elements ============================ -->
+
+    <!-- Track appearance -->
+    <xsd:element name="color" type="osmand:ColorType"/>
+    <xsd:element name="width" type="osmand:WidthType"/>
+    <xsd:element name="show_arrows" type="xsd:boolean"/>
+    <xsd:element name="show_start_finish" type="xsd:boolean"/>
+    <xsd:element name="split_type" type="osmand:SplitTypeEnum"/>
+    <xsd:element name="split_interval" type="xsd:double"/>
+    <xsd:element name="line_3d_visualization_by_type" type="osmand:Visualization3DTypeEnum"/>
+    <xsd:element name="line_3d_visualization_wall_color_type" type="osmand:WallColorTypeEnum"/>
+    <xsd:element name="line_3d_visualization_position_type" type="osmand:PositionTypeEnum"/>
+    <xsd:element name="vertical_exaggeration_scale" type="xsd:float"/>
+    <xsd:element name="elevation_meters" type="xsd:float"/>
+    <xsd:element name="coloring_type" type="osmand:ColoringTypeEnum"/>
+    <xsd:element name="color_palette" type="xsd:string"/>
+
+    <!-- Activity -->
+    <xsd:element name="activity" type="xsd:string"/>
+
+    <!-- Route information -->
+    <xsd:element name="route" type="osmand:RouteType"/>
+    <xsd:element name="types" type="osmand:TypesType"/>
+
+    <!-- Waypoint grouping -->
+    <xsd:element name="points_groups" type="osmand:PointsGroupsType"/>
+
+    <!-- OBF related tags -->
+    <xsd:element name="ref" type="xsd:string"/>
+    <xsd:element name="shield_text" type="xsd:string"/>
+    <xsd:element name="shield_fg" type="xsd:string"/>
+    <xsd:element name="shield_fg_2" type="xsd:string"/>
+    <xsd:element name="shield_bg" type="xsd:string"/>
+    <xsd:element name="shield_textcolor" type="osmand:ColorType"/>
+    <xsd:element name="shield_waycolor" type="osmand:ColorType"/>
+    <xsd:element name="translucent_line_colors" type="xsd:boolean"/>
+
+    <!-- Waypoint appearance -->
+    <xsd:element name="icon" type="xsd:string"/>
+    <xsd:element name="background" type="osmand:BackgroundShapeEnum"/>
+
+    <!-- ============================ Container types ============================ -->
+
+    <!-- Convenience grouping of the track-level appearance elements. The individual
+         elements above bind directly inside GPX <extensions>; this type collects
+         them for callers that want a single object. -->
     <xsd:complexType name="OsmAndExtensionsType">
         <xsd:choice minOccurs="0" maxOccurs="unbounded">
-            <!-- Track Appearance Parameters -->
-            <xsd:element name="color" type="osmand:ColorType"/>
-            <xsd:element name="width" type="osmand:WidthType"/>
-            <xsd:element name="show_arrows" type="xsd:boolean"/>
-            <xsd:element name="show_start_finish" type="xsd:boolean"/>
-            <xsd:element name="split_type" type="osmand:SplitTypeEnum"/>
-            <xsd:element name="split_interval" type="xsd:double"/>
-            <xsd:element name="line_3d_visualization_by_type" type="osmand:Visualization3DTypeEnum"/>
-            <xsd:element name="line_3d_visualization_wall_color_type" type="osmand:WallColorTypeEnum"/>
-            <xsd:element name="line_3d_visualization_position_type" type="osmand:PositionTypeEnum"/>
-            <xsd:element name="vertical_exaggeration_scale" type="xsd:float"/>
-            <xsd:element name="elevation_meters" type="xsd:float"/>
-            <xsd:element name="coloring_type" type="osmand:ColoringTypeEnum"/>
-            <xsd:element name="color_palette" type="xsd:string"/>
-
-            <!-- Activity Type -->
-            <xsd:element name="activity" type="xsd:string"/>
-
-            <!-- Route Information -->
-            <xsd:element name="route" type="osmand:RouteType"/>
-            <xsd:element name="types" type="osmand:TypesType"/>
-
-            <!-- Waypoint Grouping -->
-            <xsd:element name="points_groups" type="osmand:PointsGroupsType"/>
-
-            <!-- OBF Related Tags -->
-            <xsd:element name="ref" type="xsd:string"/>
-            <xsd:element name="shield_text" type="xsd:string"/>
-            <xsd:element name="shield_fg" type="xsd:string"/>
-            <xsd:element name="shield_fg_2" type="xsd:string"/>
-            <xsd:element name="shield_bg" type="xsd:string"/>
-            <xsd:element name="shield_textcolor" type="osmand:ColorType"/>
-            <xsd:element name="shield_waycolor" type="osmand:ColorType"/>
-            <xsd:element name="translucent_line_colors" type="xsd:boolean"/>
-
-            <!-- Localized names and other extensions -->
+            <xsd:element ref="osmand:color"/>
+            <xsd:element ref="osmand:width"/>
+            <xsd:element ref="osmand:show_arrows"/>
+            <xsd:element ref="osmand:show_start_finish"/>
+            <xsd:element ref="osmand:split_type"/>
+            <xsd:element ref="osmand:split_interval"/>
+            <xsd:element ref="osmand:line_3d_visualization_by_type"/>
+            <xsd:element ref="osmand:line_3d_visualization_wall_color_type"/>
+            <xsd:element ref="osmand:line_3d_visualization_position_type"/>
+            <xsd:element ref="osmand:vertical_exaggeration_scale"/>
+            <xsd:element ref="osmand:elevation_meters"/>
+            <xsd:element ref="osmand:coloring_type"/>
+            <xsd:element ref="osmand:color_palette"/>
+            <xsd:element ref="osmand:activity"/>
+            <xsd:element ref="osmand:route"/>
+            <xsd:element ref="osmand:types"/>
+            <xsd:element ref="osmand:points_groups"/>
+            <xsd:element ref="osmand:ref"/>
+            <xsd:element ref="osmand:shield_text"/>
+            <xsd:element ref="osmand:shield_fg"/>
+            <xsd:element ref="osmand:shield_fg_2"/>
+            <xsd:element ref="osmand:shield_bg"/>
+            <xsd:element ref="osmand:shield_textcolor"/>
+            <xsd:element ref="osmand:shield_waycolor"/>
+            <xsd:element ref="osmand:translucent_line_colors"/>
             <xsd:any namespace="##other" processContents="lax"/>
         </xsd:choice>
     </xsd:complexType>
 
-    <!-- Waypoint Extensions Type -->
+    <!-- Waypoint extensions -->
     <xsd:complexType name="WaypointExtensionsType">
         <xsd:sequence>
-            <xsd:element name="color" type="osmand:ColorType" minOccurs="0"/>
-            <xsd:element name="icon" type="xsd:string" minOccurs="0"/>
-            <xsd:element name="background" type="osmand:BackgroundShapeEnum" minOccurs="0"/>
+            <xsd:element ref="osmand:color" minOccurs="0"/>
+            <xsd:element ref="osmand:icon" minOccurs="0"/>
+            <xsd:element ref="osmand:background" minOccurs="0"/>
         </xsd:sequence>
     </xsd:complexType>
 
-    <!-- Track Point Extensions Type -->
+    <!-- Legacy: OsmAnd actually writes per-trackpoint speed/heading UNQUALIFIED
+         (no osmand namespace), so these types are not used for binding; retained
+         only because the generated classes are still referenced in code. -->
     <xsd:complexType name="TrackPointExtensionsType">
         <xsd:sequence>
             <xsd:element name="speed" type="xsd:decimal" minOccurs="0"/>
@@ -65,7 +121,6 @@
         </xsd:sequence>
     </xsd:complexType>
 
-    <!-- Route Point Extensions Type -->
     <xsd:complexType name="RoutePointExtensionsType">
         <xsd:sequence>
             <xsd:element name="profile" type="xsd:string" minOccurs="0"/>
@@ -101,7 +156,7 @@
         </xsd:sequence>
     </xsd:complexType>
 
-    <!-- Type Definition Type (renamed to avoid conflict) -->
+    <!-- Type Definition Type -->
     <xsd:complexType name="TypeDefinitionType">
         <xsd:attribute name="t" type="xsd:string" use="required"/>
         <xsd:attribute name="v" type="xsd:string" use="required"/>
@@ -121,6 +176,8 @@
         <xsd:attribute name="icon" type="xsd:string" use="optional"/>
         <xsd:attribute name="background" type="osmand:BackgroundShapeEnum" use="optional"/>
     </xsd:complexType>
+
+    <!-- ============================== Simple types ============================== -->
 
     <!-- Color Type (HEX or color name) -->
     <xsd:simpleType name="ColorType">

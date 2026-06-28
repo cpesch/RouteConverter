@@ -227,6 +227,64 @@ public class GpxUtilTest {
         }
     }
 
+    // ---- osmand track-appearance extensions (global elements, directly in <extensions>) ----
+
+    private static final String GPX_11_OSMAND =
+            "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+            "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"osmand-test\" " +
+            "xmlns:osmand=\"https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx\">" +
+            "<trk><trkseg>" +
+            "<trkpt lat=\"52.397799\" lon=\"4.575998\"/>" +
+            "</trkseg></trk>" +
+            "<extensions>" +
+            "<osmand:color>#4e4eff</osmand:color>" +
+            "<osmand:width>bold</osmand:width>" +
+            "<osmand:show_arrows>true</osmand:show_arrows>" +
+            "<osmand:split_type>distance</osmand:split_type>" +
+            "<osmand:split_interval>2000.0</osmand:split_interval>" +
+            "</extensions>" +
+            "</gpx>";
+
+    @Test
+    public void testUnmarshal11BindsOsmandTrackAppearanceExtensions() throws IOException {
+        GpxType type = unmarshal11(GPX_11_OSMAND);
+        assertNotNull(type);
+        assertNotNull("gpx <extensions> should be present", type.getExtensions());
+
+        // osmand writes its appearance elements directly in <extensions> (no wrapper). With the
+        // global element decls (un-scoped in newContext11's osmand.ObjectFactory), they bind to
+        // typed JAXBElements instead of falling back to DOM Elements.
+        String color = null, width = null;
+        Boolean showArrows = null;
+        for (Object o : type.getExtensions().getAny()) {
+            if (o instanceof JAXBElement) {
+                JAXBElement<?> element = (JAXBElement<?>) o;
+                String localName = element.getName().getLocalPart();
+                if ("color".equals(localName))
+                    color = (String) element.getValue();
+                else if ("width".equals(localName))
+                    width = (String) element.getValue();
+                else if ("show_arrows".equals(localName))
+                    showArrows = (Boolean) element.getValue();
+            }
+        }
+        assertEquals("osmand:color must bind to JAXBElement<String>, not a DOM Element", "#4e4eff", color);
+        assertEquals("bold", width);
+        assertEquals(Boolean.TRUE, showArrows);
+    }
+
+    @Test
+    public void testOsmandTrackAppearanceRoundTrip() throws IOException, JAXBException {
+        GpxType type = unmarshal11(GPX_11_OSMAND);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshal11(type, out);
+        String xml = out.toString(StandardCharsets.UTF_8);
+        assertTrue("round-trip should preserve the osmand namespace", xml.contains(OSMAND_EXTENSIONS_NAMESPACE_URI));
+        assertTrue("round-trip should preserve osmand:color value", xml.contains("#4e4eff"));
+        assertTrue("round-trip should preserve osmand:width value", xml.contains("bold"));
+        assertTrue("round-trip should preserve osmand:split_interval value", xml.contains("2000.0"));
+    }
+
     @Test
     public void testTrekbuddyNmeaExtensionsRoundTrip() throws IOException, JAXBException {
         String gpx =

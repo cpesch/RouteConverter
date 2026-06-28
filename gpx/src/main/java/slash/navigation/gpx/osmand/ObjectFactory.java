@@ -171,9 +171,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "color", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "color")
     public JAXBElement<String> createOsmAndExtensionsTypeColor(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeColor_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeColor_QNAME, String.class, null, value);
     }
 
     /**
@@ -184,9 +184,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "width", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "width")
     public JAXBElement<String> createOsmAndExtensionsTypeWidth(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeWidth_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeWidth_QNAME, String.class, null, value);
     }
 
     /**
@@ -197,9 +197,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "show_arrows", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "show_arrows")
     public JAXBElement<Boolean> createOsmAndExtensionsTypeShowArrows(Boolean value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeShowArrows_QNAME, Boolean.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeShowArrows_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -210,9 +210,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "show_start_finish", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "show_start_finish")
     public JAXBElement<Boolean> createOsmAndExtensionsTypeShowStartFinish(Boolean value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeShowStartFinish_QNAME, Boolean.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeShowStartFinish_QNAME, Boolean.class, null, value);
     }
 
     /**
@@ -223,9 +223,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link SplitTypeEnum }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "split_type", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "split_type")
     public JAXBElement<SplitTypeEnum> createOsmAndExtensionsTypeSplitType(SplitTypeEnum value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeSplitType_QNAME, SplitTypeEnum.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeSplitType_QNAME, SplitTypeEnum.class, null, value);
     }
 
     /**
@@ -236,9 +236,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Double }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "split_interval", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "split_interval")
     public JAXBElement<Double> createOsmAndExtensionsTypeSplitInterval(Double value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeSplitInterval_QNAME, Double.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeSplitInterval_QNAME, Double.class, null, value);
     }
 
     /**
@@ -249,9 +249,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Visualization3DTypeEnum }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "line_3d_visualization_by_type", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "line_3d_visualization_by_type")
     public JAXBElement<Visualization3DTypeEnum> createOsmAndExtensionsTypeLine3DVisualizationByType(Visualization3DTypeEnum value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeLine3DVisualizationByType_QNAME, Visualization3DTypeEnum.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeLine3DVisualizationByType_QNAME, Visualization3DTypeEnum.class, null, value);
     }
 
     /**
@@ -262,9 +262,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link WallColorTypeEnum }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "line_3d_visualization_wall_color_type", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "line_3d_visualization_wall_color_type")
     public JAXBElement<WallColorTypeEnum> createOsmAndExtensionsTypeLine3DVisualizationWallColorType(WallColorTypeEnum value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeLine3DVisualizationWallColorType_QNAME, WallColorTypeEnum.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeLine3DVisualizationWallColorType_QNAME, WallColorTypeEnum.class, null, value);
     }
 
     /**
@@ -275,9 +275,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link PositionTypeEnum }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "line_3d_visualization_position_type", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "line_3d_visualization_position_type")
     public JAXBElement<PositionTypeEnum> createOsmAndExtensionsTypeLine3DVisualizationPositionType(PositionTypeEnum value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeLine3DVisualizationPositionType_QNAME, PositionTypeEnum.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeLine3DVisualizationPositionType_QNAME, PositionTypeEnum.class, null, value);
     }
 
     /**
@@ -288,9 +288,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Float }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "vertical_exaggeration_scale", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "vertical_exaggeration_scale")
     public JAXBElement<Float> createOsmAndExtensionsTypeVerticalExaggerationScale(Float value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeVerticalExaggerationScale_QNAME, Float.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeVerticalExaggerationScale_QNAME, Float.class, null, value);
     }
 
     /**
@@ -301,9 +301,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Float }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "elevation_meters", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "elevation_meters")
     public JAXBElement<Float> createOsmAndExtensionsTypeElevationMeters(Float value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeElevationMeters_QNAME, Float.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeElevationMeters_QNAME, Float.class, null, value);
     }
 
     /**
@@ -314,9 +314,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link ColoringTypeEnum }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "coloring_type", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "coloring_type")
     public JAXBElement<ColoringTypeEnum> createOsmAndExtensionsTypeColoringType(ColoringTypeEnum value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeColoringType_QNAME, ColoringTypeEnum.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeColoringType_QNAME, ColoringTypeEnum.class, null, value);
     }
 
     /**
@@ -327,9 +327,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "color_palette", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "color_palette")
     public JAXBElement<String> createOsmAndExtensionsTypeColorPalette(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeColorPalette_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeColorPalette_QNAME, String.class, null, value);
     }
 
     /**
@@ -340,9 +340,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "activity", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "activity")
     public JAXBElement<String> createOsmAndExtensionsTypeActivity(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeActivity_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeActivity_QNAME, String.class, null, value);
     }
 
     /**
@@ -353,9 +353,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link RouteType }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "route", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "route")
     public JAXBElement<RouteType> createOsmAndExtensionsTypeRoute(RouteType value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeRoute_QNAME, RouteType.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeRoute_QNAME, RouteType.class, null, value);
     }
 
     /**
@@ -366,9 +366,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link TypesType }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "types", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "types")
     public JAXBElement<TypesType> createOsmAndExtensionsTypeTypes(TypesType value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeTypes_QNAME, TypesType.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeTypes_QNAME, TypesType.class, null, value);
     }
 
     /**
@@ -379,9 +379,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link PointsGroupsType }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "points_groups", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "points_groups")
     public JAXBElement<PointsGroupsType> createOsmAndExtensionsTypePointsGroups(PointsGroupsType value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypePointsGroups_QNAME, PointsGroupsType.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypePointsGroups_QNAME, PointsGroupsType.class, null, value);
     }
 
     /**
@@ -392,9 +392,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "ref", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "ref")
     public JAXBElement<String> createOsmAndExtensionsTypeRef(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeRef_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeRef_QNAME, String.class, null, value);
     }
 
     /**
@@ -405,9 +405,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_text", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_text")
     public JAXBElement<String> createOsmAndExtensionsTypeShieldText(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeShieldText_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeShieldText_QNAME, String.class, null, value);
     }
 
     /**
@@ -418,9 +418,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_fg", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_fg")
     public JAXBElement<String> createOsmAndExtensionsTypeShieldFg(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeShieldFg_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeShieldFg_QNAME, String.class, null, value);
     }
 
     /**
@@ -431,9 +431,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_fg_2", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_fg_2")
     public JAXBElement<String> createOsmAndExtensionsTypeShieldFg2(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeShieldFg2_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeShieldFg2_QNAME, String.class, null, value);
     }
 
     /**
@@ -444,9 +444,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_bg", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_bg")
     public JAXBElement<String> createOsmAndExtensionsTypeShieldBg(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeShieldBg_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeShieldBg_QNAME, String.class, null, value);
     }
 
     /**
@@ -457,9 +457,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_textcolor", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_textcolor")
     public JAXBElement<String> createOsmAndExtensionsTypeShieldTextcolor(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeShieldTextcolor_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeShieldTextcolor_QNAME, String.class, null, value);
     }
 
     /**
@@ -470,9 +470,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link String }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_waycolor", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "shield_waycolor")
     public JAXBElement<String> createOsmAndExtensionsTypeShieldWaycolor(String value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeShieldWaycolor_QNAME, String.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeShieldWaycolor_QNAME, String.class, null, value);
     }
 
     /**
@@ -483,9 +483,9 @@ public class ObjectFactory {
      * @return
      *     the new instance of {@link JAXBElement }{@code <}{@link Boolean }{@code >}
      */
-    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "translucent_line_colors", scope = OsmAndExtensionsType.class)
+    @XmlElementDecl(namespace = "https://osmand.net/docs/technical/osmand-file-formats/osmand-gpx", name = "translucent_line_colors")
     public JAXBElement<Boolean> createOsmAndExtensionsTypeTranslucentLineColors(Boolean value) {
-        return new JAXBElement<>(_OsmAndExtensionsTypeTranslucentLineColors_QNAME, Boolean.class, OsmAndExtensionsType.class, value);
+        return new JAXBElement<>(_OsmAndExtensionsTypeTranslucentLineColors_QNAME, Boolean.class, null, value);
     }
 
 }
