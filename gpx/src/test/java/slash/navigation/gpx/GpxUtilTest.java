@@ -23,12 +23,15 @@ import org.junit.Test;
 import slash.navigation.gpx.binding10.Gpx;
 import slash.navigation.gpx.binding11.GpxType;
 
+import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static slash.navigation.gpx.GpxUtil.*;
@@ -142,6 +145,64 @@ public class GpxUtilTest {
     @Test(expected = IOException.class)
     public void testUnmarshal11BadXml() throws IOException {
         unmarshal11("<notvalid/>");
+    }
+
+    // ---- trekbuddy nmea extensions (binding must be registered in newContext11) ----
+
+    @Test
+    public void testUnmarshal11BindsTrekbuddyNmeaExtensions() throws IOException {
+        String gpx =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"trekbuddy-test\">" +
+                "<trk><trkseg>" +
+                "<trkpt lat=\"48.0\" lon=\"11.0\">" +
+                "<extensions xmlns:nmea=\"http://trekbuddy.net/2009/01/gpx/nmea\">" +
+                "<nmea:speed>12.5</nmea:speed>" +
+                "<nmea:course>270.0</nmea:course>" +
+                "</extensions>" +
+                "</trkpt>" +
+                "</trkseg></trk>" +
+                "</gpx>";
+        GpxType type = unmarshal11(gpx);
+        assertNotNull(type);
+
+        // With slash.navigation.gpx.trekbuddy.ObjectFactory registered in newContext11(), the
+        // lax @XmlAnyElement extensions bind nmea:speed/course to JAXBElement<BigDecimal>;
+        // without it they would fall back to a generic DOM Element (dead binding).
+        List<Object> any = type.getTrk().get(0).getTrkseg().get(0).getTrkpt().get(0).getExtensions().getAny();
+        BigDecimal speed = null, course = null;
+        for (Object o : any) {
+            if (o instanceof JAXBElement) {
+                JAXBElement<?> element = (JAXBElement<?>) o;
+                if ("speed".equals(element.getName().getLocalPart()))
+                    speed = (BigDecimal) element.getValue();
+                else if ("course".equals(element.getName().getLocalPart()))
+                    course = (BigDecimal) element.getValue();
+            }
+        }
+        assertEquals("nmea:speed should bind to a JAXBElement<BigDecimal>", new BigDecimal("12.5"), speed);
+        assertEquals("nmea:course should bind to a JAXBElement<BigDecimal>", new BigDecimal("270.0"), course);
+    }
+
+    @Test
+    public void testTrekbuddyNmeaExtensionsRoundTrip() throws IOException, JAXBException {
+        String gpx =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"trekbuddy-test\">" +
+                "<trk><trkseg>" +
+                "<trkpt lat=\"48.0\" lon=\"11.0\">" +
+                "<extensions xmlns:nmea=\"http://trekbuddy.net/2009/01/gpx/nmea\">" +
+                "<nmea:speed>12.5</nmea:speed>" +
+                "</extensions>" +
+                "</trkpt>" +
+                "</trkseg></trk>" +
+                "</gpx>";
+        GpxType type = unmarshal11(gpx);
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshal11(type, out);
+        String xml = out.toString(StandardCharsets.UTF_8);
+        assertTrue("round-trip should preserve the trekbuddy nmea namespace", xml.contains(TREKBUDDY_EXTENSIONS_0984_NAMESPACE_URI));
+        assertTrue("round-trip should preserve the nmea:speed value", xml.contains("12.5"));
     }
 
     // ---- NamespaceFilter ----
