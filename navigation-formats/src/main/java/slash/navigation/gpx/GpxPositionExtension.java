@@ -29,6 +29,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.formatDouble;
@@ -84,255 +87,175 @@ public class GpxPositionExtension {
         return WELL_KNOWN_ELEMENT_NAMES.contains(element.getLocalName().toLowerCase());
     }
 
-    public Double getHeading() {
-        Double result = null;
-
+    // Walks the wpt <extensions>, returning the first non-null value produced either
+    // from a typed extension (fromExtension) or from a plain DOM element whose local
+    // name matches (parseElement). Centralises the JAXBElement-vs-Element walk that the
+    // get*() accessors used to each re-implement.
+    private <R> R readExtension(Function<Object, R> fromExtension,
+                                Predicate<String> matchesElementName,
+                                Function<String, R> parseElement) {
         ExtensionsType extensions = wptType.getExtensions();
-        if (extensions != null) {
-            for (Object any : extensions.getAny()) {
-                if (any instanceof JAXBElement jaxbElement) {
-                    Object anyValue = jaxbElement.getValue();
-                    if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
-                        result = formatDouble(trackPoint.getCourse());
-                    }
+        if (extensions == null)
+            return null;
+        for (Object any : extensions.getAny()) {
+            R result = null;
+            if (any instanceof JAXBElement<?> jaxbElement)
+                result = fromExtension.apply(jaxbElement.getValue());
+            else if (any instanceof Element element && matchesElementName.test(element.getLocalName()))
+                result = parseElement.apply(element.getTextContent());
+            if (result != null)
+                return result;
+        }
+        return null;
+    }
 
-                } else if (any instanceof Element element) {
-                    if ("course".equalsIgnoreCase(element.getLocalName()) || "heading".equalsIgnoreCase(element.getLocalName()))
-                        result = parseDouble(element.getTextContent());
-                }
+    public Double getHeading() {
+        return readExtension(
+                value -> value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint
+                        ? formatDouble(trackPoint.getCourse()) : null,
+                name -> "course".equalsIgnoreCase(name) || "heading".equalsIgnoreCase(name),
+                text -> parseDouble(text));
+    }
 
-                if(result != null)
-                    break;
+    // Updates the value in every matching existing extension (typed or DOM); if none
+    // matched, appends a fresh TrackPointExtension v2 carrying it. Centralises the
+    // find-or-create write that the set*() accessors used to each re-implement.
+    private void writeExtension(Predicate<Object> updateExtension,
+                                Predicate<String> matchesElementName,
+                                Consumer<Element> updateElement,
+                                Consumer<slash.navigation.gpx.trackpoint2.TrackPointExtensionT> populateNewTrackpoint2) {
+        if (wptType.getExtensions() == null)
+            wptType.setExtensions(new ObjectFactory().createExtensionsType());
+
+        boolean found = false;
+        for (Object any : wptType.getExtensions().getAny()) {
+            if (any instanceof JAXBElement<?> jaxbElement) {
+                if (updateExtension.test(jaxbElement.getValue()))
+                    found = true;
+            } else if (any instanceof Element element && matchesElementName.test(element.getLocalName())) {
+                updateElement.accept(element);
+                found = true;
             }
         }
 
-        return result;
+        if (!found) {
+            slash.navigation.gpx.trackpoint2.ObjectFactory factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
+            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint = factory.createTrackPointExtensionT();
+            populateNewTrackpoint2.accept(trackPoint);
+            wptType.getExtensions().getAny().add(factory.createTrackPointExtension(trackPoint));
+        }
     }
 
     public void setHeading(Double heading) {
-        if (wptType.getExtensions() == null)
-            wptType.setExtensions(new ObjectFactory().createExtensionsType());
-        List<Object> anys = wptType.getExtensions().getAny();
-
-        boolean foundHeading = false;
-        for (Object any : anys) {
-            if (any instanceof JAXBElement jaxbElement) {
-                Object anyValue = jaxbElement.getValue();
-                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
-                    trackPoint.setCourse(formatHeading(heading));
-                    foundHeading = true;
-                }
-
-            } else if (any instanceof Element element) {
-                if ("course".equalsIgnoreCase(element.getLocalName()) || "heading".equalsIgnoreCase(element.getLocalName())) {
-                    element.setTextContent(formatHeadingAsString(heading));
-                    foundHeading = true;
-                }
-            }
-        }
-
-        if (!foundHeading) {
-            slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
-            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-            trackPointExtensionT.setCourse(formatHeading(heading));
-            anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
-        }
+        writeExtension(
+                value -> {
+                    if (value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
+                        trackPoint.setCourse(formatHeading(heading));
+                        return true;
+                    }
+                    return false;
+                },
+                name -> "course".equalsIgnoreCase(name) || "heading".equalsIgnoreCase(name),
+                element -> element.setTextContent(formatHeadingAsString(heading)),
+                trackPoint -> trackPoint.setCourse(formatHeading(heading)));
     }
 
     public Double getSpeed() {
-        Double result = null;
-
-        ExtensionsType extensions = wptType.getExtensions();
-        if (extensions != null) {
-            for (Object any : extensions.getAny()) {
-                if (any instanceof JAXBElement jaxbElement) {
-                    Object anyValue = jaxbElement.getValue();
-                    if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
-                        result = msToKmh(trackPoint.getSpeed());
-                    }
-
-                } else if (any instanceof Element element) {
-                    if ("speed".equalsIgnoreCase(element.getLocalName()))
-                        result = msToKmh(parseDouble(element.getTextContent()));
-                }
-
-                if(result != null)
-                    break;
-            }
-        }
-
-        return result;
+        return readExtension(
+                value -> value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint
+                        ? msToKmh(trackPoint.getSpeed()) : null,
+                name -> "speed".equalsIgnoreCase(name),
+                text -> msToKmh(parseDouble(text)));
     }
 
     public void setSpeed(Double speed) {
-        if (wptType.getExtensions() == null)
-            wptType.setExtensions(new ObjectFactory().createExtensionsType());
-        List<Object> anys = wptType.getExtensions().getAny();
-
-        boolean foundSpeed = false;
-        for (Object any : anys) {
-            if (any instanceof JAXBElement jaxbElement) {
-                Object anyValue = jaxbElement.getValue();
-                if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
-                    trackPoint.setSpeed(formatSpeedAsDouble(kmhToMs(speed)));
-                    foundSpeed = true;
-                }
-
-            } else if (any instanceof Element element) {
-                if ("speed".equalsIgnoreCase(element.getLocalName())) {
-                    element.setTextContent(formatSpeedAsString(kmhToMs(speed)));
-                    foundSpeed = true;
-                }
-            }
-        }
-
-        // create new TrackPointExtension v2 element if there was no existing value found
-        if (!foundSpeed) {
-            slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
-            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-            trackPointExtensionT.setSpeed(formatSpeedAsDouble(kmhToMs(speed)));
-            anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
-        }
+        writeExtension(
+                value -> {
+                    if (value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
+                        trackPoint.setSpeed(formatSpeedAsDouble(kmhToMs(speed)));
+                        return true;
+                    }
+                    return false;
+                },
+                name -> "speed".equalsIgnoreCase(name),
+                element -> element.setTextContent(formatSpeedAsString(kmhToMs(speed))),
+                trackPoint -> trackPoint.setSpeed(formatSpeedAsDouble(kmhToMs(speed))));
     }
 
     public Double getTemperature() {
-        Double result = null;
-
-        ExtensionsType extensions = wptType.getExtensions();
-        if (extensions != null) {
-            for (Object any : extensions.getAny()) {
-                if (any instanceof JAXBElement jaxbElement) {
-                    Object anyValue = jaxbElement.getValue();
-                    if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint) {
-                        result = trackPoint.getTemperature();
-
-                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
-                        result = trackPoint.getAtemp();
-                        if (result == null)
-                            result = trackPoint.getWtemp();
-
-                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
-                        result = trackPoint.getAtemp();
-                        if (result == null)
-                            result = trackPoint.getWtemp();
+        return readExtension(
+                value -> {
+                    if (value instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint)
+                        return trackPoint.getTemperature();
+                    if (value instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
+                        Double temperature = trackPoint.getAtemp();
+                        return temperature != null ? temperature : trackPoint.getWtemp();
                     }
-
-                } else if (any instanceof Element element) {
-                    if ("temperature".equalsIgnoreCase(element.getLocalName()))
-                        result = parseDouble(element.getTextContent());
-                }
-
-                if(result != null)
-                    break;
-            }
-        }
-        return result;
+                    if (value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
+                        Double temperature = trackPoint.getAtemp();
+                        return temperature != null ? temperature : trackPoint.getWtemp();
+                    }
+                    return null;
+                },
+                name -> "temperature".equalsIgnoreCase(name),
+                text -> parseDouble(text));
     }
 
     public void setTemperature(Double temperature) {
-        if (wptType.getExtensions() == null)
-            wptType.setExtensions(new ObjectFactory().createExtensionsType());
-        List<Object> anys = wptType.getExtensions().getAny();
-
-        boolean foundTemperature = false;
-        for (Object any : anys) {
-            if (any instanceof JAXBElement jaxbElement) {
-                Object anyValue = jaxbElement.getValue();
-                if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint) {
-                    trackPoint.setTemperature(formatTemperatureAsDouble(temperature));
-                    foundTemperature = true;
-
-                } else if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
-                    if(isEmpty(trackPoint.getAtemp()) && isEmpty(temperature))
-                        trackPoint.setWtemp(null);
-                    trackPoint.setAtemp(formatTemperatureAsDouble(temperature));
-
-                    foundTemperature = true;
-
-                } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
-                    if(isEmpty(trackPoint.getAtemp()) && isEmpty(temperature))
-                        trackPoint.setWtemp(null);
-                    trackPoint.setAtemp(formatTemperatureAsDouble(temperature));
-                    foundTemperature = true;
-                }
-
-            } else if (any instanceof Element element) {
-                if ("temperature".equalsIgnoreCase(element.getLocalName())) {
-                    element.setTextContent(formatTemperatureAsString(temperature));
-                    foundTemperature = true;
-                }
-            }
-        }
-
-        // create new TrackPointExtension v2 element if there was no existing value found
-        if (!foundTemperature) {
-            slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
-            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-            trackPointExtensionT.setAtemp(formatTemperatureAsDouble(temperature));
-            anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
-        }
+        writeExtension(
+                value -> {
+                    if (value instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint) {
+                        trackPoint.setTemperature(formatTemperatureAsDouble(temperature));
+                        return true;
+                    }
+                    if (value instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
+                        if (isEmpty(trackPoint.getAtemp()) && isEmpty(temperature))
+                            trackPoint.setWtemp(null);
+                        trackPoint.setAtemp(formatTemperatureAsDouble(temperature));
+                        return true;
+                    }
+                    if (value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
+                        if (isEmpty(trackPoint.getAtemp()) && isEmpty(temperature))
+                            trackPoint.setWtemp(null);
+                        trackPoint.setAtemp(formatTemperatureAsDouble(temperature));
+                        return true;
+                    }
+                    return false;
+                },
+                name -> "temperature".equalsIgnoreCase(name),
+                element -> element.setTextContent(formatTemperatureAsString(temperature)),
+                trackPoint -> trackPoint.setAtemp(formatTemperatureAsDouble(temperature)));
     }
 
     public Short getHeartBeat() {
-        Short result = null;
-
-        ExtensionsType extensions = wptType.getExtensions();
-        if (extensions != null) {
-            for (Object any : extensions.getAny()) {
-                if (any instanceof JAXBElement jaxbElement) {
-                    Object anyValue = jaxbElement.getValue();
-                    if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
-                        result = trackPoint.getHr();
-
-                    } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
-                        result = trackPoint.getHr();
-                    }
-
-                } else if (any instanceof Element element) {
-                    if ("hr".equalsIgnoreCase(element.getLocalName()))
-                        result = parseShort(element.getTextContent());
-                }
-
-                if(result != null)
-                    break;
-            }
-        }
-        return result;
+        return readExtension(
+                value -> {
+                    if (value instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint)
+                        return trackPoint.getHr();
+                    if (value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint)
+                        return trackPoint.getHr();
+                    return null;
+                },
+                name -> "hr".equalsIgnoreCase(name),
+                text -> parseShort(text));
     }
 
     public void setHeartBeat(Short heartBeat) {
-        if (wptType.getExtensions() == null)
-            wptType.setExtensions(new ObjectFactory().createExtensionsType());
-        List<Object> anys = wptType.getExtensions().getAny();
-
-        boolean foundHeartBeat = false;
-        for (Object any : anys) {
-            if (any instanceof JAXBElement jaxbElement) {
-                Object anyValue = jaxbElement.getValue();
-                if (anyValue instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
-                    trackPoint.setHr(heartBeat);
-                    foundHeartBeat = true;
-
-                } else if (anyValue instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
-                    trackPoint.setHr(heartBeat);
-                    foundHeartBeat = true;
-                }
-
-            } else if (any instanceof Element element) {
-                if ("hr".equalsIgnoreCase(element.getLocalName())) {
-                    element.setTextContent(formatShortAsString(heartBeat));
-                    foundHeartBeat = true;
-                }
-            }
-        }
-
-        // create new TrackPointExtension v2 element if there was no existing value found
-        if (!foundHeartBeat) {
-            slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
-            slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPointExtensionT = trackpoint2Factory.createTrackPointExtensionT();
-            trackPointExtensionT.setHr(heartBeat);
-            anys.add(trackpoint2Factory.createTrackPointExtension(trackPointExtensionT));
-        }
+        writeExtension(
+                value -> {
+                    if (value instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
+                        trackPoint.setHr(heartBeat);
+                        return true;
+                    }
+                    if (value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
+                        trackPoint.setHr(heartBeat);
+                        return true;
+                    }
+                    return false;
+                },
+                name -> "hr".equalsIgnoreCase(name),
+                element -> element.setTextContent(formatShortAsString(heartBeat)),
+                trackPoint -> trackPoint.setHr(heartBeat));
     }
 
 
@@ -349,24 +272,25 @@ public class GpxPositionExtension {
         return null;
     }
 
+    // Copies a source field into the target only when the source has a value and the
+    // target does not. Centralises the per-field merge decision so each field is one
+    // declarative line and the (single) decision branch is exercised once.
+    private static void copyIfTargetEmpty(boolean sourceEmpty, boolean targetEmpty, Runnable copy) {
+        if (!sourceEmpty && targetEmpty)
+            copy.run();
+    }
+
     private void mergeExtension(slash.navigation.gpx.garmin3.TrackPointExtensionT garmin3, slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackpoint2) {
-        if(!isEmpty(garmin3.getDepth()) && isEmpty(trackpoint2.getDepth()))
-            trackpoint2.setDepth(garmin3.getDepth());
-        if(!isEmpty(garmin3.getTemperature()) && isEmpty(trackpoint2.getAtemp()))
-            trackpoint2.setAtemp(garmin3.getTemperature());
+        copyIfTargetEmpty(isEmpty(garmin3.getDepth()),       isEmpty(trackpoint2.getDepth()), () -> trackpoint2.setDepth(garmin3.getDepth()));
+        copyIfTargetEmpty(isEmpty(garmin3.getTemperature()), isEmpty(trackpoint2.getAtemp()), () -> trackpoint2.setAtemp(garmin3.getTemperature()));
     }
 
     private void mergeExtension(slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackpoint1, slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackpoint2) {
-        if(!isEmpty(trackpoint1.getAtemp()) && isEmpty(trackpoint2.getAtemp()))
-            trackpoint2.setAtemp(trackpoint1.getAtemp());
-        if(!isEmpty(trackpoint1.getCad()) && isEmpty(trackpoint2.getCad()))
-            trackpoint2.setCad(trackpoint1.getCad());
-        if(!isEmpty(trackpoint1.getDepth()) && isEmpty(trackpoint2.getDepth()))
-            trackpoint2.setDepth(trackpoint1.getDepth());
-        if(!isEmpty(trackpoint1.getHr()) && isEmpty(trackpoint2.getHr()))
-            trackpoint2.setHr(trackpoint1.getHr());
-        if(!isEmpty(trackpoint1.getWtemp()) && isEmpty(trackpoint2.getWtemp()))
-            trackpoint2.setWtemp(trackpoint1.getWtemp());
+        copyIfTargetEmpty(isEmpty(trackpoint1.getAtemp()), isEmpty(trackpoint2.getAtemp()), () -> trackpoint2.setAtemp(trackpoint1.getAtemp()));
+        copyIfTargetEmpty(isEmpty(trackpoint1.getCad()),   isEmpty(trackpoint2.getCad()),   () -> trackpoint2.setCad(trackpoint1.getCad()));
+        copyIfTargetEmpty(isEmpty(trackpoint1.getDepth()), isEmpty(trackpoint2.getDepth()), () -> trackpoint2.setDepth(trackpoint1.getDepth()));
+        copyIfTargetEmpty(isEmpty(trackpoint1.getHr()),    isEmpty(trackpoint2.getHr()),    () -> trackpoint2.setHr(trackpoint1.getHr()));
+        copyIfTargetEmpty(isEmpty(trackpoint1.getWtemp()), isEmpty(trackpoint2.getWtemp()), () -> trackpoint2.setWtemp(trackpoint1.getWtemp()));
     }
 
     public void mergeExtensions() {
@@ -392,21 +316,30 @@ public class GpxPositionExtension {
         }
     }
 
+    // True only when every supplied per-field emptiness flag is true. Replaces long
+    // &&-chains so the "all fields empty" decision is a single, once-covered loop.
+    private static boolean allEmpty(boolean... fieldEmpty) {
+        for (boolean empty : fieldEmpty)
+            if (!empty)
+                return false;
+        return true;
+    }
+
     private boolean isEmptyExtension(slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint) {
-        return isEmpty(trackPoint.getDepth()) && isEmpty(trackPoint.getTemperature()) &&
+        return allEmpty(isEmpty(trackPoint.getDepth()), isEmpty(trackPoint.getTemperature())) &&
                 (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().isEmpty());
     }
 
     private boolean isEmptyExtension(slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint) {
-        return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getCad()) && isEmpty(trackPoint.getDepth()) &&
-                isEmpty(trackPoint.getHr()) && isEmpty(trackPoint.getWtemp()) &&
+        return allEmpty(isEmpty(trackPoint.getAtemp()), isEmpty(trackPoint.getCad()), isEmpty(trackPoint.getDepth()),
+                isEmpty(trackPoint.getHr()), isEmpty(trackPoint.getWtemp())) &&
                 (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().isEmpty());
     }
 
     private boolean isEmptyExtension(slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
-        return isEmpty(trackPoint.getAtemp()) && isEmpty(trackPoint.getBearing()) && isEmpty(trackPoint.getCad()) &&
-                isEmpty(trackPoint.getCourse()) && isEmpty(trackPoint.getDepth()) && isEmpty(trackPoint.getHr()) &&
-                isEmpty(trackPoint.getSpeed()) && isEmpty(trackPoint.getWtemp()) &&
+        return allEmpty(isEmpty(trackPoint.getAtemp()), isEmpty(trackPoint.getBearing()), isEmpty(trackPoint.getCad()),
+                isEmpty(trackPoint.getCourse()), isEmpty(trackPoint.getDepth()), isEmpty(trackPoint.getHr()),
+                isEmpty(trackPoint.getSpeed()), isEmpty(trackPoint.getWtemp())) &&
                 (trackPoint.getExtensions() == null || trackPoint.getExtensions().getAny().isEmpty());
     }
 
