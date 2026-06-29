@@ -135,13 +135,8 @@ public class DownloadManager304Test {
         assertNotNull(download.getETag());
         assertEquals(1, bodiesServed.get());
 
-        // corrupt the target on disk so its checksum no longer matches the expected one;
-        // keep its last-modified time so the mismatch is detected via content length / SHA-1
-        // alone and the test never depends on whether the rewrite crosses a one-second
-        // boundary (otherwise the "locally later than remote" heuristic can mask the corruption)
-        long lastModified = target.lastModified();
+        // corrupt the target on disk so its checksum no longer matches the expected one
         Files.writeString(target.toPath(), "corrupt local content of a different length");
-        assertEquals(true, target.setLastModified(lastModified));
 
         // scan detects the mismatch, marks the download Outdated and drops the now-stale ETag
         manager.scanForOutdatedFilesInQueue();

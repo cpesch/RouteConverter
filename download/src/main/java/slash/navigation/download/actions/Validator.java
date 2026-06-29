@@ -112,20 +112,6 @@ public class Validator {
         if (actual == null)
             return false;
 
-        boolean sha1Known = expected.getSHA1() != null;
-        // a newer local file is treated as valid (avoids endless re-downloads) for 2 reasons:
-        // - this was the very first download after a file update and this process updated the checksum on the server
-        // - the checksum on the server was updated but in the download queue there is still the checksum from the first download
-        // but an authoritative SHA-1 must never be overridden this way: a corrupt local file that
-        // happens to carry a newer last-modified time would otherwise escape detection forever
-        boolean localLaterThanRemote = !sha1Known && file.getActualChecksum().laterThan(file.getExpectedChecksum());
-        if (localLaterThanRemote)
-            log.info(format("%s is locally later than remote", file.getFile()));
-
-        boolean lastModifiedEquals = expected.getLastModified() == null ||
-                expected.getLastModified().equals(actual.getLastModified());
-        if (!lastModifiedEquals)
-            log.warning(format("%s has last modified %s but expected %s", file.getFile(), actual.getLastModified(), expected.getLastModified()));
         boolean contentLengthEquals = expected.getContentLength() == null ||
                 expected.getContentLength().equals(actual.getContentLength());
         if (!contentLengthEquals)
@@ -134,7 +120,29 @@ public class Validator {
                 expected.getSHA1().equals(actual.getSHA1());
         if (!sha1Equals)
             log.warning(format("%s has SHA-1 %s but expected %s", file.getFile(), actual.getSHA1(), expected.getSHA1()));
-        boolean valid = lastModifiedEquals && contentLengthEquals && sha1Equals || localLaterThanRemote;
+
+        boolean valid;
+        if (expected.getSHA1() != null) {
+            // SHA-1 is authoritative: a matching content hash means the file is correct,
+            // independent of its last-modified time (the server may not even send one, so a
+            // re-downloaded good file routinely has a different mtime than the stored checksum).
+            // A mismatching SHA-1 means the file is definitively wrong (see specs/00054).
+            valid = sha1Equals && contentLengthEquals;
+        } else {
+            // no authoritative hash: fall back to size + last-modified, with the "locally later
+            // than remote" heuristic to avoid endless re-downloads when the local file is newer
+            // than the (possibly stale) queued checksum:
+            // - the very first download after a file update, once this process updated the server checksum
+            // - the server checksum was updated but the queue still holds the first download's value
+            boolean lastModifiedEquals = expected.getLastModified() == null ||
+                    expected.getLastModified().equals(actual.getLastModified());
+            if (!lastModifiedEquals)
+                log.warning(format("%s has last modified %s but expected %s", file.getFile(), actual.getLastModified(), expected.getLastModified()));
+            boolean localLaterThanRemote = actual.laterThan(expected);
+            if (localLaterThanRemote)
+                log.info(format("%s is locally later than remote", file.getFile()));
+            valid = lastModifiedEquals && contentLengthEquals || localLaterThanRemote;
+        }
         if (valid)
             log.fine(format("%s has valid checksum", file.getFile()));
         return valid;
