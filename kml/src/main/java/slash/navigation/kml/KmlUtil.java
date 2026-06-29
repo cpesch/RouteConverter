@@ -73,6 +73,38 @@ public class KmlUtil {
         return newMarshaller(newContext(slash.navigation.kml.binding22.ObjectFactory.class));
     }
 
+    // KML 2.1 / 2.2-beta / 2.2 all wrap the document in a <kml> JAXBElement, so unmarshalling
+    // is "unwrap the element and cast its value to the version's KmlType". These helpers carry
+    // that shared shape (and the uniform Parse-error wrapping) for both input sources.
+    private static <T> T unmarshalValue(Unmarshaller unmarshaller, Reader reader, Class<T> type) throws IOException {
+        try {
+            return type.cast(((JAXBElement<?>) unmarshaller.unmarshal(reader)).getValue());
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
+        }
+    }
+
+    private static <T> T unmarshalValue(Unmarshaller unmarshaller, InputStream in, Class<T> type) throws IOException {
+        try {
+            return type.cast(((JAXBElement<?>) unmarshaller.unmarshal(in)).getValue());
+        } catch (ClassCastException | JAXBException e) {
+            throw new IOException("Parse error: " + e, e);
+        }
+    }
+
+    private static void marshalElement(Marshaller marshaller, JAXBElement<?> element, OutputStream outputStream) throws JAXBException {
+        try {
+            try {
+                marshaller.marshal(element, outputStream);
+            } finally {
+                outputStream.flush();
+                outputStream.close();
+            }
+        } catch (IOException e) {
+            throw new JAXBException("Error while marshalling: " + e, e);
+        }
+    }
+
 
     public static slash.navigation.kml.binding20.Kml unmarshal20(Reader reader) throws IOException {
         slash.navigation.kml.binding20.Kml result;
@@ -95,121 +127,45 @@ public class KmlUtil {
     }
 
     public static slash.navigation.kml.binding21.KmlType unmarshal21(Reader reader) throws IOException {
-        slash.navigation.kml.binding21.KmlType result;
-        try {
-            JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(reader);
-            result = (slash.navigation.kml.binding21.KmlType) element.getValue();
-        } catch (ClassCastException | JAXBException e) {
-            throw new IOException("Parse error: " + e, e);
-        }
-        return result;
+        return unmarshalValue(newUnmarshaller21(), reader, slash.navigation.kml.binding21.KmlType.class);
     }
 
     public static slash.navigation.kml.binding21.KmlType unmarshal21(InputStream in) throws IOException {
-        slash.navigation.kml.binding21.KmlType result;
-        try {
-            JAXBElement element = (JAXBElement) newUnmarshaller21().unmarshal(in);
-            result = (slash.navigation.kml.binding21.KmlType) element.getValue();
-        } catch (ClassCastException | JAXBException e) {
-            throw new IOException("Parse error: " + e, e);
-        }
-        return result;
+        return unmarshalValue(newUnmarshaller21(), in, slash.navigation.kml.binding21.KmlType.class);
     }
 
     public static slash.navigation.kml.binding22beta.KmlType unmarshal22Beta(Reader reader) throws IOException {
-        slash.navigation.kml.binding22beta.KmlType result;
-        try {
-            JAXBElement element = (JAXBElement) newUnmarshaller22Beta().unmarshal(reader);
-            result = (slash.navigation.kml.binding22beta.KmlType) element.getValue();
-        } catch (ClassCastException | JAXBException e) {
-            throw new IOException("Parse error: " + e, e);
-        }
-        return result;
+        return unmarshalValue(newUnmarshaller22Beta(), reader, slash.navigation.kml.binding22beta.KmlType.class);
     }
 
     public static slash.navigation.kml.binding22beta.KmlType unmarshal22Beta(InputStream in) throws IOException {
-        slash.navigation.kml.binding22beta.KmlType result;
-        try {
-            JAXBElement element = (JAXBElement) newUnmarshaller22Beta().unmarshal(in);
-            result = (slash.navigation.kml.binding22beta.KmlType) element.getValue();
-        } catch (ClassCastException | JAXBException e) {
-            throw new IOException("Parse error: " + e, e);
-        }
-        return result;
+        return unmarshalValue(newUnmarshaller22Beta(), in, slash.navigation.kml.binding22beta.KmlType.class);
     }
 
     public static slash.navigation.kml.binding22.KmlType unmarshal22(Reader reader) throws IOException {
-        slash.navigation.kml.binding22.KmlType result;
-        try {
-            JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(reader);
-            result = (slash.navigation.kml.binding22.KmlType) element.getValue();
-        } catch (ClassCastException | JAXBException e) {
-            throw new IOException("Parse error: " + e, e);
-        }
-        return result;
+        return unmarshalValue(newUnmarshaller22(), reader, slash.navigation.kml.binding22.KmlType.class);
     }
 
     public static slash.navigation.kml.binding22.KmlType unmarshal22(InputStream in) throws IOException {
-        slash.navigation.kml.binding22.KmlType result;
-        try {
-            JAXBElement element = (JAXBElement) newUnmarshaller22().unmarshal(in);
-            result = (slash.navigation.kml.binding22.KmlType) element.getValue();
-        } catch (ClassCastException | JAXBException e) {
-            throw new IOException("Parse error: " + e, e);
-        }
-        return result;
+        return unmarshalValue(newUnmarshaller22(), in, slash.navigation.kml.binding22.KmlType.class);
     }
 
 
     public static void marshal20(slash.navigation.kml.binding20.Kml kml, OutputStream outputStream) throws JAXBException {
-        try {
-            try {
-                newMarshaller20().marshal(new JAXBElement<>(new QName(KML_20_NAMESPACE_URI, "kml"), slash.navigation.kml.binding20.Kml.class, kml), outputStream);
-            } finally {
-                outputStream.flush();
-                outputStream.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e, e);
-        }
+        marshalElement(newMarshaller20(),
+                new JAXBElement<>(new QName(KML_20_NAMESPACE_URI, "kml"), slash.navigation.kml.binding20.Kml.class, kml),
+                outputStream);
     }
 
     public static void marshal21(slash.navigation.kml.binding21.KmlType kmlType, OutputStream outputStream) throws JAXBException {
-        try {
-            try {
-                newMarshaller21().marshal(new slash.navigation.kml.binding21.ObjectFactory().createKml(kmlType), outputStream);
-            } finally {
-                outputStream.flush();
-                outputStream.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e, e);
-        }
+        marshalElement(newMarshaller21(), new slash.navigation.kml.binding21.ObjectFactory().createKml(kmlType), outputStream);
     }
 
     public static void marshal22Beta(slash.navigation.kml.binding22beta.KmlType kmlType, OutputStream outputStream) throws JAXBException {
-        try {
-            try {
-                newMarshaller22Beta().marshal(new slash.navigation.kml.binding22beta.ObjectFactory().createKml(kmlType), outputStream);
-            } finally {
-                outputStream.flush();
-                outputStream.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e, e);
-        }
+        marshalElement(newMarshaller22Beta(), new slash.navigation.kml.binding22beta.ObjectFactory().createKml(kmlType), outputStream);
     }
 
     public static void marshal22(slash.navigation.kml.binding22.KmlType kmlType, OutputStream outputStream) throws JAXBException {
-        try {
-            try {
-                newMarshaller22().marshal(new slash.navigation.kml.binding22.ObjectFactory().createKml(kmlType), outputStream);
-            } finally {
-                outputStream.flush();
-                outputStream.close();
-            }
-        } catch (IOException e) {
-            throw new JAXBException("Error while marshalling: " + e, e);
-        }
+        marshalElement(newMarshaller22(), new slash.navigation.kml.binding22.ObjectFactory().createKml(kmlType), outputStream);
     }
 }
