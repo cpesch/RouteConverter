@@ -144,4 +144,17 @@ public class Kml21FormatTest {
         assertEquals(1, routes.size());
         assertEquals(2, routes.get(0).getPositionCount());
     }
+
+    @Test
+    public void testNestedFolderIsRecursedInto() throws Exception {
+        String kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
+                "<Document><Folder><name>outer</name><Folder><name>inner</name>\n" +
+                "<Placemark><LineString><coordinates>11.1,48.1,0\n11.2,48.2,0\n</coordinates></LineString></Placemark>\n" +
+                "</Folder></Folder></Document></kml>";
+        List<KmlRoute> routes = readKml(kml);
+        assertEquals(1, routes.size());
+        assertTrue("nested folder path must be in the route name", routes.get(0).getName().contains("outer") && routes.get(0).getName().contains("inner"));
+        assertEquals(2, routes.get(0).getPositionCount());
+    }
 }

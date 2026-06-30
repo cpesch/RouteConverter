@@ -20,10 +20,12 @@
 
 package slash.navigation.kml;
 
+import jakarta.xml.bind.JAXBElement;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 import java.util.prefs.Preferences;
@@ -227,6 +229,49 @@ public abstract class KmlFormat extends BaseKmlFormat {
         if (!waypoints.isEmpty()) {
             RouteCharacteristics characteristics = parseCharacteristics(name, null, Waypoints);
             context.prependRoute(new KmlRoute(this, characteristics, name, asDescription(description), waypoints));
+        }
+    }
+
+    /**
+     * Filters a list of feature elements down to those whose element local name matches,
+     * regardless of the JAXB-bound feature supertype (KML 2.1 binds against FeatureType,
+     * KML 2.2-beta/2.2 against AbstractFeatureType) -- the lookup only needs the element's
+     * QName, which JAXBElement exposes independent of its type parameter. Identical across
+     * all three modern KML versions; previously duplicated verbatim in each.
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> List<JAXBElement<T>> find(List<? extends JAXBElement<?>> elements, String name, Class<T> resultClass) {
+        List<JAXBElement<T>> result = new ArrayList<>();
+        if (elements != null) {
+            for (JAXBElement<?> element : elements) {
+                if (name.equals(element.getName().getLocalPart()))
+                    result.add((JAXBElement<T>) element);
+            }
+        }
+        return result;
+    }
+
+    @FunctionalInterface
+    protected interface FeatureRecursor<T> {
+        void recurse(String name, T value) throws IOException;
+    }
+
+    /**
+     * Recurses into each child container (KML Folder or Document), invoking recurseInto with the
+     * container's resolved name and its raw (version-specific) value. nameOf may return null to
+     * skip a container without recursing into it -- KML 2.2 uses this to ignore its internal
+     * "speed" and "marks" folders, a behaviour the other versions don't have and don't trigger
+     * (their nameOf never returns null). Loop shape identical across KML 2.1/2.2-beta/2.2;
+     * the per-version divergence lives entirely in the nameOf/recurseInto lambdas the caller
+     * supplies.
+     */
+    protected <T> void extractTracksFromContainers(List<JAXBElement<T>> containers, java.util.function.Function<T, String> nameOf,
+                                                    FeatureRecursor<T> recurseInto) throws IOException {
+        for (JAXBElement<T> container : containers) {
+            T value = container.getValue();
+            String containerName = nameOf.apply(value);
+            if (containerName != null)
+                recurseInto.recurse(containerName, value);
         }
     }
 

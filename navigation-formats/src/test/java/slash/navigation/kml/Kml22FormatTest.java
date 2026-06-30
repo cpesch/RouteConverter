@@ -207,4 +207,34 @@ public class Kml22FormatTest {
         assertEquals(1, second.size());
         assertEquals("my route", second.get(0).getName());
     }
+
+    // ---- nested Folder/Document recursion (shared via KmlFormat.extractTracksFromContainers) ----
+
+    @Test
+    public void testNestedFolderIsRecursedInto() throws Exception {
+        String kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
+                "<Document><Folder><name>outer</name><Folder><name>inner</name>\n" +
+                "<Placemark><LineString><coordinates>11.1,48.1,0\n11.2,48.2,0\n</coordinates></LineString></Placemark>\n" +
+                "</Folder></Folder></Document></kml>";
+        List<KmlRoute> routes = readKml(kml);
+        assertEquals(1, routes.size());
+        assertTrue("nested folder path must be in the route name", routes.get(0).getName().contains("outer") && routes.get(0).getName().contains("inner"));
+        assertEquals(2, routes.get(0).getPositionCount());
+    }
+
+    @Test
+    public void testSpeedAndMarksFoldersAreSkipped() throws Exception {
+        // KML 2.2 ignores its own internally-generated "Speed [Km/h]" and "Marks [Km]" folders
+        String kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
+                "<Document>\n" +
+                "<Folder><name>Speed [Km/h]</name><Placemark><Point><coordinates>1.0,1.0,0</coordinates></Point></Placemark></Folder>\n" +
+                "<Folder><name>Marks [Km]</name><Placemark><Point><coordinates>2.0,2.0,0</coordinates></Point></Placemark></Folder>\n" +
+                "<Placemark><LineString><coordinates>11.1,48.1,0\n11.2,48.2,0\n</coordinates></LineString></Placemark>\n" +
+                "</Document></kml>";
+        List<KmlRoute> routes = readKml(kml);
+        assertEquals("only the real track, the Speed/Marks folders are ignored", 1, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+    }
 }

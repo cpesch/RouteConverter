@@ -65,17 +65,6 @@ public class Kml22BetaFormat extends KmlFormat {
         extractTracks(kmlType, context);
     }
 
-    @SuppressWarnings({"UnusedDeclaration", "unchecked"})
-    private <T> List<JAXBElement<T>> find(List<JAXBElement<? extends AbstractFeatureType>> elements, String name, Class<T> resultClass) {
-        List<JAXBElement<T>> result = new ArrayList<>();
-        if(elements != null) {
-            for (JAXBElement<? extends AbstractFeatureType> element : elements) {
-                if (name.equals(element.getName().getLocalPart()))
-                    result.add((JAXBElement<T>) element);
-            }
-        }
-        return result;
-    }
 
     private void extractTracks(KmlType kmlType, ParserContext<KmlRoute> context) throws IOException {
         AbstractFeatureType feature = kmlType.getAbstractFeatureGroup().getValue();
@@ -108,18 +97,12 @@ public class Kml22BetaFormat extends KmlFormat {
         extractWayPointsAndTracksFromNetworkLinks(networkLinks, context);
 
         List<JAXBElement<FolderType>> folders = find(features, "Folder", FolderType.class);
-        for (JAXBElement<FolderType> folder : folders) {
-            FolderType folderTypeValue = folder.getValue();
-            String folderName = concatPath(name, folderTypeValue.getNameElement());
-            extractTracks(folderName, description, folderTypeValue.getAbstractFeatureGroup(), context);
-        }
+        extractTracksFromContainers(folders, f -> concatPath(name, f.getNameElement()),
+                (containerName, f) -> extractTracks(containerName, description, f.getAbstractFeatureGroup(), context));
 
         List<JAXBElement<DocumentType>> documents = find(features, "Document", DocumentType.class);
-        for (JAXBElement<DocumentType> document : documents) {
-            DocumentType documentTypeValue = document.getValue();
-            String documentName = concatPath(name, documentTypeValue.getNameElement());
-            extractTracks(documentName, description, documentTypeValue.getAbstractFeatureGroup(), context);
-        }
+        extractTracksFromContainers(documents, d -> concatPath(name, d.getNameElement()),
+                (containerName, d) -> extractTracks(containerName, description, d.getAbstractFeatureGroup(), context));
     }
 
     private void extractWayPointsAndTracksFromPlacemarks(String name, String description, List<JAXBElement<PlacemarkType>> placemarkTypes, ParserContext<KmlRoute> context) {

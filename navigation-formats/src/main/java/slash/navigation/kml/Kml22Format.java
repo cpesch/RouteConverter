@@ -78,17 +78,6 @@ public class Kml22Format extends KmlFormat {
         extractTracks(kmlType, context);
     }
 
-    @SuppressWarnings({"UnusedDeclaration", "unchecked"})
-    private <T> List<JAXBElement<T>> find(List<JAXBElement<? extends AbstractFeatureType>> elements, String name, Class<T> resultClass) {
-        List<JAXBElement<T>> result = new ArrayList<>();
-        if(elements != null) {
-            for (JAXBElement<? extends AbstractFeatureType> element : elements) {
-                if (name.equals(element.getName().getLocalPart()))
-                    result.add((JAXBElement<T>) element);
-            }
-        }
-        return result;
-    }
 
     protected void extractTracks(KmlType kmlType, ParserContext<KmlRoute> context) throws IOException {
         AbstractFeatureType feature = kmlType.getAbstractFeatureGroup().getValue();
@@ -130,20 +119,15 @@ public class Kml22Format extends KmlFormat {
         extractWayPointsAndTracksFromNetworkLinks(networkLinks, context);
 
         List<JAXBElement<FolderType>> folders = find(features, "Folder", FolderType.class);
-        for (JAXBElement<FolderType> folder : folders) {
-            FolderType folderTypeValue = folder.getValue();
-            String folderName = parseFolderName(trim(folderTypeValue.getName()));
+        extractTracksFromContainers(folders, f -> {
             // ignore speed and marks folders
-            if (folderName == null || (!folderName.equals(SPEED) && !folderName.equals(MARKS)))
-                extractTracks(concatPath(name, folderName), description, folderTypeValue.getAbstractFeatureGroup(), context);
-        }
+            String folderName = parseFolderName(trim(f.getName()));
+            return (folderName == null || (!folderName.equals(SPEED) && !folderName.equals(MARKS))) ? concatPath(name, folderName) : null;
+        }, (containerName, f) -> extractTracks(containerName, description, f.getAbstractFeatureGroup(), context));
 
         List<JAXBElement<DocumentType>> documents = find(features, "Document", DocumentType.class);
-        for (JAXBElement<DocumentType> document : documents) {
-            DocumentType documentTypeValue = document.getValue();
-            String documentName = concatPath(name, documentTypeValue.getName());
-            extractTracks(documentName, description, documentTypeValue.getAbstractFeatureGroup(), context);
-        }
+        extractTracksFromContainers(documents, d -> concatPath(name, d.getName()),
+                (containerName, d) -> extractTracks(containerName, description, d.getAbstractFeatureGroup(), context));
     }
 
     private CompactCalendar extractTime(JAXBElement<? extends AbstractTimePrimitiveType> timePrimitiveType) {
