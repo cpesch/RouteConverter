@@ -213,12 +213,7 @@ public class Kml22BetaFormat extends KmlFormat {
         placemarkType.setStyleUrl("#" + TRACK_LINE_STYLE);
         LineStringType lineStringType = objectFactory.createLineStringType();
         placemarkType.setAbstractGeometryGroup(objectFactory.createLineString(lineStringType));
-        List<String> coordinates = lineStringType.getCoordinates();
-        List<KmlPosition> positions = route.getPositions();
-        for (int i = startIndex; i < endIndex; i++) {
-            KmlPosition position = positions.get(i);
-            coordinates.add(createCoordinates(position, false));
-        }
+        lineStringType.getCoordinates().addAll(createLineStringCoordinates(route, startIndex, endIndex));
         return placemarkType;
     }
 

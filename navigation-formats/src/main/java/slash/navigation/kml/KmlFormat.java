@@ -323,6 +323,18 @@ public abstract class KmlFormat extends BaseKmlFormat {
         }
     }
 
+    /**
+     * Renders route.getPositions()[startIndex, endIndex) as KML coordinate strings for a
+     * LineString. Identical across all KML versions; previously duplicated in each createTrack().
+     */
+    protected List<String> createLineStringCoordinates(KmlRoute route, int startIndex, int endIndex) {
+        List<String> coordinates = new ArrayList<>();
+        List<KmlPosition> positions = route.getPositions();
+        for (int i = startIndex; i < endIndex; i++)
+            coordinates.add(createCoordinates(positions.get(i), false));
+        return coordinates;
+    }
+
     private static final Pattern TAVELLOG_DATE_PATTERN = Pattern.compile(".*Time:.*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
     private static final String TAVELLOG_DATE ="yyyy/MM/dd HH:mm:ss";
     private static final Pattern NAVIGON6310_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*(\\d{2}:\\d{2}:\\d{2}),([\\d\\.\\s]+)meter.*");
