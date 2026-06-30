@@ -205,26 +205,15 @@ public class Kml22Format extends KmlFormat {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     private List<KmlPosition> extractPositionsFromGeometry(JAXBElement<? extends AbstractGeometryType> geometryType) {
-        List<KmlPosition> positions = new ArrayList<>();
+        List<KmlPosition> positions = extractPositionsByElementName(geometryType,
+                value -> ((MultiGeometryType) value).getAbstractGeometryGroup(),
+                child -> extractPositionsFromGeometry((JAXBElement<? extends AbstractGeometryType>) child));
         AbstractGeometryType geometryTypeValue = geometryType.getValue();
-        if (geometryTypeValue instanceof PointType point) {
-            positions.addAll(asKmlPositions(point.getCoordinates()));
-        }
-        if (geometryTypeValue instanceof LineStringType lineString) {
-            positions.addAll(asKmlPositions(lineString.getCoordinates()));
-        }
-        if (geometryTypeValue instanceof MultiGeometryType multiGeometryType) {
-            List<JAXBElement<? extends AbstractGeometryType>> geometryTypes = multiGeometryType.getAbstractGeometryGroup();
-            for (JAXBElement<? extends AbstractGeometryType> geometryType2 : geometryTypes) {
-                positions.addAll(extractPositionsFromGeometry(geometryType2));
-            }
-        }
         if (geometryTypeValue instanceof MultiTrackType multiTrackType) {
-            List<TrackType> tracks = multiTrackType.getTrack();
-            for (TrackType track : tracks) {
+            for (TrackType track : multiTrackType.getTrack())
                 positions.addAll(extractPositions(track));
-            }
         }
         if (geometryTypeValue instanceof TrackType trackType) {
             positions.addAll(extractPositions(trackType));

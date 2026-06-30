@@ -157,4 +157,20 @@ public class Kml21FormatTest {
         assertTrue("nested folder path must be in the route name", routes.get(0).getName().contains("outer") && routes.get(0).getName().contains("inner"));
         assertEquals(2, routes.get(0).getPositionCount());
     }
+
+    @Test
+    public void testMultiGeometryCombinesAllChildGeometries() throws Exception {
+        // exercises the MultiGeometry recursion branch of the shared element-name geometry dispatcher
+        String kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
+                "<Document><Placemark><MultiGeometry>\n" +
+                "<Point><coordinates>1.0,1.0,0</coordinates></Point>\n" +
+                "<LineString><coordinates>2.0,2.0,0\n3.0,3.0,0\n</coordinates></LineString>\n" +
+                "</MultiGeometry></Placemark></Document></kml>";
+        List<KmlRoute> routes = readKml(kml);
+        assertEquals(1, routes.size());
+        assertEquals(3, routes.get(0).getPositionCount());
+        assertDoubleEquals(1.0, routes.get(0).getPositions().get(0).getLongitude());
+        assertDoubleEquals(3.0, routes.get(0).getPositions().get(2).getLongitude());
+    }
 }

@@ -128,24 +128,11 @@ public class Kml21Format extends KmlFormat {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private List<KmlPosition> extractPositions(JAXBElement<? extends GeometryType> geometryType) {
-        List<KmlPosition> positions = new ArrayList<>();
-        if (geometryType != null) {
-            GeometryType geometryTypeValue = geometryType.getValue();
-            if (geometryTypeValue instanceof PointType point) {
-                positions.addAll(asKmlPositions(point.getCoordinates()));
-            }
-            if (geometryTypeValue instanceof LineStringType lineString) {
-                positions.addAll(asKmlPositions(lineString.getCoordinates()));
-            }
-            if (geometryTypeValue instanceof MultiGeometryType multiGeometryType) {
-                List<JAXBElement<? extends GeometryType>> geometryTypes = multiGeometryType.getGeometry();
-                for (JAXBElement<? extends GeometryType> geometryType2 : geometryTypes) {
-                    positions.addAll(extractPositions(geometryType2));
-                }
-            }
-        }
-        return positions;
+        return extractPositionsByElementName(geometryType,
+                value -> ((MultiGeometryType) value).getGeometry(),
+                child -> extractPositions((JAXBElement<? extends GeometryType>) child));
     }
 
     private CompactCalendar extractTime(JAXBElement<? extends TimePrimitiveType> timePrimitiveType) {

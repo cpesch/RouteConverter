@@ -237,4 +237,58 @@ public class Kml22FormatTest {
         assertEquals("only the real track, the Speed/Marks folders are ignored", 1, routes.size());
         assertEquals(2, routes.get(0).getPositionCount());
     }
+
+    // ---- geometry element-name dispatch (KmlFormat.extractPositionsByElementName) ----
+
+    @Test
+    public void testMultiGeometryCombinesAllChildGeometries() throws Exception {
+        String kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\">\n" +
+                "<Document><Placemark><MultiGeometry>\n" +
+                "<Point><coordinates>1.0,1.0,0</coordinates></Point>\n" +
+                "<LineString><coordinates>2.0,2.0,0\n3.0,3.0,0\n</coordinates></LineString>\n" +
+                "</MultiGeometry></Placemark></Document></kml>";
+        List<KmlRoute> routes = readKml(kml);
+        assertEquals(1, routes.size());
+        assertEquals(3, routes.get(0).getPositionCount());
+        assertDoubleEquals(1.0, routes.get(0).getPositions().get(0).getLongitude());
+        assertDoubleEquals(3.0, routes.get(0).getPositions().get(2).getLongitude());
+    }
+
+    @Test
+    public void testGxTrackIsExtracted() throws Exception {
+        // gx:Track (KML 2.2 extension) isn't Point/LineString/MultiGeometry -- it must still be
+        // recognised by extractPositionsFromGeometry's own instanceof checks after the shared
+        // element-name dispatcher returns nothing for it.
+        String kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n" +
+                "<Document><Placemark><gx:Track>\n" +
+                "<when>2025-01-01T00:00:00Z</when>\n" +
+                "<when>2025-01-01T00:01:00Z</when>\n" +
+                "<gx:coord>11.1 48.1 0</gx:coord>\n" +
+                "<gx:coord>11.2 48.2 0</gx:coord>\n" +
+                "</gx:Track></Placemark></Document></kml>";
+        List<KmlRoute> routes = readKml(kml);
+        assertEquals(1, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+        assertDoubleEquals(11.2, routes.get(0).getPositions().get(1).getLongitude());
+    }
+
+    @Test
+    public void testGxMultiTrackInsideMultiGeometryIsExtracted() throws Exception {
+        // proves the recursion still re-enters extractPositionsFromGeometry (not just the shared
+        // Point/LineString/MultiGeometry dispatcher) for geometry kinds nested in a MultiGeometry
+        String kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://www.opengis.net/kml/2.2\" xmlns:gx=\"http://www.google.com/kml/ext/2.2\">\n" +
+                "<Document><Placemark><MultiGeometry>\n" +
+                "<Point><coordinates>9.0,9.0,0</coordinates></Point>\n" +
+                "<gx:MultiTrack><gx:Track>\n" +
+                "<when>2025-01-01T00:00:00Z</when>\n" +
+                "<gx:coord>11.1 48.1 0</gx:coord>\n" +
+                "</gx:Track></gx:MultiTrack>\n" +
+                "</MultiGeometry></Placemark></Document></kml>";
+        List<KmlRoute> routes = readKml(kml);
+        assertEquals(1, routes.size());
+        assertEquals("Point + the nested gx:MultiTrack's gx:Track position", 2, routes.get(0).getPositionCount());
+    }
 }
