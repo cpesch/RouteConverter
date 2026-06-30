@@ -25,10 +25,12 @@ import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Kml21FormatTest {
@@ -76,5 +78,56 @@ public class Kml21FormatTest {
         assertDoubleEquals(-33.59631160091919, position.getLatitude());
         assertNull(position.getSpeed());
         assertDoubleEquals(0.0, position.getElevation());
+    }
+
+    // ---- write/read round-trips (characterise the write path) ----
+
+    private List<KmlRoute> readKml(String kml) throws Exception {
+        ParserContext<KmlRoute> context = new ParserContextImpl<>();
+        format.read(new ByteArrayInputStream(kml.getBytes()), context);
+        return context.getRoutes();
+    }
+
+    private String writeKml(List<KmlRoute> routes) throws Exception {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        format.write(routes, outputStream);
+        return outputStream.toString();
+    }
+
+    @Test
+    public void testWriteReadLineStringRoundTrip() throws Exception {
+        String kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
+                "<Document><name>round-trip</name><Placemark><name>track</name><LineString>\n" +
+                "<coordinates>11.1,48.1,100\n11.2,48.2,200\n11.3,48.3,300\n</coordinates>\n" +
+                "</LineString></Placemark></Document></kml>";
+        List<KmlRoute> first = readKml(kml);
+        assertEquals(1, first.size());
+        assertEquals(3, first.get(0).getPositionCount());
+
+        String written = writeKml(first);
+        assertTrue("writes KML 2.1 namespace", written.contains("earth.google.com/kml/2.1"));
+
+        List<KmlRoute> second = readKml(written);
+        assertEquals(1, second.size());
+        KmlRoute route = second.get(0);
+        assertEquals(3, route.getPositionCount());
+        KmlPosition position = route.getPositions().get(1);
+        assertDoubleEquals(11.2, position.getLongitude());
+        assertDoubleEquals(48.2, position.getLatitude());
+        assertDoubleEquals(200.0, position.getElevation());
+    }
+
+    @Test
+    public void testWriteReadPreservesRouteName() throws Exception {
+        String kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
+                "<Document><name>my route</name><Placemark><LineString>\n" +
+                "<coordinates>11.1,48.1,0\n11.2,48.2,0\n</coordinates>\n" +
+                "</LineString></Placemark></Document></kml>";
+        List<KmlRoute> second = readKml(writeKml(readKml(kml)));
+        assertEquals(1, second.size());
+        // the writer prefixes the route characteristics ("Track: ") onto the name
+        assertTrue(second.get(0).getName().contains("my route"));
     }
 }
