@@ -130,4 +130,18 @@ public class Kml21FormatTest {
         // the writer prefixes the route characteristics ("Track: ") onto the name
         assertTrue(second.get(0).getName().contains("my route"));
     }
+
+    @Test
+    public void testGeometrylessPlacemarkIsSkipped() throws Exception {
+        // a placemark without geometry must not produce a spurious empty track (consistent with Kml22Format)
+        String kml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+                "<kml xmlns=\"http://earth.google.com/kml/2.1\">\n" +
+                "<Document>\n" +
+                "<Placemark><name>no geometry</name></Placemark>\n" +
+                "<Placemark><LineString><coordinates>11.1,48.1,0\n11.2,48.2,0\n</coordinates></LineString></Placemark>\n" +
+                "</Document></kml>";
+        List<KmlRoute> routes = readKml(kml);
+        assertEquals(1, routes.size());
+        assertEquals(2, routes.get(0).getPositionCount());
+    }
 }

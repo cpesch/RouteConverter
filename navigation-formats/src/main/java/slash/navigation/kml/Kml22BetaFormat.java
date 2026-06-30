@@ -128,6 +128,8 @@ public class Kml22BetaFormat extends KmlFormat {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
             String placemarkName = asDescription(trim(placemarkTypeValue.getNameElement()),
                     trim(placemarkTypeValue.getDescription()));
+            if (placemarkTypeValue.getAbstractGeometryGroup() == null)
+                continue;   // skip geometry-less placemarks (consistent with Kml22Format)
             List<KmlPosition> positions = extractPositions(placemarkTypeValue.getAbstractGeometryGroup());
             appendPlacemarkAsWaypointOrTrack(name, description, placemarkName, true, placemarkTypeValue.getDescription(),
                     placemarkTypeValue.getStyleUrl(), extractTime(placemarkTypeValue.getAbstractTimePrimitiveGroup()), positions, waypoints, context);
