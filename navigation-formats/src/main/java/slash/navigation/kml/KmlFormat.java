@@ -196,6 +196,40 @@ public abstract class KmlFormat extends BaseKmlFormat {
         }
     }
 
+    /**
+     * Appends a placemark's positions as a single waypoint (one position) or a track (more).
+     * Shared across all KML versions. The only behavioural divergence is which name feeds
+     * parseCharacteristics: KML 2.0/2.1/2.2-beta use the path-prefixed route name, KML 2.2 uses
+     * the bare placemark name; characteristicsFromRouteName preserves that exactly.
+     */
+    protected void appendPlacemarkAsWaypointOrTrack(String name, String description, String placemarkName,
+                                                    boolean characteristicsFromRouteName, String placemarkDescription,
+                                                    String styleUrl, CompactCalendar time, List<KmlPosition> positions,
+                                                    List<KmlPosition> waypoints, slash.navigation.base.ParserContext<KmlRoute> context) {
+        if (positions.size() == 1) {
+            KmlPosition wayPoint = positions.get(0);
+            enrichPosition(wayPoint, time, placemarkName, placemarkDescription, context.getStartDate());
+            waypoints.add(wayPoint);
+        } else {
+            String routeName = concatPath(name, asName(placemarkName));
+            List<String> routeDescription = asDescription(placemarkDescription != null ? placemarkDescription : description);
+            RouteCharacteristics characteristics = parseCharacteristics(characteristicsFromRouteName ? routeName : placemarkName, styleUrl, Track);
+            context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
+        }
+    }
+
+    /**
+     * Prepends the accumulated single-position placemarks as one combined waypoint route.
+     * Identical across all KML versions.
+     */
+    protected void prependWaypointsRoute(String name, String description, List<KmlPosition> waypoints,
+                                         slash.navigation.base.ParserContext<KmlRoute> context) {
+        if (!waypoints.isEmpty()) {
+            RouteCharacteristics characteristics = parseCharacteristics(name, null, Waypoints);
+            context.prependRoute(new KmlRoute(this, characteristics, name, asDescription(description), waypoints));
+        }
+    }
+
     private static final Pattern TAVELLOG_DATE_PATTERN = Pattern.compile(".*Time:.*(\\d{4}/\\d{2}/\\d{2} \\d{2}:\\d{2}:\\d{2}).*");
     private static final String TAVELLOG_DATE ="yyyy/MM/dd HH:mm:ss";
     private static final Pattern NAVIGON6310_TIME_AND_ELEVATION_PATTERN = Pattern.compile(".*(\\d{2}:\\d{2}:\\d{2}),([\\d\\.\\s]+)meter.*");

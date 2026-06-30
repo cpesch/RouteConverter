@@ -128,25 +128,11 @@ public class Kml22BetaFormat extends KmlFormat {
             PlacemarkType placemarkTypeValue = placemarkType.getValue();
             String placemarkName = asDescription(trim(placemarkTypeValue.getNameElement()),
                     trim(placemarkTypeValue.getDescription()));
-
             List<KmlPosition> positions = extractPositions(placemarkTypeValue.getAbstractGeometryGroup());
-            if (positions.size() == 1) {
-                // all placemarks with one position form one waypoint route
-                KmlPosition wayPoint = positions.get(0);
-                enrichPosition(wayPoint, extractTime(placemarkTypeValue.getAbstractTimePrimitiveGroup()), placemarkName, placemarkTypeValue.getDescription(), context.getStartDate());
-                waypoints.add(wayPoint);
-            } else {
-                // each placemark with more than one position is one track
-                String routeName = concatPath(name, asName(placemarkName));
-                List<String> routeDescription = asDescription(placemarkTypeValue.getDescription() != null ? placemarkTypeValue.getDescription() : description);
-                RouteCharacteristics characteristics = parseCharacteristics(routeName, placemarkTypeValue.getStyleUrl(), Track);
-                context.appendRoute(new KmlRoute(this, characteristics, routeName, routeDescription, positions));
-            }
+            appendPlacemarkAsWaypointOrTrack(name, description, placemarkName, true, placemarkTypeValue.getDescription(),
+                    placemarkTypeValue.getStyleUrl(), extractTime(placemarkTypeValue.getAbstractTimePrimitiveGroup()), positions, waypoints, context);
         }
-        if (!waypoints.isEmpty()) {
-            RouteCharacteristics characteristics = parseCharacteristics(name, null, Waypoints);
-            context.prependRoute(new KmlRoute(this, characteristics, name, asDescription(description), waypoints));
-        }
+        prependWaypointsRoute(name, description, waypoints, context);
     }
 
     private void extractWayPointsAndTracksFromNetworkLinks(List<JAXBElement<NetworkLinkType>> networkLinkTypes, ParserContext<KmlRoute> context) throws IOException {
