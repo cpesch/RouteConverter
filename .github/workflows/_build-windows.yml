@@ -208,6 +208,9 @@ jobs:
           artifact-configuration-slug: windows-installers
           github-artifact-id: ${{ steps.unsigned.outputs.artifact-id }}
           wait-for-completion: true
+          # release-signing needs manual approval in the SignPath app; give the
+          # maintainer 30 min (test-signing auto-approves, so this is a no-op there).
+          wait-for-completion-timeout-in-seconds: 1800
           output-artifact-directory: artefacts-signed
 
       - name: Overlay signed installers into artefacts/

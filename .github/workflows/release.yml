@@ -20,6 +20,7 @@ jobs:
       artefact-name: release-linux-mac
       retention-days: 30
       sign: true
+      signing-policy-slug: release-signing   # production cert (rc-meta 00043); requires manual approval in the SignPath app during the build
     secrets: inherit
 
   build-windows:
@@ -28,6 +29,7 @@ jobs:
       artefact-name: release-windows
       retention-days: 30
       sign: true
+      signing-policy-slug: release-signing   # production cert (rc-meta 00043); requires manual approval in the SignPath app during the build
     secrets: inherit
 
   publish:

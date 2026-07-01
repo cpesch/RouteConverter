@@ -25,7 +25,9 @@ jobs:
       artefact-name: prerelease-linux-mac
       retention-days: 7
       sign: true
-      signing-policy-slug: release-signing   # prod cert live (rc-meta 00043); prerelease validates before release.yml flips
+      # prereleases stay on test-signing (auto, no approval gate). Production
+      # release-signing requires manual approval in the SignPath app — reserved
+      # for release.yml. (rc-meta specs/00043.)
     secrets: inherit
 
   build-windows:
@@ -38,7 +40,9 @@ jobs:
       artefact-name: prerelease-windows
       retention-days: 7
       sign: true
-      signing-policy-slug: release-signing   # prod cert live (rc-meta 00043); prerelease validates before release.yml flips
+      # prereleases stay on test-signing (auto, no approval gate). Production
+      # release-signing requires manual approval in the SignPath app — reserved
+      # for release.yml. (rc-meta specs/00043.)
     secrets: inherit
 
   publish:
