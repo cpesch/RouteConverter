@@ -72,6 +72,16 @@ Contributors are listed in [`CONTRIBUTORS.txt`](CONTRIBUTORS.txt).
 
 Eclipse (m2e) and NetBeans work too — import the root `pom.xml` as a Maven project.
 
+## Code signing
+
+The Windows installers and the standalone Java artifacts are code-signed
+(Authenticode / jar signature) so Windows SmartScreen and Defender recognise
+them. Free code signing for open-source projects is provided by
+[SignPath.org](https://about.signpath.io/), with a certificate issued by the
+[SignPath Foundation](https://signpath.org/). The certificate is held in
+SignPath's HSM and never leaves it — CI holds only a submitter token that can
+request a signature, not extract the key.
+
 ## License
 
 RouteConverter is licensed under the **GNU General Public License v2** — see

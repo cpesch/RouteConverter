@@ -25,6 +25,7 @@ jobs:
       artefact-name: prerelease-linux-mac
       retention-days: 7
       sign: true
+      signing-policy-slug: release-signing   # prod cert live (rc-meta 00043); prerelease validates before release.yml flips
     secrets: inherit
 
   build-windows:
@@ -37,6 +38,7 @@ jobs:
       artefact-name: prerelease-windows
       retention-days: 7
       sign: true
+      signing-policy-slug: release-signing   # prod cert live (rc-meta 00043); prerelease validates before release.yml flips
     secrets: inherit
 
   publish:
