@@ -6,7 +6,10 @@ Proposed. Created on July 3, 2026, from issue
 [#85](https://github.com/cpesch/RouteConverter/issues/85) (JimmyS83). The
 request thread converged on a design; the remaining ambiguities were resolved
 with the maintainer on 2026-07-03 (placement, missing-duration handling,
-opt-in). Ready to implement.
+opt-in). The reporter **reconfirmed the requirement on 2026-07-03**, stressing
+that **duration is as crucial as length** (it was missing from his original
+text) and that both must be visible in the Browse panel where he compares
+stored routes. Ready to implement.
 
 ## Context
 
@@ -17,6 +20,15 @@ organised in folders and uses Browse to pick the next trip. To compare
 candidates he needs **length (distance)** and **duration (time)** per route —
 today those only appear on the Convert tab, forcing a click-to-Convert-and-back
 for every route.
+
+His concrete workflow (reporter, 2026-07-03): while planning an after-work ride
+he switches between locally-stored routes and compares **length + time** to
+choose the day's route — length hints at how urban/busy it is, and **time**
+decides whether he'll "make it home in time". Both numbers must sit in the
+Browse/map UI where he does the comparing, not one tab away. This makes
+**duration a first-class requirement, not a nice-to-have** — the columns must
+carry it, and the `–` fallback (below) only applies when a track genuinely has
+no time data.
 
 Two hard constraints from the maintainer rule out the obvious approaches:
 
