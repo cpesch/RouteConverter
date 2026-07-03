@@ -1,8 +1,8 @@
 # Release notes
 
-## 3.5 — unreleased
+## 3.5 — 2026-07-03
 
-**GitHub Release:** _pending_
+**GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.5
 
 ### Highlights (EN)
 
@@ -77,7 +77,7 @@ kam mit 3.4.
 
 | OS | File | URL |
 |---|---|---|
-| Archive | All artefacts for 3.5 | https://releases.routeconverter.com/release/ |
+| Archive | All artefacts for 3.5 | https://releases.routeconverter.com/previous-releases/3.5/ |
 | API docs | Aggregated Javadoc (always current release) | https://static.routeconverter.com/javadoc/ |
 
 ### Acknowledgements
