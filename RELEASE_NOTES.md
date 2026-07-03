@@ -1,5 +1,89 @@
 # Release notes
 
+## 3.5 — unreleased
+
+**GitHub Release:** _pending_
+
+### Highlights (EN)
+
+RouteConverter 3.5 is a trust-and-stabilisation release. The Windows
+installers and the standalone Java artifacts are now **code-signed** via the
+SignPath Foundation, so Windows SmartScreen and Defender stop warning about
+them. The runtime moves to **Java 21** (bundled JRE and minimum requirement),
+the macOS bundle now launches cleanly on Apple Silicon, and a broad round of
+download-integrity, background-map, and file-format fixes lands. No new
+end-user features this time — POI lookup arrived in 3.4.
+
+### Was ist neu (DE)
+
+RouteConverter 3.5 ist ein Vertrauens- und Stabilisierungs-Release. Die
+Windows-Installer und die eigenständigen Java-Artefakte sind jetzt über die
+SignPath Foundation **signiert**, sodass Windows SmartScreen und Defender
+keine Warnung mehr zeigen. Die Laufzeit wechselt auf **Java 21** (gebündelte
+JRE und Mindestanforderung), das macOS-Bundle startet nun sauber auf Apple
+Silicon, und zahlreiche Korrekturen bei Download-Integrität, Hintergrundkarte
+und Dateiformaten kommen hinzu. Keine neuen Endnutzer-Funktionen — POI-Suche
+kam mit 3.4.
+
+### New features
+
+- Crash / init diagnostics: the unhandled-error dialog shows the full
+  root-cause chain, background-map load failures are logged with a
+  startup-complete marker, and the error-report log is cleared after a
+  successful send.
+
+### Changes
+
+- **Code signing:** Windows installers and Java artifacts are signed via the
+  SignPath Foundation (Authenticode / jar signature); the certificate is held
+  in SignPath's HSM and CI never holds it.
+- **Java 21:** minimum runtime and bundled JRE move from 17 to 21.
+- Windows installers merge the former Bundle + OpenSource builds into one
+  installer per product; the standalone macOS `.jar` is no longer published.
+- Download and release links now point to `releases.routeconverter.com`.
+- Stripped bundled-JRE module set extended (`jdk.net` for httpclient5 5.6,
+  `jdk.management`) to prevent `NoClassDefFound` on the minimised runtime.
+
+### Fixes
+
+- macOS: the bundle self-dequarantines so the signed JRE launches on Apple
+  Silicon (no more `Killed: 9`).
+- Downloads: SHA-1 is treated as authoritative and mtime is ignored when the
+  SHA-1 is known; a "locally later than remote" file no longer masks a SHA-1
+  mismatch; an outdated file drops its ETag so the re-download is
+  unconditional (#106).
+- BRouter: outdated cached `.rd5` segments are removed (lookup v11).
+- Background world map installs without racing map-view creation (fixes the
+  intermittent blank background map).
+- KML: geometry-less placemarks are skipped (Kml21 / Kml22Beta).
+- GPX: OsmAnd extensions bind as global elements and the TrekBuddy
+  `ObjectFactory` is registered (fixes extension binding failures).
+- Reverted geojson-jackson 3.0 → 1.14 (3.0 broke GeoJSON read/write).
+- gpsbabel Extract receives its fragments; no more spurious "null bytes" log
+  when the content length is unknown.
+
+### Known issues
+
+(None reported at release time.)
+
+### Upgrade notes
+
+- **Java runtime requirement is now 21 or later** (was 17). The bundled
+  installer ships a JRE 21; if you run the standalone jar on your own JVM,
+  upgrade to Java 21+.
+- Settings + saved routes carry over from 3.4 unchanged.
+
+### Downloads
+
+| OS | File | URL |
+|---|---|---|
+| Archive | All artefacts for 3.5 | https://releases.routeconverter.com/release/ |
+| API docs | Aggregated Javadoc (always current release) | https://static.routeconverter.com/javadoc/ |
+
+### Acknowledgements
+
+- Full merged-PR list: see the GitHub Release auto-notes.
+
 ## 3.4 — 2026-06-07
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.4
