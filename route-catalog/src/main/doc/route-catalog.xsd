@@ -53,7 +53,10 @@
     <xsd:complexType name="routeType">
         <xsd:annotation>
             <xsd:documentation>
-                a route has a category, a description, a creator and an url where to find the route
+                a route has a category, a description, a creator and an url where to find the route.
+                The optional attributes carry server-side metadata (specs/00055): they are
+                emitted only when the route's file has been analyzed successfully. Old clients
+                ignore unknown attributes; new clients (specs/00012) unmarshal them.
             </xsd:documentation>
         </xsd:annotation>
         <xsd:attribute name="category" type="xsd:string" use="required"/>
@@ -61,6 +64,17 @@
         <xsd:attribute name="creator" type="xsd:string" use="required"/>
         <xsd:attribute name="url" type="xsd:string" use="required"/>
         <xsd:attribute name="href" type="xsd:string" use="required"/>
+        <xsd:attribute name="length" type="xsd:long" use="optional"/>
+        <xsd:attribute name="lengthKind" type="xsd:string" use="optional"/>
+        <xsd:attribute name="duration" type="xsd:long" use="optional"/>
+        <xsd:attribute name="positionLists" type="xsd:int" use="optional"/>
+        <xsd:attribute name="positions" type="xsd:int" use="optional"/>
+        <xsd:attribute name="size" type="xsd:long" use="optional"/>
+        <xsd:attribute name="format" type="xsd:string" use="optional"/>
+        <xsd:attribute name="startTime" type="xsd:string" use="optional"/>
+        <xsd:attribute name="elevationGain" type="xsd:int" use="optional"/>
+        <xsd:attribute name="elevationLoss" type="xsd:int" use="optional"/>
+        <xsd:attribute name="country" type="xsd:string" use="optional"/>
     </xsd:complexType>
 
     <xsd:complexType name="fileType">

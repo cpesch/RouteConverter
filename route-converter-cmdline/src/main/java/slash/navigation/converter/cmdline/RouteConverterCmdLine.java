@@ -75,8 +75,13 @@ public class RouteConverterCmdLine {
         Version version = parseVersionFromManifest();
         log.info("Started RouteConverter " + version.getVersion() + " from " + version.getDate() +
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
+
+        if (args.length >= 1 && "analyze".equals(args[0]))
+            return analyze(args);
+
         if (args.length != 3) {
             log.info("Usage: java -jar RouteConverterCmdLine.jar <source file> <target format> <target file>");
+            log.info("       java -jar RouteConverterCmdLine.jar analyze <source file> [--brouter-segments <dir>]");
             logFormatNames(false);
             return 5;
         }
@@ -109,6 +114,36 @@ public class RouteConverterCmdLine {
         }
 
         return 0;
+    }
+
+    /**
+     * {@code analyze <source file> [--brouter-segments <dir>]} — writes one line
+     * of metadata JSON (see src/main/doc/analyze-json.md, specs/00055) to stdout.
+     * The {@code --brouter-segments} option is reserved for the BRouter length
+     * seam (see {@link RouteLengthComputer}); it is accepted but currently unused,
+     * so Route-type lists are measured as beeline.
+     */
+    private int analyze(String[] args) {
+        if (args.length < 2) {
+            log.severe("Usage: java -jar RouteConverterCmdLine.jar analyze <source file> [--brouter-segments <dir>]");
+            return 5;
+        }
+
+        File source = absolutize(new File(args[1]));
+        if (!source.exists()) {
+            log.severe("Source '" + source.getAbsolutePath() + "' does not exist; stopping.");
+            return 10;
+        }
+
+        try {
+            FileAnalyzer analyzer = new FileAnalyzer(registry, new PointToPointLengthComputer());
+            String json = analyzer.analyze(source);
+            System.out.println(json);
+            return 0;
+        } catch (Exception e) {
+            log.severe("Error while analyzing '" + source.getAbsolutePath() + "': " + e);
+            return 25;
+        }
     }
 
     private void convert(File source, NavigationFormat format, File target) throws IOException {
