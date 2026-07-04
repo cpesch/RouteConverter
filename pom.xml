@@ -363,7 +363,7 @@
                             <include>src/test/java/**/*.java</include>
                         </includes>
                         <licenseHeader>
-                            <file>${maven.multiModuleProjectDirectory}/spotless/license-header.txt</file>
+                            <file>${maven.multiModuleProjectDirectory}/scripts/license-header.txt</file>
                         </licenseHeader>
                         <removeUnusedImports/>
                         <importOrder/>
