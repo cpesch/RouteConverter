@@ -28,6 +28,14 @@ Updated on June 7, 2026 (Phase 7 ? 130 new unit tests across 7 modules: `routing
 
 Updated on June 7, 2026 (Phase 8 ? 50 new unit tests across `navigation-formats`: `GoPalUtil` (binding3 round-trip), `ViaMichelinUtil`, `Nmn7Util`, `NavigonCruiserUtil`, `GkPosition`, `MercatorPosition`; all green in Surefire).
 
+Updated on July 4, 2026 (Phase 9 - `common-gui` headless model/helper logic: 18 new unit tests across `FilteringTableModel` (7), `UndoManager` (6), `CombinedResourceBundle` (5); all hermetic, all green in Surefire; module suite 42 -> 60 tests).
+
+Updated on July 4, 2026 (Phase 10 - `mapsforge-mapview` model/updater value classes: 21 new unit tests across `PairWithLayer` (6), `PositionWithLayer` (7), `ThemeStyleImpl` (8); Mockito for `Layer`/`XmlRenderThemeStyle*`, no rendering or live tiles; all green in Surefire; module suite 38 -> 59 tests).
+
+Updated on July 4, 2026 (Phase 11 - `route-converter-gui` document/dnd/helper logic: 32 new unit tests across `DoubleDocument` (9), `IntegerDocument` (8), `UrlDocument` (5), `NavigationFormatFileFilter` (4), `PositionSelection` (6); Swing text/Transferable/FileFilter run headless, Mockito only for `NavigationFormat`; all green in Surefire).
+
+Updated on July 4, 2026 (Phase 12 - `route-converter-gui` dnd/model delegation: 25 new unit tests across `RouteSelection` (4), `CategorySelection` (4), `StringDocument` (4), `TimeZoneModel` (4), `FilteringPositionsModel` (9); Mockito for `PositionsModel`/`BaseRoute`/`RouteModel`/`CategoryTreeNode`, isolated Preferences keys per test; all green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -307,6 +315,70 @@ Observed result:
 - build succeeded
 - all three new classes ran in Surefire
 - `Tests run: 44, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 4, 2026: `common-gui` Phase 9 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl common-gui test -Dskip.integration.tests=true
+```
+
+Observed result:
+
+- build succeeded
+- 18 new tests ran in Surefire: `FilteringTableModelTest` (7 - row mapping, re-filter on delegate change and on `setFilterPredicate`, `mapRows`, mapped write-through, `getColumnCount` contract), `UndoManagerTest` (6 - undo/redo stack transitions, `discardAllEdits`, `ChangeListener` firing), `CombinedResourceBundleTest` (5 - key merge, later-bundle override, `getKeys`, missing-key `MissingResourceException`, empty list)
+- `CombinedResourceBundleTest` uses two tiny fixture bundles under `common-gui/src/test/resources/slash/navigation/gui/helpers/`
+- full module suite: `Tests run: 60, Failures: 0, Errors: 0, Skipped: 0` (was 42)
+
+### Verified on July 4, 2026: `mapsforge-mapview` Phase 10 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl mapsforge-mapview test -Dskip.integration.tests=true
+```
+
+Observed result:
+
+- build succeeded
+- 21 new tests ran in Surefire: `PairWithLayerTest` (6 - getters/row mutation, `hasCoordinates` both-ends rule, mutable layer/distanceAndTime, equals-by-first+second, null/other-type, `toString`), `PositionWithLayerTest` (7 - position/layer accessors, `hasCoordinates`, equals-by-position+layer incl. both-null, null/other-type, `toString`), `ThemeStyleImplTest` (8 - `description()` default-language -> menu-language -> id fallback chain, `getUrl`, `getCategories` mapping + empty, equals/hashCode by url)
+- `Layer`, `XmlRenderThemeStyleLayer` and `XmlRenderThemeStyleMenu` are Mockito mocks; no map rendering, no live tiles
+- full module suite: `Tests run: 59, Failures: 0, Errors: 0, Skipped: 0` (was 38)
+
+### Verified on July 4, 2026: `route-converter-gui` Phase 11 unit tests
+
+Verified command (`-am` rebuilds the refactored `common-gui`/`common` from source; without it the reactor resolves a stale `common-gui` from the local `.m2` and `OptionsDialog` fails to compile against the older `UIHelper.chooseDirectory` signature - a local artifact-staleness quirk, not a source break):
+
+```sh
+./mvnw -pl route-converter-gui -am test \
+  -Dtest=DoubleDocumentTest,IntegerDocumentTest,UrlDocumentTest,NavigationFormatFileFilterTest,PositionSelectionTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 32 new tests ran in Surefire: `DoubleDocumentTest` (9) and `IntegerDocumentTest` (8 - insert/remove validation state machine, whole-number fraction stripping, `getDouble`/`getInt` zero-on-failure, lone-minus and letter/decimal rejection), `UrlDocumentTest` (5 - `getShortUrl` trim/last-fragment/ellipsis-truncation, empty/blank -> null), `NavigationFormatFileFilterTest` (4 - extension match, directory accept, description/format passthrough), `PositionSelectionTest` (6 - deep-copy of input, flavor array, `isDataFlavorSupported`, POSITION/STRING `getTransferData`, unsupported-flavor throw)
+- Swing text `Document`, `Transferable`/`DataFlavor` and `FileFilter` instantiate headlessly; Mockito used only for the `NavigationFormat` collaborator
+- all green: `Tests run: 32, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 4, 2026: `route-converter-gui` Phase 12 unit tests
+
+Verified command (`-am` for the same stale-`.m2` reason as Phase 11):
+
+```sh
+./mvnw -pl route-converter-gui -am test \
+  -Dtest=RouteSelectionTest,CategorySelectionTest,StringDocumentTest,TimeZoneModelTest,FilteringPositionsModelTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 25 new tests ran in Surefire: `RouteSelectionTest` (4) and `CategorySelectionTest` (4 - single-flavor Transferable contract: flavor array, `isDataFlavorSupported`, list returned for own flavor, unsupported throws), `StringDocumentTest` (4 - get/set/replace/clear), `TimeZoneModelTest` (4 - default, persist, change-listener fire + remove; isolated per-test Preferences keys), `FilteringPositionsModelTest` (9 - delegation of getRoute/setRoute/getPosition/getIndex/edit/remove/flags/fireTableRowsUpdated through the mapped delegate row, plus UnsupportedOperationException guards for structural ops)
+- Mockito mocks `PositionsModel`, `BaseRoute`, `RouteModel`, `CategoryTreeNode`, `PositionColumnValues`
+- all green: `Tests run: 25, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
