@@ -36,6 +36,8 @@ Updated on July 4, 2026 (Phase 11 - `route-converter-gui` document/dnd/helper lo
 
 Updated on July 4, 2026 (Phase 12 - `route-converter-gui` dnd/model delegation: 25 new unit tests across `RouteSelection` (4), `CategorySelection` (4), `StringDocument` (4), `TimeZoneModel` (4), `FilteringPositionsModel` (9); Mockito for `PositionsModel`/`BaseRoute`/`RouteModel`/`CategoryTreeNode`, isolated Preferences keys per test; all green in Surefire).
 
+Updated on July 4, 2026 (Phase 13 - `common` value/utility surface + one `mapview` model: 37 new unit tests filling uncovered methods of already-tested classes - `CompactCalendar` (12: equals/hashCode, `hasDateDefined`, `parseDate`, factory zone propagation, cross-zone before/after, `asUTCTimeInTimeZone`), `Transfer` (13: trim, parseInteger/Int/Long/Short, isEmpty overloads, toDouble/toArray, encodeUmlauts, toMixedCase, trimLineFeeds), `Files` (6: getExtension/removeExtension/setExtension/extractFileName/compare/asDialogString) - plus `CharacteristicsModel` (6, Mockito `BaseRoute`) in `mapview`; all green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -379,6 +381,25 @@ Observed result:
 - 25 new tests ran in Surefire: `RouteSelectionTest` (4) and `CategorySelectionTest` (4 - single-flavor Transferable contract: flavor array, `isDataFlavorSupported`, list returned for own flavor, unsupported throws), `StringDocumentTest` (4 - get/set/replace/clear), `TimeZoneModelTest` (4 - default, persist, change-listener fire + remove; isolated per-test Preferences keys), `FilteringPositionsModelTest` (9 - delegation of getRoute/setRoute/getPosition/getIndex/edit/remove/flags/fireTableRowsUpdated through the mapped delegate row, plus UnsupportedOperationException guards for structural ops)
 - Mockito mocks `PositionsModel`, `BaseRoute`, `RouteModel`, `CategoryTreeNode`, `PositionColumnValues`
 - all green: `Tests run: 25, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 4, 2026: `common` + `mapview` Phase 13 unit tests
+
+Verified commands:
+
+```sh
+./mvnw -pl common test \
+  -Dtest=CompactCalendarValueTest,TransferStringNumberTest,FilesExtensionTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+./mvnw -pl mapview -am test -Dtest=CharacteristicsModelTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- both builds succeeded
+- `common`: 31 new tests - `CompactCalendarValueTest` (12), `TransferStringNumberTest` (13), `FilesExtensionTest` (6); no mocks, all pure static/value logic that the existing `CompactCalendarTest`/`TransferTest`/`FilesTest` did not reach
+- `mapview`: 6 new tests - `CharacteristicsModelTest` (headless `ComboBoxModel`; Mockito `BaseRoute`; selection reflect, change-updates-route, no-op-when-unchanged, from-null-selection)
+- all green: `Tests run: 31 ...` and `Tests run: 6 ...`, Failures 0, Errors 0
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
