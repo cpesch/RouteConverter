@@ -38,6 +38,8 @@ Updated on July 4, 2026 (Phase 12 - `route-converter-gui` dnd/model delegation: 
 
 Updated on July 4, 2026 (Phase 13 - `common` value/utility surface + one `mapview` model: 37 new unit tests filling uncovered methods of already-tested classes - `CompactCalendar` (12: equals/hashCode, `hasDateDefined`, `parseDate`, factory zone propagation, cross-zone before/after, `asUTCTimeInTimeZone`), `Transfer` (13: trim, parseInteger/Int/Long/Short, isEmpty overloads, toDouble/toArray, encodeUmlauts, toMixedCase, trimLineFeeds), `Files` (6: getExtension/removeExtension/setExtension/extractFileName/compare/asDialogString) - plus `CharacteristicsModel` (6, Mockito `BaseRoute`) in `mapview`; all green in Surefire).
 
+Updated on July 4, 2026 (Phase 14 - `common` utility surface, part 2: 12 more mock-free unit tests across `Transfer` (7: ceilFraction, roundMeterToMillimeterPrecision, roundMillisecondsToSecondPrecision, escape, isIsoLatin1ButReadWithUtf8, stripNonValidXMLCharacters, formatLong/ShortAsString) and `Files` (5: getExtension `File`/`URL`/`List<URL>` overloads, toUrls url-or-file fallback, reverse); all green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -400,6 +402,23 @@ Observed result:
 - `common`: 31 new tests - `CompactCalendarValueTest` (12), `TransferStringNumberTest` (13), `FilesExtensionTest` (6); no mocks, all pure static/value logic that the existing `CompactCalendarTest`/`TransferTest`/`FilesTest` did not reach
 - `mapview`: 6 new tests - `CharacteristicsModelTest` (headless `ComboBoxModel`; Mockito `BaseRoute`; selection reflect, change-updates-route, no-op-when-unchanged, from-null-selection)
 - all green: `Tests run: 31 ...` and `Tests run: 6 ...`, Failures 0, Errors 0
+
+### Verified on July 4, 2026: `common` Phase 14 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl common test \
+  -Dtest=TransferRoundingEscapeTest,FilesUrlTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 12 new tests: `TransferRoundingEscapeTest` (7) and `FilesUrlTest` (5), no mocks
+- control/replacement characters are built via `(char) 0x00` / `(char) 0xFFFD` concatenation rather than embedded literals, so the source stays plain ASCII
+- all green: `Tests run: 12, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
