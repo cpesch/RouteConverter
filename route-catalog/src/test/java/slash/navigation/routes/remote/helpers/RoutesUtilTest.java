@@ -29,6 +29,7 @@ import slash.navigation.routes.remote.binding.RouteType;
 import java.io.StringWriter;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 public class RoutesUtilTest {
@@ -43,7 +44,7 @@ public class RoutesUtilTest {
             <catalog xmlns="http://api.routeconverter.com/v1/schemas/route-catalog">
                 <category parent="" name="Root" href="https://api.routeconverter.com/v1/categories/1/">
                     <category parent="https://api.routeconverter.com/v1/categories/1/" name="Subcategory" href="https://api.routeconverter.com/v1/categories/2/"/>
-                    <route category="https://api.routeconverter.com/v1/categories/1/" description="Overview Route" creator="tester" url="https://static.routeconverter.com/routes/overview.gpx" href="https://api.routeconverter.com/v1/routes/1/"/>
+                    <route category="https://api.routeconverter.com/v1/categories/1/" description="Overview Route" creator="tester" url="https://static.routeconverter.com/routes/overview.gpx" href="https://api.routeconverter.com/v1/routes/1/" length="12345" lengthKind="routed" duration="3600"/>
                 </category>
                 <route category="https://api.routeconverter.com/v1/categories/2/" description="Detailed Route" creator="tester" url="https://static.routeconverter.com/routes/detailed.gpx" href="https://api.routeconverter.com/v1/routes/2/"/>
                 <file name="sample.gpx" creator="tester" url="https://static.routeconverter.com/files/sample.gpx" href="https://api.routeconverter.com/v1/files/1/"/>
@@ -87,6 +88,10 @@ public class RoutesUtilTest {
         assertEquals("tester", nestedRoute.getCreator());
         assertEquals("https://static.routeconverter.com/routes/overview.gpx", nestedRoute.getUrl());
         assertEquals("https://api.routeconverter.com/v1/routes/1/", nestedRoute.getHref());
+        // server metadata attributes (specs/00055) are unmarshalled when present
+        assertEquals(Long.valueOf(12345L), nestedRoute.getLength());
+        assertEquals("routed", nestedRoute.getLengthKind());
+        assertEquals(Long.valueOf(3600L), nestedRoute.getDuration());
 
         RouteType topLevelRoute = catalogType.getRoute();
         assertEquals(SUB_CATEGORY_HREF, topLevelRoute.getCategory());
@@ -94,6 +99,10 @@ public class RoutesUtilTest {
         assertEquals("tester", topLevelRoute.getCreator());
         assertEquals("https://static.routeconverter.com/routes/detailed.gpx", topLevelRoute.getUrl());
         assertEquals(TOP_LEVEL_ROUTE_HREF, topLevelRoute.getHref());
+        // absent server metadata attributes (old server) unmarshal to null
+        assertNull(topLevelRoute.getLength());
+        assertNull(topLevelRoute.getLengthKind());
+        assertNull(topLevelRoute.getDuration());
 
         FileType fileType = catalogType.getFile();
         assertEquals("sample.gpx", fileType.getName());

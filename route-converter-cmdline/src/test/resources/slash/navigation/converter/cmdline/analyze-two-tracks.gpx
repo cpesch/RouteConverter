@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<gpx xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="RouteConverter analyze test">
+  <trk>
+    <name>Track A</name>
+    <trkseg>
+      <trkpt lat="52.5000" lon="13.4000"><ele>34.0</ele><time>2020-05-01T08:00:00Z</time></trkpt>
+      <trkpt lat="52.5010" lon="13.4010"><ele>40.0</ele><time>2020-05-01T08:05:00Z</time></trkpt>
+      <trkpt lat="52.5020" lon="13.4020"><ele>38.0</ele><time>2020-05-01T08:10:00Z</time></trkpt>
+    </trkseg>
+  </trk>
+  <trk>
+    <name>Track B</name>
+    <trkseg>
+      <trkpt lat="52.5100" lon="13.4100"><ele>50.0</ele><time>2020-05-01T09:00:00Z</time></trkpt>
+      <trkpt lat="52.5110" lon="13.4110"><ele>45.0</ele><time>2020-05-01T09:03:00Z</time></trkpt>
+    </trkseg>
+  </trk>
+</gpx>

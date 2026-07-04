@@ -32,6 +32,12 @@ import java.util.List;
  */
 
 public class RoutesTableModel extends AbstractTableModel {
+    public static final int NAME_COLUMN = 0;
+    public static final int CREATOR_COLUMN = 1;
+    public static final int LENGTH_COLUMN = 2;
+    public static final int DURATION_COLUMN = 3;
+    public static final int COLUMN_COUNT = 4;
+
     private List<RouteModel> routes = new ArrayList<>();
 
     public void setRoutes(List<RouteModel> routes) {
@@ -44,7 +50,7 @@ public class RoutesTableModel extends AbstractTableModel {
     }
 
     public int getColumnCount() {
-        return 2;
+        return COLUMN_COUNT;
     }
 
     public Object getValueAt(int rowIndex, int columnIndex) {
