@@ -50,6 +50,8 @@ Updated on July 4, 2026 (Phase 18 - `navigation-formats` CSV position: 6 new moc
 
 Updated on July 4, 2026 (Phase 19 - `navigation-formats` GPX position: 6 new mock-free unit tests for `GpxPosition` (plain constructor accessors, GPX 1.0 BigDecimal constructor populating heading + hdop/pdop/vdop/satellites, plain setDescription city/no-reason, heading/speed round-trip without a position extension, asGpxPosition identity, equals); no JAXB bindings touched; all green in Surefire).
 
+Updated on July 4, 2026 (Phase 20 - `navigation-formats` Excel position: 4 new mock-free unit tests for `ExcelPosition` via its in-memory HSSFWorkbook constructor (coordinate/speed/description storage, coordinate setter round-trips, extended-sensor temperature round-trip, backing-row exposure); no files, no POI mocks; all green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -510,6 +512,22 @@ Observed result:
 - build succeeded
 - 6 new tests, no mocks, no JAXB: `GpxPositionTest` uses the plain and GPX-1.0 BigDecimal constructors (heading/hdop/pdop/vdop/satellites are inherited Wgs84Position fields), plain-text setDescription, extension-free heading/speed round-trip, asGpxPosition identity, equals
 - all green: `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 4, 2026: `navigation-formats` Phase 20 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats test -Dtest=ExcelPositionTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 4 new tests, no mocks, no files: `ExcelPositionTest` drives the `ExcelPosition(Double,...)` constructor, which builds a real in-memory `HSSFWorkbook`/`Row`, then round-trips coordinates, speed, description and an extended-sensor temperature through that row
+- note: `ExcelPosition` does not override `equals` (identity-based), so no value-equality test was written
+- all green: `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
