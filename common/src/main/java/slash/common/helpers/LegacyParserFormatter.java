@@ -97,9 +97,21 @@ class LegacyParserFormatter implements DateTimeParserFormatter {
             currentFormat = createFormatter();
 
             if (currentFormat instanceof SimpleDateFormat simpleDateFormat) {
-                String pattern = simpleDateFormat.toLocalizedPattern();
-                pattern = pattern.replaceAll("(?<!y)y(?!y)", "yy");
-                currentParser = new SimpleDateFormat(pattern);
+                // Derive the parser from the formatter itself so that whatever
+                // format() produces can be parse()d back (round-trip safe). The
+                // clone keeps the formatter's locale, symbols and calendar; we
+                // only widen a single-'y' year so both two- and four-digit years
+                // parse.
+                //
+                // The previous "new SimpleDateFormat(toLocalizedPattern())" was
+                // broken twice over: it fed a *localized* pattern into a
+                // constructor that interprets a *non-localized* one, and it
+                // dropped the formatter's locale (falling back to the default
+                // FORMAT locale). For many locales that yielded a parser which
+                // rejected the very string the formatter had just produced.
+                SimpleDateFormat parser = (SimpleDateFormat) simpleDateFormat.clone();
+                parser.applyPattern(parser.toPattern().replaceAll("(?<!y)y(?!y)", "yy"));
+                currentParser = parser;
             }
             else {
                 currentParser = createFormatter();
