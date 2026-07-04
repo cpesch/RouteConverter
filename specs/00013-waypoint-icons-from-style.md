@@ -1,3 +1,11 @@
+---
+name: 00013-waypoint-icons-from-style
+status: proposed
+phases_done: []
+phases_next: []
+last_touched: 2026-07-03
+---
+
 # 00013 - Per-waypoint icons from KML/KMZ (fetch + render real icons)
 
 ## Status

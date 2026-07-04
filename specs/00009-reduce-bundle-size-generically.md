@@ -1,3 +1,11 @@
+---
+name: 00009-reduce-bundle-size-generically
+status: proposed
+phases_done: []
+phases_next: []
+last_touched: 2026-06-13
+---
+
 # 00009 - Reduce bundle download size with a generic approach
 
 ## Status

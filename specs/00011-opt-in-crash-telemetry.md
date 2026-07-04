@@ -1,3 +1,11 @@
+---
+name: 00011-opt-in-crash-telemetry
+status: proposed
+phases_done: []
+phases_next: []
+last_touched: 2026-06-15
+---
+
 # 00011 - Crash / init-error diagnostics and opt-in telemetry
 
 ## Status

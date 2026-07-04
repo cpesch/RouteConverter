@@ -1,3 +1,11 @@
+---
+name: 00015-show-nonselected-lists-readonly
+status: proposed
+phases_done: []
+phases_next: []
+last_touched: 2026-07-03
+---
+
 # 00015 - Show non-selected position lists read-only (gray)
 
 ## Status

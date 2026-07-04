@@ -1,3 +1,11 @@
+---
+name: 00004-automate-tileserver-catalog-jaxb-generation
+status: shipped
+phases_done: []
+phases_next: []
+last_touched: 2026-06-01
+---
+
 # Issue note: automate `tileserver-maps` JAXB binding generation
 
 ## Suggested GitHub issue title

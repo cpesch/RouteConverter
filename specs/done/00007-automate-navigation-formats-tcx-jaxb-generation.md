@@ -1,3 +1,11 @@
+---
+name: 00007-automate-navigation-formats-tcx-jaxb-generation
+status: shipped
+phases_done: []
+phases_next: []
+last_touched: 2026-06-03
+---
+
 # Issue note: automate `navigation-formats` JAXB generation for TCX
 
 ## Suggested GitHub issue title

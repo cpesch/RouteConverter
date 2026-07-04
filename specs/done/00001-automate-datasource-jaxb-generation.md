@@ -1,3 +1,11 @@
+---
+name: 00001-automate-datasource-jaxb-generation
+status: shipped
+phases_done: []
+phases_next: []
+last_touched: 2026-06-01
+---
+
 # Issue note: automate `datasource` JAXB binding generation
 
 ## Suggested GitHub issue title

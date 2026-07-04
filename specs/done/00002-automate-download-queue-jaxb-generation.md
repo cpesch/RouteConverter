@@ -1,3 +1,11 @@
+---
+name: 00002-automate-download-queue-jaxb-generation
+status: shipped
+phases_done: []
+phases_next: []
+last_touched: 2026-06-01
+---
+
 # Issue note: automate `download` queue JAXB binding generation
 
 ## Suggested GitHub issue title

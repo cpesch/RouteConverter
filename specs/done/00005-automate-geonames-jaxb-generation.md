@@ -1,3 +1,11 @@
+---
+name: 00005-automate-geonames-jaxb-generation
+status: shipped
+phases_done: []
+phases_next: []
+last_touched: 2026-06-02
+---
+
 # Issue note: automate `geonames` JAXB binding generation
 
 ## Suggested GitHub issue title

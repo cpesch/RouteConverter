@@ -1,3 +1,11 @@
+---
+name: 00006-automate-navigation-formats-lmx-fpl-jaxb-generation
+status: shipped
+phases_done: []
+phases_next: []
+last_touched: 2026-06-03
+---
+
 # Issue note: automate `navigation-formats` JAXB generation for LMX and FPL
 
 ## Suggested GitHub issue title

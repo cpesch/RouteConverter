@@ -1,3 +1,11 @@
+---
+name: 00014-poi-category-overlay
+status: proposed
+phases_done: []
+phases_next: []
+last_touched: 2026-07-03
+---
+
 # 00014 - Category-based POI overlay (show all POIs of a category)
 
 ## Status
