@@ -22,6 +22,8 @@ Updated on June 7, 2026 (Phase 8 ? 50 new unit tests across `navigation-formats`
 
 Updated on July 4, 2026 (Phase 9 - `common-gui` headless model/helper logic: 18 new unit tests across `FilteringTableModel` (7), `UndoManager` (6), `CombinedResourceBundle` (5); all hermetic, all green in Surefire; module suite 42 -> 60 tests).
 
+Updated on July 4, 2026 (Phase 10 - `mapsforge-mapview` model/updater value classes: 21 new unit tests across `PairWithLayer` (6), `PositionWithLayer` (7), `ThemeStyleImpl` (8); Mockito for `Layer`/`XmlRenderThemeStyle*`, no rendering or live tiles; all green in Surefire; module suite 38 -> 59 tests).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -316,6 +318,21 @@ Observed result:
 - 18 new tests ran in Surefire: `FilteringTableModelTest` (7 - row mapping, re-filter on delegate change and on `setFilterPredicate`, `mapRows`, mapped write-through, `getColumnCount` contract), `UndoManagerTest` (6 - undo/redo stack transitions, `discardAllEdits`, `ChangeListener` firing), `CombinedResourceBundleTest` (5 - key merge, later-bundle override, `getKeys`, missing-key `MissingResourceException`, empty list)
 - `CombinedResourceBundleTest` uses two tiny fixture bundles under `common-gui/src/test/resources/slash/navigation/gui/helpers/`
 - full module suite: `Tests run: 60, Failures: 0, Errors: 0, Skipped: 0` (was 42)
+
+### Verified on July 4, 2026: `mapsforge-mapview` Phase 10 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl mapsforge-mapview test -Dskip.integration.tests=true
+```
+
+Observed result:
+
+- build succeeded
+- 21 new tests ran in Surefire: `PairWithLayerTest` (6 - getters/row mutation, `hasCoordinates` both-ends rule, mutable layer/distanceAndTime, equals-by-first+second, null/other-type, `toString`), `PositionWithLayerTest` (7 - position/layer accessors, `hasCoordinates`, equals-by-position+layer incl. both-null, null/other-type, `toString`), `ThemeStyleImplTest` (8 - `description()` default-language -> menu-language -> id fallback chain, `getUrl`, `getCategories` mapping + empty, equals/hashCode by url)
+- `Layer`, `XmlRenderThemeStyleLayer` and `XmlRenderThemeStyleMenu` are Mockito mocks; no map rendering, no live tiles
+- full module suite: `Tests run: 59, Failures: 0, Errors: 0, Skipped: 0` (was 38)
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
