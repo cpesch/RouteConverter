@@ -24,6 +24,8 @@ Updated on July 4, 2026 (Phase 9 - `common-gui` headless model/helper logic: 18 
 
 Updated on July 4, 2026 (Phase 10 - `mapsforge-mapview` model/updater value classes: 21 new unit tests across `PairWithLayer` (6), `PositionWithLayer` (7), `ThemeStyleImpl` (8); Mockito for `Layer`/`XmlRenderThemeStyle*`, no rendering or live tiles; all green in Surefire; module suite 38 -> 59 tests).
 
+Updated on July 4, 2026 (Phase 11 - `route-converter-gui` document/dnd/helper logic: 32 new unit tests across `DoubleDocument` (9), `IntegerDocument` (8), `UrlDocument` (5), `NavigationFormatFileFilter` (4), `PositionSelection` (6); Swing text/Transferable/FileFilter run headless, Mockito only for `NavigationFormat`; all green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -333,6 +335,27 @@ Observed result:
 - 21 new tests ran in Surefire: `PairWithLayerTest` (6 - getters/row mutation, `hasCoordinates` both-ends rule, mutable layer/distanceAndTime, equals-by-first+second, null/other-type, `toString`), `PositionWithLayerTest` (7 - position/layer accessors, `hasCoordinates`, equals-by-position+layer incl. both-null, null/other-type, `toString`), `ThemeStyleImplTest` (8 - `description()` default-language -> menu-language -> id fallback chain, `getUrl`, `getCategories` mapping + empty, equals/hashCode by url)
 - `Layer`, `XmlRenderThemeStyleLayer` and `XmlRenderThemeStyleMenu` are Mockito mocks; no map rendering, no live tiles
 - full module suite: `Tests run: 59, Failures: 0, Errors: 0, Skipped: 0` (was 38)
+
+### Verified on July 4, 2026: `route-converter-gui` Phase 11 unit tests
+
+Verified command (`-am` rebuilds the refactored `common-gui`/`common` from
+source; without it the reactor resolves a stale `common-gui` from the local
+`.m2` and `OptionsDialog` fails to compile against the older
+`UIHelper.chooseDirectory` signature - a local artifact-staleness quirk, not
+a source break):
+
+```sh
+./mvnw -pl route-converter-gui -am test \
+  -Dtest=DoubleDocumentTest,IntegerDocumentTest,UrlDocumentTest,NavigationFormatFileFilterTest,PositionSelectionTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 32 new tests ran in Surefire: `DoubleDocumentTest` (9) and `IntegerDocumentTest` (8 - insert/remove validation state machine, whole-number fraction stripping, `getDouble`/`getInt` zero-on-failure, lone-minus and letter/decimal rejection), `UrlDocumentTest` (5 - `getShortUrl` trim/last-fragment/ellipsis-truncation, empty/blank -> null), `NavigationFormatFileFilterTest` (4 - extension match, directory accept, description/format passthrough), `PositionSelectionTest` (6 - deep-copy of input, flavor array, `isDataFlavorSupported`, POSITION/STRING `getTransferData`, unsupported-flavor throw)
+- Swing text `Document`, `Transferable`/`DataFlavor` and `FileFilter` instantiate headlessly; Mockito used only for the `NavigationFormat` collaborator
+- all green: `Tests run: 32, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
