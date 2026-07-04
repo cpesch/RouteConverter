@@ -128,3 +128,14 @@ builds need not repeat.
 - Durable notes go in `specs/` (numbered, issue-like filenames, e.g.
   `00010-migrate-java-17-to-25.md`); stable agent instructions go here;
   temporary exploration stays in conversation.
+- **Spec lifecycle (frontmatter + status dirs).** Every `specs/000NN-*.md`
+  carries a YAML frontmatter block at the top: `name / status / phases_done /
+  phases_next / last_touched`. Status enum: `proposed | planned | in-flight |
+  shipped | live | retired`. **Active** specs (`proposed`/`planned`/`in-flight`)
+  live in `specs/`; **done** ones (`shipped`/`live`/`retired`) in `specs/done/`.
+  When a spec's status crosses that line — flip only at zero open tasks, and
+  verify ship state from git, not the `status` field alone — `git mv` it to the
+  matching dir. Then rerun the aggregator: bare `python3 scripts/gen-status.py`
+  (it writes `specs/STATUS.md` itself — do NOT redirect `> specs/STATUS.md`, that
+  races its own write). It warns on stale-dated active specs + status/dir
+  mismatch. New-spec frontmatter follows `specs/_templates/project-overview-prompt.md`.
