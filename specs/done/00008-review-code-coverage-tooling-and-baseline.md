@@ -40,6 +40,8 @@ Updated on July 4, 2026 (Phase 13 - `common` value/utility surface + one `mapvie
 
 Updated on July 4, 2026 (Phase 14 - `common` utility surface, part 2: 12 more mock-free unit tests across `Transfer` (7: ceilFraction, roundMeterToMillimeterPrecision, roundMillisecondsToSecondPrecision, escape, isIsoLatin1ButReadWithUtf8, stripNonValidXMLCharacters, formatLong/ShortAsString) and `Files` (5: getExtension `File`/`URL`/`List<URL>` overloads, toUrls url-or-file fallback, reverse); all green in Surefire).
 
+Updated on July 4, 2026 (Phase 15 - `navigation-formats` format helpers/position types: 19 new mock-free unit tests across `GarminFlightPlanFormat` (8: hasValid/createValid identifier+description, createValidWaypointType airport rule, createValidCountryCode US/prefix rules, ctor derivation), `TomTomPosition` (6: x100000 integer scaling, truncation-toward-zero, Integer ctor, null coords, equals), `NmnPosition` (5: description reconstruction, DESCRIPTION_PATTERN parse - number group needs >= 2 chars, isUnstructured); all green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -419,6 +421,23 @@ Observed result:
 - 12 new tests: `TransferRoundingEscapeTest` (7) and `FilesUrlTest` (5), no mocks
 - control/replacement characters are built via `(char) 0x00` / `(char) 0xFFFD` concatenation rather than embedded literals, so the source stays plain ASCII
 - all green: `Tests run: 12, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 4, 2026: `navigation-formats` Phase 15 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats test \
+  -Dtest=GarminFlightPlanFormatTest,TomTomPositionTest,NmnPositionTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 19 new tests, no mocks: `GarminFlightPlanFormatTest` (8), `TomTomPositionTest` (6), `NmnPositionTest` (5)
+- discovered while writing: `NmnFormat.DESCRIPTION_PATTERN`'s house-number group `( .[^,;]+)?` needs >= 2 characters after the space, so a one-digit number like `"5"` does not parse (test uses `"55"`)
+- all green: `Tests run: 19, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
