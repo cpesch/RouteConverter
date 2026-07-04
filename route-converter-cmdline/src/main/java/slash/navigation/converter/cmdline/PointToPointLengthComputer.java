@@ -1,0 +1,42 @@
+/*
+    This file is part of RouteConverter.
+
+    RouteConverter is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    RouteConverter is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with RouteConverter; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+    Copyright (C) 2007 Christian Pesch. All Rights Reserved.
+*/
+
+package slash.navigation.converter.cmdline;
+
+import slash.navigation.base.BaseRoute;
+
+import static slash.navigation.base.RouteCharacteristics.Track;
+
+/**
+ * Default {@link RouteLengthComputer}: measures a position list point-to-point
+ * along its recorded geometry. Track lists yield a {@code track} length; Route
+ * and Waypoints lists yield a straight-line {@code beeline} length (no routing).
+ *
+ * @author Christian Pesch
+ */
+public class PointToPointLengthComputer implements RouteLengthComputer {
+    public LengthResult computeLength(BaseRoute<?, ?> route) {
+        if (route.getPositionCount() < 2)
+            return null;
+        double meters = route.getDistance();
+        String kind = route.getCharacteristics() == Track ? "track" : "beeline";
+        return new LengthResult(meters, kind);
+    }
+}
