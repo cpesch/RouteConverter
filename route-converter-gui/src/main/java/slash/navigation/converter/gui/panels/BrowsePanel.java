@@ -189,7 +189,17 @@ public class BrowsePanel implements PanelInTab {
 
         routeDistanceAndTimeCache = new RouteDistanceAndTimeCache();
         // value sources in priority order: the session cache wins since client-routed values
-        // overwrite server ones; a server metadata source (spec 00055) is to be appended here
+        // overwrite server ones (spec 00012 P3).
+        // TODO(spec 00012 P3 / 00055): append a server metadata source after the session cache
+        //   here so that catalog XML metadata shows before a route is opened. The 00055 XSD is
+        //   now merged, so RemoteCategory.getRoutes() already receives RouteType.getLength()/
+        //   getDuration()/getLengthKind() per row, but wiring this is NOT a drop-out of the merge:
+        //   (1) RemoteRoute discards those attributes (fromCategory constructor keeps only the 4
+        //       string fields) and exposes no getLength()/getDuration() accessors, and
+        //   (2) RouteMetadataSource is keyed by URL only and never receives the Route/RouteModel,
+        //       so a server source cannot reach the per-route metadata without either an interface
+        //       change (url -> RouteModel) or a new URL -> DistanceAndTime registry populated when
+        //       a category is listed. Left as follow-up to avoid a cross-module redesign here.
         RouteMetadataSource routeMetadataSource = new CompositeRouteMetadataSource(routeDistanceAndTimeCache);
         distanceAndTimeUpdater = new OpenedRouteDistanceAndTimeUpdater(r.getDistanceAndTimeAggregator(),
                 routeDistanceAndTimeCache, () -> r.getUrlModel().getString(), this::updateRouteRow);
