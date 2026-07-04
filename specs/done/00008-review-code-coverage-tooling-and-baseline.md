@@ -48,6 +48,8 @@ Updated on July 4, 2026 (Phase 17 - `navigation-formats` NMEA + Garmin FPL posit
 
 Updated on July 4, 2026 (Phase 18 - `navigation-formats` CSV position: 6 new mock-free unit tests for `CsvPosition` (map-backed column lookup via primary and alternative German column names, missing-column null, setter round-trips through the backing map, extended-sensor temperature/heading round-trip, backing-row exposure); all green in Surefire).
 
+Updated on July 4, 2026 (Phase 19 - `navigation-formats` GPX position: 6 new mock-free unit tests for `GpxPosition` (plain constructor accessors, GPX 1.0 BigDecimal constructor populating heading + hdop/pdop/vdop/satellites, plain setDescription city/no-reason, heading/speed round-trip without a position extension, asGpxPosition identity, equals); no JAXB bindings touched; all green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -492,6 +494,21 @@ Observed result:
 
 - build succeeded
 - 6 new tests, no mocks: `CsvPositionTest` exercises the `Map<String,String>` column lookup - primary name (`Longitude`), alternative name (`Laengengrad`), missing-column null, setter round-trips, extended-sensor temperature/heading
+- all green: `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 4, 2026: `navigation-formats` Phase 19 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats test -Dtest=GpxPositionTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 6 new tests, no mocks, no JAXB: `GpxPositionTest` uses the plain and GPX-1.0 BigDecimal constructors (heading/hdop/pdop/vdop/satellites are inherited Wgs84Position fields), plain-text setDescription, extension-free heading/speed round-trip, asGpxPosition identity, equals
 - all green: `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
