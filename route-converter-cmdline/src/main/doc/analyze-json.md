@@ -41,6 +41,8 @@ stdout carries only the JSON payload.
 | `elevationGainM`  | integer or null | cumulative ascent in metres; `null` if no elevation data |
 | `elevationLossM`  | integer or null | cumulative descent in metres; `null` if no elevation data |
 | `startTime`       | string or null  | earliest position timestamp, ISO-8601 UTC (`2020-05-01T08:15:00Z`); `null` if none |
+| `firstName`       | string or null  | first non-empty route/track/waypoint-list name in the file; `null` if none. Used as the title for rescued routes (specs/00056) |
+| `extension`       | string or null  | the detected format's default file extension including the dot (e.g. `".gpx"`). Used to name rescued orphan-blob File rows (specs/00056) |
 
 `country`/`continent` are **not** produced here — the Django command derives
 them from `bbox` centre via point-in-polygon (keeps geo data out of Java).

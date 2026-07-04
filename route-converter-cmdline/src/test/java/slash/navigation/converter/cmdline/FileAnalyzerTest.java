@@ -63,7 +63,9 @@ public class FileAnalyzerTest {
                 "\"durationS\":780," +
                 "\"elevationGainM\":6," +
                 "\"elevationLossM\":7," +
-                "\"startTime\":\"2020-05-01T08:00:00Z\"" +
+                "\"startTime\":\"2020-05-01T08:00:00Z\"," +
+                "\"firstName\":\"Track A\"," +
+                "\"extension\":\".gpx\"" +
                 "}";
         assertEquals(expected, json);
     }

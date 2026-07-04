@@ -81,8 +81,16 @@ public class FileAnalyzer {
         double north = -90, south = 90, east = -180, west = 180;
         Long startMillis = null;
 
+        String firstName = null;
+
         for (BaseRoute route : routes) {
             positions += route.getPositionCount();
+
+            if (firstName == null) {
+                String name = route.getName();
+                if (name != null && !name.trim().isEmpty())
+                    firstName = name.trim();
+            }
 
             @SuppressWarnings("unchecked")
             RouteLengthComputer.LengthResult length = lengthComputer.computeLength(route);
@@ -182,6 +190,19 @@ public class FileAnalyzer {
             appendString(json, "startTime", DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(startMillis)));
         } else {
             appendNull(json, "startTime");
+        }
+        json.append(',');
+        if (firstName != null) {
+            appendString(json, "firstName", firstName);
+        } else {
+            appendNull(json, "firstName");
+        }
+        json.append(',');
+        String extension = result.getFormat().getExtension();
+        if (extension != null) {
+            appendString(json, "extension", extension);
+        } else {
+            appendNull(json, "extension");
         }
         json.append('}');
         return json.toString();
