@@ -36,7 +36,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import static java.io.File.separator;
 import static java.lang.String.format;
+import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
 import static slash.navigation.routes.remote.helpers.RoutesUtil.unmarshal;
 
@@ -58,34 +60,72 @@ public class RemoteCatalog implements Catalog {
 
     private final String rootUrl;
     private final Credentials credentials;
+    private final CatalogDiskCache diskCache;
 
     public RemoteCatalog(String rootUrl, Credentials credentials) {
+        this(rootUrl, credentials, new CatalogDiskCache(getApplicationDirectory("cache" + separator + "catalog")));
+    }
+
+    /*for tests*/ RemoteCatalog(String rootUrl, Credentials credentials, CatalogDiskCache diskCache) {
         this.rootUrl = rootUrl;
         this.credentials = credentials;
+        this.diskCache = diskCache;
     }
 
     public Category getRootCategory() {
         return new RemoteCategory(this, rootUrl + ROOT_CATEGORY_URI, "");
     }
 
+    /*for tests*/ Get createGet(String url) {
+        return new Get(url);
+    }
+
     CatalogType fetch(String url) throws IOException {
         long start = System.currentTimeMillis();
         String urlWithXml = url + FORMAT_XML;
+        String status = "error";
         try {
-            Get get = new Get(urlWithXml);
+            CatalogDiskCache.Entry cached = diskCache.get(url);
+
+            Get get = createGet(urlWithXml);
+            if (cached != null) {
+                if (cached.getETag() != null)
+                    get.setIfNoneMatch(cached.getETag());
+                if (cached.getLastModified() != null)
+                    get.setIfModifiedSince(cached.getLastModified());
+            }
+
             String result = get.executeAsString();
-            if (get.isSuccessful())
-                try {
-                    return unmarshal(result);
-                } catch (JAXBException e) {
-                    throw new IOException("Cannot unmarshall " + result + ": " + e, e);
-                }
+
+            if (cached != null && get.isNotModified()) {
+                status = "304 from disk cache";
+                result = cached.getBody();
+            } else if (get.isSuccessful()) {
+                status = "200 stored to disk cache";
+                diskCache.put(url, result, get.getETag(), get.getLastModified());
+            } else {
+                return null;
+            }
+
+            try {
+                return unmarshal(result);
+            } catch (JAXBException e) {
+                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
+            }
         }
         finally {
             long end = System.currentTimeMillis();
-            log.info("Fetching from " + urlWithXml + " took " + (end - start) + " milliseconds");
+            log.info("Fetching from " + urlWithXml + " took " + (end - start) + " milliseconds (" + status + ")");
         }
-        return null;
+    }
+
+    /**
+     * Drops the disk cache entries for the given urls after an own mutation so the next
+     * fetch renders the fresh copy instead of being served a stale body on a 304.
+     */
+    /*for tests*/ void dropFromDiskCache(String... urls) {
+        for (String url : urls)
+            diskCache.remove(url);
     }
 
     /*for test only*/Category getCategory(String url) throws IOException {
@@ -128,6 +168,7 @@ public class RemoteCatalog implements Catalog {
             throw new DuplicateNameException("Category " + name + " already exists", categoryUrl);
         if (!request.isSuccessful())
             throw new IOException("POST on " + (rootUrl + CATEGORY_URI) + " with payload " + name + " not successful: " + result);
+        dropFromDiskCache(categoryUrl);
         return request.getLocation();
     }
 
@@ -150,6 +191,7 @@ public class RemoteCatalog implements Catalog {
             throw new DuplicateNameException("Category " + name + " already exists", categoryUrl);
         if (!request.isSuccessful())
             throw new IOException("PUT on " + categoryUrl + " with payload " + parentUrl + "/" + name + " not successful: " + result);
+        dropFromDiskCache(categoryUrl, parentUrl);
     }
 
     void deleteCategory(String categoryUrl) throws IOException {
@@ -167,6 +209,7 @@ public class RemoteCatalog implements Catalog {
             throw new NotOwnerException("Not owner of category to delete", categoryUrl);
         if (!request.isSuccessful())
             throw new IOException("DELETE on " + categoryUrl + " not successful: " + result);
+        dropFromDiskCache(categoryUrl);
     }
 
     String addRoute(String categoryUrl, String description, String localFile, String remoteUrl) throws IOException {
@@ -190,6 +233,7 @@ public class RemoteCatalog implements Catalog {
             throw new DuplicateNameException("Route " + description + " already exists", categoryUrl);
         if (!request.isSuccessful())
             throw new IOException("POST on " + (rootUrl + ROUTE_URI) + " with route " + description + "," + categoryUrl + "," + remoteUrl + " not successful: " + result);
+        dropFromDiskCache(categoryUrl);
         return request.getLocation();
     }
 
@@ -216,6 +260,7 @@ public class RemoteCatalog implements Catalog {
             throw new DuplicateNameException("Route " + description + " already exists", description);
         if (!request.isSuccessful())
             throw new IOException("PUT on " + routeUrl + " with route " + description + "," + categoryUrl + "," + remoteUrl + " not successful: " + result);
+        dropFromDiskCache(routeUrl, categoryUrl);
     }
 
     void deleteRoute(String routeUrl) throws IOException {
@@ -233,6 +278,7 @@ public class RemoteCatalog implements Catalog {
             throw new NotOwnerException("Not owner of route to delete", routeUrl);
         if (!request.isSuccessful())
             throw new IOException("DELETE on " + routeUrl + " not successful: " + result);
+        dropFromDiskCache(routeUrl);
     }
 
     String addFile(File file) throws IOException {
@@ -268,5 +314,6 @@ public class RemoteCatalog implements Catalog {
             throw new NotOwnerException("Not owner of file to delete", fileUrl);
         if (!request.isSuccessful())
             throw new IOException("DELETE on " + fileUrl + " not successful: " + result);
+        dropFromDiskCache(fileUrl);
     }
 }
