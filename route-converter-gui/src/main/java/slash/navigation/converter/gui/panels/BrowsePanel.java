@@ -34,6 +34,7 @@ import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.RouteSelection;
 import slash.navigation.converter.gui.helpers.LocalRouteDistanceAndTimeFiller;
 import slash.navigation.converter.gui.helpers.OpenedRouteDistanceAndTimeUpdater;
+import slash.navigation.converter.gui.helpers.RemoteRouteDistanceAndTimeFiller;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
 import slash.navigation.converter.gui.helpers.RoutesTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.RoutesTablePopupMenu;
@@ -53,6 +54,7 @@ import slash.navigation.routes.impl.*;
 import slash.navigation.routes.local.LocalCatalog;
 import slash.navigation.routes.local.LocalRoute;
 import slash.navigation.routes.remote.RemoteCatalog;
+import slash.navigation.routes.remote.RemoteRoute;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
@@ -123,8 +125,10 @@ public class BrowsePanel implements PanelInTab {
 
     private CatalogModel catalogModel;
     private RouteDistanceAndTimeCache routeDistanceAndTimeCache;
+    private RouteDistanceAndTimeCache serverRouteDistanceAndTimeCache;
     private OpenedRouteDistanceAndTimeUpdater distanceAndTimeUpdater;
     private LocalRouteDistanceAndTimeFiller localRouteDistanceAndTimeFiller;
+    private RemoteRouteDistanceAndTimeFiller remoteRouteDistanceAndTimeFiller;
 
     public BrowsePanel() {
         initialize();
@@ -188,28 +192,21 @@ public class BrowsePanel implements PanelInTab {
         treeCategories.getSelectionModel().setSelectionMode(CONTIGUOUS_TREE_SELECTION);
 
         routeDistanceAndTimeCache = new RouteDistanceAndTimeCache();
-        // value sources in priority order: the session cache wins since client-routed values
-        // overwrite server ones (spec 00012 P3).
-        // TODO(spec 00012 P3 / 00055): append a server metadata source after the session cache
-        //   here so that catalog XML metadata shows before a route is opened. The 00055 XSD is
-        //   now merged, so RemoteCategory.getRoutes() already receives RouteType.getLength()/
-        //   getDuration()/getLengthKind() per row, but wiring this is NOT a drop-out of the merge:
-        //   (1) RemoteRoute discards those attributes (fromCategory constructor keeps only the 4
-        //       string fields) and exposes no getLength()/getDuration() accessors, and
-        //   (2) RouteMetadataSource is keyed by URL only and never receives the Route/RouteModel,
-        //       so a server source cannot reach the per-route metadata without either an interface
-        //       change (url -> RouteModel) or a new URL -> DistanceAndTime registry populated when
-        //       a category is listed. Left as follow-up to avoid a cross-module redesign here.
-        RouteMetadataSource routeMetadataSource = new CompositeRouteMetadataSource(routeDistanceAndTimeCache);
+        serverRouteDistanceAndTimeCache = new RouteDistanceAndTimeCache();
+        // value sources in priority order (spec 00012 P3): the session cache wins since
+        // client-routed values overwrite the server metadata from the catalog XML (spec 00055)
+        RouteMetadataSource routeMetadataSource = new CompositeRouteMetadataSource(routeDistanceAndTimeCache,
+                serverRouteDistanceAndTimeCache);
         distanceAndTimeUpdater = new OpenedRouteDistanceAndTimeUpdater(r.getDistanceAndTimeAggregator(),
                 routeDistanceAndTimeCache, () -> r.getUrlModel().getString(), this::updateRouteRow);
         localRouteDistanceAndTimeFiller = new LocalRouteDistanceAndTimeFiller(routeDistanceAndTimeCache, this::updateRouteRow);
+        remoteRouteDistanceAndTimeFiller = new RemoteRouteDistanceAndTimeFiller(serverRouteDistanceAndTimeCache);
 
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
         RoutesTableColumnModel tableColumnModel = new RoutesTableColumnModel(routeMetadataSource);
         tableRoutes.setColumnModel(tableColumnModel);
         new RoutesTableHeaderMenu(tableRoutes.getTableHeader(), tableColumnModel, actionManager);
-        catalogModel.getRoutesTableModel().addTableModelListener(e -> fillLocalRouteDistancesAndTimes());
+        catalogModel.getRoutesTableModel().addTableModelListener(e -> fillRouteDistancesAndTimes());
         tableRoutes.registerKeyboardAction(new FrameAction() {
             public void run() {
                 actionManager.run("delete-route");
@@ -350,12 +347,14 @@ public class BrowsePanel implements PanelInTab {
         });
     }
 
-    private void fillLocalRouteDistancesAndTimes() {
+    private void fillRouteDistancesAndTimes() {
         RoutesTableModel model = getRoutesListModel();
         for (int i = 0, count = model.getRowCount(); i < count; i++) {
             RouteModel route = model.getRoute(i);
             if (route.route() instanceof LocalRoute)
                 localRouteDistanceAndTimeFiller.fill(route.getUrl());
+            else if (route.route() instanceof RemoteRoute remoteRoute)
+                remoteRouteDistanceAndTimeFiller.fill(remoteRoute);
         }
     }
 

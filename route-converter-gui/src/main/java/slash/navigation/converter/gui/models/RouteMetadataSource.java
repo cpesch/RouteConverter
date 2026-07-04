@@ -27,9 +27,8 @@ import slash.navigation.routes.Route;
  *
  * Sources are queried in priority order via {@link CompositeRouteMetadataSource}:
  * the session-scoped {@link RouteDistanceAndTimeCache} first, since values routed by
- * the client overwrite server-provided ones. A source consuming server metadata from
- * the catalog XML attributes is planned to be added after the session cache once the
- * server delivers them.
+ * the client overwrite server-provided ones; then the server metadata from the
+ * catalog XML attributes (specs/00055), which shows before a route is opened.
  *
  * @author Christian Pesch
  */
