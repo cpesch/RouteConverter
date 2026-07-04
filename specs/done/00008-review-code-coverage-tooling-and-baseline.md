@@ -46,6 +46,8 @@ Updated on July 4, 2026 (Phase 16 - `navigation-formats` GoPal/Tour position typ
 
 Updated on July 4, 2026 (Phase 17 - `navigation-formats` NMEA + Garmin FPL positions: 9 new mock-free unit tests across `NmeaPosition` (5: degrees<->NMEA ddmm.mmmm round-trip, value+orientation storage, raw-NMEA constructor, S/W negative degrees, null coordinates) and `GarminFlightPlanPosition` (4: identifier ctor derivation, description fallback identifier,waypointType,country, explicit description precedence, identifier derived from description); all green in Surefire).
 
+Updated on July 4, 2026 (Phase 18 - `navigation-formats` CSV position: 6 new mock-free unit tests for `CsvPosition` (map-backed column lookup via primary and alternative German column names, missing-column null, setter round-trips through the backing map, extended-sensor temperature/heading round-trip, backing-row exposure); all green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -476,6 +478,21 @@ Observed result:
 - 9 new tests, no mocks: `NmeaPositionTest` (5), `GarminFlightPlanPositionTest` (4)
 - NMEA conversion asserted as degrees<->ddmm.mmmm round-trips within 1e-6, with `13.5` degrees stored as value `1330.0`/`East` and South/West orientations negating the decimal degrees
 - all green: `Tests run: 9, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 4, 2026: `navigation-formats` Phase 18 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats test -Dtest=CsvPositionTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 6 new tests, no mocks: `CsvPositionTest` exercises the `Map<String,String>` column lookup - primary name (`Longitude`), alternative name (`Laengengrad`), missing-column null, setter round-trips, extended-sensor temperature/heading
+- all green: `Tests run: 6, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
