@@ -32,13 +32,18 @@ import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.RouteSelection;
+import slash.navigation.converter.gui.helpers.LocalRouteDistanceAndTimeFiller;
+import slash.navigation.converter.gui.helpers.OpenedRouteDistanceAndTimeUpdater;
 import slash.navigation.converter.gui.helpers.RouteServiceOperator;
+import slash.navigation.converter.gui.helpers.RoutesTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.RoutesTablePopupMenu;
 import slash.navigation.converter.gui.helpers.TreePathStringConversion;
 import slash.navigation.converter.gui.models.CatalogModel;
+import slash.navigation.converter.gui.models.CompositeRouteMetadataSource;
+import slash.navigation.converter.gui.models.RouteDistanceAndTimeCache;
+import slash.navigation.converter.gui.models.RouteMetadataSource;
+import slash.navigation.converter.gui.models.RoutesTableColumnModel;
 import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
-import slash.navigation.converter.gui.renderer.RoutesTableCellRenderer;
-import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.undo.UndoCatalogModel;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
@@ -46,14 +51,12 @@ import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.routes.Catalog;
 import slash.navigation.routes.impl.*;
 import slash.navigation.routes.local.LocalCatalog;
+import slash.navigation.routes.local.LocalRoute;
 import slash.navigation.routes.remote.RemoteCatalog;
 
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
@@ -119,6 +122,9 @@ public class BrowsePanel implements PanelInTab {
     private JButton buttonDeleteRoute;
 
     private CatalogModel catalogModel;
+    private RouteDistanceAndTimeCache routeDistanceAndTimeCache;
+    private OpenedRouteDistanceAndTimeUpdater distanceAndTimeUpdater;
+    private LocalRouteDistanceAndTimeFiller localRouteDistanceAndTimeFiller;
 
     public BrowsePanel() {
         initialize();
@@ -181,7 +187,19 @@ public class BrowsePanel implements PanelInTab {
         treeCategories.setTransferHandler(new TreeDragAndDropHandler());
         treeCategories.getSelectionModel().setSelectionMode(CONTIGUOUS_TREE_SELECTION);
 
+        routeDistanceAndTimeCache = new RouteDistanceAndTimeCache();
+        // value sources in priority order: the session cache wins since client-routed values
+        // overwrite server ones; a server metadata source (spec 00055) is to be appended here
+        RouteMetadataSource routeMetadataSource = new CompositeRouteMetadataSource(routeDistanceAndTimeCache);
+        distanceAndTimeUpdater = new OpenedRouteDistanceAndTimeUpdater(r.getDistanceAndTimeAggregator(),
+                routeDistanceAndTimeCache, () -> r.getUrlModel().getString(), this::updateRouteRow);
+        localRouteDistanceAndTimeFiller = new LocalRouteDistanceAndTimeFiller(routeDistanceAndTimeCache, this::updateRouteRow);
+
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
+        RoutesTableColumnModel tableColumnModel = new RoutesTableColumnModel(routeMetadataSource);
+        tableRoutes.setColumnModel(tableColumnModel);
+        new RoutesTableHeaderMenu(tableRoutes.getTableHeader(), tableColumnModel, actionManager);
+        catalogModel.getRoutesTableModel().addTableModelListener(e -> fillLocalRouteDistancesAndTimes());
         tableRoutes.registerKeyboardAction(new FrameAction() {
             public void run() {
                 actionManager.run("delete-route");
@@ -216,18 +234,6 @@ public class BrowsePanel implements PanelInTab {
             handleRouteListUpdate();
             openRoute();
         });
-        TableCellRenderer headerRenderer = new SimpleHeaderRenderer("description", "creator");
-        TableCellRenderer cellRenderer = new RoutesTableCellRenderer();
-        TableColumnModel columns = tableRoutes.getColumnModel();
-        for (int i = 0; i < columns.getColumnCount(); i++) {
-            TableColumn column = columns.getColumn(i);
-            column.setHeaderRenderer(headerRenderer);
-            if (i == 1) {
-                column.setPreferredWidth(80);
-                column.setMaxWidth(100);
-            }
-            column.setCellRenderer(cellRenderer);
-        }
         tableRoutes.setRowHeight(getDefaultRowHeight(this));
 
         browsePanel.setTransferHandler(new PanelDropHandler());
@@ -306,9 +312,10 @@ public class BrowsePanel implements PanelInTab {
             return;
 
         RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
+        String urlString;
         URL url;
         try {
-            String urlString = route.route().getUrl();
+            urlString = route.route().getUrl();
             if (urlString == null)
                 return;
             url = new URL(urlString);
@@ -316,7 +323,30 @@ public class BrowsePanel implements PanelInTab {
             getOperator().handleServiceError(t);
             return;
         }
+        distanceAndTimeUpdater.routeOpened(urlString, createReadablePath(url));
         RouteConverter.getInstance().openPositionList(singletonList(url), false);
+    }
+
+    private void updateRouteRow(String url) {
+        invokeLater(() -> {
+            RoutesTableModel model = getRoutesListModel();
+            for (int i = 0, count = model.getRowCount(); i < count; i++) {
+                RouteModel route = model.getRoute(i);
+                if (url.equals(route.getUrl())) {
+                    model.updateRoute(route);
+                    break;
+                }
+            }
+        });
+    }
+
+    private void fillLocalRouteDistancesAndTimes() {
+        RoutesTableModel model = getRoutesListModel();
+        for (int i = 0, count = model.getRowCount(); i < count; i++) {
+            RouteModel route = model.getRoute(i);
+            if (route.route() instanceof LocalRoute)
+                localRouteDistanceAndTimeFiller.fill(route.getUrl());
+        }
     }
 
     private void handleRouteListUpdate() {

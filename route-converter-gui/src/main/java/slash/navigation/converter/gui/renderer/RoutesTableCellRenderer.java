@@ -20,12 +20,17 @@
 
 package slash.navigation.converter.gui.renderer;
 
+import slash.navigation.common.DistanceAndTime;
+import slash.navigation.converter.gui.models.RouteMetadataSource;
 import slash.navigation.routes.impl.RouteModel;
 
 import javax.swing.*;
 import java.awt.*;
 
+import static slash.common.io.Transfer.formatDuration;
+import static slash.navigation.converter.gui.helpers.PositionHelper.formatDistance;
 import static slash.navigation.converter.gui.helpers.RouteHelper.*;
+import static slash.navigation.routes.impl.RoutesTableModel.*;
 
 /**
  * Renders the table cells of the routes table.
@@ -34,21 +39,54 @@ import static slash.navigation.converter.gui.helpers.RouteHelper.*;
  */
 
 public class RoutesTableCellRenderer extends AlternatingColorTableCellRenderer {
+    private static final String NO_VALUE = "\u2013";
+
+    private final RouteMetadataSource routeMetadataSource;
+
+    public RoutesTableCellRenderer(RouteMetadataSource routeMetadataSource) {
+        this.routeMetadataSource = routeMetadataSource;
+    }
+
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
         JLabel label = (JLabel) super.getTableCellRendererComponent(table, value, isSelected, hasFocus, rowIndex, columnIndex);
         RouteModel route = (RouteModel) value;
-        switch (columnIndex) {
-            case 0 -> {
+        int modelColumnIndex = table.convertColumnIndexToModel(columnIndex);
+        switch (modelColumnIndex) {
+            case NAME_COLUMN -> {
                 label.setText(formatDescription(route));
                 label.setToolTipText(formatUrl(route));
             }
-            case 1 -> {
+            case CREATOR_COLUMN -> {
                 label.setText(formatCreator(route));
                 label.setToolTipText(formatUrl(route));
             }
+            case LENGTH_COLUMN -> {
+                label.setText(formatLength(getDistanceAndTime(route)));
+                label.setToolTipText(formatUrl(route));
+            }
+            case DURATION_COLUMN -> {
+                label.setText(formatTime(getDistanceAndTime(route)));
+                label.setToolTipText(formatUrl(route));
+            }
             default ->
-                    throw new IllegalArgumentException("Row " + rowIndex + ", column " + columnIndex + " does not exist");
+                    throw new IllegalArgumentException("Row " + rowIndex + ", column " + modelColumnIndex + " does not exist");
         }
         return label;
+    }
+
+    private DistanceAndTime getDistanceAndTime(RouteModel route) {
+        return routeMetadataSource.getDistanceAndTime(route.getUrl());
+    }
+
+    private String formatLength(DistanceAndTime distanceAndTime) {
+        if (distanceAndTime == null || distanceAndTime.distance() == null || distanceAndTime.distance() <= 0.0)
+            return NO_VALUE;
+        return formatDistance(distanceAndTime.distance());
+    }
+
+    private String formatTime(DistanceAndTime distanceAndTime) {
+        if (distanceAndTime == null || distanceAndTime.timeInMillis() == null || distanceAndTime.timeInMillis() <= 0)
+            return NO_VALUE;
+        return formatDuration(distanceAndTime.timeInMillis());
     }
 }
