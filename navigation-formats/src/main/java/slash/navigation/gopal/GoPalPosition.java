@@ -115,7 +115,8 @@ public class GoPalPosition extends MercatorPosition { // TODO eliminate this cla
     }
 
     public TourPosition asTourPosition() {
-        return new TourPosition(getX(), getY(), getZipCode(), getCity(), getStreet(), Short.toString(getHouseNumber()), null, false, new HashMap<String, String>());
+        String houseNo = getHouseNumber() != null ? Short.toString(getHouseNumber()) : null;
+        return new TourPosition(getX(), getY(), getZipCode(), getCity(), getStreet(), houseNo, null, false, new HashMap<String, String>());
     }
 
 

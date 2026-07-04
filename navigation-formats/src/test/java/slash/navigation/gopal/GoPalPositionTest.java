@@ -74,11 +74,13 @@ public class GoPalPositionTest {
     }
 
     @Test
-    public void asTourPositionThrowsOnNullHouseNumber() {
-        // Short.toString(getHouseNumber()) unboxes null -> NPE (a known rough edge)
+    public void asTourPositionKeepsNullHouseNumberNull() {
         GoPalPosition position = position("12345", "Berlin", "Hauptstr", null);
 
-        assertThrows(NullPointerException.class, position::asTourPosition);
+        TourPosition converted = position.asTourPosition();
+
+        assertNull(converted.getHouseNo());
+        assertEquals("Berlin", converted.getCity());
     }
 
     @Test
