@@ -141,7 +141,8 @@ public class RemoteCatalog implements Catalog {
         if (catalogType == null)
             return null;
         RouteType routeType = catalogType.getRoute();
-        return new RemoteRoute(new RemoteCategory(this, routeType.getCategory()), url, routeType.getDescription(), routeType.getCreator(), routeType.getUrl());
+        return new RemoteRoute(new RemoteCategory(this, routeType.getCategory()), url, routeType.getDescription(), routeType.getCreator(), routeType.getUrl(),
+                routeType.getLength(), routeType.getDuration());
     }
 
     /*for test only*/FileType getFile(String url) throws IOException {

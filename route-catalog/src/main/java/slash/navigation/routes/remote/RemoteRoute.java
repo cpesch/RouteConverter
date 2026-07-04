@@ -39,6 +39,7 @@ public class RemoteRoute implements Route {
     private final RemoteCategory category;
     private final String href;
     private String creator, description, url;
+    private Long length, duration;
     private RouteType routeType;
     private boolean fromCategory;
 
@@ -48,10 +49,17 @@ public class RemoteRoute implements Route {
     }
 
     public RemoteRoute(RemoteCategory category, String href, String description, String creator, String url) {
+        this(category, href, description, creator, url, null, null);
+    }
+
+    public RemoteRoute(RemoteCategory category, String href, String description, String creator, String url,
+                       Long length, Long duration) {
         this(category, href);
         this.creator = creator;
         this.description = description;
         this.url = url;
+        this.length = length;
+        this.duration = duration;
         fromCategory = true;
     }
 
@@ -79,6 +87,8 @@ public class RemoteRoute implements Route {
         category.invalidate();
         creator = null;
         description = null;
+        length = null;
+        duration = null;
         fromCategory = false;
     }
 
@@ -108,6 +118,22 @@ public class RemoteRoute implements Route {
         return getRouteType().getUrl();
     }
 
+    /**
+     * Returns the length in meters from the server metadata attributes of the catalog XML
+     * (specs/00055), or null if the server did not deliver it. Never fetches from the server.
+     */
+    public synchronized Long getLength() {
+        return length;
+    }
+
+    /**
+     * Returns the duration in seconds from the server metadata attributes of the catalog XML
+     * (specs/00055), or null if the server did not deliver it. Never fetches from the server.
+     */
+    public synchronized Long getDuration() {
+        return duration;
+    }
+
     public void update(Category parent, String description) throws IOException {
         getCatalog().updateRoute(getHref(), parent.getHref(), description, null, null);
         invalidate();
@@ -133,6 +159,7 @@ public class RemoteRoute implements Route {
     public String toString() {
         return  getClass().getSimpleName() + "[category=" + category + ", href=" + href +
                 ", creator=" + creator + ", description=" + description + ", url=" + url +
+                ", length=" + length + ", duration=" + duration +
                 ", fromCategory=" + fromCategory + "]";
     }
 }

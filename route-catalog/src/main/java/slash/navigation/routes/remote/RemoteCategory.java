@@ -117,7 +117,8 @@ public class RemoteCategory implements Category {
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<>();
         for (RouteType route : getCategoryType().getRoute()) {
-            routes.add(new RemoteRoute(this, route.getHref(), route.getDescription(), route.getCreator(), route.getUrl()));
+            routes.add(new RemoteRoute(this, route.getHref(), route.getDescription(), route.getCreator(), route.getUrl(),
+                    route.getLength(), route.getDuration()));
         }
         return routes;
     }
