@@ -42,6 +42,8 @@ Updated on July 4, 2026 (Phase 14 - `common` utility surface, part 2: 12 more mo
 
 Updated on July 4, 2026 (Phase 15 - `navigation-formats` format helpers/position types: 19 new mock-free unit tests across `GarminFlightPlanFormat` (8: hasValid/createValid identifier+description, createValidWaypointType airport rule, createValidCountryCode US/prefix rules, ctor derivation), `TomTomPosition` (6: x100000 integer scaling, truncation-toward-zero, Integer ctor, null coords, equals), `NmnPosition` (5: description reconstruction, DESCRIPTION_PATTERN parse - number group needs >= 2 chars, isUnstructured); all green in Surefire).
 
+Updated on July 4, 2026 (Phase 16 - `navigation-formats` GoPal/Tour position types: 15 new mock-free unit tests across `TourPosition` (8: description reconstruction incl. name, setDescription clear, asGoPalRoutePosition house-number parse with 0 fallback, asTourPosition identity, equals) and `GoPalPosition` (7: description reconstruction, setDescription clear, asTourPosition address copy, equals; pins the NPE when asTourPosition unboxes a null houseNumber); all green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -438,6 +440,23 @@ Observed result:
 - 19 new tests, no mocks: `GarminFlightPlanFormatTest` (8), `TomTomPositionTest` (6), `NmnPositionTest` (5)
 - discovered while writing: `NmnFormat.DESCRIPTION_PATTERN`'s house-number group `( .[^,;]+)?` needs >= 2 characters after the space, so a one-digit number like `"5"` does not parse (test uses `"55"`)
 - all green: `Tests run: 19, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 4, 2026: `navigation-formats` Phase 16 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats test \
+  -Dtest=TourPositionTest,GoPalPositionTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 15 new tests, no mocks: `TourPositionTest` (8), `GoPalPositionTest` (7)
+- `GoPalPositionTest.asTourPositionThrowsOnNullHouseNumber` pins a real rough edge: `asTourPosition()` calls `Short.toString(getHouseNumber())`, which unboxes a null `Short` to a NullPointerException
+- all green: `Tests run: 15, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
