@@ -26,6 +26,8 @@ import slash.navigation.rest.Post;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
@@ -55,8 +57,12 @@ public class CrashReportSender {
     static final String SIGNATURE_HEADER = "X-RouteConverter-Signature";
 
     static final String SECRET_PROPERTY = "routeconverter.crashReportSecret";
-    // The real HMAC key is injected at build/deploy time (system property) to match the
-    // server's CRASH_REPORT_HMAC_SECRET. This obvious placeholder must never be a live
+    static final String SECRET_RESOURCE = "crash-report.properties";
+    static final String SECRET_KEY = "crashReportSecret";
+    // The real HMAC key is injected at build time into crash-report.properties (Maven
+    // resource filtering from -DcrashReportSecret) to match the server's
+    // CRASH_REPORT_HMAC_SECRET, with the routeconverter.crashReportSecret system
+    // property as a runtime override. This obvious placeholder must never be a live
     // secret and must never be committed as one.
     static final String DEFAULT_SECRET = "CHANGEME-crash-report-hmac-secret";
 
@@ -104,7 +110,34 @@ public class CrashReportSender {
     }
 
     static String secret() {
-        return System.getProperty(SECRET_PROPERTY, DEFAULT_SECRET);
+        String property = System.getProperty(SECRET_PROPERTY);
+        if (property != null && !property.isEmpty())
+            return property;
+        String bundled = bundledSecret();
+        if (bundled != null)
+            return bundled;
+        return DEFAULT_SECRET;
+    }
+
+    /**
+     * Reads the build-time-injected key from the filtered {@code crash-report.properties}
+     * resource, or null when it is absent or still the unresolved Maven token (a local
+     * build without {@code -DcrashReportSecret}). The token-name guard mirrors
+     * {@code APIKeyRegistry}.
+     */
+    static String bundledSecret() {
+        try (InputStream inputStream = CrashReportSender.class.getResourceAsStream(SECRET_RESOURCE)) {
+            if (inputStream == null)
+                return null;
+            Properties properties = new Properties();
+            properties.load(inputStream);
+            String value = properties.getProperty(SECRET_KEY);
+            if (value != null && !value.isEmpty() && !value.contains(SECRET_KEY))
+                return value;
+        } catch (IOException e) {
+            log.log(FINE, "Cannot read bundled crash-report secret: " + e.getMessage());
+        }
+        return null;
     }
 
     /**

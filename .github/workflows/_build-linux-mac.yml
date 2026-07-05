@@ -34,6 +34,8 @@ on:
     secrets:
       SIGNPATH_API_TOKEN:
         required: false
+      CRASH_REPORT_HMAC_SECRET:
+        required: false
 
 jobs:
   build:
@@ -82,7 +84,7 @@ jobs:
         # value the inline jobs used before Phase 5.2.
         # No `clean` — runner is ephemeral; `clean` would also wipe the
         # Runtime-<arch> dirs unpacked from the hosted Mac JREs above.
-        run: ./mvnw --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} package
+        run: ./mvnw --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} -DcrashReportSecret=${{ secrets.CRASH_REPORT_HMAC_SECRET }} package
       - name: Verify runtime on stripped JRE (class-load gate)
         # Reproduces the minimized-JRE condition from scripts/jre-modules.txt and
         # fails the build on a ClassNotFoundException/NoClassDefFoundError that a
