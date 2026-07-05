@@ -220,29 +220,29 @@ public class NavigationFormatParser {
                 bytes = inputStream.readAllBytes();
             }
             log.info("Reading '" + url + "' with " + bytes.length + " bytes");
-            NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(new ByteArrayInputStream(bytes), CHUNK_BUFFER_SIZE));
-            // the whole content is buffered, so reset() between format attempts always succeeds
-            buffer.mark(bytes.length + CHUNK_BUFFER_SIZE * 2);
-            try {
-                CompactCalendar startDate = extractStartDate(url);
-                internalSetStartDate(startDate);
-                internalRead(buffer, getNavigationFormatRegistry().getReadFormats(), this);
-            } finally {
-                buffer.closeUnderlyingInputStream();
-            }
+            internalSetStartDate(extractStartDate(url));
+            bufferedInternalRead(new ByteArrayInputStream(bytes), bytes.length, getNavigationFormatRegistry().getReadFormats(), this);
         }
     }
 
     private ParserResult read(InputStream source, int readBufferSize, CompactCalendar startDate, File file,
                               List<NavigationFormat> formats) throws IOException {
         log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
+        ParserContext<BaseRoute> context = new InternalParserContext<>(file, startDate);
+        bufferedInternalRead(source, readBufferSize, formats, context);
+        return createResult(context);
+    }
+
+    /**
+     * Buffers the source and marks past its end so reset() between format
+     * attempts always succeeds, then probes the formats into the context.
+     */
+    private void bufferedInternalRead(InputStream source, int markSize, List<NavigationFormat> formats,
+                                      ParserContext context) throws IOException {
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, CHUNK_BUFFER_SIZE));
-        // make sure not to read a byte after the limit
-        buffer.mark(readBufferSize + CHUNK_BUFFER_SIZE * 2);
+        buffer.mark(markSize + CHUNK_BUFFER_SIZE * 2);
         try {
-            ParserContext<BaseRoute> context = new InternalParserContext<>(file, startDate);
             internalRead(buffer, formats, context);
-            return createResult(context);
         } finally {
             buffer.closeUnderlyingInputStream();
         }
