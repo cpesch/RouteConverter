@@ -23,14 +23,12 @@ import com.bulenkov.iconloader.IconLoader;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.babel.BabelException;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.CompleteFlightPlanDialog;
-import slash.navigation.converter.gui.dialogs.MaximumPositionCountDialog;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
@@ -41,7 +39,6 @@ import slash.navigation.converter.gui.renderer.RouteCharacteristicsListCellRende
 import slash.navigation.converter.gui.renderer.RouteListCellRenderer;
 import slash.navigation.converter.gui.undo.UndoFormatAndRoutesModel;
 import slash.navigation.converter.gui.undo.UndoPositionsModel;
-import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.gopal.GoPal3RouteFormat;
@@ -56,8 +53,6 @@ import slash.navigation.gui.helpers.AbstractListDataListener;
 import slash.navigation.gui.helpers.JTableHelper;
 import slash.navigation.gui.undo.UndoManager;
 import slash.navigation.msfs.MSFSFlightPlanFormat;
-import slash.navigation.nmn.Nmn7Format;
-import slash.navigation.nmn.NmnFormat;
 import slash.navigation.simple.GoRiderGpsFormat;
 import slash.navigation.simple.HaicomLoggerFormat;
 
@@ -69,7 +64,6 @@ import java.awt.*;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
@@ -78,7 +72,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -94,17 +87,13 @@ import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.JOptionPane.*;
 import static javax.swing.KeyStroke.getKeyStroke;
-import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.PreferencesHelper.count;
-import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Files.*;
 import static slash.feature.client.Feature.hasFeature;
-import static slash.navigation.base.NavigationFormatConverter.convertRoute;
-import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.converter.gui.dnd.PositionSelection.POSITION_FLAVOR;
@@ -138,11 +127,12 @@ public class ConvertPanel implements PanelInTab {
 
     private static final int ROW_HEIGHT_FOR_PHOTO_COLUMN = 200;
 
-    private final UrlDocument urlModel = new UrlDocument();
-    private final RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
-    private RecentFormatsModel recentFormatsModel;
-    private FormatAndRoutesModel formatAndRoutesModel;
-    private OverlayPositionsModel positionsModel;
+    final UrlDocument urlModel = new UrlDocument();
+    final RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
+    RecentFormatsModel recentFormatsModel;
+    FormatAndRoutesModel formatAndRoutesModel;
+    OverlayPositionsModel positionsModel;
+    private final FileOperations fileOperations = new FileOperations(this);
     private PositionsSelectionModel positionsSelectionModel;
     private PositionsTableHeaderMenu tableHeaderMenu;
 
@@ -407,7 +397,7 @@ public class ConvertPanel implements PanelInTab {
         invokeLater(() -> tablePositions.requestFocus());
     }
 
-    private void prepareForNewPositionList() {
+    void prepareForNewPositionList() {
         Application.getInstance().getContext().getUndoManager().discardAllEdits();
         RouteConverter.getInstance().getPositionAugmenter().interrupt();
     }
@@ -485,7 +475,7 @@ public class ConvertPanel implements PanelInTab {
         List<NavigationFormat> formats = selectedFormat != null ?
                 getNavigationFormatRegistry().getReadFormatsWithPreferredFormat(selectedFormat) :
                 getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls));
-        openPositionList(urls, formats);
+        fileOperations.openPositionList(urls, formats);
     }
 
     public void openPositionList(List<URL> urls) {
@@ -493,151 +483,11 @@ public class ConvertPanel implements PanelInTab {
             return;
 
         prepareForNewPositionList();
-        openPositionList(urls, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls)));
+        fileOperations.openPositionList(urls, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls)));
     }
 
-    private final ExecutorService openExecutor = createSingleThreadExecutor("OpenPositionList");
-
-    @SuppressWarnings("unchecked")
-    private void openPositionList(final List<URL> urls, final List<NavigationFormat> formats) {
-        final RouteConverter r = RouteConverter.getInstance();
-
-        final URL url = urls.get(0);
-        final String path = createReadablePath(url);
-        preferences.put(READ_PATH_PREFERENCE, path);
-
-        startWaitCursor(r.getFrame().getRootPane());
-        openExecutor.execute(() -> {
-            NavigationFormatParser parser = new NavigationFormatParser(getNavigationFormatRegistry());
-            NavigationFormatParserListener listener = format -> invokeLater(() -> formatAndRoutesModel.setFormat(format));
-            parser.addNavigationFileParserListener(listener);
-
-            try {
-                invokeAndWait(() -> {
-                    Gpx11Format gpxFormat = new Gpx11Format();
-                    formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
-                    urlModel.clear();
-                });
-
-                final ParserResult result = parser.read(url, formats);
-                if (result.isSuccessful()) {
-                    log.info("Opened: " + path);
-                    final NavigationFormat format = result.getFormat();
-                    countRead(format);
-                    if (!checkReadFormat(format))
-                        return;
-                    invokeLater(() -> {
-                        formatAndRoutesModel.setRoutes(new FormatAndRoutes(format, result.getAllRoutes()));
-                        urlModel.setString(path);
-                        recentUrlsModel.addUrl(url);
-
-                        if (urls.size() > 1) {
-                            List<URL> append = new ArrayList<>(urls);
-                            append.remove(0);
-                            // this way the route is always marked as modified :-(
-                            appendPositionList(-1, append);
-                        }
-                    });
-
-                } else {
-                    invokeLater(() -> {
-                        Gpx11Format gpxFormat = new Gpx11Format();
-                        formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
-                    });
-                    r.handleUnsupportedFormat(path);
-                }
-            } catch (BabelException e) {
-                r.handleBabelError(e);
-            } catch (OutOfMemoryError e) {
-                handleOutOfMemoryError(e);
-            } catch (FileNotFoundException e) {
-                r.handleFileNotFound(path);
-            } catch (Throwable t) {
-                r.handleOpenError(t, path);
-            } finally {
-                parser.removeNavigationFileParserListener(listener);
-                invokeLater(() -> stopWaitCursor(r.getFrame().getRootPane()));
-            }
-        });
-    }
-
-    private void appendPositionList(final int row, final List<URL> urls) {
-        final RouteConverter r = RouteConverter.getInstance();
-        openExecutor.execute(() -> {
-            try {
-                for (URL url : urls) {
-                    String path = createReadablePath(url);
-
-                    NavigationFormatParser parser = new NavigationFormatParser(getNavigationFormatRegistry());
-                    final ParserResult result = parser.read(url);
-                    if (result.isSuccessful()) {
-                        log.info("Appended: " + path);
-                        countRead(result.getFormat());
-
-                        final String finalPath = path;
-                        // avoid parallelism to ensure the URLs are processed in order
-                        invokeAndWait(() -> {
-                            // when called from openPositionList() and the format supports more than one position list:
-                            // append the position lists at the end
-                            NavigationFormat<BaseRoute> format = getFormatAndRoutesModel().getFormat();
-                            if (row == -1 && format.isSupportsMultipleRoutes()) {
-                                try {
-                                    List<BaseRoute> routes = convertRoute(result.getAllRoutes(), format);
-                                    for (BaseRoute route : routes) {
-                                        int appendIndex = getFormatAndRoutesModel().getSize();
-                                        getFormatAndRoutesModel().addPositionList(appendIndex, route);
-                                    }
-                                } catch (IOException e) {
-                                    r.handleOpenError(e, finalPath);
-                                }
-                            } else {
-                                // insert all position lists, which are in reverse order, at the given row or at the end
-                                try {
-                                    int insertRow = row > 0 ? row : positionsModel.getRowCount();
-                                    for (BaseRoute route : result.getAllRoutes()) {
-                                        //noinspection unchecked
-                                        positionsModel.add(insertRow, route);
-                                    }
-                                } catch (FileNotFoundException e) {
-                                    r.handleFileNotFound(finalPath);
-                                } catch (IOException e) {
-                                    r.handleOpenError(e, finalPath);
-                                }
-                            }
-                        });
-
-                    } else {
-                        r.handleUnsupportedFormat(path);
-                    }
-                }
-            } catch (BabelException e) {
-                r.handleBabelError(e);
-            } catch (OutOfMemoryError e) {
-                handleOutOfMemoryError(e);
-            } catch (Throwable t) {
-                log.severe("Append error: " + t);
-                r.handleOpenError(t, urls);
-            }
-        });
-    }
-
-    @SuppressWarnings("unchecked")
     public void newFile() {
-        if (!confirmDiscard())
-            return;
-
-        RouteConverter r = RouteConverter.getInstance();
-        startWaitCursor(r.getFrame().getRootPane());
-        try {
-            Gpx11Format gpxFormat = new Gpx11Format();
-            GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-            gpxRoute.setName(MessageFormat.format(RouteConverter.getBundle().getString("new-positionlist-name"), 1));
-            formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
-            urlModel.clear();
-            prepareForNewPositionList();
-        } finally {
-            stopWaitCursor(r.getFrame().getRootPane());
-        }
+        fileOperations.newFile();
     }
 
     public void importPositionList() {
@@ -660,7 +510,7 @@ public class ConvertPanel implements PanelInTab {
         NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
         setReadFormatFileFilterPreference(selectedFormat);
 
-        appendPositionList(selectedRow, reverse(toUrls(selected)));
+        fileOperations.appendPositionList(selectedRow, reverse(toUrls(selected)));
     }
 
     public void exportPositionList() {
@@ -682,116 +532,15 @@ public class ConvertPanel implements PanelInTab {
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
-        saveFile(selected, selectedFormat, true, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
+        fileOperations.saveFile(selected, selectedFormat, true, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
     }
 
-    private void saveFile(File file, NavigationFormat format,
-                          boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
-        RouteConverter r = RouteConverter.getInstance();
-        if (file.getParent() != null)
-            preferences.put(WRITE_PATH_PREFERENCE + format.getClass().getSimpleName(), file.getParent());
 
-        boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format) || format instanceof CoPilotFormat;
-        BaseRoute route = formatAndRoutesModel.getSelectedRoute();
-        int fileCount = getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
-
-        if (fileCount > 1) {
-            int order = route.getPositionCount() / format.getMaximumPositionCount() + 1;
-            int reducedPositionCount = route.getPositionCount() / order;
-
-            MaximumPositionCountDialog dialog = new MaximumPositionCountDialog(file, route.getPositionCount(), fileCount, reducedPositionCount, format);
-            dialog.showWithPreferences();
-
-            switch (dialog.getResult()) {
-                case Split:
-                    break;
-                case Reduce:
-                    r.selectAllButEveryNthPosition(order);
-                    r.getContext().getActionManager().run("delete-position");
-                    fileCount = 1;
-                    break;
-                case Ignore:
-                    fileCount = 1;
-                    break;
-                default:
-                    return;
-            }
-        }
-
-        File[] targets = createTargetFiles(file, fileCount, format.getExtension(), 255);
-        if (confirmOverwrite) {
-            for (File target : targets) {
-                if (target.exists()) {
-                    String path = createReadablePath(target);
-                    if (confirmOverwrite(path))
-                        return;
-                    break;
-                }
-            }
-        }
-
-        saveFiles(targets, format, route, exportSelectedRoute, confirmOverwrite, openAfterSave);
-    }
-
-    private void saveFiles(File[] files, NavigationFormat format, BaseRoute route,
-                           boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
-        final RouteConverter r = RouteConverter.getInstance();
-        String targetsAsString = asDialogString(asList(files), true);
-        startWaitCursor(r.getFrame().getRootPane());
-        try {
-            if (!checkWriteFormat(format))
-                return;
-            if (format.isSupportsMultipleRoutes()) {
-                List<BaseRoute> routes = exportSelectedRoute ? singletonList(route) : formatAndRoutesModel.getRoutes();
-                new NavigationFormatParser(getNavigationFormatRegistry()).write(routes, (MultipleRoutesFormat) format, files[0]);
-            } else {
-                boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);
-                ParserCallback parserCallback = (aRoute, aFormat) -> {
-                    if (aFormat instanceof GarminFlightPlanFormat) {
-                        GarminFlightPlanRoute garminFlightPlanRoute = (GarminFlightPlanRoute) aRoute;
-                        completeGarminFlightPlan(garminFlightPlanRoute);
-                    }
-                };
-                new NavigationFormatParser(getNavigationFormatRegistry()).write(route, format, duplicateFirstPosition, true, parserCallback, files);
-            }
-            formatAndRoutesModel.setModified(false);
-            recentFormatsModel.addFormat(format);
-            countWrite(format);
-            log.info(format("Saved: %s", targetsAsString));
-
-            if (!exportSelectedRoute && format.isSupportsReading()) {
-                if (openAfterSave) {
-                    openPositionList(toUrls(files), getNavigationFormatRegistry().getReadFormatsWithPreferredFormat(format));
-                    log.info(format("Open after save: %s", files[0]));
-                }
-                if (confirmOverwrite) {
-                    URL url = files[0].toURI().toURL();
-                    String path = createReadablePath(url);
-                    urlModel.setString(path);
-                    recentUrlsModel.addUrl(url);
-                }
-            }
-        } catch (Throwable t) {
-            log.severe(format("Error saving %s in %s: %s, %s", files[0], format, t, printStackTrace(t)));
-
-            String source = urlModel.getShortUrl();
-            // if there is no source a new file is saved
-            if (source == null)
-                source = route.getName();
-
-            showMessageDialog(r.getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), source, targetsAsString, getLocalizedMessage(t)),
-                    r.getFrame().getTitle(), ERROR_MESSAGE);
-        } finally {
-            stopWaitCursor(r.getFrame().getRootPane());
-        }
-    }
-
-    private static boolean checkReadFormat(NavigationFormat format) {
+    static boolean checkReadFormat(NavigationFormat format) {
         return !((format instanceof HaicomLoggerFormat && preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("csv-haicom", "Read Haicom Logger")));
     }
 
-    private static boolean checkWriteFormat(NavigationFormat format) {
+    static boolean checkWriteFormat(NavigationFormat format) {
         return !((format instanceof GarminFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("fpl-g1000", "Write Garmin Flight Plan")) ||
                 (format instanceof MSFSFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("msfs-pln", "Write MSFS2020 Flight Plan")) ||
                 (format instanceof GoRiderGpsFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("rt-gorider", "Write GoRider GPS")));
@@ -807,14 +556,14 @@ public class ConvertPanel implements PanelInTab {
         return true;
     }
 
-    private void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
+    void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
         CompleteFlightPlanDialog dialog = new CompleteFlightPlanDialog(garminFlightPlanRoute);
         dialog.showWithPreferences();
     }
 
     public void saveFile() {
         if (urlModel.getShortUrl() != null)
-            saveFile(new File(urlModel.getString()), formatAndRoutesModel.getFormat(), false, false, false);
+            fileOperations.saveFile(new File(urlModel.getString()), formatAndRoutesModel.getFormat(), false, false, false);
         else
             saveAsFile();
     }
@@ -838,7 +587,7 @@ public class ConvertPanel implements PanelInTab {
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
-        saveFile(selected, selectedFormat, false, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
+        fileOperations.saveFile(selected, selectedFormat, false, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
     }
 
     private NavigationFormat getSelectedFormat(FileFilter fileFilter) {
@@ -868,7 +617,7 @@ public class ConvertPanel implements PanelInTab {
         return true;
     }
 
-    private boolean confirmOverwrite(String file) {
+    boolean confirmOverwrite(String file) {
         int confirm = showConfirmDialog(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-overwrite"), file),
                 RouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
@@ -1019,7 +768,7 @@ public class ConvertPanel implements PanelInTab {
         chooser.setFileFilter(fileFilter);
     }
 
-    private NavigationFormatRegistry getNavigationFormatRegistry() {
+    NavigationFormatRegistry getNavigationFormatRegistry() {
         return RouteConverter.getInstance().getNavigationFormatRegistry();
     }
 
@@ -1054,11 +803,11 @@ public class ConvertPanel implements PanelInTab {
         log.info("Format usage:" + builder);
     }
 
-    private void countRead(NavigationFormat format) {
+    void countRead(NavigationFormat format) {
         count(preferences, READ_COUNT_PREFERENCE + format.getClass().getName());
     }
 
-    private void countWrite(NavigationFormat format) {
+    void countWrite(NavigationFormat format) {
         count(preferences, WRITE_COUNT_PREFERENCE + format.getClass().getName());
     }
 
