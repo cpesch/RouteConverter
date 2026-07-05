@@ -52,6 +52,8 @@ Updated on July 4, 2026 (Phase 19 - `navigation-formats` GPX position: 6 new moc
 
 Updated on July 4, 2026 (Phase 20 - `navigation-formats` Excel position: 4 new mock-free unit tests for `ExcelPosition` via its in-memory HSSFWorkbook constructor (coordinate/speed/description storage, coordinate setter round-trips, extended-sensor temperature round-trip, backing-row exposure); no files, no POI mocks; all green in Surefire).
 
+Updated on July 5, 2026 (Phase 21 - `navigation-formats` core route domain: 10 new mock-free unit tests for `BaseRoute`'s shared position-manipulation logic via the concrete `Wgs84Route` (top/move/bottom reordering, remove, removeDuplicates by adjacent distance, getContainedPositions, getPositionsWithinDistanceToPredecessor, getClosestPosition by coordinates and by time, getSuccessor/getIndex/getPosition). Highest refactoring-robustness target - `BaseRoute` is the spine every format's route extends. All green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -528,6 +530,22 @@ Observed result:
 - 4 new tests, no mocks, no files: `ExcelPositionTest` drives the `ExcelPosition(Double,...)` constructor, which builds a real in-memory `HSSFWorkbook`/`Row`, then round-trips coordinates, speed, description and an extended-sensor temperature through that row
 - note: `ExcelPosition` does not override `equals` (identity-based), so no value-equality test was written
 - all green: `Tests run: 4, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 5, 2026: `navigation-formats` Phase 21 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats test -Dtest=BaseRouteTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 10 new tests, no mocks: `BaseRouteTest` drives `BaseRoute`'s shared editing logic through a concrete `Wgs84Route` (null format is safe - these methods only touch positions), with positions along the zero meridian at latitudes 0..3
+- distance-based cases use generous metre thresholds (1 degree of latitude is ~111 km) so they stay robust to the exact haversine constants
+- all green: `Tests run: 10, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
