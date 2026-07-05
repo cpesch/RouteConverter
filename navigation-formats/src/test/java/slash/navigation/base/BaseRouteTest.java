@@ -25,6 +25,7 @@ import slash.navigation.common.BoundingBox;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 
 import static org.junit.Assert.*;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -145,5 +146,69 @@ public class BaseRouteTest {
         assertNull(route.getSuccessor(p3));
         assertEquals(2, route.getIndex(p2));
         assertEquals(p1, route.getPosition(1));
+    }
+
+    @Test
+    public void getInsignificantPositionsReturnsTheCollinearInteriorPoints() {
+        // p0..p3 lie on the same meridian, so the interior points carry no shape information
+        assertArrayEquals(new int[]{1, 2}, route(p0, p1, p2, p3).getInsignificantPositions(1000.0));
+    }
+
+    @Test
+    public void getDistanceDifferenceIsTheStepFromThePredecessor() {
+        Wgs84Route route = route(p0, p1, p2, p3);
+
+        assertEquals(0.0, route.getDistanceDifference(0), 0.0);            // no predecessor
+        assertEquals(111195.0, route.getDistanceDifference(1), 1000.0);   // ~one degree of latitude
+    }
+
+    @Test
+    public void getElevationDifferenceIsOtherMinusPredecessorElevation() {
+        Wgs84Position e0 = new Wgs84Position(0.0, 0.0, 100.0, null, null, "e0");
+        Wgs84Position e1 = new Wgs84Position(0.0, 1.0, 250.0, null, null, "e1");
+        Wgs84Route route = route(e0, e1);
+
+        assertEquals(0.0, route.getElevationDifference(0), 0.0);      // no predecessor
+        assertEquals(150.0, route.getElevationDifference(1), 0.0);
+    }
+
+    @Test
+    public void getTimesFromStartAccumulatesTheDeltasByRange() {
+        Wgs84Route route = timedRoute();
+
+        assertArrayEquals(new long[]{0, 1000, 3000}, route.getTimesFromStart(0, 2));
+    }
+
+    @Test
+    public void getTimesFromStartByIndicesReturnsCumulativeTimeAtEachIndex() {
+        Wgs84Route route = timedRoute();
+
+        assertArrayEquals(new long[]{1000, 3000}, route.getTimesFromStart(new int[]{1, 2}));
+    }
+
+    @Test
+    public void getDistancesFromStartByIndicesReturnsCumulativeDistanceAtEachIndex() {
+        double[] distances = route(p0, p1, p2, p3).getDistancesFromStart(new int[]{1, 3});
+
+        assertEquals(2, distances.length);
+        assertEquals(111195.0, distances[0], 1000.0);   // start -> p1
+        assertEquals(333585.0, distances[1], 3000.0);   // start -> p3
+    }
+
+    @Test
+    public void sortReordersThePositionsByTheComparator() {
+        Wgs84Route route = route(p0, p1, p2, p3);
+
+        route.sort(Comparator.comparing(Wgs84Position::getDescription).reversed());
+
+        assertEquals("p3", route.getPosition(0).getDescription());
+        assertEquals("p0", route.getPosition(3).getDescription());
+    }
+
+    private static Wgs84Route timedRoute() {
+        return route(
+                new Wgs84Position(0.0, 0.0, null, null, fromMillis(1000), "t0"),
+                new Wgs84Position(0.0, 1.0, null, null, fromMillis(2000), "t1"),
+                new Wgs84Position(0.0, 2.0, null, null, fromMillis(4000), "t2"));
     }
 }

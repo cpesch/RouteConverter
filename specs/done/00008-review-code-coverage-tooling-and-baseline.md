@@ -636,6 +636,21 @@ Observed result:
   - `ISO8601Test` extended with the null/malformed/era branches: `parseDate(null)`, six malformed inputs (wrong delimiters, unknown TZD, out-of-range with `lenient=false`), `formatDate` null guards, the `formatDate(CompactCalendar)` convenience overload, and a `0000` (1 BCE) round-trip exercising the BC-era paths — **`ISO8601` 84.5% → 94.0%** (missed 18 → 7). Same date-parsing bug-class as the `LegacyParserFormatter` fix that opened this effort.
   - `UnitSystemTest` extended with the null-input branches of the `Statute`/`Nautic` transfers, `getUnitSystemsWithPreferredUnitSystem` (null + preferred), the unit-name getters, and `Nautic` value conversions — **`UnitSystem` and all three anonymous `UnitTransfer` impls → 100%**
 
+### Verified on July 5, 2026: Phase 26 `BaseRoute` route-analysis algorithms
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats -am test -Dtest=BaseRouteTest \
+  -Dsurefire.failIfNoSpecifiedTests=false -P '!local-with-samples'
+```
+
+Observed result:
+
+- all green: `BaseRouteTest` 17 (+7)
+- targeted the real route-analysis algorithms in the `BaseRoute` spine (not the mechanical `asXxxFormat` delegations): `getInsignificantPositions` (collinear interior points), `getDistanceDifference`, `getElevationDifference`, both `getTimesFromStart` overloads (range + indices), `getDistancesFromStart(int[])`, and `sort(Comparator)` — all exercised through `Wgs84Route` positions along the zero meridian
+- **`BaseRoute` 79.2% → 87.4%** (missed 119 → 72). The residual ~72 lines are the one-line `asXxxFormat(...)` per-format conversion delegations (each `return convert(new XxxFormat())`) — volume-only, low refactor-robustness value, deliberately left uncovered
+
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
 Verified command:
