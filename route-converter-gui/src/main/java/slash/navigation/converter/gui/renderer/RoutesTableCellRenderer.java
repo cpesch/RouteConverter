@@ -79,13 +79,13 @@ public class RoutesTableCellRenderer extends AlternatingColorTableCellRenderer {
     }
 
     private String formatLength(DistanceAndTime distanceAndTime) {
-        if (distanceAndTime == null || distanceAndTime.distance() == null || distanceAndTime.distance() <= 0.0)
+        if (RouteMetadataSource.hasNoDistance(distanceAndTime))
             return NO_VALUE;
         return formatDistance(distanceAndTime.distance());
     }
 
     private String formatTime(DistanceAndTime distanceAndTime) {
-        if (distanceAndTime == null || distanceAndTime.timeInMillis() == null || distanceAndTime.timeInMillis() <= 0)
+        if (RouteMetadataSource.hasNoTime(distanceAndTime))
             return NO_VALUE;
         return formatDuration(distanceAndTime.timeInMillis());
     }

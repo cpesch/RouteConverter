@@ -20,11 +20,14 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.gui.Application;
+
 import javax.swing.*;
 
 import static slash.common.system.Platform.isMac;
 import static slash.navigation.gui.helpers.JMenuHelper.createItem;
 import static slash.navigation.gui.helpers.JMenuHelper.createMenu;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
  * Creates a {@link JMenuBar} for RouteConverter.
@@ -107,7 +110,7 @@ public class FrameMenu {
         viewMenu.add(createItem("maximize-positionlist"));
         viewMenu.add(createItem("show-all-positions-on-map"));
         viewMenu.addSeparator();
-        viewMenu.add(createMenu("show-column"));
+        viewMenu.add(createMenu("show-position-column"));
         viewMenu.add(createMenu("show-route-column"));
         viewMenu.add(createMenu("show-profile-x-axis"));
         viewMenu.add(createMenu("show-profile-y-axis"));
@@ -135,5 +138,26 @@ public class FrameMenu {
         menuBar.add(extrasMenu);
         menuBar.add(helpMenu);
         return menuBar;
+    }
+
+    /**
+     * Shows only the column-visibility submenu that matches the active tab: the routes
+     * columns ("show-route-column") on the Browse tab, the position columns ("show-position-column")
+     * on every other tab. Both submenus carry the same label in every locale, so keeping
+     * both visible at once is confusingly redundant. Called from each tab's
+     * {@code initializeSelection}, which the frame invokes on every tab change.
+     */
+    public static void updateColumnMenuVisibility(boolean browseSelected) {
+        JMenuBar menuBar = Application.getInstance().getContext().getMenuBar();
+        if (menuBar == null)
+            return;
+
+        JMenu positionColumns = findMenu(menuBar, "view", "show-position-column");
+        if (positionColumns != null)
+            positionColumns.setVisible(!browseSelected);
+
+        JMenu routeColumns = findMenu(menuBar, "view", "show-route-column");
+        if (routeColumns != null)
+            routeColumns.setVisible(browseSelected);
     }
 }

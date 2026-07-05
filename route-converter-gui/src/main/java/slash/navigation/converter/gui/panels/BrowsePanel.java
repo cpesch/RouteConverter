@@ -32,6 +32,7 @@ import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.RouteSelection;
+import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.LocalRouteDistanceAndTimeFiller;
 import slash.navigation.converter.gui.helpers.OpenedRouteDistanceAndTimeUpdater;
 import slash.navigation.converter.gui.helpers.RemoteRouteDistanceAndTimeFiller;
@@ -44,6 +45,7 @@ import slash.navigation.converter.gui.models.CompositeRouteMetadataSource;
 import slash.navigation.converter.gui.models.RouteDistanceAndTimeCache;
 import slash.navigation.converter.gui.models.RouteMetadataSource;
 import slash.navigation.converter.gui.models.RoutesTableColumnModel;
+import slash.navigation.converter.gui.models.RoutesTableSortPreferences;
 import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
 import slash.navigation.converter.gui.undo.UndoCatalogModel;
 import slash.navigation.gui.Application;
@@ -57,6 +59,7 @@ import slash.navigation.routes.remote.RemoteCatalog;
 import slash.navigation.routes.remote.RemoteRoute;
 
 import javax.swing.*;
+import javax.swing.event.RowSorterEvent;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.table.TableRowSorter;
@@ -70,8 +73,11 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
@@ -175,6 +181,35 @@ public class BrowsePanel implements PanelInTab {
         setHelpIDString(treeCategories, "category-tree");
         setHelpIDString(tableRoutes, "route-list");
 
+        initializeCategoryTree();
+        RouteMetadataSource routeMetadataSource = initializeMetadataSources(r);
+        initializeRoutesTable(actionManager, routeMetadataSource);
+
+        handleRouteListUpdate();
+        handleCategoryTreeUpdate();
+
+        new Thread(() -> {
+            String selected = r.getCategoryPreference();
+            if (TreePathStringConversion.isRemote(selected)) {
+                // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
+                // would do it in the AWT EventQueue
+                catalogModel.getCategoryTreeModel().getChildCount(remoteRoot);
+            }
+
+            invokeLater(() -> {
+                startWaitCursor(r.getFrame().getRootPane());
+                try {
+                    selectTreePath(TreePathStringConversion.fromString(root, selected), true);
+                    // make sure the subcategories of the remote catalog are visible, too
+                    treeCategories.expandPath(new TreePath(new Object[]{root, remoteRoot}));
+                } finally {
+                    stopWaitCursor(r.getFrame().getRootPane());
+                }
+            });
+        }, "CategoryTreeInitializer").start();
+    }
+
+    private void initializeCategoryTree() {
         treeCategories.setModel(catalogModel.getCategoryTreeModel());
         treeCategories.addTreeSelectionListener(e -> {
             handleCategoryTreeUpdate();
@@ -199,7 +234,9 @@ public class BrowsePanel implements PanelInTab {
         treeCategories.setDropMode(ON);
         treeCategories.setTransferHandler(new TreeDragAndDropHandler());
         treeCategories.getSelectionModel().setSelectionMode(CONTIGUOUS_TREE_SELECTION);
+    }
 
+    private RouteMetadataSource initializeMetadataSources(RouteConverter r) {
         routeDistanceAndTimeCache = new RouteDistanceAndTimeCache();
         serverRouteDistanceAndTimeCache = new RouteDistanceAndTimeCache();
         // value sources in priority order (spec 00012 P3): the session cache wins since
@@ -208,9 +245,12 @@ public class BrowsePanel implements PanelInTab {
                 serverRouteDistanceAndTimeCache);
         distanceAndTimeUpdater = new OpenedRouteDistanceAndTimeUpdater(r.getDistanceAndTimeAggregator(),
                 routeDistanceAndTimeCache, () -> r.getUrlModel().getString(), this::updateRouteRow);
-        localRouteDistanceAndTimeFiller = new LocalRouteDistanceAndTimeFiller(routeDistanceAndTimeCache, this::updateRouteRow);
+        localRouteDistanceAndTimeFiller = new LocalRouteDistanceAndTimeFiller(routeDistanceAndTimeCache, this::updateRouteRows);
         remoteRouteDistanceAndTimeFiller = new RemoteRouteDistanceAndTimeFiller(serverRouteDistanceAndTimeCache);
+        return routeMetadataSource;
+    }
 
+    private void initializeRoutesTable(final ActionManager actionManager, RouteMetadataSource routeMetadataSource) {
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
         RoutesTableColumnModel tableColumnModel = new RoutesTableColumnModel(routeMetadataSource);
         tableRoutes.setColumnModel(tableColumnModel);
@@ -224,6 +264,13 @@ public class BrowsePanel implements PanelInTab {
         rowSorter.setComparator(CREATOR_COLUMN, byCreator());
         rowSorter.setComparator(LENGTH_COLUMN, byDistance(routeMetadataSource));
         rowSorter.setComparator(DURATION_COLUMN, byDuration(routeMetadataSource));
+        // restore the persisted sort column and direction before the first paint, then keep it in sync
+        RoutesTableSortPreferences sortPreferences = new RoutesTableSortPreferences();
+        rowSorter.setSortKeys(sortPreferences.loadSortKeys());
+        rowSorter.addRowSorterListener(e -> {
+            if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED)
+                sortPreferences.saveSortKeys(rowSorter.getSortKeys());
+        });
         tableRoutes.setRowSorter(rowSorter);
         catalogModel.getRoutesTableModel().addTableModelListener(e -> fillRouteDistancesAndTimes());
         tableRoutes.registerKeyboardAction(new FrameAction() {
@@ -265,29 +312,6 @@ public class BrowsePanel implements PanelInTab {
         browsePanel.setTransferHandler(new PanelDropHandler());
 
         new RoutesTablePopupMenu(tableRoutes).createPopupMenu();
-
-        handleRouteListUpdate();
-        handleCategoryTreeUpdate();
-
-        new Thread(() -> {
-            String selected = r.getCategoryPreference();
-            if (TreePathStringConversion.isRemote(selected)) {
-                // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
-                // would do it in the AWT EventQueue
-                catalogModel.getCategoryTreeModel().getChildCount(remoteRoot);
-            }
-
-            invokeLater(() -> {
-                startWaitCursor(r.getFrame().getRootPane());
-                try {
-                    selectTreePath(TreePathStringConversion.fromString(root, selected), true);
-                    // make sure the subcategories of the remote catalog are visible, too
-                    treeCategories.expandPath(new TreePath(new Object[]{root, remoteRoot}));
-                } finally {
-                    stopWaitCursor(r.getFrame().getRootPane());
-                }
-            });
-        }, "CategoryTreeInitializer").start();
     }
 
 
@@ -312,6 +336,7 @@ public class BrowsePanel implements PanelInTab {
     }
 
     public void initializeSelection() {
+        FrameMenu.updateColumnMenuVisibility(true);
         handleCategoryTreeUpdate();
         handleRouteListUpdate();
     }
@@ -333,11 +358,10 @@ public class BrowsePanel implements PanelInTab {
     }
 
     private void openRoute() {
-        int[] selectedRows = tableRoutes.getSelectedRows();
-        if (selectedRows.length == 0)
+        RouteModel route = getSelectedRouteModel(tableRoutes);
+        if (route == null)
             return;
 
-        RouteModel route = getRoutesListModel().getRoute(tableRoutes.convertRowIndexToModel(selectedRows[0]));
         String urlString;
         URL url;
         try {
@@ -363,6 +387,21 @@ public class BrowsePanel implements PanelInTab {
                     break;
                 }
             }
+        });
+    }
+
+    private void updateRouteRows(Collection<String> urls) {
+        invokeLater(() -> {
+            RoutesTableModel model = getRoutesListModel();
+            Set<String> urlSet = new HashSet<>(urls);
+            List<RouteModel> updated = new ArrayList<>();
+            for (int i = 0, count = model.getRowCount(); i < count; i++) {
+                RouteModel route = model.getRoute(i);
+                if (urlSet.contains(route.getUrl()))
+                    updated.add(route);
+            }
+            // one table event for the whole batch -> the row sorter re-sorts once
+            model.updateRoutes(updated);
         });
     }
 
@@ -642,23 +681,8 @@ public class BrowsePanel implements PanelInTab {
             return MOVE;
         }
 
-        private List<RouteModel> toModels(int[] rowIndices, RoutesTableModel model) {
-            List<RouteModel> selectedRoutes = new ArrayList<>();
-            for (int selectedRow : rowIndices) {
-                RouteModel route = model.getRoute(selectedRow);
-                selectedRoutes.add(route);
-            }
-            return selectedRoutes;
-        }
-
         protected Transferable createTransferable(JComponent c) {
-            JTable table = (JTable) c;
-            RoutesTableModel model = (RoutesTableModel) table.getModel();
-            int[] selectedRows = table.getSelectedRows();
-            for (int i = 0; i < selectedRows.length; i++)
-                selectedRows[i] = table.convertRowIndexToModel(selectedRows[i]);
-            List<RouteModel> selectedRoutes = toModels(selectedRows, model);
-            return new RouteSelection(selectedRoutes);
+            return new RouteSelection(getSelectedRouteModels((JTable) c));
         }
     }
 

@@ -204,4 +204,25 @@ public class RouteModelComparatorsTest {
 
         assertEquals(List.of("C", "A", "B"), viewDescriptions(table));
     }
+
+    @Test
+    public void descendingSortRanksMissingLengthFirst() {
+        Map<String, DistanceAndTime> values = new HashMap<>();
+        values.put("a", new DistanceAndTime(5000.0, null));
+        values.put("b", new DistanceAndTime(1000.0, null));
+        // "c" has no metadata -> ranks as the largest value
+        RouteMetadataSource source = source(values);
+
+        RoutesTableModel model = new RoutesTableModel();
+        model.setRoutes(new ArrayList<>(List.of(
+                model("a", "A", "x"), model("b", "B", "x"), model("c", "C", "x"))));
+        JTable table = new JTable(model);
+        table.setRowSorter(sorter(model, source));
+
+        // TableRowSorter negates the comparator for DESCENDING, so the missing value
+        // (ranked as the maximum) sorts first - the documented, intended semantic
+        table.getRowSorter().setSortKeys(singletonList(new SortKey(LENGTH_COLUMN, SortOrder.DESCENDING)));
+
+        assertEquals(List.of("C", "A", "B"), viewDescriptions(table));
+    }
 }

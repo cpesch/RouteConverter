@@ -429,6 +429,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     public void initializeSelection() {
+        FrameMenu.updateColumnMenuVisibility(false);
         handlePositionsUpdate();
     }
 

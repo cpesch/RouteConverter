@@ -28,9 +28,17 @@ import java.util.Comparator;
 
 /**
  * Creates {@link Comparator}s that sort the {@link RouteModel}s of the browse routes table
- * when a column header is clicked. Name and creator sort case-insensitively; length and
- * duration sort numerically on the underlying {@link DistanceAndTime} metadata, with missing
- * values (rendered as {@code –}) sorting last.
+ * when a column header is clicked. Name and creator sort case-insensitively with missing
+ * values (via {@link Comparator#nullsLast}) sorting last; length and duration sort numerically
+ * on the underlying {@link DistanceAndTime} metadata.
+ *
+ * Missing length/duration values (rendered as {@code –}) rank as the largest value. A
+ * {@link javax.swing.table.TableRowSorter} negates the comparator for the descending order,
+ * so missing rows sort <em>last</em> ascending and <em>first</em> descending; treating an
+ * unknown value as the maximum is the intended, consistent semantic here. Pinning missing
+ * values last in both directions is not achievable through a plain {@link Comparator} (the
+ * row sorter negates the result after the comparator returns) without subclassing the row
+ * sorter's internals, so it is deliberately not attempted.
  *
  * @author Christian Pesch
  */
@@ -43,7 +51,7 @@ public class RouteModelComparators {
     }
 
     public static Comparator<RouteModel> byCreator() {
-        return Comparator.comparing(RouteModelComparators::creator, CASE_INSENSITIVE);
+        return Comparator.comparing(RouteModel::getCreator, CASE_INSENSITIVE);
     }
 
     public static Comparator<RouteModel> byDistance(RouteMetadataSource source) {
@@ -62,25 +70,15 @@ public class RouteModelComparators {
         }
     }
 
-    static String creator(RouteModel route) {
-        try {
-            return route.route().getCreator();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     static double distance(RouteMetadataSource source, RouteModel route) {
         DistanceAndTime distanceAndTime = source.getDistanceAndTime(route.getUrl());
-        if (distanceAndTime == null || distanceAndTime.distance() == null || distanceAndTime.distance() <= 0.0)
-            return Double.POSITIVE_INFINITY;
-        return distanceAndTime.distance();
+        // missing values rank as the largest, so they sort last ascending, first descending
+        return RouteMetadataSource.hasNoDistance(distanceAndTime) ? Double.POSITIVE_INFINITY : distanceAndTime.distance();
     }
 
     static long duration(RouteMetadataSource source, RouteModel route) {
         DistanceAndTime distanceAndTime = source.getDistanceAndTime(route.getUrl());
-        if (distanceAndTime == null || distanceAndTime.timeInMillis() == null || distanceAndTime.timeInMillis() <= 0)
-            return Long.MAX_VALUE;
-        return distanceAndTime.timeInMillis();
+        // missing values rank as the largest, so they sort last ascending, first descending
+        return RouteMetadataSource.hasNoTime(distanceAndTime) ? Long.MAX_VALUE : distanceAndTime.timeInMillis();
     }
 }

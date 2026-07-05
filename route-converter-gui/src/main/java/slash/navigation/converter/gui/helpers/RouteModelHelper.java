@@ -54,6 +54,15 @@ public class RouteModelHelper {
         return routeModels;
     }
 
+    /**
+     * Returns the first selected {@link RouteModel} (view-to-model converted) or {@code null}
+     * if nothing is selected - the single-selection counterpart of {@link #getSelectedRouteModels}.
+     */
+    public static RouteModel getSelectedRouteModel(JTable table) {
+        List<RouteModel> routeModels = getSelectedRouteModels(table);
+        return routeModels.isEmpty() ? null : routeModels.get(0);
+    }
+
     public static CategoryTreeNode getSelectedCategoryTreeNode(JTree tree) {
         TreePath treePath = tree.getSelectionPath();
         // if there is no selected root take the local root
