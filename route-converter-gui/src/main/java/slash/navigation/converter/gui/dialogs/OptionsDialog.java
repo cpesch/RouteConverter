@@ -86,7 +86,7 @@ import static slash.navigation.converter.gui.models.FixMapMode.*;
 import static slash.navigation.googlemaps.GoogleMapsServer.*;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 import static slash.navigation.gui.helpers.UIHelper.chooseDirectory;
-import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
+import static slash.navigation.gui.helpers.UIHelper.chooseFile;
 
 /**
  * Dialog to show options for the program.
@@ -209,7 +209,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         buttonChooseMapsPath.addActionListener(new FrameAction() {
             public void run() {
-                chooseMapPath();
+                chooseDirectoryInto("choose-map-path", RouteConverter.getInstance().getMapView().getMapsPath(), textFieldMapsPath);
             }
         });
         textFieldThemesPath.getDocument().addDocumentListener(new DocumentListener() {
@@ -235,7 +235,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         buttonChooseThemesPath.addActionListener(new FrameAction() {
             public void run() {
-                chooseThemePath();
+                chooseDirectoryInto("choose-theme-path", RouteConverter.getInstance().getMapView().getThemesPath(), textFieldThemesPath);
             }
         });
 
@@ -423,7 +423,8 @@ public class OptionsDialog extends SimpleDialog {
         });
         buttonChooseRoutingServicePath.addActionListener(new FrameAction() {
             public void run() {
-                chooseRoutingServicePath();
+                chooseDirectoryInto("choose-routing-service-path",
+                        RouteConverter.getInstance().getRoutingServiceFacade().getRoutingService().getPath(), textFieldRoutingServicePath);
             }
         });
         handleRoutingServiceUpdate();
@@ -510,7 +511,8 @@ public class OptionsDialog extends SimpleDialog {
         });
         buttonChooseElevationServicePath.addActionListener(new FrameAction() {
             public void run() {
-                chooseElevationServicePath();
+                chooseDirectoryInto("choose-elevation-service-path",
+                        RouteConverter.getInstance().getElevationServiceFacade().getElevationService().getPath(), textFieldElevationServicePath);
             }
         });
         handleElevationServiceUpdate();
@@ -705,51 +707,17 @@ public class OptionsDialog extends SimpleDialog {
         buttonChooseElevationServicePath.setEnabled(service.isDownload());
     }
 
-    private void chooseMapPath() {
-        RouteConverter r = RouteConverter.getInstance();
-        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-map-path"), r.getMapView().getMapsPath());
+    private void chooseDirectoryInto(String titleKey, String currentPath, JTextField textField) {
+        File directory = chooseDirectory(RouteConverter.getInstance().getFrame(), getBundle().getString(titleKey), currentPath);
         if (directory != null)
-            textFieldMapsPath.setText(directory.getAbsolutePath());
-    }
-
-    private void chooseThemePath() {
-        RouteConverter r = RouteConverter.getInstance();
-        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-theme-path"), r.getMapView().getThemesPath());
-        if (directory != null)
-            textFieldThemesPath.setText(directory.getAbsolutePath());
+            textField.setText(directory.getAbsolutePath());
     }
 
     private void chooseBabelPath() {
-        JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(getBundle().getString("choose-gpsbabel-path"));
-        chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));
-        chooser.setFileSelectionMode(FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != APPROVE_OPTION) {
-            return;
-        }
-
-        File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().isEmpty()) {
-            return;
-        }
-
-        textFieldBabelPath.setText(selected.getAbsolutePath());
-    }
-
-    private void chooseRoutingServicePath() {
-        RouteConverter r = RouteConverter.getInstance();
-        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-routing-service-path"), r.getRoutingServiceFacade().getRoutingService().getPath());
-        if (directory != null)
-            textFieldRoutingServicePath.setText(directory.getAbsolutePath());
-    }
-
-    private void chooseElevationServicePath() {
-        RouteConverter r = RouteConverter.getInstance();
-        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-elevation-service-path"), r.getElevationServiceFacade().getElevationService().getPath());
-        if (directory != null)
-            textFieldElevationServicePath.setText(directory.getAbsolutePath());
+        File selected = chooseFile(RouteConverter.getInstance().getFrame(), getBundle().getString("choose-gpsbabel-path"),
+                BabelFormat.getBabelPathPreference());
+        if (selected != null)
+            textFieldBabelPath.setText(selected.getAbsolutePath());
     }
 
     private void close() {

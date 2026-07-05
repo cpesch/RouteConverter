@@ -124,6 +124,19 @@ public class UIHelper {
         return selected == null || selected.getName().isEmpty() ? null : selected;
     }
 
+    public static File chooseFile(Component parent, String title, String currentPath) {
+        JFileChooser chooser = createJFileChooser();
+        chooser.setDialogTitle(title);
+        if (currentPath != null && !currentPath.isEmpty())
+            chooser.setSelectedFile(new File(currentPath));
+        chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        chooser.setMultiSelectionEnabled(false);
+        if (chooser.showOpenDialog(parent) != JFileChooser.APPROVE_OPTION)
+            return null;
+        File selected = chooser.getSelectedFile();
+        return selected == null || selected.getName().isEmpty() ? null : selected;
+    }
+
     public static void patchUIManager(ResourceBundle bundle, String... keys) {
         for (String key : keys) {
             try {
