@@ -20,6 +20,8 @@
 
 package slash.navigation.converter.cmdline;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
@@ -32,7 +34,9 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.Math.round;
 
@@ -46,6 +50,8 @@ import static java.lang.Math.round;
  * @author Christian Pesch
  */
 public class FileAnalyzer {
+    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+
     private final NavigationFormatRegistry registry;
     private final RouteLengthComputer lengthComputer;
 
@@ -87,7 +93,7 @@ public class FileAnalyzer {
      * null handling) can be unit-tested with crafted routes (specs/00055).
      */
     static String toJson(List<BaseRoute> routes, long size, String format, String extension,
-                         RouteLengthComputer lengthComputer) {
+                         RouteLengthComputer lengthComputer) throws JsonProcessingException {
         int positions = 0;
         double lengthMeters = 0;
         boolean anyLength = false;
@@ -157,81 +163,37 @@ public class FileAnalyzer {
             }
         }
 
-        StringBuilder json = new StringBuilder();
-        json.append('{');
-        appendNumber(json, "size", size);
-        json.append(',');
-        appendString(json, "format", format);
-        json.append(',');
-        appendNumber(json, "positionLists", routes.size());
-        json.append(',');
-        appendNumber(json, "positions", positions);
-        json.append(',');
-        json.append("\"bbox\":");
+        // Insertion order defines the JSON field order (LinkedHashMap); the
+        // single-line, no-whitespace layout and null emission are ObjectMapper
+        // defaults, so the output matches the analyze-json.md contract.
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("size", size);
+        payload.put("format", format);
+        payload.put("positionLists", routes.size());
+        payload.put("positions", positions);
         if (anyCoordinate) {
-            json.append('{');
-            appendRawNumber(json, "north", north);
-            json.append(',');
-            appendRawNumber(json, "south", south);
-            json.append(',');
-            appendRawNumber(json, "east", east);
-            json.append(',');
-            appendRawNumber(json, "west", west);
-            json.append('}');
+            Map<String, Object> bbox = new LinkedHashMap<>();
+            bbox.put("north", north);
+            bbox.put("south", south);
+            bbox.put("east", east);
+            bbox.put("west", west);
+            payload.put("bbox", bbox);
         } else {
-            json.append("null");
+            payload.put("bbox", null);
         }
-        json.append(',');
-        if (anyLength) {
-            appendNumber(json, "lengthM", round(lengthMeters));
-        } else {
-            appendNull(json, "lengthM");
-        }
-        json.append(',');
+        payload.put("lengthM", anyLength ? round(lengthMeters) : null);
         // lengthKind tracks lengthM: when nothing was computable (lengthM null)
         // the kind is null too, rather than falsely defaulting to "track"
         // (specs/00055). rc-site tolerates null: data.get('lengthKind') or ''.
-        if (aggregateKind != null) {
-            appendString(json, "lengthKind", aggregateKind);
-        } else {
-            appendNull(json, "lengthKind");
-        }
-        json.append(',');
-        if (anyTime) {
-            appendNumber(json, "durationS", round(durationMillis / 1000.0));
-        } else {
-            appendNull(json, "durationS");
-        }
-        json.append(',');
-        if (anyElevation) {
-            appendNumber(json, "elevationGainM", round(elevationGain));
-            json.append(',');
-            appendNumber(json, "elevationLossM", round(elevationLoss));
-        } else {
-            appendNull(json, "elevationGainM");
-            json.append(',');
-            appendNull(json, "elevationLossM");
-        }
-        json.append(',');
-        if (startMillis != null) {
-            appendString(json, "startTime", DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(startMillis)));
-        } else {
-            appendNull(json, "startTime");
-        }
-        json.append(',');
-        if (firstName != null) {
-            appendString(json, "firstName", firstName);
-        } else {
-            appendNull(json, "firstName");
-        }
-        json.append(',');
-        if (extension != null) {
-            appendString(json, "extension", extension);
-        } else {
-            appendNull(json, "extension");
-        }
-        json.append('}');
-        return json.toString();
+        payload.put("lengthKind", aggregateKind);
+        payload.put("durationS", anyTime ? round(durationMillis / 1000.0) : null);
+        payload.put("elevationGainM", anyElevation ? round(elevationGain) : null);
+        payload.put("elevationLossM", anyElevation ? round(elevationLoss) : null);
+        payload.put("startTime", startMillis != null
+                ? DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(startMillis)) : null);
+        payload.put("firstName", firstName);
+        payload.put("extension", extension);
+        return OBJECT_MAPPER.writeValueAsString(payload);
     }
 
     /**
@@ -246,41 +208,5 @@ public class FileAnalyzer {
         if ("routed".equals(current) || "routed".equals(next))
             return "routed";
         return "track";
-    }
-
-    private static void appendString(StringBuilder builder, String key, String value) {
-        builder.append('"').append(key).append("\":\"").append(escape(value)).append('"');
-    }
-
-    private static void appendNumber(StringBuilder builder, String key, long value) {
-        builder.append('"').append(key).append("\":").append(value);
-    }
-
-    private static void appendRawNumber(StringBuilder builder, String key, double value) {
-        builder.append('"').append(key).append("\":").append(value);
-    }
-
-    private static void appendNull(StringBuilder builder, String key) {
-        builder.append('"').append(key).append("\":null");
-    }
-
-    private static String escape(String value) {
-        StringBuilder result = new StringBuilder(value.length());
-        for (int i = 0; i < value.length(); i++) {
-            char c = value.charAt(i);
-            switch (c) {
-                case '"':  result.append("\\\""); break;
-                case '\\': result.append("\\\\"); break;
-                case '\n': result.append("\\n"); break;
-                case '\r': result.append("\\r"); break;
-                case '\t': result.append("\\t"); break;
-                default:
-                    if (c < 0x20)
-                        result.append(String.format("\\u%04x", (int) c));
-                    else
-                        result.append(c);
-            }
-        }
-        return result.toString();
     }
 }
