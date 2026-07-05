@@ -118,6 +118,22 @@ An rsync `Permission denied (publickey)` is an **infra-side** break of the deplo
 `rc-release-deploy`), not a repo bug — fix the key, then re-run the failed job; the
 builds need not repeat.
 
+**Build-time secret injection** (e.g. the crash-telemetry HMAC key, spec 00011).
+A secret is baked into a Maven-filtered resource at build, mirroring
+`apikey.properties`: the resource holds `key=${prop}`, the module's pom enables
+`<filtering>true`, and CI passes `-Dprop=${{ secrets.X }}` on the `mvn package`
+line in the reusable build workflows (`_build-linux-mac.yml`, `_build-windows.yml`).
+Two traps:
+- **Declare the secret in the reusable workflow's `on.workflow_call.secrets`** even
+  though callers use `secrets: inherit` — otherwise `secrets.X` reads as undefined
+  and `actionlint` fails the PR. `inherit` passes values; it does not declare them.
+- **A test that asserts the unresolved-`${prop}`/placeholder state must use a
+  test-scoped copy of the resource** (`src/test/resources/...`) keeping the literal
+  token. Test resources are unfiltered and `target/test-classes` precedes
+  `target/classes`, so it shadows the injected main resource — otherwise the test
+  passes on a bare `mvn test` but fails in CI, where `mvn package -Dprop=X` filters
+  the real value in. Reproduce locally with `mvn -pl <mod> -Dprop=X test`.
+
 ## Notes for AI agents
 
 - Continue autonomously when the next step is reversible and strongly implied by
