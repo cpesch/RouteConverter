@@ -28,9 +28,17 @@ import java.util.Comparator;
 
 /**
  * Creates {@link Comparator}s that sort the {@link RouteModel}s of the browse routes table
- * when a column header is clicked. Name and creator sort case-insensitively; length and
- * duration sort numerically on the underlying {@link DistanceAndTime} metadata, with missing
- * values (rendered as {@code –}) sorting last.
+ * when a column header is clicked. Name and creator sort case-insensitively with missing
+ * values (via {@link Comparator#nullsLast}) sorting last; length and duration sort numerically
+ * on the underlying {@link DistanceAndTime} metadata.
+ *
+ * Missing length/duration values (rendered as {@code –}) rank as the largest value. A
+ * {@link javax.swing.table.TableRowSorter} negates the comparator for the descending order,
+ * so missing rows sort <em>last</em> ascending and <em>first</em> descending; treating an
+ * unknown value as the maximum is the intended, consistent semantic here. Pinning missing
+ * values last in both directions is not achievable through a plain {@link Comparator} (the
+ * row sorter negates the result after the comparator returns) without subclassing the row
+ * sorter's internals, so it is deliberately not attempted.
  *
  * @author Christian Pesch
  */
