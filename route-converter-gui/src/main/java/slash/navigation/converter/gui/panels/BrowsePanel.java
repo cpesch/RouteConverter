@@ -32,6 +32,7 @@ import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.RouteSelection;
+import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.LocalRouteDistanceAndTimeFiller;
 import slash.navigation.converter.gui.helpers.OpenedRouteDistanceAndTimeUpdater;
 import slash.navigation.converter.gui.helpers.RemoteRouteDistanceAndTimeFiller;
@@ -315,6 +316,7 @@ public class BrowsePanel implements PanelInTab {
     }
 
     public void initializeSelection() {
+        FrameMenu.updateColumnMenuVisibility(true);
         handleCategoryTreeUpdate();
         handleRouteListUpdate();
     }

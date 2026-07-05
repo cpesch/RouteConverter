@@ -28,6 +28,7 @@ import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.actions.AddAudioAction;
 import slash.navigation.converter.gui.actions.DeletePositionAction;
 import slash.navigation.converter.gui.actions.PlayVoiceAction;
+import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.PointsOfInterestTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.PointsOfInterestTablePopupMenu;
 import slash.navigation.converter.gui.models.*;
@@ -167,6 +168,7 @@ public class PointOfInterestPanel implements PanelInTab {
     }
 
     public void initializeSelection() {
+        FrameMenu.updateColumnMenuVisibility(false);
         handlePositionsUpdate();
     }
 

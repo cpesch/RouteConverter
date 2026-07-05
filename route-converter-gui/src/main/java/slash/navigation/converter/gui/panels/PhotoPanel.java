@@ -34,6 +34,7 @@ import slash.navigation.converter.gui.actions.AddPhotosAction;
 import slash.navigation.converter.gui.actions.DeletePositionAction;
 import slash.navigation.converter.gui.actions.TagPhotosAction;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
+import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.PhotosTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.PhotosTablePopupMenu;
 import slash.navigation.converter.gui.helpers.TagStrategy;
@@ -267,6 +268,7 @@ public class PhotoPanel implements PanelInTab {
     }
 
     public void initializeSelection() {
+        FrameMenu.updateColumnMenuVisibility(false);
         handlePositionsUpdate();
     }
 
