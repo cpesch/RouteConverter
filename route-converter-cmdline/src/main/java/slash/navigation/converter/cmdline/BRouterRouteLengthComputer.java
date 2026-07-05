@@ -28,7 +28,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import static java.lang.String.format;
 import static slash.navigation.base.RouteCharacteristics.Route;
+import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
  * BRouter-backed {@link RouteLengthComputer} for the {@code analyze} command
@@ -56,6 +58,10 @@ import static slash.navigation.base.RouteCharacteristics.Route;
  */
 public class BRouterRouteLengthComputer implements RouteLengthComputer {
     private static final Logger log = Logger.getLogger(BRouterRouteLengthComputer.class.getName());
+    // an on-road route can never be shorter than the straight line through the
+    // same points; allow 1% for rounding/projection slack before treating a
+    // "routed" length as impossible and distrusting it
+    private static final double BEELINE_SANITY_EPSILON = 0.01;
 
     private final RouteLengthComputer fallback = new PointToPointLengthComputer();
     private final RouteRouter routeRouter;
@@ -115,7 +121,24 @@ public class BRouterRouteLengthComputer implements RouteLengthComputer {
             log.info("BRouter could not route the list; falling back to beeline for this list");
             return fallback.computeLength(route);
         }
+
+        // Sanity: an on-road route cannot be shorter than the beeline through the
+        // same points. A routed length materially below the beeline signals a
+        // wrong/partial result, so distrust it and fall back to beeline.
+        double beelineMeters = beelineMeters(longitudes, latitudes);
+        if (routedMeters < beelineMeters * (1 - BEELINE_SANITY_EPSILON)) {
+            log.warning(format("BRouter routed length %.0f m is shorter than the %.0f m beeline; falling back to beeline",
+                    routedMeters, beelineMeters));
+            return fallback.computeLength(route);
+        }
         return new LengthResult(routedMeters, "routed");
+    }
+
+    private static double beelineMeters(double[] longitudes, double[] latitudes) {
+        double meters = 0;
+        for (int i = 1; i < longitudes.length; i++)
+            meters += calculateBearing(longitudes[i - 1], latitudes[i - 1], longitudes[i], latitudes[i]).getDistance();
+        return meters;
     }
 
     private Double safeRoute(double[] longitudes, double[] latitudes) {

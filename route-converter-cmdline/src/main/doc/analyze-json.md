@@ -59,9 +59,12 @@ them from `bbox` centre via point-in-polygon (keeps geo data out of Java).
     routes successfully. The reported length is the sum of the on-road leg
     distances between consecutive route points.
   - **beeline** otherwise — no `--brouter-segments` given, the directory does
-    not exist, the list is outside coverage, or any single leg fails to route
-    (routing error, timeout, no segment). A partially-covered route is reported
-    wholly as `beeline`, never as a mix, so the label never over-promises.
+    not exist, the list is outside coverage, the route fails to route (routing
+    error, timeout, no segment), or the routed length comes back materially
+    shorter than the straight-line beeline through the same points (impossible
+    for an on-road route, so the result is distrusted). A partially-covered
+    route is reported wholly as `beeline`, never as a mix, so the label never
+    over-promises.
 
 Routing is best-effort and never aborts the run: any BRouter failure degrades
 that list to `beeline` and the JSON is still emitted.

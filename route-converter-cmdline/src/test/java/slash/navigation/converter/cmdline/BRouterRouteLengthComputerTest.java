@@ -105,6 +105,21 @@ public class BRouterRouteLengthComputerTest {
     }
 
     @Test
+    public void impossiblyShortRoutedLengthIsDistrustedAndFallsBackToBeeline() throws IOException, URISyntaxException {
+        BaseRoute<?, ?> route = firstRoute("analyze-route.gpx");
+
+        // a routed length far below the beeline through the same points is
+        // impossible (routing can never be shorter than the straight line), so
+        // it must be distrusted and reported as beeline
+        BRouterRouteLengthComputer.RouteRouter tooShort = (longitudes, latitudes) -> 1.0;
+        RouteLengthComputer computer = new BRouterRouteLengthComputer(tooShort);
+
+        RouteLengthComputer.LengthResult result = computer.computeLength(route);
+        assertEquals("beeline", result.kind());
+        assertEquals(route.getDistance(), result.meters(), 0.0001);
+    }
+
+    @Test
     public void trackListIsDelegatedToPointToPointAndReportsTrack() throws IOException, URISyntaxException {
         BaseRoute<?, ?> track = firstRoute("analyze-two-tracks.gpx");
         assertEquals(RouteCharacteristics.Track, track.getCharacteristics());
