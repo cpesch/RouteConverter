@@ -37,19 +37,19 @@ import static slash.navigation.base.RouteCharacteristics.Route;
  * (recorded tracks, loose waypoints) is delegated to the point-to-point
  * {@link PointToPointLengthComputer}.
  * <p>
- * A Route list is routed leg by leg between consecutive positions that carry
- * coordinates, and the leg distances are summed. If <em>any</em> leg cannot be
- * routed (no segment coverage, routing error, timeout, missing profile) the
- * whole list falls back to the straight-line {@code beeline} length, so the
- * label never over-promises and a partially-covered route is never reported as
- * a mix. Routing failures never propagate: {@link #computeLength} never throws
- * for a routing problem, so the analyzer always emits its JSON.
+ * A Route list is routed in a single call over all of its coordinates, and the
+ * total on-road distance is reported. If the route cannot be routed (no segment
+ * coverage, routing error, timeout, missing profile) the whole list falls back
+ * to the straight-line {@code beeline} length, so the label never over-promises
+ * and a partially-covered route is never reported as a mix. Routing failures
+ * never propagate: {@link #computeLength} never throws for a routing problem, so
+ * the analyzer always emits its JSON.
  * <p>
- * The actual leg routing is behind the {@link LegRouter} seam. The production
- * seam is {@link BRouterLegRouter}, which drives BRouter's
- * {@code RoutingContext}/{@code RoutingEngine} exactly like
+ * The actual routing is behind the {@link RouteRouter} seam. The production seam
+ * is {@link BRouterRouteRouter}, which drives BRouter's
+ * {@code RoutingContext}/{@code RoutingEngine} over the whole waypoint list like
  * {@code slash.navigation.brouter.BRouter#getRouteBetween}. Tests inject a fake
- * {@link LegRouter} to exercise the summation and fallback logic without real
+ * {@link RouteRouter} to exercise the routed/fallback logic without real
  * {@code .rd5} segments.
  *
  * @author Christian Pesch
@@ -58,17 +58,21 @@ public class BRouterRouteLengthComputer implements RouteLengthComputer {
     private static final Logger log = Logger.getLogger(BRouterRouteLengthComputer.class.getName());
 
     private final RouteLengthComputer fallback = new PointToPointLengthComputer();
-    private final LegRouter legRouter;
+    private final RouteRouter routeRouter;
 
     /**
-     * Routes a single leg between two coordinates.
+     * Routes a whole position list in one call.
      */
-    interface LegRouter {
+    interface RouteRouter {
         /**
-         * @return the on-road distance in metres, or {@code null} if the leg
-         *         cannot be routed (no coverage, error, timeout)
+         * @param longitudes the route's point longitudes, in order
+         * @param latitudes  the route's point latitudes, in order (parallel to
+         *                   {@code longitudes})
+         * @return the total on-road distance in metres through all points, or
+         *         {@code null} if the route cannot be routed (no coverage,
+         *         error, timeout) — routing is all-or-nothing
          */
-        Double routeLeg(double fromLongitude, double fromLatitude, double toLongitude, double toLatitude);
+        Double routeRoute(double[] longitudes, double[] latitudes);
     }
 
     /**
@@ -76,11 +80,11 @@ public class BRouterRouteLengthComputer implements RouteLengthComputer {
      * segments directory using the bundled default profile.
      */
     public BRouterRouteLengthComputer(java.io.File segmentsDirectory) {
-        this(new BRouterLegRouter(segmentsDirectory));
+        this(new BRouterRouteRouter(segmentsDirectory));
     }
 
-    BRouterRouteLengthComputer(LegRouter legRouter) {
-        this.legRouter = legRouter;
+    BRouterRouteLengthComputer(RouteRouter routeRouter) {
+        this.routeRouter = routeRouter;
     }
 
     public LengthResult computeLength(BaseRoute<?, ?> route) {
@@ -99,26 +103,27 @@ public class BRouterRouteLengthComputer implements RouteLengthComputer {
         if (withCoordinates.size() < 2)
             return fallback.computeLength(route);
 
-        double routedMeters = 0;
-        for (int i = 1; i < withCoordinates.size(); i++) {
-            NavigationPosition from = withCoordinates.get(i - 1);
-            NavigationPosition to = withCoordinates.get(i);
-            Double legMeters = safeRouteLeg(from, to);
-            if (legMeters == null) {
-                log.info("BRouter could not route a leg; falling back to beeline for this list");
-                return fallback.computeLength(route);
-            }
-            routedMeters += legMeters;
+        double[] longitudes = new double[withCoordinates.size()];
+        double[] latitudes = new double[withCoordinates.size()];
+        for (int i = 0; i < withCoordinates.size(); i++) {
+            longitudes[i] = withCoordinates.get(i).getLongitude();
+            latitudes[i] = withCoordinates.get(i).getLatitude();
+        }
+
+        Double routedMeters = safeRoute(longitudes, latitudes);
+        if (routedMeters == null) {
+            log.info("BRouter could not route the list; falling back to beeline for this list");
+            return fallback.computeLength(route);
         }
         return new LengthResult(routedMeters, "routed");
     }
 
-    private Double safeRouteLeg(NavigationPosition from, NavigationPosition to) {
+    private Double safeRoute(double[] longitudes, double[] latitudes) {
         try {
-            return legRouter.routeLeg(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude());
+            return routeRouter.routeRoute(longitudes, latitudes);
         } catch (Throwable t) {
             // never let a routing error crash the analyze run
-            log.warning("BRouter leg routing failed: " + t);
+            log.warning("BRouter routing failed: " + t);
             return null;
         }
     }
