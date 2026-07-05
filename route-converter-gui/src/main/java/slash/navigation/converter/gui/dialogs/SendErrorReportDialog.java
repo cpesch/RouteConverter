@@ -42,11 +42,9 @@ import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JFileChooser.APPROVE_OPTION;
-import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
-import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
+import static slash.navigation.gui.helpers.UIHelper.chooseFile;
 
 /**
  * Dialog for sending error reports
@@ -135,19 +133,9 @@ public class SendErrorReportDialog extends SimpleDialog {
     }
 
     private void chooseFilePath() {
-        JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("choose-file-path"));
-        chooser.setFileSelectionMode(FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != APPROVE_OPTION)
-            return;
-
-        File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().isEmpty())
-            return;
-
-        textFieldFilePath.setText(selected.getAbsolutePath());
+        File selected = chooseFile(RouteConverter.getInstance().getFrame(), RouteConverter.getBundle().getString("choose-file-path"), null);
+        if (selected != null)
+            textFieldFilePath.setText(selected.getAbsolutePath());
     }
 
     /**

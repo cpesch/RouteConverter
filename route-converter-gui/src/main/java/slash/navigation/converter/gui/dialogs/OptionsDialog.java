@@ -86,7 +86,7 @@ import static slash.navigation.converter.gui.models.FixMapMode.*;
 import static slash.navigation.googlemaps.GoogleMapsServer.*;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 import static slash.navigation.gui.helpers.UIHelper.chooseDirectory;
-import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
+import static slash.navigation.gui.helpers.UIHelper.chooseFile;
 
 /**
  * Dialog to show options for the program.
@@ -706,22 +706,10 @@ public class OptionsDialog extends SimpleDialog {
     }
 
     private void chooseBabelPath() {
-        JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(getBundle().getString("choose-gpsbabel-path"));
-        chooser.setSelectedFile(new File(BabelFormat.getBabelPathPreference()));
-        chooser.setFileSelectionMode(FILES_ONLY);
-        chooser.setMultiSelectionEnabled(false);
-        int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
-        if (open != APPROVE_OPTION) {
-            return;
-        }
-
-        File selected = chooser.getSelectedFile();
-        if (selected == null || selected.getName().isEmpty()) {
-            return;
-        }
-
-        textFieldBabelPath.setText(selected.getAbsolutePath());
+        File selected = chooseFile(RouteConverter.getInstance().getFrame(), getBundle().getString("choose-gpsbabel-path"),
+                BabelFormat.getBabelPathPreference());
+        if (selected != null)
+            textFieldBabelPath.setText(selected.getAbsolutePath());
     }
 
     private void close() {
