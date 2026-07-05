@@ -21,6 +21,7 @@
 package slash.common.io;
 
 import java.io.*;
+import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
@@ -35,7 +36,7 @@ import static slash.common.system.Platform.isMac;
  *
  * @author Christian Pesch
  */
-public class MacAlias {
+public class MacAlias implements ResolvableLink {
     // modern Finder aliases are bookmark data starting with "book\0\0\0\0mark"
     private static final byte[] MAGIC = {'b', 'o', 'o', 'k'};
     private static final long RESOLVE_TIMEOUT_SECONDS = 10;
@@ -58,7 +59,7 @@ public class MacAlias {
 
         try (InputStream inputStream = new FileInputStream(file)) {
             byte[] head = new byte[MAGIC.length];
-            return inputStream.read(head) == MAGIC.length && isMagicPresent(head);
+            return inputStream.read(head) == MAGIC.length && Arrays.equals(head, MAGIC);
         }
     }
 
@@ -85,15 +86,6 @@ public class MacAlias {
 
     public boolean isFile() {
         return !isDirectory();
-    }
-
-    private static boolean isMagicPresent(byte[] head) {
-        if (head.length < MAGIC.length)
-            return false;
-        for (int i = 0; i < MAGIC.length; i++)
-            if (head[i] != MAGIC[i])
-                return false;
-        return true;
     }
 
     /**

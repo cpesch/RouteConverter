@@ -472,10 +472,6 @@ public class Transfer {
     public static String formatTime(CompactCalendar time) {
         if (time == null)
             return "?";
-        long totalSeconds = time.getTimeInMillis() / 1000;
-        long hours = totalSeconds / 3600;
-        long minutes = (totalSeconds % 3600) / 60;
-        long seconds = totalSeconds % 60;
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        return formatDuration(time.getTimeInMillis());
     }
 }

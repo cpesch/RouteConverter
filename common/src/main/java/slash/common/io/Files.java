@@ -71,7 +71,7 @@ public class Files {
     }
 
     public static String getExtension(URL url) {
-        return getExtension(url.toExternalForm()).toLowerCase();
+        return getExtension(url.toExternalForm());
     }
 
     public static String getExtension(List<URL> urls) {
@@ -81,7 +81,23 @@ public class Files {
             if (found.length() > extension.length())
                 extension = found;
         }
-        return extension.toLowerCase();
+        return extension;
+    }
+
+    /**
+     * Resolves a file that may be an indirection to another file or directory:
+     * a Windows shortcut ({@code .lnk}) or a macOS Finder alias.
+     *
+     * @param file the file to inspect
+     * @return a {@link ResolvableLink} for the target, or null if the file is not such an indirection
+     * @throws IOException if the file cannot be read
+     */
+    public static ResolvableLink resolveLink(File file) throws IOException {
+        if (WindowsShortcut.isPotentialValidLink(file))
+            return new WindowsShortcut(file);
+        if (MacAlias.isPotentialValidAlias(file))
+            return new MacAlias(file);
+        return null;
     }
 
     /**

@@ -21,12 +21,11 @@
 package slash.navigation.routes.local;
 
 import slash.common.io.MacAlias;
+import slash.common.io.WindowsShortcut;
 
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
-
-import static slash.common.io.Files.getExtension;
 
 /**
  * A file filter that accepts only directories not starting with a dot plus the
@@ -37,7 +36,15 @@ import static slash.common.io.Files.getExtension;
 public class DirectoryFileFilter implements FileFilter {
     public boolean accept(File file) {
         return file.isDirectory() && !file.getName().startsWith(".") ||
-                file.isFile() && (getExtension(file).equals(".lnk") || isAlias(file));
+                file.isFile() && (isLink(file) || isAlias(file));
+    }
+
+    private static boolean isLink(File file) {
+        try {
+            return WindowsShortcut.isPotentialValidLink(file);
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     private static boolean isAlias(File file) {
