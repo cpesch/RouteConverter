@@ -28,6 +28,7 @@ import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.model.DisplayModel;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.PositionListsModel;
 import slash.navigation.gui.models.IntegerModel;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
@@ -39,6 +40,7 @@ import java.util.List;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
+import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 
 /**
  * Renders every position list of a file that is not the selected one as a read-only,
@@ -51,12 +53,17 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 
 public class NonSelectedPositionListsRenderer {
+    // waypoint icon: lighter/grayer so it reads as subordinate to the selected list
     private static final String NON_SELECTED_COLOR = "808080";
-    private static final String NON_SELECTED_OPACITY = "0.5";
-    private static final int NON_SELECTED_RGBA = 0x80808080;
+    private static final String NON_SELECTED_OPACITY = "0.7";
+    // non-selected Route/Track lines use a lightened version of the active list's color (solid),
+    // so the darker, fully-saturated active list clearly stands out as the one being edited
+    private static final float NON_SELECTED_LIGHTEN_FACTOR = 0.55f;
 
     private final MapsforgeMapView mapView;
     private final PositionListsModel positionListsModel;
+    private final ColorModel routeColorModel;
+    private final ColorModel trackColorModel;
     private final IntegerModel routeLineWidthModel;
     private final IntegerModel trackLineWidthModel;
     private final GraphicFactory graphicFactory;
@@ -64,10 +71,13 @@ public class NonSelectedPositionListsRenderer {
     private Bitmap waypointIcon;
 
     public NonSelectedPositionListsRenderer(MapsforgeMapView mapView, PositionListsModel positionListsModel,
+                                            ColorModel routeColorModel, ColorModel trackColorModel,
                                             IntegerModel routeLineWidthModel, IntegerModel trackLineWidthModel,
                                             GraphicFactory graphicFactory) {
         this.mapView = mapView;
         this.positionListsModel = positionListsModel;
+        this.routeColorModel = routeColorModel;
+        this.trackColorModel = trackColorModel;
         this.routeLineWidthModel = routeLineWidthModel;
         this.trackLineWidthModel = trackLineWidthModel;
         this.graphicFactory = graphicFactory;
@@ -127,14 +137,36 @@ public class NonSelectedPositionListsRenderer {
             if (latLongs.size() < 2)
                 return;
 
-            Paint paint = graphicFactory.createPaint();
-            paint.setColor(NON_SELECTED_RGBA);
-            paint.setStrokeWidth((route.getCharacteristics().equals(Route) ?
-                    routeLineWidthModel : trackLineWidthModel).getInteger());
-            Polyline polyline = new Polyline(latLongs, paint, mapView.getTileSize());
-            polyline.setDisplayModel(displayModel);
-            layer.layers.add(polyline);
+            boolean isRoute = route.getCharacteristics().equals(Route);
+            int width = (isRoute ? routeLineWidthModel : trackLineWidthModel).getInteger();
+            int color = lighten(asRGBA(isRoute ? routeColorModel : trackColorModel), NON_SELECTED_LIGHTEN_FACTOR);
+            // lighter shade of the active color, solid: the darker active line stays dominant
+            layer.layers.add(line(latLongs, color, width, displayModel));
         }
+    }
+
+    /**
+     * Blends the RGB of an ARGB color toward white by the given factor (0 = unchanged, 1 = white),
+     * keeping the alpha, so a non-selected line reads as a lighter shade of the active color.
+     */
+    static int lighten(int argb, float factor) {
+        int a = (argb >>> 24) & 0xFF;
+        int r = (argb >> 16) & 0xFF;
+        int g = (argb >> 8) & 0xFF;
+        int b = argb & 0xFF;
+        r = (int) (r + (255 - r) * factor);
+        g = (int) (g + (255 - g) * factor);
+        b = (int) (b + (255 - b) * factor);
+        return (a << 24) | (r << 16) | (g << 8) | b;
+    }
+
+    private Polyline line(List<LatLong> latLongs, int colorRgba, int strokeWidth, DisplayModel displayModel) {
+        Paint paint = graphicFactory.createPaint();
+        paint.setColor(colorRgba);
+        paint.setStrokeWidth(strokeWidth);
+        Polyline polyline = new Polyline(latLongs, paint, mapView.getTileSize());
+        polyline.setDisplayModel(displayModel);
+        return polyline;
     }
 
     private synchronized Bitmap getWaypointIcon() {

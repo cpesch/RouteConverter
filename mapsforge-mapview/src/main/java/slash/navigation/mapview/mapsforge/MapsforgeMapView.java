@@ -337,6 +337,7 @@ public class MapsforgeMapView extends BaseMapView {
         trackRenderer = new TrackRenderer(this, preferencesModel.getTrackColorModel(),
                 preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
         nonSelectedPositionListsRenderer = new NonSelectedPositionListsRenderer(this, positionListsModel,
+                preferencesModel.getRouteColorModel(), preferencesModel.getTrackColorModel(),
                 preferencesModel.getRouteLineWidthModel(), preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
     }
 
