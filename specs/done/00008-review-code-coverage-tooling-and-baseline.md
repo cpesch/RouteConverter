@@ -666,6 +666,25 @@ Observed result:
 - covered the two pure text helpers `RouteComments` left untested: `shortenRouteName` (null route, short name pass-through, long-name truncation with the `...` suffix) and `createRouteDescription` (name only, name + description with the `; ` separator, and the empty-name/description-only branch) — via `BcrRoute`, whose `getName`/`getDescription` are real (unlike `SimpleRoute`, which returns null)
 - **`RouteComments` 91.6% → 97.7%** (missed 26 → 7). The residual 7 are `parseDescription` edge branches and the abstract class's implicit constructor
 
+### Verified on July 5, 2026: Phase 28 `BaseNavigationPosition` null-guard branches
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats -am test -Dtest=BaseNavigationPositionTest \
+  -Dsurefire.failIfNoSpecifiedTests=false -P '!local-with-samples'
+```
+
+Observed result:
+
+- all green: `BaseNavigationPositionTest` 11 (+2)
+- covered the only remaining real-logic gaps in the position spine — the null-return guards of `calculateBearing`, `calculateAngle` and `calculateOrthogonalDistance` (existing tests exercised only the value paths) — plus a direct `calculateBearing` great-circle-distance assertion
+- the rest of `BaseNavigationPosition`'s residual is the one-line `asXxxPosition(...)` per-format delegations (mirroring `BaseRoute`'s `asXxxFormat`), which are volume-only and deliberately left uncovered
+
+### Campaign status (July 5, 2026)
+
+After Phase 28 the pure-utility + domain-spine layer is thoroughly pinned — `DataSourcesUtil` 92.1%, `Files` 84.7%, `ISO8601` 94.0%, `UnitSystem`/`UnitTransfer` 100%, `BaseRoute` 87.4%, `RouteComments` 97.7%, `BaseNavigationPosition` real-logic complete. The remaining uncovered lines across the domain classes are almost entirely the mechanical one-line `asXxxFormat`/`asXxxPosition` per-format conversion delegations (pure volume, low refactor-robustness value) plus network/native/UI classes that belong to the `*IT` integration suite. Further hermetic unit-test work is low-leverage from here.
+
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
 Verified command:

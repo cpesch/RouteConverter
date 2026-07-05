@@ -20,6 +20,7 @@
 package slash.navigation.base;
 
 import org.junit.Test;
+import slash.navigation.common.Bearing;
 
 import static org.junit.Assert.*;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -111,5 +112,20 @@ public class BaseNavigationPositionTest {
 
         assertNotNull(crossTrack);
         assertEquals(0.0, crossTrack, 1000.0);
+    }
+
+    @Test
+    public void bearingCarriesTheGreatCircleDistance() {
+        Bearing bearing = at(0.0, 0.0).calculateBearing(at(0.0, 1.0));
+
+        assertNotNull(bearing);
+        assertEquals(111195.0, bearing.getDistance(), 1000.0);
+    }
+
+    @Test
+    public void bearingAngleAndOrthogonalDistanceAreNullWithoutBothCoordinates() {
+        assertNull(at(0.0, 0.0).calculateBearing(at(null, null)));
+        assertNull(at(0.0, 0.0).calculateAngle(at(null, null)));
+        assertNull(at(0.0, 1.0).calculateOrthogonalDistance(at(null, null), at(0.0, 2.0)));
     }
 }
