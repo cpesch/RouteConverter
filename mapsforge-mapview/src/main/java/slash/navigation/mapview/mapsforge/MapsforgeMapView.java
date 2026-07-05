@@ -102,8 +102,6 @@ import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.*;
 import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
-import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
-import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.type.HexadecimalNumber.encodeInt;
@@ -120,6 +118,9 @@ import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asAlpha;
+import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.collectBoundingPositions;
+import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.computeAddRow;
+import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.thresholdForPixel;
 import static slash.navigation.mapview.mapsforge.helpers.SVGHelper.getResourceBitmap;
 import static slash.navigation.mapview.mapsforge.helpers.WithLayerHelper.*;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
@@ -897,33 +898,7 @@ public class MapsforgeMapView extends BaseMapView {
 
     private void centerAndZoom(BoundingBox mapBoundingBox, BoundingBox routeBoundingBox,
                                boolean alwaysZoom, boolean alwaysRecenter) {
-        List<NavigationPosition> positions = new ArrayList<>();
-
-        // if there is a route and we center and zoom, then use the route bounding box
-        if (routeBoundingBox != null) {
-            positions.add(routeBoundingBox.northEast());
-            positions.add(routeBoundingBox.southWest());
-        }
-
-        // if the map is limited
-        if (mapBoundingBox != null) {
-
-            // if there is a route
-            if (routeBoundingBox != null) {
-                positions.add(routeBoundingBox.northEast());
-                positions.add(routeBoundingBox.southWest());
-                // if the map is limited and doesn't cover the route
-                if (!mapBoundingBox.contains(routeBoundingBox)) {
-                    positions.add(mapBoundingBox.northEast());
-                    positions.add(mapBoundingBox.southWest());
-                }
-
-                // if there just a map
-            } else {
-                positions.add(mapBoundingBox.northEast());
-                positions.add(mapBoundingBox.southWest());
-            }
-        }
+        List<NavigationPosition> positions = collectBoundingPositions(mapBoundingBox, routeBoundingBox);
 
         if (!positions.isEmpty()) {
             BoundingBox both = asBoundingBox(positions);
@@ -1128,9 +1103,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private double getThresholdForPixel(LatLong latLong) {
-        long mapSize = getMapSize(mapView.getModel().mapViewPosition.getZoomLevel(), getTileSize());
-        double metersPerPixel = calculateGroundResolution(latLong.latitude, mapSize);
-        return metersPerPixel * SELECTION_CIRCLE_IN_PIXEL;
+        return thresholdForPixel(latLong.latitude, mapView.getModel().mapViewPosition.getZoomLevel(), getTileSize(), SELECTION_CIRCLE_IN_PIXEL);
     }
 
     private void selectPosition(LatLong latLong, Double threshold, boolean replaceSelection) {
@@ -1164,11 +1137,8 @@ public class MapsforgeMapView extends BaseMapView {
     private class AddPositionAction extends FrameAction {
         private int getAddRow() {
             List<PositionWithLayer> lastSelectedPositions = selectionUpdater.getPositionWithLayers();
-            NavigationPosition position = !lastSelectedPositions.isEmpty() ? lastSelectedPositions.get(lastSelectedPositions.size() - 1).getPosition() : null;
-            // quite crude logic to be as robust as possible on failures
-            if (position == null && positionsModel.getRowCount() > 0)
-                position = positionsModel.getPosition(positionsModel.getRowCount() - 1);
-            return position != null ? positionsModel.getIndex(position) + 1 : 0;
+            NavigationPosition lastSelected = !lastSelectedPositions.isEmpty() ? lastSelectedPositions.get(lastSelectedPositions.size() - 1).getPosition() : null;
+            return computeAddRow(lastSelected, positionsModel);
         }
 
         private void insertPosition(int row, Double longitude, Double latitude) {
