@@ -36,6 +36,7 @@ import java.util.List;
 
 public interface MapView extends PositionsSelectionModel {
     void initialize(PositionsModel positionsModel,
+                    PositionListsModel positionListsModel,
                     MapPreferencesModel preferencesModel,
                     MapViewCallback mapViewCallback);
     boolean isDownload();
