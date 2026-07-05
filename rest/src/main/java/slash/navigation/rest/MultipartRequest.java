@@ -92,13 +92,23 @@ abstract class MultipartRequest extends HttpRequest {
         super.setHeader(name, value);
     }
 
-    public <T> T execute(HttpClientResponseHandler<T> responseHandler) throws IOException {
+    /**
+     * Sets the request entity from the raw body if one was supplied via {@link #setBody},
+     * otherwise from the accumulated multipart parts. A raw body takes precedence: it is
+     * sent verbatim so the server can sign-verify the exact bytes. Package-visible so the
+     * entity assembly can be verified without a live transport.
+     */
+    void prepareEntity() {
         if (rawEntity != null) {
             getMethod().setEntity(rawEntity);
         } else if (builder != null) {
             HttpEntity entity = builder.build();
             getMethod().setEntity(entity);
         }
+    }
+
+    public <T> T execute(HttpClientResponseHandler<T> responseHandler) throws IOException {
+        prepareEntity();
         return super.execute(responseHandler);
     }
 
