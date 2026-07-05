@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -175,5 +176,40 @@ public class LocalRouteDistanceAndTimeFillerTest {
         // a second flush without new results delivers nothing
         filler.flush();
         assertEquals(1, batches.size());
+    }
+
+    @Test
+    public void nullResultIsNeitherCachedNorNotified() {
+        ManualExecutor executor = new ManualExecutor();
+        LocalRouteDistanceAndTimeFiller filler = filler(url -> null, executor);
+
+        filler.fill("url");
+        executor.runAll();
+        filler.flush();
+
+        assertNull(cache.getDistanceAndTime("url"));
+        assertTrue(batches.isEmpty());
+    }
+
+    @Test
+    public void parserExceptionIsSwallowedAndTheUrlCanBeRetried() {
+        AtomicInteger calls = new AtomicInteger();
+        Function<String, DistanceAndTime> parser = url -> {
+            if (calls.incrementAndGet() == 1)
+                throw new RuntimeException("boom");
+            return RESULT;
+        };
+        ManualExecutor executor = new ManualExecutor();
+        LocalRouteDistanceAndTimeFiller filler = filler(parser, executor);
+
+        filler.fill("url");
+        executor.runAll();
+        assertNull("failed parse must not cache", cache.getDistanceAndTime("url"));
+
+        // the pending mark was cleared in the finally block, so a retry is accepted and succeeds
+        filler.fill("url");
+        executor.runAll();
+        assertEquals(RESULT, cache.getDistanceAndTime("url"));
+        assertEquals(2, calls.get());
     }
 }

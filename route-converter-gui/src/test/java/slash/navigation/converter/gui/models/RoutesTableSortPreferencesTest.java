@@ -138,4 +138,28 @@ public class RoutesTableSortPreferencesTest {
         preferences.saveSortKeys(singletonList(new SortKey(LENGTH_COLUMN, SortOrder.UNSORTED)));
         assertTrue(preferences.loadSortKeys().isEmpty());
     }
+
+    @Test
+    public void loadFallsBackToAscendingWhenStoredOrderIsUnreadable() {
+        node.putInt("routes-sort-column", LENGTH_COLUMN);
+        node.put("routes-sort-order", "not-a-sort-order");
+
+        List<SortKey> restored = preferences.loadSortKeys();
+        assertEquals(1, restored.size());
+        assertEquals(LENGTH_COLUMN, restored.get(0).getColumn());
+        assertEquals(SortOrder.ASCENDING, restored.get(0).getSortOrder());
+    }
+
+    @Test
+    public void loadTreatsAStoredUnsortedOrderAsNoSort() {
+        node.putInt("routes-sort-column", LENGTH_COLUMN);
+        node.put("routes-sort-order", SortOrder.UNSORTED.name());
+
+        assertTrue(preferences.loadSortKeys().isEmpty());
+    }
+
+    @Test
+    public void defaultConstructorReadsFromThePackageNodeWithoutFailing() {
+        assertTrue(new RoutesTableSortPreferences().loadSortKeys() != null);
+    }
 }
