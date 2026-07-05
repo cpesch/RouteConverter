@@ -20,31 +20,17 @@
 
 package slash.navigation.routes.local;
 
-import slash.common.io.MacAlias;
-
 import java.io.File;
 import java.io.FileFilter;
-import java.io.IOException;
-
-import static slash.common.io.Files.getExtension;
 
 /**
- * A file filter that accepts only directories not starting with a dot plus the
- * files that may resolve to directories: Windows shortcuts and macOS aliases.
+ * A file filter that accepts only files not starting with a dot,
+ * hiding system files like .DS_Store and dot-prefixed hidden files.
  *
  * @author Christian Pesch
  */
-public class DirectoryFileFilter implements FileFilter {
+public class RouteFileFilter implements FileFilter {
     public boolean accept(File file) {
-        return file.isDirectory() && !file.getName().startsWith(".") ||
-                file.isFile() && (getExtension(file).equals(".lnk") || isAlias(file));
-    }
-
-    private static boolean isAlias(File file) {
-        try {
-            return MacAlias.isPotentialValidAlias(file);
-        } catch (IOException e) {
-            return false;
-        }
+        return file.isFile() && !file.getName().startsWith(".");
     }
 }

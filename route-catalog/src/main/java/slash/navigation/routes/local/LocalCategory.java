@@ -20,7 +20,7 @@
 
 package slash.navigation.routes.local;
 
-import slash.common.io.FileFileFilter;
+import slash.common.io.MacAlias;
 import slash.common.io.WindowsShortcut;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
@@ -45,6 +45,7 @@ import static slash.common.io.Files.removeExtension;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.encodeFileName;
+import static slash.common.io.MacAlias.isPotentialValidAlias;
 import static slash.common.io.WindowsShortcut.isPotentialValidLink;
 
 /**
@@ -84,6 +85,12 @@ public class LocalCategory implements Category {
                     if (shortcut.isDirectory()) {
                         subDirectory = new File(removeExtension(shortcut.getRealFilename()));
                     } else
+                        continue;
+                } else if (isPotentialValidAlias(subDirectory)) {
+                    MacAlias alias = new MacAlias(subDirectory);
+                    if (alias.isDirectory())
+                        subDirectory = new File(alias.getRealFilename());
+                    else
                         continue;
                 }
                 categories.add(new LocalCategory(catalog, subDirectory));
@@ -125,13 +132,19 @@ public class LocalCategory implements Category {
 
     public List<Route> getRoutes() throws IOException {
         List<Route> routes = new ArrayList<>();
-        File[] files = directory.listFiles(new FileFileFilter());
+        File[] files = directory.listFiles(new RouteFileFilter());
         if(files != null) {
             for (File file : files) {
                 if (isPotentialValidLink(file)) {
                     WindowsShortcut shortcut = new WindowsShortcut(file);
                     if (shortcut.isFile())
                         file = new File(shortcut.getRealFilename());
+                    else
+                        continue;
+                } else if (isPotentialValidAlias(file)) {
+                    MacAlias alias = new MacAlias(file);
+                    if (alias.isFile())
+                        file = new File(alias.getRealFilename());
                     else
                         continue;
                 }
