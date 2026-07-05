@@ -70,8 +70,11 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.awt.datatransfer.DataFlavor.javaFileListFlavor;
@@ -208,7 +211,7 @@ public class BrowsePanel implements PanelInTab {
                 serverRouteDistanceAndTimeCache);
         distanceAndTimeUpdater = new OpenedRouteDistanceAndTimeUpdater(r.getDistanceAndTimeAggregator(),
                 routeDistanceAndTimeCache, () -> r.getUrlModel().getString(), this::updateRouteRow);
-        localRouteDistanceAndTimeFiller = new LocalRouteDistanceAndTimeFiller(routeDistanceAndTimeCache, this::updateRouteRow);
+        localRouteDistanceAndTimeFiller = new LocalRouteDistanceAndTimeFiller(routeDistanceAndTimeCache, this::updateRouteRows);
         remoteRouteDistanceAndTimeFiller = new RemoteRouteDistanceAndTimeFiller(serverRouteDistanceAndTimeCache);
 
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
@@ -363,6 +366,21 @@ public class BrowsePanel implements PanelInTab {
                     break;
                 }
             }
+        });
+    }
+
+    private void updateRouteRows(Collection<String> urls) {
+        invokeLater(() -> {
+            RoutesTableModel model = getRoutesListModel();
+            Set<String> urlSet = new HashSet<>(urls);
+            List<RouteModel> updated = new ArrayList<>();
+            for (int i = 0, count = model.getRowCount(); i < count; i++) {
+                RouteModel route = model.getRoute(i);
+                if (urlSet.contains(route.getUrl()))
+                    updated.add(route);
+            }
+            // one table event for the whole batch -> the row sorter re-sorts once
+            model.updateRoutes(updated);
         });
     }
 

@@ -23,6 +23,7 @@ package slash.navigation.routes.impl;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -81,6 +82,25 @@ public class RoutesTableModel extends AbstractTableModel {
         if (index == -1)
             throw new IllegalArgumentException("Route " + route + " not found in " + routes);
         fireTableRowsUpdated(index, index);
+    }
+
+    /**
+     * Updates several routes with a single table event so that a {@link javax.swing.table.TableRowSorter}
+     * with {@code setSortsOnUpdates} re-sorts once for the whole batch instead of once per route.
+     * Routes that are no longer in the model are ignored.
+     */
+    public void updateRoutes(Collection<RouteModel> routesToUpdate) {
+        int min = Integer.MAX_VALUE;
+        int max = -1;
+        for (RouteModel route : routesToUpdate) {
+            int index = getIndex(route);
+            if (index == -1)
+                continue;
+            min = Math.min(min, index);
+            max = Math.max(max, index);
+        }
+        if (max >= 0)
+            fireTableRowsUpdated(min, max);
     }
 
     public void deleteRoute(RouteModel route) {
