@@ -119,4 +119,37 @@ public class CrashReporterTest {
         assertEquals(2, sender.sent.size());
         assertEquals("a failed send must leave the report for the next launch", 2, spool.list().size());
     }
+
+    @Test
+    public void testManualDialogDeletesOnlyReportsTheUserSent() throws IOException {
+        CrashReportSpool spool = spoolWithReports(3);
+        RecordingSender sender = new RecordingSender(true);
+        // the injected opener stands in for the Swing dialog: the user "sends" only the
+        // n:1 report and dismisses the rest
+        CrashReporter.DialogOpener opener = json -> json.contains("\"n\":1");
+        CrashReporter reporter = new CrashReporter(spool, sender, () -> false, () -> "http://localhost/", opener);
+
+        reporter.offerSpooledReportsInDialog();
+
+        assertEquals("only the sent report is deleted; dismissed ones are kept", 2, spool.list().size());
+        assertEquals("the manual path never uses the silent sender", 0, sender.sent.size());
+    }
+
+    @Test
+    public void testManualDialogOffersEveryReportAndDismissedKeepsAll() throws IOException {
+        CrashReportSpool spool = spoolWithReports(3);
+        RecordingSender sender = new RecordingSender(true);
+        List<String> opened = new ArrayList<>();
+        CrashReporter.DialogOpener opener = json -> {
+            opened.add(json);
+            return false;
+        };
+        CrashReporter reporter = new CrashReporter(spool, sender, () -> false, () -> "http://localhost/", opener);
+
+        reporter.offerSpooledReportsInDialog();
+
+        assertEquals("every spooled report is offered, not just the newest", 3, opened.size());
+        assertEquals("a report the user dismisses is kept for a later offer", 3, spool.list().size());
+        assertEquals(0, sender.sent.size());
+    }
 }

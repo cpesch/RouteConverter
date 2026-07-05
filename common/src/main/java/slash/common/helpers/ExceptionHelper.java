@@ -26,6 +26,12 @@ import java.io.StringWriter;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.List;
+import java.util.Set;
+
+import static java.util.Collections.newSetFromMap;
 
 /**
  * Provides exception helpers
@@ -52,16 +58,37 @@ public class ExceptionHelper {
     }
 
     /**
+     * Walks the {@link Throwable#getCause() cause} chain from {@code throwable} to the
+     * deepest cause and returns every distinct throwable on the way, outermost first.
+     * <p>
+     * The walk is cycle-safe: a throwable is only visited once (identity-based), so a
+     * self-referential ({@code A -> A}) or looping ({@code A -> B -> A}) chain, which a
+     * naive {@code getCause()} loop would follow forever, terminates. This is the single
+     * cause-chain traversal every other helper here (and {@code DiagnosticReport}) shares.
+     */
+    public static List<Throwable> getCauseChain(Throwable throwable) {
+        List<Throwable> chain = new ArrayList<>();
+        Set<Throwable> visited = newSetFromMap(new IdentityHashMap<>());
+        Throwable cause = throwable;
+        // visited.add() returns false once a throwable recurs, which ends the walk on a
+        // self-referential (A -> A) or looping (A -> B -> A) chain
+        while (cause != null && visited.add(cause)) {
+            chain.add(cause);
+            cause = cause.getCause();
+        }
+        return chain;
+    }
+
+    /**
      * Walks the {@link Throwable#getCause() cause} chain to the deepest cause.
      * A wrapper like ExceptionInInitializerError or InvocationTargetException
      * carries the real fault (e.g. a NoClassDefFoundError for a missing JDK
      * module) as its cause; this returns that fault instead of the wrapper.
+     * Cycle-safe via {@link #getCauseChain}.
      */
     public static Throwable getRootCause(Throwable throwable) {
-        Throwable cause = throwable;
-        while (cause.getCause() != null && cause.getCause() != cause)
-            cause = cause.getCause();
-        return cause;
+        List<Throwable> chain = getCauseChain(throwable);
+        return chain.get(chain.size() - 1);
     }
 
     /**
@@ -69,20 +96,17 @@ public class ExceptionHelper {
      * "ExceptionInInitializerError caused by NoClassDefFoundError: jdk/net/Sockets".
      * Surfaces the underlying fault that a single getMessage() hides -- the
      * outermost message is often a generic "Could not initialize class ...".
+     * Cycle-safe via {@link #getCauseChain}.
      */
     public static String getMessageWithCauses(Throwable throwable) {
         StringBuilder builder = new StringBuilder();
-        Throwable cause = throwable;
-        while (cause != null) {
+        for (Throwable cause : getCauseChain(throwable)) {
             if (builder.length() > 0)
                 builder.append("\ncaused by ");
             builder.append(cause.getClass().getSimpleName());
             String message = cause.getLocalizedMessage();
             if (message != null)
                 builder.append(": ").append(message);
-            if (cause.getCause() == cause)
-                break;
-            cause = cause.getCause();
         }
         return builder.toString();
     }

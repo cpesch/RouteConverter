@@ -26,11 +26,13 @@ import javax.net.ssl.SSLException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
+import static slash.common.helpers.ExceptionHelper.getCauseChain;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.getMessageWithCauses;
 import static slash.common.helpers.ExceptionHelper.getRootCause;
@@ -150,6 +152,69 @@ public class ExceptionHelperTest {
         Throwable root = new NoClassDefFoundError("jdk/net/Sockets");
         Throwable wrapper = new ExceptionInInitializerError(root);  // no own message
         assertEquals("jdk/net/Sockets", getLocalizedMessage(wrapper));
+    }
+
+    @Test
+    public void testGetCauseChainReturnsOutermostFirst() {
+        Throwable root = new NoClassDefFoundError("jdk/net/Sockets");
+        Throwable wrapper = new ExceptionInInitializerError(root);
+        List<Throwable> chain = getCauseChain(wrapper);
+        assertEquals(2, chain.size());
+        assertEquals(wrapper, chain.get(0));
+        assertEquals(root, chain.get(1));
+    }
+
+    /**
+     * A -> A: a throwable whose cause is itself. A naive getCause() loop would spin
+     * forever; the shared traversal must terminate for all three consumers.
+     */
+    @Test
+    public void testSelfReferentialCauseIsCycleSafe() {
+        Throwable[] self = new Throwable[1];
+        Throwable a = new RuntimeException("self") {
+            public Throwable getCause() {
+                return self[0];
+            }
+        };
+        self[0] = a;
+
+        assertEquals(1, getCauseChain(a).size());
+        assertEquals(a, getRootCause(a));
+        assertEquals("only one distinct throwable is rendered", 1,
+                getMessageWithCauses(a).split("caused by", -1).length);
+    }
+
+    /**
+     * A -> B -> A: a two-node cause cycle. The traversal must visit each node once and
+     * stop, for getCauseChain, getRootCause and getMessageWithCauses alike.
+     */
+    @Test
+    public void testLoopingCauseChainIsCycleSafe() {
+        Throwable[] holder = new Throwable[2];
+        Throwable a = new RuntimeException("A") {
+            public Throwable getCause() {
+                return holder[1];
+            }
+        };
+        Throwable b = new RuntimeException("B") {
+            public Throwable getCause() {
+                return holder[0];
+            }
+        };
+        holder[0] = a;
+        holder[1] = b;
+
+        List<Throwable> chain = getCauseChain(a);
+        assertEquals(2, chain.size());
+        assertEquals(a, chain.get(0));
+        assertEquals(b, chain.get(1));
+        // getRootCause returns the deepest distinct cause, not spinning on the loop
+        assertEquals(b, getRootCause(a));
+        String message = getMessageWithCauses(a);
+        assertTrue(message.contains("A"));
+        assertTrue(message.contains("B"));
+        assertEquals("the loop is walked once, not repeatedly", 2,
+                message.split("caused by", -1).length);
     }
 }
 

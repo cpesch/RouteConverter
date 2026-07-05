@@ -129,6 +129,59 @@ public class DiagnosticReportTest {
     }
 
     @Test
+    public void testScrubsWindowsPathOutsideHome() {
+        // a document opened from a different drive than user.home still leaks its name
+        // through a free-form message; the whole path token is redacted
+        String scrubbed = DiagnosticReport.scrub("Cannot read D:\\Trips\\vacation2024.gpx", "C:\\Users\\me", "me");
+        assertTrue(scrubbed.contains("<PATH>"));
+        assertFalse(scrubbed.contains("vacation2024"));
+        assertFalse(scrubbed.contains("Trips"));
+    }
+
+    @Test
+    public void testScrubsUnixExternalPath() {
+        String scrubbed = DiagnosticReport.scrub("Cannot read /Volumes/Backup/trips/secret.gpx", "/home/me", "me");
+        assertTrue(scrubbed.contains("<PATH>"));
+        assertFalse(scrubbed.contains("secret.gpx"));
+    }
+
+    @Test
+    public void testScrubsShortUserNameOnWordBoundary() {
+        // a two-character user name must still be scrubbed (the old length>=3 guard let
+        // it leak) but only as a whole word, never inside an unrelated token like "json"
+        String scrubbed = DiagnosticReport.scrub("parsing json failed for jo", null, "jo");
+        assertTrue("standalone user name is scrubbed", scrubbed.contains("<USER>"));
+        assertTrue("substring inside another word is left intact", scrubbed.contains("json"));
+        assertFalse(scrubbed.contains("for jo"));
+    }
+
+    @Test
+    public void testTruncateCapsLongValueWithMarker() {
+        assertNull(DiagnosticReport.truncate(null));
+        assertEquals("short", DiagnosticReport.truncate("short"));
+
+        StringBuilder builder = new StringBuilder();
+        while (builder.length() < DiagnosticReport.MAXIMUM_FIELD_LENGTH + 100)
+            builder.append("x");
+        String truncated = DiagnosticReport.truncate(builder.toString());
+        assertTrue(truncated.endsWith(DiagnosticReport.TRUNCATION_MARKER));
+        assertEquals(DiagnosticReport.MAXIMUM_FIELD_LENGTH + DiagnosticReport.TRUNCATION_MARKER.length(),
+                truncated.length());
+    }
+
+    @Test
+    public void testHugeMessageProducesBoundedTruncatedJson() {
+        StringBuilder builder = new StringBuilder();
+        while (builder.length() < 200 * 1024)
+            builder.append("boom ");
+        String json = report(new RuntimeException(builder.toString())).toJson();
+        // the cause chain carrying the huge message is truncated, so the payload stays
+        // well under the 64 KB the crash-report endpoint accepts (no forever-retry loop)
+        assertTrue(json.contains("[truncated]"));
+        assertTrue("payload must stay under the sender limit, was " + json.length(), json.length() < 64 * 1024);
+    }
+
+    @Test
     public void testBundledJreFlag() {
         String previous = System.getProperty(BUNDLED_JRE_PROPERTY);
         try {

@@ -1330,6 +1330,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
         return preferences.getBoolean(SEND_CRASH_REPORTS_PREFERENCE, false);
     }
 
+    public static void setSendCrashReportsEnabled(boolean enabled) {
+        preferences.putBoolean(SEND_CRASH_REPORTS_PREFERENCE, enabled);
+    }
+
     private File getTileServersDirectory() {
         return getApplicationDirectory("tileservers");
     }

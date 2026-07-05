@@ -26,10 +26,12 @@ import slash.navigation.rest.Post;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Logger;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.logging.Level.FINE;
+import static java.util.logging.Level.WARNING;
 import static slash.navigation.datasources.DataSourceManager.V1;
 
 /**
@@ -62,6 +64,11 @@ public class CrashReportSender {
 
     private static final String HMAC_ALGORITHM = "HmacSHA256";
 
+    // warns exactly once per run: a build that forgot to inject the real key would sign
+    // every report with the placeholder, so the server rejects them all silently. One
+    // warning surfaces the misconfiguration without spamming the log on every crash.
+    private static final AtomicBoolean warnedAboutDefaultSecret = new AtomicBoolean(false);
+
     /**
      * Signs and POSTs the given JSON payload to {@code apiUrl}. Returns true only on a
      * 2xx response (the report was accepted and may be removed from the spool); returns
@@ -75,6 +82,7 @@ public class CrashReportSender {
                 log.log(FINE, "Skipping oversized crash report of " + body.length + " bytes");
                 return false;
             }
+            warnIfDefaultSecret();
             String signature = sign(secret(), body);
             return post(apiUrl + CRASH_REPORT_URI, json, signature);
         } catch (Exception e) {
@@ -97,6 +105,23 @@ public class CrashReportSender {
 
     static String secret() {
         return System.getProperty(SECRET_PROPERTY, DEFAULT_SECRET);
+    }
+
+    /**
+     * Logs a single warning if the effective secret is still the committed placeholder.
+     * Returns true only on the call that emitted the warning, so it can be exercised.
+     */
+    static boolean warnIfDefaultSecret() {
+        if (DEFAULT_SECRET.equals(secret()) && warnedAboutDefaultSecret.compareAndSet(false, true)) {
+            log.log(WARNING, "Crash report secret is the committed placeholder; set -D" + SECRET_PROPERTY +
+                    " to the server's key or reports will fail signature verification");
+            return true;
+        }
+        return false;
+    }
+
+    static void resetDefaultSecretWarningForTesting() {
+        warnedAboutDefaultSecret.set(false);
     }
 
     /**

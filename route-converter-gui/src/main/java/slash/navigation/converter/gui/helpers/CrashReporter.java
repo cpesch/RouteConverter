@@ -69,19 +69,37 @@ public class CrashReporter implements CrashHandler {
     private final CrashReportSender sender;
     private final BooleanSupplier telemetryOptedIn;
     private final Supplier<String> apiUrl;
+    private final DialogOpener dialogOpener;
+
+    /**
+     * Opens the manual review dialog for a report and reports back whether the user sent
+     * it. Injected so the manual (opt-out) branching is exercised without the static
+     * {@link RouteConverter#getInstance()} Swing singleton; the public constructor wires
+     * the real {@link SendErrorReportDialog}.
+     */
+    interface DialogOpener {
+        boolean openAndConfirmSent(String json);
+    }
 
     public CrashReporter() {
         this(CrashReportSpool.createDefault(), new CrashReportSender(),
                 RouteConverter::isSendCrashReportsEnabled,
-                () -> RouteConverter.getInstance().getApiUrl());
+                () -> RouteConverter.getInstance().getApiUrl(),
+                CrashReporter::showSendErrorReportDialog);
     }
 
     CrashReporter(CrashReportSpool spool, CrashReportSender sender,
                   BooleanSupplier telemetryOptedIn, Supplier<String> apiUrl) {
+        this(spool, sender, telemetryOptedIn, apiUrl, CrashReporter::showSendErrorReportDialog);
+    }
+
+    CrashReporter(CrashReportSpool spool, CrashReportSender sender,
+                  BooleanSupplier telemetryOptedIn, Supplier<String> apiUrl, DialogOpener dialogOpener) {
         this.spool = spool;
         this.sender = sender;
         this.telemetryOptedIn = telemetryOptedIn;
         this.apiUrl = apiUrl;
+        this.dialogOpener = dialogOpener;
     }
 
     public void handleCrash(Thread thread, Throwable throwable) {
@@ -103,7 +121,7 @@ public class CrashReporter implements CrashHandler {
 
         // not opted in: the Phase 1 manual review dialog is the only send path.
         if (claimDialogSlot())
-            invokeLater(() -> showReportDialog(json));
+            invokeLater(() -> dialogOpener.openAndConfirmSent(json));
     }
 
     /**
@@ -126,22 +144,27 @@ public class CrashReporter implements CrashHandler {
         if (!claimDialogSlot())
             return;
 
-        // offer every spooled report, not just the newest: a report the user dismisses
-        // without sending is kept, so offering only the newest would block all older
-        // ones from ever being surfaced (they would linger until evicted by the cap)
-        invokeLater(() -> {
-            for (File file : spool.list()) {
-                try {
-                    String json = spool.read(file);
-                    SendErrorReportDialog dialog = new SendErrorReportDialog(json);
-                    dialog.showWithPreferences();
-                    if (dialog.isSent())
-                        spool.delete(file);
-                } catch (IOException e) {
-                    log.log(WARNING, "Cannot read spooled crash report " + file, e);
-                }
+        invokeLater(this::offerSpooledReportsInDialog);
+    }
+
+    /**
+     * Offers every spooled report in the manual review dialog, deleting each only once
+     * the user actually sent it. Every report is offered, not just the newest: a report
+     * the user dismisses without sending is kept, so offering only the newest would block
+     * all older ones from ever being surfaced (they would linger until evicted by the
+     * cap). Package-visible and free of the event dispatch thread so the per-file
+     * delete-only-when-sent branching can be exercised directly.
+     */
+    void offerSpooledReportsInDialog() {
+        for (File file : spool.list()) {
+            try {
+                String json = spool.read(file);
+                if (dialogOpener.openAndConfirmSent(json))
+                    spool.delete(file);
+            } catch (IOException e) {
+                log.log(WARNING, "Cannot read spooled crash report " + file, e);
             }
-        });
+        }
     }
 
     /**
@@ -171,15 +194,20 @@ public class CrashReporter implements CrashHandler {
         }
     }
 
-    private void showReportDialog(String json) {
+    /**
+     * The production {@link DialogOpener}: shows the {@link SendErrorReportDialog} on the
+     * RouteConverter frame and reports whether the user sent the report. Returns false
+     * with no frame yet (a very early crash): the report is spooled and offered on the
+     * next successful launch instead.
+     */
+    private static boolean showSendErrorReportDialog(String json) {
         RouteConverter instance = RouteConverter.getInstance();
-        // no frame yet (a very early crash): the report is spooled and offered on the
-        // next successful launch instead
         if (instance == null || instance.getFrame() == null)
-            return;
+            return false;
 
         SendErrorReportDialog dialog = new SendErrorReportDialog(json);
         dialog.showWithPreferences();
+        return dialog.isSent();
     }
 
     /**
