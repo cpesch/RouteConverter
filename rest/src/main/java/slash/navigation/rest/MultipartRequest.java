@@ -24,6 +24,7 @@ import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
 import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpEntity;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +44,7 @@ import static slash.common.io.Transfer.encodeUriButKeepSlashes;
 
 abstract class MultipartRequest extends HttpRequest {
     private MultipartEntityBuilder builder;
+    private HttpEntity rawEntity;
     private boolean containsFileLargerThan4k;
 
     MultipartRequest(HttpUriRequestBase method, Credentials credentials) {
@@ -61,6 +63,15 @@ abstract class MultipartRequest extends HttpRequest {
         getBuilder().addTextBody(name, value, ContentType.APPLICATION_JSON);
     }
 
+    /**
+     * Sends the given string verbatim as the request body (not multipart), so the
+     * transmitted bytes are exactly {@code body} encoded with the content type's
+     * charset. Used where the server expects a raw JSON body it can sign-verify.
+     */
+    public void setBody(String body, ContentType contentType) {
+        this.rawEntity = new StringEntity(body, contentType);
+    }
+
     public void addFile(String name, File value) {
         if (value.exists() && value.length() > 4096)
             containsFileLargerThan4k = true;
@@ -77,8 +88,14 @@ abstract class MultipartRequest extends HttpRequest {
         return containsFileLargerThan4k;
     }
 
+    public void setHeader(String name, String value) {
+        super.setHeader(name, value);
+    }
+
     public <T> T execute(HttpClientResponseHandler<T> responseHandler) throws IOException {
-        if (builder != null) {
+        if (rawEntity != null) {
+            getMethod().setEntity(rawEntity);
+        } else if (builder != null) {
             HttpEntity entity = builder.build();
             getMethod().setEntity(entity);
         }

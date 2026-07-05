@@ -34,6 +34,6 @@ Section
   File "RouteConverterWindows.jar"
   SetOutPath $TEMP
   ${GetParameters} $R0
-  nsExec::Exec '"${JRE_DIR}\bin\java.exe" -server -jar $PluginsDir\RouteConverterWindows.jar $R0'
+  nsExec::Exec '"${JRE_DIR}\bin\java.exe" -server -Drouteconverter.bundledJre=true -jar $PluginsDir\RouteConverterWindows.jar $R0'
   RMDir /r $PluginsDir
 SectionEnd

@@ -49,15 +49,40 @@ them from `bbox` centre via point-in-polygon (keeps geo data out of Java).
 
 ## `lengthKind` semantics
 
-Each position list is measured point-to-point (recorded geometry):
+- **Track** characteristic → `track` (recorded GPS track length, measured
+  point-to-point along the recorded geometry).
+- **Waypoints** characteristic → `beeline` (straight-line length between the
+  points; never routed).
+- **Route** characteristic (planned routes) → depends on `--brouter-segments`:
+  - **routed** when `--brouter-segments <dir>` is given, the list falls inside
+    the BRouter `.rd5` segment coverage in that directory, and every leg
+    routes successfully. The reported length is the sum of the on-road leg
+    distances between consecutive route points.
+  - **beeline** otherwise — no `--brouter-segments` given, the directory does
+    not exist, the list is outside coverage, or any single leg fails to route
+    (routing error, timeout, no segment). A partially-covered route is reported
+    wholly as `beeline`, never as a mix, so the label never over-promises.
 
-- **Track** characteristic → `track` (recorded GPS track length).
-- **Route** / **Waypoints** characteristic → `beeline` (straight-line length
-  between planned points; not a routed distance).
-- `routed` is reserved: when a `RouteLengthComputer` backed by BRouter is wired
-  in (spec 00055 P3, host infra), Route-type lists inside coverage report
-  `routed` with the on-road distance. The seam is `RouteLengthComputer`; the
-  default `PointToPointLengthComputer` never returns `routed`.
+Routing is best-effort and never aborts the run: any BRouter failure degrades
+that list to `beeline` and the JSON is still emitted.
+
+### BRouter profile
+
+Routed lengths use the **`trekking`** profile (BRouter's general-purpose
+bike/foot profile), bundled with the command-line tool. Planned catalog routes
+are predominantly cycling and hiking tours; trekking follows both roads and
+paths, giving a plausible on-road length across the widest range of routes,
+whereas a car-only profile would refuse footpaths and fall back to beeline on
+exactly those tours. The profile and its `lookups.dat` must match the lookup
+version of the `.rd5` segments on disk; a mismatch makes routing fail and the
+list falls back to `beeline`.
+
+### Routing vs. the client
+
+The number is a BRouter estimate, not a promise of equality with the client's
+Convert tab (which may use map-rendered routing such as GraphHopper or Google
+Maps for Route lists). `lengthKind=routed` labels the method, not a specific
+router.
 
 File-level aggregation of a mixed file reports the least-certain kind present:
 `beeline` if any list is beeline, else `routed` if any list is routed, else

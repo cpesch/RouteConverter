@@ -180,6 +180,9 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-3.0"; // versioned preference
 
+    private static final String SEND_CRASH_REPORTS_PREFERENCE = "sendCrashReports";
+    private static final String ASKED_SEND_CRASH_REPORTS_PREFERENCE = "askedSendCrashReports-3.0"; // versioned preference
+
     private final NavigationFormatRegistry navigationFormatRegistry = new NavigationFormatRegistry();
     private RouteServiceOperator routeServiceOperator;
     private UpdateChecker updateChecker;
@@ -199,6 +202,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     private final ProfileModeModel profileModeModel = new ProfileModeModel();
     private TileServerMapManager tileServerMapManager;
     private final DistanceAndTimeAggregator distanceAndTimeAggregator = new DistanceAndTimeAggregator();
+    private final CrashReporter crashReporter = new CrashReporter();
 
     protected JPanel contentPane;
     private JSplitPane mapSplitPane, profileSplitPane;
@@ -221,12 +225,14 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     protected void startup() {
         startupStartMillis = System.currentTimeMillis();
-        initializeLogging();
+        initializeDiagnostics();
         checkJavaPrequisites();
         checkForGoogleMapsAPIKey();
         show();
         checkForMissingTranslator();
+        askForCrashReportConsent();
         updateChecker.implicitCheck(getFrame());
+        crashReporter.offerSpooledReports();
         // show() returns once the synchronous bring-up is done, but the frame and
         // map/profile views are realized later on the EDT — see the "frame shown"
         // and "map and profile view ready" timings logged from those callbacks.
@@ -261,7 +267,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     // helper
 
-    private void initializeLogging() {
+    private void initializeDiagnostics() {
+        // register the crash handler first so an early init crash is still captured,
+        // then bring up logging -- both are the application's diagnostics bootstrap
+        setCrashHandler(crashReporter);
+
         LoggingHelper loggingHelper = LoggingHelper.getInstance();
         loggingHelper.logToFileAndConsole();
         log.info(format("Started %s for %s with locale %s on %s and %s with %d MByte maximum heap",
@@ -292,6 +302,21 @@ public abstract class RouteConverter extends SingleFrameApplication {
             showMessageDialog(getFrame(), labelTranslatorMissing, getTitle(), QUESTION_MESSAGE);
             preferences.putBoolean(SHOWED_MISSING_TRANSLATOR_PREFERENCE, true);
         }
+    }
+
+    /**
+     * Asks once whether the user wants to send anonymous crash telemetry (spec 00011
+     * Phase 2). Default is off: the preference is only turned on if the user explicitly
+     * answers Yes. The question is shown at most once, guarded by a separate "asked"
+     * preference.
+     */
+    protected void askForCrashReportConsent() {
+        if (preferences.getBoolean(ASKED_SEND_CRASH_REPORTS_PREFERENCE, false))
+            return;
+        JLabel label = new JLabel(getBundle().getString("send-crash-reports-question"));
+        int result = showConfirmDialog(getFrame(), label, getTitle(), YES_NO_OPTION, QUESTION_MESSAGE);
+        preferences.putBoolean(SEND_CRASH_REPORTS_PREFERENCE, result == YES_OPTION);
+        preferences.putBoolean(ASKED_SEND_CRASH_REPORTS_PREFERENCE, true);
     }
 
     private void show() {
@@ -1299,6 +1324,10 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public String getApiUrl() {
         return System.getProperty("api", "https://api.routeconverter.com/");
+    }
+
+    public static boolean isSendCrashReportsEnabled() {
+        return preferences.getBoolean(SEND_CRASH_REPORTS_PREFERENCE, false);
     }
 
     private File getTileServersDirectory() {
