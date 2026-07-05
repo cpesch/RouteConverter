@@ -67,8 +67,14 @@ import slash.navigation.mapview.mapsforge.helpers.*;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.models.ThemeStyleImpl;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
+import slash.navigation.mapview.mapsforge.overlays.OverlayManager;
+import slash.navigation.mapview.mapsforge.renderer.BorderPainter;
+import slash.navigation.mapview.mapsforge.renderer.MagnifierPainter;
+import slash.navigation.mapview.mapsforge.renderer.MapViewLayerOperations;
 import slash.navigation.mapview.mapsforge.renderer.RouteRenderer;
 import slash.navigation.mapview.mapsforge.renderer.TrackRenderer;
+import slash.navigation.mapview.mapsforge.tiles.DefaultTileLayerFactory;
+import slash.navigation.mapview.mapsforge.tiles.TileLayerFactory;
 import slash.navigation.mapview.mapsforge.updater.*;
 
 import javax.swing.*;
@@ -342,7 +348,7 @@ public class MapsforgeMapView extends BaseMapView {
         handleUnitSystem();
 
         tileLayerFactory = new DefaultTileLayerFactory(getMapManager(), mapView.getModel().mapViewPosition,
-                hillsRenderConfig, menuCallback);
+                hillsRenderConfig, menuCallback, GRAPHIC_FACTORY);
         overlayManager = new OverlayManager(tileLayerFactory,
                 mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel(), new OverlayManager.Context() {
             public DisplayModel getDisplayModel() {

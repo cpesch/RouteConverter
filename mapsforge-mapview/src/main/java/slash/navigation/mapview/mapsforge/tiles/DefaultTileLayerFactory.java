@@ -17,8 +17,9 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview.mapsforge.tiles;
 
+import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.cache.FileSystemTileCache;
 import org.mapsforge.map.layer.cache.InMemoryTileCache;
@@ -40,13 +41,13 @@ import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 import slash.navigation.maps.mapsforge.mbtiles.TileMBTilesLayer;
 import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
+import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 
 import java.io.File;
 import java.util.prefs.Preferences;
 
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Transfer.encodeUri;
-import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 
 /**
  * Default {@link TileLayerFactory} building the real mapsforge tile layers and caches.
@@ -54,7 +55,7 @@ import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTO
  * @author Christian Pesch
  */
 
-class DefaultTileLayerFactory implements TileLayerFactory {
+public class DefaultTileLayerFactory implements TileLayerFactory {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
     private static final String FIRST_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "firstLevelTileCacheSize";
     private static final String SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE = "secondLevelTileCacheSize";
@@ -63,26 +64,29 @@ class DefaultTileLayerFactory implements TileLayerFactory {
     private final MapViewPosition mapViewPosition;
     private final HillsRenderConfig hillsRenderConfig;
     private final XmlRenderThemeMenuCallback menuCallback;
+    private final GraphicFactory graphicFactory;
 
-    DefaultTileLayerFactory(MapsforgeMapManager mapManager, MapViewPosition mapViewPosition,
-                            HillsRenderConfig hillsRenderConfig, XmlRenderThemeMenuCallback menuCallback) {
+    public DefaultTileLayerFactory(MapsforgeMapManager mapManager, MapViewPosition mapViewPosition,
+                                   HillsRenderConfig hillsRenderConfig, XmlRenderThemeMenuCallback menuCallback,
+                                   GraphicFactory graphicFactory) {
         this.mapManager = mapManager;
         this.mapViewPosition = mapViewPosition;
         this.hillsRenderConfig = hillsRenderConfig;
         this.menuCallback = menuCallback;
+        this.graphicFactory = graphicFactory;
     }
 
     private TileCache createTileCache(String cacheId) {
         TileCache firstLevelTileCache = new InMemoryTileCache(preferences.getInt(FIRST_LEVEL_TILE_CACHE_SIZE_PREFERENCE, 256));
         File cacheDirectory = new File(getTemporaryDirectory(), encodeUri(cacheId));
-        TileCache secondLevelTileCache = new FileSystemTileCache(preferences.getInt(SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE, 2048), cacheDirectory, GRAPHIC_FACTORY);
+        TileCache secondLevelTileCache = new FileSystemTileCache(preferences.getInt(SECOND_LEVEL_TILE_CACHE_SIZE_PREFERENCE, 2048), cacheDirectory, graphicFactory);
         return new TwoLevelTileCache(firstLevelTileCache, secondLevelTileCache);
     }
 
     private TileRendererLayer createTileRendererLayer(MapFile mapFile, String cacheId) {
         return new TileRendererLayer(createTileCache(cacheId), mapFile,
                 mapViewPosition, true, true, true,
-                GRAPHIC_FACTORY, hillsRenderConfig);
+                graphicFactory, hillsRenderConfig);
     }
 
     private TileRendererLayer createMapLayer(MapFile mapFile, String cacheId) {
@@ -98,15 +102,15 @@ class DefaultTileLayerFactory implements TileLayerFactory {
     public Layer createLayerForMap(LocalMap map) {
         return switch (map.getType()) {
             case Mapsforge -> createMapLayer(((MapsforgeFileMap) map).getMapFile(), map.getUrl());
-            case MBTiles -> new TileMBTilesLayer(createTileCache(map.getUrl()), mapViewPosition, true, ((MBTilesFileMap) map).getMBTilesFile(), GRAPHIC_FACTORY);
-            case Download -> new TileDownloadLayer(createTileCache(map.getUrl()), mapViewPosition, ((TileDownloadMap) map).getTileSource(), GRAPHIC_FACTORY);
+            case MBTiles -> new TileMBTilesLayer(createTileCache(map.getUrl()), mapViewPosition, true, ((MBTilesFileMap) map).getMBTilesFile(), graphicFactory);
+            case Download -> new TileDownloadLayer(createTileCache(map.getUrl()), mapViewPosition, ((TileDownloadMap) map).getTileSource(), graphicFactory);
         };
     }
 
     public TileDownloadLayer createOverlayLayer(TileServer tileServer) {
         TileServerMapSource mapSource = new TileServerMapSource(tileServer);
         mapSource.setAlpha(true);
-        return new TileDownloadLayer(createTileCache(tileServer.id()), mapViewPosition, mapSource, GRAPHIC_FACTORY);
+        return new TileDownloadLayer(createTileCache(tileServer.id()), mapViewPosition, mapSource, graphicFactory);
     }
 
     public Layer createBackgroundLayer(File backgroundMap) {

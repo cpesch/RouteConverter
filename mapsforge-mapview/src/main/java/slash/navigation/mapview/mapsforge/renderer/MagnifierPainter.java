@@ -17,13 +17,14 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview.mapsforge.renderer;
 
 import org.mapsforge.core.graphics.Bitmap;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.overlay.Marker;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,14 +39,14 @@ import java.util.stream.Collectors;
  * @author Christian Pesch
  */
 
-class MagnifierPainter {
+public class MagnifierPainter {
     private static final Logger log = Logger.getLogger(MagnifierPainter.class.getName());
 
     private final MapViewLayerOperations operations;
     private final List<Layer> markers = new ArrayList<>();
     private Bitmap magnifierIcon;
 
-    MagnifierPainter(MapViewLayerOperations operations, GraphicFactory graphicFactory) {
+    public MagnifierPainter(MapViewLayerOperations operations, GraphicFactory graphicFactory) {
         this.operations = operations;
         try {
             magnifierIcon = graphicFactory.renderSvg(MapsforgeMapView.class.getResourceAsStream("magnifier.svg"),

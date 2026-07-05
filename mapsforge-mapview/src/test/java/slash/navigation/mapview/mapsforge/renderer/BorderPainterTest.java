@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview.mapsforge.renderer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,7 @@ import java.util.List;
 import static java.util.Arrays.asList;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
+import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
 
 public class BorderPainterTest {
     private MapViewLayerOperations operations;
@@ -43,7 +43,7 @@ public class BorderPainterTest {
         operations = mock(MapViewLayerOperations.class);
         when(operations.getTileSize()).thenReturn(256);
         when(operations.asLatLong(anyList())).thenReturn(asList(new LatLong(1.0, 2.0), new LatLong(3.0, 4.0)));
-        painter = new BorderPainter(operations, GRAPHIC_FACTORY);
+        painter = new BorderPainter(operations, INSTANCE);
     }
 
     @Test

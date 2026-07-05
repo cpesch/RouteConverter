@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview.mapsforge.tiles;
 
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
@@ -37,7 +37,7 @@ import java.io.File;
  * @author Christian Pesch
  */
 
-interface TileLayerFactory {
+public interface TileLayerFactory {
     Layer createLayerForMap(LocalMap map);
 
     TileDownloadLayer createOverlayLayer(TileServer tileServer);

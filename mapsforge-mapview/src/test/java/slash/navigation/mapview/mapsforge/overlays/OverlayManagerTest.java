@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview.mapsforge.overlays;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -25,6 +25,7 @@ import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.model.DisplayModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.tileserver.TileServer;
+import slash.navigation.mapview.mapsforge.tiles.TileLayerFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;

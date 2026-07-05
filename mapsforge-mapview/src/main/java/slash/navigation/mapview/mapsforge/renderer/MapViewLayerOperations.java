@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview.mapsforge.renderer;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.Layer;
@@ -34,7 +34,7 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-interface MapViewLayerOperations {
+public interface MapViewLayerOperations {
     int getTileSize();
 
     LatLong asLatLong(NavigationPosition position);

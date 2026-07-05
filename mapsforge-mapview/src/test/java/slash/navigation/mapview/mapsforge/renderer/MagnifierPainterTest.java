@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview.mapsforge.renderer;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +36,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.*;
-import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
+import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
 
 public class MagnifierPainterTest {
     private MapViewLayerOperations operations;
@@ -46,7 +46,7 @@ public class MagnifierPainterTest {
     public void setUp() {
         operations = mock(MapViewLayerOperations.class);
         when(operations.asLatLong(any(NavigationPosition.class))).thenReturn(new LatLong(1.0, 2.0));
-        painter = new MagnifierPainter(operations, GRAPHIC_FACTORY);
+        painter = new MagnifierPainter(operations, INSTANCE);
     }
 
     @Test

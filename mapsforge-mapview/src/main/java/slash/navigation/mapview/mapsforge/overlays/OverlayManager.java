@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview.mapsforge.overlays;
 
 import org.mapsforge.map.layer.GroupLayer;
 import org.mapsforge.map.layer.Layer;
@@ -25,6 +25,7 @@ import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.model.DisplayModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.tileserver.TileServer;
+import slash.navigation.mapview.mapsforge.tiles.TileLayerFactory;
 
 /**
  * Manages the tile-server overlay download layers for the {@link MapsforgeMapView}: keeps them on
@@ -35,11 +36,11 @@ import slash.navigation.maps.tileserver.TileServer;
  * @author Christian Pesch
  */
 
-class OverlayManager {
+public class OverlayManager {
     /**
      * The {@link MapsforgeMapView} interactions the overlay handling needs.
      */
-    interface Context {
+    public interface Context {
         DisplayModel getDisplayModel();
 
         void redrawLayers();
@@ -55,17 +56,17 @@ class OverlayManager {
     private final ItemTableModel<TileServer> appliedOverlaysModel;
     private final Context context;
 
-    OverlayManager(TileLayerFactory tileLayerFactory, ItemTableModel<TileServer> appliedOverlaysModel, Context context) {
+    public OverlayManager(TileLayerFactory tileLayerFactory, ItemTableModel<TileServer> appliedOverlaysModel, Context context) {
         this.tileLayerFactory = tileLayerFactory;
         this.appliedOverlaysModel = appliedOverlaysModel;
         this.context = context;
     }
 
-    GroupLayer getLayer() {
+    public GroupLayer getLayer() {
         return overlaysLayer;
     }
 
-    void insert(int firstRow, int lastRow) {
+    public void insert(int firstRow, int lastRow) {
         for (int i = firstRow; i < lastRow + 1; i++) {
             TileServer tileServer = appliedOverlaysModel.getItem(i);
             TileDownloadLayer overlay = tileLayerFactory.createOverlayLayer(tileServer);
@@ -78,7 +79,7 @@ class OverlayManager {
         context.forceOverlayDisplay();
     }
 
-    void delete(int firstRow, int lastRow) {
+    public void delete(int firstRow, int lastRow) {
         for (int i = lastRow; i >= firstRow; i--) {
             if (i >= overlaysLayer.layers.size())
                 continue;

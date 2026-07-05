@@ -17,7 +17,7 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge;
+package slash.navigation.mapview.mapsforge.renderer;
 
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
@@ -37,12 +37,12 @@ import static org.mapsforge.core.graphics.Color.BLUE;
  * @author Christian Pesch
  */
 
-class BorderPainter {
+public class BorderPainter {
     private final MapViewLayerOperations operations;
     private final GraphicFactory graphicFactory;
     private Polyline mapBorder, routeBorder;
 
-    BorderPainter(MapViewLayerOperations operations, GraphicFactory graphicFactory) {
+    public BorderPainter(MapViewLayerOperations operations, GraphicFactory graphicFactory) {
         this.operations = operations;
         this.graphicFactory = graphicFactory;
     }
