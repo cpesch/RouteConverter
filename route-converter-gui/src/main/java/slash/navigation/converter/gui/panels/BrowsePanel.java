@@ -181,6 +181,35 @@ public class BrowsePanel implements PanelInTab {
         setHelpIDString(treeCategories, "category-tree");
         setHelpIDString(tableRoutes, "route-list");
 
+        initializeCategoryTree();
+        RouteMetadataSource routeMetadataSource = initializeMetadataSources(r);
+        initializeRoutesTable(actionManager, routeMetadataSource);
+
+        handleRouteListUpdate();
+        handleCategoryTreeUpdate();
+
+        new Thread(() -> {
+            String selected = r.getCategoryPreference();
+            if (TreePathStringConversion.isRemote(selected)) {
+                // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
+                // would do it in the AWT EventQueue
+                catalogModel.getCategoryTreeModel().getChildCount(remoteRoot);
+            }
+
+            invokeLater(() -> {
+                startWaitCursor(r.getFrame().getRootPane());
+                try {
+                    selectTreePath(TreePathStringConversion.fromString(root, selected), true);
+                    // make sure the subcategories of the remote catalog are visible, too
+                    treeCategories.expandPath(new TreePath(new Object[]{root, remoteRoot}));
+                } finally {
+                    stopWaitCursor(r.getFrame().getRootPane());
+                }
+            });
+        }, "CategoryTreeInitializer").start();
+    }
+
+    private void initializeCategoryTree() {
         treeCategories.setModel(catalogModel.getCategoryTreeModel());
         treeCategories.addTreeSelectionListener(e -> {
             handleCategoryTreeUpdate();
@@ -205,7 +234,9 @@ public class BrowsePanel implements PanelInTab {
         treeCategories.setDropMode(ON);
         treeCategories.setTransferHandler(new TreeDragAndDropHandler());
         treeCategories.getSelectionModel().setSelectionMode(CONTIGUOUS_TREE_SELECTION);
+    }
 
+    private RouteMetadataSource initializeMetadataSources(RouteConverter r) {
         routeDistanceAndTimeCache = new RouteDistanceAndTimeCache();
         serverRouteDistanceAndTimeCache = new RouteDistanceAndTimeCache();
         // value sources in priority order (spec 00012 P3): the session cache wins since
@@ -216,7 +247,10 @@ public class BrowsePanel implements PanelInTab {
                 routeDistanceAndTimeCache, () -> r.getUrlModel().getString(), this::updateRouteRow);
         localRouteDistanceAndTimeFiller = new LocalRouteDistanceAndTimeFiller(routeDistanceAndTimeCache, this::updateRouteRows);
         remoteRouteDistanceAndTimeFiller = new RemoteRouteDistanceAndTimeFiller(serverRouteDistanceAndTimeCache);
+        return routeMetadataSource;
+    }
 
+    private void initializeRoutesTable(final ActionManager actionManager, RouteMetadataSource routeMetadataSource) {
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
         RoutesTableColumnModel tableColumnModel = new RoutesTableColumnModel(routeMetadataSource);
         tableRoutes.setColumnModel(tableColumnModel);
@@ -278,29 +312,6 @@ public class BrowsePanel implements PanelInTab {
         browsePanel.setTransferHandler(new PanelDropHandler());
 
         new RoutesTablePopupMenu(tableRoutes).createPopupMenu();
-
-        handleRouteListUpdate();
-        handleCategoryTreeUpdate();
-
-        new Thread(() -> {
-            String selected = r.getCategoryPreference();
-            if (TreePathStringConversion.isRemote(selected)) {
-                // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
-                // would do it in the AWT EventQueue
-                catalogModel.getCategoryTreeModel().getChildCount(remoteRoot);
-            }
-
-            invokeLater(() -> {
-                startWaitCursor(r.getFrame().getRootPane());
-                try {
-                    selectTreePath(TreePathStringConversion.fromString(root, selected), true);
-                    // make sure the subcategories of the remote catalog are visible, too
-                    treeCategories.expandPath(new TreePath(new Object[]{root, remoteRoot}));
-                } finally {
-                    stopWaitCursor(r.getFrame().getRootPane());
-                }
-            });
-        }, "CategoryTreeInitializer").start();
     }
 
 
