@@ -20,6 +20,7 @@
 
 package slash.navigation.feedback.domain;
 
+import org.junit.After;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -27,9 +28,18 @@ import java.io.IOException;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static slash.navigation.feedback.domain.CrashReportSender.MAXIMUM_BYTES;
+import static slash.navigation.feedback.domain.CrashReportSender.SECRET_PROPERTY;
+import static slash.navigation.feedback.domain.CrashReportSender.warnIfDefaultSecret;
 
 public class CrashReportSenderTest {
+
+    @After
+    public void tearDown() {
+        System.clearProperty(SECRET_PROPERTY);
+        CrashReportSender.resetDefaultSecretWarningForTesting();
+    }
 
     @Test
     public void testSignatureMatchesKnownVector() throws Exception {
@@ -67,5 +77,24 @@ public class CrashReportSenderTest {
 
         // no exception must propagate; the failed send simply reports false
         assertFalse(sender.send("https://api.routeconverter.com/", "{\"schema_version\":1}"));
+    }
+
+    @Test
+    public void testWarnsOnceWhenSecretIsPlaceholder() {
+        System.clearProperty(SECRET_PROPERTY);
+        CrashReportSender.resetDefaultSecretWarningForTesting();
+
+        // the committed placeholder is still in effect: warn exactly once
+        assertTrue(warnIfDefaultSecret());
+        assertFalse("the placeholder warning must not repeat", warnIfDefaultSecret());
+        assertFalse(warnIfDefaultSecret());
+    }
+
+    @Test
+    public void testDoesNotWarnWhenRealSecretInjected() {
+        System.setProperty(SECRET_PROPERTY, "a-real-injected-secret");
+        CrashReportSender.resetDefaultSecretWarningForTesting();
+
+        assertFalse(warnIfDefaultSecret());
     }
 }
