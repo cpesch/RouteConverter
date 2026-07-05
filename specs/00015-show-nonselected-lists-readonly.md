@@ -1,21 +1,39 @@
 ---
 name: 00015-show-nonselected-lists-readonly
-status: implemented (gray read-only MVP, needs manual UI test)
-phases_done: [gray-readonly-mvp]
+status: implemented (read-only MVP on PR #117, needs manual UI test)
+phases_done: [readonly-mvp]
 phases_next: [manual-ui-verification]
-last_touched: 2026-07-04
+last_touched: 2026-07-05
 ---
 
-# 00015 - Show non-selected position lists read-only (gray)
+# 00015 - Show non-selected position lists read-only
 
 ## Status
 
-Proposed. Created on July 3, 2026, from issue
+Implemented on PR [#117](https://github.com/cpesch/RouteConverter/pull/117),
+rebased onto the refactored `MapsforgeMapView` (after #119/#125/#126). The
+read-only secondary render path is done and unit-tested; only a manual UI pass
+remains before merge.
+
+**Styling evolved during external-feedback review (2026-07-05):** the original
+plan drew non-selected lists flat gray, but on light/busy map themes that was
+barely visible, and later experiments (dark line + white casing; dashed) either
+over-powered the active list or inverted the hierarchy. The shipped look draws
+each non-selected Route/Track list as a **lighter solid shade of the active
+route/track color** (`NonSelectedPositionListsRenderer.lighten()`, ~55% toward
+white), so the darker, fully-saturated active list clearly stands out as the one
+being edited. Waypoint lists use a subordinate gray icon. The active list's own
+render path is unchanged (a per-segment casing was tried and reverted — it
+interleaved white over the colored joins).
+
+Created on July 3, 2026, from issue
 [#101](https://github.com/cpesch/RouteConverter/issues/101) (Baltasarq,
 2026-06-01), which was split off the #91 POI thread. Scope tier decided by the
-maintainer on 2026-07-03: **the gray read-only MVP** — draw every non-selected
-position list in the file as gray, non-interactive; keep editing exactly as
-today (one list, chosen by the existing combo). The more ambitious forum design
+maintainer on 2026-07-03: **the read-only MVP** — draw every non-selected
+position list in the file de-emphasized and non-interactive; keep editing
+exactly as today (one list, chosen by the existing combo). (The de-emphasis was
+planned as flat gray; it shipped as a lighter shade of the active color — see
+Status.) The more ambitious forum design
 (Mogh's panel with per-list colors + visibility checkboxes + multi-edit +
 multiple elevation profiles) is recorded below as the future evolution, not this
 spec's scope.
