@@ -29,6 +29,7 @@ import slash.navigation.common.NavigationPosition;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static junit.framework.TestCase.assertNull;
 import static org.junit.Assert.*;
 import static slash.common.io.Transfer.formatIntAsString;
@@ -196,5 +197,27 @@ public class RouteCommentsTest {
         for (int i = 0; i < positions.size(); i++) {
             assertEquals(formatIntAsString(i + 1, 2) + "description", positions.get(i).getDescription());
         }
+    }
+
+    private BcrRoute route(String name, List<String> description) {
+        return new BcrRoute(new MTP0607Format(), name, description, new ArrayList<>());
+    }
+
+    @Test
+    public void testShortenRouteName() {
+        assertEquals("?", shortenRouteName(null));
+        assertEquals("r", shortenRouteName(route));   // short name is returned as-is
+
+        String longName = "x".repeat(100);
+        String shortened = shortenRouteName(route(longName, null));
+        assertTrue(shortened.endsWith("..."));
+        assertTrue(shortened.length() < longName.length());
+    }
+
+    @Test
+    public void testCreateRouteDescription() {
+        assertEquals("name", createRouteDescription(route("name", null)));
+        assertEquals("name; ab", createRouteDescription(route("name", asList("a", "b"))));
+        assertEquals("x", createRouteDescription(route("", asList("x"))));   // empty name, description only
     }
 }

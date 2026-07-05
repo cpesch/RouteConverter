@@ -651,6 +651,21 @@ Observed result:
 - targeted the real route-analysis algorithms in the `BaseRoute` spine (not the mechanical `asXxxFormat` delegations): `getInsignificantPositions` (collinear interior points), `getDistanceDifference`, `getElevationDifference`, both `getTimesFromStart` overloads (range + indices), `getDistancesFromStart(int[])`, and `sort(Comparator)` — all exercised through `Wgs84Route` positions along the zero meridian
 - **`BaseRoute` 79.2% → 87.4%** (missed 119 → 72). The residual ~72 lines are the one-line `asXxxFormat(...)` per-format conversion delegations (each `return convert(new XxxFormat())`) — volume-only, low refactor-robustness value, deliberately left uncovered
 
+### Verified on July 5, 2026: Phase 27 `RouteComments` name/description helpers
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats -am test -Dtest=RouteCommentsTest \
+  -Dsurefire.failIfNoSpecifiedTests=false -P '!local-with-samples'
+```
+
+Observed result:
+
+- all green: `RouteCommentsTest` 9 (+2)
+- covered the two pure text helpers `RouteComments` left untested: `shortenRouteName` (null route, short name pass-through, long-name truncation with the `...` suffix) and `createRouteDescription` (name only, name + description with the `; ` separator, and the empty-name/description-only branch) — via `BcrRoute`, whose `getName`/`getDescription` are real (unlike `SimpleRoute`, which returns null)
+- **`RouteComments` 91.6% → 97.7%** (missed 26 → 7). The residual 7 are `parseDescription` edge branches and the abstract class's implicit constructor
+
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
 Verified command:
