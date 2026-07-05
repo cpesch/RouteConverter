@@ -20,7 +20,6 @@
 package slash.navigation.mapview.mapsforge;
 
 import org.mapsforge.core.graphics.Bitmap;
-import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.MapPosition;
@@ -77,7 +76,6 @@ import slash.navigation.maps.tileserver.TileServer;
 import slash.navigation.mapview.BaseMapView;
 import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.mapsforge.helpers.*;
-import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.models.ThemeStyleImpl;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
 import slash.navigation.mapview.mapsforge.renderer.RouteRenderer;
@@ -94,7 +92,6 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
-import java.util.stream.Collectors;
 
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.awt.event.KeyEvent.*;
@@ -108,7 +105,6 @@ import static javax.swing.JComponent.WHEN_IN_FOCUSED_WINDOW;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.*;
-import static org.mapsforge.core.graphics.Color.BLUE;
 import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
 import static org.mapsforge.core.util.MercatorProjection.getMapSize;
@@ -143,7 +139,7 @@ import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
  * @author Christian Pesch
  */
 
-public class MapsforgeMapView extends BaseMapView {
+public class MapsforgeMapView extends BaseMapView implements MapViewLayerOperations {
     private static final Preferences preferences = Preferences.userNodeForPackage(MapsforgeMapView.class);
     private static final Logger log = Logger.getLogger(MapsforgeMapView.class.getName());
 
@@ -177,8 +173,8 @@ public class MapsforgeMapView extends BaseMapView {
     private AwtGraphicMapView mapView;
     private MapViewMoverAndZoomer mapViewMoverAndZoomer;
     private final MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
-    private final BorderPainter borderPainter = new BorderPainter();
-    private final MagnifierPainter magnifierPainter = new MagnifierPainter();
+    private final BorderPainter borderPainter = new BorderPainter(this, GRAPHIC_FACTORY);
+    private final MagnifierPainter magnifierPainter = new MagnifierPainter(this, GRAPHIC_FACTORY);
     private RouteRenderer routeRenderer;
     private TrackRenderer trackRenderer;
     private final GroupLayer overlaysLayer = new GroupLayer();
@@ -824,7 +820,7 @@ public class MapsforgeMapView extends BaseMapView {
         removeLayers(singletonList(layer));
     }
 
-    private void removeLayers(final List<Layer> layers) {
+    public void removeLayers(final List<Layer> layers) {
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
                 getLayerManager().pause();
@@ -870,7 +866,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     @SuppressWarnings("unchecked")
-    private BoundingBox getRouteBoundingBox() {
+    public BoundingBox getRouteBoundingBox() {
         BaseRoute route = positionsModel.getRoute();
         return route != null && !route.getPositions().isEmpty() ? asBoundingBox(route.getPositions()) : null;
     }
@@ -932,7 +928,7 @@ public class MapsforgeMapView extends BaseMapView {
         return new SimpleNavigationPosition(latLong.longitude, latLong.latitude);
     }
 
-    private void centerAndZoom(BoundingBox mapBoundingBox, BoundingBox routeBoundingBox,
+    public void centerAndZoom(BoundingBox mapBoundingBox, BoundingBox routeBoundingBox,
                                boolean alwaysZoom, boolean alwaysRecenter) {
         List<NavigationPosition> positions = new ArrayList<>();
 
@@ -1289,69 +1285,6 @@ public class MapsforgeMapView extends BaseMapView {
                 mapViewMoverAndZoomer.zoomToPosition(zoomLevelDiff, asLatLong(center));
             } else
                 mapViewMoverAndZoomer.zoomToMousePosition(zoomLevelDiff);
-        }
-    }
-
-    private class BorderPainter {
-        private Polyline mapBorder, routeBorder;
-
-        private Polyline drawBorder(BoundingBox boundingBox) {
-            Paint paint = GRAPHIC_FACTORY.createPaint();
-            paint.setColor(BLUE);
-            paint.setStrokeWidth(3);
-            paint.setDashPathEffect(new float[]{3, 12});
-            Polyline polyline = new Polyline(asLatLong(boundingBox), paint, getTileSize());
-            addLayer(polyline);
-            return polyline;
-        }
-
-        public void showMapBorder(BoundingBox mapBoundingBox) {
-            if (mapBorder != null) {
-                removeLayer(mapBorder);
-                mapBorder = null;
-            }
-            if (routeBorder != null) {
-                removeLayer(routeBorder);
-                routeBorder = null;
-            }
-
-            if (mapBoundingBox != null) {
-                mapBorder = drawBorder(mapBoundingBox);
-
-                BoundingBox routeBoundingBox = getRouteBoundingBox();
-                if (routeBoundingBox != null)
-                    routeBorder = drawBorder(routeBoundingBox);
-
-                boolean zoomToMap = routeBoundingBox == null || mapBoundingBox.contains(routeBoundingBox);
-                centerAndZoom(mapBoundingBox, zoomToMap ? mapBoundingBox : routeBoundingBox, true, true);
-            }
-        }
-    }
-
-    private class MagnifierPainter {
-        private Bitmap magnifierIcon;
-        {
-            try {
-                magnifierIcon = GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream("magnifier.svg"), 1.0f, 57, 56, 100, 1234567891);
-            } catch (IOException e) {
-                log.severe("Cannot create magnifier icon: " + e);
-            }
-        }
-        private final List<Layer> markers = new ArrayList<>();
-
-        public void showPositionMagnifier(List<NavigationPosition> positions) {
-            if(!markers.isEmpty()) {
-                removeLayers(markers);
-                markers.clear();
-            }
-
-            if(positions != null && !positions.isEmpty()) {
-                List<Layer> icons = positions.stream()
-                        .map(position -> new Marker(asLatLong(position), magnifierIcon, -10, 13))
-                        .collect(Collectors.toList());
-                addLayers(icons);
-                markers.addAll(icons);
-            }
         }
     }
 
