@@ -45,6 +45,16 @@
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
+                <includes>
+                    <include>slash/navigation/feedback/domain/crash-report.properties</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <excludes>
+                    <exclude>slash/navigation/feedback/domain/crash-report.properties</exclude>
+                </excludes>
             </resource>
         </resources>
     </build>

@@ -111,6 +111,10 @@ public class CrashReportSenderTest {
     @Test
     public void testSystemPropertyOverridesSecret() {
         System.setProperty(SECRET_PROPERTY, "a-real-injected-secret");
-        assertEquals("a-real-injected-secret", CrashReportSender.secret());
+        try {
+            assertEquals("a-real-injected-secret", CrashReportSender.secret());
+        } finally {
+            System.clearProperty(SECRET_PROPERTY);
+        }
     }
 }
