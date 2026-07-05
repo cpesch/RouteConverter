@@ -91,7 +91,7 @@ class DefaultTileLayerFactory implements TileLayerFactory {
         LocalTheme theme = mapManager.getAppliedThemeModel().getItem();
         XmlRenderTheme xmlRenderTheme = theme.getXmlRenderTheme();
         xmlRenderTheme.setMenuCallback(menuCallback);
-        tileRendererLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
+        tileRendererLayer.setXmlRenderTheme(xmlRenderTheme);
         return tileRendererLayer;
     }
 
