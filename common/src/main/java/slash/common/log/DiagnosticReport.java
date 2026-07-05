@@ -22,8 +22,11 @@ package slash.common.log;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static java.util.Arrays.asList;
+import static slash.common.helpers.ExceptionHelper.getCauseChain;
 import static slash.common.helpers.ExceptionHelper.getMessageWithCauses;
 import static slash.common.helpers.ExceptionHelper.getRootCause;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
@@ -50,9 +53,26 @@ import static slash.common.system.Platform.getPlatform;
 
 public class DiagnosticReport {
     static final int SCHEMA_VERSION = 1;
+    // each free-text field (cause chain, stack trace) is capped so the assembled JSON
+    // stays well under the crash-report endpoint's 64 KB limit. Without this, a runaway
+    // stack (deep recursion) or a huge exception message would spool a report the sender
+    // rejects as oversized on every launch, keeping the file forever (it is never sent,
+    // so never deleted). A truncated report is still useful; an undeliverable one is not.
+    static final int MAXIMUM_FIELD_LENGTH = 24 * 1024;
+    static final String TRUNCATION_MARKER = "\n... [truncated]";
     static final String BUNDLED_JRE_PROPERTY = "routeconverter.bundledJre";
     static final String HOME_PLACEHOLDER = "<USER_HOME>";
     static final String USER_PLACEHOLDER = "<USER>";
+    static final String PATH_PLACEHOLDER = "<PATH>";
+
+    // a Windows absolute path (drive letter + backslash), e.g. D:\Trips\vacation2024.gpx;
+    // the drive letter must not be the tail of a word and the separator must be a
+    // backslash so a URL like https://host/x is left intact
+    private static final Pattern WINDOWS_PATH = Pattern.compile("(?<![A-Za-z])[A-Za-z]:\\\\[^\\s\"]+");
+    // a unix absolute path on an external/user mount point, e.g. /Volumes/Backup/secret.gpx
+    // or /home/other/notes.gpx; the running user's own home is replaced first, so anything
+    // still matching here is a path outside it
+    private static final Pattern UNIX_PATH = Pattern.compile("/(?:Volumes|media|mnt|home)/[^\\s\"]+");
 
     // the OS user name and home directory leak into exception messages / stack traces
     // via absolute paths; both are known values, so they are scrubbed by literal
@@ -81,11 +101,11 @@ public class DiagnosticReport {
     private final boolean bundledJre;
 
     public DiagnosticReport(String threadName, Throwable throwable, String appVersion, String build) {
-        List<Throwable> chain = toChain(throwable);
+        List<Throwable> chain = getCauseChain(throwable);
         this.threadName = threadName;
         this.rootCauseClass = getRootCause(throwable).getClass().getName();
-        this.causeChain = scrub(getMessageWithCauses(throwable));
-        this.stackTrace = scrub(printStackTrace(throwable));
+        this.causeChain = scrub(truncate(getMessageWithCauses(throwable)));
+        this.stackTrace = scrub(truncate(printStackTrace(throwable)));
         this.prioritySignature = computePrioritySignature(chain);
         this.missingClass = scrub(extractMissingClass(chain));
         this.appVersion = appVersion;
@@ -112,32 +132,43 @@ public class DiagnosticReport {
     }
 
     /**
-     * Replaces the known {@code user.home} and {@code user.name} values with
-     * placeholders so an absolute path in a message or stack trace cannot reveal
-     * them. This is a literal replacement of two known strings, not a heuristic path
-     * mask; the short-value guard avoids scrubbing an accidental common substring.
+     * Removes personal data an absolute path in a message or stack trace can carry.
+     * First the known {@code user.home} and {@code user.name} values are replaced with
+     * placeholders (home literally; the name on word boundaries, so even a two-character
+     * name is scrubbed inside a path without rewriting it inside an unrelated word such
+     * as {@code json}). Then any remaining absolute-path-like token -- a Windows drive
+     * path or a unix external-mount path outside the user's home -- is replaced whole,
+     * so a message like {@code "cannot read D:\Trips\vacation2024.gpx"} cannot leak the
+     * document name. Class names and stack frames carry no such token and are left
+     * intact.
      */
     static String scrub(String value) {
+        return scrub(value, USER_HOME, USER_NAME);
+    }
+
+    /**
+     * Caps a free-text field at {@link #MAXIMUM_FIELD_LENGTH} characters, appending a
+     * marker when it had to cut, so no single crash can assemble a payload the sender
+     * rejects as oversized.
+     */
+    static String truncate(String value) {
+        if (value == null || value.length() <= MAXIMUM_FIELD_LENGTH)
+            return value;
+        return value.substring(0, MAXIMUM_FIELD_LENGTH) + TRUNCATION_MARKER;
+    }
+
+    static String scrub(String value, String home, String name) {
         if (value == null)
             return null;
         String result = value;
-        if (USER_HOME != null && USER_HOME.length() >= 3)
-            result = result.replace(USER_HOME, HOME_PLACEHOLDER);
-        if (USER_NAME != null && USER_NAME.length() >= 3)
-            result = result.replace(USER_NAME, USER_PLACEHOLDER);
+        if (home != null && !home.isEmpty())
+            result = result.replace(home, HOME_PLACEHOLDER);
+        if (name != null && !name.isEmpty())
+            result = result.replaceAll("(?<![A-Za-z0-9])" + Pattern.quote(name) + "(?![A-Za-z0-9])",
+                    Matcher.quoteReplacement(USER_PLACEHOLDER));
+        result = WINDOWS_PATH.matcher(result).replaceAll(PATH_PLACEHOLDER);
+        result = UNIX_PATH.matcher(result).replaceAll(PATH_PLACEHOLDER);
         return result;
-    }
-
-    private static List<Throwable> toChain(Throwable throwable) {
-        List<Throwable> chain = new ArrayList<>();
-        Throwable cause = throwable;
-        while (cause != null && !chain.contains(cause) && chain.size() < 100) {
-            chain.add(cause);
-            if (cause.getCause() == cause)
-                break;
-            cause = cause.getCause();
-        }
-        return chain;
     }
 
     private static boolean isPrioritySignature(Throwable throwable) {
