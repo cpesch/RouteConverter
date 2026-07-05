@@ -707,6 +707,29 @@ Observed aggregate (`coverage-report/target/site/jacoco-aggregate`):
 
 **Campaign total: Line 40.54% (baseline, June 4) → 43.18% (post-Phase 6) → 45.31% (post-Phase 23) → 46.03% (post-Phase 28)** — +5.49 points overall. Branch moved most in the final stretch (+0.94), reflecting the null-guard/edge-branch focus of Phases 24–28.
 
+### Verified on July 5, 2026: unit + hermetic integration-test combined coverage (the "80%?" investigation)
+
+Question: does folding integration-test coverage into the aggregate help approach 80%? Answer: **no.**
+
+Command (unit + hermetic ITs; excludes the network/native ITs via the profile's `failsafe.hermetic.excludes`):
+
+```sh
+./mvnw -T1C verify -P test-all-hermetic -P '!local-with-samples' \
+  -Dspotless.check.skip=true -Dmaven.javadoc.skip=true
+```
+
+BUILD SUCCESS (9:20 min, zero failing IT reports) — but only *after* fixing the 3 blocking GPX ITs (see below). Combined vs unit-only:
+
+| Metric | Unit-only | Unit + hermetic IT | Δ |
+|---|---|---|---|
+| Line | 46.03% | 46.11% (17027/36927) | +0.08 |
+| Instruction | 43.74% | 43.83% | +0.09 |
+| Branch | 47.38% | 47.48% | +0.10 |
+
+Hermetic ITs (`ConvertIT`, `ReadIT`, format round-trips) re-exercise format code already covered by unit tests → ~28 net new lines. The coverage that would actually move the number lives behind the *non-hermetic* ITs the profile excludes (`DownloadManagerIT`, `GraphHopperIT`, `BRouterIT`, the `Google/Photon/Nominatim/GeoNames` service ITs, `HgtFilesIT` — all need live network/native) plus the Swing UI (`converter.gui.*`, ~61% of the 19,928 missed lines, which no IT touches). **80% line is unreachable by unit + hermetic IT; ceiling for hermetic unit tests alone ≈ 54–55%.**
+
+Blockers found and fixed along the way: 3 sample-dependent GPX ITs (`GpxExtensionsIT.testReadTrekbuddyExtension2`, `GpxReadWriteRoundtripIT.testGpx11TrkRoundtrip`, `AccurracyConvertIT` GPX→GpsTuner/ColumbusGps) failed on null heading/speed. Root cause was a **pre-existing** bug (not the `6c9741b0e` refactor): `GpxPositionExtension.getHeading()/getSpeed()` only read `trackpoint2`-typed or DOM extensions, missing simple-typed `JAXBElement<BigDecimal>` bindings like TrekBuddy 0.9.84's `nmea:course`/`nmea:speed`. Fixed in `readExtension()` (commit `019e63e40`) with a hermetic `Gpx11ExtensionsTest` regression guard so it is caught in CI without samples.
+
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
 Verified command:
