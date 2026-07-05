@@ -144,6 +144,7 @@ public class OptionsDialog extends SimpleDialog {
     private JLabel labelGoogleApiKey;
     private JLabel labelThunderforestApiKey;
     private JLabel labelGeonamesUserName;
+    private JCheckBox checkBoxSendCrashReports;
 
 
     public OptionsDialog() {
@@ -349,6 +350,13 @@ public class OptionsDialog extends SimpleDialog {
             }
         });
         textFieldGeonamesUserName.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("geonames"));
+
+        checkBoxSendCrashReports.setSelected(isSendCrashReportsEnabled());
+        checkBoxSendCrashReports.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent e) {
+                setSendCrashReportsEnabled(checkBoxSendCrashReports.isSelected());
+            }
+        });
 
         checkBoxShowAllPositionsAfterLoading.setSelected(r.getShowAllPositionsAfterLoading().getBoolean());
         checkBoxShowAllPositionsAfterLoading.addItemListener(new ItemListener() {
@@ -779,7 +787,7 @@ public class OptionsDialog extends SimpleDialog {
         panel2.setLayout(new GridLayoutManager(5, 1, new Insets(5, 0, 0, 0), -1, -1));
         tabbedPane1.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "general-options-tab"), panel2);
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(4, 2, new Insets(3, 3, 3, 3), -1, -1));
+        panel3.setLayout(new GridLayoutManager(5, 2, new Insets(3, 3, 3, 3), -1, -1));
         panel2.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "preferred-locale"));
@@ -791,9 +799,14 @@ public class OptionsDialog extends SimpleDialog {
         panel3.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JSeparator separator1 = new JSeparator();
         panel3.add(separator1, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel labelSendCrashReports = new JLabel();
+        this.$$$loadLabelText$$$(labelSendCrashReports, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "send-crash-reports-option"));
+        panel3.add(labelSendCrashReports, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxSendCrashReports = new JCheckBox();
+        panel3.add(checkBoxSendCrashReports, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
-        panel3.add(panel4, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel3.add(panel4, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(4, 4, new Insets(3, 3, 3, 3), -1, -1));
         panel2.add(panel5, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
