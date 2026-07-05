@@ -618,6 +618,24 @@ Observed aggregate (`coverage-report/target/site/jacoco-aggregate`):
 
 Line coverage has moved 40.54% (baseline) → 43.18% (post-Phase 6) → **45.31%** over the campaign. Note: `-DskipTests`/`-Dtest=…`/`-Dmaven.test.skip` all break this measurement — the first two disable the parent `*IT` excludes or the jacoco `check` gate, so a plain `verify` with the `local-with-samples` profile off is the only clean path.
 
+### Verified on July 5, 2026: Phase 25 core pure-utility gaps (`Files`, `ISO8601`, `UnitSystem`)
+
+Verified command:
+
+```sh
+./mvnw -pl common,common-navigation -am test \
+  -Dtest='FilesFilesystemTest,ISO8601Test,UnitSystemTest' \
+  -Dsurefire.failIfNoSpecifiedTests=false -P '!local-with-samples'
+```
+
+Observed result:
+
+- all green: `FilesFilesystemTest` 18, `ISO8601Test` 16 (+5), `UnitSystemTest` 7 (+4)
+- these are the load-bearing pure functions everything depends on — the highest refactor-robustness payoff left after the domain spines:
+  - new `FilesFilesystemTest` covers the real-temp-file/path branches `FilesTest`/`FilesUrlTest` never touched: `createReadablePath` (File+URL), `toFile`/`toUrls` fallback, `shortenPath`/`lastPathFragment` ellipsis branches, `createTargetFiles` (1 vs N), `checkFile`/`checkDirectory` (missing/wrong-type), `writePartialFile` (truncate + extend), `generateChecksum(File)`, `setLastModified` (null + Long + CompactCalendar), `collectFiles` (recursive + extension filter), `findExistingPath`, `absolutize`, `recursiveDelete`, `asDialogString` — **`Files` 73.4% → 84.7%** (missed 59 → 34; residual = network/URL helpers + the `realPath` IO-fallback)
+  - `ISO8601Test` extended with the null/malformed/era branches: `parseDate(null)`, six malformed inputs (wrong delimiters, unknown TZD, out-of-range with `lenient=false`), `formatDate` null guards, the `formatDate(CompactCalendar)` convenience overload, and a `0000` (1 BCE) round-trip exercising the BC-era paths — **`ISO8601` 84.5% → 94.0%** (missed 18 → 7). Same date-parsing bug-class as the `LegacyParserFormatter` fix that opened this effort.
+  - `UnitSystemTest` extended with the null-input branches of the `Statute`/`Nautic` transfers, `getUnitSystemsWithPreferredUnitSystem` (null + preferred), the unit-name getters, and `Nautic` value conversions — **`UnitSystem` and all three anonymous `UnitTransfer` impls → 100%**
+
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
 Verified command:

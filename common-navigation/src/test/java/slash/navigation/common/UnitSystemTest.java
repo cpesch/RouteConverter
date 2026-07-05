@@ -24,6 +24,11 @@ package slash.navigation.common;
 
 import org.junit.Test;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.common.UnitSystem.*;
 
@@ -56,5 +61,42 @@ public class UnitSystemTest {
 
         assertDoubleEquals(0.3048, Statute.valueToDefault(1.0));
         assertDoubleEquals(1.0, Statute.valueToUnit(0.3048));
+    }
+
+    @Test
+    public void nauticValueConversionsRoundTrip() {
+        assertDoubleEquals(0.3048, Nautic.valueToDefault(1.0));
+        assertDoubleEquals(1.0, Nautic.valueToUnit(0.3048));
+    }
+
+    @Test
+    public void statuteAndNauticTransfersReturnNullOnNullInput() {
+        for (UnitSystem unitSystem : asList(Statute, Nautic)) {
+            assertNull(unitSystem.distanceToUnit(null));
+            assertNull(unitSystem.shortDistanceToUnit(null));
+            assertNull(unitSystem.distanceToDefault(null));
+            assertNull(unitSystem.valueToUnit(null));
+            assertNull(unitSystem.valueToDefault(null));
+        }
+    }
+
+    @Test
+    public void namesReflectTheUnitSystem() {
+        assertEquals("km", Metric.getDistanceName());
+        assertEquals("m", Metric.getShortDistanceName());
+        assertEquals("m", Metric.getElevationName());
+        assertEquals("km/h", Metric.getSpeedName());
+
+        assertEquals("mi", Statute.getDistanceName());
+        assertEquals("knots", Nautic.getSpeedName());
+    }
+
+    @Test
+    public void preferredUnitSystemIsMovedToTheFront() {
+        assertEquals(asList(Metric, Statute, Nautic), getUnitSystemsWithPreferredUnitSystem(null));
+
+        List<UnitSystem> preferringNautic = getUnitSystemsWithPreferredUnitSystem(Nautic);
+        assertEquals(Nautic, preferringNautic.get(0));
+        assertEquals(3, preferringNautic.size());
     }
 }

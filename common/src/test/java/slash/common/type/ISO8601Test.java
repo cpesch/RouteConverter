@@ -26,6 +26,9 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 import static slash.common.TestCase.calendar;
 import static slash.common.type.ISO8601.formatDate;
 import static slash.common.type.ISO8601.parseDate;
@@ -121,5 +124,49 @@ public class ISO8601Test {
         Calendar actual = parseDate("2010-09-18 03:13:32");
         Calendar expected = calendar(2010, 9, 18, 3, 13, 32).getCalendar();
         assertEquals(formatDate(expected, true), formatDate(actual, true));
+    }
+
+    @Test
+    public void testParseNullReturnsNull() {
+        assertNull(parseDate(null));
+    }
+
+    @Test
+    public void testParseMalformedReturnsNull() {
+        assertNull(parseDate("not-a-date"));
+        assertNull(parseDate("2007/03/04T14:49:05Z"));   // wrong date delimiter
+        assertNull(parseDate("2007-03-04X14:49:05Z"));   // wrong date/time delimiter
+        assertNull(parseDate("2007-03-04T14-49-05Z"));   // wrong time delimiter
+        assertNull(parseDate("2007-03-04T14:49:05X"));   // unknown timezone designator
+        assertNull(parseDate("2007-13-40T14:49:05Z"));   // out of range with lenient=false
+    }
+
+    @Test
+    public void testFormatNullThrows() {
+        try {
+            formatDate((Calendar) null, false);
+            fail("expected IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+            // expected
+        }
+        try {
+            formatDate((slash.common.type.CompactCalendar) null);
+            fail("expected IllegalArgumentException");
+        } catch (IllegalArgumentException expected) {
+            // expected
+        }
+    }
+
+    @Test
+    public void testFormatCompactCalendarConvenienceOverload() {
+        assertEquals("2007-03-04T14:49:05Z", formatDate(calendar(2007, 3, 4, 14, 49, 5)));
+    }
+
+    @Test
+    public void testParseAndFormatRoundTripAcrossTheEraBoundary() {
+        // year 0000 denotes 1 BCE: parse sets the BC era, format renders it back to 0000
+        Calendar actual = parseDate("0000-01-01T00:00:00Z");
+        assertNotNull(actual);
+        assertEquals("0000-01-01T00:00:00Z", formatDate(actual, false));
     }
 }
