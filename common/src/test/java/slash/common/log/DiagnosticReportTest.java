@@ -107,6 +107,28 @@ public class DiagnosticReportTest {
     }
 
     @Test
+    public void testScrubsUserHomeAndNameFromMessages() {
+        String home = System.getProperty("user.home");
+        // an exception carrying an absolute path (e.g. a FileNotFoundException) must not
+        // leak the home directory (and hence the OS user name) into the payload
+        String json = report(new RuntimeException("Cannot read " + home + "/routes/secret.gpx")).toJson();
+        assertTrue(json.contains("<USER_HOME>"));
+        assertFalse(json.contains(home));
+
+        String user = System.getProperty("user.name");
+        if (user != null && user.length() >= 3) {
+            String userJson = report(new RuntimeException("access for " + user + " denied")).toJson();
+            assertTrue(userJson.contains("<USER>"));
+        }
+    }
+
+    @Test
+    public void testScrubIsNoOpWithoutKnownValues() {
+        assertNull(DiagnosticReport.scrub(null));
+        assertEquals("nothing sensitive here", DiagnosticReport.scrub("nothing sensitive here"));
+    }
+
+    @Test
     public void testBundledJreFlag() {
         String previous = System.getProperty(BUNDLED_JRE_PROPERTY);
         try {

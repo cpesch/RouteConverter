@@ -36,8 +36,14 @@ import static slash.common.system.Platform.getPlatform;
  * arrives as a full root-cause chain and environment instead of a screenshot of a
  * truncated dialog.
  * <p>
- * Only known fields are extracted; free text is never scraped. No file paths, user
- * names or user documents are captured.
+ * Only known fields are extracted; free text is never scraped. The one unavoidable
+ * exception is the cause chain and stack trace, which are needed for root-cause
+ * diagnosis yet can embed absolute file paths (a {@code FileNotFoundException} on an
+ * opened document, say). Those paths would reveal the OS user name and document
+ * names, so {@link #scrub} replaces the known {@code user.home} and {@code user.name}
+ * values with placeholders before the payload is spooled or sent. Route/track
+ * contents, file names beyond what a path segment carries, and any stable identifier
+ * are still never captured.
  *
  * @author Christian Pesch
  */
@@ -45,6 +51,14 @@ import static slash.common.system.Platform.getPlatform;
 public class DiagnosticReport {
     static final int SCHEMA_VERSION = 1;
     static final String BUNDLED_JRE_PROPERTY = "routeconverter.bundledJre";
+    static final String HOME_PLACEHOLDER = "<USER_HOME>";
+    static final String USER_PLACEHOLDER = "<USER>";
+
+    // the OS user name and home directory leak into exception messages / stack traces
+    // via absolute paths; both are known values, so they are scrubbed by literal
+    // replacement (deterministic, not a heuristic mask) before anything leaves the app
+    private static final String USER_HOME = System.getProperty("user.home");
+    private static final String USER_NAME = System.getProperty("user.name");
 
     /**
      * The bundle-integrity signatures: a stripped JRE missing a JDK module a
@@ -70,10 +84,10 @@ public class DiagnosticReport {
         List<Throwable> chain = toChain(throwable);
         this.threadName = threadName;
         this.rootCauseClass = getRootCause(throwable).getClass().getName();
-        this.causeChain = getMessageWithCauses(throwable);
-        this.stackTrace = printStackTrace(throwable);
+        this.causeChain = scrub(getMessageWithCauses(throwable));
+        this.stackTrace = scrub(printStackTrace(throwable));
         this.prioritySignature = computePrioritySignature(chain);
-        this.missingClass = extractMissingClass(chain);
+        this.missingClass = scrub(extractMissingClass(chain));
         this.appVersion = appVersion;
         this.build = build;
         this.os = getPlatform();
@@ -95,6 +109,23 @@ public class DiagnosticReport {
 
     boolean isBundledJre() {
         return bundledJre;
+    }
+
+    /**
+     * Replaces the known {@code user.home} and {@code user.name} values with
+     * placeholders so an absolute path in a message or stack trace cannot reveal
+     * them. This is a literal replacement of two known strings, not a heuristic path
+     * mask; the short-value guard avoids scrubbing an accidental common substring.
+     */
+    static String scrub(String value) {
+        if (value == null)
+            return null;
+        String result = value;
+        if (USER_HOME != null && USER_HOME.length() >= 3)
+            result = result.replace(USER_HOME, HOME_PLACEHOLDER);
+        if (USER_NAME != null && USER_NAME.length() >= 3)
+            result = result.replace(USER_NAME, USER_PLACEHOLDER);
+        return result;
     }
 
     private static List<Throwable> toChain(Throwable throwable) {

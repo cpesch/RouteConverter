@@ -126,16 +126,20 @@ public class CrashReporter implements CrashHandler {
         if (!claimDialogSlot())
             return;
 
-        File newest = spool.newest();
+        // offer every spooled report, not just the newest: a report the user dismisses
+        // without sending is kept, so offering only the newest would block all older
+        // ones from ever being surfaced (they would linger until evicted by the cap)
         invokeLater(() -> {
-            try {
-                String json = spool.read(newest);
-                SendErrorReportDialog dialog = new SendErrorReportDialog(json);
-                dialog.showWithPreferences();
-                if (dialog.isSent())
-                    spool.delete(newest);
-            } catch (IOException e) {
-                log.log(WARNING, "Cannot read spooled crash report " + newest, e);
+            for (File file : spool.list()) {
+                try {
+                    String json = spool.read(file);
+                    SendErrorReportDialog dialog = new SendErrorReportDialog(json);
+                    dialog.showWithPreferences();
+                    if (dialog.isSent())
+                        spool.delete(file);
+                } catch (IOException e) {
+                    log.log(WARNING, "Cannot read spooled crash report " + file, e);
+                }
             }
         });
     }

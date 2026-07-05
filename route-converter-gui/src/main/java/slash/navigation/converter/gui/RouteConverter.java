@@ -225,8 +225,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     protected void startup() {
         startupStartMillis = System.currentTimeMillis();
-        setCrashHandler(crashReporter);
-        initializeLogging();
+        initializeDiagnostics();
         checkJavaPrequisites();
         checkForGoogleMapsAPIKey();
         show();
@@ -268,7 +267,11 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     // helper
 
-    private void initializeLogging() {
+    private void initializeDiagnostics() {
+        // register the crash handler first so an early init crash is still captured,
+        // then bring up logging -- both are the application's diagnostics bootstrap
+        setCrashHandler(crashReporter);
+
         LoggingHelper loggingHelper = LoggingHelper.getInstance();
         loggingHelper.logToFileAndConsole();
         log.info(format("Started %s for %s with locale %s on %s and %s with %d MByte maximum heap",
