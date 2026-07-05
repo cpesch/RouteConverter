@@ -205,7 +205,7 @@ public class BrowsePanel implements PanelInTab {
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
         RoutesTableColumnModel tableColumnModel = new RoutesTableColumnModel(routeMetadataSource);
         tableRoutes.setColumnModel(tableColumnModel);
-        new RoutesTableHeaderMenu(tableRoutes.getTableHeader(), tableColumnModel, actionManager);
+        new RoutesTableHeaderMenu(tableRoutes.getTableHeader(), Application.getInstance().getContext().getMenuBar(), tableColumnModel, actionManager);
         catalogModel.getRoutesTableModel().addTableModelListener(e -> fillRouteDistancesAndTimes());
         tableRoutes.registerKeyboardAction(new FrameAction() {
             public void run() {
