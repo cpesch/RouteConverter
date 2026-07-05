@@ -43,7 +43,7 @@ public class RouteModelComparators {
     }
 
     public static Comparator<RouteModel> byCreator() {
-        return Comparator.comparing(RouteModelComparators::creator, CASE_INSENSITIVE);
+        return Comparator.comparing(RouteModel::getCreator, CASE_INSENSITIVE);
     }
 
     public static Comparator<RouteModel> byDistance(RouteMetadataSource source) {
@@ -62,25 +62,15 @@ public class RouteModelComparators {
         }
     }
 
-    static String creator(RouteModel route) {
-        try {
-            return route.route().getCreator();
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
     static double distance(RouteMetadataSource source, RouteModel route) {
         DistanceAndTime distanceAndTime = source.getDistanceAndTime(route.getUrl());
-        if (distanceAndTime == null || distanceAndTime.distance() == null || distanceAndTime.distance() <= 0.0)
-            return Double.POSITIVE_INFINITY;
-        return distanceAndTime.distance();
+        // missing values rank as the largest, so they sort last ascending, first descending
+        return RouteMetadataSource.hasNoDistance(distanceAndTime) ? Double.POSITIVE_INFINITY : distanceAndTime.distance();
     }
 
     static long duration(RouteMetadataSource source, RouteModel route) {
         DistanceAndTime distanceAndTime = source.getDistanceAndTime(route.getUrl());
-        if (distanceAndTime == null || distanceAndTime.timeInMillis() == null || distanceAndTime.timeInMillis() <= 0)
-            return Long.MAX_VALUE;
-        return distanceAndTime.timeInMillis();
+        // missing values rank as the largest, so they sort last ascending, first descending
+        return RouteMetadataSource.hasNoTime(distanceAndTime) ? Long.MAX_VALUE : distanceAndTime.timeInMillis();
     }
 }

@@ -61,6 +61,22 @@ public record RouteModel(CategoryTreeNode category, Route route) {
         }
     }
 
+    /**
+     * Returns the creator of the route, or {@code null} if it cannot be determined.
+     * Unlike {@link #getName()}, {@link #getDescription()} and {@link #getUrl()}, which
+     * return {@code "?"} on error for display, this returns {@code null} so the creator
+     * comparator can sort such rows last via {@link java.util.Comparator#nullsLast}. The
+     * display path ({@code RouteHelper.formatCreator}) keeps its own null/error handling.
+     */
+    public String getCreator() {
+        try {
+            return route().getCreator();
+        } catch (Exception e) {
+            log.severe("Cannot get creator: " + e);
+            return null;
+        }
+    }
+
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

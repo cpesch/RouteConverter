@@ -41,4 +41,22 @@ public interface RouteMetadataSource {
      * @return the distance and time or null if this source does not know the route
      */
     DistanceAndTime getDistanceAndTime(String url);
+
+    /**
+     * The single definition of a missing distance shared by the routes table renderer
+     * (which shows {@code –}) and the length comparator (which sorts such rows last):
+     * no metadata at all, no distance or a non-positive distance all count as missing.
+     */
+    static boolean hasNoDistance(DistanceAndTime distanceAndTime) {
+        return distanceAndTime == null || distanceAndTime.distance() == null || distanceAndTime.distance() <= 0.0;
+    }
+
+    /**
+     * The single definition of a missing duration shared by the routes table renderer
+     * (which shows {@code –}) and the duration comparator (which sorts such rows last):
+     * no metadata at all, no time or a non-positive time all count as missing.
+     */
+    static boolean hasNoTime(DistanceAndTime distanceAndTime) {
+        return distanceAndTime == null || distanceAndTime.timeInMillis() == null || distanceAndTime.timeInMillis() <= 0;
+    }
 }
