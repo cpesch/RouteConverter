@@ -582,6 +582,42 @@ Observed result:
 - `asExcelFormat` is excluded: it calls `ExcelFormat.createSheet(...)` so it NPEs on a null format; the Excel position path is already covered by Phase 20's `ExcelPositionTest`
 - all green: `Tests run: 5, Failures: 0, Errors: 0, Skipped: 0`
 
+### Verified on July 5, 2026: `datasource` Phase 24 unit tests (`DataSourcesUtil`)
+
+Verified command:
+
+```sh
+./mvnw -pl datasource -am test -Dtest=DataSourcesUtilTest \
+  -Dsurefire.failIfNoSpecifiedTests=false -P '!local-with-samples'
+```
+
+Observed result:
+
+- build succeeded; `Tests run: 14, Failures: 0, Errors: 0, Skipped: 0`
+- extended the existing `DataSourcesUtilTest` (which only round-tripped the JAXB catalog) with 13 hermetic tests for the pure DTO↔domain mapper/factory methods: `asChecksum`, `asChecksums`, `asBoundingBox`/`asBoundingBoxType` (incl. null-corner branches), `asDatasourceType` (Mockito `DataSource`), `createFileType`/`createMapType`/`createThemeType` (incl. null checksums/bounding box), all three `createFragmentType` overloads (key+sizes, `ZipEntry`+stream checksum, `Fragment`+`FileAndChecksum`), `createChecksumType`, and `asMetaDataComparablePath`
+- `DataSourcesUtil` line coverage **20.8% → 92.1%** (missed 80 → 8); the 8 residual lines are error/niche branches (the `ClassCastException` wrap in `unmarshal`, reduced-precision time paths, the `toXml(DatasourceType)` marshal-failure path)
+
+### Verified on July 5, 2026: fresh full-reactor aggregate re-measure (post Phases 9–24)
+
+Verified command (CI-equivalent — deactivates the local `*IT`-including profile so only hermetic unit tests run):
+
+```sh
+./mvnw -T1C verify -P '!local-with-samples' \
+  -Dspotless.check.skip=true -Dmaven.javadoc.skip=true
+```
+
+Observed aggregate (`coverage-report/target/site/jacoco-aggregate`):
+
+| Metric | Covered | % |
+|---|---|---|
+| Line | 16734/36930 | 45.31% |
+| Instruction | 78819/182779 | 43.12% |
+| Branch | 6591/14191 | 46.44% |
+| Method | 4106/8586 | 47.82% |
+| Class | 535/1211 | 44.18% |
+
+Line coverage has moved 40.54% (baseline) → 43.18% (post-Phase 6) → **45.31%** over the campaign. Note: `-DskipTests`/`-Dtest=…`/`-Dmaven.test.skip` all break this measurement — the first two disable the parent `*IT` excludes or the jacoco `check` gate, so a plain `verify` with the `local-with-samples` profile off is the only clean path.
+
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
 Verified command:
