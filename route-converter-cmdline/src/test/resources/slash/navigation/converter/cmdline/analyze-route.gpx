@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gpx version="1.1" creator="RouteConverter" xmlns="http://www.topografix.com/GPX/1/1">
+    <rte>
+        <name>Planned Tour</name>
+        <rtept lat="53.40451" lon="10.18587"/>
+        <rtept lat="53.44000" lon="10.12000"/>
+        <rtept lat="53.49249" lon="10.06767"/>
+    </rte>
+</gpx>
