@@ -46,6 +46,7 @@ public class Gpx11ExtensionsTest {
     private final slash.navigation.gpx.garmin3.ObjectFactory garmin3Factory = new slash.navigation.gpx.garmin3.ObjectFactory();
     private final slash.navigation.gpx.trackpoint1.ObjectFactory trackpoint1Factory = new slash.navigation.gpx.trackpoint1.ObjectFactory();
     private final slash.navigation.gpx.trackpoint2.ObjectFactory trackpoint2Factory = new slash.navigation.gpx.trackpoint2.ObjectFactory();
+    private final slash.navigation.gpx.trekbuddy.ObjectFactory trekbuddyFactory = new slash.navigation.gpx.trekbuddy.ObjectFactory();
 
     private WptType createWptType() {
         WptType trkptType = gpx11Factory.createWptType();
@@ -83,6 +84,27 @@ public class Gpx11ExtensionsTest {
         return outputStream.toString(StandardCharsets.UTF_8);
     }
 
+
+    @Test
+    public void testReadTrekbuddy0984TypedCourseAndSpeed() throws Exception {
+        // TrekBuddy 0.9.84 writes <nmea:course>/<nmea:speed> in a namespace that has a
+        // registered JAXB binding, so they unmarshal to JAXBElement<BigDecimal> rather than
+        // plain DOM elements - getHeading()/getSpeed() must still read them (regression guard
+        // for the trekbuddy-extension-2.gpx integration test, reproduced here without samples)
+        ExtensionsType extensionsType = gpx11Factory.createExtensionsType();
+        extensionsType.getAny().add(trekbuddyFactory.createCourse(new BigDecimal("124.5")));
+        extensionsType.getAny().add(trekbuddyFactory.createSpeed(new BigDecimal("4.2")));
+
+        WptType trkptType = createWptType();
+        trkptType.setExtensions(extensionsType);
+        GpxType gpx = createGpxType(trkptType);
+
+        List<GpxRoute> routes = readGpx(toXml(gpx));
+        GpxPosition position = getFirstPositionOfFirstRoute(routes);
+
+        assertDoubleEquals(124.5, position.getHeading());
+        assertDoubleEquals(15.12, position.getSpeed());   // 4.2 m/s -> km/h
+    }
 
     @Test
     public void testWriteHeading() throws Exception {

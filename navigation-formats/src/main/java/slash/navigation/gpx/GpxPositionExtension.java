@@ -99,9 +99,15 @@ public class GpxPositionExtension {
             return null;
         for (Object any : extensions.getAny()) {
             R result = null;
-            if (any instanceof JAXBElement<?> jaxbElement)
+            if (any instanceof JAXBElement<?> jaxbElement) {
                 result = fromExtension.apply(jaxbElement.getValue());
-            else if (any instanceof Element element && matchesElementName.test(element.getLocalName()))
+                // simple-typed extensions (e.g. TrekBuddy's nmea:course/nmea:speed, bound to
+                // JAXBElement<BigDecimal>) carry the value in the element itself, not in a typed
+                // trackpoint object - parse them by name like a plain DOM element
+                if (result == null && jaxbElement.getValue() != null
+                        && matchesElementName.test(jaxbElement.getName().getLocalPart()))
+                    result = parseElement.apply(jaxbElement.getValue().toString());
+            } else if (any instanceof Element element && matchesElementName.test(element.getLocalName()))
                 result = parseElement.apply(element.getTextContent());
             if (result != null)
                 return result;
