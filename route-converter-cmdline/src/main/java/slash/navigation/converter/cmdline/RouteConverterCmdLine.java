@@ -158,8 +158,12 @@ public class RouteConverterCmdLine {
      * beeline/track so the analyze run still emits JSON.
      */
     private RouteLengthComputer createLengthComputer(String[] args) {
-        for (int i = 2; i < args.length - 1; i++) {
+        for (int i = 2; i < args.length; i++) {
             if ("--brouter-segments".equals(args[i])) {
+                if (i == args.length - 1) {
+                    log.warning("--brouter-segments requires a directory argument; using beeline lengths");
+                    break;
+                }
                 File segments = absolutize(new File(args[i + 1]));
                 if (segments.isDirectory()) {
                     log.info("Using BRouter segments from " + segments.getAbsolutePath() + " for routed lengths");

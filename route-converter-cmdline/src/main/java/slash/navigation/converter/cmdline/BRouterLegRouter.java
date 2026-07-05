@@ -71,8 +71,10 @@ class BRouterLegRouter implements LegRouter {
     private static final long MAXIMUM_TIMEOUT = 60000L;
 
     private final File segmentsDirectory;
-    private File profileFile;
-    private boolean profileExtractionAttempted;
+    // static: one extraction per JVM, not per file — a batch-reused analyzer
+    // JVM would otherwise accumulate temp directories until exit
+    private static File profileFile;
+    private static boolean profileExtractionAttempted;
 
     BRouterLegRouter(File segmentsDirectory) {
         this.segmentsDirectory = segmentsDirectory;
@@ -123,7 +125,7 @@ class BRouterLegRouter implements LegRouter {
         return Math.min(timeout, MAXIMUM_TIMEOUT);
     }
 
-    private synchronized File getProfileFile() {
+    private static synchronized File getProfileFile() {
         if (profileExtractionAttempted)
             return profileFile;
         profileExtractionAttempted = true;
@@ -142,7 +144,7 @@ class BRouterLegRouter implements LegRouter {
         return profileFile;
     }
 
-    private File extractResource(String name, File directory) throws IOException {
+    private static File extractResource(String name, File directory) throws IOException {
         File target = new File(directory, name);
         try (InputStream in = BRouterLegRouter.class.getResourceAsStream(RESOURCE_PREFIX + name)) {
             if (in == null)
