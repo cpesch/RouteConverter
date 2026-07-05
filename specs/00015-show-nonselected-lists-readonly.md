@@ -1,8 +1,8 @@
 ---
 name: 00015-show-nonselected-lists-readonly
-status: implemented (read-only MVP on PR #117, needs manual UI test)
-phases_done: [readonly-mvp]
-phases_next: [manual-ui-verification]
+status: shipped
+phases_done: [readonly-mvp, manual-ui-verification]
+phases_next: []
 last_touched: 2026-07-05
 ---
 
@@ -10,10 +10,11 @@ last_touched: 2026-07-05
 
 ## Status
 
-Implemented on PR [#117](https://github.com/cpesch/RouteConverter/pull/117),
-rebased onto the refactored `MapsforgeMapView` (after #119/#125/#126). The
-read-only secondary render path is done and unit-tested; only a manual UI pass
-remains before merge.
+Shipped in PR [#117](https://github.com/cpesch/RouteConverter/pull/117)
+(squash-merged 2026-07-05), rebased onto the refactored `MapsforgeMapView`
+(after #119/#125/#126). The read-only secondary render path is unit-tested and
+the manual UI pass (add/move/delete/drag on the active list, combo-switch)
+confirmed the non-selected lists stay non-interactive.
 
 **Styling evolved during external-feedback review (2026-07-05):** the original
 plan drew non-selected lists flat gray, but on light/busy map themes that was
