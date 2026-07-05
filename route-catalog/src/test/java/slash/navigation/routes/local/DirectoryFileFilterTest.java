@@ -56,7 +56,11 @@ public class DirectoryFileFilterTest {
         regularFile = File.createTempFile("route", ".gpx", base);
 
         lnkFile = new File(base, "shortcut.lnk");
-        assertTrue(lnkFile.createNewFile());
+        // a .lnk is accepted only when it carries the shortcut magic (little-endian
+        // DWORD 0x0000004C at offset 0) and is at least 0x64 bytes long
+        byte[] header = new byte[0x64];
+        header[0] = 0x4C;
+        java.nio.file.Files.write(lnkFile.toPath(), header);
     }
 
     @After
@@ -95,6 +99,13 @@ public class DirectoryFileFilterTest {
     @Test
     public void acceptsLnkFile() {
         assertTrue(filter.accept(lnkFile));
+    }
+
+    @Test
+    public void rejectsLnkFileWithoutMagic() throws IOException {
+        File emptyLnk = new File(tempDir, "empty.lnk");
+        assertTrue(emptyLnk.createNewFile());
+        assertFalse(filter.accept(emptyLnk));
     }
 
     @Test

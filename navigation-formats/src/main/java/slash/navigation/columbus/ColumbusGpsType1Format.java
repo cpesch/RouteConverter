@@ -21,10 +21,8 @@
 package slash.navigation.columbus;
 
 import slash.navigation.base.ParserContext;
-import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,7 +30,6 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.Math.abs;
 import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteComments.isDefaultDescription;
@@ -61,23 +58,23 @@ public class ColumbusGpsType1Format extends ColumbusGpsFormat {
             compile("INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,(HEIGHT|ALTITUDE),SPEED,HEADING,(FIX MODE,VALID,PDOP,HDOP,VDOP,)?VOX");
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([" + VALID_TAG_VALUES + "])" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
-                    "(" +
-                    SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]*)" + SPACE_OR_ZERO + SEPARATOR +
+                    field("\\d+") +                         // 1 index
+                    field("[" + VALID_TAG_VALUES + "]") +   // 2 tag
+                    field("\\d*") +                         // 3 date
+                    field("\\d*") +                         // 4 time
+                    coordinate("[NS]") +                    // 5 latitude, 6 hemisphere
+                    coordinate("[WE]") +                    // 7 longitude, 8 hemisphere
+                    field("[-\\d]+") +                      // 9 height
+                    field("\\d+") +                         // 10 speed
+                    field("\\d+") +                         // 11 heading
+                    "(" +                                   // 12 optional Type-A block
+                    field("[^" + SEPARATOR + "]*") +        // 13 fix mode
+                    field("[^" + SEPARATOR + "]*") +        // 14 valid
+                    field("[\\d\\.]*") +                    // 15 pdop
+                    field("[\\d\\.]*") +                    // 16 hdop
+                    field("[\\d\\.]*") +                    // 17 vdop
                     ")?" +
-                    SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
+                    lastField("[^" + SEPARATOR + "]*") +    // 18 vox
                     END_OF_LINE);
     private static final Set<String> VALID_FIX_MODES = new HashSet<>(asList("2D", "3D"));
     private static final Set<String> VALID_VALID = new HashSet<>(asList("SPS", "DGPS"));
@@ -116,45 +113,16 @@ public class ColumbusGpsType1Format extends ColumbusGpsFormat {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        WaypointType waypointType = parseTag(trim(lineMatcher.group(2)));
-        String date = lineMatcher.group(3);
-        String time = lineMatcher.group(4);
-        Double latitude = parseDouble(lineMatcher.group(5));
-        String northOrSouth = lineMatcher.group(6);
-        if ("S".equals(northOrSouth) && latitude != null)
-            latitude = -latitude;
-        Double longitude = parseDouble(lineMatcher.group(7));
-        String westOrEasth = lineMatcher.group(8);
-        if ("W".equals(westOrEasth) && longitude != null)
-            longitude = -longitude;
-        String height = lineMatcher.group(9);
-        String speed = lineMatcher.group(10);
-        String heading = lineMatcher.group(11);
         boolean isTypeA = trim(lineMatcher.group(14)) != null;
-        String pdop = lineMatcher.group(15);
-        String hdop = lineMatcher.group(16);
-        String vdop = lineMatcher.group(17);
-        String description = parseDescription(removeZeros(lineMatcher.group(18)), removeZeros(lineMatcher.group(1)), waypointType);
-
-        Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
-                parseDateAndTime(date, time), description,
-                context.getFile() != null && isTypeA ? new File(context.getFile().getParentFile(), description) : null);
-        position.setWaypointType(waypointType);
-        position.setHeading(parseDouble(heading));
-        position.setPdop(parseDouble(pdop));
-        position.setHdop(parseDouble(hdop));
-        position.setVdop(parseDouble(vdop));
+        Wgs84Position position = parseCommonPosition(lineMatcher, context,
+                parseDateAndTime(lineMatcher.group(3), lineMatcher.group(4)), 18, isTypeA);
+        position.setPdop(parseDouble(lineMatcher.group(15)));
+        position.setHdop(parseDouble(lineMatcher.group(16)));
+        position.setVdop(parseDouble(lineMatcher.group(17)));
         return position;
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String date = fillWithZeros(formatDate(position.getTime()), 6);
-        String time = fillWithZeros(formatTime(position.getTime()), 6);
-        String latitude = formatDoubleAsString(abs(position.getLatitude()), 6);
-        String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
-        String longitude = formatDoubleAsString(abs(position.getLongitude()), 6);
-        String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
-        String height = fillWithZeros(position.getElevation() != null ? formatIntAsString(position.getElevation().intValue()) : "0", 5);
         String speed = fillWithZeros(position.getSpeed() != null ? formatIntAsString(position.getSpeed().intValue()) : "0", 4);
         String heading = fillWithZeros(position.getHeading() != null ? formatIntAsString(position.getHeading().intValue()) : "0", 3);
         String pdop = fillWithZeros(position.getPdop() != null ? formatAccuracyAsString(position.getPdop()) : "", 5);
@@ -162,12 +130,7 @@ public class ColumbusGpsType1Format extends ColumbusGpsFormat {
         String vdop = fillWithZeros(position.getVdop() != null ? formatAccuracyAsString(position.getVdop()) : "", 5);
         String description = !isDefaultDescription(position.getDescription()) ? position.getDescription() : "";
 
-        writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
-                formatTag(position) + SEPARATOR +
-                date + SEPARATOR + time + SEPARATOR +
-                latitude + northOrSouth + SEPARATOR +
-                longitude + westOrEast + SEPARATOR +
-                height + SEPARATOR +
+        writer.println(formatCommonPrefix(position, index) + SEPARATOR +
                 speed + SEPARATOR +
                 heading + SEPARATOR +
                 "3D" + SEPARATOR +

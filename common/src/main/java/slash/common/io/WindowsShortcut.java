@@ -38,7 +38,7 @@ import static slash.common.io.Files.getExtension;
  *
  * @author Christian Pesch
  */
-public class WindowsShortcut {
+public class WindowsShortcut implements ResolvableLink {
     private static final int MINIMUM_LENGTH = 0x64;
     private static final int MAGIC = 0x0000004C;
 

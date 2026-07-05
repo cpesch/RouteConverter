@@ -20,8 +20,7 @@
 
 package slash.navigation.routes.local;
 
-import slash.common.io.MacAlias;
-import slash.common.io.WindowsShortcut;
+import slash.common.io.ResolvableLink;
 import slash.navigation.rest.exception.DuplicateNameException;
 import slash.navigation.rest.exception.ForbiddenException;
 import slash.navigation.routes.Category;
@@ -41,12 +40,10 @@ import static java.lang.String.format;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.IOUtils.copyLarge;
 import static slash.common.io.Files.recursiveDelete;
-import static slash.common.io.Files.removeExtension;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.encodeFileName;
-import static slash.common.io.MacAlias.isPotentialValidAlias;
-import static slash.common.io.WindowsShortcut.isPotentialValidLink;
+import static slash.common.io.Files.resolveLink;
 
 /**
  * Represents a category in the file system.
@@ -80,18 +77,11 @@ public class LocalCategory implements Category {
         File[] directories = directory.listFiles(new DirectoryFileFilter());
         if(directories != null) {
             for (File subDirectory : directories) {
-                if (isPotentialValidLink(subDirectory)) {
-                    WindowsShortcut shortcut = new WindowsShortcut(subDirectory);
-                    if (shortcut.isDirectory()) {
-                        subDirectory = new File(removeExtension(shortcut.getRealFilename()));
-                    } else
+                ResolvableLink link = resolveLink(subDirectory);
+                if (link != null) {
+                    if (!link.isDirectory())
                         continue;
-                } else if (isPotentialValidAlias(subDirectory)) {
-                    MacAlias alias = new MacAlias(subDirectory);
-                    if (alias.isDirectory())
-                        subDirectory = new File(alias.getRealFilename());
-                    else
-                        continue;
+                    subDirectory = new File(link.getRealFilename());
                 }
                 categories.add(new LocalCategory(catalog, subDirectory));
             }
@@ -135,18 +125,11 @@ public class LocalCategory implements Category {
         File[] files = directory.listFiles(new RouteFileFilter());
         if(files != null) {
             for (File file : files) {
-                if (isPotentialValidLink(file)) {
-                    WindowsShortcut shortcut = new WindowsShortcut(file);
-                    if (shortcut.isFile())
-                        file = new File(shortcut.getRealFilename());
-                    else
+                ResolvableLink link = resolveLink(file);
+                if (link != null) {
+                    if (!link.isFile())
                         continue;
-                } else if (isPotentialValidAlias(file)) {
-                    MacAlias alias = new MacAlias(file);
-                    if (alias.isFile())
-                        file = new File(alias.getRealFilename());
-                    else
-                        continue;
+                    file = new File(link.getRealFilename());
                 }
                 routes.add(new LocalRoute(file));
             }
