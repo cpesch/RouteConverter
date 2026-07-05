@@ -32,7 +32,7 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public interface FormatAndRoutesModel extends ComboBoxModel {
+public interface FormatAndRoutesModel extends ComboBoxModel, PositionListsModel {
     List<BaseRoute> getRoutes();
     void setRoutes(FormatAndRoutes<BaseNavigationFormat, BaseRoute, BaseNavigationPosition> formatAndRoutes);
     NavigationFormat<BaseRoute> getFormat();

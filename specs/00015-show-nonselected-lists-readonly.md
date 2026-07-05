@@ -1,21 +1,39 @@
 ---
 name: 00015-show-nonselected-lists-readonly
-status: proposed
-phases_done: []
-phases_next: []
-last_touched: 2026-07-03
+status: implemented (read-only MVP on PR #117, needs manual UI test)
+phases_done: [readonly-mvp]
+phases_next: [manual-ui-verification]
+last_touched: 2026-07-05
 ---
 
-# 00015 - Show non-selected position lists read-only (gray)
+# 00015 - Show non-selected position lists read-only
 
 ## Status
 
-Proposed. Created on July 3, 2026, from issue
+Implemented on PR [#117](https://github.com/cpesch/RouteConverter/pull/117),
+rebased onto the refactored `MapsforgeMapView` (after #119/#125/#126). The
+read-only secondary render path is done and unit-tested; only a manual UI pass
+remains before merge.
+
+**Styling evolved during external-feedback review (2026-07-05):** the original
+plan drew non-selected lists flat gray, but on light/busy map themes that was
+barely visible, and later experiments (dark line + white casing; dashed) either
+over-powered the active list or inverted the hierarchy. The shipped look draws
+each non-selected Route/Track list as a **lighter solid shade of the active
+route/track color** (`NonSelectedPositionListsRenderer.lighten()`, ~55% toward
+white), so the darker, fully-saturated active list clearly stands out as the one
+being edited. Waypoint lists use a subordinate gray icon. The active list's own
+render path is unchanged (a per-segment casing was tried and reverted — it
+interleaved white over the colored joins).
+
+Created on July 3, 2026, from issue
 [#101](https://github.com/cpesch/RouteConverter/issues/101) (Baltasarq,
 2026-06-01), which was split off the #91 POI thread. Scope tier decided by the
-maintainer on 2026-07-03: **the gray read-only MVP** — draw every non-selected
-position list in the file as gray, non-interactive; keep editing exactly as
-today (one list, chosen by the existing combo). The more ambitious forum design
+maintainer on 2026-07-03: **the read-only MVP** — draw every non-selected
+position list in the file de-emphasized and non-interactive; keep editing
+exactly as today (one list, chosen by the existing combo). (The de-emphasis was
+planned as flat gray; it shipped as a lighter shade of the active color — see
+Status.) The more ambitious forum design
 (Mogh's panel with per-list colors + visibility checkboxes + multi-edit +
 multiple elevation profiles) is recorded below as the future evolution, not this
 spec's scope.
@@ -119,6 +137,38 @@ gray render path** for every other list in the file:
   path must dispatch per list, not assume one type.
 - **Repaint triggers:** existing color/characteristics/routing listeners assume
   one list; each needs a companion that also refreshes the gray set.
+
+## Implementation notes (2026-07-04)
+
+Implemented as designed, with one structural deviation that earlier manual
+attempts likely tripped over: `FormatAndRoutesModel` lives in
+`route-converter-gui`, which **depends on** `mapview` (where `MapView` and
+`PositionsModel` live) — so `MapView.initialize` cannot take
+`FormatAndRoutesModel` without a circular module dependency. Solution: new
+minimal interface `PositionListsModel` (`mapview/.../converter/gui/models/`,
+same package) with `getRoutes()`, `getSelectedRoute()` and list-data listener
+registration; `FormatAndRoutesModel` extends it, so no caller changes.
+
+- `MapView.initialize`/`MapsforgeMapView.initialize` take the extra
+  `PositionListsModel`; `RouteConverter.setMapView` passes
+  `getConvertPanel().getFormatAndRoutesModel()` (the undo wrapper delegates
+  listeners to the impl, so events flow).
+- Gray render path: one `GroupLayer` (`nonSelectedPositionListsLayer`)
+  inserted directly above the map/background tile layers, i.e. below the
+  active list's layers and selection markers. Rebuilt wholesale from
+  `getRoutes() minus getSelectedRoute()` on every `ListDataEvent` (selection
+  switch fires `contentsChanged`, list add/remove fire interval events,
+  `setRoutes` fires both), on map/theme switch, and on color/line-width
+  changes.
+- Per-list dispatch: Waypoints → plain gray `Marker` per position (gray
+  variant of waypoint.svg, opacity 0.5); Route/Track → a single gray
+  `Polyline` over the stored positions (one layer per list — cheap, no
+  per-pair layers, no routing engine, no DistanceAndTimeAggregator).
+- Read-only for free: plain `Marker`/`Polyline` layers have no tap/drag
+  handling, and all edit paths (`getClosestPosition`, add/move/delete) only
+  consult the active `positionsModel`, so gray lists cannot be edited or
+  snapped onto.
+- Single-list files: gray set is empty, behaviour unchanged.
 
 ## Future evolution (not this spec)
 

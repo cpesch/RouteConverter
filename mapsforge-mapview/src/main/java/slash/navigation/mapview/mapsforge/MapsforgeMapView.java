@@ -71,6 +71,7 @@ import slash.navigation.mapview.mapsforge.overlays.OverlayManager;
 import slash.navigation.mapview.mapsforge.renderer.BorderPainter;
 import slash.navigation.mapview.mapsforge.renderer.MagnifierPainter;
 import slash.navigation.mapview.mapsforge.renderer.MapViewLayerOperations;
+import slash.navigation.mapview.mapsforge.renderer.NonSelectedPositionListsRenderer;
 import slash.navigation.mapview.mapsforge.renderer.RouteRenderer;
 import slash.navigation.mapview.mapsforge.renderer.TrackRenderer;
 import slash.navigation.mapview.mapsforge.tiles.DefaultTileLayerFactory;
@@ -147,10 +148,13 @@ public class MapsforgeMapView extends BaseMapView {
     private static final byte MAXIMUM_ZOOM_LEVEL = 22;
 
     private PositionsModel positionsModel;
+    private PositionListsModel positionListsModel;
     private MapPreferencesModel preferencesModel;
     private MapViewCallbackOpenSource mapViewCallback;
+    private NonSelectedPositionListsRenderer nonSelectedPositionListsRenderer;
 
     private final TableModelListener positionsModelListener = new PositionsModelListener();
+    private final ListDataListener positionListsModelListener = new PositionListsModelListener();
     private final ListDataListener characteristicsModelListener = new CharacteristicsModelListener();
     private final ChangeListener routingPreferencesListener = e -> {
         if (positionsModel.getRoute().getCharacteristics().equals(Route))
@@ -164,6 +168,8 @@ public class MapsforgeMapView extends BaseMapView {
             this.waypointIcon = null;
         }
         this.updateDecoupler.replaceRoute();
+        // line widths apply to the gray set, too
+        updateNonSelectedPositionLists();
     };
     private final ChangeListener displayedMapListener = e ->
             handleMapAndThemeUpdate(true, !isVisible(this.mapView.getModel().mapViewPosition.getCenter()));
@@ -200,9 +206,11 @@ public class MapsforgeMapView extends BaseMapView {
     // initialization
 
     public void initialize(PositionsModel positionsModel,
+                           PositionListsModel positionListsModel,
                            MapPreferencesModel preferencesModel,
                            MapViewCallback mapViewCallback) {
         this.positionsModel = positionsModel;
+        this.positionListsModel = positionListsModel;
         this.preferencesModel = preferencesModel;
         this.mapViewCallback = (MapViewCallbackOpenSource) mapViewCallback;
 
@@ -309,6 +317,7 @@ public class MapsforgeMapView extends BaseMapView {
         this.updateDecoupler = new UpdateDecoupler(positionsModel, this::getEventMapUpdaterFor);
 
         positionsModel.addTableModelListener(positionsModelListener);
+        positionListsModel.addListDataListener(positionListsModelListener);
         preferencesModel.getRoutingPreferencesModel().addChangeListener(routingPreferencesListener);
         preferencesModel.getCharacteristicsModel().addListDataListener(characteristicsModelListener);
         preferencesModel.getUnitSystemModel().addChangeListener(unitSystemListener);
@@ -327,6 +336,9 @@ public class MapsforgeMapView extends BaseMapView {
                 preferencesModel.getRouteLineWidthModel(), GRAPHIC_FACTORY);
         trackRenderer = new TrackRenderer(this, preferencesModel.getTrackColorModel(),
                 preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
+        nonSelectedPositionListsRenderer = new NonSelectedPositionListsRenderer(this, positionListsModel,
+                preferencesModel.getRouteColorModel(), preferencesModel.getTrackColorModel(),
+                preferencesModel.getRouteLineWidthModel(), preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
     }
 
     private static boolean initializedActions = false;
@@ -509,22 +521,25 @@ public class MapsforgeMapView extends BaseMapView {
                     encodeInt(waypointColorModel.getColor().getGreen(), 2) +
                     encodeInt(waypointColorModel.getColor().getBlue(), 2);
             String opacity = Transfer.formatDoubleAsString(Float.valueOf(asAlpha(waypointColorModel)).doubleValue(), 2);
-
-            InputStream inputStream = MapsforgeMapView.class.getResourceAsStream("waypoint.svg");
-            assert inputStream != null;
-            Reader reader = new TokenReplacingReader(new InputStreamReader(inputStream), new TokenResolver() {
-                public String resolveToken(String tokenName) {
-                    if (tokenName.equals("color"))
-                        return color;
-                    if (tokenName.equals("opacity"))
-                        return opacity;
-                    return tokenName;
-                }
-            });
-            BufferedImage bufferedImage = getResourceBitmap(reader, "waypoint-" + color + "-" + opacity, getDeviceScaleFactor(), 100f, 16, 16, 100);
-            waypointIcon = new AwtBitmap(bufferedImage);
+            waypointIcon = createWaypointIcon(color, opacity);
         }
         return waypointIcon;
+    }
+
+    public Bitmap createWaypointIcon(String color, String opacity) {
+        InputStream inputStream = MapsforgeMapView.class.getResourceAsStream("waypoint.svg");
+        assert inputStream != null;
+        Reader reader = new TokenReplacingReader(new InputStreamReader(inputStream), new TokenResolver() {
+            public String resolveToken(String tokenName) {
+                if (tokenName.equals("color"))
+                    return color;
+                if (tokenName.equals("opacity"))
+                    return opacity;
+                return tokenName;
+            }
+        });
+        BufferedImage bufferedImage = getResourceBitmap(reader, "waypoint-" + color + "-" + opacity, getDeviceScaleFactor(), 100f, 16, 16, 100);
+        return new AwtBitmap(bufferedImage);
     }
 
     private void handleUnitSystem() {
@@ -614,6 +629,7 @@ public class MapsforgeMapView extends BaseMapView {
 
         handleBackground();
         handleOverlays();
+        handleNonSelectedPositionLists();
 
         // then start download layer threads
         if (layer instanceof TileDownloadLayer tileDownloadLayer)
@@ -648,6 +664,28 @@ public class MapsforgeMapView extends BaseMapView {
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
         if (map.getType().equals(Mapsforge))
             layers.add(0, backgroundLayer);
+    }
+
+    private void handleNonSelectedPositionLists() {
+        Layer nonSelectedLayer = nonSelectedPositionListsRenderer.getLayer();
+        Layers layers = getLayerManager().getLayers();
+        layers.remove(nonSelectedLayer);
+
+        // insert directly above the map (and background) layers so that the selected
+        // position list and the selection markers are always drawn on top of the gray set
+        int index = 0;
+        for (Layer layer : mapsToLayers.values())
+            index = max(index, layers.indexOf(layer) + 1);
+        layers.add(index, nonSelectedLayer);
+
+        // catch position lists that were loaded before the map was initialized
+        nonSelectedPositionListsRenderer.update();
+    }
+
+    private void updateNonSelectedPositionLists() {
+        // may fire from list/preference listeners registered before the renderer is built
+        if (nonSelectedPositionListsRenderer != null)
+            nonSelectedPositionListsRenderer.update();
     }
 
     private void handleShadedHills() {
@@ -694,6 +732,7 @@ public class MapsforgeMapView extends BaseMapView {
         mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().removeTableModelListener(appliedOverlayListener);
 
         positionsModel.removeTableModelListener(positionsModelListener);
+        positionListsModel.removeListDataListener(positionListsModelListener);
         preferencesModel.getRoutingPreferencesModel().removeChangeListener(routingPreferencesListener);
         preferencesModel.getCharacteristicsModel().removeListDataListener(characteristicsModelListener);
         preferencesModel.getUnitSystemModel().removeChangeListener(unitSystemListener);
@@ -1289,6 +1328,22 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     // listeners
+
+    private class PositionListsModelListener implements ListDataListener {
+        public void intervalAdded(ListDataEvent e) {
+            updateNonSelectedPositionLists();
+        }
+
+        public void intervalRemoved(ListDataEvent e) {
+            updateNonSelectedPositionLists();
+        }
+
+        public void contentsChanged(ListDataEvent e) {
+            // selection changes are fired as contentsChanged: the previously selected
+            // list joins the gray set, the newly selected one leaves it
+            updateNonSelectedPositionLists();
+        }
+    }
 
     private class PositionsModelListener implements TableModelListener {
         public void tableChanged(TableModelEvent e) {

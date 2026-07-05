@@ -412,7 +412,8 @@ public abstract class RouteConverter extends SingleFrameApplication {
                     printStackTrace(new UnsupportedOperationException()).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
 
         } else {
-            getMapView().initialize(getConvertPanel().getPositionsModel(), mapPreferencesModel, getMapViewCallback());
+            getMapView().initialize(getConvertPanel().getPositionsModel(), getConvertPanel().getFormatAndRoutesModel(),
+                    mapPreferencesModel, getMapViewCallback());
 
             @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
             Throwable cause = getMapView().getInitializationCause();
