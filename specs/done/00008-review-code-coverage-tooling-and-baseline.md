@@ -56,6 +56,8 @@ Updated on July 5, 2026 (Phase 21 - `navigation-formats` core route domain: 10 n
 
 Updated on July 5, 2026 (Phase 22 - `navigation-formats` position geo-math: 9 new mock-free unit tests for `BaseNavigationPosition` via the concrete `Wgs84Position` (hasCoordinates/hasTime, calculateDistance ~111 km per degree + null without both coordinates, calculateAngle due-east 90, calculateElevation other-minus-this, calculateTime millis delta, calculateSpeed km/h + null without both times, calculateOrthogonalDistance ~0 on the line). The position-level counterpart to Phase 21's `BaseRoute`; pure geo/units math with high refactor blast-radius. All green in Surefire).
 
+Updated on July 5, 2026 (Phase 23 - `navigation-formats` cross-format conversion matrix: 5 new mock-free unit tests for `SimpleRoute` via the concrete `Wgs84Route` (accessors + add, generated-name fallback, equals by name/characteristics/positions, and the `asXxxFormat` conversion matrix - Csv/Gpx/Kml/Nmea/Nmn/Photo/Simple/Tcx preserve position count and longitude, Bcr/GoPal/TomTom preserve count; a null format is safe since it is only stored on the target route). asExcelFormat omitted - it needs a real ExcelFormat to create a sheet, and its position path is covered by Phase 20. All green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -563,6 +565,22 @@ Observed result:
 - build succeeded
 - 9 new tests, no mocks: `BaseNavigationPositionTest` drives the shared geo/units math through `Wgs84Position`; distance/speed assertions use generous deltas (1 degree latitude ~= 111 km) to stay robust to the bearing constants
 - all green: `Tests run: 10, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 5, 2026: `navigation-formats` Phase 23 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats test -Dtest=SimpleRouteTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 5 new tests, no mocks: `SimpleRouteTest` exercises accessors/add/equals plus 11 of the 12 `asXxxFormat` conversions through `Wgs84Route` with a null format
+- `asExcelFormat` is excluded: it calls `ExcelFormat.createSheet(...)` so it NPEs on a null format; the Excel position path is already covered by Phase 20's `ExcelPositionTest`
+- all green: `Tests run: 5, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
