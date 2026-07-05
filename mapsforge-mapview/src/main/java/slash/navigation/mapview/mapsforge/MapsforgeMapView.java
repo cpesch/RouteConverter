@@ -84,7 +84,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -106,11 +105,9 @@ import static org.mapsforge.core.util.LatLongUtils.zoomForBounds;
 import static org.mapsforge.core.util.MercatorProjection.calculateGroundResolution;
 import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 import static org.mapsforge.map.scalebar.DefaultMapScaleBar.ScaleBarMode.SINGLE;
-import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.type.HexadecimalNumber.encodeInt;
 import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.common.BoundingBox.asBoundingBox;
 import static slash.navigation.common.TransformUtil.delta;
 import static slash.navigation.common.TransformUtil.isPositionInChina;
@@ -152,17 +149,35 @@ public class MapsforgeMapView extends BaseMapView {
     private MapPreferencesModel preferencesModel;
     private MapViewCallbackOpenSource mapViewCallback;
 
-    private final PositionsModelListener positionsModelListener = new PositionsModelListener();
-    private final RoutingPreferencesListener routingPreferencesListener = new RoutingPreferencesListener();
-    private final CharacteristicsModelListener characteristicsModelListener = new CharacteristicsModelListener();
-    private final UnitSystemListener unitSystemListener = new UnitSystemListener();
-    private final ShowCoordinatesListener showCoordinatesListener = new ShowCoordinatesListener();
-    private final RepaintPositionListListener repaintPositionListListener = new RepaintPositionListListener();
-    private final DisplayedMapListener displayedMapListener = new DisplayedMapListener();
-    private final AppliedThemeListener appliedThemeListener = new AppliedThemeListener();
-    private final AppliedThemeStyleListener appliedThemeStyleListener = new AppliedThemeStyleListener();
-    private final AppliedOverlayListener appliedOverlayListener = new AppliedOverlayListener();
-    private final ShadedHillsListener shadedHillsListener = new ShadedHillsListener();
+    private final TableModelListener positionsModelListener = new PositionsModelListener();
+    private final ListDataListener characteristicsModelListener = new CharacteristicsModelListener();
+    private final ChangeListener routingPreferencesListener = e -> {
+        if (positionsModel.getRoute().getCharacteristics().equals(Route))
+            this.updateDecoupler.replaceRoute();
+    };
+    private final ChangeListener unitSystemListener = e -> handleUnitSystem();
+    private final ChangeListener showCoordinatesListener = e ->
+            this.mapViewCoordinateDisplayer.setShowCoordinates(preferencesModel.getShowCoordinatesModel().getBoolean());
+    private final ChangeListener repaintPositionListListener = e -> {
+        synchronized (MapsforgeMapView.this) {
+            this.waypointIcon = null;
+        }
+        this.updateDecoupler.replaceRoute();
+    };
+    private final ChangeListener displayedMapListener = e ->
+            handleMapAndThemeUpdate(true, !isVisible(this.mapView.getModel().mapViewPosition.getCenter()));
+    private final ChangeListener appliedThemeListener = e -> handleMapAndThemeUpdate(false, false);
+    private final ChangeListener appliedThemeStyleListener = e -> handleMapAndThemeUpdate(false, false);
+    private final TableModelListener appliedOverlayListener = e -> {
+        switch (e.getType()) {
+            case INSERT -> this.overlayManager.insert(e.getFirstRow(), e.getLastRow());
+            case DELETE -> this.overlayManager.delete(e.getFirstRow(), e.getLastRow());
+        }
+    };
+    private final ChangeListener shadedHillsListener = e -> {
+        handleShadedHills();
+        handleMapAndThemeUpdate(false, false);
+    };
 
     private MapSelector mapSelector;
     private AwtGraphicMapView mapView;
@@ -290,7 +305,7 @@ public class MapsforgeMapView extends BaseMapView {
             }
         });
 
-        this.updateDecoupler = new UpdateDecoupler();
+        this.updateDecoupler = new UpdateDecoupler(positionsModel, this::getEventMapUpdaterFor);
 
         positionsModel.addTableModelListener(positionsModelListener);
         preferencesModel.getRoutingPreferencesModel().addChangeListener(routingPreferencesListener);
@@ -1303,36 +1318,6 @@ public class MapsforgeMapView extends BaseMapView {
         }
     }
 
-    private class UpdateDecoupler {
-        private final ExecutorService executor = createSingleThreadExecutor("UpdateDecoupler");
-        private EventMapUpdater eventMapUpdater = getEventMapUpdaterFor(Waypoints);
-
-        public void replaceRoute() {
-            executor.execute(() -> {
-                // remove all from previous event map updater
-                eventMapUpdater.handleRemove(0, MAX_VALUE);
-
-                // select current event map updater and let him add all
-                eventMapUpdater = getEventMapUpdaterFor(positionsModel.getRoute().getCharacteristics());
-                eventMapUpdater.handleAdd(0, positionsModel.getRowCount() - 1);
-            });
-        }
-
-        public void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
-            executor.execute(() -> {
-                switch (eventType) {
-                    case INSERT -> eventMapUpdater.handleAdd(firstRow, lastRow);
-                    case UPDATE -> eventMapUpdater.handleUpdate(firstRow, lastRow);
-                    case DELETE -> eventMapUpdater.handleRemove(firstRow, lastRow);
-                }
-            });
-        }
-
-        public void dispose() {
-            executor.shutdownNow();
-        }
-    }
-
     // listeners
 
     private class PositionsModelListener implements TableModelListener {
@@ -1379,66 +1364,4 @@ public class MapsforgeMapView extends BaseMapView {
         }
     }
 
-    private class ShowCoordinatesListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            mapViewCoordinateDisplayer.setShowCoordinates(preferencesModel.getShowCoordinatesModel().getBoolean());
-        }
-    }
-
-    private class RepaintPositionListListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            synchronized (MapsforgeMapView.this) {
-                waypointIcon = null;
-            }
-            updateDecoupler.replaceRoute();
-        }
-    }
-
-    private class RoutingPreferencesListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            if (positionsModel.getRoute().getCharacteristics().equals(Route))
-                updateDecoupler.replaceRoute();
-        }
-    }
-
-    private class UnitSystemListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            handleUnitSystem();
-        }
-    }
-
-    private class DisplayedMapListener implements ChangeListener {
-
-        public void stateChanged(ChangeEvent e) {
-            handleMapAndThemeUpdate(true, !isVisible(mapView.getModel().mapViewPosition.getCenter()));
-        }
-    }
-
-    private class AppliedThemeListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            handleMapAndThemeUpdate(false, false);
-        }
-    }
-
-    private class AppliedThemeStyleListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            handleMapAndThemeUpdate(false, false);
-        }
-    }
-
-    private class AppliedOverlayListener implements TableModelListener {
-        public void tableChanged(TableModelEvent e) {
-            switch (e.getType()) {
-                case INSERT -> overlayManager.insert(e.getFirstRow(), e.getLastRow());
-                case DELETE -> overlayManager.delete(e.getFirstRow(), e.getLastRow());
-            }
-        }
-    }
-
-    private class ShadedHillsListener implements ChangeListener {
-        public void stateChanged(ChangeEvent e) {
-            handleShadedHills();
-            handleMapAndThemeUpdate(false, false);
-        }
-    }
 }

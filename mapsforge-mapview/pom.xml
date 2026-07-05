@@ -68,4 +68,37 @@
             <version>2.3.0</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>check-coverage</id>
+                        <goals><goal>check</goal></goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <!-- Floor set 2026-07-05: actual is 0.20 after extracting and unit-testing
+                                                 the painters, tile factory, overlay manager and update decoupler.
+                                                 The bulk of MapsforgeMapView / MapSelector / AwtGraphicMapView needs a
+                                                 live map view, so 0.18 prevents regression with a little headroom. -->
+                                            <minimum>0.18</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

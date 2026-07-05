@@ -697,18 +697,18 @@ public class OptionsDialog extends SimpleDialog {
         buttonChooseElevationServicePath.setEnabled(service.isDownload());
     }
 
-    private void chooseMapPath() {
-        RouteConverter r = RouteConverter.getInstance();
-        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-map-path"), r.getMapView().getMapsPath());
+    private void chooseDirectoryInto(String titleKey, String currentPath, JTextField textField) {
+        File directory = chooseDirectory(RouteConverter.getInstance().getFrame(), getBundle().getString(titleKey), currentPath);
         if (directory != null)
-            textFieldMapsPath.setText(directory.getAbsolutePath());
+            textField.setText(directory.getAbsolutePath());
+    }
+
+    private void chooseMapPath() {
+        chooseDirectoryInto("choose-map-path", RouteConverter.getInstance().getMapView().getMapsPath(), textFieldMapsPath);
     }
 
     private void chooseThemePath() {
-        RouteConverter r = RouteConverter.getInstance();
-        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-theme-path"), r.getMapView().getThemesPath());
-        if (directory != null)
-            textFieldThemesPath.setText(directory.getAbsolutePath());
+        chooseDirectoryInto("choose-theme-path", RouteConverter.getInstance().getMapView().getThemesPath(), textFieldThemesPath);
     }
 
     private void chooseBabelPath() {
@@ -731,17 +731,13 @@ public class OptionsDialog extends SimpleDialog {
     }
 
     private void chooseRoutingServicePath() {
-        RouteConverter r = RouteConverter.getInstance();
-        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-routing-service-path"), r.getRoutingServiceFacade().getRoutingService().getPath());
-        if (directory != null)
-            textFieldRoutingServicePath.setText(directory.getAbsolutePath());
+        chooseDirectoryInto("choose-routing-service-path",
+                RouteConverter.getInstance().getRoutingServiceFacade().getRoutingService().getPath(), textFieldRoutingServicePath);
     }
 
     private void chooseElevationServicePath() {
-        RouteConverter r = RouteConverter.getInstance();
-        File directory = chooseDirectory(r.getFrame(), getBundle().getString("choose-elevation-service-path"), r.getElevationServiceFacade().getElevationService().getPath());
-        if (directory != null)
-            textFieldElevationServicePath.setText(directory.getAbsolutePath());
+        chooseDirectoryInto("choose-elevation-service-path",
+                RouteConverter.getInstance().getElevationServiceFacade().getElevationService().getPath(), textFieldElevationServicePath);
     }
 
     private void close() {
