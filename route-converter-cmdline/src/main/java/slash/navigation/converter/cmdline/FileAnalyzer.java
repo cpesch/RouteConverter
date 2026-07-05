@@ -66,6 +66,28 @@ public class FileAnalyzer {
 
         List<BaseRoute> routes = result.getAllRoutes();
 
+        // A file the parser accepts but with no positions carries no usable
+        // geometry (empty/binary/garbage sniffed as a permissive text format).
+        // Treat it as broken so the caller marks it broken rather than creating
+        // an empty metadata row / rescuing a non-route (specs/00055, 00056).
+        int total = 0;
+        for (BaseRoute route : routes)
+            total += route.getPositionCount();
+        if (total == 0)
+            throw new IOException("No positions found in '" + source.getAbsolutePath() + "'");
+
+        return toJson(routes, source.length(), result.getFormat().getName(),
+                result.getFormat().getExtension(), lengthComputer);
+    }
+
+    /**
+     * JSON emission seam: aggregates the metadata across every position list and
+     * renders the single-line JSON of the analyze contract. Package-visible and
+     * decoupled from parsing so the emission (bbox union, length-kind roll-up,
+     * null handling) can be unit-tested with crafted routes (specs/00055).
+     */
+    static String toJson(List<BaseRoute> routes, long size, String format, String extension,
+                         RouteLengthComputer lengthComputer) {
         int positions = 0;
         double lengthMeters = 0;
         boolean anyLength = false;
@@ -105,7 +127,12 @@ public class FileAnalyzer {
             for (NavigationPosition position : positionList) {
                 Double longitude = position.getLongitude();
                 Double latitude = position.getLatitude();
-                if (longitude != null && latitude != null) {
+                // A non-finite coordinate (NaN/Infinity from a malformed source)
+                // is treated as absent: it never enters the bbox union, so the
+                // emitted bbox doubles stay valid JSON. If no position carries a
+                // finite coordinate pair the bbox is null (specs/00055).
+                if (longitude != null && latitude != null
+                        && Double.isFinite(longitude) && Double.isFinite(latitude)) {
                     anyCoordinate = true;
                     if (latitude > north) north = latitude;
                     if (latitude < south) south = latitude;
@@ -130,18 +157,11 @@ public class FileAnalyzer {
             }
         }
 
-        // A file the parser accepts but with no positions carries no usable
-        // geometry (empty/binary/garbage sniffed as a permissive text format).
-        // Treat it as broken so the caller marks it broken rather than creating
-        // an empty metadata row / rescuing a non-route (specs/00055, 00056).
-        if (positions == 0)
-            throw new IOException("No positions found in '" + source.getAbsolutePath() + "'");
-
         StringBuilder json = new StringBuilder();
         json.append('{');
-        appendNumber(json, "size", source.length());
+        appendNumber(json, "size", size);
         json.append(',');
-        appendString(json, "format", result.getFormat().getName());
+        appendString(json, "format", format);
         json.append(',');
         appendNumber(json, "positionLists", routes.size());
         json.append(',');
@@ -198,7 +218,6 @@ public class FileAnalyzer {
             appendNull(json, "firstName");
         }
         json.append(',');
-        String extension = result.getFormat().getExtension();
         if (extension != null) {
             appendString(json, "extension", extension);
         } else {
