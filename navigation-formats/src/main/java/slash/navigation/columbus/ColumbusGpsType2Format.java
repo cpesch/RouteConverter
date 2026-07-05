@@ -22,16 +22,13 @@ package slash.navigation.columbus;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
-import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 
-import java.io.File;
 import java.io.PrintWriter;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.lang.Math.abs;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteComments.isDefaultDescription;
 import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
@@ -60,19 +57,19 @@ public class ColumbusGpsType2Format extends ColumbusGpsFormat {
     private static final Pattern HEADER_PATTERN = Pattern.compile(COMMON_HEADER + "(" + TYPE_A_HEADER + ")?");
     private static final Pattern LINE_PATTERN = Pattern.
             compile(BEGIN_OF_LINE +
-                    SPACE_OR_ZERO + "(\\d+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([" + VALID_TAG_VALUES + "])" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)([NS])" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)([WE])" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "(\\d*)" + SPACE_OR_ZERO +
-                    "(" + SEPARATOR +
-                    SPACE_OR_ZERO + "([\\d\\.]+)" + SPACE_OR_ZERO + SEPARATOR +
-                    SPACE_OR_ZERO + "([-\\d]+)" + SPACE_OR_ZERO + SEPARATOR + "?" +
-                    SPACE_OR_ZERO + "([^" + SEPARATOR + "]*)" + SPACE_OR_ZERO +
+                    field("\\d+") +                         // 1 index
+                    field("[" + VALID_TAG_VALUES + "]") +   // 2 tag
+                    field("\\d*") +                         // 3 date
+                    field("\\d*") +                         // 4 time
+                    coordinate("[NS]") +                    // 5 latitude, 6 hemisphere
+                    coordinate("[WE]") +                    // 7 longitude, 8 hemisphere
+                    field("[-\\d]+") +                      // 9 height
+                    field("[\\d\\.]+") +                    // 10 speed
+                    lastField("\\d*") +                     // 11 heading
+                    "(" + SEPARATOR +                       // 12 optional Type-A block
+                    field("[\\d\\.]+") +                    // 13 pressure
+                    field("[-\\d]+") + "?" +                // 14 temperature (trailing separator optional)
+                    lastField("[^" + SEPARATOR + "]*") +    // 15 description
                     ")?" +
                     END_OF_LINE);
 
@@ -101,58 +98,24 @@ public class ColumbusGpsType2Format extends ColumbusGpsFormat {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
-        WaypointType waypointType = parseTag(trim(lineMatcher.group(2)));
-        String date = lineMatcher.group(3);
-        String time = lineMatcher.group(4);
-        Double latitude = parseDouble(lineMatcher.group(5));
-        String northOrSouth = lineMatcher.group(6);
-        if ("S".equals(northOrSouth) && latitude != null)
-            latitude = -latitude;
-        Double longitude = parseDouble(lineMatcher.group(7));
-        String westOrEasth = lineMatcher.group(8);
-        if ("W".equals(westOrEasth) && longitude != null)
-            longitude = -longitude;
-        String height = lineMatcher.group(9);
-        String speed = lineMatcher.group(10);
-        String heading = lineMatcher.group(11);
         boolean isTypeA = trim(lineMatcher.group(12)) != null;
-        String pressure = lineMatcher.group(13);
-        String temperature = lineMatcher.group(14);
-        String description = parseDescription(removeZeros(lineMatcher.group(15)), removeZeros(lineMatcher.group(1)), waypointType);
-
-        CompactCalendar dateAndTime = parseDateAndTime(date, time);
-        if(getUseLocalTimeZone())
+        CompactCalendar dateAndTime = parseDateAndTime(lineMatcher.group(3), lineMatcher.group(4));
+        if (getUseLocalTimeZone())
             dateAndTime = dateAndTime.asUTCTimeInTimeZone(TimeZone.getTimeZone(getTimeZone()));
-        Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(height), parseDouble(speed),
-                dateAndTime, description,
-                context.getFile() != null && isTypeA ? new File(context.getFile().getParentFile(), description) : null);
-        position.setWaypointType(waypointType);
-        position.setHeading(parseDouble(heading));
-        position.setPressure(parseDouble(pressure));
-        position.setTemperature(parseDouble(temperature));
+        Wgs84Position position = parseCommonPosition(lineMatcher, context, dateAndTime, 15, isTypeA);
+        position.setPressure(parseDouble(lineMatcher.group(13)));
+        position.setTemperature(parseDouble(lineMatcher.group(14)));
         return position;
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        String date = fillWithZeros(formatDate(position.getTime()), 6);
-        String time = fillWithZeros(formatTime(position.getTime()), 6);
-        String latitude = formatDoubleAsString(abs(position.getLatitude()), 6);
-        String northOrSouth = position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
-        String longitude = formatDoubleAsString(abs(position.getLongitude()), 6);
-        String westOrEast = position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
-        String height = fillWithZeros(position.getElevation() != null ? formatIntAsString(position.getElevation().intValue()) : "0", 5);
         String speed = position.getSpeed() != null ? formatDoubleAsString(position.getSpeed()) : "0";
         String heading = fillWithZeros(position.getHeading() != null ? formatIntAsString(position.getHeading().intValue()) : "0", 3);
         String pressure = position.getPressure() != null ? formatDoubleAsString(position.getPressure()) : "0";
         String temperature = fillWithZeros(position.getTemperature() != null ? formatIntAsString(position.getTemperature().intValue()) : "0", 2);
         String description = !isDefaultDescription(position.getDescription()) ? position.getDescription() : "";
 
-        writer.println(fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
-                formatTag(position) + SEPARATOR +
-                date + SEPARATOR + time + SEPARATOR +
-                latitude + northOrSouth + SEPARATOR +
-                longitude + westOrEast + SEPARATOR +
-                height + SEPARATOR +
+        writer.println(formatCommonPrefix(position, index) + SEPARATOR +
                 speed + SEPARATOR +
                 heading + SEPARATOR +
                 pressure + SEPARATOR +

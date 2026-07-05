@@ -23,13 +23,15 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
+import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static slash.common.io.Transfer.trim;
+import static java.lang.Math.abs;
+import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
@@ -158,5 +160,83 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
 
     protected String formatTag(Wgs84Position position) {
         return extractWaypointType(position).value();
+    }
+
+    // --- shared LINE_PATTERN building blocks ---
+
+    /**
+     * A comma-terminated capturing field surrounded by optional whitespace/NUL padding.
+     */
+    protected static String field(String regex) {
+        return SPACE_OR_ZERO + "(" + regex + ")" + SPACE_OR_ZERO + SEPARATOR;
+    }
+
+    /**
+     * A capturing field without a trailing separator (the last field of a line).
+     */
+    protected static String lastField(String regex) {
+        return SPACE_OR_ZERO + "(" + regex + ")" + SPACE_OR_ZERO;
+    }
+
+    /**
+     * A coordinate field: a decimal number followed by its hemisphere letter, each captured.
+     */
+    protected static String coordinate(String hemisphere) {
+        return SPACE_OR_ZERO + "([\\d\\.]+)(" + hemisphere + ")" + SPACE_OR_ZERO + SEPARATOR;
+    }
+
+    // --- shared read/write of the fields common to all Columbus line formats ---
+
+    /**
+     * Parses the fields common to every Columbus line format (index, tag, date/time,
+     * latitude/longitude with hemisphere sign, height, speed, heading, description) and
+     * builds the position; format-specific fields (dop/pressure/temperature) are set by callers.
+     *
+     * @param descriptionGroup the matcher group holding the description/voice column
+     * @param isTypeA          whether the line has the extended (Type-A) columns, enabling a voice file
+     */
+    protected Wgs84Position parseCommonPosition(Matcher matcher, ParserContext context, CompactCalendar dateAndTime,
+                                                int descriptionGroup, boolean isTypeA) {
+        WaypointType waypointType = parseTag(trim(matcher.group(2)));
+        Double latitude = parseDouble(matcher.group(5));
+        if ("S".equals(matcher.group(6)) && latitude != null)
+            latitude = -latitude;
+        Double longitude = parseDouble(matcher.group(7));
+        if ("W".equals(matcher.group(8)) && longitude != null)
+            longitude = -longitude;
+        String description = parseDescription(removeZeros(matcher.group(descriptionGroup)), removeZeros(matcher.group(1)), waypointType);
+
+        Wgs84Position position = new Wgs84Position(longitude, latitude, parseDouble(matcher.group(9)), parseDouble(matcher.group(10)),
+                dateAndTime, description,
+                context.getFile() != null && isTypeA ? new File(context.getFile().getParentFile(), description) : null);
+        position.setWaypointType(waypointType);
+        position.setHeading(parseDouble(matcher.group(11)));
+        return position;
+    }
+
+    protected String latitudeHemisphere(Wgs84Position position) {
+        return position.getLatitude() != null && position.getLatitude() < 0.0 ? "S" : "N";
+    }
+
+    protected String longitudeHemisphere(Wgs84Position position) {
+        return position.getLongitude() != null && position.getLongitude() < 0.0 ? "W" : "E";
+    }
+
+    /**
+     * Formats the leading columns shared by all Columbus line formats up to and
+     * including height: index, tag, date, time, latitude+hemisphere, longitude+hemisphere, height.
+     */
+    protected String formatCommonPrefix(Wgs84Position position, int index) {
+        String date = fillWithZeros(formatDate(position.getTime()), 6);
+        String time = fillWithZeros(formatTime(position.getTime()), 6);
+        String latitude = formatDoubleAsString(abs(position.getLatitude()), 6);
+        String longitude = formatDoubleAsString(abs(position.getLongitude()), 6);
+        String height = fillWithZeros(position.getElevation() != null ? formatIntAsString(position.getElevation().intValue()) : "0", 5);
+        return fillWithZeros(Integer.toString(index + 1), 6) + SEPARATOR +
+                formatTag(position) + SEPARATOR +
+                date + SEPARATOR + time + SEPARATOR +
+                latitude + latitudeHemisphere(position) + SEPARATOR +
+                longitude + longitudeHemisphere(position) + SEPARATOR +
+                height;
     }
  }
