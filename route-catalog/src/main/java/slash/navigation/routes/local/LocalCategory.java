@@ -87,7 +87,12 @@ public class LocalCategory implements Category {
                     } else
                         continue;
                 } else if (isPotentialValidAlias(subDirectory)) {
-                    MacAlias alias = new MacAlias(subDirectory);
+                    MacAlias alias;
+                    try {
+                        alias = new MacAlias(subDirectory);
+                    } catch (IOException e) {
+                        continue;
+                    }
                     if (alias.isDirectory())
                         subDirectory = new File(alias.getRealFilename());
                     else
@@ -142,7 +147,12 @@ public class LocalCategory implements Category {
                     else
                         continue;
                 } else if (isPotentialValidAlias(file)) {
-                    MacAlias alias = new MacAlias(file);
+                    MacAlias alias;
+                    try {
+                        alias = new MacAlias(file);
+                    } catch (IOException e) {
+                        continue;
+                    }
                     if (alias.isFile())
                         file = new File(alias.getRealFilename());
                     else

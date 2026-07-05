@@ -36,7 +36,8 @@ import static slash.common.system.Platform.isMac;
  * @author Christian Pesch
  */
 public class MacAlias {
-    // modern Finder aliases are bookmark data starting with "book\0\0\0\0mark"
+    // cheap sniff: checks only the leading 4 bytes ("book") of the fuller
+    // "book\0\0\0\0mark" bookmark-data signature
     private static final byte[] MAGIC = {'b', 'o', 'o', 'k'};
     private static final long RESOLVE_TIMEOUT_SECONDS = 10;
 
@@ -49,7 +50,7 @@ public class MacAlias {
      * any code looping over several files should first check this.
      *
      * @param file the potential alias
-     * @return true if this is a macOS running a file that carries the alias magic, false otherwise
+     * @return true if this is macOS and the file starts with the alias magic, false otherwise
      * @throws IOException if an IOException is thrown while reading from the file
      */
     public static boolean isPotentialValidAlias(File file) throws IOException {
@@ -105,23 +106,24 @@ public class MacAlias {
         String script = "tell application \"Finder\" to get POSIX path of " +
                 "(original item of ((POSIX file \"" + path + "\") as alias) as text)";
         Process process = new ProcessBuilder("osascript", "-e", script)
-                .redirectErrorStream(false)
+                .redirectErrorStream(true)
                 .start();
         try {
             String result;
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream(), UTF_8))) {
                 result = reader.readLine();
             }
-            if (!process.waitFor(RESOLVE_TIMEOUT_SECONDS, TimeUnit.SECONDS)) {
-                process.destroyForcibly();
+            if (!process.waitFor(RESOLVE_TIMEOUT_SECONDS, TimeUnit.SECONDS))
                 return null;
-            }
             if (process.exitValue() != 0 || result == null || result.trim().isEmpty())
                 return null;
             return result.trim();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new IOException(format("Interrupted while resolving macOS alias %s", file), e);
+        } finally {
+            if (process.isAlive())
+                process.destroyForcibly();
         }
     }
 }
