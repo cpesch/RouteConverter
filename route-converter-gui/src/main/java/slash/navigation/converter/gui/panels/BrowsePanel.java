@@ -59,6 +59,7 @@ import slash.navigation.routes.remote.RemoteRoute;
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
+import javax.swing.table.TableRowSorter;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.datatransfer.Transferable;
@@ -93,11 +94,19 @@ import static slash.navigation.converter.gui.dnd.CategorySelection.categoryFlavo
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractDescription;
 import static slash.navigation.converter.gui.dnd.DnDHelper.extractUrl;
 import static slash.navigation.converter.gui.dnd.RouteSelection.routeFlavor;
+import static slash.navigation.converter.gui.comparators.RouteModelComparators.byCreator;
+import static slash.navigation.converter.gui.comparators.RouteModelComparators.byDistance;
+import static slash.navigation.converter.gui.comparators.RouteModelComparators.byDuration;
+import static slash.navigation.converter.gui.comparators.RouteModelComparators.byName;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
 import static slash.navigation.converter.gui.models.LocalActionConstants.CATEGORIES;
 import static slash.navigation.converter.gui.models.LocalActionConstants.ROUTES;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.getDefaultRowHeight;
+import static slash.navigation.routes.impl.RoutesTableModel.CREATOR_COLUMN;
+import static slash.navigation.routes.impl.RoutesTableModel.DURATION_COLUMN;
+import static slash.navigation.routes.impl.RoutesTableModel.LENGTH_COLUMN;
+import static slash.navigation.routes.impl.RoutesTableModel.NAME_COLUMN;
 import static slash.navigation.gui.helpers.JTableHelper.selectAndScrollToPosition;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
 import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
@@ -205,7 +214,17 @@ public class BrowsePanel implements PanelInTab {
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
         RoutesTableColumnModel tableColumnModel = new RoutesTableColumnModel(routeMetadataSource);
         tableRoutes.setColumnModel(tableColumnModel);
-        new RoutesTableHeaderMenu(tableRoutes.getTableHeader(), tableColumnModel, actionManager);
+        new RoutesTableHeaderMenu(tableRoutes.getTableHeader(), Application.getInstance().getContext().getMenuBar(), tableColumnModel, actionManager);
+        // spec 00012 polish: sort by clicking headers; length/duration sort numerically on the
+        // metadata values (missing sorts last), name/creator case-insensitively. setSortsOnUpdates
+        // keeps the order correct as fireTableRowsUpdated fills in metadata
+        TableRowSorter<RoutesTableModel> rowSorter = new TableRowSorter<>(getRoutesListModel());
+        rowSorter.setSortsOnUpdates(true);
+        rowSorter.setComparator(NAME_COLUMN, byName());
+        rowSorter.setComparator(CREATOR_COLUMN, byCreator());
+        rowSorter.setComparator(LENGTH_COLUMN, byDistance(routeMetadataSource));
+        rowSorter.setComparator(DURATION_COLUMN, byDuration(routeMetadataSource));
+        tableRoutes.setRowSorter(rowSorter);
         catalogModel.getRoutesTableModel().addTableModelListener(e -> fillRouteDistancesAndTimes());
         tableRoutes.registerKeyboardAction(new FrameAction() {
             public void run() {
@@ -318,7 +337,7 @@ public class BrowsePanel implements PanelInTab {
         if (selectedRows.length == 0)
             return;
 
-        RouteModel route = getRoutesListModel().getRoute(selectedRows[0]);
+        RouteModel route = getRoutesListModel().getRoute(tableRoutes.convertRowIndexToModel(selectedRows[0]));
         String urlString;
         URL url;
         try {
@@ -636,6 +655,8 @@ public class BrowsePanel implements PanelInTab {
             JTable table = (JTable) c;
             RoutesTableModel model = (RoutesTableModel) table.getModel();
             int[] selectedRows = table.getSelectedRows();
+            for (int i = 0; i < selectedRows.length; i++)
+                selectedRows[i] = table.convertRowIndexToModel(selectedRows[i]);
             List<RouteModel> selectedRoutes = toModels(selectedRows, model);
             return new RouteSelection(selectedRoutes);
         }

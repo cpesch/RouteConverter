@@ -43,7 +43,7 @@ public class RouteModelHelper {
         int[] selectedRows = table.getSelectedRows();
         List<RouteModel> routeModels = new ArrayList<>();
         for (int selectedRow : selectedRows) {
-            int row = table.convertRowIndexToView(selectedRow);
+            int row = table.convertRowIndexToModel(selectedRow);
             if(table.getModel().getRowCount() <= row)
                 continue;
 
@@ -70,8 +70,9 @@ public class RouteModelHelper {
         RoutesTableModel model = (RoutesTableModel) table.getModel();
         for(int i = 0; i < model.getRowCount(); i++) {
             if(model.getRoute(i).route().equals(route.route())) {
-                scrollToPosition(table, i);
-                table.getSelectionModel().addSelectionInterval(i, i);
+                int viewIndex = table.convertRowIndexToView(i);
+                scrollToPosition(table, viewIndex);
+                table.getSelectionModel().addSelectionInterval(viewIndex, viewIndex);
                 break;
             }
         }
