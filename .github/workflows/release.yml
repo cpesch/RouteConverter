@@ -79,7 +79,9 @@ jobs:
         env:
           DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
         run: |
-          rsync -av --omit-dir-times --no-perms \
+          # --delete: /latest/ must only hold the current release; prunes prior-version
+          # orphans (renamed/discontinued assets) that would otherwise serve stale builds
+          rsync -av --delete --omit-dir-times --no-perms \
             artefacts/ \
             "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/downloads/release/"
       - name: Rsync to static.routeconverter.com/downloads/previous-releases/<v>/
