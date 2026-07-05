@@ -89,6 +89,18 @@ public class UpdateDecouplerTest {
     }
 
     @Test
+    public void publicConstructorRunsWorkOnABackgroundExecutor() {
+        UpdateDecoupler backgroundDecoupler = new UpdateDecoupler(positionsModel, characteristics -> waypointUpdater);
+        try {
+            backgroundDecoupler.handleUpdate(INSERT, 0, 2);
+            // its own single-thread executor runs the work asynchronously
+            verify(waypointUpdater, timeout(2000)).handleAdd(0, 2);
+        } finally {
+            backgroundDecoupler.dispose();
+        }
+    }
+
+    @Test
     @SuppressWarnings("unchecked")
     public void replaceRouteClearsPreviousUpdaterAndFillsSelectedOne() throws Exception {
         BaseRoute route = mock(BaseRoute.class);
