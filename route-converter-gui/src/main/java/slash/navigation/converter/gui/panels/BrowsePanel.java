@@ -336,11 +336,10 @@ public class BrowsePanel implements PanelInTab {
     }
 
     private void openRoute() {
-        int[] selectedRows = tableRoutes.getSelectedRows();
-        if (selectedRows.length == 0)
+        RouteModel route = getSelectedRouteModel(tableRoutes);
+        if (route == null)
             return;
 
-        RouteModel route = getRoutesListModel().getRoute(tableRoutes.convertRowIndexToModel(selectedRows[0]));
         String urlString;
         URL url;
         try {
@@ -660,23 +659,8 @@ public class BrowsePanel implements PanelInTab {
             return MOVE;
         }
 
-        private List<RouteModel> toModels(int[] rowIndices, RoutesTableModel model) {
-            List<RouteModel> selectedRoutes = new ArrayList<>();
-            for (int selectedRow : rowIndices) {
-                RouteModel route = model.getRoute(selectedRow);
-                selectedRoutes.add(route);
-            }
-            return selectedRoutes;
-        }
-
         protected Transferable createTransferable(JComponent c) {
-            JTable table = (JTable) c;
-            RoutesTableModel model = (RoutesTableModel) table.getModel();
-            int[] selectedRows = table.getSelectedRows();
-            for (int i = 0; i < selectedRows.length; i++)
-                selectedRows[i] = table.convertRowIndexToModel(selectedRows[i]);
-            List<RouteModel> selectedRoutes = toModels(selectedRows, model);
-            return new RouteSelection(selectedRoutes);
+            return new RouteSelection(getSelectedRouteModels((JTable) c));
         }
     }
 
