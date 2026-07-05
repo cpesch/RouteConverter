@@ -33,6 +33,7 @@ import slash.navigation.gui.actions.DialogAction;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -60,16 +61,32 @@ public class SendErrorReportDialog extends SimpleDialog {
     private JTextField textFieldFilePath;
     private JButton buttonChooseFilePath;
     private JButton buttonSend;
+    private JButton buttonCopyDiagnosticReport;
     private JButton buttonCancel;
 
+    private final String diagnosticReport;
+    private boolean sent;
+
     public SendErrorReportDialog() {
+        this(null);
+    }
+
+    /**
+     * Opens the dialog pre-filled with a diagnostic report (e.g. from a captured
+     * crash): the report is prepended to the log area so the user reviews and sends
+     * a full root-cause payload. The "Copy diagnostic report" button then copies the
+     * report; without a report it copies the log area content.
+     */
+    public SendErrorReportDialog(String diagnosticReport) {
         super(RouteConverter.getInstance().getFrame(), "send-error-report");
+        this.diagnosticReport = diagnosticReport;
         setTitle(RouteConverter.getBundle().getString("send-error-report-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonSend);
 
-        textAreaLog.setText(LoggingHelper.getInstance().getLogFileAsString());
+        String log = LoggingHelper.getInstance().getLogFileAsString();
+        textAreaLog.setText(diagnosticReport != null ? diagnosticReport + "\n\n" + log : log);
 
         textAreaDescription.getDocument().addDocumentListener(new AbstractDocumentListener() {
             public void process(DocumentEvent e) {
@@ -87,6 +104,12 @@ public class SendErrorReportDialog extends SimpleDialog {
         buttonSend.addActionListener(new DialogAction(this) {
             public void run() {
                 send();
+            }
+        });
+
+        buttonCopyDiagnosticReport.addActionListener(new DialogAction(this) {
+            public void run() {
+                copyDiagnosticReport();
             }
         });
 
@@ -127,12 +150,26 @@ public class SendErrorReportDialog extends SimpleDialog {
         textFieldFilePath.setText(selected.getAbsolutePath());
     }
 
+    /**
+     * Whether the report was handed to the send pipeline (the user clicked Send).
+     * Used by the startup spool offer to delete the spooled report only after a send.
+     */
+    public boolean isSent() {
+        return sent;
+    }
+
     private void send() {
         String log = textAreaLog.getText();
         String description = textAreaDescription.getText();
         File file = Files.findExistingPath(new File(textFieldFilePath.getText()));
         RouteConverter.getInstance().sendErrorReport(log, description, file);
+        sent = true;
         dispose();
+    }
+
+    private void copyDiagnosticReport() {
+        String report = diagnosticReport != null ? diagnosticReport : textAreaLog.getText();
+        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(report), null);
     }
 
     private void cancel() {
@@ -161,16 +198,19 @@ public class SendErrorReportDialog extends SimpleDialog {
         panel1.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonSend = new JButton();
         this.$$$loadButtonText$$$(buttonSend, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "send"));
         panel2.add(buttonSend, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonCopyDiagnosticReport = new JButton();
+        this.$$$loadButtonText$$$(buttonCopyDiagnosticReport, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "copy-diagnostic-report"));
+        panel2.add(buttonCopyDiagnosticReport, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonCancel = new JButton();
         this.$$$loadButtonText$$$(buttonCancel, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "cancel"));
-        panel2.add(buttonCancel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel2.add(buttonCancel, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        panel2.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel2.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(9, 2, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));

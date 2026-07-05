@@ -54,6 +54,18 @@ public abstract class Application {
     private static final String PREFERRED_LANGUAGE_PREFERENCE = "preferredLanguage";
     private static final String PREFERRED_COUNTRY_PREFERENCE = "preferredCountry";
 
+    private static volatile CrashHandler crashHandler;
+    private static final ThreadLocal<Boolean> handlingCrash = ThreadLocal.withInitial(() -> Boolean.FALSE);
+
+    /**
+     * Registers the application-specific handler that receives every uncaught
+     * exception routed to the default handler installed in {@link #launch}. Kept
+     * pluggable so this application-generic module carries no report/dialog logic.
+     */
+    public static void setCrashHandler(CrashHandler handler) {
+        crashHandler = handler;
+    }
+
     Application() {
         exitListeners = new CopyOnWriteArrayList<>();
         context = new ApplicationContext();
@@ -106,8 +118,33 @@ public abstract class Application {
         // setup) died on System.err and never reached the log file or an error
         // report — a blank/half-built UI with nothing to diagnose. Now every
         // uncaught exception, on any thread, lands in the RC log.
-        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
-                log.log(SEVERE, format("Uncaught exception in thread %s", thread.getName()), throwable));
+        //
+        // This also covers exceptions thrown on the EDT while a modal dialog's
+        // secondary event pump is active: on Java 9+ (verified on 17/21)
+        // EventDispatchThread.processException routes to
+        // getUncaughtExceptionHandler().uncaughtException(...), and the nested modal
+        // pump uses the same pumpOneEventForFilters -> processException path, so it
+        // falls back to this default handler too. No custom EventQueue is needed.
+        // (See EventDispatchThreadExceptionTest for the plain-EDT verification.)
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            log.log(SEVERE, format("Uncaught exception in thread %s", thread.getName()), throwable);
+
+            // hand off to the pluggable application handler, guarded against a crash
+            // loop: a throw from within the handler must not re-enter it on the same
+            // thread (the concrete handler additionally shows at most one dialog per
+            // session and only spools further crashes)
+            CrashHandler handler = crashHandler;
+            if (handler != null && !handlingCrash.get()) {
+                handlingCrash.set(Boolean.TRUE);
+                try {
+                    handler.handleCrash(thread, throwable);
+                } catch (Throwable t) {
+                    log.log(SEVERE, "Crash handler failed", t);
+                } finally {
+                    handlingCrash.set(Boolean.FALSE);
+                }
+            }
+        });
 
         Runnable doCreateAndShowGUI = () -> {
             try {
