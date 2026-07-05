@@ -54,6 +54,8 @@ Updated on July 4, 2026 (Phase 20 - `navigation-formats` Excel position: 4 new m
 
 Updated on July 5, 2026 (Phase 21 - `navigation-formats` core route domain: 10 new mock-free unit tests for `BaseRoute`'s shared position-manipulation logic via the concrete `Wgs84Route` (top/move/bottom reordering, remove, removeDuplicates by adjacent distance, getContainedPositions, getPositionsWithinDistanceToPredecessor, getClosestPosition by coordinates and by time, getSuccessor/getIndex/getPosition). Highest refactoring-robustness target - `BaseRoute` is the spine every format's route extends. All green in Surefire).
 
+Updated on July 5, 2026 (Phase 22 - `navigation-formats` position geo-math: 9 new mock-free unit tests for `BaseNavigationPosition` via the concrete `Wgs84Position` (hasCoordinates/hasTime, calculateDistance ~111 km per degree + null without both coordinates, calculateAngle due-east 90, calculateElevation other-minus-this, calculateTime millis delta, calculateSpeed km/h + null without both times, calculateOrthogonalDistance ~0 on the line). The position-level counterpart to Phase 21's `BaseRoute`; pure geo/units math with high refactor blast-radius. All green in Surefire).
+
 ## Summary
 
 JaCoCo remains the right coverage tool for this repository.
@@ -545,6 +547,21 @@ Observed result:
 - build succeeded
 - 10 new tests, no mocks: `BaseRouteTest` drives `BaseRoute`'s shared editing logic through a concrete `Wgs84Route` (null format is safe - these methods only touch positions), with positions along the zero meridian at latitudes 0..3
 - distance-based cases use generous metre thresholds (1 degree of latitude is ~111 km) so they stay robust to the exact haversine constants
+- all green: `Tests run: 10, Failures: 0, Errors: 0, Skipped: 0`
+
+### Verified on July 5, 2026: `navigation-formats` Phase 22 unit tests
+
+Verified command:
+
+```sh
+./mvnw -pl navigation-formats test -Dtest=BaseNavigationPositionTest \
+  -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+Observed result:
+
+- build succeeded
+- 9 new tests, no mocks: `BaseNavigationPositionTest` drives the shared geo/units math through `Wgs84Position`; distance/speed assertions use generous deltas (1 degree latitude ~= 111 km) to stay robust to the bearing constants
 - all green: `Tests run: 10, Failures: 0, Errors: 0, Skipped: 0`
 
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
