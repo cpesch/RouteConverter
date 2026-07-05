@@ -23,6 +23,7 @@ package slash.navigation.base;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.After;
 import org.junit.Test;
+import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.gpx.Gpx11Format;
 
@@ -60,6 +61,13 @@ public class NavigationFormatParserTest {
             "<wpt lat=\"1.0\" lon=\"2.0\"><name>a</name></wpt></gpx>";
 
     private static final String COLUMBUS_HEADER = "INDEX,TAG,DATE,TIME,LATITUDE N/S,LONGITUDE E/W,HEIGHT,SPEED,HEADING,FIX MODE,VALID,PDOP,HDOP,VDOP,VOX\r\n";
+
+    // a GPX with two independent lists: one route and one track
+    private static final String GPX_11_TWO_ROUTES = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+            "<gpx version=\"1.1\" creator=\"test\" xmlns=\"http://www.topografix.com/GPX/1/1\">" +
+            "<rte><name>r</name><rtept lat=\"1.0\" lon=\"2.0\"/><rtept lat=\"1.1\" lon=\"2.1\"/></rte>" +
+            "<trk><name>t</name><trkseg><trkpt lat=\"3.0\" lon=\"4.0\"/><trkpt lat=\"3.1\" lon=\"4.1\"/></trkseg></trk>" +
+            "</gpx>";
 
     @After
     public void tearDown() {
@@ -186,6 +194,44 @@ public class NavigationFormatParserTest {
         ParserResult result = parser.read(GPX_11);
         // one position and a format with a large per-file limit => a single file
         assertEquals(1, NavigationFormatParser.getNumberOfFilesToWriteFor(result.getTheRoute(), format, false));
+    }
+
+    @Test
+    public void testGetNumberOfFilesToWriteForSplitsLargeRoute() throws IOException {
+        ParserResult result = parser.read(temporaryFile(".csv", columbusBody(250)));
+        assertEquals(250, result.getTheRoute().getPositionCount());
+        // MTP0809 caps at 1 + 99 + 1 = 101 positions per file => ceil(250 / 101) = 3 files
+        assertEquals(3, NavigationFormatParser.getNumberOfFilesToWriteFor(result.getTheRoute(), new MTP0809Format(), false));
+    }
+
+    @Test
+    public void testReadMultipleRoutes() throws IOException {
+        ParserResult result = parser.read(GPX_11_TWO_ROUTES);
+        assertTrue(result.isSuccessful());
+        assertEquals(Gpx11Format.class, result.getFormat().getClass());
+        assertEquals(2, result.getAllRoutes().size());
+    }
+
+    @Test
+    public void testWriteMultipleRoutesToSingleFile() throws IOException {
+        List<BaseRoute> routes = parser.read(GPX_11_TWO_ROUTES).getAllRoutes();
+        assertEquals(2, routes.size());
+        File target = File.createTempFile("parser-test", ".gpx");
+        temporaryFiles.add(target);
+
+        parser.write(routes, new Gpx11Format(), target);
+
+        ParserResult reread = parser.read(target);
+        assertTrue(reread.isSuccessful());
+        assertEquals(2, reread.getAllRoutes().size());
+    }
+
+    @Test
+    public void testReadEmptyInputIsLenientlySuccessful() throws IOException {
+        // documents the firstSuccessfulFormat fallback: with no positions parsed,
+        // the parser still reports the first format that did not throw
+        ParserResult result = parser.read("");
+        assertTrue(result.isSuccessful());
     }
 
     private interface UrlConsumer {
