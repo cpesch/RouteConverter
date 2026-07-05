@@ -119,9 +119,12 @@ public class RouteConverterCmdLine {
     /**
      * {@code analyze <source file> [--brouter-segments <dir>]} — writes one line
      * of metadata JSON (see src/main/doc/analyze-json.md, specs/00055) to stdout.
-     * The {@code --brouter-segments} option is reserved for the BRouter length
-     * seam (see {@link RouteLengthComputer}); it is accepted but currently unused,
-     * so Route-type lists are measured as beeline.
+     * When {@code --brouter-segments <dir>} points at a directory of BRouter
+     * {@code .rd5} segments, Route-characteristic (planned) position lists inside
+     * coverage are routed on-road and reported as {@code routed}; without the
+     * option, or for lists outside coverage / that fail to route, they fall back
+     * to {@code beeline} (see {@link BRouterRouteLengthComputer}). Tracks and
+     * waypoint lists are always measured point-to-point.
      */
     private int analyze(String[] args) {
         if (args.length < 2) {
@@ -135,8 +138,10 @@ public class RouteConverterCmdLine {
             return 10;
         }
 
+        RouteLengthComputer lengthComputer = createLengthComputer(args);
+
         try {
-            FileAnalyzer analyzer = new FileAnalyzer(registry, new PointToPointLengthComputer());
+            FileAnalyzer analyzer = new FileAnalyzer(registry, lengthComputer);
             String json = analyzer.analyze(source);
             System.out.println(json);
             return 0;
@@ -144,6 +149,27 @@ public class RouteConverterCmdLine {
             log.severe("Error while analyzing '" + source.getAbsolutePath() + "': " + e);
             return 25;
         }
+    }
+
+    /**
+     * Picks the BRouter-backed computer when {@code --brouter-segments <dir>}
+     * names an existing directory, otherwise the point-to-point default. A
+     * missing or non-existent directory is not fatal: everything is measured as
+     * beeline/track so the analyze run still emits JSON.
+     */
+    private RouteLengthComputer createLengthComputer(String[] args) {
+        for (int i = 2; i < args.length - 1; i++) {
+            if ("--brouter-segments".equals(args[i])) {
+                File segments = absolutize(new File(args[i + 1]));
+                if (segments.isDirectory()) {
+                    log.info("Using BRouter segments from " + segments.getAbsolutePath() + " for routed lengths");
+                    return new BRouterRouteLengthComputer(segments);
+                }
+                log.warning("BRouter segments directory '" + segments.getAbsolutePath() + "' does not exist; using beeline lengths");
+                break;
+            }
+        }
+        return new PointToPointLengthComputer();
     }
 
     private void convert(File source, NavigationFormat format, File target) throws IOException {

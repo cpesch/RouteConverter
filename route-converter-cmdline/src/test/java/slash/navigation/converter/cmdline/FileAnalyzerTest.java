@@ -84,6 +84,20 @@ public class FileAnalyzerTest {
     }
 
     @Test
+    public void routeFileWithBRouterButNoSegmentsStillEmitsBeelineJson() throws IOException, URISyntaxException {
+        // wiring the BRouter computer at a non-existent segments directory must
+        // never crash the analyze run: JSON is still produced, kind is beeline
+        File missing = new File(System.getProperty("java.io.tmpdir"), "no-such-brouter-segments-dir");
+        FileAnalyzer brouterAnalyzer = new FileAnalyzer(new CmdLineNavigationFormatRegistry(),
+                new BRouterRouteLengthComputer(missing));
+
+        File source = resource("analyze-route.gpx");
+        String json = brouterAnalyzer.analyze(source);
+        assertTrue(json, json.contains("\"lengthKind\":\"beeline\""));
+        assertTrue(json, json.contains("\"positionLists\":1"));
+    }
+
+    @Test
     public void corruptZipFails() throws URISyntaxException {
         // a hostile/corrupt zip must fail the analysis, not produce metadata
         File source = resource("analyze-corrupt.zip");

@@ -10,6 +10,11 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <properties>
+        <!-- keep in sync with brouter/pom.xml: the analyze BRouter length seam reuses these -->
+        <brouter.version>1.7.8</brouter.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -21,6 +26,34 @@
             <artifactId>log4j-to-slf4j</artifactId>
             <version>2.24.3</version>
             <scope>runtime</scope>
+        </dependency>
+        <!-- BRouter offline routing for the analyze routed-length seam (specs/00055 P2b).
+             RoutingContext/RoutingEngine are used directly, matching the calling
+             convention in slash.navigation.brouter.BRouter#getRouteBetween. -->
+        <dependency>
+            <groupId>org.btools</groupId>
+            <artifactId>brouter-core</artifactId>
+            <version>${brouter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btools</groupId>
+            <artifactId>brouter-expressions</artifactId>
+            <version>${brouter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btools</groupId>
+            <artifactId>brouter-mapaccess</artifactId>
+            <version>${brouter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btools</groupId>
+            <artifactId>brouter-codec</artifactId>
+            <version>${brouter.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.btools</groupId>
+            <artifactId>brouter-util</artifactId>
+            <version>${brouter.version}</version>
         </dependency>
     </dependencies>
 </project>
