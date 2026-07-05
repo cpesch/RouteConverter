@@ -208,7 +208,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         buttonChooseMapsPath.addActionListener(new FrameAction() {
             public void run() {
-                chooseMapPath();
+                chooseDirectoryInto("choose-map-path", RouteConverter.getInstance().getMapView().getMapsPath(), textFieldMapsPath);
             }
         });
         textFieldThemesPath.getDocument().addDocumentListener(new DocumentListener() {
@@ -234,7 +234,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         buttonChooseThemesPath.addActionListener(new FrameAction() {
             public void run() {
-                chooseThemePath();
+                chooseDirectoryInto("choose-theme-path", RouteConverter.getInstance().getMapView().getThemesPath(), textFieldThemesPath);
             }
         });
 
@@ -415,7 +415,8 @@ public class OptionsDialog extends SimpleDialog {
         });
         buttonChooseRoutingServicePath.addActionListener(new FrameAction() {
             public void run() {
-                chooseRoutingServicePath();
+                chooseDirectoryInto("choose-routing-service-path",
+                        RouteConverter.getInstance().getRoutingServiceFacade().getRoutingService().getPath(), textFieldRoutingServicePath);
             }
         });
         handleRoutingServiceUpdate();
@@ -502,7 +503,8 @@ public class OptionsDialog extends SimpleDialog {
         });
         buttonChooseElevationServicePath.addActionListener(new FrameAction() {
             public void run() {
-                chooseElevationServicePath();
+                chooseDirectoryInto("choose-elevation-service-path",
+                        RouteConverter.getInstance().getElevationServiceFacade().getElevationService().getPath(), textFieldElevationServicePath);
             }
         });
         handleElevationServiceUpdate();
@@ -703,14 +705,6 @@ public class OptionsDialog extends SimpleDialog {
             textField.setText(directory.getAbsolutePath());
     }
 
-    private void chooseMapPath() {
-        chooseDirectoryInto("choose-map-path", RouteConverter.getInstance().getMapView().getMapsPath(), textFieldMapsPath);
-    }
-
-    private void chooseThemePath() {
-        chooseDirectoryInto("choose-theme-path", RouteConverter.getInstance().getMapView().getThemesPath(), textFieldThemesPath);
-    }
-
     private void chooseBabelPath() {
         JFileChooser chooser = createJFileChooser();
         chooser.setDialogTitle(getBundle().getString("choose-gpsbabel-path"));
@@ -728,16 +722,6 @@ public class OptionsDialog extends SimpleDialog {
         }
 
         textFieldBabelPath.setText(selected.getAbsolutePath());
-    }
-
-    private void chooseRoutingServicePath() {
-        chooseDirectoryInto("choose-routing-service-path",
-                RouteConverter.getInstance().getRoutingServiceFacade().getRoutingService().getPath(), textFieldRoutingServicePath);
-    }
-
-    private void chooseElevationServicePath() {
-        chooseDirectoryInto("choose-elevation-service-path",
-                RouteConverter.getInstance().getElevationServiceFacade().getElevationService().getPath(), textFieldElevationServicePath);
     }
 
     private void close() {
