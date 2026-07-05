@@ -34,6 +34,8 @@ on:
     secrets:
       SIGNPATH_API_TOKEN:
         required: false
+      CRASH_REPORT_HMAC_SECRET:
+        required: false
 
 jobs:
   build:
