@@ -188,7 +188,14 @@ public class FileAnalyzer {
             appendNull(json, "lengthM");
         }
         json.append(',');
-        appendString(json, "lengthKind", aggregateKind != null ? aggregateKind : "track");
+        // lengthKind tracks lengthM: when nothing was computable (lengthM null)
+        // the kind is null too, rather than falsely defaulting to "track"
+        // (specs/00055). rc-site tolerates null: data.get('lengthKind') or ''.
+        if (aggregateKind != null) {
+            appendString(json, "lengthKind", aggregateKind);
+        } else {
+            appendNull(json, "lengthKind");
+        }
         json.append(',');
         if (anyTime) {
             appendNumber(json, "durationS", round(durationMillis / 1000.0));

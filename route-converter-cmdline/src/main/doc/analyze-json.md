@@ -36,7 +36,7 @@ stdout carries only the JSON payload.
 | `bbox.east`       | number          | maximum longitude |
 | `bbox.west`       | number          | minimum longitude |
 | `lengthM`         | integer or null | total length in metres, summed over all lists; `null` if not computable |
-| `lengthKind`      | string          | `"track"` \| `"beeline"` \| `"routed"` (see below) |
+| `lengthKind`      | string or null  | `"track"` \| `"beeline"` \| `"routed"` (see below); `null` exactly when `lengthM` is `null` (no length computable) |
 | `durationS`       | integer or null | total duration in seconds derived from position timestamps only; `null` if no timestamps |
 | `elevationGainM`  | integer or null | cumulative ascent in metres; `null` if no elevation data |
 | `elevationLossM`  | integer or null | cumulative descent in metres; `null` if no elevation data |
@@ -86,4 +86,5 @@ router.
 
 File-level aggregation of a mixed file reports the least-certain kind present:
 `beeline` if any list is beeline, else `routed` if any list is routed, else
-`track`.
+`track`. If no list has a computable length (`lengthM` is `null`) then
+`lengthKind` is `null` too.

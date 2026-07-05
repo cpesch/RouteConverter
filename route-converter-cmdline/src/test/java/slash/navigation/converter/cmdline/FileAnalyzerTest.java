@@ -133,6 +133,22 @@ public class FileAnalyzerTest {
     }
 
     @Test
+    public void noComputableLengthEmitsNullLengthKind() throws Exception {
+        // a single-position list has no computable length: lengthM is null, and
+        // lengthKind must be null too rather than falsely defaulting to "track"
+        java.util.List<slash.navigation.gpx.GpxPosition> positions = new java.util.ArrayList<>();
+        positions.add(new slash.navigation.gpx.GpxPosition(13.4, 52.5, null, null, null, "lonely"));
+        slash.navigation.gpx.GpxRoute route = new slash.navigation.gpx.GpxRoute(new slash.navigation.gpx.Gpx11Format(),
+                slash.navigation.base.RouteCharacteristics.Track, "one point", new java.util.ArrayList<>(), positions);
+
+        String json = FileAnalyzer.toJson(new java.util.ArrayList<>(java.util.List.of(route)), 0L, "test", ".gpx",
+                new PointToPointLengthComputer());
+        assertTrue(json, json.contains("\"lengthM\":null"));
+        assertTrue(json, json.contains("\"lengthKind\":null"));
+        assertNotNull(new com.fasterxml.jackson.databind.ObjectMapper().readTree(json));
+    }
+
+    @Test
     public void corruptZipFails() throws URISyntaxException {
         // a hostile/corrupt zip must fail the analysis, not produce metadata
         File source = resource("analyze-corrupt.zip");
