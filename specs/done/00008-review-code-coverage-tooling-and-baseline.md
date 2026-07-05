@@ -685,6 +685,28 @@ Observed result:
 
 After Phase 28 the pure-utility + domain-spine layer is thoroughly pinned — `DataSourcesUtil` 92.1%, `Files` 84.7%, `ISO8601` 94.0%, `UnitSystem`/`UnitTransfer` 100%, `BaseRoute` 87.4%, `RouteComments` 97.7%, `BaseNavigationPosition` real-logic complete. The remaining uncovered lines across the domain classes are almost entirely the mechanical one-line `asXxxFormat`/`asXxxPosition` per-format conversion delegations (pure volume, low refactor-robustness value) plus network/native/UI classes that belong to the `*IT` integration suite. Further hermetic unit-test work is low-leverage from here.
 
+### Verified on July 5, 2026: final full-reactor aggregate re-measure (post Phases 24–28)
+
+Verified command (CI-equivalent — `local-with-samples` profile off so only hermetic unit tests run):
+
+```sh
+./mvnw -T1C verify -P '!local-with-samples' \
+  -Dspotless.check.skip=true -Dmaven.javadoc.skip=true
+```
+
+Observed aggregate (`coverage-report/target/site/jacoco-aggregate`):
+
+| Metric | Covered | % | Δ vs post-Phase-23 |
+|---|---|---|---|
+| Line | 16999/36927 | 46.03% | +0.72 |
+| Instruction | 79987/182849 | 43.74% | +0.62 |
+| Branch | 6732/14209 | 47.38% | +0.94 |
+| Method | 4156/8590 | 48.38% | +0.56 |
+| Complexity | 6781/15750 | 43.05% | +0.68 |
+| Class | 537/1213 | 44.27% | +0.09 |
+
+**Campaign total: Line 40.54% (baseline, June 4) → 43.18% (post-Phase 6) → 45.31% (post-Phase 23) → 46.03% (post-Phase 28)** — +5.49 points overall. Branch moved most in the final stretch (+0.94), reflecting the null-guard/edge-branch focus of Phases 24–28.
+
 ### Verified on June 7, 2026: current aggregate measurement (post-Phase 6)
 
 Verified command:
