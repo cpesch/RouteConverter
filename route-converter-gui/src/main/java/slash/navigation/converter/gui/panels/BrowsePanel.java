@@ -45,6 +45,7 @@ import slash.navigation.converter.gui.models.CompositeRouteMetadataSource;
 import slash.navigation.converter.gui.models.RouteDistanceAndTimeCache;
 import slash.navigation.converter.gui.models.RouteMetadataSource;
 import slash.navigation.converter.gui.models.RoutesTableColumnModel;
+import slash.navigation.converter.gui.models.RoutesTableSortPreferences;
 import slash.navigation.converter.gui.renderer.CategoryTreeCellRenderer;
 import slash.navigation.converter.gui.undo.UndoCatalogModel;
 import slash.navigation.gui.Application;
@@ -58,6 +59,7 @@ import slash.navigation.routes.remote.RemoteCatalog;
 import slash.navigation.routes.remote.RemoteRoute;
 
 import javax.swing.*;
+import javax.swing.event.RowSorterEvent;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.table.TableRowSorter;
@@ -228,6 +230,13 @@ public class BrowsePanel implements PanelInTab {
         rowSorter.setComparator(CREATOR_COLUMN, byCreator());
         rowSorter.setComparator(LENGTH_COLUMN, byDistance(routeMetadataSource));
         rowSorter.setComparator(DURATION_COLUMN, byDuration(routeMetadataSource));
+        // restore the persisted sort column and direction before the first paint, then keep it in sync
+        RoutesTableSortPreferences sortPreferences = new RoutesTableSortPreferences();
+        rowSorter.setSortKeys(sortPreferences.loadSortKeys());
+        rowSorter.addRowSorterListener(e -> {
+            if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED)
+                sortPreferences.saveSortKeys(rowSorter.getSortKeys());
+        });
         tableRoutes.setRowSorter(rowSorter);
         catalogModel.getRoutesTableModel().addTableModelListener(e -> fillRouteDistancesAndTimes());
         tableRoutes.registerKeyboardAction(new FrameAction() {
