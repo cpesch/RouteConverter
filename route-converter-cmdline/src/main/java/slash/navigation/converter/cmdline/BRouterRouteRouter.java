@@ -29,13 +29,14 @@ import slash.navigation.converter.cmdline.BRouterRouteLengthComputer.RouteRouter
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static slash.common.io.InputOutput.copyAndClose;
+import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
  * Production {@link RouteRouter}: routes an entire position list in a single
@@ -81,6 +82,9 @@ class BRouterRouteRouter implements RouteRouter {
     // accordingly. Five minutes still bounds a hostile route so it can never
     // wedge a batch of analyze runs.
     private static final long MAXIMUM_TIMEOUT = 300000L;
+    // metres of beeline that buy one extra millisecond of routing budget,
+    // matching slash.navigation.brouter.BRouter#getRouteBetween (bearing / 15.0)
+    private static final double METERS_PER_MILLISECOND = 15.0;
 
     private final File segmentsDirectory;
     // static: one extraction per JVM, not per file — a batch-reused analyzer
@@ -131,13 +135,9 @@ class BRouterRouteRouter implements RouteRouter {
      */
     private long timeoutFor(double[] longitudes, double[] latitudes) {
         double beelineMeters = 0;
-        for (int i = 1; i < longitudes.length; i++) {
-            double meanLatitude = Math.toRadians((latitudes[i - 1] + latitudes[i]) / 2);
-            double deltaLongitude = (longitudes[i] - longitudes[i - 1]) * Math.cos(meanLatitude);
-            double deltaLatitude = latitudes[i] - latitudes[i - 1];
-            beelineMeters += Math.sqrt(deltaLongitude * deltaLongitude + deltaLatitude * deltaLatitude) * 111320.0;
-        }
-        long timeout = (long) (MINIMUM_TIMEOUT + beelineMeters / 15.0);
+        for (int i = 1; i < longitudes.length; i++)
+            beelineMeters += calculateBearing(longitudes[i - 1], latitudes[i - 1], longitudes[i], latitudes[i]).getDistance();
+        long timeout = (long) (MINIMUM_TIMEOUT + beelineMeters / METERS_PER_MILLISECOND);
         return Math.min(timeout, MAXIMUM_TIMEOUT);
     }
 
@@ -162,16 +162,10 @@ class BRouterRouteRouter implements RouteRouter {
 
     private static File extractResource(String name, File directory) throws IOException {
         File target = new File(directory, name);
-        try (InputStream in = BRouterRouteRouter.class.getResourceAsStream(RESOURCE_PREFIX + name)) {
-            if (in == null)
-                throw new IOException("Resource " + RESOURCE_PREFIX + name + " not found on classpath");
-            try (OutputStream out = Files.newOutputStream(target.toPath())) {
-                byte[] buffer = new byte[8192];
-                int read;
-                while ((read = in.read(buffer)) != -1)
-                    out.write(buffer, 0, read);
-            }
-        }
+        InputStream in = BRouterRouteRouter.class.getResourceAsStream(RESOURCE_PREFIX + name);
+        if (in == null)
+            throw new IOException("Resource " + RESOURCE_PREFIX + name + " not found on classpath");
+        copyAndClose(in, Files.newOutputStream(target.toPath()));
         return target;
     }
 
