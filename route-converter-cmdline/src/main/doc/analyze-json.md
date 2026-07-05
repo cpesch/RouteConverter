@@ -36,7 +36,7 @@ stdout carries only the JSON payload.
 | `bbox.east`       | number          | maximum longitude |
 | `bbox.west`       | number          | minimum longitude |
 | `lengthM`         | integer or null | total length in metres, summed over all lists; `null` if not computable |
-| `lengthKind`      | string          | `"track"` \| `"beeline"` \| `"routed"` (see below) |
+| `lengthKind`      | string or null  | `"track"` \| `"beeline"` \| `"routed"` (see below); `null` exactly when `lengthM` is `null` (no length computable) |
 | `durationS`       | integer or null | total duration in seconds derived from position timestamps only; `null` if no timestamps |
 | `elevationGainM`  | integer or null | cumulative ascent in metres; `null` if no elevation data |
 | `elevationLossM`  | integer or null | cumulative descent in metres; `null` if no elevation data |
@@ -59,9 +59,12 @@ them from `bbox` centre via point-in-polygon (keeps geo data out of Java).
     routes successfully. The reported length is the sum of the on-road leg
     distances between consecutive route points.
   - **beeline** otherwise — no `--brouter-segments` given, the directory does
-    not exist, the list is outside coverage, or any single leg fails to route
-    (routing error, timeout, no segment). A partially-covered route is reported
-    wholly as `beeline`, never as a mix, so the label never over-promises.
+    not exist, the list is outside coverage, the route fails to route (routing
+    error, timeout, no segment), or the routed length comes back materially
+    shorter than the straight-line beeline through the same points (impossible
+    for an on-road route, so the result is distrusted). A partially-covered
+    route is reported wholly as `beeline`, never as a mix, so the label never
+    over-promises.
 
 Routing is best-effort and never aborts the run: any BRouter failure degrades
 that list to `beeline` and the JSON is still emitted.
@@ -86,4 +89,5 @@ router.
 
 File-level aggregation of a mixed file reports the least-certain kind present:
 `beeline` if any list is beeline, else `routed` if any list is routed, else
-`track`.
+`track`. If no list has a computable length (`lengthM` is `null`) then
+`lengthKind` is `null` too.

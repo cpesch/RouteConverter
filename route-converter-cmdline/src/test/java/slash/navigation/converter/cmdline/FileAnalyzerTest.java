@@ -98,6 +98,57 @@ public class FileAnalyzerTest {
     }
 
     @Test
+    public void nonFiniteCoordinatesAreExcludedFromBboxAndJsonStaysValid() throws Exception {
+        // a position list where some positions carry NaN/Infinity coordinates:
+        // those must never reach the bbox doubles (NaN/Infinity are invalid JSON)
+        java.util.List<slash.navigation.gpx.GpxPosition> positions = new java.util.ArrayList<>();
+        positions.add(new slash.navigation.gpx.GpxPosition(13.4, 52.5, null, null, null, "finite"));
+        positions.add(new slash.navigation.gpx.GpxPosition(Double.NaN, 52.6, null, null, null, "nanLon"));
+        positions.add(new slash.navigation.gpx.GpxPosition(13.5, Double.POSITIVE_INFINITY, null, null, null, "infLat"));
+        positions.add(new slash.navigation.gpx.GpxPosition(13.41, 52.51, null, null, null, "finite2"));
+        slash.navigation.gpx.GpxRoute route = new slash.navigation.gpx.GpxRoute(new slash.navigation.gpx.Gpx11Format(),
+                slash.navigation.base.RouteCharacteristics.Track, "NaN track", new java.util.ArrayList<>(), positions);
+
+        String json = FileAnalyzer.toJson(new java.util.ArrayList<>(java.util.List.of(route)), 0L, "test", ".gpx",
+                new PointToPointLengthComputer());
+
+        // bbox is unioned over the two finite positions only
+        assertTrue(json, json.contains("\"bbox\":{\"north\":52.51,\"south\":52.5,\"east\":13.41,\"west\":13.4}"));
+        // and the payload is parseable JSON (no NaN/Infinity tokens)
+        assertNotNull(new com.fasterxml.jackson.databind.ObjectMapper().readTree(json));
+    }
+
+    @Test
+    public void allNonFiniteCoordinatesYieldNullBbox() throws Exception {
+        java.util.List<slash.navigation.gpx.GpxPosition> positions = new java.util.ArrayList<>();
+        positions.add(new slash.navigation.gpx.GpxPosition(Double.NaN, Double.NaN, null, null, null, "a"));
+        positions.add(new slash.navigation.gpx.GpxPosition(Double.NEGATIVE_INFINITY, 1.0, null, null, null, "b"));
+        slash.navigation.gpx.GpxRoute route = new slash.navigation.gpx.GpxRoute(new slash.navigation.gpx.Gpx11Format(),
+                slash.navigation.base.RouteCharacteristics.Track, "no finite", new java.util.ArrayList<>(), positions);
+
+        String json = FileAnalyzer.toJson(new java.util.ArrayList<>(java.util.List.of(route)), 0L, "test", ".gpx",
+                new PointToPointLengthComputer());
+        assertTrue(json, json.contains("\"bbox\":null"));
+        assertNotNull(new com.fasterxml.jackson.databind.ObjectMapper().readTree(json));
+    }
+
+    @Test
+    public void noComputableLengthEmitsNullLengthKind() throws Exception {
+        // a single-position list has no computable length: lengthM is null, and
+        // lengthKind must be null too rather than falsely defaulting to "track"
+        java.util.List<slash.navigation.gpx.GpxPosition> positions = new java.util.ArrayList<>();
+        positions.add(new slash.navigation.gpx.GpxPosition(13.4, 52.5, null, null, null, "lonely"));
+        slash.navigation.gpx.GpxRoute route = new slash.navigation.gpx.GpxRoute(new slash.navigation.gpx.Gpx11Format(),
+                slash.navigation.base.RouteCharacteristics.Track, "one point", new java.util.ArrayList<>(), positions);
+
+        String json = FileAnalyzer.toJson(new java.util.ArrayList<>(java.util.List.of(route)), 0L, "test", ".gpx",
+                new PointToPointLengthComputer());
+        assertTrue(json, json.contains("\"lengthM\":null"));
+        assertTrue(json, json.contains("\"lengthKind\":null"));
+        assertNotNull(new com.fasterxml.jackson.databind.ObjectMapper().readTree(json));
+    }
+
+    @Test
     public void corruptZipFails() throws URISyntaxException {
         // a hostile/corrupt zip must fail the analysis, not produce metadata
         File source = resource("analyze-corrupt.zip");

@@ -38,10 +38,10 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Exercises {@link BRouterRouteLengthComputer} through the {@code LegRouter}
- * seam so the routed-summation and beeline-fallback logic are covered without
- * real {@code .rd5} segments (specs/00055 P2b). One case drives the production
- * {@link BRouterLegRouter} against a non-existent segments directory to prove
+ * Exercises {@link BRouterRouteLengthComputer} through the {@code RouteRouter}
+ * seam so the routed and beeline-fallback logic are covered without real
+ * {@code .rd5} segments (specs/00055 P2b). One case drives the production
+ * {@link BRouterRouteRouter} against a non-existent segments directory to prove
  * the real path degrades to beeline rather than crashing.
  */
 public class BRouterRouteLengthComputerTest {
@@ -55,32 +55,34 @@ public class BRouterRouteLengthComputerTest {
     }
 
     @Test
-    public void routeTypeSumsRoutedLegDistancesAndReportsRouted() throws IOException, URISyntaxException {
+    public void routeTypeRoutesWholeListInOneCallAndReportsRouted() throws IOException, URISyntaxException {
         BaseRoute<?, ?> route = firstRoute("analyze-route.gpx");
         assertEquals(RouteCharacteristics.Route, route.getCharacteristics());
 
-        List<Object[]> legs = new ArrayList<>();
-        BRouterRouteLengthComputer.LegRouter fake = (fromLon, fromLat, toLon, toLat) -> {
-            legs.add(new Object[]{fromLon, fromLat, toLon, toLat});
-            return 1234.0;
+        // routing must be one call over all three route points, and the routed
+        // distance must be plausibly >= the straight-line beeline
+        int[] calls = {0};
+        int[] pointCount = {0};
+        double routedMeters = route.getDistance() + 5000.0;
+        BRouterRouteLengthComputer.RouteRouter fake = (longitudes, latitudes) -> {
+            calls[0]++;
+            pointCount[0] = longitudes.length;
+            return routedMeters;
         };
         RouteLengthComputer computer = new BRouterRouteLengthComputer(fake);
 
         RouteLengthComputer.LengthResult result = computer.computeLength(route);
         assertEquals("routed", result.kind());
-        // three route points -> two routed legs -> 2 * 1234
-        assertEquals(2, legs.size());
-        assertEquals(2468.0, result.meters(), 0.0001);
+        assertEquals(1, calls[0]);
+        assertEquals(3, pointCount[0]);
+        assertEquals(routedMeters, result.meters(), 0.0001);
     }
 
     @Test
-    public void routeTypeFallsBackToBeelineWhenALegCannotBeRouted() throws IOException, URISyntaxException {
+    public void routeTypeFallsBackToBeelineWhenRoutingFails() throws IOException, URISyntaxException {
         BaseRoute<?, ?> route = firstRoute("analyze-route.gpx");
 
-        // fail the second leg only
-        int[] calls = {0};
-        BRouterRouteLengthComputer.LegRouter fake = (fromLon, fromLat, toLon, toLat) ->
-                (++calls[0] == 1) ? 1000.0 : null;
+        BRouterRouteLengthComputer.RouteRouter fake = (longitudes, latitudes) -> null;
         RouteLengthComputer computer = new BRouterRouteLengthComputer(fake);
 
         RouteLengthComputer.LengthResult result = computer.computeLength(route);
@@ -89,13 +91,28 @@ public class BRouterRouteLengthComputerTest {
     }
 
     @Test
-    public void routeTypeTreatsRoutingExceptionAsLegFailureAndFallsBackToBeeline() throws IOException, URISyntaxException {
+    public void routeTypeTreatsRoutingExceptionAsFailureAndFallsBackToBeeline() throws IOException, URISyntaxException {
         BaseRoute<?, ?> route = firstRoute("analyze-route.gpx");
 
-        BRouterRouteLengthComputer.LegRouter throwing = (fromLon, fromLat, toLon, toLat) -> {
+        BRouterRouteLengthComputer.RouteRouter throwing = (longitudes, latitudes) -> {
             throw new RuntimeException("simulated routing crash");
         };
         RouteLengthComputer computer = new BRouterRouteLengthComputer(throwing);
+
+        RouteLengthComputer.LengthResult result = computer.computeLength(route);
+        assertEquals("beeline", result.kind());
+        assertEquals(route.getDistance(), result.meters(), 0.0001);
+    }
+
+    @Test
+    public void impossiblyShortRoutedLengthIsDistrustedAndFallsBackToBeeline() throws IOException, URISyntaxException {
+        BaseRoute<?, ?> route = firstRoute("analyze-route.gpx");
+
+        // a routed length far below the beeline through the same points is
+        // impossible (routing can never be shorter than the straight line), so
+        // it must be distrusted and reported as beeline
+        BRouterRouteLengthComputer.RouteRouter tooShort = (longitudes, latitudes) -> 1.0;
+        RouteLengthComputer computer = new BRouterRouteLengthComputer(tooShort);
 
         RouteLengthComputer.LengthResult result = computer.computeLength(route);
         assertEquals("beeline", result.kind());
@@ -107,8 +124,8 @@ public class BRouterRouteLengthComputerTest {
         BaseRoute<?, ?> track = firstRoute("analyze-two-tracks.gpx");
         assertEquals(RouteCharacteristics.Track, track.getCharacteristics());
 
-        // a LegRouter that must never be consulted for a non-Route list
-        BRouterRouteLengthComputer.LegRouter forbidden = (fromLon, fromLat, toLon, toLat) -> {
+        // a RouteRouter that must never be consulted for a non-Route list
+        BRouterRouteLengthComputer.RouteRouter forbidden = (longitudes, latitudes) -> {
             throw new AssertionError("routing must not be attempted for a Track list");
         };
         RouteLengthComputer computer = new BRouterRouteLengthComputer(forbidden);
@@ -131,7 +148,7 @@ public class BRouterRouteLengthComputerTest {
 
     @Test
     public void shortRouteWithFewerThanTwoCoordinatesReturnsNull() {
-        BRouterRouteLengthComputer.LegRouter fake = (fromLon, fromLat, toLon, toLat) -> 1.0;
+        BRouterRouteLengthComputer.RouteRouter fake = (longitudes, latitudes) -> 1.0;
         RouteLengthComputer computer = new BRouterRouteLengthComputer(fake);
 
         BaseRoute<?, ?> empty = new slash.navigation.gpx.GpxRoute(new slash.navigation.gpx.Gpx11Format(),

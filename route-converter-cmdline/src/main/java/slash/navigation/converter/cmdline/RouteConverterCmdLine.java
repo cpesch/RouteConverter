@@ -157,7 +157,7 @@ public class RouteConverterCmdLine {
      * missing or non-existent directory is not fatal: everything is measured as
      * beeline/track so the analyze run still emits JSON.
      */
-    private RouteLengthComputer createLengthComputer(String[] args) {
+    static RouteLengthComputer createLengthComputer(String[] args) {
         for (int i = 2; i < args.length; i++) {
             if ("--brouter-segments".equals(args[i])) {
                 if (i == args.length - 1) {

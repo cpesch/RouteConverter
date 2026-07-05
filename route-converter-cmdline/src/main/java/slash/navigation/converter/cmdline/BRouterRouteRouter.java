@@ -24,28 +24,37 @@ import btools.router.OsmNodeNamed;
 import btools.router.OsmTrack;
 import btools.router.RoutingContext;
 import btools.router.RoutingEngine;
-import slash.navigation.converter.cmdline.BRouterRouteLengthComputer.LegRouter;
+import slash.navigation.converter.cmdline.BRouterRouteLengthComputer.RouteRouter;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
+import static slash.common.io.InputOutput.copyAndClose;
+import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
- * Production {@link LegRouter}: routes a single leg with BRouter's offline
- * engine against a directory of {@code .rd5} segment files, using a default
- * profile bundled with this module. This mirrors the calling convention of
- * {@code slash.navigation.brouter.BRouter#getRouteBetween} (build a
- * {@code RoutingContext} pointing at the profile, run a {@code RoutingEngine}
- * over the segments directory, read distance from the found track) but without
- * the GUI download/DataSource machinery — the analyzer runs against segments
- * that already exist on disk (specs/00055 P3 host infra).
+ * Production {@link RouteRouter}: routes an entire position list in a single
+ * BRouter run against a directory of {@code .rd5} segment files, using a default
+ * profile bundled with this module. BRouter's {@code RoutingEngine} accepts an
+ * ordered waypoint list and routes through all of them in sequence, appending
+ * the sections into one track, so the whole list is one engine call rather than
+ * one per leg. {@code getDistance()} then returns the total on-road distance
+ * through every waypoint (compare {@code slash.navigation.brouter.BRouter#getRouteBetween},
+ * which drives the same {@code RoutingContext}/{@code RoutingEngine} for its
+ * two-point case) but without the GUI download/DataSource machinery — the
+ * analyzer runs against segments that already exist on disk (specs/00055 P3
+ * host infra).
+ * <p>
+ * Routing is all-or-nothing: if the engine reports an error or finds no track
+ * (no segment coverage, timeout, missing profile) the method returns {@code null}
+ * and the caller falls the whole list back to a straight-line beeline length, so
+ * the label never over-promises (specs/00055).
  * <p>
  * Profile choice: {@code trekking} — BRouter's general-purpose bike/foot
  * profile. Planned routes in the RouteConverter catalog are predominantly
@@ -57,18 +66,25 @@ import static java.lang.String.format;
  * extracted to a temporary directory on first use.
  * <p>
  * Memory stays bounded: {@code RoutingContext.memoryclass} defaults to 64 MB
- * for the node cache and a fresh engine is used per leg, well within the
+ * for the node cache and a fresh engine is used per list, well within the
  * {@code -Xmx1g} the analyzer runs with.
  *
  * @author Christian Pesch
  */
-class BRouterLegRouter implements LegRouter {
-    private static final Logger log = Logger.getLogger(BRouterLegRouter.class.getName());
+class BRouterRouteRouter implements RouteRouter {
+    private static final Logger log = Logger.getLogger(BRouterRouteRouter.class.getName());
     private static final String PROFILE_NAME = "trekking.brf";
     private static final String LOOKUPS_NAME = "lookups.dat";
     private static final String RESOURCE_PREFIX = "brouter/";
     private static final long MINIMUM_TIMEOUT = 10000L;
-    private static final long MAXIMUM_TIMEOUT = 60000L;
+    // whole-route budget (was a per-leg cap): a route routed in one engine call
+    // gets a single timeout scaled with its total beeline, so raise the cap
+    // accordingly. Five minutes still bounds a hostile route so it can never
+    // wedge a batch of analyze runs.
+    private static final long MAXIMUM_TIMEOUT = 300000L;
+    // metres of beeline that buy one extra millisecond of routing budget,
+    // matching slash.navigation.brouter.BRouter#getRouteBetween (bearing / 15.0)
+    private static final double METERS_PER_MILLISECOND = 15.0;
 
     private final File segmentsDirectory;
     // static: one extraction per JVM, not per file — a batch-reused analyzer
@@ -76,11 +92,11 @@ class BRouterLegRouter implements LegRouter {
     private static File profileFile;
     private static boolean profileExtractionAttempted;
 
-    BRouterLegRouter(File segmentsDirectory) {
+    BRouterRouteRouter(File segmentsDirectory) {
         this.segmentsDirectory = segmentsDirectory;
     }
 
-    public Double routeLeg(double fromLongitude, double fromLatitude, double toLongitude, double toLatitude) {
+    public Double routeRoute(double[] longitudes, double[] latitudes) {
         if (segmentsDirectory == null || !segmentsDirectory.isDirectory()) {
             log.warning(format("BRouter segments directory %s does not exist; cannot route", segmentsDirectory));
             return null;
@@ -94,12 +110,12 @@ class BRouterLegRouter implements LegRouter {
         routingContext.localFunction = profile.getPath();
 
         List<OsmNodeNamed> waypoints = new ArrayList<>();
-        waypoints.add(asOsmNodeNamed(fromLongitude, fromLatitude));
-        waypoints.add(asOsmNodeNamed(toLongitude, toLatitude));
+        for (int i = 0; i < longitudes.length; i++)
+            waypoints.add(asOsmNodeNamed(longitudes[i], latitudes[i]));
 
         RoutingEngine routingEngine = new RoutingEngine(null, null, segmentsDirectory, waypoints, routingContext);
         routingEngine.quite = true;
-        routingEngine.doRun(timeoutFor(fromLongitude, fromLatitude, toLongitude, toLatitude));
+        routingEngine.doRun(timeoutFor(longitudes, latitudes));
 
         if (routingEngine.getErrorMessage() != null) {
             log.info(format("BRouter routing error: %s", routingEngine.getErrorMessage()));
@@ -112,16 +128,16 @@ class BRouterLegRouter implements LegRouter {
     }
 
     /**
-     * Larger legs get a longer budget, matching the heuristic in
-     * {@code BRouter#getRouteBetween}, but capped so a single hostile leg can
-     * never wedge a batch of analyze runs.
+     * A longer route gets a longer budget, matching the heuristic in
+     * {@code BRouter#getRouteBetween}, summed over the whole list and capped at
+     * {@link #MAXIMUM_TIMEOUT} so a single hostile route can never wedge a batch
+     * of analyze runs.
      */
-    private long timeoutFor(double fromLongitude, double fromLatitude, double toLongitude, double toLatitude) {
-        double meanLatitude = Math.toRadians((fromLatitude + toLatitude) / 2);
-        double deltaLongitude = (toLongitude - fromLongitude) * Math.cos(meanLatitude);
-        double deltaLatitude = toLatitude - fromLatitude;
-        double beelineMeters = Math.sqrt(deltaLongitude * deltaLongitude + deltaLatitude * deltaLatitude) * 111320.0;
-        long timeout = (long) (MINIMUM_TIMEOUT + beelineMeters / 15.0);
+    private long timeoutFor(double[] longitudes, double[] latitudes) {
+        double beelineMeters = 0;
+        for (int i = 1; i < longitudes.length; i++)
+            beelineMeters += calculateBearing(longitudes[i - 1], latitudes[i - 1], longitudes[i], latitudes[i]).getDistance();
+        long timeout = (long) (MINIMUM_TIMEOUT + beelineMeters / METERS_PER_MILLISECOND);
         return Math.min(timeout, MAXIMUM_TIMEOUT);
     }
 
@@ -146,16 +162,10 @@ class BRouterLegRouter implements LegRouter {
 
     private static File extractResource(String name, File directory) throws IOException {
         File target = new File(directory, name);
-        try (InputStream in = BRouterLegRouter.class.getResourceAsStream(RESOURCE_PREFIX + name)) {
-            if (in == null)
-                throw new IOException("Resource " + RESOURCE_PREFIX + name + " not found on classpath");
-            try (OutputStream out = Files.newOutputStream(target.toPath())) {
-                byte[] buffer = new byte[8192];
-                int read;
-                while ((read = in.read(buffer)) != -1)
-                    out.write(buffer, 0, read);
-            }
-        }
+        InputStream in = BRouterRouteRouter.class.getResourceAsStream(RESOURCE_PREFIX + name);
+        if (in == null)
+            throw new IOException("Resource " + RESOURCE_PREFIX + name + " not found on classpath");
+        copyAndClose(in, Files.newOutputStream(target.toPath()));
         return target;
     }
 
