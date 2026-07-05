@@ -71,7 +71,9 @@ jobs:
         env:
           DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
         run: |
-          rsync -av --omit-dir-times --no-perms \
+          # --delete: /prerelease/ mirrors only the current build; prunes renamed/
+          # discontinued assets so stale files aren't served (matches release.yml)
+          rsync -av --delete --omit-dir-times --no-perms \
             artefacts/ \
             "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/downloads/prereleases/"
       - name: Update rolling 'prerelease' GitHub Release
