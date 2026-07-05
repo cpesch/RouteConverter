@@ -70,7 +70,7 @@ jobs:
 
       - name: Build (incl. bundle modules, resource-filters .nsi)
         shell: cmd
-        run: ./mvnw.cmd --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} clean package
+        run: ./mvnw.cmd --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} -DcrashReportSecret=${{ secrets.CRASH_REPORT_HMAC_SECRET }} clean package
 
       - name: Pin NSIS 3.11
         shell: pwsh
