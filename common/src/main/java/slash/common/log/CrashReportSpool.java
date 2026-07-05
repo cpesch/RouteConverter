@@ -56,6 +56,11 @@ public class CrashReportSpool {
     private static final String FILE_PREFIX = "crash-";
     private static final String FILE_SUFFIX = ".json";
     private static final AtomicLong sequence = new AtomicLong();
+    // the process id makes a file name unique across concurrent RouteConverter processes:
+    // two of them can otherwise write in the same millisecond with per-process sequence
+    // counters that both start at zero and collide. It trails the timestamp and sequence
+    // so sorting by name still orders reports chronologically within a process.
+    private static final long PID = ProcessHandle.current().pid();
 
     private final File directory;
 
@@ -70,7 +75,7 @@ public class CrashReportSpool {
     public File write(String json) throws IOException {
         ensureDirectory(directory);
         String name = FILE_PREFIX + new SimpleDateFormat("yyyyMMdd-HHmmss-SSS").format(new Date()) +
-                String.format("-%04d", sequence.incrementAndGet() % 10000) + FILE_SUFFIX;
+                String.format("-%04d", sequence.incrementAndGet() % 10000) + "-" + PID + FILE_SUFFIX;
         File file = new File(directory, name);
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), UTF_8)) {
             writer.write(json);

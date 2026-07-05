@@ -98,6 +98,21 @@ public class CrashReportSpoolTest {
     }
 
     @Test
+    public void testFileNameCarriesProcessIdAndIsUnique() throws IOException {
+        long pid = ProcessHandle.current().pid();
+        File first = spool.write("{\"n\":0}");
+        File second = spool.write("{\"n\":1}");
+
+        // crash-<yyyyMMdd-HHmmss-SSS>-<sequence>-<pid>.json: the trailing process id keeps
+        // the name unique across concurrent RouteConverter processes writing in the same
+        // millisecond with sequence counters that both start at zero
+        String pattern = "crash-\\d{8}-\\d{6}-\\d{3}-\\d{4}-" + pid + "\\.json";
+        assertTrue("unexpected name " + first.getName(), first.getName().matches(pattern));
+        assertTrue("unexpected name " + second.getName(), second.getName().matches(pattern));
+        assertFalse("two writes must not collide", first.getName().equals(second.getName()));
+    }
+
+    @Test
     public void testListEmptyWhenDirectoryMissing() {
         CrashReportSpool missing = new CrashReportSpool(new File(directory, "does-not-exist"));
         assertEquals(0, missing.list().size());
