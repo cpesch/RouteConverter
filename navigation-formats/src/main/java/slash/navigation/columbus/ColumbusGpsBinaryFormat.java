@@ -157,7 +157,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
         return ((aByte >> position) & 1) == 1;
     }
 
-    private WaypointType parseTag(byte aByte) {
+    WaypointType parseTag(byte aByte) {
         if (!hasBitSet(aByte, 0) && !hasBitSet(aByte, 1))
             return Waypoint;
         else if (hasBitSet(aByte, 0) && !hasBitSet(aByte, 1))
@@ -172,7 +172,7 @@ public class ColumbusGpsBinaryFormat extends SimpleFormat<Wgs84Route> {
     private static final long MINUTE_MASK = parseLong("00000000000000000000111111000000", 2);
     private static final long SECOND_MASK = parseLong("00000000000000000000000000111111", 2);
 
-    private CompactCalendar parseTime(int time) {
+    CompactCalendar parseTime(int time) {
         int year = (int) ((time & YEAR_MASK) >> 26);
         int month = (int) ((time & MONTH_MASK) >> 22);
         int day = (int) ((time & DAY_MASK) >> 17);
