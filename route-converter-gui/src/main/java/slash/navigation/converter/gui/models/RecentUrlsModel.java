@@ -109,7 +109,7 @@ public class RecentUrlsModel {
             String urlString = preferences.get(RECENT_URL_PREFERENCE + c, null);
             if (urlString != null) {
                 try {
-                    URL url = new URL(urlString);
+                    URL url = Files.toUrl(urlString);
                     File file = Files.toFile(url);
                     if (file == null || file.exists())
                         result.add(0, url);

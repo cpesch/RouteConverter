@@ -63,6 +63,21 @@ public class FilesUrlTest {
     }
 
     @Test
+    public void toUrlKeepsAbsoluteUrls() throws Exception {
+        assertEquals("http", toUrl("http://host/x.gpx").getProtocol());
+    }
+
+    @Test
+    public void toUrlFallsBackToFileForBareAndSpaceBearingPaths() throws Exception {
+        // absolute local path, no scheme -> not an absolute URI -> file fallback
+        assertEquals("file", toUrl("/some/dir/track.gpx").getProtocol());
+        // spaces are illegal in a URI -> file fallback keeps leniency of the old new URL(String)
+        URL url = toUrl("/some/dir/with space/track.gpx");
+        assertEquals("file", url.getProtocol());
+        assertEquals(new File("/some/dir/with space/track.gpx"), new File(url.toURI()));
+    }
+
+    @Test
     public void reverseReturnsTheUrlsInReverseOrder() throws Exception {
         URL a = new URL("http://host/a");
         URL b = new URL("http://host/b");

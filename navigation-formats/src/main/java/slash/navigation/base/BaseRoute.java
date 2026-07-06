@@ -503,6 +503,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return 0;
     }
 
+    @SuppressWarnings("unchecked") // P[] cast from toArray is safe: positions are all of type P
     public void sort(Comparator<P> comparator) {
         List<P> positions = getPositions();
         P[] sorted = (P[]) positions.toArray(new BaseNavigationPosition[0]);

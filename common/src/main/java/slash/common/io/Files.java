@@ -24,6 +24,7 @@ import slash.common.type.CompactCalendar;
 
 import java.io.*;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.LinkOption;
@@ -194,19 +195,27 @@ public class Files {
         return null;
     }
 
+    /**
+     * Converts a URL or local (possibly relative or space-bearing) path string
+     * to a {@link URL}, falling back to file semantics when the string is not a
+     * valid absolute URI. Replaces the deprecated {@code new URL(String)}.
+     */
+    public static URL toUrl(String urlOrPath) throws MalformedURLException {
+        try {
+            return new URI(urlOrPath).toURL();
+        } catch (URISyntaxException | IllegalArgumentException e) {
+            // fallback from URL to file (relative paths, spaces, ...)
+            return new File(urlOrPath).toURI().toURL();
+        }
+    }
+
     public static List<URL> toUrls(String... urls) {
         List<URL> result = new ArrayList<>(urls.length);
         for (String url : urls) {
             try {
-                result.add(new URL(url));
+                result.add(toUrl(url));
             } catch (MalformedURLException e) {
-
-                // fallback from URL to file
-                try {
-                    result.add(new File(url).toURI().toURL());
-                } catch (MalformedURLException e1) {
-                    // intentionally left empty
-                }
+                // intentionally left empty
             }
         }
         return result;

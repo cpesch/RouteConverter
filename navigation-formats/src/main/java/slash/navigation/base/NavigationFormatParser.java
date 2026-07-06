@@ -46,6 +46,7 @@ import static java.io.File.separatorChar;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static slash.common.io.Files.getExtension;
+import static slash.common.io.Files.toUrl;
 import static slash.common.io.Transfer.ceiling;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -214,7 +215,7 @@ public class NavigationFormatParser {
         public void parse(String urlString) throws IOException {
             // replace CWD with current working directory for easier testing
             urlString = urlString.replace("CWD", new File(".").getCanonicalPath()).replace(separatorChar, '/');
-            URL url = new URL(urlString);
+            URL url = toUrl(urlString);
             byte[] bytes;
             try (InputStream inputStream = url.openStream()) {
                 bytes = inputStream.readAllBytes();
@@ -303,7 +304,7 @@ public class NavigationFormatParser {
         }
 
         if (isGoogleMapsProfileUrl(url)) {
-            url = new URL(url.toExternalForm() + "&output=kml");
+            url = toUrl(url.toExternalForm() + "&output=kml");
             formats = new ArrayList<>(formats);
             formats.add(0, new Kml22Format());
         }

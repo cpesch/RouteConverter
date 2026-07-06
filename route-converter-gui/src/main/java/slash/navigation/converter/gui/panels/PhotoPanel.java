@@ -104,13 +104,18 @@ public class PhotoPanel implements PanelInTab {
     private JComboBox<TagStrategy> comboBoxTagStrategy;
     private JButton buttonTagPhotos;
 
-    private static final ComboBoxModel<FilterPredicate<NavigationPosition>> FILTER_PREDICATE_MODEL =
-            new DefaultComboBoxModel<FilterPredicate<NavigationPosition>>(new FilterPredicate[]{
-                    new TautologyPredicate("All"),
-                    new TagStatePhotoPredicate(Tagged),
-                    new TagStatePhotoPredicate(Taggable),
-                    new TagStatePhotoPredicate(NotTaggable),
-            });
+    private static final ComboBoxModel<FilterPredicate<NavigationPosition>> FILTER_PREDICATE_MODEL = createFilterPredicateModel();
+
+    private static ComboBoxModel<FilterPredicate<NavigationPosition>> createFilterPredicateModel() {
+        // built via addElement instead of the array constructor to avoid the
+        // unavoidable unchecked warning from generic array creation
+        DefaultComboBoxModel<FilterPredicate<NavigationPosition>> model = new DefaultComboBoxModel<>();
+        model.addElement(new TautologyPredicate("All"));
+        model.addElement(new TagStatePhotoPredicate(Tagged));
+        model.addElement(new TagStatePhotoPredicate(Taggable));
+        model.addElement(new TagStatePhotoPredicate(NotTaggable));
+        return model;
+    }
 
     private PositionsModel photosModel;
     private FilteringPositionsModel<NavigationPosition> filteredPhotosModel;
@@ -302,10 +307,10 @@ public class PhotoPanel implements PanelInTab {
     }
 
     private FilterPredicate<NavigationPosition> getFilterPredicatePreference() {
-        FilterPredicate result = FILTER_PREDICATE_MODEL.getElementAt(0);
+        FilterPredicate<NavigationPosition> result = FILTER_PREDICATE_MODEL.getElementAt(0);
         String name = preferences.get(FILTER_PHOTO_PREDICATE_PREFERENCE, result.name());
         for (int i = 0, c = FILTER_PREDICATE_MODEL.getSize(); i < c; i++) {
-            FilterPredicate filterPredicate = FILTER_PREDICATE_MODEL.getElementAt(i);
+            FilterPredicate<NavigationPosition> filterPredicate = FILTER_PREDICATE_MODEL.getElementAt(i);
             if (filterPredicate.name().equals(name)) {
                 result = filterPredicate;
                 break;

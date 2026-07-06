@@ -21,6 +21,7 @@ package slash.navigation.download.tools;
 
 import jakarta.xml.bind.JAXBException;
 import org.apache.commons.cli.*;
+import org.apache.commons.cli.help.HelpFormatter;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.datasources.*;
 import slash.navigation.datasources.binding.*;
@@ -362,20 +363,23 @@ public class UpdateCatalog extends BaseDownloadTool {
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
         options.addOption(Option.builder().argName(ID_ARGUMENT).hasArgs().required().longOpt("id").
-                desc("ID of the data source").build());
+                desc("ID of the data source").get());
         options.addOption(Option.builder().argName(DATASOURCES_SERVER_ARGUMENT).numberOfArgs(1).longOpt("server").
-                desc("Data sources server").build());
+                desc("Data sources server").get());
         options.addOption(Option.builder().argName(DATASOURCES_USERNAME_ARGUMENT).numberOfArgs(1).longOpt("username").
-                desc("Data sources server user name").build());
+                desc("Data sources server user name").get());
         options.addOption(Option.builder().argName(DATASOURCES_PASSWORD_ARGUMENT).numberOfArgs(1).longOpt("password").
-                desc("Data sources server password").build());
+                desc("Data sources server password").get());
         options.addOption(Option.builder().argName(MIRROR_ARGUMENT).numberOfArgs(1).required().longOpt("mirror").
-                desc("Filesystem path to mirror resources").build());
+                desc("Filesystem path to mirror resources").get());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp(getClass().getSimpleName(), options);
+            try {
+                HelpFormatter.builder().get().printHelp(getClass().getSimpleName(), null, options, null, false);
+            } catch (IOException ignored) {
+                // help output is best-effort
+            }
             throw e;
         }
     }

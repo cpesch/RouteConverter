@@ -176,7 +176,6 @@ public class WindowHelper {
     public static void handleOutOfMemoryError(OutOfMemoryError e) {
         // get some air to breath
         System.gc();
-        System.runFinalization();
 
         final long limitBefore = getMaximumMemory();
         final long limitAfter = limitBefore * 2;

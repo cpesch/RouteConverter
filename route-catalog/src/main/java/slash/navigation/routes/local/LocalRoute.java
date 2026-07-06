@@ -36,6 +36,7 @@ import java.util.Objects;
 
 import static java.lang.String.format;
 import static slash.common.io.Files.toFile;
+import static slash.common.io.Files.toUrl;
 import static slash.common.io.Transfer.encodeFileName;
 
 /**
@@ -82,7 +83,7 @@ public class LocalRoute implements Route {
     }
 
     public void update(Category parent, String description) throws IOException {
-        File category = toFile(new URL(parent.getHref()));
+        File category = toFile(toUrl(parent.getHref()));
         File newName = new File(category, encodeFileName(description));
         if (newName.exists())
             throw new DuplicateNameException(format("%s %s already exists", newName.isDirectory() ? "Category" : "Route", description), newName.getAbsolutePath());

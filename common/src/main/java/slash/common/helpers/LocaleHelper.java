@@ -29,25 +29,25 @@ import java.util.Locale;
 
 public class LocaleHelper {
     // for language support which is not defined by a constant in Locale
-    public static final Locale ARABIA = new Locale("ar", "SA");
-    public static final Locale BRAZIL = new Locale("pt", "BR");
-    public static final Locale CATALAN = new Locale("ca", "ES");
-    public static final Locale CZECH = new Locale("cs", "CZ");
-    public static final Locale CROATIA = new Locale("hr", "HR");
-    public static final Locale DENMARK = new Locale("da", "DK");
-    public static final Locale FINLAND = new Locale("fi", "FI");
-    public static final Locale HUNGARY = new Locale("hu", "HU");
+    public static final Locale ARABIA = Locale.of("ar", "SA");
+    public static final Locale BRAZIL = Locale.of("pt", "BR");
+    public static final Locale CATALAN = Locale.of("ca", "ES");
+    public static final Locale CZECH = Locale.of("cs", "CZ");
+    public static final Locale CROATIA = Locale.of("hr", "HR");
+    public static final Locale DENMARK = Locale.of("da", "DK");
+    public static final Locale FINLAND = Locale.of("fi", "FI");
+    public static final Locale HUNGARY = Locale.of("hu", "HU");
     public static final Locale LATVIAN = Locale.forLanguageTag("lv");
-    public static final Locale NEDERLANDS = new Locale("nl", "NL");
-    public static final Locale NORWAY_BOKMAL = new Locale("nb", "NO");
-    public static final Locale POLAND = new Locale("pl", "PL");
-    public static final Locale PORTUGAL = new Locale("pt", "PT");
-    public static final Locale RUSSIA = new Locale("ru", "RU");
-    public static final Locale SERBIA = new Locale("sr", "SR");
-    public static final Locale SLOVAKIA = new Locale("sk", "SK");
-    public static final Locale SPAIN = new Locale("es", "ES");
+    public static final Locale NEDERLANDS = Locale.of("nl", "NL");
+    public static final Locale NORWAY_BOKMAL = Locale.of("nb", "NO");
+    public static final Locale POLAND = Locale.of("pl", "PL");
+    public static final Locale PORTUGAL = Locale.of("pt", "PT");
+    public static final Locale RUSSIA = Locale.of("ru", "RU");
+    public static final Locale SERBIA = Locale.of("sr", "SR");
+    public static final Locale SLOVAKIA = Locale.of("sk", "SK");
+    public static final Locale SPAIN = Locale.of("es", "ES");
     public static final Locale TAMIL = Locale.forLanguageTag("ta");
-    public static final Locale TURKEY = new Locale("tr", "TR");
-    public static final Locale UKRAINE = new Locale("uk", "UA");
-    public static final Locale UZBEKISTAN = new Locale("uz", "UZ");
+    public static final Locale TURKEY = Locale.of("tr", "TR");
+    public static final Locale UKRAINE = Locale.of("uk", "UA");
+    public static final Locale UZBEKISTAN = Locale.of("uz", "UZ");
 }

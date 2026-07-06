@@ -86,7 +86,7 @@ public abstract class Application {
     public Locale getLocale() {
         String language = preferences.get(PREFERRED_LANGUAGE_PREFERENCE, "");
         String country = preferences.get(PREFERRED_COUNTRY_PREFERENCE, "");
-        return new Locale(language, country);
+        return Locale.of(language, country);
     }
 
     public void setLocale(Locale locale) {
@@ -102,7 +102,7 @@ public abstract class Application {
     private static void initializeLocale(Preferences preferences) {
         String language = preferences.get(PREFERRED_LANGUAGE_PREFERENCE, Locale.getDefault().getLanguage());
         String country = preferences.get(PREFERRED_COUNTRY_PREFERENCE, Locale.getDefault().getCountry());
-        Locale.setDefault(new Locale(language, country));
+        Locale.setDefault(Locale.of(language, country));
     }
 
     private static ResourceBundle initializeBundles(List<String> bundleNames) {

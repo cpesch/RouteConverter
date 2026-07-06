@@ -23,6 +23,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 
@@ -53,7 +54,7 @@ public class ClassPathExtender {
     }
 
     public void addJarInJar(String fileName) throws MalformedURLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        addURL(new URL(JAR_IN_JAR_PROTOCOL + fileName));
+        addURL(URI.create(JAR_IN_JAR_PROTOCOL + fileName).toURL());
     }
 
     public void addExternalFile(File file) throws MalformedURLException, NoSuchMethodException, InvocationTargetException, IllegalAccessException {

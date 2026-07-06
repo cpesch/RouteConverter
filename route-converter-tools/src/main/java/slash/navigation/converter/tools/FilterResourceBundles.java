@@ -20,6 +20,7 @@
 package slash.navigation.converter.tools;
 
 import org.apache.commons.cli.*;
+import org.apache.commons.cli.help.HelpFormatter;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -71,14 +72,17 @@ public class FilterResourceBundles {
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
         options.addOption(Option.builder().argName(DEFAULT_ARGUMENT).hasArgs().numberOfArgs(1).required().
-                longOpt("default").desc("Default resource bundle").build());
+                longOpt("default").desc("Default resource bundle").get());
         options.addOption(Option.builder().argName(FILTER_ARGUMENT).hasArgs().numberOfArgs(1).required().
-                longOpt("filter").desc("Resource bundle to filter").build());
+                longOpt("filter").desc("Resource bundle to filter").get());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp(getClass().getSimpleName(), options);
+            try {
+                HelpFormatter.builder().get().printHelp(getClass().getSimpleName(), null, options, null, false);
+            } catch (IOException ignored) {
+                // help output is best-effort
+            }
             throw e;
         }
     }

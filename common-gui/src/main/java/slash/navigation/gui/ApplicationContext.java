@@ -29,6 +29,7 @@ import javax.help.HelpSet;
 import javax.help.HelpSetException;
 import javax.swing.*;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -83,7 +84,7 @@ public class ApplicationContext {
 
     public HelpBroker getHelpBroker() throws HelpSetException, MalformedURLException {
         if (broker == null) {
-            HelpSet helpSet = new HelpSet(Application.class.getClassLoader(), new URL(helpBrokerUrl));
+            HelpSet helpSet = new HelpSet(Application.class.getClassLoader(), URI.create(helpBrokerUrl).toURL());
             broker = helpSet.createHelpBroker();
         }
         return broker;
