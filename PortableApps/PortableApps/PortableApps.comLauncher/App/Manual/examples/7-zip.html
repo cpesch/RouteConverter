@@ -1,0 +1,139 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Worked Example: 7-Zip &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Examples" href="index.html" />
+    <link rel="next" title="Using the PortableApps.com Launcher" href="../topics/index.html" />
+    <link rel="prev" title="Worked Example: Scribus" href="scribus.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-examples-7-zip" class="page withsidebar">
+    
+  <div class="section" id="worked-example-7-zip">
+<span id="examples-7-zip"></span><h1>Worked Example: 7-Zip<a class="headerlink" href="#worked-example-7-zip" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="../ref/paf/appinfo.html#paf-appinfo-appid"><em>AppID</em></a> of 7-Zip is <tt class="docutils literal"><span class="pre">7-ZipPortable</span></tt>, and so the
+launcher executable is named <tt class="docutils literal"><span class="pre">7-ZipPortable.exe</span></tt> and the launcher
+configuration file is in <tt class="docutils literal"><span class="pre">App\AppInfo\Launcher\7-ZipPortable.ini</span></tt>.</p>
+<p>The main 7-Zip executable to be launched is <tt class="docutils literal"><span class="pre">7zFM.exe</span></tt>, and it lives in
+<tt class="docutils literal"><span class="pre">App\7-Zip</span></tt>.</p>
+<p>7-Zip stores its settings in the registry, in
+<tt class="docutils literal"><span class="pre">HKEY_CURRENT_USER\Software\7-Zip</span></tt>.  In previous releases of 7-Zip Portable,
+it has stored this in Datasettings7zip_portable.reg (this is represented as
+<a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryKeys]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryKeys]</span></tt></a><tt class="docutils literal"><span class="pre">:7zip_portable=HKCU\Software\7-Zip</span></tt>).</p>
+<p>Paths saved in this 7zip_portable.reg file are normal paths with a
+double-backslash directory separator and should be updated with a
+<a class="reference internal" href="../ref/launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a> section in this way.</p>
+<p>7-Zip itself <strong>can</strong> be run from a read-only location (this is why
+<a class="reference internal" href="../ref/launcher.ini/livemode.html#std:ini-key-[LiveMode]:CopyApp"><tt class="xref std std-ini-key docutils literal"><span class="pre">[LiveMode]:CopyApp</span></tt></a>=<tt class="docutils literal"><span class="pre">false</span></tt>).</p>
+<p>From the information above, here is a fully functional sample launcher file,
+configured correctly for 7-Zip Portable:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Launch]</span>
+<span class="na">ProgramExecutable</span><span class="o">=</span><span class="s">7-Zip\7zFM.exe</span>
+
+<span class="k">[Activate]</span>
+<span class="na">Registry</span><span class="o">=</span><span class="s">true</span>
+
+<span class="k">[FileWrite1]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">Replace</span>
+<span class="na">File</span><span class="o">=</span><span class="s">%PAL:DataDir%\settings\7zip_portable.reg</span>
+<span class="na">Find</span><span class="o">=</span><span class="s">%PAL:LastDrive%\\</span>
+<span class="na">Replace</span><span class="o">=</span><span class="s">%PAL:Drive%\\</span>
+
+<span class="k">[RegistryKeys]</span>
+<span class="na">7zip_portable</span><span class="o">=</span><span class="s">HKEY_CURRENT_USER\Software\7-Zip</span>
+</pre></div>
+</div>
+<p>To outline what this actually does: in the registry,
+<tt class="docutils literal"><span class="pre">HKEY_CURRENT_USER\Software\7-Zip</span></tt> is backed up if necessary, and the contents
+of Data\settings\<strong>7zip_portable</strong>.reg`` are inserted into the registry,
+after updating the drive letter. Then App\<strong>7-Zip7zFM.exe</strong> is run. After it
+is closed, the 7-Zip registry key is stored and deleted, and the backup of local
+7-Zip settings is restored if it existed.</p>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="scribus.html">Worked Example: Scribus</a></li>
+    
+    
+      <li>Next: <a href="../topics/index.html">Using the PortableApps.com Launcher</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Examples</a>
+        
+        <ul><li>Worked Example: 7-Zip</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="scribus.html" title="Worked Example: Scribus">previous</a>  | <a href="index.html" title="Examples" accesskey="U">up</a>  | <a href="../topics/index.html" title="Using the PortableApps.com Launcher">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

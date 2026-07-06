@@ -1,0 +1,135 @@
+#!/bin/bash
+
+if [ "$1" = "" ]; then
+	echo -n "Please enter the release name: (e.g. 2.0, 2.0 Beta 3, 2.0 Release Candidate 1) "
+	read VERSION
+else
+	VERSION="$1"
+fi
+echo "Setting release version number and tagging revision..."
+
+# ${BATCH_REMATCH[n]}:
+#  1. major version
+#  2. minor version
+#  3. - (working space)
+#  4. increment version
+#  5. - (working space)
+#  6. Alpha/Beta/Release Candidate
+#  7. Number
+regex='([1-9])\.([0-9])(\.([0-9]))?( (Alpha|Beta|Release Candidate) ([1-9][0-9]*))?'
+
+# If it's a valid version string, use it
+if [[ $VERSION =~ $regex ]]; then
+	XXXX1=${BASH_REMATCH[1]}
+	XXXX2=${BASH_REMATCH[2]}
+
+	if [ "${BASH_REMATCH[4]}" != "" ]; then
+		XXXX3=${BASH_REMATCH[4]}
+	else
+		XXXX3=0
+	fi
+
+	if [ "${BASH_REMATCH[6]}" != "" ]; then
+		# Alpha, Beta or Release Candidate: subtract one from the numbers.
+		if [[ $XXXX3 > 0 ]]; then
+			XXXX3=$(( $XXXX3 - 1))
+		else
+			XXXX3=9
+			if [[ $XXXX2 > 0 ]]; then
+				XXXX2=$(( $XXXX2 - 1))
+			else
+				XXXX2=9
+				XXXX1=$(( $XXXX1 - 1))
+			fi
+		fi
+	fi
+
+	# Now work out the alpha/beta/etc.
+	case "${BASH_REMATCH[6]}" in
+		Alpha)               XXXX4=70;;
+		Beta)                XXXX4=80;;
+		"Release Candidate") XXXX4=90;;
+		*)                   XXXX4=0;;
+	esac
+
+
+	if [ "${BASH_REMATCH[4]}" = "" ]; then
+		# Not a *.*.X version number, alpha/beta/RC can go in part 3
+		XXXX3=$XXXX4
+		if [ "${BASH_REMATCH[6]}" != "" ]; then
+			# Alpha/Beta/RC
+			XXXX4=${BASH_REMATCH[7]}
+		else
+			XXXX4=0 # Final
+		fi
+	else
+		# *.*.X version number: this changes the way alpha/beta/etc. works
+		if [ "${BASH_REMATCH[6]}" != "" ]; then
+			# Alpha/Beta/RC
+			XXXX4=$(( $XXXX4 + ${BASH_REMATCH[7]} ))
+		else
+			XXXX4=0 # Final
+		fi
+	fi
+	XXXX=$XXXX1.$XXXX2.$XXXX3.$XXXX4
+	echo "$VERSION translates to $XXXX"
+else
+	echo "Sorry, I don't understand $VERSION as a version number string." >&2
+	exit 1
+fi
+sed -i "s/DisplayVersion=[^\r]*/DisplayVersion=$VERSION/" ../../App/AppInfo/appinfo.ini
+sed -i "s/PackageVersion=[^\r]*/PackageVersion=$XXXX/" ../../App/AppInfo/appinfo.ini
+sed -i "s/!define Version [^\r]*/!define Version $XXXX/" PortableApps.comLauncher.nsi
+hgtag=$VERSION
+hgtag=`echo $hgtag | sed "s/Alpha/alpha/"`
+hgtag=`echo $hgtag | sed "s/Beta/beta/"`
+hgtag=`echo $hgtag | sed "s/Release Candidate/rc/"`
+hgtag=`echo $hgtag | sed "s/ /-/g"`
+hg ci -m "Updated version number to $VERSION ($XXXX)"
+hg tag $hgtag
+hg push
+
+echo "Building the PortableApps.com Launcher Manual..."
+	cd Manual
+	make release
+	cd ..
+
+echo "Building the PortableApps.com Launcher Generator..."
+	rm ../../PortableApps.comLauncherGenerator.exe
+	makensisu GeneratorWizard.nsi
+	if ! [ -e ../../PortableApps.comLauncherGenerator.exe ]; then
+		echo "PortableApps.comLauncherGenerator.exe was not built!" >&2
+		exit 1
+	fi
+
+echo "Building the PortableApps.com Launcher installer..."
+	cd ../..
+	installer_filename="PortableApps.comLauncher_`echo $VERSION | sed "s/ /_/g"`.paf.exe"
+	rm ../$installer_filename
+	pai $PWD
+	cd ..
+
+	if ! [ -e $installer_filename ]; then
+		echo "Installer $installer_filename was not built!" >&2
+		exit 1
+	fi
+
+echo "Uploading the installer..."
+	if [ "$sfusername" = "" ]; then
+		sfusername=chriswombat
+	fi
+
+	directory="PortableApps.com Launcher $VERSION"
+	if [ "${BASH_REMATCH[6]}" != "" ]; then
+		parent_directory="PortableApps.com Launcher Test"
+	else
+		parent_directory="PortableApps.com Launcher"
+	fi
+
+	echo "cd \"/home/pfs/project/p/po/portableapps/$parent_directory\"
+-mkdir \"$directory\"
+cd \"$directory\"
+-rm \"$installer_filename\"
+put \"$installer_filename\"" | sftp $sfusername,portableapps@frs.sourceforge.net
+
+echo "Done!"

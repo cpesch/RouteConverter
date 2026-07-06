@@ -1,0 +1,223 @@
+.. index:: Release notes; 2.1
+
+.. _releases-2.1:
+
+===========================================
+PortableApps.com Launcher 2.1 release notes
+===========================================
+
+The next version of the PortableApps.com Launcher is coming now! With `various
+new features`_, `some changes`_ and improved documentation, this release makes
+it easier than ever to make portable apps.
+
+.. _`various new features`: `New features`_
+.. _`some changes`: `Changes`_
+
+**Important recommendation:** use the new `support for directory moving`_.
+
+Development team
+================
+
+First of all, the PortableApps.com Launcher core development team has grown!
+Version 2.0 was managed and released just by Chris Morgan; in 2.1, Mark Sikkema
+(Gringoloco) has joined the development team. Mark is the author of several of
+the important new features and modifications in 2.1; XML support and wildcards
+are the biggest features which have been done entirely by him (and very
+thoroughly, too). DLL server and type library registration is also a region
+Mark has done a lot of research and work with, but unfortunately it's proved to
+be more complex than we originally thought, and the code is not yet stable
+enough to be included, so it has been removed from 2.1.  It may ship in 2.2 or
+2.3, depending on the rapidity of the release cycle.
+
+New features
+============
+
+Better support for varying operating systems
+--------------------------------------------
+
+This release introduces operating system compatibility detection, supporting a
+minimum OS required to run, with :ini-key:`[Launch]:MinOS`, and a maximum
+supported OS, with :ini-key:`[Launch]:MaxOS`.
+
+This is handy in particular for apps which don't support Windows 2000; the
+PortableApps.com Launcher itself doesn't support Windows 95, 98 or Me (due to
+its being Unicode), but it does support Windows 2000, and some apps, like
+Google Chrome or the GIMP, don't work on Windows 2000. Rather than failing
+silently, it's more helpful to warn the user -- so a line ``MinOS=2000`` is
+very helpful for the user.
+
+There are also some more values added to supplement
+:ini-key:`[Launch]:RunAsAdmin`, to provide operating system dependant privilege
+requirement. This may be useful in particular for some apps which before Vista
+didn't need administrative privileges, but for Vista and later need
+administrative privileges due to the tightened security and UAC subsystem.
+
+These added values are
+:ini-key:`[Launch]:RunAsAdmin2000`,
+:ini-key:`[Launch]:RunAsAdminXP`,
+:ini-key:`[Launch]:RunAsAdmin2003`,
+:ini-key:`[Launch]:RunAsAdminVista`,
+:ini-key:`[Launch]:RunAsAdmin2008`,
+:ini-key:`[Launch]:RunAsAdmin7` and
+:ini-key:`[Launch]:RunAsAdmin2008R2`.
+
+Wildcards
+---------
+
+Support for wildcards (using the characters ``*`` and ``?``) in file and
+directory names has been added. It's supported in the
+:ini-section:`[FilesMove]`, :ini-section:`[DirectoriesMove]`,
+:ini-section:`[FileWriteN]`, :ini-section:`[DirectoriesCleanupIfEmpty]` and
+:ini-section:`[DirectoriesCleanupForce]` sections. This is a fairly
+self-explanatory feature which most or all users will already be familiar with.
+Precisely what is supported is documentated in :ref:`wildcards`.
+
+There is currently one known slight bug; on XP, ``?`` wildcard matching in file
+extensions will also match fewer characters, so ``*.???`` will mistakenly match
+``*.xy``. This usage pattern is extremely rare, however, and so it is unlikely
+to cause any trouble ever.
+
+Support for directory moving
+----------------------------
+
+Historically, PortableApps.com launchers have often not supported changing the
+directory a portable app is in; while they support updating drive letters, some
+haven't supported updating the path to an app, so that, for example, moving
+from ``C:\Users\User\Desktop\Apps\AppNamePortable`` to
+``C:\PortableApps\AppNamePortable`` didn't work. The particular problem with
+this was that apps didn't give any indication that they were going to fail, or
+that things might not work.
+
+By default now, if the launcher detects that the user has moved the package, it
+will warn them that it may not work. Portable app developers should, however,
+try to make it work with directory moving, or if they can't manage that, they
+should block. After making it work completely or knowing that it won't work at
+all, you can then set :ini-key:`[Launch]:DirectoryMoveOK` to ``yes`` if it
+works or ``no`` if it doesn't work at all. Otherwise don't specify that value
+and the user will be warned that it may not work, and asked if they really want
+to continue.
+
+Along with this, to help portable app developers update paths in their packages
+as well as drive letters, two new environment variable groups have been added:
+:env:`PAL:PackagePartialDir` and :env:`PAL:LastPackagePartialDir`.
+
+64-bit support
+--------------
+
+For support of apps which have different executables between 32-bit and 64-bit
+versions, :ini-key:`[Launch]:ProgramExecutable64` and
+:ini-key:`[Launch]:ProgramExecutableWhenParameters64` were added.
+
+If an environment variable is needed so specify ``%PAL:AppDir%\AppName`` and
+``%PAL:AppDir%\AppName64``, depending on the architecture, this can be done
+easily with :ref:`custom code <custom-code>`::
+
+   ${If} $Bits = 64
+       ${SetEnvironmentVariablesPath} FullAppDir $AppDirectory\AppName64
+   ${Else}
+       ${SetEnvironmentVariablesPath} FullAppDir $AppDirectory\AppName
+   ${EndIf}
+
+Then environment variables ``FullAppDir``, ``FullAppDir:ForwardSlash``,
+:ref:`etc. <ref-envsub-directory>` will be available for use.
+
+For more information on 64-bit support in the PortableApps.com Launcher, see
+:ref:`64-bit`.
+
+XML support
+-----------
+
+Support for reading from and writing to has been added. This provides the types
+``XML attribute`` and ``XML text`` to :ini-section:`[LanguageFile]` and
+:ini-section:`[FileWriteN]`. For more information on general usage of XML
+support, see the documentation for those sections and :ref:`xml`.
+
+ALLUSERSAPPDATA environment variable
+------------------------------------
+
+To facilitate apps which write to ``C:\Documents and Settings\All
+Users\Application Data`` on Windows 2000 and XP and to ``C:\ProgramData`` on
+Windows Vista and 7, a new environment variable, :env:`ALLUSERSAPPDATA`, was
+added.
+
+A new way to run as admin
+-------------------------
+
+It seems that the environment can get altered with
+:ini-key:`[Launch]:RunAsAdmin` set to ``try`` or ``force``, making it so that
+portable apps may not work. For cases where this has happened, a new value has
+been added in, ``compile-force``, which sets a flag in the launcher executable
+itself to need to run as administrator, leaving it up to the operating system
+to raise privileges. This should make most or all cases where the value
+``force`` has not worked work.
+
+Changes
+=======
+
+Increased resiliance
+--------------------
+
+This new version of the PortableApps.com Launcher includes new code to make a
+portable app even more stable when a disk is removed or a power failure occurs
+so that all portable data from the host system is cleaned up and any settings
+substituted are restored.
+
+Also when a :ini-section:`[RegistryKeys]` value targets a key in
+HKEY_LOCAL_MACHINE and the user did not have sufficient privileges, the first
+time it was run, a key was left behind in the registry and future runs of the
+app would not function entirely correctly. This has been fixed.
+
+Apps will now also detect already-running instances of themselves which are
+shutting down or starting up at the same time, and so prevent data corruption
+which has been observed in one or two apps. At present this only applies in the
+scope of individual portable app installations, not multiple installations of
+the same app. This may mean that some apps which move settings to shared
+locations (such as APPDATA) will still be affected by this issue. However, for
+the apps which it was originally reported with, which moved settings from the
+Data directory to the App directory, this bug is fixed. A complete fix for all
+cases where this bug may manifest itself this will be investigated in version
+2.2.
+
+DefaultData now more flexible
+-----------------------------
+
+A change in the time when DefaultData is processed means that you can now use
+the DefaultData to override Launcher settings so that you can do things like
+provide a last used drive letter for first run, which formerly didn't work. A
+full explanation of how to use this will come soon, but for the moment just
+take a look at Data\\settings\\\ *AppNamePortable*\ Settings.ini after you've
+run an app (all values in it are optional).
+
+Friendlier management of Java apps
+----------------------------------
+
+When Java was not found on the local machine or in the portable installation,
+apps using Java formerly gave the not-particularly-helpful error message "App
+Name Portable cannot be started. You may wish to re-install to fix this issue.
+(ERROR: Java could not be found)". Now a more helpful error message is
+provided, "App Name requires a Java Runtime Environment. Please install
+jPortable from http://portableapps.com/jportable and then try again." Automatic
+installation will come in a later version.
+
+Changes to custom code
+----------------------
+
+For :ref:`custom code <custom-code>` the path has now changed from
+``Other\Source\PortableApps.comLauncherCustom.nsh`` to
+``App\AppInfo\Launcher\Custom.nsh``. Although the Generator will still need to
+be run whenever you alter your custom code to compile the changes, this keeps
+files related to the PortableApps.com Launcher together, and makes it clearer
+that there is custom code involved.
+
+Similarly, the path to the :ref:`debugging file <debug>` has now changed from
+``Other\Source\PortableApps.comLauncherDebug.nsh`` to
+``App\AppInfo\Launcher\Debug.nsh``. Again, the launcher will still need to be
+regenerated to compile changes to debug code.
+
+In custom code, the macro ``${ReadUserOverrideConfig}`` has been renamed to
+``${ReadUserConfig}``.
+
+None of these changes are backwards-incompatible insofar as the Generator will
+upgrade the paths and macro name when you first run it. Developers who are
+using the :ref:`development version of the PortableApps.com Launcher <hg>` will
+need to :ref:`recompile the Generator <compile-pal-generator>`.

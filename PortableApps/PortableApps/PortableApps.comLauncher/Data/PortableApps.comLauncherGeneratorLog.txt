@@ -1,0 +1,1 @@
+ERROR: Z:\IdeaProjects\RouteConverter\RouteConverterPortable\target\RouteConverterPortable\App\AppInfo\appinfo.ini doesn't exist!

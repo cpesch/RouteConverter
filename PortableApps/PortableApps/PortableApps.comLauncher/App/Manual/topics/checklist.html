@@ -1,0 +1,193 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Release checklist &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Using the PortableApps.com Launcher" href="index.html" />
+    <link rel="next" title="Reference" href="../ref/index.html" />
+    <link rel="prev" title="Dealing with XML data" href="xml.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-topics-checklist" class="page withsidebar">
+    
+  <div class="section" id="release-checklist">
+<span id="index-0"></span><span id="id1"></span><h1>Release checklist<a class="headerlink" href="#release-checklist" title="Permalink to this headline">¶</a></h1>
+<p>Here is a checklist of some things to check over before releasing a portable
+app. For any other issues, try going through <a class="reference internal" href="../troubleshooting.html#troubleshooting"><em>Troubleshooting</em></a>. This also
+makes a good checklist for testers.</p>
+<dl class="docutils">
+<dt>Does it validate against the <a class="reference internal" href="../ref/paf/index.html#paf"><em>PortableApps.com Format™ Specification</em></a>?</dt>
+<dd>It saves time later if it&#8217;s in PortableApps.com Format to start with: you&#8217;ll
+need to fix it afterwards anyway if you want to have it released.</dd>
+<dt>Does it run?</dt>
+<dd>There&#8217;s not much point in releasing a package which doesn&#8217;t work. Try to test
+it (or at least run it) on as many computers and operating systems as you
+can, with the software installed locally and not, 32-bit and 64-bit, and so
+on.</dd>
+<dt>Does it run from the PortableApps.com Platform?</dt>
+<dd>If not, a common cause of failure is having the wrong value in
+<a class="reference internal" href="../ref/paf/appinfo.html#paf-appinfo-control"><em>appinfo.ini, [Control]</em></a>.</dd>
+<dt>Does it run by running the launcher executable directly?</dt>
+<dd>Many users don&#8217;t use the PortableApps.com Platform. Thus it&#8217;s a good idea to
+make sure that it works without it.</dd>
+<dt>Does a different working directory break things?</dt>
+<dd>Try running the executable while the working directory is not its own
+directory &#8211; for example, start Command Prompt and run the launcher
+executable without changing the directory. If there are any symptoms of
+malfunction, your app may need the working directory to be set to a special
+value (see <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:WorkingDirectory"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:WorkingDirectory</span></tt></a>).</dd>
+<dt>Does it run from a path with spaces in it?</dt>
+<dd>If not, check in launcher.ini that you have quoted paths in values like
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:CommandLineArguments"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:CommandLineArguments</span></tt></a>.  If it&#8217;s still not working and the
+base app doesn&#8217;t work if you install it to a path with spaces, set
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:NoSpacesInPath"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:NoSpacesInPath</span></tt></a><tt class="docutils literal"><span class="pre">=true</span></tt>.</dd>
+<dt>Is data stored in the Data directory?</dt>
+<dd>Make sure data isn&#8217;t stored in the App directory. This is a core part of the
+usefulness of the PortableApps.com Format and PortableApps.com Installer.</dd>
+<dt>Does a fresh installation work?</dt>
+<dd>Run the installer and install to an empty directory. Then try running the app
+and make sure it works. If it doesn&#8217;t, make sure that the app and data are
+properly separated.</dd>
+<dt>Does nothing go wrong in upgrading from a previous version?</dt>
+<dd>Try running the installer and installing over another installation of the
+portable app. No settings should be lost by doing this, and the app should
+run properly. If anything goes wrong, you may need to use <a class="reference internal" href="../ref/paf/installer.html#paf-installer-custom"><em>custom
+installer code</em></a> to update paths, or you may just need
+to make sure data isn&#8217;t stored in the App directory (see the above two
+points).</dd>
+<dt>Does it run from a different drive letter?</dt>
+<dd>A key feature for portable applications is being able to run from different
+drive letters. If your app can&#8217;t do that, you&#8217;re in trouble.  A
+<a class="reference internal" href="../ref/launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a> <tt class="docutils literal"><span class="pre">Replace</span></tt> section tends to be the way this is
+achieved.</dd>
+<dt>Does it run if you move the directory?</dt>
+<dd>Prior to the PortableApps.com Launcher, little attention has been paid to
+supporting moving the directory (e.g. from C:UsersuserDesktop to
+X:PortableApps). It is not a requirement that you support directory moving,
+but it is generally fairly easy to do and is often already supported. It&#8217;s
+recommended that you make sure that this works and set
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:DirectoryMoveOK"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:DirectoryMoveOK</span></tt></a> to <tt class="docutils literal"><span class="pre">yes</span></tt>, or determine that it&#8217;s too
+hard to fix and set it definitively to <tt class="docutils literal"><span class="pre">no</span></tt> which will explicitly block
+the user from running it and tell them it breaks things.</dd>
+<dt>Does it run on different operating systems?</dt>
+<dd>Where possible you should test apps on multiple operating systems,
+especially one of 2000 or XP and one of Vista and 7, so that you get the two
+path schemes (e.g. <tt class="docutils literal"><span class="pre">C:\Documents</span> <span class="pre">and</span> <span class="pre">Settings\Username\Application</span> <span class="pre">Data</span></tt>
+and  <tt class="docutils literal"><span class="pre">C:\Users\Username\AppData\Roaming</span></tt>). Testing on 32- and 64-bit
+systems is also helpful where possible. Support for running in Linux with
+Wine is not mandatory but it can be good to know from the start if an app
+can run in it.</dd>
+</dl>
+<div class="section" id="other-helpful-things">
+<h2>Other helpful things<a class="headerlink" href="#other-helpful-things" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Language switching:</dt>
+<dd>If an app is multilingual, it&#8217;s good if the launcher supports automatic
+language switching. Refer to <a class="reference internal" href="languages.html#languages"><em>Languages</em></a> for more details about
+implementing this.</dd>
+<dt>Support for directory moving:</dt>
+<dd>While not mandatory, if you can make an app support moving the installation
+directory, it&#8217;s good to. See &#8220;Does it run if you move the directory?&#8221; above.</dd>
+</dl>
+</div>
+<div class="section" id="suggestions-and-improvements">
+<h2>Suggestions and improvements<a class="headerlink" href="#suggestions-and-improvements" title="Permalink to this headline">¶</a></h2>
+<p>If you have any suggestions for improvements to this checklist (or any of the
+rest of the manual), please <a class="reference internal" href="../help.html#help"><em>get in contact with Chris Morgan</em></a>.</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Release checklist</a><ul>
+<li><a class="reference internal" href="#other-helpful-things">Other helpful things</a></li>
+<li><a class="reference internal" href="#suggestions-and-improvements">Suggestions and improvements</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="xml.html">Dealing with XML data</a></li>
+    
+    
+      <li>Next: <a href="../ref/index.html">Reference</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Using the PortableApps.com Launcher</a>
+        
+        <ul><li>Release checklist</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="xml.html" title="Dealing with XML data">previous</a>  | <a href="index.html" title="Using the PortableApps.com Launcher" accesskey="U">up</a>  | <a href="../ref/index.html" title="Reference">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

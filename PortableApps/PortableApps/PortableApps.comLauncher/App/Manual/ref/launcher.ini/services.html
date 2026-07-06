@@ -1,0 +1,198 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>[ServiceN] &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="launcher.ini" href="index.html" />
+    <link rel="next" title="PortableApps.com Format™ Specification" href="../paf/index.html" />
+    <link rel="prev" title="[Language]" href="language.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-launcher.ini-services" class="page withsidebar">
+    
+  <div class="section" id="servicen">
+<span id="std:ini-section-[ServiceN]"></span><h1>[Service<em>N</em>]<a class="headerlink" href="#servicen" title="Permalink to this headline">¶</a></h1>
+<p>Services and drivers which are required or recommended by your portable
+application. There are various keys for each section which are listed below.</p>
+<p><strong>Services are currently disabled in the PortableApps.com Launcher.</strong></p>
+<div class="section" id="name">
+<span id="std:ini-key-[ServiceN]:Name"></span><h2>Name<a class="headerlink" href="#name" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory.</div>
+</div>
+<hr class="docutils" />
+<p>The service name.</p>
+</div>
+<div class="section" id="path">
+<span id="std:ini-key-[ServiceN]:Path"></span><h2>Path<a class="headerlink" href="#path" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory.</div>
+</div>
+<hr class="docutils" />
+<p>The execution string of the service.</p>
+</div>
+<div class="section" id="type">
+<span id="std:ini-key-[ServiceN]:Type"></span><h2>Type<a class="headerlink" href="#type" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">service</span></tt> / <tt class="docutils literal"><span class="pre">driver-kernel</span></tt> / <tt class="docutils literal"><span class="pre">driver-file-system</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">service</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>Specify whether you are dealing with a service, a kernel driver or a file system
+driver.</p>
+</div>
+<div class="section" id="user">
+<span id="std:ini-key-[ServiceN]:User"></span><h2>User<a class="headerlink" href="#user" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: none / <tt class="docutils literal"><span class="pre">LocalService</span></tt> / <tt class="docutils literal"><span class="pre">NetworkService</span></tt></div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If the service needs to run as other than LocalSystem, i.e. as LocalService or
+NetworkService, specify it here (omit the leading <tt class="docutils literal"><span class="pre">NT</span> <span class="pre">AUTHORITY\</span></tt>).</p>
+</div>
+<div class="section" id="display">
+<span id="std:ini-key-[ServiceN]:Display"></span><h2>Display<a class="headerlink" href="#display" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>The short display name of the service.</p>
+</div>
+<div class="section" id="dependencies">
+<span id="std:ini-key-[ServiceN]:Dependencies"></span><h2>Dependencies<a class="headerlink" href="#dependencies" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>A comma-separated list of dependencies.</p>
+</div>
+<div class="section" id="description">
+<span id="std:ini-key-[ServiceN]:Description"></span><h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>A description of what the service does for the &#8220;Services&#8221; Control Panel applet
+(this should not be necessary).</p>
+</div>
+<div class="section" id="ifexists">
+<span id="std:ini-key-[ServiceN]:IfExists"></span><h2>IfExists<a class="headerlink" href="#ifexists" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">skip</span></tt> / <tt class="docutils literal"><span class="pre">replace</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">skip</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If the service already exists, you can either skip it or replace it with the
+portable version of the service (the original service will be restored
+afterwards).</p>
+<p><strong>This value currently has no effect</strong> (except to show a warning that it won&#8217;t
+do what you expect if you specify <tt class="docutils literal"><span class="pre">replace</span></tt>).</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">[Service<em>N</em>]</a><ul>
+<li><a class="reference internal" href="#name">Name</a></li>
+<li><a class="reference internal" href="#path">Path</a></li>
+<li><a class="reference internal" href="#type">Type</a></li>
+<li><a class="reference internal" href="#user">User</a></li>
+<li><a class="reference internal" href="#display">Display</a></li>
+<li><a class="reference internal" href="#dependencies">Dependencies</a></li>
+<li><a class="reference internal" href="#description">Description</a></li>
+<li><a class="reference internal" href="#ifexists">IfExists</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="language.html">[Language]</a></li>
+    
+    
+      <li>Next: <a href="../paf/index.html">PortableApps.com Format™ Specification</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">launcher.ini</a>
+        
+        <ul><li>[Service<em>N</em>]</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="language.html" title="[Language]">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="../paf/index.html" title="PortableApps.com Format™ Specification">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

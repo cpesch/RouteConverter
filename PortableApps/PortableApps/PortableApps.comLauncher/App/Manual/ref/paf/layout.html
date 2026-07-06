@@ -1,0 +1,147 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>1. Directory and File Layout &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="PortableApps.com Format™ Specification" href="index.html" />
+    <link rel="next" title="2. AppInfo.ini (App Configuration)" href="appinfo.html" />
+    <link rel="prev" title="PortableApps.com Format™ Specification" href="index.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-paf-layout" class="page withsidebar">
+    
+  <div class="section" id="directory-and-file-layout">
+<span id="paf-layout"></span><h1>1. Directory and File Layout<a class="headerlink" href="#directory-and-file-layout" title="Permalink to this headline">¶</a></h1>
+<p>The basic directory layout of each portable app consists of a main directory,
+AppNamePortable which contains three directories: App, Data and Other.</p>
+<div class="highlight-python"><pre>AppNamePortable
++ App
+  + AppInfo
+  + AppName
+  + DefaultData
++ Data
++ Other
+  + Help
+    + Images
+  + Source</pre>
+</div>
+<p><strong>AppNamePortable</strong>: contains the main application launcher, typically named
+<tt class="docutils literal"><span class="pre">AppNamePortable.exe</span></tt> and the main help file <tt class="docutils literal"><span class="pre">help.html</span></tt>. No other files are
+present in this directory by default.</p>
+<p><strong>App</strong>: contains all the binary and other files that make up the application
+itself, usually within a directory called <tt class="docutils literal"><span class="pre">AppName</span></tt>. The other directory
+called <tt class="docutils literal"><span class="pre">AppInfo</span></tt> (discussed in <a class="reference internal" href="appinfo.html#paf-appinfo"><em>section 2</em></a>) contains the
+configuration details for the PortableApps.com Platform as well as the icons
+used within the menu. It may also contain the launcher.ini configuration file
+used for the PortableApps.com Launcher. The third directory, <tt class="docutils literal"><span class="pre">DefaultData</span></tt> is
+usually used as a container for the default files to be placed within the
+<tt class="docutils literal"><span class="pre">Data</span></tt> directory. Generally, the launcher, when run, will check if there is a
+set of files within Data and, if not, will copy them from DefaultData. The next
+release of the PortableApps.com Installer will do the same.</p>
+<p><strong>Data</strong>: contains all the user data for the application including settings,
+configuration and other data that would usually be stored within APPDATA for a
+locally installed application. The applications released by PortableApps.com
+typically contain the settings in a <tt class="docutils literal"><span class="pre">settings</span></tt> subdirectory, profiles for
+Mozilla apps in a <tt class="docutils literal"><span class="pre">profiles</span></tt> subdirectory. No application components (binary
+files, etc) should be contained within the Data directory. The launcher or
+application must be able to recreate the Data directory and all required files
+within it if it is missing.</p>
+<p><strong>Other</strong>: contains files that don&#8217;t fit into the other categories. The
+additional images and other files used by <tt class="docutils literal"><span class="pre">help.html</span></tt> included in the main
+<tt class="docutils literal"><span class="pre">AppNamePortable</span></tt> are included in a <tt class="docutils literal"><span class="pre">Help</span></tt> subdirectory in the <tt class="docutils literal"><span class="pre">Other</span></tt>
+directory.  Images for the help file would be included in an <tt class="docutils literal"><span class="pre">Images</span></tt>
+subdirectory within the <tt class="docutils literal"><span class="pre">Help</span></tt> subdirectory.</p>
+<p>Any source code or source code licensing as well as the source files for the
+PortableApps.com Installer (if desired) are included within the Source
+subdirectory. This may include the source for the <tt class="docutils literal"><span class="pre">AppNamePortable.exe</span></tt>
+launcher, a <tt class="docutils literal"><span class="pre">readme.txt</span></tt> file detailing the usage of the launcher, license
+information and other files.</p>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="index.html">PortableApps.com Format™ Specification</a></li>
+    
+    
+      <li>Next: <a href="appinfo.html">2. AppInfo.ini (App Configuration)</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">PortableApps.com Format™ Specification</a>
+        
+        <ul><li>1. Directory and File Layout</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="index.html" title="PortableApps.com Format™ Specification">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="appinfo.html" title="2. AppInfo.ini (App Configuration)">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

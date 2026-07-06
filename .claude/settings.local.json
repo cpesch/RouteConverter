@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -sI http://127.0.0.1:8000/v1/datasources/)",
+      "Bash(curl -sI http://127.0.0.1:8000/admin/)",
+      "Read(//Users/christian.pesch/.routeconverter/snapshot-127.0.0.18000/datasources/**)",
+      "Bash(git add *)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.routeconverter.com)",
+      "Bash(export JAVA_HOME=/Users/christian.pesch/.sdkman/candidates/java/17.0.19-tem)",
+      "Bash(./mvnw --batch-mode -Prouteconverter -pl navigation-formats,photon -am compile)",
+      "Bash(curl -sSI https://api.routeconverter.com/v1/datasources/brouter-segments-4/?format=xml)",
+      "Bash(gh run *)",
+      "Bash(mvn -pl brouter -am install -DskipTests -q)",
+      "Bash(mvn -pl brouter surefire:test -Dtest=BRouterRemoveOutdatedSegmentsTest,BRouterTest)",
+      "Bash(rtk ls *)",
+      "Bash(rtk wc *)",
+      "Bash(rtk git *)"
+    ]
+  }
+}

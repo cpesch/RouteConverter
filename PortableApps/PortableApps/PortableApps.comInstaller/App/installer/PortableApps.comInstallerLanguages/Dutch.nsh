@@ -1,0 +1,75 @@
+﻿LangString welcome ${LANG_DUTCH} "Deze wizard zal u door de installatie van ${PORTABLEAPPNAMEDOUBLEDAMPERSANDS} begeleiden.$\r$\n$\r$\nAls u een bestaande installatie van ${PORTABLEAPPNAMEDOUBLEDAMPERSANDS} wilt bijwerken, sluit deze dan af voordat u verder gaat.$\r$\n$\r$\nKlik op Volgende om verder te gaan."
+LangString finish ${LANG_DUTCH} "${PORTABLEAPPNAMEDOUBLEDAMPERSANDS} is geïnstalleerd op uw apparaat.$\r$\n$\r$\nKlik op Voltooien om deze wizard te sluiten."
+LangString runwarning ${LANG_DUTCH} "Gelieve alle instanties van ${CLOSENAME} af te sluiten en dan op OK te klikken.  De draagbare toepassing kan niet vernieuwd worden zolang ze nog gebruikt wordt."
+LangString invaliddirectory ${LANG_DUTCH} "De gekozen doelmap is ongeldig.  Kies een geldige map."
+LangString notenoughspace ${LANG_DUTCH} "Het geselecteerde apparaat heeft onvoldoende beschikbare schijfruimte voor deze toepassing."
+LangString checkforplatform ${LANG_DUTCH} "Controleren op PortableApps.com Platform"
+LangString refreshmenu ${LANG_DUTCH} "PortableApps.com Menu bijwerken"
+LangString copylocalfilesnotfound ${LANG_DUTCH} "Dit installatieprogramma kopieert een lokale versie van de applicatie en maakt het portable. Helaas werd er geen lokale kopie van de toepassing gevonden. U kunt opnieuw installeren of de bestanden zelf kopiëren om de installatie later te voltooien. (Fout: $MISSINGFILEORPATH kon niet gevonden worden.)"
+LangString downloadfilemismatch ${LANG_DUTCH} "De gedownloade kopie van ${DownloadName} is niet geldig en kan niet geïnstalleerd worden."
+LangString downloadfailed ${LANG_DUTCH} "Het installatieprogramma was niet in staat om ${DownloadName} te downloaden.  Hierdoor zal de installatie van het programma onvolledig zijn. (Fout: $DOWNLOADRESULT)"
+LangString extractfailed ${LANG_DUTCH} "Het installatieprogramma was niet in staat om het noodzakelijke bestand te halen uit het gedownloade bestand.  Hierdoor zal de installatie van het programma onvolledig zijn."
+LangString downloading ${LANG_DUTCH} "Downloaden van ${DownloadName}..."
+LangString prepareupgrade ${LANG_DUTCH} "Voorbereiden om ${PORTABLEAPPNAME} bij te werken..."
+LangString installingstatus ${LANG_DUTCH} "Installeren van ${PORTABLEAPPNAME}..."
+LangString downloadremaining ${LANG_DUTCH} "resterend"
+LangString downloadconnecting ${LANG_DUTCH} "Verbinding maken..."
+LangString downloadsecond ${LANG_DUTCH} "seconden"
+LangString downloadhour ${LANG_DUTCH} "uren"
+LangString downloadminute ${LANG_DUTCH} "minuten"
+LangString downloadplural ${LANG_DUTCH} ""
+LangString downloadof ${LANG_DUTCH} "van"
+
+LangString existingfileswarning ${LANG_DUTCH} "De door u geselecteerde map ($INSTDIR) is niet de standaard installatiemap voor deze plugin. Deze map bevat bestanden binnen dat kan worden verwijderd of gewijzigd. Bent u zeker dat u wilt installeren om deze folder?"
+
+LangString runwarningplatform ${LANG_DUTCH} "Sluit alle instanties van ${CLOSENAME} en klik op OK.  Het platform kan niet bijgewerkt worden als het uitgevoerd wordt."
+LangString installlocation ${LANG_DUTCH} "Setup zal ${PORTABLEAPPNAMEDOUBLEDAMPERSANDS} op onderstaande schijf installeren.  Het is best om op de schijf zelf te installeren in plaats van in een map, hoewel u een aangepaste map mag selecteren als u wil. Er zullen geen bestaande persoonlijke bestanden verwijderd worden tijdens de installatie. Selecteer uw installatielocatie."
+LangString launch ${LANG_DUTCH} "${PORTABLEAPPNAME} uitvoeren..."
+LangString sethomepage ${LANG_DUTCH} "Portable homepage instellen op Start.PortableApps.com"
+
+LangString otherplatform ${LANG_DUTCH} "U lijkt $OTHERPLATFORM uit te voeren, dat voordien onjuist/illegaal gebruik gemaakt heeft van PortableApps.com code en processen.  Dit kan problemen of conflicten veroorzaken met software in het open PortableApps.com-formaat.  Wilt u meer informatie voordat u dit programma installeert?"
+LangString installplatformonly ${LANG_DUTCH} "PortableApps.com Platform - Voeg alleen de programma's toe die u wilt"
+LangString installsuitestandard ${LANG_DUTCH} "PortableApps.com Suite - Complete office-suite, browser, e-mail, antivirus en meer"
+LangString installsuitelight ${LANG_DUTCH} "PortableApps.com Suite Light - Lichtgewicht tekstverwerker, browser, e-mail, antivirus en meer"
+LangString installsuitelight2 ${LANG_DUTCH} "PortableApps.com Suite Light - Lichtgewicht tekstverwerker, spreadsheet, browser, e-mail, antivirus en meer"
+LangString installsuitecomplete ${LANG_DUTCH} "PortableApps.com Suite Compleet - Verkrijg alles! Honderden programma's op uw apparaat."
+
+LangString outdatedplatform ${LANG_DUTCH} "U lijkt $OUTDATEDPLATFORM uit te voeren.  Wilt u upgraden naar het laatste Portableapps.com Platform en meer functies en functionaliteit verkrijgen?  Het is open source en helemaal gratis!"
+;New strings for the PA.c Platform Installer
+LangString platformsharedcustomlocation ${LANG_DUTCH} "Aangepaste locatie selecteren..."
+LangString platformsharednotfound ${LANG_DUTCH} "Niet teruggevonden"
+
+LangString platforminstalltype ${LANG_DUTCH} "Installatietype"
+LangString platforminstalltypequestion ${LANG_DUTCH} "Welk type installatie zal dit worden?"
+LangString platformnewinstall ${LANG_DUTCH} "Nieuwe installatie"
+LangString platformnewinstalldetails ${LANG_DUTCH} "Een nieuwe kopie van het PortableApps.com Platform installeren op uw lokale pc, clouddrive of draagbaar apparaat"
+LangString platformupgradeinstall ${LANG_DUTCH} "Bijwerken van bestaande installatie"
+LangString platformupgradeinstalldetails ${LANG_DUTCH} "Een bestaande kopie van het PortableApps.com Platform bijwerken."
+
+LangString platforminstalllocation ${LANG_DUTCH} "Installatiepad"
+LangString platforminstalllocationquestion ${LANG_DUTCH} "Waar wilt u dat uw platform geïnstalleerd wordt?"
+LangString platforminstalllocationcloud ${LANG_DUTCH} "Cloud - installeren in een cloud-gesynchroniseerde map (Dropbox, Google Drive, enz.)"
+LangString platforminstalllocationportable ${LANG_DUTCH} "Portable - installeren op een draagbaar apparaat"
+LangString platforminstalllocationlocal ${LANG_DUTCH} "Lokaal - installeren voor huidige gebruiker, private programma's en instellingen"
+LangString platforminstalllocationlocalall ${LANG_DUTCH} "Lokaal alle gebruikers - installeren voor alle gebruikers, gedeelde programma's en instellingen"
+
+LangString platforminstallcloud ${LANG_DUTCH} "Cloud-installatie"
+LangString platforminstallcloudquestion ${LANG_DUTCH} "In welke cloud-map wilt u installeren?"
+
+LangString platformupgrade ${LANG_DUTCH} "Platform bijwerken"
+LangString platformupgradequestion ${LANG_DUTCH} "Welke platform-installatie wilt u bijwerken?"
+
+LangString platforminstallportable ${LANG_DUTCH} "Portable installatie"
+LangString platforminstallportablequestion ${LANG_DUTCH} "Op welk draagbaar apparaat wilt u installeren?"
+
+LangString platforminstalllocal ${LANG_DUTCH} "Lokale installatie"
+LangString platforminstalllocalquestion ${LANG_DUTCH} "Naar welk lokaal pad wilt u installeren?"
+
+LangString platformconfirminstall ${LANG_DUTCH} "Installatie bevestigen"
+LangString platformconfirminstallsubhead ${LANG_DUTCH} "Bevestig de details van uw installatie onderaan"
+LangString platformconfirmintro ${LANG_DUTCH} "U heeft geselecteerd om te installeren naar:"
+LangString platformconfirmoutro ${LANG_DUTCH} "Klik op Installeren om de installatie te starten."
+
+LangString platformstartwithwindows ${LANG_DUTCH} "Het platform automatisch samen met Windows starten"
+
+LangString platforminstallerlang ${LANG_DUTCH} "Dutch"

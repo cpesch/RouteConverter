@@ -1,0 +1,311 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PortableApps.com Launcher 2.1 release notes &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Release notes" href="index.html" />
+    <link rel="next" title="PortableApps.com Launcher 2.1.1 release notes" href="2.1.1.html" />
+    <link rel="prev" title="PortableApps.com Launcher 2.2 release notes" href="2.2.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-releases-2.1" class="page withsidebar">
+    
+  <div class="section" id="portableapps-com-launcher-2-1-release-notes">
+<span id="releases-2-1"></span><span id="index-0"></span><h1>PortableApps.com Launcher 2.1 release notes<a class="headerlink" href="#portableapps-com-launcher-2-1-release-notes" title="Permalink to this headline">¶</a></h1>
+<p>The next version of the PortableApps.com Launcher is coming now! With <a class="reference internal" href="#new-features">various
+new features</a>, <a class="reference internal" href="#changes">some changes</a> and improved documentation, this release makes
+it easier than ever to make portable apps.</p>
+<p><strong>Important recommendation:</strong> use the new <a class="reference internal" href="#support-for-directory-moving">support for directory moving</a>.</p>
+<div class="section" id="development-team">
+<h2>Development team<a class="headerlink" href="#development-team" title="Permalink to this headline">¶</a></h2>
+<p>First of all, the PortableApps.com Launcher core development team has grown!
+Version 2.0 was managed and released just by Chris Morgan; in 2.1, Mark Sikkema
+(Gringoloco) has joined the development team. Mark is the author of several of
+the important new features and modifications in 2.1; XML support and wildcards
+are the biggest features which have been done entirely by him (and very
+thoroughly, too). DLL server and type library registration is also a region
+Mark has done a lot of research and work with, but unfortunately it&#8217;s proved to
+be more complex than we originally thought, and the code is not yet stable
+enough to be included, so it has been removed from 2.1.  It may ship in 2.2 or
+2.3, depending on the rapidity of the release cycle.</p>
+</div>
+<div class="section" id="new-features">
+<h2>New features<a class="headerlink" href="#new-features" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="better-support-for-varying-operating-systems">
+<h3>Better support for varying operating systems<a class="headerlink" href="#better-support-for-varying-operating-systems" title="Permalink to this headline">¶</a></h3>
+<p>This release introduces operating system compatibility detection, supporting a
+minimum OS required to run, with <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:MinOS"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:MinOS</span></tt></a>, and a maximum
+supported OS, with <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:MaxOS"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:MaxOS</span></tt></a>.</p>
+<p>This is handy in particular for apps which don&#8217;t support Windows 2000; the
+PortableApps.com Launcher itself doesn&#8217;t support Windows 95, 98 or Me (due to
+its being Unicode), but it does support Windows 2000, and some apps, like
+Google Chrome or the GIMP, don&#8217;t work on Windows 2000. Rather than failing
+silently, it&#8217;s more helpful to warn the user &#8211; so a line <tt class="docutils literal"><span class="pre">MinOS=2000</span></tt> is
+very helpful for the user.</p>
+<p>There are also some more values added to supplement
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RunAsAdmin"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin</span></tt></a>, to provide operating system dependant privilege
+requirement. This may be useful in particular for some apps which before Vista
+didn&#8217;t need administrative privileges, but for Vista and later need
+administrative privileges due to the tightened security and UAC subsystem.</p>
+<p>These added values are
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RunAsAdmin2000"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin2000</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RunAsAdminXP"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdminXP</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RunAsAdmin2003"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin2003</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RunAsAdminVista"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdminVista</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RunAsAdmin2008"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin2008</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RunAsAdmin7"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin7</span></tt></a> and
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RunAsAdmin2008R2"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin2008R2</span></tt></a>.</p>
+</div>
+<div class="section" id="wildcards">
+<h3>Wildcards<a class="headerlink" href="#wildcards" title="Permalink to this headline">¶</a></h3>
+<p>Support for wildcards (using the characters <tt class="docutils literal"><span class="pre">*</span></tt> and <tt class="docutils literal"><span class="pre">?</span></tt>) in file and
+directory names has been added. It&#8217;s supported in the
+<a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[FilesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FilesMove]</span></tt></a>, <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesMove]</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a>, <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesCleanupIfEmpty]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesCleanupIfEmpty]</span></tt></a> and
+<a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesCleanupForce]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesCleanupForce]</span></tt></a> sections. This is a fairly
+self-explanatory feature which most or all users will already be familiar with.
+Precisely what is supported is documentated in <a class="reference internal" href="../topics/files-and-directories.html#wildcards"><em>Support for wildcards</em></a>.</p>
+<p>There is currently one known slight bug; on XP, <tt class="docutils literal"><span class="pre">?</span></tt> wildcard matching in file
+extensions will also match fewer characters, so <tt class="docutils literal"><span class="pre">*.???</span></tt> will mistakenly match
+<tt class="docutils literal"><span class="pre">*.xy</span></tt>. This usage pattern is extremely rare, however, and so it is unlikely
+to cause any trouble ever.</p>
+</div>
+<div class="section" id="support-for-directory-moving">
+<h3>Support for directory moving<a class="headerlink" href="#support-for-directory-moving" title="Permalink to this headline">¶</a></h3>
+<p>Historically, PortableApps.com launchers have often not supported changing the
+directory a portable app is in; while they support updating drive letters, some
+haven&#8217;t supported updating the path to an app, so that, for example, moving
+from <tt class="docutils literal"><span class="pre">C:\Users\User\Desktop\Apps\AppNamePortable</span></tt> to
+<tt class="docutils literal"><span class="pre">C:\PortableApps\AppNamePortable</span></tt> didn&#8217;t work. The particular problem with
+this was that apps didn&#8217;t give any indication that they were going to fail, or
+that things might not work.</p>
+<p>By default now, if the launcher detects that the user has moved the package, it
+will warn them that it may not work. Portable app developers should, however,
+try to make it work with directory moving, or if they can&#8217;t manage that, they
+should block. After making it work completely or knowing that it won&#8217;t work at
+all, you can then set <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:DirectoryMoveOK"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:DirectoryMoveOK</span></tt></a> to <tt class="docutils literal"><span class="pre">yes</span></tt> if it
+works or <tt class="docutils literal"><span class="pre">no</span></tt> if it doesn&#8217;t work at all. Otherwise don&#8217;t specify that value
+and the user will be warned that it may not work, and asked if they really want
+to continue.</p>
+<p>Along with this, to help portable app developers update paths in their packages
+as well as drive letters, two new environment variable groups have been added:
+<a class="reference internal" href="../ref/envsub.html#std:env-PAL:PackagePartialDir"><tt class="xref std std-env docutils literal"><span class="pre">PAL:PackagePartialDir</span></tt></a> and <a class="reference internal" href="../ref/envsub.html#std:env-PAL:LastPackagePartialDir"><tt class="xref std std-env docutils literal"><span class="pre">PAL:LastPackagePartialDir</span></tt></a>.</p>
+</div>
+<div class="section" id="bit-support">
+<h3>64-bit support<a class="headerlink" href="#bit-support" title="Permalink to this headline">¶</a></h3>
+<p>For support of apps which have different executables between 32-bit and 64-bit
+versions, <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:ProgramExecutable64"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutable64</span></tt></a> and
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:ProgramExecutableWhenParameters64"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutableWhenParameters64</span></tt></a> were added.</p>
+<p>If an environment variable is needed so specify <tt class="docutils literal"><span class="pre">%PAL:AppDir%\AppName</span></tt> and
+<tt class="docutils literal"><span class="pre">%PAL:AppDir%\AppName64</span></tt>, depending on the architecture, this can be done
+easily with <a class="reference internal" href="../advanced/custom.html#custom-code"><em>custom code</em></a>:</p>
+<div class="highlight-python"><pre>${If} $Bits = 64
+    ${SetEnvironmentVariablesPath} FullAppDir $AppDirectory\AppName64
+${Else}
+    ${SetEnvironmentVariablesPath} FullAppDir $AppDirectory\AppName
+${EndIf}</pre>
+</div>
+<p>Then environment variables <tt class="docutils literal"><span class="pre">FullAppDir</span></tt>, <tt class="docutils literal"><span class="pre">FullAppDir:ForwardSlash</span></tt>,
+<a class="reference internal" href="../ref/envsub.html#ref-envsub-directory"><em>etc.</em></a> will be available for use.</p>
+<p>For more information on 64-bit support in the PortableApps.com Launcher, see
+<a class="reference internal" href="../topics/64-bit.html#bit"><em>64-bit applications</em></a>.</p>
+</div>
+<div class="section" id="xml-support">
+<h3>XML support<a class="headerlink" href="#xml-support" title="Permalink to this headline">¶</a></h3>
+<p>Support for reading from and writing to has been added. This provides the types
+<tt class="docutils literal"><span class="pre">XML</span> <span class="pre">attribute</span></tt> and <tt class="docutils literal"><span class="pre">XML</span> <span class="pre">text</span></tt> to <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageFile]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageFile]</span></tt></a> and
+<a class="reference internal" href="../ref/launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a>. For more information on general usage of XML
+support, see the documentation for those sections and <a class="reference internal" href="../topics/xml.html#xml"><em>Dealing with XML data</em></a>.</p>
+</div>
+<div class="section" id="allusersappdata-environment-variable">
+<h3>ALLUSERSAPPDATA environment variable<a class="headerlink" href="#allusersappdata-environment-variable" title="Permalink to this headline">¶</a></h3>
+<p>To facilitate apps which write to <tt class="docutils literal"><span class="pre">C:\Documents</span> <span class="pre">and</span> <span class="pre">Settings\All</span>
+<span class="pre">Users\Application</span> <span class="pre">Data</span></tt> on Windows 2000 and XP and to <tt class="docutils literal"><span class="pre">C:\ProgramData</span></tt> on
+Windows Vista and 7, a new environment variable, <a class="reference internal" href="../ref/envsub.html#std:env-ALLUSERSAPPDATA"><tt class="xref std std-env docutils literal"><span class="pre">ALLUSERSAPPDATA</span></tt></a>, was
+added.</p>
+</div>
+<div class="section" id="a-new-way-to-run-as-admin">
+<h3>A new way to run as admin<a class="headerlink" href="#a-new-way-to-run-as-admin" title="Permalink to this headline">¶</a></h3>
+<p>It seems that the environment can get altered with
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RunAsAdmin"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin</span></tt></a> set to <tt class="docutils literal"><span class="pre">try</span></tt> or <tt class="docutils literal"><span class="pre">force</span></tt>, making it so that
+portable apps may not work. For cases where this has happened, a new value has
+been added in, <tt class="docutils literal"><span class="pre">compile-force</span></tt>, which sets a flag in the launcher executable
+itself to need to run as administrator, leaving it up to the operating system
+to raise privileges. This should make most or all cases where the value
+<tt class="docutils literal"><span class="pre">force</span></tt> has not worked work.</p>
+</div>
+</div>
+<div class="section" id="changes">
+<h2>Changes<a class="headerlink" href="#changes" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="increased-resiliance">
+<h3>Increased resiliance<a class="headerlink" href="#increased-resiliance" title="Permalink to this headline">¶</a></h3>
+<p>This new version of the PortableApps.com Launcher includes new code to make a
+portable app even more stable when a disk is removed or a power failure occurs
+so that all portable data from the host system is cleaned up and any settings
+substituted are restored.</p>
+<p>Also when a <a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryKeys]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryKeys]</span></tt></a> value targets a key in
+HKEY_LOCAL_MACHINE and the user did not have sufficient privileges, the first
+time it was run, a key was left behind in the registry and future runs of the
+app would not function entirely correctly. This has been fixed.</p>
+<p>Apps will now also detect already-running instances of themselves which are
+shutting down or starting up at the same time, and so prevent data corruption
+which has been observed in one or two apps. At present this only applies in the
+scope of individual portable app installations, not multiple installations of
+the same app. This may mean that some apps which move settings to shared
+locations (such as APPDATA) will still be affected by this issue. However, for
+the apps which it was originally reported with, which moved settings from the
+Data directory to the App directory, this bug is fixed. A complete fix for all
+cases where this bug may manifest itself this will be investigated in version
+2.2.</p>
+</div>
+<div class="section" id="defaultdata-now-more-flexible">
+<h3>DefaultData now more flexible<a class="headerlink" href="#defaultdata-now-more-flexible" title="Permalink to this headline">¶</a></h3>
+<p>A change in the time when DefaultData is processed means that you can now use
+the DefaultData to override Launcher settings so that you can do things like
+provide a last used drive letter for first run, which formerly didn&#8217;t work. A
+full explanation of how to use this will come soon, but for the moment just
+take a look at Data\settings\<em>AppNamePortable</em>Settings.ini after you&#8217;ve
+run an app (all values in it are optional).</p>
+</div>
+<div class="section" id="friendlier-management-of-java-apps">
+<h3>Friendlier management of Java apps<a class="headerlink" href="#friendlier-management-of-java-apps" title="Permalink to this headline">¶</a></h3>
+<p>When Java was not found on the local machine or in the portable installation,
+apps using Java formerly gave the not-particularly-helpful error message &#8220;App
+Name Portable cannot be started. You may wish to re-install to fix this issue.
+(ERROR: Java could not be found)&#8221;. Now a more helpful error message is
+provided, &#8220;App Name requires a Java Runtime Environment. Please install
+jPortable from <a class="reference external" href="http://portableapps.com/jportable">http://portableapps.com/jportable</a> and then try again.&#8221; Automatic
+installation will come in a later version.</p>
+</div>
+<div class="section" id="changes-to-custom-code">
+<h3>Changes to custom code<a class="headerlink" href="#changes-to-custom-code" title="Permalink to this headline">¶</a></h3>
+<p>For <a class="reference internal" href="../advanced/custom.html#custom-code"><em>custom code</em></a> the path has now changed from
+<tt class="docutils literal"><span class="pre">Other\Source\PortableApps.comLauncherCustom.nsh</span></tt> to
+<tt class="docutils literal"><span class="pre">App\AppInfo\Launcher\Custom.nsh</span></tt>. Although the Generator will still need to
+be run whenever you alter your custom code to compile the changes, this keeps
+files related to the PortableApps.com Launcher together, and makes it clearer
+that there is custom code involved.</p>
+<p>Similarly, the path to the <a class="reference internal" href="../advanced/debug.html#debug"><em>debugging file</em></a> has now changed from
+<tt class="docutils literal"><span class="pre">Other\Source\PortableApps.comLauncherDebug.nsh</span></tt> to
+<tt class="docutils literal"><span class="pre">App\AppInfo\Launcher\Debug.nsh</span></tt>. Again, the launcher will still need to be
+regenerated to compile changes to debug code.</p>
+<p>In custom code, the macro <tt class="docutils literal"><span class="pre">${ReadUserOverrideConfig}</span></tt> has been renamed to
+<tt class="docutils literal"><span class="pre">${ReadUserConfig}</span></tt>.</p>
+<p>None of these changes are backwards-incompatible insofar as the Generator will
+upgrade the paths and macro name when you first run it. Developers who are
+using the <a class="reference internal" href="../advanced/development.html#hg"><em>development version of the PortableApps.com Launcher</em></a> will
+need to <a class="reference internal" href="../advanced/development.html#compile-pal-generator"><em>recompile the Generator</em></a>.</p>
+</div>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PortableApps.com Launcher 2.1 release notes</a><ul>
+<li><a class="reference internal" href="#development-team">Development team</a></li>
+<li><a class="reference internal" href="#new-features">New features</a><ul>
+<li><a class="reference internal" href="#better-support-for-varying-operating-systems">Better support for varying operating systems</a></li>
+<li><a class="reference internal" href="#wildcards">Wildcards</a></li>
+<li><a class="reference internal" href="#support-for-directory-moving">Support for directory moving</a></li>
+<li><a class="reference internal" href="#bit-support">64-bit support</a></li>
+<li><a class="reference internal" href="#xml-support">XML support</a></li>
+<li><a class="reference internal" href="#allusersappdata-environment-variable">ALLUSERSAPPDATA environment variable</a></li>
+<li><a class="reference internal" href="#a-new-way-to-run-as-admin">A new way to run as admin</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#changes">Changes</a><ul>
+<li><a class="reference internal" href="#increased-resiliance">Increased resiliance</a></li>
+<li><a class="reference internal" href="#defaultdata-now-more-flexible">DefaultData now more flexible</a></li>
+<li><a class="reference internal" href="#friendlier-management-of-java-apps">Friendlier management of Java apps</a></li>
+<li><a class="reference internal" href="#changes-to-custom-code">Changes to custom code</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="2.2.html">PortableApps.com Launcher 2.2 release notes</a></li>
+    
+    
+      <li>Next: <a href="2.1.1.html">PortableApps.com Launcher 2.1.1 release notes</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Release notes</a>
+        
+        <ul><li>PortableApps.com Launcher 2.1 release notes</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="2.2.html" title="PortableApps.com Launcher 2.2 release notes">previous</a>  | <a href="index.html" title="Release notes" accesskey="U">up</a>  | <a href="2.1.1.html" title="PortableApps.com Launcher 2.1.1 release notes">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

@@ -1,0 +1,185 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PortableApps.com Launcher 2.1.1 release notes &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Release notes" href="index.html" />
+    <link rel="next" title="PortableApps.com Launcher 2.1.2 release notes" href="2.1.2.html" />
+    <link rel="prev" title="PortableApps.com Launcher 2.1 release notes" href="2.1.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-releases-2.1.1" class="page withsidebar">
+    
+  <div class="section" id="portableapps-com-launcher-2-1-1-release-notes">
+<span id="releases-2-1-1"></span><span id="index-0"></span><h1>PortableApps.com Launcher 2.1.1 release notes<a class="headerlink" href="#portableapps-com-launcher-2-1-1-release-notes" title="Permalink to this headline">¶</a></h1>
+<p>This release is the first bug-fix release for the 2.1 line and incidentally the
+first bug-fix release for the PortableApps.com Launcher as a whole.</p>
+<p>Three of these bugs are related to the already-starting detection which was
+added in version 2.1. There were a few cases where the technique used was not
+dealt with properly. In version 2.2, it is planned that the mechanism used to
+flag it as &#8220;starting&#8221; will be changed from INI storage to mutexes, which will
+be a lot more reliable and will not be able to get into the stuck state which
+is common with a couple of these bugs.</p>
+<p>For more information about the 2.1 release, see <a class="reference internal" href="2.1.html#releases-2-1"><em>PortableApps.com Launcher 2.1 release notes</em></a>.</p>
+<div class="section" id="development-team">
+<h2>Development team<a class="headerlink" href="#development-team" title="Permalink to this headline">¶</a></h2>
+<p>First of all, we have a new team member in the PortableApps.com Launcher
+development team: <strong>Aluísio Augusto Silva Gonçalves</strong> (known generally as
+<strong>kAlug</strong>). He started contributing shortly after the release of 2.1 and has
+done a number of the things on the 2.2 roadmap already, and has also identified
+and fixed some of the bugs found in this release while I have been busy doing
+mission work in India and so have had less time to spare on this than normal.
+The release of 2.1.1 would have taken quite a lot longer without him (and the
+delays have still been my fault, too). I thank kAlug for his contributions and
+am looking forward to further work with him. <em>&#8212; Chris Morgan</em></p>
+</div>
+<div class="section" id="bugs-fixed">
+<h2>Bugs fixed<a class="headerlink" href="#bugs-fixed" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="tertiary-launches-don-t-work">
+<h3>Tertiary launches don&#8217;t work<a class="headerlink" href="#tertiary-launches-don-t-work" title="Permalink to this headline">¶</a></h3>
+<p>One of the new features in 2.1 is detection of an already-starting instance of
+the portable app, which formerly could lead to data corruption. However, the
+&#8220;starting&#8221; flag was set for secondary launches, and so tertiary launches would
+fail to run while any instances were still running (depending slightly on the
+app configuration).</p>
+<p>Further details are available in the <a class="reference external" href="http://portableapps.com/node/28197">bug report</a>.</p>
+</div>
+<div class="section" id="runtime-data-file-left-behind-on-host-machine-for-secondary-launches">
+<h3>Runtime data file left behind on host machine for secondary launches<a class="headerlink" href="#runtime-data-file-left-behind-on-host-machine-for-secondary-launches" title="Permalink to this headline">¶</a></h3>
+<p>While investigating the bug mentioned above, another minor problem was found -
+a file <tt class="docutils literal"><span class="pre">runtimedata.ini</span></tt> was left behind in the plugin directory (which is a
+subdirectory with a name like <tt class="docutils literal"><span class="pre">nsXXXXXX</span></tt> in the user&#8217;s TEMP directory) for
+all secondary instances. This has been fixed now.</p>
+</div>
+<div class="section" id="live-mode-breaks-after-the-first-run-on-writeable-medium">
+<h3>Live mode breaks after the first run on writeable medium<a class="headerlink" href="#live-mode-breaks-after-the-first-run-on-writeable-medium" title="Permalink to this headline">¶</a></h3>
+<p>In subsequent investigations <a class="reference external" href="http://portableapps.com/node/28522">a third bug was found</a>, related to the
+&#8220;starting&#8221; detection, in Live mode. If the source directory was writeable, the
+&#8220;starting&#8221; flag was set but never cleared, meaning that after the first run in
+Live mode the app would not start again without deleting the runtime data file
+manually. Now this does not break, though on a read-only medium the &#8220;starting&#8221;
+check won&#8217;t function at all until 2.2.</p>
+</div>
+<div class="section" id="flaws-in-automatic-language-switching-in-nested-launchers">
+<h3>Flaws in automatic language switching in nested launchers<a class="headerlink" href="#flaws-in-automatic-language-switching-in-nested-launchers" title="Permalink to this headline">¶</a></h3>
+<p>Previously, if an app not running from the PortableApps.com Platform launched
+another app, this other app would believe that the language had been set by the
+Platform, thus ignoring its own saved language, if any. The typical case for
+this is when an English-only app launches a multilingual app; formerly this
+would have ended up with the multilingual app being reset to English.  To
+resolve this, when the PortableApps.com Platform is missing, a special
+environment variable is set to indicate the fact which will be picked up by
+nested launchers, so that they have the option of using the last language used
+(as defined by the <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageFile]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageFile]</span></tt></a> section in launcher.ini).</p>
+</div>
+<div class="section" id="incompatibility-between-live-mode-and-launch-waitforprogram-false">
+<h3>Incompatibility between Live mode and <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:WaitForProgram"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:WaitForProgram</span></tt></a>=<tt class="docutils literal"><span class="pre">false</span></tt><a class="headerlink" href="#incompatibility-between-live-mode-and-launch-waitforprogram-false" title="Permalink to this headline">¶</a></h3>
+<p>Previously, when the developer had set <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:WaitForProgram"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:WaitForProgram</span></tt></a> to
+<tt class="docutils literal"><span class="pre">false</span></tt>, and Live mode had been enabled, the launcher would just exit after
+running the app, without cleaning up. Now, the value of <tt class="docutils literal"><span class="pre">WaitForProgram</span></tt> is
+simply ignored.</p>
+</div>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PortableApps.com Launcher 2.1.1 release notes</a><ul>
+<li><a class="reference internal" href="#development-team">Development team</a></li>
+<li><a class="reference internal" href="#bugs-fixed">Bugs fixed</a><ul>
+<li><a class="reference internal" href="#tertiary-launches-don-t-work">Tertiary launches don&#8217;t work</a></li>
+<li><a class="reference internal" href="#runtime-data-file-left-behind-on-host-machine-for-secondary-launches">Runtime data file left behind on host machine for secondary launches</a></li>
+<li><a class="reference internal" href="#live-mode-breaks-after-the-first-run-on-writeable-medium">Live mode breaks after the first run on writeable medium</a></li>
+<li><a class="reference internal" href="#flaws-in-automatic-language-switching-in-nested-launchers">Flaws in automatic language switching in nested launchers</a></li>
+<li><a class="reference internal" href="#incompatibility-between-live-mode-and-launch-waitforprogram-false">Incompatibility between Live mode and <tt class="docutils literal"><span class="pre">[Launch]:WaitForProgram</span></tt>=<tt class="docutils literal"><span class="pre">false</span></tt></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="2.1.html">PortableApps.com Launcher 2.1 release notes</a></li>
+    
+    
+      <li>Next: <a href="2.1.2.html">PortableApps.com Launcher 2.1.2 release notes</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Release notes</a>
+        
+        <ul><li>PortableApps.com Launcher 2.1.1 release notes</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="2.1.html" title="PortableApps.com Launcher 2.1 release notes">previous</a>  | <a href="index.html" title="Release notes" accesskey="U">up</a>  | <a href="2.1.2.html" title="PortableApps.com Launcher 2.1.2 release notes">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

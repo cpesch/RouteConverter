@@ -1,0 +1,191 @@
+﻿# Header, don't edit
+NLF v6
+# Start editing here
+# Language ID
+1132
+# Font and size - dash (-) means default
+-
+-
+# Codepage - dash (-) means ANSI code page
+-
+# RTL - anything else than RTL means LTR
+-
+# Translation by ..... (any credits should go here)
+# ^Branding
+Nullsoft Install System %s
+# ^SetupCaption
+Setapo ea $(^Name)
+# ^UninstallCaption
+Ntša Lenaneo la $(^Name)
+# ^LicenseSubCaption
+: Tumellano ea Laesense
+# ^ComponentsSubCaption
+: Tse ka Khethoang ha ho Kenngoa Lenaneo
+# ^DirSubCaption
+: Sephuthelo sa ho Kenya Lenaneo
+# ^InstallingSubCaption
+: E Ntse e Kenya Lenaneo
+# ^CompletedSubCaption
+: E Qetile
+# ^UnComponentsSubCaption
+: Tse ka Khethoang ha ho Ntšoa Lenaneo
+# ^UnDirSubCaption
+: Sephuthelo sa ho Ntša Lenaneo
+# ^ConfirmSubCaption
+: Tiiso
+# ^UninstallingSubCaption
+: E Ntse e Ntša Lenaneo
+# ^UnCompletedSubCaption
+: E Qetile
+# ^BackBtn
+< &Morao
+# ^NextBtn
+&Latelang >
+# ^AgreeBtn
+Kea &Lumela
+# ^AcceptBtn
+Ke &amohela lintlha tsa Tumellano ea Laesense
+# ^DontAcceptBtn
+&Ha ke amohele lintlha tsa Tumellano ea Laesense
+# ^InstallBtn
+&Le Kenye
+# ^UninstallBtn
+&Le Ntše
+# ^CancelBtn
+Tlohela
+# ^CloseBtn
+&Koala
+# ^BrowseBtn
+S&heba...
+# ^ShowDetailsBtn
+Bontša &lintlha tse qaqileng
+# ^ClickNext
+Tobetsa konopo ea Latelang hore e tsoele pele.
+# ^ClickInstall
+Tobetsa konopo ea Kenya Lenaneo hore e qale ho le kenya.
+# ^ClickUninstall
+Tobetsa konopo ea Ntša Lenaneo hore e qale ho le ntša.
+# ^Name
+Lebitso
+# ^Completed
+E Qetile
+# ^LicenseText
+Ka kōpo hlahloba tumellano ea laesense pele u kenya lenaneo la $(^NameDA). Haeba u amohela lintlha tsohle tsa tumellano, tobetsa konopo ea Kea Lumela.
+# ^LicenseTextCB
+Ka kōpo hlahloba tumellano ea laesense pele u kenya lenaneo la $(^NameDA). Haeba u amohela lintlha tsohle tsa tumellano, tšoaea lebokose le ka tlaase. $_CLICK
+# ^LicenseTextRB
+Ka kōpo hlahloba tumellano ea laesense pele u kenya lenaneo la $(^NameDA). Haeba u amohela lintlha tsohle tsa tumellano, khetha ntlha ea pele ka tlaase mona. $_CLICK
+# ^UnLicenseText
+Ka kōpo hlahloba tumellano ea laesense pele u ntša lenaneo la $(^NameDA). Haeba u amohela lintlha tsohle tsa tumellano, tobetsa konopo ea Kea Lumela.
+# ^UnLicenseTextCB
+Ka kōpo hlahloba tumellano ea laesense pele u ntša lenaneo la $(^NameDA). Haeba u amohela lintlha tsohle tsa tumellano, tšoaea lebokose le ka tlaase. $_CLICK
+# ^UnLicenseTextRB
+Ka kōpo hlahloba tumellano ea laesense pele u ntša lenaneo la $(^NameDA). Haeba u amohela lintlha tsohle tsa tumellano, khetha ntlha ea pele ka tlaase mona. $_CLICK
+# ^Custom
+Mokhoa o Tloaelehileng
+# ^ComponentsText
+Tšoaea likarolo tseo u batlang ho li kenya ’me u tlose letšoao ho tseo u sa batleng ho li kenya. $_CLICK
+# ^ComponentsSubText1
+Khetha mokhoa oa ho kenya lenaneo:
+# ^ComponentsSubText2_NoInstTypes
+Khetha likarolo tseo u batlang ho li kenya:
+# ^ComponentsSubText2
+Kapa u khethe likarolo tse sa tlameng tseo u ratang ho li kenya:
+# ^UnComponentsText
+Tšoaea likarolo tseo u batlang ho li ntša mochineng ’me u tšoaee likarolo tseo u sa batleng ho li ntša mochineng. $_CLICK
+# ^UnComponentsSubText1
+Khetha mokhoa oa ho ntša lenaneo:
+# ^UnComponentsSubText2_NoInstTypes
+Khetha likarolo tseo u batlang ho li ntša mochineng:
+# ^UnComponentsSubText2
+Kapa u khethe likarolo tse sa tlameng tseo u batla ho li ntša mochineng:
+# ^DirText
+Setapo e tla kenya lenaneo la $(^NameDA) ka sephuthelong se latelang. Hore u le kenye ka sephuthelong se seng, tobetsa konopo ea Sheba 'me u khethe sephuthelo se seng. $_CLICK
+# ^DirSubText
+Sephuthelo Seo U Batlang ho le Kenya ho Sona
+# ^DirBrowseText
+Khetha sephuthelo seo u kenyang lenaneo la $(^NameDA) ho sona:
+# ^UnDirText
+Setapo e tla ntša lenaneo la $(^NameDA) sephuthelong se latelang. Hore u le ntše ka sephuthelong se seng, tobetsa konopo ea Sheba 'me u khethe sephuthelo se seng. $_CLICK
+# ^UnDirSubText
+""
+# ^UnDirBrowseText
+Khetha sephuthelo seo u batlang ho ntša lenaneo la $(^NameDA) ho sona:
+# ^SpaceAvailable
+"Sebaka se leng teng: "
+# ^SpaceRequired
+"Sebaka se hlokahalang: "
+# ^UninstallingText
+E tla ntša lenaneo la $(^NameDA) sephuthelong se latelang. $_CLICK
+# ^UninstallingSubText
+E ntse e ntša lenaneo ho:
+# ^FileError
+Ho hlahile phoso ha e bula faele: \r\n\r\n$0\r\n\r\nTobetsa konopo ea Nyahlatsa hore e khaotse ho kenya lenaneo,\r\nea Leka Hape hore e boele e leke, kapa\r\nea Hlokomoloha hore e tlōle faele ena.
+# ^FileError_NoIgnore
+Ho hlahile phoso ha e bula faele: \r\n\r\n$0\r\n\r\nTobetsa konopo ea Leka Hape hore e boele e leke, kapa\r\nea Tlohela hore e khaotse ho kenya lenaneo.
+# ^CantWrite
+"E sitiloe ho ngola: "
+# ^CopyFailed
+E sitiloe ho kopitsa
+# ^CopyTo
+"Kopiletsa ho "
+# ^Registering
+"E ntse e ngolisa: "
+# ^Unregistering
+"E tlosa seo e se ngolisitseng: "
+# ^SymbolNotFound
+"E sitiloe ho fumana letšoao: "
+# ^CouldNotLoad
+"E sitiloe ho nka faele: "
+# ^CreateFolder
+"Etsa sephuthelo: "
+# ^CreateShortcut
+"Etsa tsela e khaoletsang: "
+# ^CreatedUninstaller
+"E entse sesebelisoa se ntšang lenaneo: "
+# ^Delete
+"Hlakola faele: "
+# ^DeleteOnReboot
+"E hlakole ha e bula mochine hape: "
+# ^ErrorCreatingShortcut
+"Ho hlahile phoso ha e etsa tsela e khaoletsang: "
+# ^ErrorCreating
+"Ho hlahile phoso ha e etsa: "
+# ^ErrorDecompressing
+Ho hlahile phoso ha e khutlisetsa boitsebiso boemong bo tloaelehileng! Na sesebelisoa sa ho kenya lenaneo se senyehile?
+# ^ErrorRegistering
+Ho hlahile phoso ha e ngolisa faele ea DLL
+# ^ExecShell
+"ExecShell: "
+# ^Exec
+"Sebelisa: "
+# ^Extract
+"Ntša faele: "
+# ^ErrorWriting
+"Ntša faele: ho hlahile phoso ha e ngola faele"
+# ^InvalidOpcode
+Sesebelisoa sa ho kenya lenaneo se senyehile: opcode ha e sebetse
+# ^NoOLE
+"Ha ho na OLE ea: "
+# ^OutputFolder
+"Sephuthelo seo lifaele li kenang ho sona: "
+# ^RemoveFolder
+"Tlosa sephuthelo: "
+# ^RenameOnReboot
+"E rehe lebitso ha e bula mochine hape: "
+# ^Rename
+"E rehe lebitso: "
+# ^Skipped
+"E tlōtse: "
+# ^CopyDetails
+Kopiletsa Lintlha Tlelipibotong
+# ^LogInstall
+Lethathamo le bontšang se etsahetseng ha u kenya lenaneo
+# ^Byte
+B
+# ^Kilo
+K
+# ^Mega
+M
+# ^Giga
+G

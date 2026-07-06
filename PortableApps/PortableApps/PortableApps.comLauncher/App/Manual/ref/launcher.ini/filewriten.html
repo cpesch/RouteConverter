@@ -1,0 +1,280 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>[FileWriteN] &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="launcher.ini" href="index.html" />
+    <link rel="next" title="[FilesMove]" href="filesystem.html" />
+    <link rel="prev" title="[QtKeysCleanup]" href="qt.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-launcher.ini-filewriten" class="page withsidebar">
+    
+  <div class="section" id="filewriten">
+<span id="std:ini-section-[FileWriteN]"></span><h1>[FileWrite<em>N</em>]<a class="headerlink" href="#filewriten" title="Permalink to this headline">¶</a></h1>
+<p>For writing data to files. The values which must be set depend on the
+<a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a> specified below.</p>
+<div class="section" id="type">
+<span id="std:ini-key-[FileWriteN]:Type"></span><h2>Type<a class="headerlink" href="#type" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">ConfigWrite</span></tt>, <tt class="docutils literal"><span class="pre">INI</span></tt>, <tt class="docutils literal"><span class="pre">Replace</span></tt>, <tt class="docutils literal"><span class="pre">XML</span> <span class="pre">attribute</span></tt>, <tt class="docutils literal"><span class="pre">XML</span> <span class="pre">text</span></tt></div>
+<div class="line">Mandatory.</div>
+</div>
+<hr class="docutils" />
+<p>Specify the type of file writing which is to be used:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">ConfigWrite</span></tt>: write arbitrary data to a file, the line on which to write
+being selected as one starting with the <a class="reference internal" href="#std:ini-key-[FileWriteN]:Entry"><tt class="xref std std-ini-key docutils literal"><span class="pre">Entry</span></tt></a>.</li>
+<li><tt class="docutils literal"><span class="pre">INI</span></tt>: write a string to an INI file.</li>
+<li><tt class="docutils literal"><span class="pre">Replace</span></tt>: search for a string and replace it with another string in a file.
+This is particularly useful for updating drive letters and configuration paths
+(using <a class="reference internal" href="../envsub.html#std:env-PAL:Drive"><tt class="xref std std-env docutils literal"><span class="pre">%PAL:Drive%</span></tt></a> and <a class="reference internal" href="../envsub.html#std:env-PAL:LastDrive"><tt class="xref std std-env docutils literal"><span class="pre">%PAL:LastDrive%</span></tt></a>)</li>
+<li><tt class="docutils literal"><span class="pre">XML</span> <span class="pre">attribute</span></tt>: write an attribute to an XML file. Only available when
+<a class="reference internal" href="activate.html#std:ini-key-[Activate]:XML"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Activate]:XML</span></tt></a>=<tt class="docutils literal"><span class="pre">true</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">XML</span> <span class="pre">text</span></tt>: write a text node to an XML file. Only available when
+<a class="reference internal" href="activate.html#std:ini-key-[Activate]:XML"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Activate]:XML</span></tt></a>=<tt class="docutils literal"><span class="pre">true</span></tt>.</li>
+</ul>
+</div>
+<div class="section" id="file">
+<span id="std:ini-key-[FileWriteN]:File"></span><h2>File<a class="headerlink" href="#file" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>Specify the file in which the modification will be made. This file must exist
+before any writing will be done. If it does not exist, the <tt class="docutils literal"><span class="pre">[FileWriteN]</span></tt>
+section will be skipped.</p>
+</div>
+<div class="section" id="entry">
+<span id="std:ini-key-[FileWriteN]:Entry"></span><h2>Entry<a class="headerlink" href="#entry" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">ConfigWrite</span></tt>.</div>
+</div>
+<hr class="docutils" />
+<p>The <a class="reference internal" href="#std:ini-key-[FileWriteN]:Value"><tt class="xref std std-ini-key docutils literal"><span class="pre">Value</span></tt></a> will be written to a line starting
+with this value, or if it is not found, at the end of the file. This should be
+set to the text to search for at the start of a line. In an INI-style file, this
+would be <tt class="docutils literal"><span class="pre">key=</span></tt>, and in an XML file it might be <tt class="docutils literal"><span class="pre">'</span>&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">&lt;config</span>
+<span class="pre">id=&quot;something&quot;&gt;'</span></tt>; note that you <strong>must</strong> include any leading
+whitespace which will be in the file, and if there is any leading or trailing
+whitespace you must quote the string with single (<tt class="docutils literal"><span class="pre">'</span></tt>) or double (<tt class="docutils literal"><span class="pre">&quot;</span></tt>)
+quotes.</p>
+</div>
+<div class="section" id="section">
+<span id="std:ini-key-[FileWriteN]:Section"></span><h2>Section<a class="headerlink" href="#section" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">INI</span></tt>.</div>
+</div>
+<hr class="docutils" />
+<p>The INI section to write the value to.</p>
+</div>
+<div class="section" id="key">
+<span id="std:ini-key-[FileWriteN]:Key"></span><h2>Key<a class="headerlink" href="#key" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">INI</span></tt>.</div>
+</div>
+<hr class="docutils" />
+<p>The INI key to write the value to.</p>
+</div>
+<div class="section" id="value">
+<span id="std:ini-key-[FileWriteN]:Value"></span><h2>Value<a class="headerlink" href="#value" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">ConfigWrite</span></tt>,
+<tt class="docutils literal"><span class="pre">INI</span></tt>, <tt class="docutils literal"><span class="pre">XML</span> <span class="pre">attribute</span></tt>, <tt class="docutils literal"><span class="pre">XML</span> <span class="pre">text</span></tt>.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>The value which will be written to the file. If dealing with <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">ConfigWrite</span></tt>, you should remember with things like
+XML files that you will normally need to close the tag, for example
+<tt class="docutils literal"><span class="pre">%PAL:DataDir%\settings&lt;/config&gt;</span></tt>. In such cases you can also try using the
+inbuilt XML support.</p>
+</div>
+<div class="section" id="find">
+<span id="std:ini-key-[FileWriteN]:Find"></span><h2>Find<a class="headerlink" href="#find" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">Replace</span></tt>.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>The string to search for.</p>
+</div>
+<div class="section" id="replace">
+<span id="std:ini-key-[FileWriteN]:Replace"></span><h2>Replace<a class="headerlink" href="#replace" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">Replace</span></tt>.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>The string to replace the search string with. If, after environment variable
+replacement, this is the same as the <a class="reference internal" href="#std:ini-key-[FileWriteN]:Find"><tt class="xref std std-ini-key docutils literal"><span class="pre">Find</span></tt></a> string,
+the replacement will be skipped (e.g. if you use it to update drive letters and
+it&#8217;s on the same letter).</p>
+</div>
+<div class="section" id="attribute">
+<span id="std:ini-key-[FileWriteN]:Attribute"></span><h2>Attribute<a class="headerlink" href="#attribute" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">XML</span> <span class="pre">attribute</span></tt></div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>The attribute which will be set inside the element identified by the given
+XPath. See <a class="reference internal" href="../../topics/xml.html#xml"><em>Dealing with XML data</em></a> for more details.</p>
+</div>
+<div class="section" id="xpath">
+<span id="std:ini-key-[FileWriteN]:XPath"></span><h2>XPath<a class="headerlink" href="#xpath" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">XML</span> <span class="pre">attribute</span></tt>, <tt class="docutils literal"><span class="pre">XML</span> <span class="pre">text</span></tt>.</div>
+</div>
+<hr class="docutils" />
+<p>Specify the <a class="reference external" href="http://en.wikipedia.org/wiki/XPath">XPath</a> to find the place to write to. It is a good idea to make
+sure that you have a solid understanding of how XPaths work and how to use them
+before writing one.</p>
+<p>For information about what this should look like, see <a class="reference internal" href="../../topics/xml.html#xml"><em>Dealing with XML data</em></a>.</p>
+</div>
+<div class="section" id="casesensitive">
+<span id="std:ini-key-[FileWriteN]:CaseSensitive"></span><h2>CaseSensitive<a class="headerlink" href="#casesensitive" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Applies for <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">ConfigWrite</span></tt>, <tt class="docutils literal"><span class="pre">Replace</span></tt>.</div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>Case sensitive searches are somewhat faster than case-insensitive searches. If
+you can do a case-sensitive ConfigWrite or find and replace, do.</p>
+<p>Concerning drive letter updates, you can&#8217;t guarrantee what case the drive letter
+will be and so it will not normally be practical to do a case sensitive
+replacement for drive letters.</p>
+</div>
+<div class="section" id="encoding">
+<span id="std:ini-key-[FileWriteN]:Encoding"></span><h2>Encoding<a class="headerlink" href="#encoding" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: auto / <tt class="docutils literal"><span class="pre">ANSI</span></tt> / <tt class="docutils literal"><span class="pre">UTF-16LE</span></tt></div>
+<div class="line">Default: auto</div>
+<div class="line">Applies to <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">Replace</span></tt>.</div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If you need to find and replace in a Unicode (UTF-16LE) file, but it is missing
+the byte-order mark (BOM), set the encoding here as <tt class="docutils literal"><span class="pre">UTF-16LE</span></tt>; if a file for
+some reason has the UTF-16LE BOM, <tt class="docutils literal"><span class="pre">U+FFFE</span></tt>, at the start of the file, but
+isn&#8217;t really UTF-16LE, set this to <tt class="docutils literal"><span class="pre">ANSI</span></tt>. Otherwise, omit this value and the
+encoding will be automatically detected by checking for the BOM.</p>
+<p>For UTF-8 files, leave this value out. The value <tt class="docutils literal"><span class="pre">ANSI</span></tt> isn&#8217;t really ANSI,
+it&#8217;s just &#8220;normal&#8221;, which includes ANSI, UTF-8 and really anything which doesn&#8217;t
+use null bytes all over the place.</p>
+<p>This value only works with the <a class="reference internal" href="#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a> <tt class="docutils literal"><span class="pre">Replace</span></tt>;
+both <tt class="docutils literal"><span class="pre">ConfigWrite</span></tt> and <tt class="docutils literal"><span class="pre">INI</span></tt> automatically detect the encoding of the file
+(this requires that the file start with the UTF-16LE BOM, <tt class="docutils literal"><span class="pre">U+FFFE</span></tt>).</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 2.1: </span>previously <tt class="docutils literal"><span class="pre">ConfigWrite</span></tt> was not able to write to UTF-16LE files.</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">[FileWrite<em>N</em>]</a><ul>
+<li><a class="reference internal" href="#type">Type</a></li>
+<li><a class="reference internal" href="#file">File</a></li>
+<li><a class="reference internal" href="#entry">Entry</a></li>
+<li><a class="reference internal" href="#section">Section</a></li>
+<li><a class="reference internal" href="#key">Key</a></li>
+<li><a class="reference internal" href="#value">Value</a></li>
+<li><a class="reference internal" href="#find">Find</a></li>
+<li><a class="reference internal" href="#replace">Replace</a></li>
+<li><a class="reference internal" href="#attribute">Attribute</a></li>
+<li><a class="reference internal" href="#xpath">XPath</a></li>
+<li><a class="reference internal" href="#casesensitive">CaseSensitive</a></li>
+<li><a class="reference internal" href="#encoding">Encoding</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="qt.html">[QtKeysCleanup]</a></li>
+    
+    
+      <li>Next: <a href="filesystem.html">[FilesMove]</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">launcher.ini</a>
+        
+        <ul><li>[FileWrite<em>N</em>]</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="qt.html" title="[QtKeysCleanup]">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="filesystem.html" title="[FilesMove]">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

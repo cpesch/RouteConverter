@@ -1,0 +1,154 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Worked Example: Scribus &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Examples" href="index.html" />
+    <link rel="next" title="Worked Example: 7-Zip" href="7-zip.html" />
+    <link rel="prev" title="Examples" href="index.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-examples-scribus" class="page withsidebar">
+    
+  <div class="section" id="worked-example-scribus">
+<span id="examples-scribus"></span><h1>Worked Example: Scribus<a class="headerlink" href="#worked-example-scribus" title="Permalink to this headline">¶</a></h1>
+<p>The <a class="reference internal" href="../ref/paf/appinfo.html#paf-appinfo-appid"><em>AppID</em></a> of Scribus is <tt class="docutils literal"><span class="pre">ScribusPortable</span></tt>,
+and so the launcher executable is named <tt class="docutils literal"><span class="pre">ScribusPortable.exe</span></tt> and the
+launcher configuration file is in
+<tt class="docutils literal"><span class="pre">App\AppInfo\Launcher\ScribusPortable.ini</span></tt>.</p>
+<p>The main Scribus executable to be launched is <tt class="docutils literal"><span class="pre">Scribus.exe</span></tt>, and it lives in
+<tt class="docutils literal"><span class="pre">App\Scribus</span></tt>. Thus the <tt class="xref std std-ini-key docutils literal"><span class="pre">ProgramExecutable</span></tt> will be
+<tt class="docutils literal"><span class="pre">Scribus\Scribus.exe</span></tt>.</p>
+<p>With a little bit of guesswork and/or looking around, it can be seen that
+Scribus stores its settings in the filesystem, in the path specified by the
+environment variable <tt class="docutils literal"><span class="pre">HOME</span></tt> if it is found. This is a &#8220;safe&#8221; environment
+variable to set, and so there will be an <a class="reference internal" href="../ref/launcher.ini/environment.html#std:ini-section-[Environment]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[Environment]</span></tt></a> pair
+<tt class="docutils literal"><span class="pre">HOME=%PAL:DataDir%</span></tt> to get it to store its settings in the Data directory.</p>
+<p>In this directory another directory is created, <tt class="docutils literal"><span class="pre">.scribus</span></tt>, and in that a
+file <tt class="docutils literal"><span class="pre">scribus13.rc</span></tt> which contains the Scribus settings. Among various other
+settings, an MRU (Most Recently Used) file list is maintained, which (I think)
+can store paths with a backslash separator and a forward slash separator &#8211; so
+there may be paths in like <tt class="docutils literal"><span class="pre">X:\Documents\...</span></tt> and <tt class="docutils literal"><span class="pre">X:/Documents/...</span></tt>.  To
+update the drive letter in this file is the work of two
+<a class="reference internal" href="../ref/launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a> sections (one to do each slash style).</p>
+<p>One last thing: Ghostscript is required, and will be included in the
+<tt class="docutils literal"><span class="pre">App\Ghostscript</span></tt> directory. For Scribus to be able to detect this, it will
+need to be added with an <a class="reference internal" href="../ref/launcher.ini/environment.html#std:ini-section-[Environment]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[Environment]</span></tt></a> pair.</p>
+<p>From the information above, here is a fully functional sample launcher file,
+configured correctly for Scribus Portable:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Launch]</span>
+<span class="na">ProgramExecutable</span><span class="o">=</span><span class="s">Scribus\Scribus.exe</span>
+<span class="na">WaitForProgram</span><span class="o">=</span><span class="s">false</span>
+
+<span class="k">[FileWrite1]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">replace</span>
+<span class="na">File</span><span class="o">=</span><span class="s">%PAL:DataDir%\.scribus\scribus13.rc</span>
+<span class="na">Find</span><span class="o">=</span><span class="s">%PAL:LastDrive%\</span>
+<span class="na">Replace</span><span class="o">=</span><span class="s">%PAL:Drive%\</span>
+
+<span class="k">[FileWrite2]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">replace</span>
+<span class="na">File</span><span class="o">=</span><span class="s">%PAL:DataDir%\.scribus\scribus13.rc</span>
+<span class="na">Find</span><span class="o">=</span><span class="s">%PAL:LastDrive%/</span>
+<span class="na">Replace</span><span class="o">=</span><span class="s">%PAL:Drive%/</span>
+
+<span class="k">[Environment]</span>
+<span class="na">PATH</span><span class="o">=</span><span class="s">%PAL:AppDir%\Ghostscript;%PATH%</span>
+<span class="na">HOME</span><span class="o">=</span><span class="s">%PAL:DataDir%</span>
+</pre></div>
+</div>
+<p>To outline what this actually does: it inserts the App\Ghostscript directory
+into the start of the environment variable PATH, sets the environment variable
+HOME to the Data directory, updates drive letters in
+Data\.scribus\scribus13.rc, then runs <tt class="docutils literal"><span class="pre">App\Scribus\Scribus.exe</span></tt>. Without
+waiting for it (this is because there is nothing which needs tidying up
+afterwards), the launcher quits.</p>
+<p>If Scribus were to change so that any cleanup was needed afterwards, the
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:WaitForProgram"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:WaitForProgram</span></tt></a> line would need to be removed.</p>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="index.html">Examples</a></li>
+    
+    
+      <li>Next: <a href="7-zip.html">Worked Example: 7-Zip</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Examples</a>
+        
+        <ul><li>Worked Example: Scribus</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="index.html" title="Examples">previous</a>  | <a href="index.html" title="Examples" accesskey="U">up</a>  | <a href="7-zip.html" title="Worked Example: 7-Zip">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

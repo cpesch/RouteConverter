@@ -1,0 +1,137 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>[LiveMode] &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="launcher.ini" href="index.html" />
+    <link rel="next" title="[Environment]" href="environment.html" />
+    <link rel="prev" title="[Activate]" href="activate.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-launcher.ini-livemode" class="page withsidebar">
+    
+  <div class="section" id="livemode">
+<span id="std:ini-section-[LiveMode]"></span><h1>[LiveMode]<a class="headerlink" href="#livemode" title="Permalink to this headline">¶</a></h1>
+<p>The <tt class="docutils literal"><span class="pre">[LiveMode]</span></tt> section provides details regarding how the portable
+application should function when in Live mode, when in a read-only directory.</p>
+<p>As specified here, certain things are copied to the local hard drive, and then
+the application is run, and any things copied locally are deleted. This is
+called running locally, or &#8220;Live mode&#8221;.</p>
+<div class="section" id="copyapp">
+<span id="std:ini-key-[LiveMode]:CopyApp"></span><h2>CopyApp<a class="headerlink" href="#copyapp" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">true</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>When run in Live mode, does the application need to be run from a writable
+location? If yes, specify <tt class="docutils literal"><span class="pre">true</span></tt>.</p>
+</div>
+<div class="section" id="copydata">
+<span id="std:ini-key-[LiveMode]:CopyData"></span><h2>CopyData<a class="headerlink" href="#copydata" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Obsolete.</div>
+</div>
+<hr class="docutils" />
+<p>This option has been removed due to issues with the <a class="reference internal" href="../envsub.html#std:env-PAL:DataDir"><tt class="xref std std-env docutils literal"><span class="pre">%PAL:DataDir%</span></tt></a> replacement variable in file moving. Data will now always be
+copied. This may change back in the future.</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">[LiveMode]</a><ul>
+<li><a class="reference internal" href="#copyapp">CopyApp</a></li>
+<li><a class="reference internal" href="#copydata">CopyData</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="activate.html">[Activate]</a></li>
+    
+    
+      <li>Next: <a href="environment.html">[Environment]</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">launcher.ini</a>
+        
+        <ul><li>[LiveMode]</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="activate.html" title="[Activate]">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="environment.html" title="[Environment]">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

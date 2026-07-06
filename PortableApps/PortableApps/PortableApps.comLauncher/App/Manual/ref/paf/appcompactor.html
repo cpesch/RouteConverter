@@ -1,0 +1,142 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. PortableApps.com AppCompactor and AppCompactor.ini &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="PortableApps.com Format™ Specification" href="index.html" />
+    <link rel="next" title="5. PortableApps.com Installer (and installer.ini)" href="installer.html" />
+    <link rel="prev" title="3. Icons" href="icons.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-paf-appcompactor" class="page withsidebar">
+    
+  <div class="section" id="portableapps-com-appcompactor-and-appcompactor-ini">
+<span id="paf-appcompactor"></span><h1>4. PortableApps.com AppCompactor and AppCompactor.ini<a class="headerlink" href="#portableapps-com-appcompactor-and-appcompactor-ini" title="Permalink to this headline">¶</a></h1>
+<p>The PortableApps.com AppCompactor is used to shrink software to better fit on
+smaller removable devices and run quicker over bandwidth-limited removable
+media. Normally, the AppCompactor is entirely automatic in settings and just
+needs to be run on the AppNamePortable directory of the portable app.
+Occasionally, some software is incompatible with the AppCompactor and its
+automated routines cannot detect the incompatibility. Additionally, sometimes
+additional files of a specific app should be compressed and the AppCompactor
+doesn&#8217;t normally handle them. In these cases, the AppCompactor.ini may be used.</p>
+<p>The AppCompactor.ini resides in the AppInfo directory alongside the AppInfo.ini
+and Installer.ini. An example of the file follows:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[PortableApps.comAppCompactor]</span>
+<span class="na">FilesExcluded</span><span class="o">=</span><span class="s">msvcm90.dll|msvcp90.dll|mscvr90.dll</span>
+<span class="na">AdditionalExtensionsExcluded</span><span class="o">=</span><span class="s">pyd|irc</span>
+<span class="na">AdditionalExtensionsIncluded</span><span class="o">=</span><span class="s">example|beta</span>
+</pre></div>
+</div>
+<div class="section" id="within-the-portableapps-comappcompactor-section">
+<h2>Within the <tt class="docutils literal"><span class="pre">[PortableApps.comAppCompactor]</span></tt> section:<a class="headerlink" href="#within-the-portableapps-comappcompactor-section" title="Permalink to this headline">¶</a></h2>
+<p><em>Note: If you do not plan on using the PortableApps.com AppCompactor to shrink
+your app or do not need to make changes to its standard compression setup, this
+section should be omitted.</em></p>
+<p><strong>FilesExcluded</strong> are any files you would like excluded from an AppCompactor run
+separated by pipes <tt class="docutils literal"><span class="pre">|</span></tt>.</p>
+<p><strong>AdditionalExtensionsExcluded</strong> is any additional types of files (extensions)
+that you would like to exclude from the compaction separated by pipes <tt class="docutils literal"><span class="pre">|</span></tt>.</p>
+<p><strong>AdditionalExtensionsIncluded</strong> is any additional types of files (extensions)
+that you would like to include in the compaction separated by pipes <tt class="docutils literal"><span class="pre">|</span></tt>.</p>
+<p><strong>CompressionFileSizeCutOff</strong> is the cutoff point at which to ignore files for
+compression in bytes. The default is 4096, meaning files 4K in size and smaller
+are ignored.</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4. PortableApps.com AppCompactor and AppCompactor.ini</a><ul>
+<li><a class="reference internal" href="#within-the-portableapps-comappcompactor-section">Within the <tt class="docutils literal"><span class="pre">[PortableApps.comAppCompactor]</span></tt> section:</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="icons.html">3. Icons</a></li>
+    
+    
+      <li>Next: <a href="installer.html">5. PortableApps.com Installer (and installer.ini)</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">PortableApps.com Format™ Specification</a>
+        
+        <ul><li>4. PortableApps.com AppCompactor and AppCompactor.ini</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="icons.html" title="3. Icons">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="installer.html" title="5. PortableApps.com Installer (and installer.ini)">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

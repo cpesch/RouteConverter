@@ -1,0 +1,172 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>[Activate] &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="launcher.ini" href="index.html" />
+    <link rel="next" title="[LiveMode]" href="livemode.html" />
+    <link rel="prev" title="[Launch]" href="launch.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-launcher.ini-activate" class="page withsidebar">
+    
+  <div class="section" id="activate">
+<span id="std:ini-section-[Activate]"></span><h1>[Activate]<a class="headerlink" href="#activate" title="Permalink to this headline">¶</a></h1>
+<p>This section is for telling the launcher whether or not it should load certain
+things, for example Java and registry support.</p>
+<div class="section" id="registry">
+<span id="std:ini-key-[Activate]:Registry"></span><h2>Registry<a class="headerlink" href="#registry" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> or <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If the base application uses the registry, set this to true. <strong>You MUST set this
+to true if you wish the registry sections to be parsed.</strong> Otherwise they will
+not be read at all.</p>
+</div>
+<div class="section" id="java">
+<span id="std:ini-key-[Activate]:Java"></span><h2>Java<a class="headerlink" href="#java" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: none, <tt class="docutils literal"><span class="pre">find</span></tt> or <tt class="docutils literal"><span class="pre">require</span></tt></div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If the application can use Java but does not depend on its being available, set
+this to <tt class="docutils literal"><span class="pre">find</span></tt>, and a Java Runtime Environment (JRE) will be found if
+available, and the environment variable <a class="reference internal" href="../envsub.html#std:env-JAVA_HOME"><tt class="xref std std-env docutils literal"><span class="pre">%JAVA_HOME%</span></tt></a> will
+become available for use.</p>
+<p>If the application is completely dependant on Java, set this to <tt class="docutils literal"><span class="pre">require</span></tt>.
+Then you may set <a class="reference internal" href="launch.html#std:ini-key-[Launch]:ProgramExecutable"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutable</span></tt></a> to <tt class="docutils literal"><span class="pre">javaw.exe</span></tt> (normal
+use) or <tt class="docutils literal"><span class="pre">java.exe</span></tt> (command line version which may be useful for testing and
+debugging) and it will use Java.</p>
+<p><strong>Caveat:</strong> With <tt class="docutils literal"><span class="pre">require</span></tt>, if you can possibly help it, set
+<a class="reference internal" href="launch.html#std:ini-key-[Launch]:WaitForProgram"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:WaitForProgram</span></tt></a> or <a class="reference internal" href="launch.html#std:ini-key-[Launch]:WaitForOtherInstances"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:WaitForOtherInstances</span></tt></a>
+to false if you use java.exe or javaw.exe. Otherwise you&#8217;ll run into problems
+cleaning up if other Java applications get run, as it&#8217;ll look for instances of
+the application, and find javaw.exe, even though it&#8217;s another application&#8217;s
+javaw.exe instance.</p>
+<p>See <a class="reference internal" href="../../topics/java.html#java"><em>Making Java applications portable</em></a> for more discussion about Java apps.</p>
+</div>
+<div class="section" id="xml">
+<span id="std:ini-key-[Activate]:XML"></span><h2>XML<a class="headerlink" href="#xml" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> or <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If you wish to get the language string from an XML file with
+<a class="reference internal" href="language.html#std:ini-section-[LanguageFile]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageFile]</span></tt></a> or write anything to an XML file with
+<a class="reference internal" href="filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a>, using their <tt class="docutils literal"><span class="pre">Type</span></tt>s <tt class="docutils literal"><span class="pre">XML</span> <span class="pre">text</span></tt> or <tt class="docutils literal"><span class="pre">XML</span>
+<span class="pre">attribute</span></tt>, you will need to set this to <tt class="docutils literal"><span class="pre">true</span></tt>. After setting this to true,
+<strong>you will need to regenerate the launcher</strong>. This includes the NSIS plug-in,
+which adds approximately 60KB to the file size of the generated launcher
+executable.</p>
+<p>Don&#8217;t worry too much about the possibility of forgetting this; if you try to
+use any XML features when the launcher has not been compiled with XML support,
+it will warn you that you need to set this value to <tt class="docutils literal"><span class="pre">true</span></tt>.</p>
+<p>See <a class="reference internal" href="../../topics/xml.html#xml"><em>Dealing with XML data</em></a> for more information about XML support in the PortableApps.com
+Launcher.</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">[Activate]</a><ul>
+<li><a class="reference internal" href="#registry">Registry</a></li>
+<li><a class="reference internal" href="#java">Java</a></li>
+<li><a class="reference internal" href="#xml">XML</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="launch.html">[Launch]</a></li>
+    
+    
+      <li>Next: <a href="livemode.html">[LiveMode]</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">launcher.ini</a>
+        
+        <ul><li>[Activate]</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="launch.html" title="[Launch]">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="livemode.html" title="[LiveMode]">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

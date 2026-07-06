@@ -1,0 +1,138 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Troubleshooting &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="index.html" />
+    <link rel="next" title="Release notes" href="releases/index.html" />
+    <link rel="prev" title="INI files" href="ini.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="index.html">Home</a>  |
+      <a title="Table of contents" href="contents.html">Table of contents</a>  |
+      <a title="Global index" href="genindex.html">Index</a>  |
+      <a title="Search" href="search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-troubleshooting" class="page withsidebar">
+    
+  <div class="section" id="troubleshooting">
+<span id="id1"></span><h1>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permalink to this headline">¶</a></h1>
+<p>When something isn&#8217;t working properly in the PortableApps.com Launcher, it&#8217;s
+probably a mistake on your part. Before reporting it as a bug, please try
+going through this list of things first. If you can&#8217;t work out what the issue
+is, or if you still think you&#8217;ve found a bug, then you can try <a class="reference internal" href="help.html#help"><em>asking
+for help</em></a>.</p>
+<dl class="docutils">
+<dt>Check your launcher configuration</dt>
+<dd>Please go through all the lines in your <a class="reference internal" href="ref/launcher.ini/index.html#ref-launcher-ini"><em>launcher.ini</em></a> file and
+reread the documentation for the section or key to make sure that you&#8217;re
+not doing something wrong by mistake.</dd>
+<dt>Other issues</dt>
+<dd>Go through the <a class="reference internal" href="topics/checklist.html#release-checklist"><em>Release checklist</em></a>.</dd>
+</dl>
+<div class="section" id="registry">
+<h2>Registry<a class="headerlink" href="#registry" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>Registry things aren&#8217;t happening</dt>
+<dd>Make sure you have <a class="reference internal" href="ref/launcher.ini/activate.html#std:ini-key-[Activate]:Registry"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Activate]:Registry</span></tt></a> set to <tt class="docutils literal"><span class="pre">true</span></tt>.</dd>
+</dl>
+</div>
+<div class="section" id="java">
+<h2>Java<a class="headerlink" href="#java" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>General issues</dt>
+<dd>Read the <a class="reference internal" href="topics/java.html#java"><em>Making Java applications portable</em></a> section, your issue may be covered there.</dd>
+<dt>The base application says it can&#8217;t find Java</dt>
+<dd>If the base application requires Java, <a class="reference internal" href="ref/launcher.ini/activate.html#std:ini-key-[Activate]:Java"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Activate]:Java</span></tt></a> must be
+set to <tt class="docutils literal"><span class="pre">require</span></tt>. Not setting it, or setting it to <tt class="docutils literal"><span class="pre">try</span></tt></dd>
+</dl>
+<p><em>This document is not complete (not that it ever will be)</em></p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Troubleshooting</a><ul>
+<li><a class="reference internal" href="#registry">Registry</a></li>
+<li><a class="reference internal" href="#java">Java</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="ini.html">INI files</a></li>
+    
+    
+      <li>Next: <a href="releases/index.html">Release notes</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+        <ul><li>Troubleshooting</li></ul>
+        
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="ini.html" title="INI files">previous</a>  | <a href="index.html" title="PortableApps.com Launcher 2.2 documentation" accesskey="U">up</a>  | <a href="releases/index.html" title="Release notes">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

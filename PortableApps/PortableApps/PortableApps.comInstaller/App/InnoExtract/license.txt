@@ -1,0 +1,41 @@
+Copyright (2022) by Dr. J. Rathlev, D-24222 Schwentinental
+
+1. Nutzung des Programms / Using the program
+--------------------------------------------
+
+Das vorliegende Programm darf kostenlos von jedermann genutzt werden. Das gilt 
+auch für alle Arten von öffentlichen Einrichtungen, für Vereine und sonst. 
+nicht kommerziell betriebene Organisationen sowie für privatrechtlich 
+organisierte Unternehmen.
+Eine Gewährleistung für die Funktionsfähigkeit des Programms und die Korrektheit
+der Ergebnisse, sowie eine Haftung für Schäden an der Hard- oder Software des
+Benutzers wird nicht übernommen.
+
+The program may be used by anyone in any way, for any purpose, free of charge.
+There is no warranty for correct operation of the program and results. The
+author is not liable for any damages on hard- and software arising out of the
+use of the program.
+
+
+2. Weitergabe des Programms / Distributing the program
+------------------------------------------------------
+
+Das Programm darf ohne Einschränkungen weitergegeben werden, vorausgesetzt die
+Originaldateien, wie sie vom Autor bereitgestellt wurden, bleiben unverändert.
+Es darf dafür keine Gebühr verlangt werden.
+Die Nutzung oder Verwertung als Bestandteil von kommerziellen Produkten ist
+ohne Zustimmung des Autors untersagt.
+
+The program may be distributed by any means, provided that the original files 
+as supplied by the author remain intact and no charge is made other than for 
+reasonable distribution costs. The program may not be distributed as a 
+component of any commercial product without a prior license agreement 
+with the author. 
+
+
+3. Kontakt mit dem Autor / Contacting then author
+-------------------------------------------------
+# Dr. Jürgen Rathlev
+# E-Mail: kontakt(a)rathlev-home.de
+
+Copyright (2022) by Dr. J. Rathlev, D-24222 Schwentinental

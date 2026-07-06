@@ -1,0 +1,289 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>2. AppInfo.ini (App Configuration) &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="PortableApps.com Format™ Specification" href="index.html" />
+    <link rel="next" title="3. Icons" href="icons.html" />
+    <link rel="prev" title="1. Directory and File Layout" href="layout.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-paf-appinfo" class="page withsidebar">
+    
+  <div class="section" id="appinfo-ini-app-configuration">
+<span id="paf-appinfo"></span><h1>2. AppInfo.ini (App Configuration)<a class="headerlink" href="#appinfo-ini-app-configuration" title="Permalink to this headline">¶</a></h1>
+<p>The portable app makes available its configuration information to the
+PortableApps.com Platform by way of the <tt class="docutils literal"><span class="pre">AppInfo</span></tt> details. Within the
+<tt class="docutils literal"><span class="pre">AppNamePortable\App</span></tt> directory, an <tt class="docutils literal"><span class="pre">AppInfo</span></tt> directory contains an
+<tt class="docutils literal"><span class="pre">appinfo.ini</span></tt> file as well as any icons used within the menu (explained in
+<a class="reference internal" href="icons.html#paf-icons"><em>Section 3</em></a>). The <tt class="docutils literal"><span class="pre">appinfo.ini</span></tt> file consists of the
+following:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Format]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">PortableApps.comFormat</span>
+<span class="na">Version</span><span class="o">=</span><span class="s">2.0</span>
+
+<span class="k">[Details]</span>
+<span class="na">Name</span><span class="o">=</span><span class="s">AppName Portable</span>
+<span class="na">AppId</span><span class="o">=</span><span class="s">AppNamePortable</span>
+<span class="na">Publisher</span><span class="o">=</span><span class="s">App Developer &amp; PortableApps.com</span>
+<span class="na">Homepage</span><span class="o">=</span><span class="s">PortableApps.com/AppNamePortable</span>
+<span class="na">Category</span><span class="o">=</span><span class="s">Utilities</span>
+<span class="na">Description</span><span class="o">=</span><span class="s">AppName Portable is a tool that does something.</span>
+<span class="na">Language</span><span class="o">=</span><span class="s">Multilingual</span>
+<span class="na">Trademarks</span><span class="o">=</span>
+<span class="na">InstallType</span><span class="o">=</span>
+
+<span class="k">[License]</span>
+<span class="na">Shareable</span><span class="o">=</span><span class="s">true</span>
+<span class="na">OpenSource</span><span class="o">=</span><span class="s">true</span>
+<span class="na">Freeware</span><span class="o">=</span><span class="s">true</span>
+<span class="na">CommercialUse</span><span class="o">=</span><span class="s">true</span>
+<span class="na">EULAVersion</span><span class="o">=</span><span class="s">1</span>
+
+<span class="k">[Version]</span>
+<span class="na">PackageVersion</span><span class="o">=</span><span class="s">1.2.0.1</span>
+<span class="na">DisplayVersion</span><span class="o">=</span><span class="s">1.2 Release 1</span>
+
+<span class="k">[SpecialPaths]</span>
+<span class="na">Plugins</span><span class="o">=</span><span class="s">NONE</span>
+
+<span class="k">[Dependencies]</span>
+<span class="na">UsesJava</span><span class="o">=</span><span class="s">false</span>
+<span class="na">UsesDotNetVersion</span><span class="o">=</span>
+
+<span class="k">[Control]</span>
+<span class="na">Icons</span><span class="o">=</span><span class="s">1</span>
+<span class="na">Start</span><span class="o">=</span><span class="s">AppNamePortable.exe</span>
+<span class="na">ExtractIcon</span><span class="o">=</span><span class="s">App\AppName\AppName.exe</span>
+</pre></div>
+</div>
+<p>Within the <tt class="docutils literal"><span class="pre">appinfo.ini</span></tt> file, the entries are as follows:</p>
+<div class="section" id="within-the-format-section">
+<h2>Within the <tt class="docutils literal"><span class="pre">[Format]</span></tt> section:<a class="headerlink" href="#within-the-format-section" title="Permalink to this headline">¶</a></h2>
+<p><strong>Type</strong> is the type of configuration file this is (only PortableApps.comFormat
+is valid at this time).</p>
+<p><strong>Version</strong> is the version of this format the file is in (currently 2.0).</p>
+</div>
+<div class="section" id="within-the-details-section">
+<h2>Within the <tt class="docutils literal"><span class="pre">[Details]</span></tt> section:<a class="headerlink" href="#within-the-details-section" title="Permalink to this headline">¶</a></h2>
+<p><strong>Name</strong> is the name of your app as it appears in the PortableApps.com Menu</p>
+<p id="paf-appinfo-appid"><strong>AppID</strong> is the globally unique id for the application. Apps released by
+PortableApps.com or directly by the publisher of the regular version of the
+software will generally just be the name without spaces. Apps released by other
+entities must be AppNamePortable-example.com where example.com is their company
+domain. Apps released by individuals on PortableApps.com that aren&#8217;t working
+towards making it an official PortableApps.com release must be
+AppNamePortable-username where username is the PortableApps.com username. AppIDs
+may contain letters, numbers, periods ( . ), dashes ( - ), plus signs ( + ) and
+underscores ( _ ).</p>
+<p><strong>Publisher</strong> is the name of the app publisher as it appears in a hover tip in
+the next PortableApps.com Platform release and within the app details screen. If
+you are repackaging an app written by someone else, they should also be listed.</p>
+<p><strong>Homepage</strong> is the homepage of the portable app (not the base app)</p>
+<p><strong>Category</strong> is the category that the application falls into within the
+PortableApps.com Platform. Valid entries are: Accessibility, Development,
+Education, Games, Graphics &amp; Pictures, Internet, Music &amp; Video, Office, Security
+or Utilities. Only these *exact* entries are supported and should be used
+regardless of the default language of the base app (even if this is a German
+application, it should still use the English translation of the category).</p>
+<p><strong>Description</strong> is a brief description of what the application is. Maximum of
+512 characters.</p>
+<p><strong>Language</strong> is the language the app is available in. If the app is
+multilingual, it should be specified as Multilingual. The language string must
+be in a specific format. The following strings are available: Afrikaans,
+Albanian, Arabic, Armenian, Basque, Belarusian, Bosnian, Breton, Bulgarian,
+Catalan, Cibemba, Croatian, Czech, Danish, Dutch, Efik, English, Estonian,
+Farsi, Finnish, French, Galician, Georgian, German, Greek, Hebrew, Hungarian,
+Icelandic, Igbo, Indonesian, Irish, Italian, Japanese, Khmer, Korean, Kurdish,
+Latvian, Lithuanian, Luxembourgish, Macedonian, Malagasy, Malay, Mongolian,
+Norwegian, NorwegianNynorsk, Pashto, Polish, Portuguese, PortugueseBR, Romanian,
+Russian, Serbian, SerbianLatin, SimpChinese, Slovak, Slovenian, Spanish,
+SpanishInternational, Swahili, Swedish, Thai, TradChinese, Turkish, Ukranian,
+Uzbek, Valencian, Vietnamese, Welsh, Yoruba.</p>
+<p><strong>Trademarks</strong> (optional) is any trademark notifications that should appear. For
+example, HappyApp is a trademark of Acme, Inc.</p>
+<p><strong>InstallType</strong> (optional) is if you would like the app listed as a specific
+install type within the menu. For some apps that are packaged by language (like
+Mozilla Firefox), the language may be specified on this line. In installers with
+optional components, this line is automatically updated by the installer based
+on the details within installer.ini (see below). The InstallType will be shown
+within the PortableApps.com Platform in the app&#8217;s details.</p>
+</div>
+<div class="section" id="within-the-license-section">
+<h2>Within the <tt class="docutils literal"><span class="pre">[License]</span></tt> section:<a class="headerlink" href="#within-the-license-section" title="Permalink to this headline">¶</a></h2>
+<p>(all values are either <tt class="docutils literal"><span class="pre">true</span></tt> or <tt class="docutils literal"><span class="pre">false</span></tt>)</p>
+<p><strong>Shareable</strong> is whether the app is allowed to be copied from one drive to
+another (without the <tt class="docutils literal"><span class="pre">Data</span></tt> directory)</p>
+<p><strong>OpenSource</strong> is whether the app is fully open source under an OSI approved
+license</p>
+<p><strong>Freeware</strong> is whether the app is free (no cost)</p>
+<p><strong>CommercialUse</strong> is whether the app is allowed to be used in a commercial
+environment</p>
+<p><strong>EULAVersion</strong> (optional) is used to indicate the version of the End User
+License Agreement used if you include EULA.txt or EULA.rtf and require the user
+to agree to a license to install. If you are using an EULA and omit this entry,
+the default, 1, will be used.</p>
+</div>
+<div class="section" id="within-the-version-section">
+<h2>Within the <tt class="docutils literal"><span class="pre">[Version]</span></tt> section:<a class="headerlink" href="#within-the-version-section" title="Permalink to this headline">¶</a></h2>
+<p><strong>PackageVersion</strong> is the version of the package itself. This must be in 1.2.3.4
+format with no other characters and must be incremented with each public
+release.</p>
+<p><strong>DisplayVersion</strong> is the user-friendly version that is generally used to
+describe the version. So, a released app may have a DisplayVersion of <tt class="docutils literal"><span class="pre">2.4</span>
+<span class="pre">Revision</span> <span class="pre">2</span></tt> but a PackageVersion of <tt class="docutils literal"><span class="pre">2.4.0.2</span></tt>.</p>
+</div>
+<div class="section" id="within-the-optional-specialpaths-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[SpecialPaths]</span></tt> section:<a class="headerlink" href="#within-the-optional-specialpaths-section" title="Permalink to this headline">¶</a></h2>
+<p><strong>Plugins</strong> (optional) is the path to an app&#8217;s user-added plugins directory if
+it is within the App directory (as it is with applications like Firefox). This
+path is excluded when the installer calculates how much free space is needed for
+an upgrade. If there is no plugins directory, this value should be omitted from
+appinfo.ini.</p>
+</div>
+<div class="section" id="within-the-optional-dependencies-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[Dependencies]</span></tt> section:<a class="headerlink" href="#within-the-optional-dependencies-section" title="Permalink to this headline">¶</a></h2>
+<p><strong>UsesJava</strong> (optional) specifies whether the portable app makes use of <a class="reference external" href="http://portableapps.com/apps/utilities/java_portable">Java
+Portable</a>. If needed, this value should be set to true. If not needed, it
+should be omitted or set to false.</p>
+<p><strong>UsesDotNetVersion</strong> (optional) specifies which minimum version of the .NET
+framework the application requires. If needed, this value should be set to the
+minimum version the application requires (example: 1.1, 2.0, 3.0, 3.5). If not
+needed, this value should be omitted.</p>
+<p><em>Please note that PortableApps.com does not currently accept .NET-based apps for
+inclusion in our application listings. Most PCs &#8220;in the wild&#8221; do not have .NET
+available, so portable apps that require .NET will not function on them.</em></p>
+</div>
+<div class="section" id="within-the-control-section">
+<span id="paf-appinfo-control"></span><h2>Within the <tt class="docutils literal"><span class="pre">[Control]</span></tt> section:<a class="headerlink" href="#within-the-control-section" title="Permalink to this headline">¶</a></h2>
+<p><strong>Icons</strong> is the number of icons that the app has in the PortableApps.com Menu</p>
+<p><strong>Start</strong> is the command line to execute to start the app relative to the
+<tt class="docutils literal"><span class="pre">AppNamePortable</span></tt> directory. This will typically be <tt class="docutils literal"><span class="pre">AppNamePortable.exe</span></tt>.</p>
+<p><strong>ExtractIcon</strong> (optional) is used if the app&#8217;s main icon is not appicon.ico
+within the AppInfo directory. This should only be used when legally required for
+launchers in specific apps as it cause the application to be accessed more
+slowly. When not needed it should be left out of appinfo.ini.</p>
+<p>Sometimes, an application will have multiple icons, as is the case with
+OpenOffice.org Portable. In this case, the last section of the appinfo.ini file
+will look like:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Control]</span>
+<span class="na">Icons</span><span class="o">=</span><span class="s">2</span>
+<span class="na">Start</span><span class="o">=</span><span class="s">AppNamePortable.exe</span>
+<span class="na">Start1</span><span class="o">=</span><span class="s">AppNamePortable.exe</span>
+<span class="na">Name1</span><span class="o">=</span><span class="s">AppName Portable</span>
+<span class="na">Start2</span><span class="o">=</span><span class="s">AppNamePortable2.exe</span>
+<span class="na">Name2</span><span class="o">=</span><span class="s">AppName Portable Other Part</span>
+</pre></div>
+</div>
+<p><strong>Icons</strong> is still the number of icons to be shown in the PortableApps.com Menu</p>
+<p><strong>Start</strong> is the command line to execute for the main application</p>
+<p><strong>Start1</strong> is the command line for the first icon (often the same as Start)</p>
+<p><strong>Name1</strong> is the name to show in the menu for the first icon</p>
+<p><strong>Start2</strong> is the command line for the second icon</p>
+<p><strong>Name2</strong> is the name to show in the menu for the second icon</p>
+<p>Like the main icon, ExtractIcon1, ExtractIcon2, etc can be used where legally
+required. These should not normally be used or included.</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">2. AppInfo.ini (App Configuration)</a><ul>
+<li><a class="reference internal" href="#within-the-format-section">Within the <tt class="docutils literal"><span class="pre">[Format]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-details-section">Within the <tt class="docutils literal"><span class="pre">[Details]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-license-section">Within the <tt class="docutils literal"><span class="pre">[License]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-version-section">Within the <tt class="docutils literal"><span class="pre">[Version]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-specialpaths-section">Within the optional <tt class="docutils literal"><span class="pre">[SpecialPaths]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-dependencies-section">Within the optional <tt class="docutils literal"><span class="pre">[Dependencies]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-control-section">Within the <tt class="docutils literal"><span class="pre">[Control]</span></tt> section:</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="layout.html">1. Directory and File Layout</a></li>
+    
+    
+      <li>Next: <a href="icons.html">3. Icons</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">PortableApps.com Format™ Specification</a>
+        
+        <ul><li>2. AppInfo.ini (App Configuration)</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="layout.html" title="1. Directory and File Layout">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="icons.html" title="3. Icons">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

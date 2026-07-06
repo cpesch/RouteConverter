@@ -1,0 +1,143 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>[Environment] &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="launcher.ini" href="index.html" />
+    <link rel="next" title="[RegistryKeys]" href="registry.html" />
+    <link rel="prev" title="[LiveMode]" href="livemode.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-launcher.ini-environment" class="page withsidebar">
+    
+  <div class="section" id="environment">
+<span id="std:ini-section-[Environment]"></span><h1>[Environment]<a class="headerlink" href="#environment" title="Permalink to this headline">¶</a></h1>
+<p><strong>Format:</strong> arbitrary pairs</p>
+<p><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</p>
+<hr class="docutils" />
+<p>This section is for the setting of environment variables. The key names are the
+environment variables, and the values are the values which are assigned to them.</p>
+<p>There are no fixed values which must go in here; all data is in arbitrary INI
+pairs. A few examples:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Environment]</span>
+<span class="na">PATH</span><span class="o">=</span><span class="s">%PATH%;%PAL:AppDir%\AppName</span>
+<span class="na">APPNAME_HOME</span><span class="o">=</span><span class="s">%PAL:DataDir%\settings</span>
+</pre></div>
+</div>
+<p>Here, <tt class="docutils literal"><span class="pre">PATH</span></tt> will have <tt class="docutils literal"><span class="pre">;%PAL:AppDir%\AppName</span></tt> appended to it (as
+<tt class="docutils literal"><span class="pre">%PATH%</span></tt> will be expanded) and <tt class="docutils literal"><span class="pre">APPNAME_HOME</span></tt> will be set to something like
+<tt class="docutils literal"><span class="pre">X:\PortableApps\AppNamePortable\Data\settings</span></tt>.</p>
+<p>All values are parsed in the order they are come across, and the
+<tt class="docutils literal"><span class="pre">[Environment]</span></tt> section is parsed before all others that can &#8220;do
+anything&#8221;, thus you can, in a way, store a variable if you want to, for use in
+later <tt class="docutils literal"><span class="pre">[Environment]</span></tt> pairs or in another section such as a
+<a class="reference internal" href="filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a> section:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Environment]</span>
+<span class="na">LongSettingFile</span><span class="o">=</span><span class="s">%PAL:DataDir%\settings\.metadata\this.is.a.long.path\and.it.gets.used.a.number.of.times\file.conf</span>
+<span class="na">LongSettingFileDBS</span><span class="o">=</span><span class="s">%PAL:DataDir:DoubleBackslash%\\settings\\.metadata\\this.is.a.long.path\\and.it.gets.used.a.number.of.times\\file.conf</span>
+<span class="na">SomeEnvVar</span><span class="o">=</span><span class="s">%SomeEnvVar%;%LongSettingFile%</span>
+
+<span class="k">[FileWrite1]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">Replace</span>
+<span class="na">File</span><span class="o">=</span><span class="s">%LongSettingFile%</span>
+<span class="na">Find</span><span class="o">=</span><span class="s">%PAL:LastDrive%\\</span>
+<span class="na">Replace</span><span class="o">=</span><span class="s">%PAL:CurrentDrive%\\</span>
+
+<span class="k">[FileWrite2]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">Replace</span>
+<span class="na">File</span><span class="o">=</span><span class="s">%PAL:AppDir%\AppName\setting-file.conf</span>
+<span class="na">Entry</span><span class="o">=</span><span class="s">config.filename=</span>
+<span class="na">Value</span><span class="o">=</span><span class="s">%LongSettingFileDBS%</span>
+</pre></div>
+</div>
+<p>For a list of the extra environment variables that the PortableApps.com Launcher
+makes available, see <a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a>.</p>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="livemode.html">[LiveMode]</a></li>
+    
+    
+      <li>Next: <a href="registry.html">[RegistryKeys]</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">launcher.ini</a>
+        
+        <ul><li>[Environment]</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="livemode.html" title="[LiveMode]">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="registry.html" title="[RegistryKeys]">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

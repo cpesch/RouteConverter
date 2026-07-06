@@ -1,0 +1,186 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>INI files &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="index.html" />
+    <link rel="next" title="Troubleshooting" href="troubleshooting.html" />
+    <link rel="prev" title="Working with development builds of the PortableApps.com Launcher" href="advanced/development.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="index.html">Home</a>  |
+      <a title="Table of contents" href="contents.html">Table of contents</a>  |
+      <a title="Global index" href="genindex.html">Index</a>  |
+      <a title="Search" href="search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ini" class="page withsidebar">
+    
+  <div class="section" id="ini-files">
+<span id="ini"></span><h1>INI files<a class="headerlink" href="#ini-files" title="Permalink to this headline">¶</a></h1>
+<p>This document contains explanation of the INI file format.</p>
+<p>The INI file format is a plain-text data storage format used primarily in
+Microsoft Windows for storing configuration. It is used extensively by
+PortableApps.com in various products.</p>
+<ul class="simple">
+<li>PortableApps.com Format: <a class="reference internal" href="ref/paf/appinfo.html#paf-appinfo"><em>App\AppInfo\appinfo.ini</em></a></li>
+<li>PortableApps.com Installer: <a class="reference internal" href="ref/paf/installer.html#paf-installer"><em>App\AppInfo\installer.ini</em></a></li>
+<li>PortableApps.com Launcher: <a class="reference internal" href="ref/launcher.ini/index.html#ref-launcher-ini"><em>App\AppInfo\Launcher\launcher.ini</em></a></li>
+</ul>
+<p>In this documentation, fully qualified key names (those including the section
+name) are written as <tt class="docutils literal"><span class="pre">[Section]:Key</span></tt>, or if including the value, as
+<tt class="docutils literal"><span class="pre">[Section]:Key=Value</span></tt>.</p>
+<div class="section" id="basic-syntax">
+<h2>Basic syntax<a class="headerlink" href="#basic-syntax" title="Permalink to this headline">¶</a></h2>
+<p>INI files are divided into <a class="reference internal" href="#sections">sections</a>, which contain lines of <a class="reference internal" href="#keys">keys and values</a>.</p>
+<p>Inline comments are not permitted, but comment lines are. Comment lines start
+with a semicolon (<tt class="docutils literal"><span class="pre">;</span></tt>).</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[SectionOne]</span>
+<span class="na">KeyOne</span><span class="o">=</span><span class="s">value</span>
+<span class="na">KeyTwo</span><span class="o">=</span><span class="s">&quot;  value&quot;</span>
+
+<span class="k">[SectionTwo]</span>
+<span class="c">; Comments can go in like this</span>
+<span class="na">KeyOne</span><span class="o">=</span><span class="s">more values</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="sections">
+<span id="ini-sections"></span><h2>Sections<a class="headerlink" href="#sections" title="Permalink to this headline">¶</a></h2>
+<p>Section lines are indicated by a left square bracket at the start of the line,
+the section name (arbitrary text) and then a right square bracket;
+<tt class="docutils literal"><span class="pre">[SectionName]</span></tt>.  The convention with Windows and PortableApps.com is to use
+CamelCase for section names.</p>
+</div>
+<div class="section" id="keys">
+<span id="ini-keys"></span><h2>Keys<a class="headerlink" href="#keys" title="Permalink to this headline">¶</a></h2>
+<p>Key/value lines are lines which are not <a class="reference internal" href="#sections">section lines</a>. The key comes first,
+by convention in CamelCase, then arbitrary whitespace (by convention omitted
+entirely in the INI format), an equals sign (<tt class="docutils literal"><span class="pre">=</span></tt>), arbitrary whitespace
+(omitted by convention), and then the value.  Thus the normal way is
+<tt class="docutils literal"><span class="pre">Key=value</span></tt>. The value can be quoted; if its first and last characters are the
+same, as a single or double quote, <tt class="docutils literal"><span class="pre">'</span></tt> or <tt class="docutils literal"><span class="pre">&quot;</span></tt>. If this is the case, the
+quotes are removed. It is purely a character check, though, not a full quoted
+string validation, so something like <tt class="docutils literal"><span class="pre">Key='It's</span> <span class="pre">going</span> <span class="pre">to</span> <span class="pre">work'</span></tt> will work
+fine. If you escape the character as <tt class="docutils literal"><span class="pre">\'</span></tt> or anything like that, it will
+remain like that, and will be read as <tt class="docutils literal"><span class="pre">It\'s</span> <span class="pre">going</span> <span class="pre">to</span> <span class="pre">work</span></tt>. Regarding which
+type of quotation mark to use, the author prefers in such situation to use the
+quote style which is not used (or used less) in the string, so <tt class="docutils literal"><span class="pre">Key=&quot;It's</span> <span class="pre">going</span>
+<span class="pre">to</span> <span class="pre">work&quot;</span></tt> (read as <tt class="docutils literal"><span class="pre">It's</span> <span class="pre">going</span> <span class="pre">to</span> <span class="pre">work</span></tt>) or <tt class="docutils literal"><span class="pre">Key='&quot;quoted</span> <span class="pre">string&quot;'</span></tt> (read
+as <tt class="docutils literal"><span class="pre">&quot;quoted</span> <span class="pre">string&quot;</span></tt>). This last point is most important for the
+PortableApps.com Launcher; for example, it is mentioned in
+<a class="reference internal" href="ref/launcher.ini/launch.html#std:ini-key-[Launch]:CommandLineArguments"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:CommandLineArguments</span></tt></a>, as quoting paths in that can be very
+important for making sure apps will work in paths with spaces.</p>
+</div>
+<div class="section" id="using-ini-files">
+<h2>Using INI files<a class="headerlink" href="#using-ini-files" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="in-nsis">
+<h3>In NSIS<a class="headerlink" href="#in-nsis" title="Permalink to this headline">¶</a></h3>
+<p>In <a class="reference internal" href="glossary.html#term-nsis"><em class="xref std std-term">NSIS</em></a>, there are two main commands for dealing with INI files;
+<tt class="docutils literal"><span class="pre">ReadINIStr</span></tt> to read values and <tt class="docutils literal"><span class="pre">WriteINIStr</span></tt> to write values. When writing
+custom code for the PortableApps.com Installer or the PortableApps.com Launcher
+you can use these. Also in the PortableApps.com Launcher a few specialty macros
+are available; <tt class="docutils literal"><span class="pre">${ReadLauncherConfig}</span></tt>, <tt class="docutils literal"><span class="pre">${ReadLauncherConfigWithDefault}</span></tt>
+and <tt class="docutils literal"><span class="pre">${ReadUserConfig}</span></tt>. See <a class="reference internal" href="advanced/custom.html#custom-code"><em>Custom code</em></a> for details on using them.</p>
+</div>
+<div class="section" id="in-general">
+<h3>In general<a class="headerlink" href="#in-general" title="Permalink to this headline">¶</a></h3>
+<p>The Windows API provides a number of functions for dealing with INI files;
+<a class="reference external" href="http://msdn.microsoft.com/en-us/library/ms724353(v=VS.85).aspx">GetPrivateProfileString</a> and <a class="reference external" href="http://msdn.microsoft.com/en-us/library/ms725501(v=VS.85).aspx">WritePrivateProfileString</a> are used for reading and
+writing values. Other functions are available from that page; the intricate
+details of them is beyond the scope of this documentation.</p>
+</div>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">INI files</a><ul>
+<li><a class="reference internal" href="#basic-syntax">Basic syntax</a></li>
+<li><a class="reference internal" href="#sections">Sections</a></li>
+<li><a class="reference internal" href="#keys">Keys</a></li>
+<li><a class="reference internal" href="#using-ini-files">Using INI files</a><ul>
+<li><a class="reference internal" href="#in-nsis">In NSIS</a></li>
+<li><a class="reference internal" href="#in-general">In general</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="advanced/development.html">Working with development builds of the PortableApps.com Launcher</a></li>
+    
+    
+      <li>Next: <a href="troubleshooting.html">Troubleshooting</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+        <ul><li>INI files</li></ul>
+        
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="advanced/development.html" title="Working with development builds of the PortableApps.com Launcher">previous</a>  | <a href="index.html" title="PortableApps.com Launcher 2.2 documentation" accesskey="U">up</a>  | <a href="troubleshooting.html" title="Troubleshooting">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

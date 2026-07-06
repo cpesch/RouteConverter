@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.prefs.Preferences;
 
 import static org.junit.Assert.*;
 
@@ -35,39 +36,47 @@ import static org.junit.Assert.*;
 
 public class IntegerModelTest {
 
+    // isolated in-memory store per test instance, so concurrent forks cannot
+    // clobber each other's writes on the shared OS preferences node
+    private final Preferences preferences = new InMemoryPreferences();
+
     private static String key(String suffix) {
         return "test.int." + suffix + "." + UUID.randomUUID();
     }
 
+    private IntegerModel model(String suffix, Integer defaultValue) {
+        return new IntegerModel(key(suffix), defaultValue, preferences);
+    }
+
     @Test
     public void testDefaultValue() {
-        IntegerModel model = new IntegerModel(key("default"), 42);
+        IntegerModel model = model("default", 42);
         assertEquals(Integer.valueOf(42), model.getInteger());
     }
 
     @Test
     public void testDefaultValueZero() {
-        IntegerModel model = new IntegerModel(key("default.zero"), 0);
+        IntegerModel model = model("default.zero", 0);
         assertEquals(Integer.valueOf(0), model.getInteger());
     }
 
     @Test
     public void testSetInteger() {
-        IntegerModel model = new IntegerModel(key("set"), 0);
+        IntegerModel model = model("set", 0);
         model.setInteger(99);
         assertEquals(Integer.valueOf(99), model.getInteger());
     }
 
     @Test
     public void testSetIntegerNegative() {
-        IntegerModel model = new IntegerModel(key("negative"), 0);
+        IntegerModel model = model("negative", 0);
         model.setInteger(-5);
         assertEquals(Integer.valueOf(-5), model.getInteger());
     }
 
     @Test
     public void testSetIntegerFiresChangeListener() {
-        IntegerModel model = new IntegerModel(key("change"), 0);
+        IntegerModel model = model("change", 0);
         AtomicInteger count = new AtomicInteger(0);
         model.addChangeListener(e -> count.incrementAndGet());
         model.setInteger(1);
@@ -76,7 +85,7 @@ public class IntegerModelTest {
 
     @Test
     public void testSetIntegerFiresMultipleChangeListeners() {
-        IntegerModel model = new IntegerModel(key("multi"), 0);
+        IntegerModel model = model("multi", 0);
         AtomicInteger count = new AtomicInteger(0);
         model.addChangeListener(e -> count.incrementAndGet());
         model.addChangeListener(e -> count.incrementAndGet());
@@ -86,7 +95,7 @@ public class IntegerModelTest {
 
     @Test
     public void testRemoveChangeListenerNoFire() {
-        IntegerModel model = new IntegerModel(key("remove"), 0);
+        IntegerModel model = model("remove", 0);
         AtomicInteger count = new AtomicInteger(0);
         javax.swing.event.ChangeListener listener = e -> count.incrementAndGet();
         model.addChangeListener(listener);

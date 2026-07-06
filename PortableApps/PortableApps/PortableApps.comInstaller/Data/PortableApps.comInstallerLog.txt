@@ -1,0 +1,17 @@
+Processing script file: "Z:\cpesch\IdeaProjects\RouteConverter\RouteConverterPortable\target\classes\RouteConverterPortable\Other\Source\PortableApps.comInstaller.nsi" (UTF16LE)
+
+Processed 1 file, writing output (x86-unicode):
+
+Output: "Z:\cpesch\IdeaProjects\RouteConverter\RouteConverterPortable\target\classes\RouteConverterPortable_3.2_-406.paf.exe"
+Install: 4 pages (256 bytes), 1 section (1 required) (16408 bytes), 2348 instructions (65744 bytes), 5241 strings (376944 bytes), 88 language tables (28688 bytes).
+Datablock optimizer saved 623648 bytes (~0.9%).
+
+Using lzma (compress whole) compression.
+
+EXE header size:              155648 / 38912 bytes
+Install code:                          (488528 bytes)
+Install data:                          (63264947 bytes)
+Compressed data:            57014982 / 63753475 bytes
+CRC (0x97EF65CD):                  4 / 4 bytes
+
+Total size:                 57170634 / 63792391 bytes (89.6%)

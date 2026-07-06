@@ -1,0 +1,191 @@
+﻿# Header, don't edit
+NLF v6
+# Start editing here
+# Language ID
+1102
+# Font and size - dash (-) means default
+-
+-
+# Codepage - dash (-) means ASCII code page
+1200
+# RTL - anything else than RTL means LTR
+-
+# Translation by John T. Haller (machine generated)
+# ^Branding
+Nullsoft Install System %s
+# ^SetupCaption
+$(^Name) सेटअप
+# ^UninstallCaption
+$(^Name) विस्थापित करा
+# ^LicenseSubCaption
+: परवाना करार
+# ^ComponentsSubCaption
+: स्थापना पर्याय
+# ^DirSubCaption
+: स्थापना फोल्डर
+# ^InstallingSubCaption
+: स्थापित करत आहे
+# ^CompletedSubCaption
+: पूर्ण झाले
+# ^UnComponentsSubCaption
+: विस्थापित पर्याय
+# ^UnDirSubCaption
+: विस्थापित फोल्डर
+# ^ConfirmSubCaption
+: पुष्टीकरण
+# ^UninstallingSubCaption
+: विस्थापित करत आहे
+# ^UnCompletedSubCaption
+: पूर्ण झाले
+# ^BackBtn
+< मागे
+# ^NextBtn
+पुढे >
+# ^AgreeBtn
+मी सहमत आहे
+# ^AcceptBtn
+मी परवाना कराराच्या अटी स्वीकारतो
+# ^DontAcceptBtn
+मी परवाना कराराच्या अटी स्वीकारत नाही
+# ^InstallBtn
+स्थापित करा
+# ^UninstallBtn
+विस्थापित करा
+# ^CancelBtn
+रद्द करा
+# ^CloseBtn
+बंद
+# ^BrowseBtn
+ब्राउझ करा...
+# ^ShowDetailsBtn
+तपशील दाखवा
+# ^ClickNext
+पुढे जाण्यासाठी नेक्स्ट क्लिक करा.
+# ^ClickInstall
+प्रतिष्ठापन सुरू करण्यासाठी स्थापित क्लिक करा.
+# ^ClickUninstall
+विस्थापन सुरू करण्यासाठी अनइन्स्टॉल वर क्लिक करा.
+# ^Name
+नाव
+# ^Completed
+पूर्ण झाले
+# ^LicenseText
+कृपया $(^NameDA) स्थापित करण्यापूर्वी परवाना कराराचे पुनरावलोकन करा. तुम्ही कराराच्या सर्व अटी स्वीकारल्यास, मी सहमत आहे क्लिक करा.
+# ^LicenseTextCB
+कृपया $(^NameDA) स्थापित करण्यापूर्वी परवाना कराराचे पुनरावलोकन करा. तुम्ही कराराच्या सर्व अटी मान्य केल्यास, खालील चेक बॉक्सवर क्लिक करा. $_CLICK
+# ^LicenseTextRB
+कृपया $(^NameDA) स्थापित करण्यापूर्वी परवाना कराराचे पुनरावलोकन करा. तुम्ही कराराच्या सर्व अटी मान्य केल्यास, खालील पहिला पर्याय निवडा. $_CLICK
+# ^UnLicenseText
+कृपया $(^NameDA) विस्थापित करण्यापूर्वी परवाना कराराचे पुनरावलोकन करा. तुम्ही कराराच्या सर्व अटी स्वीकारल्यास, मी सहमत आहे क्लिक करा.
+# ^UnLicenseTextCB
+कृपया $(^NameDA) विस्थापित करण्यापूर्वी परवाना कराराचे पुनरावलोकन करा. तुम्ही कराराच्या सर्व अटी मान्य केल्यास, खालील चेक बॉक्सवर क्लिक करा. $_CLICK
+# ^UnLicenseTextRB
+कृपया $(^NameDA) विस्थापित करण्यापूर्वी परवाना कराराचे पुनरावलोकन करा. तुम्ही कराराच्या सर्व अटी मान्य केल्यास, खालील पहिला पर्याय निवडा. $_CLICK
+# ^Custom
+सानुकूल
+# ^ComponentsText
+तुम्ही जे घटक स्थापित करू इच्छिता ते तपासा आणि तुम्ही स्थापित करू इच्छित नसलेले घटक अनचेक करा. $_CLICK
+# ^ComponentsSubText1
+स्थापनेचा प्रकार निवडा:
+# ^ComponentsSubText2_NoInstTypes
+स्थापित करण्यासाठी घटक निवडा:
+# ^ComponentsSubText2
+किंवा, आपण स्थापित करू इच्छित पर्यायी घटक निवडा:
+# ^UnComponentsText
+तुम्हाला अनइंस्टॉल करायचे असलेले घटक तपासा आणि तुम्ही अनइंस्टॉल करू इच्छित नसलेले घटक अनचेक करा. $_CLICK
+# ^UnComponentsSubText1
+विस्थापित प्रकार निवडा:
+# ^UnComponentsSubText2_NoInstTypes
+विस्थापित करण्यासाठी घटक निवडा:
+# ^UnComponentsSubText2
+किंवा, तुम्ही विस्थापित करू इच्छित असलेले पर्यायी घटक निवडा:
+# ^DirText
+खालील फोल्डरमध्ये सेटअप $(^NameDA) स्थापित करेल. वेगळ्या फोल्डरमध्ये स्थापित करण्यासाठी, ब्राउझ वर क्लिक करा आणि दुसरे फोल्डर निवडा. $_CLICK
+# ^DirSubText
+गंतव्य फोल्डर
+# ^DirBrowseText
+$(^NameDA) स्थापित करण्यासाठी फोल्डर निवडा:
+# ^UnDirText
+सेटअप खालील फोल्डरमधून $(^NameDA) अनइंस्टॉल करेल. वेगळ्या फोल्डरमधून विस्थापित करण्यासाठी, ब्राउझ क्लिक करा आणि दुसरे फोल्डर निवडा. $_CLICK
+# ^UnDirSubText
+""
+# ^UnDirBrowseText
+$(^NameDA) विस्थापित करण्यासाठी फोल्डर निवडा:
+# ^SpaceAvailable
+"जागा उपलब्ध: "
+# ^SpaceRequired
+"जागा आवश्यक: "
+# ^UninstallingText
+$(^NameDA) खालील फोल्डरमधून विस्थापित केले जाईल. $_CLICK
+# ^UninstallingSubText
+येथून विस्थापित करत आहे:
+# ^FileError
+लिहिण्यासाठी फाइल उघडताना त्रुटी: \r\n\r\n$0\r\n\r\nइंस्टॉलेशन थांबवण्यासाठी अॅबॉर्ट वर क्लिक करा,\r\nपुन्हा प्रयत्न करण्याचा प्रयत्न करा, किंवा\r\nही फाइल वगळण्यासाठी दुर्लक्ष करा.
+# ^FileError_NoIgnore
+लेखनासाठी फाइल उघडताना त्रुटी: \r\n\r\n$0\r\n\r\nपुन्हा प्रयत्न करण्यासाठी पुन्हा प्रयत्न करा क्लिक करा किंवा\r\nस्थापना थांबवण्यासाठी रद्द करा.
+# ^CantWrite
+"लिहिता येत नाही: "
+# ^CopyFailed
+कॉपी अयशस्वी
+# ^CopyTo
+"वर कॉपी करा "
+# ^Registering
+"नोंदणी करत आहे: "
+# ^Unregistering
+"नोंदणी रद्द करत आहे: "
+# ^SymbolNotFound
+"चिन्ह सापडले नाही: "
+# ^CouldNotLoad
+"लोड करू शकलो नाही: "
+# ^CreateFolder
+"फोल्डर तयार करा: "
+# ^CreateShortcut
+"शॉर्टकट तयार करा: "
+# ^CreatedUninstaller
+अनइन्स्टॉलर तयार केले: "
+# ^Delete
+"फाईल काढून टाका: "
+# ^DeleteOnReboot
+"रीबूट केल्यावर हटवा: "
+# ^ErrorCreatingShortcut
+"शॉर्टकट तयार करताना एरर आली: "
+# ^ErrorCreating
+"तयार करताना त्रुटी: "
+# ^ErrorDecompressing
+डेटा डीकंप्रेस करताना त्रुटी! दूषित इंस्टॉलर?
+# ^ErrorRegistering
+DLL नोंदणी करताना त्रुटी
+# ^ExecShell
+"ExecShell: "
+# ^Exec
+"अंमलात आणा: "
+# ^Extract
+"अर्क: "
+# ^ErrorWriting
+"अर्क: फाइलवर लिहिताना त्रुटी "
+# ^InvalidOpcode
+इंस्टॉलर दूषित: अवैध opcode
+# ^NoOLE
+"साठी OLE नाही: "
+# ^OutputFolder
+"आउटपुट फोल्डर: "
+# ^RemoveFolder
+"फोल्डर काढा: "
+# ^RenameOnReboot
+"रीबूट केल्यावर नाव बदला: "
+# ^Rename
+"नाव बदला: "
+# ^Skipped
+"वगळले: "
+# ^CopyDetails
+क्लिपबोर्डवर तपशील कॉपी करा
+# ^LogInstall
+लॉग इन्स्टॉल करण्याची प्रक्रिया
+# ^Byte
+B
+# ^Kilo
+ K
+# ^Mega
+ M
+# ^Giga
+ G
