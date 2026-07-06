@@ -36,16 +36,23 @@ import static slash.common.io.Transfer.trim;
  */
 
 public class IntegerModel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(IntegerModel.class);
-
+    private final Preferences preferences;
     private final String preferencesName;
     private final Integer defaultValue;
 
     private final EventListenerList listenerList = new EventListenerList();
 
     public IntegerModel(String preferencesName, Integer defaultValue) {
+        this(preferencesName, defaultValue, Preferences.userNodeForPackage(IntegerModel.class));
+    }
+
+    // package-private seam so tests can inject an isolated (in-memory) store
+    // instead of the shared OS node, which loses writes under concurrent
+    // multi-fork test execution
+    IntegerModel(String preferencesName, Integer defaultValue, Preferences preferences) {
         this.preferencesName = preferencesName;
         this.defaultValue = defaultValue;
+        this.preferences = preferences;
     }
 
     public Integer getInteger() {
