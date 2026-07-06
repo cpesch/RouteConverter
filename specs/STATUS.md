@@ -14,7 +14,7 @@ that line, `git mv` it to match and rerun this script.
 | [00010-migrate-java-17-to-25](./00010-migrate-java-17-to-25.md) | `in-flight` | — | — | 2026-06-13 |
 | [00013-waypoint-icons-from-style](./00013-waypoint-icons-from-style.md) | `proposed` | — | — | 2026-07-03 |
 | [00014-poi-category-overlay](./00014-poi-category-overlay.md) | `proposed` | — | — | 2026-07-03 |
-| [00017-remove-compiler-warnings](./00017-remove-compiler-warnings.md) | `planned` | — | 1, 2 | 2026-07-06 |
+| [00017-remove-compiler-warnings](./00017-remove-compiler-warnings.md) | `in-flight` | 1, 2 | — | 2026-07-06 |
 
 ## Done (11) — shipped / live / retired (`specs/done/`)
 

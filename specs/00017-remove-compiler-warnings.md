@@ -1,8 +1,8 @@
 ---
 name: 00017-remove-compiler-warnings
-status: planned
-phases_done: []
-phases_next: [1, 2]
+status: in-flight
+phases_done: [1, 2]
+phases_next: []
 last_touched: 2026-07-06
 ---
 
@@ -88,15 +88,35 @@ low ROI, or not our source. No enforcement gate this pass (`-Werror` /
 - **Phase 2 — behavior-touching (commit 2):** URL→URI full conversion with
   file-path fallback, per-site unchecked fixes.
 
+## Corrections found during execution
+
+- **URL sites: 12, not 9.** Ground-truth `grep 'new URL('` beat the truncated
+  log dedup: added NavigationFormatParser (x2) and DeleteRoutes.
+- **commons-cli: 6 files, not 4.** CheckProxy (proxy-tools) and
+  FilterResourceBundles (route-converter-tools) were missed in the first pass,
+  caught by the `-Xlint` verify, fixed in P2.
+- **"12 real unchecked" over-counted.** 6 of them live in IntelliJ
+  `$$$setupUI$$$`-generated blocks (PhotoPanel x3, ConvertPanel, ThemeStyleDialog,
+  MapSelector) — treated as generated (out of scope, like ObjectFactory).
+  Genuinely hand-written and fixed: PhotoPanel:108/314, ConvertPanel:385,
+  BaseRoute:508.
+- **FileOperations:119/131 unchecked are pre-existing on master** (raw
+  FormatAndRoutes; method at line 84 already suppresses the sibling site) —
+  the initial baseline undercounted them due to inconsistent `-Xlint`
+  application. Out of scope (same cascade as ConvertPanel:385).
+
 ## Verification
 
-- `mvn -Djacoco.skip clean compile` — the 68 deprecated + 1 missing-dir + 12
-  real unchecked gone from default output; 46 codegen-locale + rawtypes/serial/
-  this-escape unchanged (expected, out of scope).
-- Unit tests green (`navigation-formats` covers parse paths; download-tools CLI
-  help is dev-only, no test asserts exact text).
-- Spot-check: parse a `file:` URL whose path contains a space still round-trips
-  (guards Q3 fallback).
+- Full-reactor `-Xlint:all` compile (temp pom arg, reverted): all targeted
+  buckets now **0** — Locale, URL(String), Option.Builder, old HelpFormatter,
+  runFinalization, missing-source-dir. Remaining unchecked are only generated
+  `setupUI` + pre-existing FileOperations + generated ObjectFactory.
+- New `Files.toUrl` unit tests cover the http-passthrough and the bare/
+  space-bearing-path File fallback (guards the Q3 leniency claim).
+- Unit tests green across all touched modules. Note: `IntegerModelTest.
+  testSetIntegerNegative` is **pre-existing flaky** (default-Locale pollution
+  across tests, execution-order dependent) — reproduced then cleared on both
+  master and this branch; unrelated to these changes.
 
 ## Out of scope / follow-ups
 
