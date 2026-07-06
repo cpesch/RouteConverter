@@ -1,12 +1,18 @@
 ---
 name: 00016-dialog-sizing-and-message-bounding
-status: in-flight
-phases_done: [grill-plan, p1-windowbounds, p2-list-formatter, p3-windowhelper-wrappers, p4-joptionpane-migration]
+status: shipped
+phases_done: [grill-plan, p1-windowbounds, p2-list-formatter, p3-windowhelper-wrappers, p4-joptionpane-migration, integration-merge]
 phases_next: [manual-ui-verification]
 last_touched: 2026-07-06
 ---
 
 # 00016 - Dialog sizing cleanup + message-content bounding
+
+Shipped: all four phases combined and squash-merged in PR
+[#135](https://github.com/cpesch/RouteConverter/pull/135). The `manual-ui-verification`
+visual pass (open all 17 dialogs, confirm default all-visible / resize-persists /
+long-list caps / stacktrace scrolls) remains the one outstanding follow-up — the
+GUI can't be exercised headless in CI.
 
 ## Progress (2026-07-06)
 
