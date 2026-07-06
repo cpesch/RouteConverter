@@ -150,7 +150,7 @@ public class MapsforgeMapView extends BaseMapView {
     private PositionsModel positionsModel;
     private PositionListsModel positionListsModel;
     private MapPreferencesModel preferencesModel;
-    private MapViewCallbackOpenSource mapViewCallback;
+    private MapsforgeMapViewCallback mapViewCallback;
     private NonSelectedPositionListsRenderer nonSelectedPositionListsRenderer;
 
     private final TableModelListener positionsModelListener = new PositionsModelListener();
@@ -212,7 +212,7 @@ public class MapsforgeMapView extends BaseMapView {
         this.positionsModel = positionsModel;
         this.positionListsModel = positionListsModel;
         this.preferencesModel = preferencesModel;
-        this.mapViewCallback = (MapViewCallbackOpenSource) mapViewCallback;
+        this.mapViewCallback = (MapsforgeMapViewCallback) mapViewCallback;
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             private Bitmap markerIcon;

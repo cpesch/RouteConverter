@@ -30,7 +30,7 @@ import slash.navigation.mapview.MapViewCallback;
  * @author Christian Pesch
  */
 
-public interface MapViewCallbackOpenSource extends MapViewCallback {
+public interface MapsforgeMapViewCallback extends MapViewCallback {
     MapsforgeMapManager getMapsforgeMapManager();
 
     ElevationService getElevationService();

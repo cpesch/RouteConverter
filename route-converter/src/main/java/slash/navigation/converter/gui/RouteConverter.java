@@ -38,7 +38,7 @@ import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
-import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
+import slash.navigation.mapview.mapsforge.MapsforgeMapViewCallback;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.nominatim.NominatimService;
 import slash.navigation.photon.PhotonService;
@@ -127,8 +127,8 @@ public class RouteConverter extends BaseRouteConverter {
         return mapsforgeMapManager;
     }
 
-    protected MapViewCallbackOpenSource getMapViewCallback() {
-        return new MapViewCallbackOpenSourceImpl();
+    protected MapsforgeMapViewCallback getMapViewCallback() {
+        return new MapsforgeMapViewCallbackImpl();
     }
 
     protected void initializeElevationServices() {

@@ -24,7 +24,7 @@ import slash.navigation.elevation.ElevationService;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
-import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
+import slash.navigation.mapview.mapsforge.MapsforgeMapViewCallback;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -43,8 +43,8 @@ import static slash.navigation.gui.helpers.WindowHelper.showError;
  * @author Christian Pesch
  */
 
-public class MapViewCallbackOpenSourceImpl extends MapViewCallbackImpl implements MapViewCallbackOpenSource {
-    private static final Logger log = Logger.getLogger(MapViewCallbackOpenSourceImpl.class.getName());
+public class MapsforgeMapViewCallbackImpl extends MapViewCallbackImpl implements MapsforgeMapViewCallback {
+    private static final Logger log = Logger.getLogger(MapsforgeMapViewCallbackImpl.class.getName());
 
     public MapsforgeMapManager getMapsforgeMapManager() {
         return ((RouteConverter) Application.getInstance()).getMapsforgeMapManager();
