@@ -88,8 +88,7 @@ import static java.util.Collections.singletonList;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.tree.TreeSelectionModel.CONTIGUOUS_TREE_SELECTION;
@@ -482,9 +481,9 @@ public class BrowsePanel implements PanelInTab {
     private void addFilesToCatalog(CategoryTreeNode category, List<File> files) {
         if (category == null || category.getParent() == null) {
             RouteConverter r = RouteConverter.getInstance();
-            showMessageDialog(r.getFrame(),
+            showError(r.getFrame(),
                     r.getContext().getBundle().getString("add-file-category-missing"),
-                    r.getFrame().getTitle(), ERROR_MESSAGE);
+                    r.getFrame().getTitle());
             return;
         }
 
@@ -505,9 +504,9 @@ public class BrowsePanel implements PanelInTab {
     private void addUrlToCatalog(CategoryTreeNode category, String url) {
         if (category == null || category.getParent() == null) {
             RouteConverter r = RouteConverter.getInstance();
-            showMessageDialog(r.getFrame(),
+            showError(r.getFrame(),
                     r.getContext().getBundle().getString("add-url-category-missing"),
-                    r.getFrame().getTitle(), ERROR_MESSAGE);
+                    r.getFrame().getTitle());
             return;
         }
 

@@ -30,9 +30,8 @@ import javax.swing.*;
 
 import static java.text.MessageFormat.format;
 import static java.util.Collections.singletonList;
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.showInputDialog;
 import static slash.common.io.Transfer.trim;
+import static slash.navigation.gui.helpers.WindowHelper.showInput;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedCategoryTreeNode;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.selectCategory;
 
@@ -56,9 +55,9 @@ public class AddCategoryAction extends FrameAction {
         if (category == null)
             return;
 
-        final String name = showInputDialog(WindowHelper.getFrame(),
+        final String name = showInput(WindowHelper.getFrame(),
                 format(getBundle().getString("add-category-label"), category.getName()),
-                WindowHelper.getFrame().getTitle(), QUESTION_MESSAGE);
+                WindowHelper.getFrame().getTitle());
         if (trim(name) == null)
             return;
 

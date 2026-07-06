@@ -39,8 +39,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.Objects.requireNonNullElse;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static slash.common.io.Transfer.trim;
 import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
@@ -303,9 +302,9 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateTimeParserFormatter format) {
         RouteConverter instance = RouteConverter.getInstance();
         if (instance != null) {
-            showMessageDialog(instance.getFrame(),
+            showError(instance.getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString(messageBundleKey),
-                            stringValue, format.getPatternInfo()), RouteConverter.getTitle(), ERROR_MESSAGE);
+                            stringValue, format.getPatternInfo()), RouteConverter.getTitle());
         }
 
         // Occurs during unittests ...

@@ -54,10 +54,9 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.Mapsforge;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.gui.helpers.JMenuHelper.*;
@@ -203,7 +202,7 @@ public class RouteConverterOpenSource extends RouteConverter {
             } catch (Exception e) {
                 invokeLater(() -> {
                     log.warning("Could not set GraphHopper data source: " + e);
-                    showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
+                    showError(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle());
                 });
             }
         }
@@ -231,7 +230,7 @@ public class RouteConverterOpenSource extends RouteConverter {
             } catch (IOException e) {
                 invokeLater(() -> {
                     log.warning("Could not scan local maps and themes: " + e);
-                    showMessageDialog(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle(), ERROR_MESSAGE);
+                    showError(frame, MessageFormat.format(getBundle().getString("scan-error"), e), frame.getTitle());
                 });
             }
 

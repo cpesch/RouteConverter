@@ -86,6 +86,8 @@ import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.JOptionPane.*;
+import static slash.navigation.gui.helpers.WindowHelper.showConfirm;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
@@ -549,8 +551,8 @@ public class ConvertPanel implements PanelInTab {
     private static boolean checkForFeature(String featureName, String featureDescription) {
         if (!hasFeature(featureName)) {
             final RouteConverter r = RouteConverter.getInstance();
-            showMessageDialog(r.getFrame(), new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("feature-not-available"), featureDescription)),
-                    r.getFrame().getTitle(), ERROR_MESSAGE);
+            showError(r.getFrame(), new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("feature-not-available"), featureDescription)),
+                    r.getFrame().getTitle());
             return false;
         }
         return true;
@@ -601,7 +603,7 @@ public class ConvertPanel implements PanelInTab {
 
     public boolean confirmDiscard() {
         if (formatAndRoutesModel.isModified()) {
-            int confirm = showConfirmDialog(RouteConverter.getInstance().getFrame(),
+            int confirm = showConfirm(RouteConverter.getInstance().getFrame(),
                     RouteConverter.getBundle().getString("confirm-discard"),
                     urlModel.getShortUrl(), YES_NO_CANCEL_OPTION);
             switch (confirm) {
@@ -618,7 +620,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     boolean confirmOverwrite(String file) {
-        int confirm = showConfirmDialog(RouteConverter.getInstance().getFrame(),
+        int confirm = showConfirm(RouteConverter.getInstance().getFrame(),
                 MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-overwrite"), file),
                 RouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
         return confirm != YES_OPTION;

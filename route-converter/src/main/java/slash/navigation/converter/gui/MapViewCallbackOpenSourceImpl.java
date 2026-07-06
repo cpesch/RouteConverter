@@ -32,11 +32,10 @@ import java.util.ResourceBundle;
 import java.util.logging.Logger;
 
 import static java.text.MessageFormat.format;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.navigation.gui.helpers.WindowHelper.getFrame;
 import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 
 /**
  * Implements the callbacks from the MapsforgeMapView to the RouteConverterOpenSource services.
@@ -66,14 +65,14 @@ public class MapViewCallbackOpenSourceImpl extends MapViewCallbackImpl implement
             StringWriter writer = new StringWriter();
             t.printStackTrace(new PrintWriter(writer));
             log.severe("Cannot route position list: " + getLocalizedMessage(t) + ", " + writer);
-            showMessageDialog(getFrame(), format(getBundle().getString("cannot-route-position-list"), t),
-                    getFrame().getTitle(), ERROR_MESSAGE);
+            showError(getFrame(), format(getBundle().getString("cannot-route-position-list"), t),
+                    getFrame().getTitle());
         }
     }
 
     public void showMapException(String mapName, Exception e) {
         log.severe("Cannot display map " + mapName + ": " + getLocalizedMessage(e));
-        showMessageDialog(getFrame(), format(getBundle().getString("cannot-display-map"), mapName, e),
-                getFrame().getTitle(), ERROR_MESSAGE);
+        showError(getFrame(), format(getBundle().getString("cannot-display-map"), mapName, e),
+                getFrame().getTitle());
     }
 }

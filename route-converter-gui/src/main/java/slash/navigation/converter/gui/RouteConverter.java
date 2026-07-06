@@ -85,6 +85,9 @@ import static java.util.Collections.singletonList;
 import static java.util.Locale.*;
 import static javax.help.CSH.setHelpIDString;
 import static javax.swing.JOptionPane.*;
+import static slash.navigation.gui.helpers.WindowHelper.showConfirm;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
+import static slash.navigation.gui.helpers.WindowHelper.showWarning;
 import static javax.swing.JSplitPane.DIVIDER_LOCATION_PROPERTY;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -248,7 +251,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     protected void checkJavaPrequisites() {
         String currentVersion = System.getProperty("java.version");
         if (!isJava17OrLater()) {
-            showMessageDialog(null, "Java " + currentVersion + " is too old. Please install Java 17 or later.", "RouteConverter", ERROR_MESSAGE);
+            showError(null, "Java " + currentVersion + " is too old. Please install Java 17 or later.", "RouteConverter");
             System.exit(8);
         }
     }
@@ -315,7 +318,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
         if (preferences.getBoolean(ASKED_SEND_CRASH_REPORTS_PREFERENCE, false))
             return;
         JLabel label = new JLabel(getBundle().getString("send-crash-reports-question"));
-        int result = showConfirmDialog(getFrame(), label, getTitle(), YES_NO_OPTION, QUESTION_MESSAGE);
+        int result = showConfirm(getFrame(), label, getTitle(), YES_NO_OPTION);
         preferences.putBoolean(SEND_CRASH_REPORTS_PREFERENCE, result == YES_OPTION);
         preferences.putBoolean(ASKED_SEND_CRASH_REPORTS_PREFERENCE, true);
     }
@@ -674,16 +677,15 @@ public abstract class RouteConverter extends SingleFrameApplication {
     // dialogs for external components
 
     public void handleBabelError(final BabelException e) {
-        invokeLater(() -> showMessageDialog(frame,
-                MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle(),
-                ERROR_MESSAGE));
+        invokeLater(() -> showError(frame,
+                MessageFormat.format(getBundle().getString("babel-error"), e.getBabelPath()), frame.getTitle()));
     }
 
     public void handleOpenError(final Throwable throwable, final String path) {
         invokeLater(() -> {
             log.severe("Open error from " + path + ": " + throwable + "\n" + printStackTrace(throwable));
-            showMessageDialog(frame, new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable))),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable))),
+                    frame.getTitle());
         });
     }
 
@@ -691,26 +693,24 @@ public abstract class RouteConverter extends SingleFrameApplication {
         invokeLater(() -> {
             String dialogUrls = asDialogString(urls);
             log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + printStackTrace(throwable));
-            showMessageDialog(frame, new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable))),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable))),
+                    frame.getTitle());
         });
     }
 
     public void handleUnsupportedFormat(final String path) {
         invokeLater(() -> {
             log.severe("Unsupported format: " + path);
-            showMessageDialog(frame,
-                    MessageFormat.format(getBundle().getString("unsupported-format"), shortenPath(path, 60)),
-                    frame.getTitle(), WARNING_MESSAGE);
+            showWarning(frame,
+                    MessageFormat.format(getBundle().getString("unsupported-format"), shortenPath(path, 60)));
         });
     }
 
     public void handleFileNotFound(final String path) {
         invokeLater(() -> {
             log.severe("File not found: " + path);
-            showMessageDialog(frame,
-                    MessageFormat.format(getBundle().getString("file-not-found"), shortenPath(path, 60)),
-                    frame.getTitle(), WARNING_MESSAGE);
+            showWarning(frame,
+                    MessageFormat.format(getBundle().getString("file-not-found"), shortenPath(path, 60)));
         });
     }
 

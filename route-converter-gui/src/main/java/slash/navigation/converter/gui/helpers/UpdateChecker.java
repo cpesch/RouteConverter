@@ -39,6 +39,7 @@ import java.util.logging.Logger;
 import static java.lang.System.currentTimeMillis;
 import static java.text.MessageFormat.format;
 import static javax.swing.JOptionPane.*;
+import static slash.navigation.gui.helpers.WindowHelper.showInformation;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
@@ -158,7 +159,7 @@ public class UpdateChecker {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.add(new JLabel("<html>" + message.replace("\n", "<br>") + "</html>"), BorderLayout.NORTH);
         panel.add(createLink(url, () -> startBrowser(window, url)), BorderLayout.SOUTH);
-        showMessageDialog(window, panel, RouteConverter.getTitle(), INFORMATION_MESSAGE);
+        showInformation(window, panel, RouteConverter.getTitle());
     }
 
     private void offerRouteConverterUpdate(Window window, UpdateResult result) {
@@ -183,16 +184,16 @@ public class UpdateChecker {
         skipVersion.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(skipVersion);
 
-        showMessageDialog(window, panel, RouteConverter.getTitle(), INFORMATION_MESSAGE);
+        showInformation(window, panel, RouteConverter.getTitle());
 
         if (skipVersion.isSelected())
             setSkippedVersion(latestVersion);
     }
 
     private void noUpdateAvailable(Window window) {
-        showMessageDialog(window, format(RouteConverter.getBundle().getString("no-update-available"),
+        showInformation(window, format(RouteConverter.getBundle().getString("no-update-available"),
                 RouteConverter.getInstance().getEdition()),
-                RouteConverter.getTitle(), INFORMATION_MESSAGE);
+                RouteConverter.getTitle());
     }
 
     private void offerJavaUpdate(Window window, UpdateResult result) {

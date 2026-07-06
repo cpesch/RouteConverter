@@ -55,12 +55,11 @@ import static java.lang.System.getProperty;
 import static slash.common.io.Transfer.formatSize;
 import static slash.common.io.Transfer.formatTime;
 import static java.nio.file.Files.isDirectory;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.INFORMATION_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION;
 import static javax.swing.SortOrder.ASCENDING;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
+import static slash.navigation.gui.helpers.WindowHelper.showInformation;
 
 /**
  * Desktop UI for snapshot-based mirroring jobs.
@@ -210,7 +209,7 @@ public class CatalogMirrorFrame {
             labelSummary.setText("Could not load data: " + e.getMessage());
             textAreaDetails.setText("");
             appendLog("ERROR: " + e.getMessage());
-            showMessageDialog(frame, e.getMessage(), "Load failed", ERROR_MESSAGE);
+            showError(frame, e.getMessage(), "Load failed");
         }
     }
 
@@ -225,7 +224,7 @@ public class CatalogMirrorFrame {
 
         int[] selectedRows = tableJobs.getSelectedRows();
         if (selectedRows.length == 0) {
-            showMessageDialog(frame, "Please select at least one mirror job.", "No selection", INFORMATION_MESSAGE);
+            showInformation(frame, "Please select at least one mirror job.", "No selection");
             return;
         }
 
@@ -253,7 +252,7 @@ public class CatalogMirrorFrame {
             if (!Files.exists(mirrorDirectory))
                 Files.createDirectories(mirrorDirectory);
         } catch (IOException e) {
-            showMessageDialog(frame, e.getMessage(), "Invalid mirror directory", ERROR_MESSAGE);
+            showError(frame, e.getMessage(), "Invalid mirror directory");
             return;
         }
 

@@ -39,13 +39,12 @@ import static java.lang.String.format;
 import static java.util.logging.Logger.getLogger;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.InputOutput.copyAndClose;
 import static slash.navigation.base.WaypointType.Voice;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractFile;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 
 /**
  * {@link Action} that adds audio to a {@link WaypointType#Voice} waypoint.
@@ -108,9 +107,9 @@ public class AddAudioAction extends FrameAction {
             }
             catch (IOException e) {
                 log.severe(format("Could copy audio %s to %s: %s", selected, nextToTrack, e));
-                showMessageDialog(r.getFrame(),
+                showError(r.getFrame(),
                         MessageFormat.format(RouteConverter.getBundle().getString("add-audio-error"), getLocalizedMessage(e)),
-                        r.getFrame().getTitle(), ERROR_MESSAGE);
+                        r.getFrame().getTitle());
 
             }
         }

@@ -119,6 +119,12 @@ public class WindowHelper {
         return result != null ? result.toString() : null;
     }
 
+    /** Free-text input pre-filled with {@code initialValue}. */
+    public static String showInput(Window owner, Object message, String title, Object initialValue) {
+        Object result = showInputDialog(owner, boundMessage(message), title, QUESTION_MESSAGE, null, null, initialValue);
+        return result != null ? result.toString() : null;
+    }
+
     // --- content bounding ----------------------------------------------------
 
     /**
