@@ -476,7 +476,12 @@ public class Files {
         delete(path);
     }
 
-    public static <T> String asDialogString(List<T> list, boolean shorten) {
+    /**
+     * Joins a list into a human-readable, English, uncapped string for log
+     * output, e.g. {@code 'a',\n'b' and\n'c'}. For user-facing dialog text use
+     * the localized, capped formatter in the GUI layer instead.
+     */
+    public static <T> String asLogString(List<T> list) {
         if (list == null)
             return "null";
         if (list.isEmpty())
@@ -489,10 +494,7 @@ public class Files {
                     buffer.append(" and\n");
                 else
                     buffer.append(",\n");
-            String string = list.get(i).toString();
-            if(shorten)
-                string = shortenPath(string, 60);
-            buffer.append("'").append(string).append("'");
+            buffer.append("'").append(list.get(i).toString()).append("'");
         }
         return buffer.toString();
     }

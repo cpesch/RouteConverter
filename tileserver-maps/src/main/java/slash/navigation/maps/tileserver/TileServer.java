@@ -23,7 +23,7 @@ import slash.navigation.maps.item.Item;
 
 import java.util.List;
 
-import static slash.common.io.Files.asDialogString;
+import static slash.common.io.Files.asLogString;
 
 /**
  * Description of a tile server that serves an online map.
@@ -35,6 +35,6 @@ public record TileServer(String id, String description, String urlPattern, List<
                          int minZoom, int maxZoom, String copyright, String copyrightText) implements Item {
 
     public String getUrl() {
-        return asDialogString(hosts(), false);
+        return asLogString(hosts());
     }
 }

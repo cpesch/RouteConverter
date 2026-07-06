@@ -287,7 +287,7 @@ public class MapsforgeMapManager {
 
         long end = currentTimeMillis();
         log.info(format("Collected %d map files %s from %s in %d milliseconds",
-                mapFiles.size(), asDialogString(mapFiles, false), mapsDirectory, (end - start)));
+                mapFiles.size(), asLogString(mapFiles), mapsDirectory, (end - start)));
     }
 
     public synchronized void scanThemes() throws IOException {
@@ -311,7 +311,7 @@ public class MapsforgeMapManager {
 
         long end = currentTimeMillis();
         log.info(format("Collected %d theme files %s from %s in %d milliseconds",
-                themeFiles.size(), asDialogString(themeFiles,false), themesDirectory, (end - start)));
+                themeFiles.size(), asLogString(themeFiles), themesDirectory, (end - start)));
     }
 
     public void scanDataSources() {

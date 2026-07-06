@@ -30,8 +30,7 @@ import javax.swing.*;
 import java.util.List;
 
 import static java.text.MessageFormat.format;
-import static javax.swing.JOptionPane.QUESTION_MESSAGE;
-import static javax.swing.JOptionPane.showInputDialog;
+import static slash.navigation.gui.helpers.WindowHelper.showInput;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helpers.RouteHelper.formatName;
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.getSelectedRouteModels;
@@ -59,9 +58,9 @@ public class RenameRoutesAction extends FrameAction {
             return;
 
         for (final RouteModel route : routes) {
-            String name = (String) showInputDialog(WindowHelper.getFrame(),
+            String name = showInput(WindowHelper.getFrame(),
                     format(getBundle().getString("rename-route-label"), formatName(route)),
-                    WindowHelper.getFrame().getTitle(), QUESTION_MESSAGE, null, null, route.getDescription());
+                    WindowHelper.getFrame().getTitle(), route.getDescription());
             if (trim(name) == null)
                 return;
 

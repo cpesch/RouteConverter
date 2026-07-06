@@ -7,13 +7,14 @@ Active specs (`proposed`/`planned`/`in-flight`) live in `specs/`; done ones
 (`shipped`/`live`/`retired`) in `specs/done/`. When a spec's status crosses
 that line, `git mv` it to match and rerun this script.
 
-## Active (3) — planned / proposed / in-flight
+## Active (4) — planned / proposed / in-flight
 
 | Spec | Status | Phases done | Phases next | Last touched |
 |------|--------|-------------|-------------|--------------|
 | [00010-migrate-java-17-to-25](./00010-migrate-java-17-to-25.md) | `in-flight` | — | — | 2026-06-13 |
 | [00013-waypoint-icons-from-style](./00013-waypoint-icons-from-style.md) | `proposed` | — | — | 2026-07-03 |
 | [00014-poi-category-overlay](./00014-poi-category-overlay.md) | `proposed` | — | — | 2026-07-03 |
+| [00016-dialog-sizing-and-message-bounding](./00016-dialog-sizing-and-message-bounding.md) | `in-flight` | grill-plan, p1-windowbounds, p2-list-formatter, p3-windowhelper-wrappers, p4-joptionpane-migration | manual-ui-verification | 2026-07-06 |
 
 ## Done (10) — shipped / live / retired (`specs/done/`)
 

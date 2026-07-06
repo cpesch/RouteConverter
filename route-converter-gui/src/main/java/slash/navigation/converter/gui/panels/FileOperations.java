@@ -45,14 +45,14 @@ import java.util.prefs.Preferences;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static javax.swing.SwingUtilities.invokeAndWait;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Files.*;
+import static slash.navigation.gui.helpers.DialogStrings.asDialogString;
 import static slash.navigation.base.NavigationFormatConverter.convertRoute;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
@@ -256,9 +256,9 @@ class FileOperations {
             if (source == null)
                 source = route.getName();
 
-            showMessageDialog(r.getFrame(),
+            showError(r.getFrame(),
                     MessageFormat.format(RouteConverter.getBundle().getString("save-error"), source, targetsAsString, getLocalizedMessage(t)),
-                    r.getFrame().getTitle(), ERROR_MESSAGE);
+                    r.getFrame().getTitle());
         } finally {
             stopWaitCursor(r.getFrame().getRootPane());
         }

@@ -41,14 +41,13 @@ import java.util.ResourceBundle;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static java.text.MessageFormat.format;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Files.createReadablePath;
 import static slash.common.io.Transfer.formatDoubleAsString;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.common.UnitConversion.METERS_OF_A_KILOMETER;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 
 /**
  * Dialog to add a {@link File} to a catalog
@@ -119,8 +118,8 @@ public class AddFileDialog extends SimpleDialog {
 
         String description = textFieldDescription.getText();
         if (trim(description) == null) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("add-route-no-description-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("add-route-no-description-error")),
+                    frame.getTitle());
             return;
         }
 

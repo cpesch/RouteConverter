@@ -71,11 +71,11 @@ public class FilesExtensionTest {
     }
 
     @Test
-    public void asDialogStringHandlesNullEmptyAndJoins() {
-        assertEquals("null", asDialogString(null, false));
-        assertEquals("none", asDialogString(emptyList(), false));
-        assertEquals("'a'", asDialogString(asList("a"), false));
-        assertEquals("'a' and\n'b'", asDialogString(asList("a", "b"), false));
-        assertEquals("'a',\n'b' and\n'c'", asDialogString(asList("a", "b", "c"), false));
+    public void asLogStringHandlesNullEmptyAndJoins() {
+        assertEquals("null", asLogString(null));
+        assertEquals("none", asLogString(emptyList()));
+        assertEquals("'a'", asLogString(asList("a")));
+        assertEquals("'a' and\n'b'", asLogString(asList("a", "b")));
+        assertEquals("'a',\n'b' and\n'c'", asLogString(asList("a", "b", "c")));
     }
 }

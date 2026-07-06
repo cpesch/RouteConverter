@@ -31,8 +31,7 @@ import static java.awt.Desktop.getDesktop;
 import static java.awt.Desktop.isDesktopSupported;
 import static java.util.Locale.GERMAN;
 import static java.util.Locale.getDefault;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 
 /**
@@ -115,9 +114,9 @@ public class ExternalPrograms {
         } catch (Exception e) {
             log.severe("Start browser error: " + e);
 
-            showMessageDialog(window,
+            showError(window,
                     MessageFormat.format(RouteConverter.getBundle().getString("start-browser-error"), getLocalizedMessage(e)),
-                    RouteConverter.getTitle(), ERROR_MESSAGE);
+                    RouteConverter.getTitle());
         }
     }
 
@@ -130,9 +129,9 @@ public class ExternalPrograms {
         } catch (Exception e) {
             log.severe("Start mail error: " + e);
 
-            showMessageDialog(window,
+            showError(window,
                     MessageFormat.format(RouteConverter.getBundle().getString("start-mail-error"), getLocalizedMessage(e)),
-                    RouteConverter.getTitle(), ERROR_MESSAGE);
+                    RouteConverter.getTitle());
         }
     }
 }

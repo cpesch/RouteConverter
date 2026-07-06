@@ -1,0 +1,10 @@
+# Much of RouteConverter is Swing GUI (dialogs, actions, frame wiring) that
+# cannot be exercised headless in CI, so patch (diff) coverage on GUI-heavy
+# changes is unavoidably low even when all testable logic is covered.
+# Report patch coverage for information, but never fail a PR on it; project
+# coverage stays the meaningful (non-required) signal.
+coverage:
+  status:
+    patch:
+      default:
+        informational: true
