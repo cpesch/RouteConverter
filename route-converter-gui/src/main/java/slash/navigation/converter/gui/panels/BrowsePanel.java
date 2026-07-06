@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.*;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.AddFileDialog;
 import slash.navigation.converter.gui.dialogs.AddUrlDialog;
@@ -149,7 +149,7 @@ public class BrowsePanel implements PanelInTab {
     }
 
     private void initialize() {
-        final RouteConverter r = RouteConverter.getInstance();
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         Catalog localCatalog = new LocalCatalog(System.getProperty("root", createRootFolder()));
         CategoryTreeNode localRoot = new CategoryTreeNodeImpl(localCatalog.getRootCategory(), true, false);
@@ -235,7 +235,7 @@ public class BrowsePanel implements PanelInTab {
         treeCategories.getSelectionModel().setSelectionMode(CONTIGUOUS_TREE_SELECTION);
     }
 
-    private RouteMetadataSource initializeMetadataSources(RouteConverter r) {
+    private RouteMetadataSource initializeMetadataSources(BaseRouteConverter r) {
         routeDistanceAndTimeCache = new RouteDistanceAndTimeCache();
         serverRouteDistanceAndTimeCache = new RouteDistanceAndTimeCache();
         // value sources in priority order (spec 00012 P3): the session cache wins since
@@ -341,7 +341,7 @@ public class BrowsePanel implements PanelInTab {
     }
 
     private void selectTreePath(TreePath treePath, boolean selectCategoryTreePath) {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         startWaitCursor(r.getFrame().getRootPane());
         try {
             Object selectedObject = treePath.getLastPathComponent();
@@ -350,7 +350,7 @@ public class BrowsePanel implements PanelInTab {
             if (selectCategoryTreePath)
                 selectCategoryTreePath(treeCategories, treePath);
             catalogModel.setCurrentCategory(selectedCategoryTreeNode);
-            RouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
+            BaseRouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
         } finally {
             stopWaitCursor(r.getFrame().getRootPane());
         }
@@ -373,7 +373,7 @@ public class BrowsePanel implements PanelInTab {
             return;
         }
         distanceAndTimeUpdater.routeOpened(urlString, createReadablePath(url));
-        RouteConverter.getInstance().openPositionList(singletonList(url), false);
+        BaseRouteConverter.getInstance().openPositionList(singletonList(url), false);
     }
 
     private void updateRouteRow(String url) {
@@ -440,7 +440,7 @@ public class BrowsePanel implements PanelInTab {
     }
 
     private RouteServiceOperator getOperator() {
-        return RouteConverter.getInstance().getRouteServiceOperator();
+        return BaseRouteConverter.getInstance().getRouteServiceOperator();
     }
 
 
@@ -450,7 +450,7 @@ public class BrowsePanel implements PanelInTab {
     }
 
     private void addFileToCatalog(CategoryTreeNode categoryTreeNode, File file) {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         String path = createReadablePath(file);
         String description = null;
         Double length = null;
@@ -480,7 +480,7 @@ public class BrowsePanel implements PanelInTab {
 
     private void addFilesToCatalog(CategoryTreeNode category, List<File> files) {
         if (category == null || category.getParent() == null) {
-            RouteConverter r = RouteConverter.getInstance();
+            BaseRouteConverter r = BaseRouteConverter.getInstance();
             showError(r.getFrame(),
                     r.getContext().getBundle().getString("add-file-category-missing"),
                     r.getFrame().getTitle());
@@ -503,7 +503,7 @@ public class BrowsePanel implements PanelInTab {
 
     private void addUrlToCatalog(CategoryTreeNode category, String url) {
         if (category == null || category.getParent() == null) {
-            RouteConverter r = RouteConverter.getInstance();
+            BaseRouteConverter r = BaseRouteConverter.getInstance();
             showError(r.getFrame(),
                     r.getContext().getBundle().getString("add-url-category-missing"),
                     r.getFrame().getTitle());

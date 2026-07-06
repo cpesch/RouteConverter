@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.models.DoubleDocument;
 import slash.navigation.converter.gui.models.IntegerDocument;
 import slash.navigation.converter.gui.models.PositionsModel;
@@ -77,11 +77,11 @@ public class DeletePositionsDialog extends SimpleDialog {
     private final DoubleDocument threshold;
 
     public DeletePositionsDialog() {
-        super(RouteConverter.getInstance().getFrame(), "delete-positions");
-        setTitle(RouteConverter.getBundle().getString("delete-positions-title"));
+        super(BaseRouteConverter.getInstance().getFrame(), "delete-positions");
+        setTitle(BaseRouteConverter.getBundle().getString("delete-positions-title"));
         setContentPane(contentPane);
 
-        final RouteConverter r = RouteConverter.getInstance();
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         labelDouglasPeucker.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent me) {
@@ -166,8 +166,8 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void handlePositionsUpdate() {
-        int selectedRowCount = RouteConverter.getInstance().getConvertPanel().getPositionsView().getSelectedRowCount();
-        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedRowCount));
+        int selectedRowCount = BaseRouteConverter.getInstance().getConvertPanel().getPositionsView().getSelectedRowCount();
+        labelSelection.setText(MessageFormat.format(BaseRouteConverter.getBundle().getString("selected-positions"), selectedRowCount));
 
         boolean existsSelectedPosition = selectedRowCount > 0;
         buttonDeletePositions.setEnabled(existsSelectedPosition);
@@ -177,8 +177,8 @@ public class DeletePositionsDialog extends SimpleDialog {
     private void selectByDistance() {
         double distance = this.distance.getDouble();
         if (distance >= 0) {
-            int selectedRowCount = RouteConverter.getInstance().selectPositionsWithinDistanceToPredecessor(distance);
-            labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-distance-result"), selectedRowCount, distance));
+            int selectedRowCount = BaseRouteConverter.getInstance().selectPositionsWithinDistanceToPredecessor(distance);
+            labelSelection.setText(MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-distance-result"), selectedRowCount, distance));
             savePreferences();
         }
     }
@@ -186,8 +186,8 @@ public class DeletePositionsDialog extends SimpleDialog {
     private void selectByOrder() {
         int order = this.order.getInt();
         if (order >= 0) {
-            int[] selectedRowCount = RouteConverter.getInstance().selectAllButEveryNthPosition(order);
-            labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-order-result"), selectedRowCount[0], selectedRowCount[1]));
+            int[] selectedRowCount = BaseRouteConverter.getInstance().selectAllButEveryNthPosition(order);
+            labelSelection.setText(MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-order-result"), selectedRowCount[0], selectedRowCount[1]));
             savePreferences();
         }
     }
@@ -195,14 +195,14 @@ public class DeletePositionsDialog extends SimpleDialog {
     private void selectBySignificance() {
         double threshold = this.threshold.getDouble();
         if (threshold >= 0) {
-            int selectedRowCount = RouteConverter.getInstance().selectInsignificantPositions(threshold);
-            labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("delete-select-by-significance-result"), selectedRowCount, threshold));
+            int selectedRowCount = BaseRouteConverter.getInstance().selectInsignificantPositions(threshold);
+            labelSelection.setText(MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-significance-result"), selectedRowCount, threshold));
             savePreferences();
         }
     }
 
     private void clearSelection() {
-        RouteConverter.getInstance().clearSelection();
+        BaseRouteConverter.getInstance().clearSelection();
         handlePositionsUpdate();
     }
 
@@ -212,7 +212,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void savePreferences() {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         r.setSelectByDistancePreference(distance.getDouble());
         r.setSelectByOrderPreference(order.getInt());
         r.setSelectBySignificancePreference(threshold.getDouble());

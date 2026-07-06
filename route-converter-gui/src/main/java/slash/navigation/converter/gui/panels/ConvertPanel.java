@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -26,7 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.CompleteFlightPlanDialog;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
@@ -166,7 +166,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private void initialize() {
-        final RouteConverter r = RouteConverter.getInstance();
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         recentFormatsModel = new RecentFormatsModel(getNavigationFormatRegistry());
 
@@ -216,8 +216,8 @@ public class ConvertPanel implements PanelInTab {
         urlModel.addDocumentListener(new AbstractDocumentListener() {
             public void process(DocumentEvent e) {
                 String url = urlModel.getShortUrl();
-                String title = (url != null ? url + " - " : "") + RouteConverter.getTitle();
-                RouteConverter.getInstance().getFrame().setTitle(title);
+                String title = (url != null ? url + " - " : "") + BaseRouteConverter.getTitle();
+                BaseRouteConverter.getInstance().getFrame().setTitle(title);
             }
         });
         r.getUnitSystemModel().addChangeListener(e -> positionsModel.fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS));
@@ -401,7 +401,7 @@ public class ConvertPanel implements PanelInTab {
 
     void prepareForNewPositionList() {
         Application.getInstance().getContext().getUndoManager().discardAllEdits();
-        RouteConverter.getInstance().getPositionAugmenter().interrupt();
+        BaseRouteConverter.getInstance().getPositionAugmenter().interrupt();
     }
 
     public Component getRootComponent() {
@@ -454,9 +454,9 @@ public class ConvertPanel implements PanelInTab {
         if (!confirmDiscard())
             return;
 
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("open-file-dialog-title"));
+        chooser.setDialogTitle(BaseRouteConverter.getBundle().getString("open-file-dialog-title"));
         setReadFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedSource());
         chooser.setFileSelectionMode(FILES_ONLY);
@@ -496,12 +496,12 @@ public class ConvertPanel implements PanelInTab {
         int selectedRow = getPositionsView().getSelectedRow() + 1;
 
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("import-file-dialog-title"));
+        chooser.setDialogTitle(BaseRouteConverter.getBundle().getString("import-file-dialog-title"));
         setReadFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedSource());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(true);
-        int open = chooser.showOpenDialog(RouteConverter.getInstance().getFrame());
+        int open = chooser.showOpenDialog(BaseRouteConverter.getInstance().getFrame());
         if (open != APPROVE_OPTION)
             return;
 
@@ -517,12 +517,12 @@ public class ConvertPanel implements PanelInTab {
 
     public void exportPositionList() {
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("export-file-dialog-title"));
+        chooser.setDialogTitle(BaseRouteConverter.getBundle().getString("export-file-dialog-title"));
         setWriteFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedTarget());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
-        int save = chooser.showSaveDialog(RouteConverter.getInstance().getFrame());
+        int save = chooser.showSaveDialog(BaseRouteConverter.getInstance().getFrame());
         if (save != APPROVE_OPTION)
             return;
 
@@ -550,8 +550,8 @@ public class ConvertPanel implements PanelInTab {
 
     private static boolean checkForFeature(String featureName, String featureDescription) {
         if (!hasFeature(featureName)) {
-            final RouteConverter r = RouteConverter.getInstance();
-            showError(r.getFrame(), new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("feature-not-available"), featureDescription)),
+            final BaseRouteConverter r = BaseRouteConverter.getInstance();
+            showError(r.getFrame(), new JLabel(MessageFormat.format(BaseRouteConverter.getBundle().getString("feature-not-available"), featureDescription)),
                     r.getFrame().getTitle());
             return false;
         }
@@ -572,12 +572,12 @@ public class ConvertPanel implements PanelInTab {
 
     public void saveAsFile() {
         JFileChooser chooser = createJFileChooser();
-        chooser.setDialogTitle(RouteConverter.getBundle().getString("save-file-dialog-title"));
+        chooser.setDialogTitle(BaseRouteConverter.getBundle().getString("save-file-dialog-title"));
         setWriteFormatFileFilters(chooser);
         chooser.setSelectedFile(createSelectedTarget());
         chooser.setFileSelectionMode(FILES_ONLY);
         chooser.setMultiSelectionEnabled(false);
-        int save = chooser.showSaveDialog(RouteConverter.getInstance().getFrame());
+        int save = chooser.showSaveDialog(BaseRouteConverter.getInstance().getFrame());
         if (save != APPROVE_OPTION)
             return;
 
@@ -603,8 +603,8 @@ public class ConvertPanel implements PanelInTab {
 
     public boolean confirmDiscard() {
         if (formatAndRoutesModel.isModified()) {
-            int confirm = showConfirm(RouteConverter.getInstance().getFrame(),
-                    RouteConverter.getBundle().getString("confirm-discard"),
+            int confirm = showConfirm(BaseRouteConverter.getInstance().getFrame(),
+                    BaseRouteConverter.getBundle().getString("confirm-discard"),
                     urlModel.getShortUrl(), YES_NO_CANCEL_OPTION);
             switch (confirm) {
                 case YES_OPTION:
@@ -620,9 +620,9 @@ public class ConvertPanel implements PanelInTab {
     }
 
     boolean confirmOverwrite(String file) {
-        int confirm = showConfirm(RouteConverter.getInstance().getFrame(),
-                MessageFormat.format(RouteConverter.getBundle().getString("save-confirm-overwrite"), file),
-                RouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
+        int confirm = showConfirm(BaseRouteConverter.getInstance().getFrame(),
+                MessageFormat.format(BaseRouteConverter.getBundle().getString("save-confirm-overwrite"), file),
+                BaseRouteConverter.getInstance().getFrame().getTitle(), YES_NO_OPTION);
         return confirm != YES_OPTION;
     }
 
@@ -646,7 +646,7 @@ public class ConvertPanel implements PanelInTab {
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
         boolean existsAPosition = positionsModel.getRowCount() > 0;
         boolean existsMoreThanOnePosition = positionsModel.getRowCount() > 1;
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         ActionManager actionManager = r.getContext().getActionManager();
 
         // depending on the existence of routes
@@ -682,7 +682,7 @@ public class ConvertPanel implements PanelInTab {
         boolean allPositionsSelected = selectedRows.length == tablePositions.getRowCount();
         boolean firstRowNotSelected = existsASelectedPosition && selectedRows[0] != 0;
         boolean lastRowNotSelected = existsASelectedPosition && selectedRows[selectedRows.length - 1] != tablePositions.getRowCount() - 1;
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         ActionManager actionManager = r.getContext().getActionManager();
 
         // depending on selections
@@ -771,7 +771,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     NavigationFormatRegistry getNavigationFormatRegistry() {
-        return RouteConverter.getInstance().getNavigationFormatRegistry();
+        return BaseRouteConverter.getInstance().getNavigationFormatRegistry();
     }
 
     private void setReadFormatFileFilters(JFileChooser chooser) {

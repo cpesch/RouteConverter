@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.io.Files;
 import slash.common.log.LoggingHelper;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.helpers.AbstractDocumentListener;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
@@ -76,9 +76,9 @@ public class SendErrorReportDialog extends SimpleDialog {
      * report; without a report it copies the log area content.
      */
     public SendErrorReportDialog(String diagnosticReport) {
-        super(RouteConverter.getInstance().getFrame(), "send-error-report");
+        super(BaseRouteConverter.getInstance().getFrame(), "send-error-report");
         this.diagnosticReport = diagnosticReport;
-        setTitle(RouteConverter.getBundle().getString("send-error-report-title"));
+        setTitle(BaseRouteConverter.getBundle().getString("send-error-report-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonSend);
@@ -133,7 +133,7 @@ public class SendErrorReportDialog extends SimpleDialog {
     }
 
     private void chooseFilePath() {
-        File selected = chooseFile(RouteConverter.getInstance().getFrame(), RouteConverter.getBundle().getString("choose-file-path"), null);
+        File selected = chooseFile(BaseRouteConverter.getInstance().getFrame(), BaseRouteConverter.getBundle().getString("choose-file-path"), null);
         if (selected != null)
             textFieldFilePath.setText(selected.getAbsolutePath());
     }
@@ -150,7 +150,7 @@ public class SendErrorReportDialog extends SimpleDialog {
         String log = textAreaLog.getText();
         String description = textAreaDescription.getText();
         File file = Files.findExistingPath(new File(textFieldFilePath.getText()));
-        RouteConverter.getInstance().sendErrorReport(log, description, file);
+        BaseRouteConverter.getInstance().sendErrorReport(log, description, file);
         sent = true;
         dispose();
     }

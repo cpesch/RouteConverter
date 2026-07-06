@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -26,7 +26,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.helpers.PositionHelper;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
@@ -46,7 +46,7 @@ import static slash.navigation.converter.gui.models.PositionColumns.*;
 
 /**
  * Shared implementation from {@link ConvertPanel} and {@link PhotoPanel} for callbacks
- * from the {@link PositionsModel} to other RouteConverter services.
+ * from the {@link PositionsModel} to other BaseRouteConverter services.
  *
  * @author Christian Pesch
  */
@@ -290,21 +290,21 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
     }
 
     private List<DegreeFormat> getDegreeFormats() {
-        DegreeFormat preferred = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
+        DegreeFormat preferred = BaseRouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
         return DegreeFormat.getDegreeFormatsWithPreferredDegreeFormat(preferred);
     }
 
     private List<UnitSystem> getUnitSystems() {
-        UnitSystem preferred = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        UnitSystem preferred = BaseRouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
         return UnitSystem.getUnitSystemsWithPreferredUnitSystem(preferred);
     }
 
     private void handleDateTimeParseException(String stringValue, String messageBundleKey, DateTimeParserFormatter format) {
-        RouteConverter instance = RouteConverter.getInstance();
+        BaseRouteConverter instance = BaseRouteConverter.getInstance();
         if (instance != null) {
             showError(instance.getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString(messageBundleKey),
-                            stringValue, format.getPatternInfo()), RouteConverter.getTitle());
+                    MessageFormat.format(BaseRouteConverter.getBundle().getString(messageBundleKey),
+                            stringValue, format.getPatternInfo()), BaseRouteConverter.getTitle());
         }
 
         // Occurs during unittests ...

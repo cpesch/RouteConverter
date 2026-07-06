@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.system.Version;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.feedback.domain.RouteFeedback;
 
 import com.sun.management.OperatingSystemMXBean;
@@ -45,7 +45,7 @@ import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializeFeatures;
 import static slash.feature.client.Feature.initializePreferences;
-import static slash.navigation.converter.gui.RouteConverter.getPreferences;
+import static slash.navigation.converter.gui.BaseRouteConverter.getPreferences;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowser;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForRouteConverterForum;
 
@@ -118,7 +118,7 @@ public class UpdateChecker {
         UpdateResult result = new UpdateResult(myRouteConverterVersion, myJavaVersion);
         try {
             String parameters = routeFeedback.checkForUpdate(myRouteConverterVersion,
-                    RouteConverter.getInstance().getEditionId(),
+                    BaseRouteConverter.getInstance().getEditionId(),
                     getStartCount(),
                     myJavaVersion,
                     System.getProperty("sun.arch.data.model"),
@@ -159,15 +159,15 @@ public class UpdateChecker {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.add(new JLabel("<html>" + message.replace("\n", "<br>") + "</html>"), BorderLayout.NORTH);
         panel.add(createLink(url, () -> startBrowser(window, url)), BorderLayout.SOUTH);
-        showInformation(window, panel, RouteConverter.getTitle());
+        showInformation(window, panel, BaseRouteConverter.getTitle());
     }
 
     private void offerRouteConverterUpdate(Window window, UpdateResult result) {
         String latestVersion = result.getLatestRouteConverterVersion();
         String downloadUrl = routeFeedback.getUpdateCheckUrl(result.getMyRouteConverterVersion(), getStartTime());
-        String message = format(RouteConverter.getBundle().getString("confirm-routeconverter-update"),
+        String message = format(BaseRouteConverter.getBundle().getString("confirm-routeconverter-update"),
                 result.getMyRouteConverterVersion(),
-                RouteConverter.getInstance().getEdition(),
+                BaseRouteConverter.getInstance().getEdition(),
                 latestVersion);
 
         JPanel panel = new JPanel();
@@ -176,28 +176,28 @@ public class UpdateChecker {
         messageLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(messageLabel);
         panel.add(Box.createVerticalStrut(10));
-        panel.add(createLink(RouteConverter.getBundle().getString("update-whats-new"),
+        panel.add(createLink(BaseRouteConverter.getBundle().getString("update-whats-new"),
                 () -> startBrowserForRouteConverterForum(window)));
         panel.add(createLink(downloadUrl, () -> startBrowser(window, downloadUrl)));
         panel.add(Box.createVerticalStrut(10));
-        JCheckBox skipVersion = new JCheckBox(format(RouteConverter.getBundle().getString("update-skip-version"), latestVersion));
+        JCheckBox skipVersion = new JCheckBox(format(BaseRouteConverter.getBundle().getString("update-skip-version"), latestVersion));
         skipVersion.setAlignmentX(Component.LEFT_ALIGNMENT);
         panel.add(skipVersion);
 
-        showInformation(window, panel, RouteConverter.getTitle());
+        showInformation(window, panel, BaseRouteConverter.getTitle());
 
         if (skipVersion.isSelected())
             setSkippedVersion(latestVersion);
     }
 
     private void noUpdateAvailable(Window window) {
-        showInformation(window, format(RouteConverter.getBundle().getString("no-update-available"),
-                RouteConverter.getInstance().getEdition()),
-                RouteConverter.getTitle());
+        showInformation(window, format(BaseRouteConverter.getBundle().getString("no-update-available"),
+                BaseRouteConverter.getInstance().getEdition()),
+                BaseRouteConverter.getTitle());
     }
 
     private void offerJavaUpdate(Window window, UpdateResult result) {
-        String message = format(RouteConverter.getBundle().getString("confirm-java-update"),
+        String message = format(BaseRouteConverter.getBundle().getString("confirm-java-update"),
                 result.getMyJavaVersion(), result.getLatestJavaVersion());
         showUpdateMessage(window, message, "https://adoptium.net/de/temurin/releases?version=17");
     }

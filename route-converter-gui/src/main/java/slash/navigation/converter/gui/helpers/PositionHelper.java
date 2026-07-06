@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -29,7 +29,7 @@ import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 
 import java.io.File;
 import java.util.prefs.Preferences;
@@ -58,7 +58,7 @@ public class PositionHelper {
         // don't use isEmpty(distance) here since a 0.0 makes sense to display
         if (distance == null || distance <= 0.0)
             return "";
-        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        UnitSystem unitSystem = BaseRouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
 
         double shortDistanceInUnit = unitSystem.shortDistanceToUnit(distance);
         if (abs(shortDistanceInUnit) < maximumDistanceDisplayedInSmallUnit)
@@ -73,7 +73,7 @@ public class PositionHelper {
     public static String formatElevation(Double elevation) {
         if (elevation == null)
             return "";
-        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        UnitSystem unitSystem = BaseRouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
         double elevationInUnit = unitSystem.valueToUnit(elevation);
         return format("%s %s", roundFraction(elevationInUnit, 1), unitSystem.getElevationName());
     }
@@ -85,21 +85,21 @@ public class PositionHelper {
     public static String formatLongitude(Double longitude) {
         if (longitude == null)
             return "";
-        DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
+        DegreeFormat degreeFormat = BaseRouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
         return degreeFormat.longitudeToDegrees(longitude);
     }
 
     public static String formatLatitude(Double latitude) {
         if (latitude == null)
             return "";
-        DegreeFormat degreeFormat = RouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
+        DegreeFormat degreeFormat = BaseRouteConverter.getInstance().getUnitSystemModel().getDegreeFormat();
         return degreeFormat.latitudeToDegrees(latitude);
     }
 
     public static String formatSpeed(Double speed) {
         if (speed == null)
             return "";
-        UnitSystem unitSystem = RouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        UnitSystem unitSystem = BaseRouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
         double speedInUnit = unitSystem.distanceToUnit(speed) * METERS_OF_A_KILOMETER;
         if (abs(speedInUnit) < 10.0)
              return format("%s %s", roundFraction(speedInUnit, 1), unitSystem.getSpeedName());
@@ -147,7 +147,7 @@ public class PositionHelper {
     }
 
     public static String formatDate(CompactCalendar time) {
-        return formatDate(time, RouteConverter.getInstance().getTimeZone().getTimeZoneId());
+        return formatDate(time, BaseRouteConverter.getInstance().getTimeZone().getTimeZoneId());
     }
 
     public static File extractFile(NavigationPosition position) {

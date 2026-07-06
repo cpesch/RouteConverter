@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.RouteConverterOpenSource;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.renderer.ThemeStyleCategoryTableCellRenderer;
@@ -60,8 +60,8 @@ public class ThemeStyleDialog extends SimpleDialog {
     private JButton buttonClose;
 
     public ThemeStyleDialog() {
-        super(RouteConverter.getInstance().getFrame(), "style");
-        setTitle(RouteConverter.getBundle().getString("theme-style-title"));
+        super(BaseRouteConverter.getInstance().getFrame(), "style");
+        setTitle(BaseRouteConverter.getBundle().getString("theme-style-title"));
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
 
@@ -102,7 +102,7 @@ public class ThemeStyleDialog extends SimpleDialog {
     }
 
     private MapsforgeMapManager getMapsforgeMapManager() {
-        return ((RouteConverterOpenSource) RouteConverter.getInstance()).getMapsforgeMapManager();
+        return ((RouteConverterOpenSource) BaseRouteConverter.getInstance()).getMapsforgeMapManager();
     }
 
     private void close() {

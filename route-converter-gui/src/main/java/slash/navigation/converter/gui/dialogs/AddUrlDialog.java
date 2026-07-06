@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.SimpleDialog;
@@ -64,15 +64,15 @@ public class AddUrlDialog extends SimpleDialog {
 
     public AddUrlDialog(CatalogModel catalogModel, CategoryTreeNode category,
                         String description, String url) {
-        super(RouteConverter.getInstance().getFrame(), "add-url");
+        super(BaseRouteConverter.getInstance().getFrame(), "add-url");
         this.catalogModel = catalogModel;
         this.category = category;
-        setTitle(RouteConverter.getBundle().getString("add-url-title"));
+        setTitle(BaseRouteConverter.getBundle().getString("add-url-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonAdd);
 
-        labelLabel.setText(format(RouteConverter.getBundle().getString("add-url-label"), category.getName()));
+        labelLabel.setText(format(BaseRouteConverter.getBundle().getString("add-url-label"), category.getName()));
         textFieldDescription.setText(description);
         textFieldUrl.setText(url);
 
@@ -104,18 +104,18 @@ public class AddUrlDialog extends SimpleDialog {
     }
 
     private void addUrl() {
-        JFrame frame = RouteConverter.getInstance().getFrame();
+        JFrame frame = BaseRouteConverter.getInstance().getFrame();
 
         String url = textFieldUrl.getText();
         if (trim(url) == null) {
-            showError(frame, new JLabel(RouteConverter.getBundle().getString("add-route-no-url-error")),
+            showError(frame, new JLabel(BaseRouteConverter.getBundle().getString("add-route-no-url-error")),
                     frame.getTitle());
             return;
         }
 
         String description = textFieldDescription.getText();
         if (trim(description) == null) {
-            showError(frame, new JLabel(RouteConverter.getBundle().getString("add-route-no-description-error")),
+            showError(frame, new JLabel(BaseRouteConverter.getBundle().getString("add-route-no-description-error")),
                     frame.getTitle());
             return;
         }
@@ -123,7 +123,7 @@ public class AddUrlDialog extends SimpleDialog {
         catalogModel.addRoute(category, description, null, url, new AddRouteCallback());
 
         dispose();
-        RouteConverter.getInstance().getContext().getNotificationManager().showNotification(RouteConverter.getBundle().getString("add-route-by-url-success"), null);
+        BaseRouteConverter.getInstance().getContext().getNotificationManager().showNotification(BaseRouteConverter.getBundle().getString("add-route-by-url-success"), null);
     }
 
     private void cancel() {
