@@ -59,7 +59,9 @@ public class AboutRouteConverterDialog extends SimpleDialog {
     private JLabel labelAbout;
     private JLabel labelContact;
     private JLabel labelResources;
+    private JLabel labelUserNameCaption;
     private JLabel labelUserName;
+    private JLabel labelFeatureCaption;
     private JLabel labelFeature;
     private JButton buttonClose;
     private JLabel labelRouteConverterVersion;
@@ -67,13 +69,16 @@ public class AboutRouteConverterDialog extends SimpleDialog {
     private JLabel labelOperatingSystem;
     private JButton buttonCopySystemInfo;
     private JLabel labelReportProblem;
-    private JLabel labelCp;
+    private JLabel labelLogo;
 
     public AboutRouteConverterDialog() {
         super(RouteConverter.getInstance().getFrame(), "about");
         setTitle(RouteConverter.getBundle().getString("about-title"));
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
+
+        labelLogo.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/RouteConverter.png"))
+                .getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH)));
 
         final RouteConverter r = RouteConverter.getInstance();
 
@@ -83,13 +88,17 @@ public class AboutRouteConverterDialog extends SimpleDialog {
 
         String username = RouteConverter.getInstance().getUserNamePreference();
         if (username != null) {
-            labelUserName.setText(format(RouteConverter.getBundle().getString("logged-in-as"), username));
+            labelUserNameCaption.setText(captionOf("logged-in-as"));
+            labelUserName.setText(username);
+            labelUserNameCaption.setVisible(true);
             labelUserName.setVisible(true);
         }
 
         String featuredTo = getFeature("featured-to");
         if (featuredTo != null) {
-            labelFeature.setText(format(RouteConverter.getBundle().getString("featured-to"), maskEmailAddresses(featuredTo)));
+            labelFeatureCaption.setText(captionOf("featured-to"));
+            labelFeature.setText(maskEmailAddresses(featuredTo));
+            labelFeatureCaption.setVisible(true);
             labelFeature.setVisible(true);
         }
 
@@ -130,6 +139,16 @@ public class AboutRouteConverterDialog extends SimpleDialog {
 
     private void close() {
         dispose();
+    }
+
+    /**
+     * The caption part of a "Caption: {0}" bundle string, so the caption can sit in one
+     * column and its value in the next, aligned with the version/Java/OS rows.
+     */
+    private static String captionOf(String key) {
+        String pattern = RouteConverter.getBundle().getString(key);
+        int index = pattern.indexOf("{0}");
+        return (index != -1 ? pattern.substring(0, index) : pattern).trim();
     }
 
     /**
@@ -181,19 +200,18 @@ public class AboutRouteConverterDialog extends SimpleDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(1, 2, new Insets(10, 10, 10, 10), 20, -1));
+        labelLogo = new JLabel();
+        contentPane.add(labelLogo, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(8, 2, new Insets(0, 0, 0, 0), -1, -1));
-        contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        contentPane.add(panel1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         labelAbout = new JLabel();
         this.$$$loadLabelText$$$(labelAbout, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-routeconverter"));
         panel1.add(labelAbout, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelContact = new JLabel();
         this.$$$loadLabelText$$$(labelContact, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-routeconverter-contact"));
         panel1.add(labelContact, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelFeature = new JLabel();
-        labelFeature.setVisible(false);
-        panel1.add(labelFeature, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 2, new Insets(3, 0, 1, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(7, 0, 1, 2, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -205,29 +223,44 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         final JSeparator separator1 = new JSeparator();
         panel1.add(separator1, new GridConstraints(6, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.setLayout(new GridLayoutManager(6, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel3, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelUserNameCaption = new JLabel();
+        labelUserNameCaption.setVisible(false);
+        panel3.add(labelUserNameCaption, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelUserName = new JLabel();
+        labelUserName.setText("");
+        labelUserName.setVisible(false);
+        panel3.add(labelUserName, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelFeatureCaption = new JLabel();
+        labelFeatureCaption.setVisible(false);
+        panel3.add(labelFeatureCaption, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelFeature = new JLabel();
+        labelFeature.setVisible(false);
+        panel3.add(labelFeature, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
+        label1.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-routeconverter-version"));
-        panel3.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelRouteConverterVersion = new JLabel();
+        labelRouteConverterVersion.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         labelRouteConverterVersion.setText("?");
-        panel3.add(labelRouteConverterVersion, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(labelRouteConverterVersion, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-java-version"));
-        panel3.add(label2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelJavaVersion = new JLabel();
         labelJavaVersion.setText("?");
-        panel3.add(labelJavaVersion, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(labelJavaVersion, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         this.$$$loadLabelText$$$(label3, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-os-version"));
-        panel3.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(label3, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelOperatingSystem = new JLabel();
         labelOperatingSystem.setText("?");
-        panel3.add(labelOperatingSystem, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(labelOperatingSystem, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 3, new Insets(6, 0, 0, 0), -1, -1));
-        panel3.add(panel4, new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(panel4, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonCopySystemInfo = new JButton();
         this.$$$loadButtonText$$$(buttonCopySystemInfo, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-copy-system-info"));
         panel4.add(buttonCopySystemInfo, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -236,17 +269,9 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         panel4.add(labelReportProblem, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         panel4.add(spacer2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        labelUserName = new JLabel();
-        labelUserName.setText("");
-        labelUserName.setVisible(false);
-        panel1.add(labelUserName, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelResources = new JLabel();
         this.$$$loadLabelText$$$(labelResources, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-routeconverter-resources"));
         panel1.add(labelResources, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelCp = new JLabel();
-        labelCp.setIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/cp.png")));
-        labelCp.setOpaque(false);
-        panel1.add(labelCp, new GridConstraints(0, 1, 5, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;

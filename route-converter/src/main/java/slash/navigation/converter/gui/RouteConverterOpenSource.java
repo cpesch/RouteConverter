@@ -73,11 +73,14 @@ public class RouteConverterOpenSource extends RouteConverter {
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
+        // the macOS application menu ("About X", "Quit X") otherwise shows the main
+        // class name; set it before AWT initializes so it reads "RouteConverter"
+        System.setProperty("apple.awt.application.name", "RouteConverter");
         launch(RouteConverterOpenSource.class, asList(RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()), args);
     }
 
     public String getEdition() {
-        return "RouteConverter OpenSource Edition";
+        return "RouteConverter";
     }
 
     public String getEditionId() {
