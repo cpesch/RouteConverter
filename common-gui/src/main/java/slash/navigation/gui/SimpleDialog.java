@@ -22,13 +22,9 @@ package slash.navigation.gui;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
-import static java.lang.Integer.MAX_VALUE;
-import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
-import static slash.navigation.gui.SingleFrameApplication.*;
 
 /**
  * The base of all simple {@link JDialog}s.
@@ -37,8 +33,8 @@ import static slash.navigation.gui.SingleFrameApplication.*;
  */
 
 public abstract class SimpleDialog extends JDialog {
-    private static final Logger log = getLogger(SimpleDialog.class.getName());
     private final Preferences preferences = userNodeForPackage(getClass());
+    private WindowBounds windowBounds;
 
     public SimpleDialog(Window owner, String name) {
         super(owner);
@@ -47,78 +43,19 @@ public abstract class SimpleDialog extends JDialog {
 
     public void showWithPreferences() {
         pack();
-
-        Rectangle bounds = getOwner().getGraphicsConfiguration().getBounds();
-        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(getOwner().getGraphicsConfiguration());
-
-        int width = crop(getName() + "width", getPreferenceWidth(),
-                (int) bounds.getX() - (insets.left + insets.right),
-                (int) bounds.getWidth() - (insets.left + insets.right));
-        int height = crop(getName() + "height", getPreferenceHeight(),
-                (int) bounds.getY() - (insets.top + insets.bottom),
-                (int) bounds.getHeight() - (insets.top + insets.bottom));
-        if (width > 120 && height > 60)
-            setSize(width, height);
-        log.info("Dialog " + getName() + " size is " + getSize());
-
-        int x = crop(getName() + "x", getPreferencesX(),
-                (int) bounds.getX() + insets.left,
-                (int) bounds.getX() + insets.left + (int) bounds.getWidth() - insets.right - width);
-        int y = crop(getName() + "y", getPreferencesY(),
-                (int) bounds.getY() + insets.top,
-                (int) bounds.getY() + insets.top + (int) bounds.getHeight() - insets.bottom - height);
-        if (x != -1 && y != -1)
-            setLocation(x, y);
-        else
-            setLocationRelativeTo(getOwner());
-        log.info("Dialog " + getName() + " location is " + getLocation());
-
+        windowBounds = new WindowBounds(this, preferences, getName() + "-");
+        windowBounds.restore(getOwner());
+        windowBounds.installLivePersistence();
         setVisible(true);
-    }
-
-    private int getPreferencesX() {
-        return preferences.getInt(getName() + "-" + X_PREFERENCE, -1);
-    }
-
-    private int getPreferencesY() {
-        return preferences.getInt(getName() + "-" + Y_PREFERENCE, -1);
-    }
-
-    private int getPreferenceHeight() {
-        return -1;
-    }
-
-    private int getPreferenceWidth() {
-return -1;
-    }
-
-    private void putPreferencesLocation() {
-        int x = getLocation().x;
-        int y = getLocation().y;
-        if(getPreferencesX() == x && getPreferencesY() == y)
-            return;
-
-        preferences.putInt(getName() + "-" + X_PREFERENCE, x);
-        preferences.putInt(getName() + "-" + Y_PREFERENCE, y);
-        log.fine("Storing dialog " + getName() + " location as " + getLocation());
-    }
-
-    private void putPreferencesSize() {
-        int width = getSize().width;
-        int height = getSize().height;
-        if(getPreferenceWidth() == width && getPreferenceHeight() == height)
-            return;
-
-        preferences.putInt(getName() + "-" + WIDTH_PREFERENCE, width);
-        preferences.putInt(getName() + "-" + HEIGHT_PREFERENCE, height);
-        log.fine("Storing dialog " + getName() + " size as " + getSize());
     }
 
     private boolean disposed = false;
 
     public void dispose() {
-        putPreferencesLocation();
-        putPreferencesSize();
+        if (windowBounds != null) {
+            windowBounds.putLocation();
+            windowBounds.putSize();
+        }
         super.dispose();
         disposed = true;
     }

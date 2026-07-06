@@ -186,10 +186,7 @@ public abstract class SingleFrameApplication extends Application {
     }
 
     static int crop(String name, int position, int minimum, int maximum) {
-        int result = position < minimum ? (position == -1 ? -1 : minimum) :
-                position > maximum ? (position == -1 ? -1 : maximum) : position;
-        log.finer("Cropping value " + position + " for " + name + " to [" + minimum + ";" + maximum + "] gives " + result);
-        return result;
+        return WindowBounds.crop(name, position, minimum, maximum);
     }
 
     private void putPreferencesLocation() {

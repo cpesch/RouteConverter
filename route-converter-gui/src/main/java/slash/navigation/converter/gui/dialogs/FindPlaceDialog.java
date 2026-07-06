@@ -85,7 +85,9 @@ public class FindPlaceDialog extends SimpleDialog {
         super(RouteConverter.getInstance().getFrame(), "find-place");
         setTitle(RouteConverter.getBundle().getString("find-place-title"));
         setContentPane(contentPane);
-        contentPane.setPreferredSize(new Dimension(900, 540));
+        // size the results table (the content), not the window: pack() then
+        // yields a good default and WindowBounds derives the minimum from it
+        tableResult.setPreferredScrollableViewportSize(new Dimension(840, 400));
 
         setMnemonic(buttonSearchPositions, "search-position-mnemonic");
         buttonSearchPositions.addActionListener(new DialogAction(this) {
