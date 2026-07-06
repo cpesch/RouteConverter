@@ -22,7 +22,7 @@ package slash.navigation.download.tools;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
@@ -169,17 +169,21 @@ public class MirrorCatalog {
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
         options.addOption(Option.builder().argName(SNAPSHOT_ARGUMENT).numberOfArgs(1).required().longOpt(SNAPSHOT_ARGUMENT)
-                .desc("Path to snapshot datasources directory").build());
+                .desc("Path to snapshot datasources directory").get());
         options.addOption(Option.builder().argName(MIRROR_ARGUMENT).numberOfArgs(1).required().longOpt(MIRROR_ARGUMENT)
-                .desc("Path to local mirror root").build());
+                .desc("Path to local mirror root").get());
         options.addOption(Option.builder().argName(ID_ARGUMENT).hasArgs().longOpt(ID_ARGUMENT)
-                .desc("Restrict to a specific datasource id (repeatable)").build());
+                .desc("Restrict to a specific datasource id (repeatable)").get());
         options.addOption(Option.builder().longOpt(DRY_RUN_ARGUMENT)
-                .desc("Print wget commands without running them").build());
+                .desc("Print wget commands without running them").get());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {
-            new HelpFormatter().printHelp(MirrorCatalog.class.getSimpleName(), options);
+            try {
+                HelpFormatter.builder().get().printHelp(MirrorCatalog.class.getSimpleName(), null, options, null, false);
+            } catch (IOException ignored) {
+                // help output is best-effort
+            }
             throw e;
         }
     }
