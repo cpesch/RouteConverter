@@ -1,0 +1,191 @@
+﻿# Header, don't edit
+NLF v6
+# Start editing here
+# Language ID
+1093
+# Font and size - dash (-) means default
+-
+-
+# Codepage - dash (-) means ASCII code page
+1200
+# RTL - anything else than RTL means LTR
+-
+# Translation by John T. Haller (machine translated)
+# ^Branding
+Nullsoft Install System %s
+# ^SetupCaption
+$(^Name) সেটআপ
+# ^UninstallCaption
+$(^Name) আনইনস্টল করুন
+# ^LicenseSubCaption
+: লাইসেন্স চুক্তি
+# ^ComponentsSubCaption
+: ইনস্টলেশন বিকল্প
+# ^DirSubCaption
+: ইনস্টলেশন ফোল্ডার
+# ^InstallingSubCaption
+: ইনস্টল করা হচ্ছে
+# ^CompletedSubCaption
+: সম্পন্ন
+# ^UnComponentsSubCaption
+: আনইনস্টল করার বিকল্প
+# ^UnDirSubCaption
+: আনইনস্টল করার বিকল্প
+# ^ConfirmSubCaption
+: নিশ্চিতকরণ
+# ^UninstallingSubCaption
+: আনইনস্টল হচ্ছে
+# ^UnCompletedSubCaption
+: সম্পন্ন
+# ^BackBtn
+< পেছনে
+# ^NextBtn
+পরবর্তী >
+# ^AgreeBtn
+আমি রাজী
+# ^AcceptBtn
+আমি লাইসেন্স চুক্তির শর্তাবলী স্বীকার করি
+# ^DontAcceptBtn
+I do not accept the terms of the License Agreement
+# ^InstallBtn
+ইনস্টল করুন
+# ^UninstallBtn
+আনইনস্টল করুন
+# ^CancelBtn
+বাতিল করুন
+# ^CloseBtn
+বন্ধ
+# ^BrowseBtn
+ব্রাউজ করুন...
+# ^ShowDetailsBtn
+বিস্তারিত দেখাও
+# ^ClickNext
+অব্যাহত রাখার জন্য পরবর্তী ক্লিক করুন.
+# ^ClickInstall
+ইনস্টলেশন শুরু করতে ইনস্টল ক্লিক করুন.
+# ^ClickUninstall
+আনইনস্টল শুরু করতে আনইনস্টল ক্লিক করুন।
+# ^Name
+নাম
+# ^Completed
+সম্পন্ন
+# ^LicenseText
+অনুগ্রহ করে $(^NameDA) ইনস্টল করার আগে লাইসেন্স চুক্তি পর্যালোচনা করুন। আপনি যদি চুক্তির সমস্ত শর্ত স্বীকার করেন তবে আমি রাজি ক্লিক করুন৷
+# ^LicenseTextCB
+অনুগ্রহ করে $(^NameDA) ইনস্টল করার আগে লাইসেন্স চুক্তি পর্যালোচনা করুন। আপনি যদি চুক্তির সব শর্ত স্বীকার করেন, তাহলে নিচের চেক বক্সে ক্লিক করুন। $_CLICK
+# ^LicenseTextRB
+অনুগ্রহ করে $(^NameDA) ইনস্টল করার আগে লাইসেন্স চুক্তি পর্যালোচনা করুন। আপনি যদি চুক্তির সমস্ত শর্ত স্বীকার করেন, তাহলে নীচের প্রথম বিকল্পটি নির্বাচন করুন৷ $_CLICK
+# ^UnLicenseText
+অনুগ্রহ করে $(^NameDA) আনইনস্টল করার আগে লাইসেন্স চুক্তি পর্যালোচনা করুন। আপনি যদি চুক্তির সমস্ত শর্ত স্বীকার করেন তবে আমি রাজি ক্লিক করুন৷
+# ^UnLicenseTextCB
+অনুগ্রহ করে $(^NameDA) আনইনস্টল করার আগে লাইসেন্স চুক্তি পর্যালোচনা করুন। আপনি যদি চুক্তির সব শর্ত স্বীকার করেন, তাহলে নিচের চেক বক্সে ক্লিক করুন। $_CLICK
+# ^UnLicenseTextRB
+অনুগ্রহ করে $(^NameDA) আনইনস্টল করার আগে লাইসেন্স চুক্তি পর্যালোচনা করুন। আপনি যদি চুক্তির সমস্ত শর্ত স্বীকার করেন, তাহলে নীচের প্রথম বিকল্পটি নির্বাচন করুন৷ $_CLICK
+# ^Custom
+কাস্টম
+# ^ComponentsText
+আপনি যে উপাদানগুলি ইনস্টল করতে চান তা পরীক্ষা করুন এবং আপনি যে উপাদানগুলি ইনস্টল করতে চান না সেগুলি থেকে টিক চিহ্ন মুক্ত করুন৷ $_CLICK
+# ^ComponentsSubText1
+ইনস্টলের ধরন নির্বাচন করুন:
+# ^ComponentsSubText2_NoInstTypes
+ইনস্টল করার জন্য উপাদান নির্বাচন করুন:
+# ^ComponentsSubText2
+অথবা, আপনি ইনস্টল করতে চান ঐচ্ছিক উপাদান নির্বাচন করুন:
+# ^UnComponentsText
+আপনি যে উপাদানগুলি আনইনস্টল করতে চান তা পরীক্ষা করুন এবং যে উপাদানগুলি আপনি আনইনস্টল করতে চান না সেগুলি আনচেক করুন৷ $_CLICK
+# ^UnComponentsSubText1
+আনইনস্টল প্রকার নির্বাচন করুন:
+# ^UnComponentsSubText2_NoInstTypes
+আনইনস্টল করতে উপাদান নির্বাচন করুন:
+# ^UnComponentsSubText2
+অথবা, আপনি আনইনস্টল করতে চান ঐচ্ছিক উপাদান নির্বাচন করুন:
+# ^DirText
+সেটআপ নিম্নলিখিত ফোল্ডারে $(^NameDA) ইনস্টল করবে। একটি ভিন্ন ফোল্ডারে ইনস্টল করতে, ব্রাউজ ক্লিক করুন এবং অন্য ফোল্ডার নির্বাচন করুন। $_CLICK
+# ^DirSubText
+গন্তব্য ফোল্ডার
+# ^DirBrowseText
+$(^NameDA) ইনস্টল করার জন্য ফোল্ডারটি নির্বাচন করুন:
+# ^UnDirText
+সেটআপ নিচের ফোল্ডার থেকে $(^NameDA) আনইনস্টল করবে। একটি ভিন্ন ফোল্ডার থেকে আনইনস্টল করতে, ব্রাউজ ক্লিক করুন এবং অন্য ফোল্ডার নির্বাচন করুন। $_CLICK
+# ^UnDirSubText
+""
+# ^UnDirBrowseText
+থেকে $(^NameDA) আনইনস্টল করতে ফোল্ডারটি নির্বাচন করুন:
+# ^SpaceAvailable
+"উপলব্ধ স্থান: "
+# ^SpaceRequired
+"স্থান প্রয়োজন: "
+# ^UninstallingText
+$(^NameDA) নিম্নলিখিত ফোল্ডার থেকে আনইনস্টল করা হবে। $_CLICK
+# ^UninstallingSubText
+থেকে আনইনস্টল হচ্ছে:
+# ^FileError
+লেখার জন্য ফাইল খুলতে ত্রুটি: \r\n\r\n$0\r\n\r\nইনস্টলেশন বন্ধ করতে অ্যাবর্ট ক্লিক করুন,\r\nআবার চেষ্টা করার জন্য আবার চেষ্টা করুন, অথবা\r\nএই ফাইলটি এড়িয়ে যেতে উপেক্ষা করুন।
+# ^FileError_NoIgnore
+লেখার জন্য ফাইল খোলার সময় ত্রুটি: \r\n\r\n$0\r\n\r\nআবার চেষ্টা করতে পুনরায় চেষ্টা করুন ক্লিক করুন, অথবা\r\nইনস্টলেশন বন্ধ করতে বাতিল করুন।
+# ^CantWrite
+"লিখতে পারি না: "
+# ^CopyFailed
+অনুলিপি ব্যর্থ হয়েছে
+# ^CopyTo
+"নকল করা "
+# ^Registering
+"নিবন্ধন করা হচ্ছে: "
+# ^Unregistering
+"নিবন্ধনমুক্ত করা হচ্ছে: "
+# ^SymbolNotFound
+"প্রতীক খুঁজে পাওয়া যায়নি: "
+# ^CouldNotLoad
+"লোড করা যায়নি: "
+# ^CreateFolder
+"ফোল্ডার তৈরি করুন: "
+# ^CreateShortcut
+"শর্টকাট তৈরি করুন: "
+# ^CreatedUninstaller
+"আনইনস্টলার তৈরি করা হয়েছে: "
+# ^Delete
+"নথিপত্র মুছে দাও: "
+# ^DeleteOnReboot
+"রিবুট হলে মুছুন: "
+# ^ErrorCreatingShortcut
+"রিবুট হলে মুছুন: "
+# ^ErrorCreating
+"তৈরিতে ত্রুটি৷: "
+# ^ErrorDecompressing
+ডেটা ডিকম্প্রেস করার ত্রুটি! দূষিত ইনস্টলার?
+# ^ErrorRegistering
+DLL নিবন্ধন করার সময় ত্রুটি৷
+# ^ExecShell
+"ExecShell: "
+# ^Exec
+"এক্সিকিউট: "
+# ^Extract
+"নির্যাস: "
+# ^ErrorWriting
+"এক্সট্রাক্ট: ফাইলে লেখার ত্রুটি "
+# ^InvalidOpcode
+ইনস্টলার দূষিত: অবৈধ opcode
+# ^NoOLE
+"জন্য কোন OLE: "
+# ^OutputFolder
+"আউটপুট ফোল্ডার: "
+# ^RemoveFolder
+"ফোল্ডার সরান: "
+# ^RenameOnReboot
+"ফোল্ডার সরান: "
+# ^Rename
+"নাম পরিবর্তন করুন: "
+# ^Skipped
+"এড়িয়ে গেছে: "
+# ^CopyDetails
+ক্লিপবোর্ডে বিবরণ অনুলিপি করুন
+# ^LogInstall
+লগ ইনস্টল প্রক্রিয়া
+# ^Byte
+B
+# ^Kilo
+ K
+# ^Mega
+ M
+# ^Giga
+ G

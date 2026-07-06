@@ -1,0 +1,142 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PortableApps.com Launcher 2.1.2 release notes &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Release notes" href="index.html" />
+    <link rel="next" title="PortableApps.com Launcher 2.0 release notes" href="2.0.html" />
+    <link rel="prev" title="PortableApps.com Launcher 2.1.1 release notes" href="2.1.1.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-releases-2.1.2" class="page withsidebar">
+    
+  <div class="section" id="portableapps-com-launcher-2-1-2-release-notes">
+<span id="releases-2-1-2"></span><span id="index-0"></span><h1>PortableApps.com Launcher 2.1.2 release notes<a class="headerlink" href="#portableapps-com-launcher-2-1-2-release-notes" title="Permalink to this headline">¶</a></h1>
+<p>This release fixes a fairly important but not common bug introduced in version
+2.1. No new features have been added.</p>
+<p>For more information about the 2.1 release, see <a class="reference internal" href="2.1.html#releases-2-1"><em>PortableApps.com Launcher 2.1 release notes</em></a>.</p>
+<div class="section" id="bugs-fixed">
+<h2>Bugs fixed<a class="headerlink" href="#bugs-fixed" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="directoriesmove-not-backing-up-some-folders">
+<h3><a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesMove]</span></tt></a> not backing up some folders<a class="headerlink" href="#directoriesmove-not-backing-up-some-folders" title="Permalink to this headline">¶</a></h3>
+<p>In certain situations with <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesMove]</span></tt></a>, a variable not
+being reset would cause local data of the first entry in the
+<a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesMove]</span></tt></a> section to be deleted rather than backed up.</p>
+<p>For those who like gory details, this bug only surfaces when both
+<a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[FilesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FilesMove]</span></tt></a> and <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesMove]</span></tt></a> are used, the
+last entry in <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[FilesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FilesMove]</span></tt></a> is inside the package and the first
+entry in <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesMove]</span></tt></a> is outside.</p>
+<p>Here is a sample <tt class="docutils literal"><span class="pre">launcher.ini</span></tt> excerpt which would strike this bug:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[FilesMove]</span>
+<span class="na">settings.ini</span><span class="o">=</span><span class="s">%PAL:AppDir%\AppName</span>
+
+<span class="k">[DirectoiresMove]</span>
+<span class="na">appdata</span><span class="o">=</span><span class="s">%APPDATA%\AppName</span>
+</pre></div>
+</div>
+<p>This would cause any local data in the <tt class="docutils literal"><span class="pre">%APPDATA%\AppName</span></tt> directory to be
+lost.</p>
+<p>The severity of this bug is strongly mitigated by the fact that no officially
+released apps are affected by this bug.</p>
+<p>This bug was reported by prapper and fixed by kAlug. Further details are
+available in the <a class="reference external" href="http://portableapps.com/node/29043">bug report</a>.</p>
+</div>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PortableApps.com Launcher 2.1.2 release notes</a><ul>
+<li><a class="reference internal" href="#bugs-fixed">Bugs fixed</a><ul>
+<li><a class="reference internal" href="#directoriesmove-not-backing-up-some-folders"><tt class="docutils literal"><span class="pre">[DirectoriesMove]</span></tt> not backing up some folders</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="2.1.1.html">PortableApps.com Launcher 2.1.1 release notes</a></li>
+    
+    
+      <li>Next: <a href="2.0.html">PortableApps.com Launcher 2.0 release notes</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Release notes</a>
+        
+        <ul><li>PortableApps.com Launcher 2.1.2 release notes</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="2.1.1.html" title="PortableApps.com Launcher 2.1.1 release notes">previous</a>  | <a href="index.html" title="Release notes" accesskey="U">up</a>  | <a href="2.0.html" title="PortableApps.com Launcher 2.0 release notes">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

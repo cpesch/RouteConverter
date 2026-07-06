@@ -1,0 +1,212 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Segments &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Advanced usage of the PortableApps.com Launcher" href="index.html" />
+    <link rel="next" title="Debugging the PortableApps.com Launcher" href="debug.html" />
+    <link rel="prev" title="Custom code" href="custom.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-advanced-segments" class="page withsidebar">
+    
+  <div class="section" id="segments">
+<span id="id1"></span><h1>Segments<a class="headerlink" href="#segments" title="Permalink to this headline">¶</a></h1>
+<p>The PortableApps.com Launcher source code is divided up into lots of &#8220;segments&#8221;,
+each of which can run a number of &#8220;hooks&#8221;. This aids with code separation of
+different pieces of functionality, by grouping code by what it does rather than
+when it executes, providing a synergistically value-adding, mutually-beneficial
+strategic partnership between the developer and... and... well, whatever&#8217;s left.
+(A more useful workflow anyway. I&#8217;ll leave the marketing talk to the marketers.)</p>
+<div class="admonition-why-did-you-write-that-nonsense admonition">
+<p class="first admonition-title">Why did you write that nonsense?</p>
+<p>A few proposals have been put forward about such things as this, but as usual
+analysts have been unable to agree on the issue.</p>
+<p>The simple answer is that we software developers have a quirky sense of
+humour.  How else could you explain things like the recursive acronyms that
+all developers so love? At times it can get dull, just writing a program
+which does what it&#8217;s meant to do and that&#8217;s all, and so developers make time
+to put in what are commonly known as &#8220;easter eggs&#8221;: hidden functionality
+which they generally find amusing and which break the monotony of writing
+good software.</p>
+<p>In particular here the point is writing documentation. Writing this
+documentation for the PortableApps.com Launcher is taking far longer than the
+actual writing of the code did in the first place (orders of magnitude
+longer). And so at times I decide to put strange things in for the fun of it.</p>
+<p class="last">It&#8217;s just one of those illogicalities of software developers.</p>
+</div>
+<div class="section" id="hooks">
+<span id="segments-hooks"></span><h2>Hooks<a class="headerlink" href="#hooks" title="Permalink to this headline">¶</a></h2>
+<p>Here is a list of the hooks which can be executed:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">.onInit</span></tt>: things which must go in the NSIS <tt class="docutils literal"><span class="pre">.onInit</span></tt> function (see the
+<a class="reference external" href="http://nsis.sourceforge.net/Docs/Chapter4.html#4.7.2.1.2">NSIS documentation</a> for details about <tt class="docutils literal"><span class="pre">.onInit</span></tt>)</li>
+<li><tt class="docutils literal"><span class="pre">Init</span></tt>: load data into variables, abort the launcher if necessary, and do
+anything else of a &#8220;starting up&#8221; nature&#8221;.</li>
+<li><tt class="docutils literal"><span class="pre">Pre</span></tt>: do things to make the application portable which must always be
+done, whether the launcher is dealing with a primary or secondary instance of
+the application.</li>
+<li><tt class="docutils literal"><span class="pre">PrePrimary</span></tt>: actions to make the application portable which should only be
+run with a primary instance of an application.</li>
+<li><tt class="docutils literal"><span class="pre">PreSecondary</span></tt>:  actions to make the application portable which should only
+be run with a secondary or subsequent instance of an application. I haven&#8217;t
+yet thought of an instance when this would be useful but there could be.</li>
+<li><tt class="docutils literal"><span class="pre">PreExec</span></tt>: just before the program gets executed, there&#8217;s an opportunity to
+do something here. Try to use the <tt class="docutils literal"><span class="pre">Pre</span></tt> hook instead.</li>
+<li><tt class="docutils literal"><span class="pre">PreExecPrimary</span></tt>: <tt class="docutils literal"><span class="pre">PreExec</span></tt> for primary instances.</li>
+<li><tt class="docutils literal"><span class="pre">PreExecSecondary</span></tt>: <tt class="docutils literal"><span class="pre">PreExec</span></tt> for secondary and subsequent instances.</li>
+<li><tt class="docutils literal"><span class="pre">Post</span></tt>: clean up the application and handle restoration of settings and
+related things in here.</li>
+<li><tt class="docutils literal"><span class="pre">PostPrimary</span></tt>: <tt class="docutils literal"><span class="pre">Post</span></tt> for primary instances.</li>
+<li><tt class="docutils literal"><span class="pre">PostSecondary</span></tt>: <tt class="docutils literal"><span class="pre">Post</span></tt> for secondary and subsequent instances.</li>
+<li><tt class="docutils literal"><span class="pre">Unload</span></tt>: unload plug-ins and clean up traces from the launcher itself.</li>
+</ul>
+</div>
+<div class="section" id="customisations">
+<span id="segments-disable"></span><h2>Customisations<a class="headerlink" href="#customisations" title="Permalink to this headline">¶</a></h2>
+<p>If you ever need to disable a segment or hook, you can do so. In general though
+if you can possibly avoid doing it you should; you can very easily break the
+PortableApps.com Launcher by disabling certain things. See
+<a class="reference internal" href="custom.html#custom-code-segment"><em>Writing a custom segment</em></a> for details.</p>
+</div>
+<div class="section" id="list-of-core-segments">
+<span id="segments-list"></span><h2>List of core segments<a class="headerlink" href="#list-of-core-segments" title="Permalink to this headline">¶</a></h2>
+<p>Here is the current list of segments included in the PortableApps.com Launcher:</p>
+<ul class="simple">
+<li><strong>Core:</strong> various core functionality</li>
+<li><strong>DirectoriesCleanup:</strong> <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesCleanupIfEmpty]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesCleanupIfEmpty]</span></tt></a> and
+<a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesCleanupForce]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesCleanupForce]</span></tt></a></li>
+<li><strong>DirectoriesMove:</strong> <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesMove]</span></tt></a></li>
+<li><strong>DirectoryMoving:</strong> coping with moving the portable app package &#8211;
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:DirectoryMoveOK"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:DirectoryMoveOK</span></tt></a></li>
+<li><strong>DriveLetter:</strong> <a class="reference internal" href="../ref/envsub.html#ref-envsub-drive"><em>Drive variables</em></a></li>
+<li><strong>Environment:</strong> <a class="reference internal" href="../ref/launcher.ini/environment.html#std:ini-section-[Environment]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[Environment]</span></tt></a></li>
+<li><strong>ExecString:</strong> constructing the string for execution</li>
+<li><strong>FileWrite:</strong> <a class="reference internal" href="../ref/launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a></li>
+<li><strong>FilesMove:</strong> <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[FilesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FilesMove]</span></tt></a></li>
+<li><strong>InstanceManagement:</strong> managing multiple instances of portable apps</li>
+<li><strong>Java:</strong> <a class="reference internal" href="../topics/java.html#java"><em>guess</em></a></li>
+<li><strong>Language:</strong> launcher language selection for message boxes and language
+switching (see <a class="reference internal" href="../topics/languages.html#languages"><em>Languages</em></a>)</li>
+<li><strong>OperatingSystem:</strong> <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:MinOS"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:MinOS</span></tt></a> and <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:MaxOS"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:MaxOS</span></tt></a></li>
+<li><strong>Qt:</strong> <a class="reference internal" href="../ref/launcher.ini/qt.html#std:ini-section-[QtKeysCleanup]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[QtKeysCleanup]</span></tt></a> (see also <a class="reference internal" href="../topics/qt.html#qt"><em>Making Qt applications portable</em></a>)</li>
+<li><strong>RefreshShellIcons:</strong> <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RefreshShellIcons"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RefreshShellIcons</span></tt></a></li>
+<li><strong>Registry:</strong> <a class="reference internal" href="../ref/launcher.ini/activate.html#std:ini-key-[Activate]:Registry"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Activate]:Registry</span></tt></a> and helper utilities for
+other Registry segments. See also <a class="reference internal" href="../topics/registry.html#registry"><em>Dealing with the registry</em></a> for this and the
+other Registry segments listed here.</li>
+<li><strong>RegistryCleanup:</strong> <a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryCleanupIfEmpty]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryCleanupIfEmpty]</span></tt></a> and
+<a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryCleanupForce]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryCleanupForce]</span></tt></a></li>
+<li><strong>RegistryKeys:</strong> <a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryKeys]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryKeys]</span></tt></a></li>
+<li><strong>RegistryValueBackupDelete:</strong> <a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryValueBackupDelete]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryValueBackupDelete]</span></tt></a></li>
+<li><strong>RegistryValueWrite:</strong> <a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryValueWrite]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryValueWrite]</span></tt></a></li>
+<li><strong>RunAsAdmin:</strong> <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:RunAsAdmin"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin</span></tt></a> et al.</li>
+<li><strong>RunLocally:</strong> live mode support (mainly a user feature, but slightly
+configurable with <a class="reference internal" href="../ref/launcher.ini/livemode.html#std:ini-section-[LiveMode]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LiveMode]</span></tt></a>)</li>
+<li><strong>Services:</strong> services (currently not functional and disabled)</li>
+<li><strong>Settings:</strong> Management of <tt class="docutils literal"><span class="pre">Data\settings</span></tt> and copying default data from
+<tt class="docutils literal"><span class="pre">App\DefaultData</span></tt> to the <tt class="docutils literal"><span class="pre">Data</span></tt> directory</li>
+<li><strong>SplashScreen:</strong> <a class="reference internal" href="../topics/splashscreen.html#splash-screen"><em>Splash screens</em></a></li>
+<li><strong>Temp:</strong> management of the TEMP directory (mainly controlled by
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:CleanTemp"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:CleanTemp</span></tt></a>)</li>
+<li><strong>Variables:</strong> internal functions for providing environment variables and most
+of the <a class="reference internal" href="../ref/envsub.html#ref-envsub-directory"><em>Directory variables</em></a></li>
+<li><strong>WorkingDirectory:</strong> <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:WorkingDirectory"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:WorkingDirectory</span></tt></a></li>
+</ul>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Segments</a><ul>
+<li><a class="reference internal" href="#hooks">Hooks</a></li>
+<li><a class="reference internal" href="#customisations">Customisations</a></li>
+<li><a class="reference internal" href="#list-of-core-segments">List of core segments</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="custom.html">Custom code</a></li>
+    
+    
+      <li>Next: <a href="debug.html">Debugging the PortableApps.com Launcher</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Advanced usage of the PortableApps.com Launcher</a>
+        
+        <ul><li>Segments</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="custom.html" title="Custom code">previous</a>  | <a href="index.html" title="Advanced usage of the PortableApps.com Launcher" accesskey="U">up</a>  | <a href="debug.html" title="Debugging the PortableApps.com Launcher">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

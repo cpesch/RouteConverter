@@ -1,0 +1,187 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>[FilesMove] &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="launcher.ini" href="index.html" />
+    <link rel="next" title="[Language]" href="language.html" />
+    <link rel="prev" title="[FileWriteN]" href="filewriten.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-launcher.ini-filesystem" class="page withsidebar">
+    
+  <div class="section" id="filesmove">
+<span id="std:ini-section-[FilesMove]"></span><h1>[FilesMove]<a class="headerlink" href="#filesmove" title="Permalink to this headline">¶</a></h1>
+<p>These are files for which to manage portability. They come in the form <tt class="docutils literal"><span class="pre">[file</span>
+<span class="pre">name]=[target</span> <span class="pre">directory]</span></tt>.</p>
+<p>The <em>file name</em> is the location of the place where it is saved, relative to the
+portable data directory (AppNamePortable\Data).</p>
+<p>The <em>target directory</em> is the full path to the directory the file is copied to
+during the program execution. Do not include the file name. <a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</p>
+<p>If the target directory already exists at the start of the process, it will be
+backed up (to <em>target directory</em>\<em>file name</em>-BackupBy<em>AppID</em>) and
+restored at the end.</p>
+<p>Concerning how the file should be situated in the Data directory, the directory
+must exist or the file will not be saved. Thus, you are recommended to either
+store files in the root of Data or in the <tt class="docutils literal"><span class="pre">settings</span></tt> directory. Other
+directories may be suitable sometimes if the directory will be created by
+<tt class="docutils literal"><span class="pre">DefaultData</span></tt>.</p>
+<p><a class="reference internal" href="../../topics/files-and-directories.html#wildcards"><em>Wildcards</em></a> are supported.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">settings\file.txt=%PAL:AppDir%\AppName</span></tt></p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 2.1: </span>added support for wildcards</p>
+</div>
+<div class="section" id="directoriesmove">
+<span id="std:ini-section-[DirectoriesMove]"></span><h1>[DirectoriesMove]<a class="headerlink" href="#directoriesmove" title="Permalink to this headline">¶</a></h1>
+<p>These are directories for which to manage portability. They come in the form
+<tt class="docutils literal"><span class="pre">[directory]=[target</span> <span class="pre">location]</span></tt>.</p>
+<p>The <em>directory</em> is the location of the source directory, relative to the
+portable data directory (AppNamePortable\Data).</p>
+<p>The <em>target location</em> includes the directory you want it to go to, so
+<tt class="docutils literal"><span class="pre">%PAL:DataDir%\[directory]\*.*</span></tt> gets copied to <tt class="docutils literal"><span class="pre">[target</span> <span class="pre">location]\*.*</span></tt>.
+<a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</p>
+<p>If the target directory already exists at the start of the process, it will be
+backed up (to <em>target location</em>-BackupBy<em>AppID</em>) and restored at the end.</p>
+<p>If you do not wish to save the data but only want to keep a local version safe
+and throw away any changes, set the source directory to <tt class="docutils literal"><span class="pre">-</span></tt>, so you end up
+with <tt class="docutils literal"><span class="pre">-=[target</span> <span class="pre">location]</span></tt>. If you don&#8217;t wish to back up local data, you can
+use <a class="reference internal" href="#std:ini-section-[DirectoriesCleanupForce]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesCleanupForce]</span></tt></a>.</p>
+<p>Concerning how the directory should be situated, the parent directory must
+exist or the directory will not be saved. Thus, you are recommended to use a
+top-level directory name. Contrary to some former recommendations, <tt class="docutils literal"><span class="pre">settings</span></tt>
+should <strong>not</strong> be used as the key, as the <tt class="docutils literal"><span class="pre">Data\settings</span></tt> directory is used
+for storing registry keys in such a way that data will be lost if you move the
+directory; it  may also be used for other purposes, so whether you use registry
+support or not, you should avoid it.</p>
+<p><a class="reference internal" href="../../topics/files-and-directories.html#wildcards"><em>Wildcards</em></a> are supported.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">config=%APPDATA%\Pub\lisher\AppName</span></tt></p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 2.1: </span>added support for wildcards</p>
+</div>
+<div class="section" id="directoriescleanupifempty">
+<span id="std:ini-section-[DirectoriesCleanupIfEmpty]"></span><h1>[DirectoriesCleanupIfEmpty]<a class="headerlink" href="#directoriescleanupifempty" title="Permalink to this headline">¶</a></h1>
+<p>Key names are consecutive integers, starting at 1 (i.e. <tt class="docutils literal"><span class="pre">1</span></tt>, <tt class="docutils literal"><span class="pre">2</span></tt>, <tt class="docutils literal"><span class="pre">3</span></tt>, etc.)</p>
+<p><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</p>
+<p><a class="reference internal" href="../../topics/files-and-directories.html#wildcards"><em>Wildcards</em></a> are supported.</p>
+<hr class="docutils" />
+<p>These are directories which get cleaned up after the application has run if they
+are empty. This is useful if there is a tree which will be left behind, for
+example, if something stores to <tt class="docutils literal"><span class="pre">%APPDATA%\Publisher\AppName</span></tt>, when
+<tt class="docutils literal"><span class="pre">AppName</span></tt> is saved, <tt class="docutils literal"><span class="pre">Publisher</span></tt> will still be left, empty. Remove it with a
+line in here.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">1=%APPDATA%\Publisher</span></tt></p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 2.1: </span>added support for wildcards</p>
+</div>
+<div class="section" id="directoriescleanupforce">
+<span id="std:ini-section-[DirectoriesCleanupForce]"></span><h1>[DirectoriesCleanupForce]<a class="headerlink" href="#directoriescleanupforce" title="Permalink to this headline">¶</a></h1>
+<p>Key names are consecutive integers, starting at 1 (i.e. <tt class="docutils literal"><span class="pre">1</span></tt>, <tt class="docutils literal"><span class="pre">2</span></tt>, <tt class="docutils literal"><span class="pre">3</span></tt>, etc.)</p>
+<p><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</p>
+<p><a class="reference internal" href="../../topics/files-and-directories.html#wildcards"><em>Wildcards</em></a> are supported.</p>
+<hr class="docutils" />
+<p>These are directories which get removed after the application has run. This is
+useful if there is a tree which will be left behind, for example, if something
+stores temporary data which can be safely deleted in <tt class="docutils literal"><span class="pre">%APPDATA%\AppName\Temp</span></tt>.
+Remove it with a line in here.</p>
+<p>If you need to back up the local directory so that it will not be ruined, you
+can use <a class="reference internal" href="#std:ini-section-[DirectoriesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesMove]</span></tt></a> with a key name of <tt class="docutils literal"><span class="pre">-</span></tt>.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">1=%APPDATA%\Publisher</span></tt></p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 2.1: </span>added support for wildcards</p>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">[FilesMove]</a></li>
+<li><a class="reference internal" href="#directoriesmove">[DirectoriesMove]</a></li>
+<li><a class="reference internal" href="#directoriescleanupifempty">[DirectoriesCleanupIfEmpty]</a></li>
+<li><a class="reference internal" href="#directoriescleanupforce">[DirectoriesCleanupForce]</a></li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="filewriten.html">[FileWrite<em>N</em>]</a></li>
+    
+    
+      <li>Next: <a href="language.html">[Language]</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">launcher.ini</a>
+        
+        <ul><li>[FilesMove]</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="filewriten.html" title="[FileWrite&lt;em&gt;N&lt;/em&gt;]">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="language.html" title="[Language]">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

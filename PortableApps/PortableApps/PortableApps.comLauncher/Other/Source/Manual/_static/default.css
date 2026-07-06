@@ -1,0 +1,368 @@
+/* first reset everything */
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}
+table{border-collapse:collapse;border-spacing:0;}
+fieldset,img{border:0;}
+address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}
+li{list-style:none;}
+caption,th{text-align:left;}
+h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}
+q:before,q:after{content:'';}
+abbr,acronym {border:0;font-variant:normal;}
+sup{vertical-align:text-top;}
+sub{vertical-align:text-bottom;}
+input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}
+input,textarea,select{*font-size:100%;}
+legend{color:#000;}
+table{font-size:inherit;font:100%;}
+pre,code,kbd,samp,tt{font-family:Courier New,Courier,monospace;*font-size:108%;line-height:100%;}
+
+body {
+	margin: 20px;
+	background: #e6e8ea none repeat scroll 0% 50%;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	font-size: 76%;
+	color: #000000;
+	text-align: center;
+}
+pre {
+	border: 1px dotted #808080;
+	padding: 10px;
+	background-color: #e6e8ea;
+}
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Trebuchet MS",Arial,sans-serif;
+	font-weight: bold;
+}
+h1 {
+	/*border-bottom: 1px solid silver;*/
+	color: #b31616;
+	font-weight: bold;
+	letter-spacing: -2px;
+	font-size: 2.2em;
+	padding-bottom: 5px;
+	line-height: 100%;
+}
+h2 {
+	border-top: 1px solid silver;
+	border-bottom: 1px solid silver;
+	background-color: #e6e8ea;
+	font-size: 1.5em;
+	clear: both;
+	/* option one: stay inside margin * /
+		padding: 0.3em;
+		margin: 0.4em 0;/**/
+	/* option two: shade all the way up to the page edge */
+		padding: 0.3em 20px 0.3em 25px;
+		margin: 0.4em -20px 0.4em -25px;/**/
+}
+h3 {
+	font-size: 1.2em;
+}
+h4 {
+	font-size: 1.1em;
+}
+h5 {
+	font-size: 1em;
+}
+h6 {
+	font-size: 0.8em;
+}
+img {
+	border: none;
+}
+ol, ul, li {
+	font-size: 1em;
+}
+p, table, tr, td, th {
+	font-size: 1em;
+}
+pre {
+	font-size: 1em;
+}
+strong, b {
+	font-weight: bold;
+}
+table, tr, td {
+	font-size: 1em;
+	border-collapse: collapse;
+}
+td, th {
+	border: 1px solid #aaaaaa;
+	padding: 3px;
+	border-collapse: collapse;
+}
+th {
+	background: #3667a8 none repeat scroll 0% 50%;
+	color: white;
+}
+ol ol {
+	list-style-type: lower-alpha;
+}
+.document {
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	padding: 0 25px;
+	text-align: left;
+	margin-left: auto;
+	margin-right: auto;
+	width: 790px;
+	background: #ffffff url(help_background_header.png) repeat-x 0 -32px;
+	line-height: 150%;
+}
+.page {
+	padding-top: 27px;
+	padding-bottom: 12px;
+}
+
+.page.withsidebar {
+	float: left;
+	width: 555px;
+	border-right: 1px solid black;
+	padding-right: 20px;
+}
+.sphinxsidebar {
+	float: right;
+	margin-left: -1px;
+	border-left: 1px solid black;
+	padding-left: 15px;
+	width: 199px;
+	padding-top: 27px;
+}
+.sphinxsidebar h3 {
+	border-top: 1px solid silver;
+	border-bottom: 1px solid silver;
+	background-color: #e6e8ea;
+	padding: 0.3em 25px 0.3em 15px;
+	margin: 0.4em -25px 0.4em -15px;
+	font-weight: normal;
+}
+.header {
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	background: #ffffff url(help_background_header.png) repeat-x;
+	width: 840px;
+	margin-top: 20px;
+	margin-bottom: -15px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+}
+.footer {
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	background: #ffffff url(help_background_footer.png) repeat-x scroll 0% 50%;
+	width: 840px;
+	height: 16px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: left;
+}
+.clearer {
+	clear: both;
+}
+.header img {
+	border: none;
+	padding-left: 0px;
+	position: relative;
+	top: -4px;
+}
+* html .document {
+	width: 760px;
+}
+* html .header, * html .footer {
+	width: 820px;
+}
+@media print {
+	body, .document { margin: 0;
+		padding: 0;
+	}
+	.navigation, .locator, .footer a, .message, .footer-links {
+		display: none;
+	}
+	.footer, .document, .header {
+		border: none;
+	}
+	a {
+		text-decoration: none;
+		font-weight: normal;
+		color: black;
+	}
+}
+
+.rubric {
+	color: #747673;
+	clear: none;
+	margin-top: 0em;
+	font-family: Arial,sans-serif;
+	font-weight: bold;
+	border-bottom: 1px solid silver;
+	font-size: 1.5em;
+	padding-bottom: 3px;
+	clear: both;
+	margin-bottom: 0.4em;
+}
+
+
+/*** links ***/
+a {text-decoration: none;}
+a img {border: none;}
+a:link, a:visited { color:#b31616; font-weight: bold; }
+.sphinxsidebar a:link, .sphinxsidebar a:visited, .toctree-l2 a:link, .toctree-l2 a:visited, .toctree-l3 a:link, .toctree-l3 a:visited { font-weight: normal; }
+.sphinxsidebar h3 a:link, .sphinxsidebar h3 a:visited { font-weight: bold; }
+a:hover { color:#f00; text-decoration: underline; }
+h2 a, h3 a, h4 a { text-decoration:none !important; }
+a.reference.internal em { font-style: normal; font-weight: bold; }
+
+/*** basic styles ***/
+dd { margin-left:15px; }
+div.figure { text-align: center; }
+div.figure p.caption { font-size:1em; margin-top:0; margin-bottom:1.5em; color: #555;}
+hr { color:#ccc; background-color:#ccc; height:1px; border:0; }
+p, ul, dl { margin-top:.6em; margin-bottom:1em; padding-bottom: 0.1em;}
+#main div.block img { max-width: 50em; margin-left: auto; margin-right: auto; display: block; }
+caption { font-size:1em; font-weight:bold; margin-top:0.5em; margin-bottom:0.5em; margin-left: 2px; text-align: center; }
+blockquote { padding: 0 1em; margin: 1em 0; font:125%/1.2em "Trebuchet MS", sans-serif; border-left:2px solid #94da3a; } 
+strong { font-weight: bold; }
+em { font-style: italic; }
+ins { font-weight: bold; text-decoration: none; }
+
+/*** lists ***/
+ul { padding-left:30px; }
+ol { padding-left:30px; }
+ol.arabic li { list-style-type: decimal; }
+ul li { list-style-type:square; margin-bottom:.4em; }
+ol li { margin-bottom: .4em; }
+ul ul { padding-left:1.2em; }
+ul ul { margin-top:0em; margin-bottom:0em}
+ul ul ul { padding-left:1em; }
+ul.linklist, ul.toc { padding-left:0; }
+ul.toc ul { margin-left:.6em; }
+ul.toc ul li { list-style-type:square; }
+ul.toc ul ul li { list-style-type:disc; }
+ul.linklist li, ul.toc li { list-style-type:none; }
+dt { font-weight:bold; margin-top:.5em; font-size:1.1em; }
+dd { margin-bottom:.8em; }
+ol.toc { margin-bottom: 2em; }
+ol.toc li { font-size:125%; padding: .5em; line-height:1.2em; clear: right; }
+ol.toc li.b { background-color: #e6e8ea; }
+ol.toc li a:hover { background-color: transparent !important; text-decoration: underline !important; }
+ol.toc span.release-date { color:#600b0b; float: right; font-size: 85%; padding-right: .5em; }
+ol.toc span.comment-count { font-size: 75%; color: #999; }
+.sphinxsidebar ul { padding-left:15px; }
+
+/*** tables ***/
+table { color:#000; margin-bottom: 1em; width: 100%; }
+table.docutils td { background-color: #ffffff; }
+table.docutils td p { margin-top:0; margin-bottom:.5em; }
+table.docutils td, table.docutils th { border-bottom:1px solid #dfdfdf; padding:4px 2px;}
+table.docutils thead th { border-bottom:1px solid #000000; text-align:left; font-weight: bold; white-space: nowrap; background: url(help_background_header.png) center top; }
+table.docutils thead th p { margin: 0; padding: 0; }
+table.docutils { border-collapse:collapse;
+/* Make the sidebar line "fade out" if they overlap. */
+-webkit-box-shadow: white 0 0 10px 10px;
+   -moz-box-shadow: white 0 0 10px 10px;
+     -o-box-shadow: white 0 0 10px 10px;
+        box-shadow: white 0 0 10px 10px;
+}
+
+/*** code blocks ***/
+.literal { white-space:nowrap; }
+h1 .literal, h2 .literal, h3 .literal, h4 .literal, h5 .literal, h6 .literal { color: inherit; }
+pre { font-size:small; background:#feecec; border:1px solid #f09090; border-width:1px 0; margin: 1em 0; padding: .3em .4em; overflow: auto; line-height: 1.3em;}
+dt .literal, table .literal { background:none; }
+.page a.reference tt.literal { border-bottom: 1px #600b0b dotted; }
+
+/*** INI formatting ***/
+/* This could be done as a special Pygments style, I think */
+.highlight-ini .k { /* section */
+	color: #007020; /* default */
+	font-weight: bold; /* default */
+}
+.highlight-ini .na { /* key */
+	color: #4080CC; /* changed from #4070A0 */
+	font-weight: bold; /* added */
+}
+.highlight-ini .o { /* = */
+	color: #4070A0; /* default */
+}
+.highlight-ini .s { /* value */
+	color: #000000; /* changed from #4070A0 */
+}
+ 
+/*** notes & admonitions ***/
+.note, .admonition { padding:.8em 1em .8em; margin: 1em 0; border:1px solid #b31616; }
+.admonition-title { font-weight:bold; margin-top:0 !important; margin-bottom:0 !important;}
+.admonition .last { margin-bottom:0 !important; }
+.note, .admonition { padding-left:65px; background:url(support_oxygen.png) .8em .8em  #e6e8ea no-repeat;}
+
+/*** p-links ***/
+a.headerlink { color: #c68b8b; font-size: 0.8em; padding: 0 4px 0 4px; text-decoration: none; visibility: hidden; float: right; }
+h1:hover > a.headerlink, h2:hover > a.headerlink, h3:hover > a.headerlink, h4:hover > a.headerlink, h5:hover > a.headerlink, h6:hover > a.headerlink, dt:hover > a.headerlink { visibility: visible; color: #c68b8b; }
+
+/*** index ***/
+table.indextable td { border: 0 none; width: 50%; }
+table.indextable td { text-align: left; vertical-align: top; }
+table.indextable dl, table.indextable dd { margin-top: 0; margin-bottom: 0; }
+table.indextable tr.pcap { height: 10px; }
+table.indextable tr.cap { margin-top: 10px; background-color: #f2f2f2;}
+table.indextable dd a { font-weight: normal; }
+
+/*** page-specific overrides ***/
+div#contents ul { margin-bottom: 0;}
+div#contents ul li { margin-bottom: 0;}
+div#contents ul ul li { margin-top: 0.3em;}
+
+/*** IE hacks ***/
+* pre { width: 100%; }
+
+/*** nav ***/
+.nav { font-size: 11px; text-align: right; color: #000; padding-right: 8px; }
+.nav a:link, .nav a:visited {color:#a0a0a0; font-weight: bold;}
+.nav a {padding:0 4px;}
+.footer:hover .nav, .header:hover .nav {color:#999;}
+.footer:hover a:link, .footer:hover a:visited, .header:hover a:link, .header:hover a:visited { color:#d0d0d0; }
+.footer:hover a:hover, .header:hover a:hover { color:#fff; }
+#global-nav { float: right; margin-top: 8px; }
+
+/*** footnotes ***/
+.footnote-reference {
+	vertical-align: super;
+	font-size: 70%;
+	line-height: 0;
+}
+
+table.docutils.footnote {
+	font-size: 85%;
+	  -moz-box-shadow: none;
+	-opera-box-shadow: none;
+	       box-shadow: none;
+	margin: 0;
+}
+
+table.docutils.footnote td {
+	border: 0;
+	padding: 2px;
+}
+
+/*** line blocks (lines starting with |; used for details like "Optional", values) ***/
+.line-block {
+	/*background-color: #e6e8ea;*/
+  background-image: -moz-linear-gradient(top, #e6e8ea, #f6f8fa); /* FF3.6 */
+  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #e6e8ea),color-stop(1, #f6f8fa)); /* Saf4+, Chrome */
+            filter:  progid:DXImageTransform.Microsoft.gradient(startColorStr='#e6e8ea', EndColorStr='#f6f8fa'); /* IE6,IE7 */
+        -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr='#e6e8ea', EndColorStr='#f6f8fa')"; /* IE8 */		  
+	padding: 0.6em 20px 0.3em 25px;
+	margin: -0.6em -20px 0 -25px; /* -0.6 instead of -0.4 because of h2's font-size: 1.5em */
+}
+
+/*** "version added" and "version modified" lines ***/
+.versionmodified {
+	font-style: italic;
+}
+
+/*** Page overrides ***/
+#page-index h2 {
+	border: 0 none;
+	background-color: transparent;
+}
+#page-index li a:link em, #page-index li a:visited em { font-weight: normal; }

@@ -1,0 +1,191 @@
+﻿# Header, don't edit
+NLF v6
+# Start editing here
+# Language ID
+1077
+# Font and size - dash (-) means default
+-
+-
+# Codepage - dash (-) means ANSI code page
+1200
+# RTL - anything else than RTL means LTR
+-
+# Translation by ..... (any credits should go here)
+# ^Branding
+Nullsoft Install System %s
+# ^SetupCaption
+I-Setup Ye-$(^Name)
+# ^UninstallCaption
+Ukukhipha I-$(^Name)
+# ^LicenseSubCaption
+: ISivumelwano Selayisense
+# ^ComponentsSubCaption
+: Izinhlelo Ozikhethayo
+# ^DirSubCaption
+: Indawo Yokuzifaka
+# ^InstallingSubCaption
+: Iyayifaka
+# ^CompletedSubCaption
+: Isiqedile
+# ^UnComponentsSubCaption
+: Izinto Ofuna Ukuzikhipha
+# ^UnDirSubCaption
+: Indawo Ofuna Ukukhipha Kuyo
+# ^ConfirmSubCaption
+: Ukuqinisekisa
+# ^UninstallingSubCaption
+: Iyayikhipha
+# ^UnCompletedSubCaption
+: Isiqedile
+# ^BackBtn
+< &Hlehla
+# ^NextBtn
+&Qhubeka >
+# ^AgreeBtn
+Ngiya&vuma
+# ^AcceptBtn
+Ngiyasa&mukela ISivumelwano Selayisense
+# ^DontAcceptBtn
+Angi&samukeli ISivumelwano Selayisense
+# ^InstallBtn
+I&fake
+# ^UninstallBtn
+I&khiphe
+# ^CancelBtn
+Khansela
+# ^CloseBtn
+&Vala
+# ^BrowseBtn
+Phen&ya ...
+# ^ShowDetailsBtn
+Bonisa imininig&wane
+# ^ClickNext
+Chofoza u-Qhubeka ukuze uqhubeke.
+# ^ClickInstall
+Chofoza u-Ifake ukuze uqale ukuyifaka.
+# ^ClickUninstall
+Chofoza u-Ikhiphe ukuze uqale ukuyikhipha.
+# ^Name
+Igama
+# ^Completed
+Iqedile
+# ^LicenseText
+Siza ubukeze imininingwane yelayisense ngaphambi kokuba ufake i-$(^NameDA). Uma uyemukela imininingwane yesivumelwano, chofoza inkinobho ethi Ngiyavuma.
+# ^LicenseTextCB
+Siza ubukeze imininingwane yelayisense ngaphambi kokuba ufake i-$(^NameDA). Uma uyemukela imininingwane yesivumelwano, chofoza ibhokisi elinoqhwishi ngezansi. $_CLICK
+# ^LicenseTextRB
+Siza ubukeze imininingwane yelayisense ngaphambi kokuba ufake i-$(^NameDA). Uma uyemukela imininingwane yesivumelwano, khetha okokuqala ngezansi. $_CLICK
+# ^UnLicenseText
+Siza ubukeze imininingwane yelayisense ngaphambi kokuba ukhiphe i-$(^NameDA). Uma uyemukela imininingwane yesivumelwano, chofoza inkinobho ethi Ngiyavuma.
+# ^UnLicenseTextCB
+Siza ubukeze imininingwane yelayisense ngaphambi kokuba ukhiphe i-$(^NameDA). Uma uyemukela imininingwane yesivumelwano, chofoza ibhokisi elinoqhwishi ngezansi. $_CLICK
+# ^UnLicenseTextRB
+Siza ubukeze imininingwane yelayisense ngaphambi kokuba ukhiphe i-$(^NameDA). Uma uyemukela imininingwane yesivumelwano, khetha okokuqala ngezansi. $_CLICK
+# ^Custom
+Uhlelo Oluvamile
+# ^ComponentsText
+Faka uqhwishi ezinhlelweni ozifunayo uwususe kongafuni ukuzifaka. $_CLICK
+# ^ComponentsSubText1
+Khetha indlela ofuna ukuyifaka ngayo:
+# ^ComponentsSubText2_NoInstTypes
+Khetha izingxenye ofuna ukuzifaka:
+# ^ComponentsSubText2
+Noma, ukhethe ezinye izingxenye ongathanda ukuzifaka:
+# ^UnComponentsText
+Faka uqhwishi ezinhlelweni ofuna ukuzikhipha uwususe kongafuni ukuzikhipha. $_CLICK
+# ^UnComponentsSubText1
+Khetha indlela ofuna ukuyikhipha ngayo:
+# ^UnComponentsSubText2_NoInstTypes
+Khetha izingxenye ofuna ukuzikhipha:
+# ^UnComponentsSubText2
+Noma, ukhethe ezinye izingxenye ofuna ukuzikhipha:
+# ^DirText
+I-Setup izofaka i-$(^NameDA) endaweni elandelayo. Uma ufuna ukuyifaka endaweni ehlukile, chofoza u-Phenya bese ukhetha enye indawo. $_CLICK
+# ^DirSubText
+Indawo Ofaka Kuyo
+# ^DirBrowseText
+Khetha indawo ozofaka kuyo i-$(^NameDA):
+# ^UnDirText
+I-Setup izokhipha i-$(^NameDA) endaweni elandelayo. Uma ufuna ukuyikhipha endaweni ehlukile, chofoza u-Phenya bese ukhetha enye indawo. $_CLICK
+# ^UnDirSubText
+""
+# ^UnDirBrowseText
+Khetha indawo ozokhipha kuyo i-$(^NameDA):
+# ^SpaceAvailable
+"Isikhala esikhona: "
+# ^SpaceRequired
+"Isikhala esidingekayo: "
+# ^UninstallingText
+I-$(^NameDA) izokhishwa endaweni elandelayo. $_CLICK
+# ^UninstallingSubText
+Iyayikhipha kule ndawo:
+# ^FileError
+Kube nephutha ekuvuleni leli fayela: \r\n\r\n$0\r\n\r\nChofoza u-Yeka ukuze ingaqhubeki iyifaka,\r\nu-Phinda ukuze uzame futhi, noma\r\nu-Ziba ukuze uleqe leli fayela.
+# ^FileError_NoIgnore
+Kube nephutha ekuvuleni leli fayela: \r\n\r\n$0\r\n\r\nChofoza u-Phinda ukuze uzame futhi, noma\r\nu-Khansela ukuze uyeke ukuyifaka.
+# ^CantWrite
+"Leli fayela alivuleki: "
+# ^CopyFailed
+Ukukopisha akuphumelelanga
+# ^CopyTo
+"Kopishela ku-"
+# ^Registering
+"Iyabhalisa: "
+# ^Unregistering
+"Iyasula: "
+# ^SymbolNotFound
+"Lolu phawu alutholakalanga: "
+# ^CouldNotLoad
+"Ayikwazanga ukuvula: "
+# ^CreateFolder
+"Vula indawo: "
+# ^CreateShortcut
+"Yenza indlela esheshayo: "
+# ^CreatedUninstaller
+"Izingxenye ezizokhishwa: "
+# ^Delete
+"Sula ifayela: "
+# ^DeleteOnReboot
+"Lisule lapho ngiphinda ngivula umshini: "
+# ^ErrorCreatingShortcut
+"Kube nephutha ekwenzeni indlela esheshayo: "
+# ^ErrorCreating
+"Kube nephutha ekwenzeni lokhu: "
+# ^ErrorDecompressing
+Kube nephutha ekufingqeni ukwaziswa! Ingabe ithuluzi lokuyifaka lonakele?
+# ^ErrorRegistering
+Kube nephutha lokubhalisa i-DLL
+# ^ExecShell
+"ExecShell: "
+# ^Exec
+"Vula: "
+# ^Extract
+"Qaqa: "
+# ^ErrorWriting
+"Qaqa: kube nephutha ekuvuleni ifayela "
+# ^InvalidOpcode
+Ithuluzi lokuyifaka lonakele: i-opcode ayisebenzi
+# ^NoOLE
+"Ayikho i-OLE yalokhu: "
+# ^OutputFolder
+"Indawo okukhishelwa kuyo: "
+# ^RemoveFolder
+"Susa le ndawo: "
+# ^RenameOnReboot
+"Shintsha igama ngemva kokuphinda uvule umshini: "
+# ^Rename
+"Shintsha igama: "
+# ^Skipped
+"Leqiwe: "
+# ^CopyDetails
+Kopisha Imininingwane
+# ^LogInstall
+Gcina imininingwane yokuyifaka
+# ^Byte
+B
+# ^Kilo
+K
+# ^Mega
+M
+# ^Giga
+G

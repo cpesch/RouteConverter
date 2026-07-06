@@ -1,0 +1,9 @@
+PortableApps.com Taskbar
+
+Pin an exe or lnk file to the Windows taskbar. Works with Windows 10 build 1093 or later and Windows 11
+
+Usage: PortableAppsTaskbar.exe "path\to\exe\or\link\file"
+
+License: GPL 2.0, NSIS plugin MPL
+
+Copyright: 2024 John T. Haller of PortableApps.com

@@ -1,0 +1,9 @@
+Pin to Taskbar Legacy
+
+Pin an exe or lnk file to the Windows taskbar. Works with 32-bit and 64-bit Windows 7, Windows 8/8.1, and Windows 10 prior to build 1089
+
+Usage: pttb-legacy.exe "path\to\exe\or\link\file"
+
+License: GPL 2.0
+
+Copyright: 2024 John T. Haller of PortableApps.com

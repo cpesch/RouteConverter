@@ -1,0 +1,621 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Languages &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Using the PortableApps.com Launcher" href="index.html" />
+    <link rel="next" title="Making Java applications portable" href="java.html" />
+    <link rel="prev" title="Files and directories" href="files-and-directories.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-topics-languages" class="page withsidebar">
+    
+  <div class="section" id="languages">
+<span id="index-0"></span><span id="id1"></span><h1>Languages<a class="headerlink" href="#languages" title="Permalink to this headline">¶</a></h1>
+<p>The PortableApps.com Launcher supports automatic language switching of
+applications when launched from the PortableApps.com Platform, by a series of
+environment variables. This document discusses how to go about getting language
+setting working for your application, and some quirks of the system.</p>
+<div class="section" id="the-environment-variables">
+<h2>The environment variables<a class="headerlink" href="#the-environment-variables" title="Permalink to this headline">¶</a></h2>
+<p><a class="reference internal" href="../ref/envsub.html#ref-envsub-language"><em>Language variables</em></a> covers the default variables which are available. If
+those environment variables are enough for use in a <a class="reference internal" href="../ref/launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a>
+section, then you shouldn&#8217;t need to go beyond here.</p>
+</div>
+<div class="section" id="setting-a-custom-language-environment-variable">
+<span id="languages-custom"></span><h2>Setting a custom language environment variable<a class="headerlink" href="#setting-a-custom-language-environment-variable" title="Permalink to this headline">¶</a></h2>
+<p>Constructing a custom language environment variable is done with the
+<a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[Language]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[Language]</span></tt></a> and <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageStrings]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageStrings]</span></tt></a> sections, and
+the final result is placed in <a class="reference internal" href="../ref/envsub.html#std:env-PAL:LanguageCustom"><tt class="xref std std-env docutils literal"><span class="pre">%PAL:LanguageCustom%</span></tt></a>.
+Here is the order in which things happen.</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-key-[Language]:Base"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Language]:Base</span></tt></a> is read and environment variables are parsed
+(this will normally be other <a class="reference internal" href="../ref/envsub.html#ref-envsub-language"><em>language variables</em></a>).</li>
+<li>The key defined by that value is looked up in the section
+<a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageStrings]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageStrings]</span></tt></a> (into a variable we&#8217;ll call <tt class="docutils literal"><span class="pre">value</span></tt>).</li>
+<li>If that key did not exist (and so <tt class="docutils literal"><span class="pre">value</span></tt> is undefined), then
+<a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-key-[Language]:Default"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Language]:Default</span></tt></a> is read (with environment variable parsing)
+into <tt class="docutils literal"><span class="pre">value</span></tt> if it exists; if it doesn&#8217;t exist then
+<a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-key-[Language]:Base"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Language]:Base</span></tt></a> (with environment variables parsed; the value we
+looked up in <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageStrings]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageStrings]</span></tt></a> before) is used.</li>
+<li><tt class="docutils literal"><span class="pre">%PAL:LanguageCustom%</span></tt> is set to <tt class="docutils literal"><span class="pre">value</span></tt>.</li>
+<li>Now we come to checking if a file exists. This is handy when you have a
+whole table of, for example, glibc-compliant names, but not all possible
+files are there and if an invalid language is specified the application will
+cause problems. It becomes convenient to check if a certain file exists, and
+if it doesn&#8217;t, reverting to a default value.</li>
+<li>If <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-key-[Language]:CheckIfExists"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Language]:CheckIfExists</span></tt></a> is not set, the final value is
+<tt class="docutils literal"><span class="pre">value</span></tt> (and this process stops).  Otherwise, it is read and environment
+variables are parsed.</li>
+<li>That file is checked for existence: for example, you could have a value of
+<tt class="docutils literal"><span class="pre">%PAL:AppDir%\AppName\locales\%PAL:LanguageCustom%.mo</span></tt>. You should have
+<tt class="docutils literal"><span class="pre">%PAL:LanguageCustom%</span></tt> at least once in this value (otherwise there
+wouldn&#8217;t seem much point in it).</li>
+<li>If this file does not exist, then <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-key-[Language]:DefaultIfNotExists"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Language]:DefaultIfNotExists</span></tt></a>
+is read, environment variables parsed in it, and set as the value for
+<tt class="docutils literal"><span class="pre">%PAL:LanguageCustom%</span></tt>.</li>
+</ol>
+<p><strong>Note:</strong> normally you will want to use only one of
+<a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-key-[Language]:Default"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Language]:Default</span></tt></a> and <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-key-[Language]:DefaultIfNotExists"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Language]:DefaultIfNotExists</span></tt></a>.</p>
+<p>Here is a diagram of how it works:</p>
+<img alt="../_images/languages-custom.png" src="../_images/languages-custom.png" />
+<p>When the portable application is not launched from the PortableApps.com
+Platform, to maintain the user&#8217;s language setting, the custom language should
+be read from a file with the aid of the <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageFile]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageFile]</span></tt></a> section,
+if this is possible.</p>
+</div>
+<div class="section" id="other-ways">
+<h2>Other ways<a class="headerlink" href="#other-ways" title="Permalink to this headline">¶</a></h2>
+<p>If you really can&#8217;t make language switching work as you need it to, you can
+<a class="reference internal" href="../advanced/custom.html#custom-code-segment"><em>write a custom segment</em></a> to do what you need.
+Remember then that you will need to compile this new code with the
+PortableApps.com Launcher Generator. Also please try <a class="reference internal" href="../help.html#help"><em>contacting Chris
+Morgan</em></a> as any code you write or a new language situation may be useful
+for putting into the PortableApps.com Launcher itself.</p>
+</div>
+<div class="section" id="language-variable-values">
+<span id="languages-values"></span><h2>Language variable values<a class="headerlink" href="#language-variable-values" title="Permalink to this headline">¶</a></h2>
+<p>Here is a table of language variables and the values they are given. (All the
+variables in this table have <tt class="docutils literal"><span class="pre">PortableApps.com</span></tt> prefixed to them, see
+<a class="reference internal" href="../ref/envsub.html#ref-envsub-language"><em>Language variables</em></a> for the full names.)</p>
+<p><strong>Note:</strong> <a class="reference internal" href="../ref/envsub.html#std:env-PortableApps.comLocaleName"><tt class="xref std std-env docutils literal"><span class="pre">PortableApps.comLocaleName</span></tt></a> will be in uppercase for users of
+the PortableApps.com Platform 2.0 Beta 5 and earlier. If this matters, you may
+need to use the <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageStrings]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageStrings]</span></tt></a> section.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="12%" />
+<col width="11%" />
+<col width="11%" />
+<col width="11%" />
+<col width="8%" />
+<col width="26%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">LocaleName</th>
+<th class="head">LanguageCode</th>
+<th class="head">LocaleCode2</th>
+<th class="head">LocaleCode3</th>
+<th class="head">Localeglibc</th>
+<th class="head">LocaleID</th>
+<th class="head">LocaleWinName</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Afrikaans</td>
+<td>af</td>
+<td>af</td>
+<td>afr</td>
+<td>af</td>
+<td>1078</td>
+<td>LANG_AFRIKAANS</td>
+</tr>
+<tr class="row-odd"><td>Albanian</td>
+<td>sq</td>
+<td>sq</td>
+<td>sqi</td>
+<td>sq</td>
+<td>1052</td>
+<td>LANG_ALBANIAN</td>
+</tr>
+<tr class="row-even"><td>Arabic</td>
+<td>ar-sa</td>
+<td>ar</td>
+<td>ara</td>
+<td>ar</td>
+<td>1025</td>
+<td>LANG_ARABIC</td>
+</tr>
+<tr class="row-odd"><td>Basque</td>
+<td>eu</td>
+<td>eu</td>
+<td>eus</td>
+<td>eu</td>
+<td>1069</td>
+<td>LANG_BASQUE</td>
+</tr>
+<tr class="row-even"><td>Belarussian</td>
+<td>be</td>
+<td>be</td>
+<td>bel</td>
+<td>be</td>
+<td>1059</td>
+<td>LANG_BELARUSSIAN</td>
+</tr>
+<tr class="row-odd"><td>Bulgarian</td>
+<td>bg</td>
+<td>bg</td>
+<td>bul</td>
+<td>bg</td>
+<td>1026</td>
+<td>LANG_BULGARIAN</td>
+</tr>
+<tr class="row-even"><td>Catalan</td>
+<td>ca</td>
+<td>ca</td>
+<td>cat</td>
+<td>ca</td>
+<td>1027</td>
+<td>LANG_CATALAN</td>
+</tr>
+<tr class="row-odd"><td>SimpChinese</td>
+<td>zh-cn</td>
+<td>zh</td>
+<td>zho</td>
+<td>zh_CN</td>
+<td>2052</td>
+<td>LANG_SIMPCHINESE</td>
+</tr>
+<tr class="row-even"><td>TradChinese</td>
+<td>zh-tw</td>
+<td>zh</td>
+<td>zho</td>
+<td>zh_TW</td>
+<td>1028</td>
+<td>LANG_TRADCHINESE</td>
+</tr>
+<tr class="row-odd"><td>Croatian</td>
+<td>hr</td>
+<td>hr</td>
+<td>hrv</td>
+<td>hr</td>
+<td>1050</td>
+<td>LANG_CROATIAN</td>
+</tr>
+<tr class="row-even"><td>Czech</td>
+<td>cs</td>
+<td>cs</td>
+<td>ces</td>
+<td>cs</td>
+<td>1029</td>
+<td>LANG_CZECH</td>
+</tr>
+<tr class="row-odd"><td>Danish</td>
+<td>da</td>
+<td>da</td>
+<td>dan</td>
+<td>da</td>
+<td>1030</td>
+<td>LANG_DANISH</td>
+</tr>
+<tr class="row-even"><td>Dutch</td>
+<td>nl</td>
+<td>nl</td>
+<td>nld</td>
+<td>nl</td>
+<td>1043</td>
+<td>LANG_DUTCH</td>
+</tr>
+<tr class="row-odd"><td>English</td>
+<td>en</td>
+<td>en</td>
+<td>eng</td>
+<td>en_US</td>
+<td>1033</td>
+<td>LANG_ENGLISH</td>
+</tr>
+<tr class="row-even"><td>Estonian</td>
+<td>et</td>
+<td>et</td>
+<td>est</td>
+<td>et</td>
+<td>1061</td>
+<td>LANG_ESTONIAN</td>
+</tr>
+<tr class="row-odd"><td>Farsi</td>
+<td>fa</td>
+<td>fa</td>
+<td>fas</td>
+<td>fa</td>
+<td>1065</td>
+<td>LANG_FARSI</td>
+</tr>
+<tr class="row-even"><td>Filipino</td>
+<td>tl</td>
+<td>tl</td>
+<td>fil</td>
+<td>tl</td>
+<td>1124</td>
+<td>LANG_FILIPINO</td>
+</tr>
+<tr class="row-odd"><td>Finnish</td>
+<td>fi</td>
+<td>fi</td>
+<td>fin</td>
+<td>fi</td>
+<td>1035</td>
+<td>LANG_FINNISH</td>
+</tr>
+<tr class="row-even"><td>French</td>
+<td>fr</td>
+<td>fr</td>
+<td>fra</td>
+<td>fr</td>
+<td>1036</td>
+<td>LANG_FRENCH</td>
+</tr>
+<tr class="row-odd"><td>Galician</td>
+<td>gl</td>
+<td>gl</td>
+<td>glg</td>
+<td>gl</td>
+<td>1110</td>
+<td>LANG_GALICIAN</td>
+</tr>
+<tr class="row-even"><td>German</td>
+<td>de</td>
+<td>de</td>
+<td>ger</td>
+<td>de</td>
+<td>1031</td>
+<td>LANG_GERMAN</td>
+</tr>
+<tr class="row-odd"><td>Greek</td>
+<td>el</td>
+<td>el</td>
+<td>ell</td>
+<td>el</td>
+<td>1032</td>
+<td>LANG_GREEK</td>
+</tr>
+<tr class="row-even"><td>Hebrew</td>
+<td>he</td>
+<td>he</td>
+<td>heb</td>
+<td>he</td>
+<td>1037</td>
+<td>LANG_HEBREW</td>
+</tr>
+<tr class="row-odd"><td>Hungarian</td>
+<td>hu</td>
+<td>hu</td>
+<td>hun</td>
+<td>hu</td>
+<td>1038</td>
+<td>LANG_HUNGARIAN</td>
+</tr>
+<tr class="row-even"><td>Indonesian</td>
+<td>id</td>
+<td>id</td>
+<td>ina</td>
+<td>id</td>
+<td>1057</td>
+<td>LANG_INDONESIAN</td>
+</tr>
+<tr class="row-odd"><td>Irish</td>
+<td>ga</td>
+<td>ga</td>
+<td>gle</td>
+<td>ga</td>
+<td>2108</td>
+<td>LANG_IRISH</td>
+</tr>
+<tr class="row-even"><td>Italian</td>
+<td>it</td>
+<td>it</td>
+<td>ita</td>
+<td>it</td>
+<td>1040</td>
+<td>LANG_ITALIAN</td>
+</tr>
+<tr class="row-odd"><td>Japanese</td>
+<td>ja</td>
+<td>ja</td>
+<td>jpn</td>
+<td>ja</td>
+<td>1041</td>
+<td>LANG_JAPANESE</td>
+</tr>
+<tr class="row-even"><td>Korean</td>
+<td>ko</td>
+<td>ko</td>
+<td>kor</td>
+<td>ko</td>
+<td>1042</td>
+<td>LANG_KOREAN</td>
+</tr>
+<tr class="row-odd"><td>Latvian</td>
+<td>lv</td>
+<td>lv</td>
+<td>lav</td>
+<td>lv</td>
+<td>1062</td>
+<td>LANG_LATVIAN</td>
+</tr>
+<tr class="row-even"><td>Lithuanian</td>
+<td>lt</td>
+<td>lt</td>
+<td>lit</td>
+<td>lt</td>
+<td>1063</td>
+<td>LANG_LITHUANIAN</td>
+</tr>
+<tr class="row-odd"><td>Luxembourgish</td>
+<td>lb</td>
+<td>lb</td>
+<td>ltz</td>
+<td>lb</td>
+<td>1033</td>
+<td>LANG_LUXEMBOURGISH</td>
+</tr>
+<tr class="row-even"><td>Macedonian</td>
+<td>mk</td>
+<td>mk</td>
+<td>mkd</td>
+<td>mk</td>
+<td>1071</td>
+<td>LANG_MACEDONIAN</td>
+</tr>
+<tr class="row-odd"><td>Malay</td>
+<td>ms</td>
+<td>ms</td>
+<td>msa</td>
+<td>ms</td>
+<td>1086</td>
+<td>LANG_MALAY</td>
+</tr>
+<tr class="row-even"><td>Norwegian</td>
+<td>no</td>
+<td>no</td>
+<td>nor</td>
+<td>nb</td>
+<td>1044</td>
+<td>LANG_NORWEGIAN</td>
+</tr>
+<tr class="row-odd"><td>Polish</td>
+<td>pl</td>
+<td>pl</td>
+<td>pol</td>
+<td>pl</td>
+<td>1045</td>
+<td>LANG_POLISH</td>
+</tr>
+<tr class="row-even"><td>Portuguese</td>
+<td>pt</td>
+<td>pt</td>
+<td>por</td>
+<td>pt</td>
+<td>2070</td>
+<td>LANG_PORTUGUESE</td>
+</tr>
+<tr class="row-odd"><td>PortugueseBR</td>
+<td>pt-br</td>
+<td>pt</td>
+<td>por</td>
+<td>pt_BR</td>
+<td>1046</td>
+<td>LANG_PORTUGUESEBR</td>
+</tr>
+<tr class="row-even"><td>Romanian</td>
+<td>ro</td>
+<td>ro</td>
+<td>ron</td>
+<td>ro</td>
+<td>1048</td>
+<td>LANG_ROMANIAN</td>
+</tr>
+<tr class="row-odd"><td>Russian</td>
+<td>ru</td>
+<td>ru</td>
+<td>rus</td>
+<td>ru</td>
+<td>1049</td>
+<td>LANG_RUSSIAN</td>
+</tr>
+<tr class="row-even"><td>Serbian</td>
+<td>sr</td>
+<td>sr</td>
+<td>srp</td>
+<td>sr_RS</td>
+<td>3098</td>
+<td>LANG_SERBIAN</td>
+</tr>
+<tr class="row-odd"><td>SerbianLatin</td>
+<td>sr</td>
+<td>sr</td>
+<td>srp</td>
+<td>sr</td>
+<td>2074</td>
+<td>LANG_SERBIANLATIN</td>
+</tr>
+<tr class="row-even"><td>Slovak</td>
+<td>sk</td>
+<td>sk</td>
+<td>slk</td>
+<td>sk</td>
+<td>1051</td>
+<td>LANG_SLOVAK</td>
+</tr>
+<tr class="row-odd"><td>Slovenian</td>
+<td>sl</td>
+<td>sl</td>
+<td>slv</td>
+<td>sl</td>
+<td>1060</td>
+<td>LANG_SLOVENIAN</td>
+</tr>
+<tr class="row-even"><td>Spanish</td>
+<td>es</td>
+<td>es</td>
+<td>spa</td>
+<td>es</td>
+<td>1034</td>
+<td>LANG_SPANISH</td>
+</tr>
+<tr class="row-odd"><td>SpanishInternational</td>
+<td>es-mx</td>
+<td>es</td>
+<td>spa</td>
+<td>es</td>
+<td>3082</td>
+<td>LANG_SPANISHINTERNATIONAL</td>
+</tr>
+<tr class="row-even"><td>Sundanese</td>
+<td>su</td>
+<td>su</td>
+<td>sun</td>
+<td>su</td>
+<td>9999</td>
+<td>LANG_SUNDANESE</td>
+</tr>
+<tr class="row-odd"><td>Swedish</td>
+<td>sv</td>
+<td>sv</td>
+<td>swe</td>
+<td>sv</td>
+<td>1053</td>
+<td>LANG_SWEDISH</td>
+</tr>
+<tr class="row-even"><td>Thai</td>
+<td>th</td>
+<td>th</td>
+<td>tha</td>
+<td>th</td>
+<td>1054</td>
+<td>LANG_THAI</td>
+</tr>
+<tr class="row-odd"><td>Turkish</td>
+<td>tr</td>
+<td>tr</td>
+<td>tur</td>
+<td>tr</td>
+<td>1055</td>
+<td>LANG_TURKISH</td>
+</tr>
+<tr class="row-even"><td>Ukrainian</td>
+<td>uk</td>
+<td>uk</td>
+<td>ukr</td>
+<td>uk</td>
+<td>1058</td>
+<td>LANG_UKRAINIAN</td>
+</tr>
+<tr class="row-odd"><td>Vietnamese</td>
+<td>vi</td>
+<td>vi</td>
+<td>vie</td>
+<td>vi</td>
+<td>1066</td>
+<td>LANG_VIETNAMESE</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Languages</a><ul>
+<li><a class="reference internal" href="#the-environment-variables">The environment variables</a></li>
+<li><a class="reference internal" href="#setting-a-custom-language-environment-variable">Setting a custom language environment variable</a></li>
+<li><a class="reference internal" href="#other-ways">Other ways</a></li>
+<li><a class="reference internal" href="#language-variable-values">Language variable values</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="files-and-directories.html">Files and directories</a></li>
+    
+    
+      <li>Next: <a href="java.html">Making Java applications portable</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Using the PortableApps.com Launcher</a>
+        
+        <ul><li>Languages</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="files-and-directories.html" title="Files and directories">previous</a>  | <a href="index.html" title="Using the PortableApps.com Launcher" accesskey="U">up</a>  | <a href="java.html" title="Making Java applications portable">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

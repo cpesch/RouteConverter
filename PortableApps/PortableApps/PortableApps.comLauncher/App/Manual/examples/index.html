@@ -1,0 +1,332 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Examples &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="next" title="Worked Example: Scribus" href="scribus.html" />
+    <link rel="prev" title="Features for the portable app developer" href="../features/developer.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-examples-index" class="page withsidebar">
+    
+  <div class="section" id="examples">
+<span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>Here are some fully worked examples for the PortableApps.com Launcher.</p>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="scribus.html">Worked Example: Scribus</a></li>
+<li class="toctree-l1"><a class="reference internal" href="7-zip.html">Worked Example: 7-Zip</a></li>
+</ul>
+</div>
+<p><em>More worked examples will be written some time. For the moment you can look at
+applications which have been made portable with the PortableApps.com Launcher
+and work out how they work manually.</em></p>
+</div>
+<div class="section" id="apps-using-the-portableapps-com-launcher">
+<span id="apps-using-pal"></span><h1>Apps using the PortableApps.com Launcher<a class="headerlink" href="#apps-using-the-portableapps-com-launcher" title="Permalink to this headline">¶</a></h1>
+<p>When learning to use the PortableApps.com Launcher, referring to various
+existing apps which already use the PortableApps.com Launcher can be very
+helpful.</p>
+<p>Here is a list of some of the apps which have been officially released at
+PortableApps.com which use the PortableApps.com Launcher and notes on special
+features that they use.</p>
+<p>For the moment, this list is manually updated and a very long distance away
+from being comprehensive. There are plans to automatically scrape information
+about all apps and make this page a comprehensive reference to usage of
+features. With only one or two exceptions, all the apps released since December
+2010 (over 120 apps) use the PortableApps.com Launcher, and many of the older
+apps are updated to use the PortableApps.com Launcher as new releases come out.</p>
+<div class="section" id="id2">
+<h2><a class="reference external" href="http://portableapps.com/apps/games/assaultcube_portable">AssaultCube</a><a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Running a batch file instead of an executable (including using
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:HideCommandLineWindow"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:HideCommandLineWindow</span></tt></a>)</li>
+<li><a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:LaunchAppAfterSplash"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:LaunchAppAfterSplash</span></tt></a></li>
+<li>Waiting for multiple executables</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h2><a class="reference external" href="http://portableapps.com/apps/music_video/audacity_portable">Audacity</a><a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Writing INI strings including using paths with double backslashes</li>
+<li>Updating drive letters</li>
+<li>Moving a directory</li>
+<li>Language switching including <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageFile]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageFile]</span></tt></a> language
+preservation and <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageStrings]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageStrings]</span></tt></a> mappings</li>
+<li>Single portable app instance but multiple app instances</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h2><a class="reference external" href="http://portableapps.com/apps/utilities/console_portable">Console</a><a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Updating drive letters</li>
+<li>Moving a file</li>
+<li>Setting environment variables</li>
+</ul>
+</div>
+<div class="section" id="id5">
+<h2><a class="reference external" href="http://portableapps.com/apps/utilities/converber_portable">Converber</a><a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Moving files</li>
+<li>Full automatic language switching</li>
+</ul>
+</div>
+<div class="section" id="finance-explorer">
+<h2><a class="reference external" href="http://portableapps.com/apps/office/finance_explorer_portable">Finance Explorer</a><a class="headerlink" href="#finance-explorer" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Moving files</li>
+</ul>
+</div>
+<div class="section" id="id7">
+<h2><a class="reference external" href="http://portableapps.com/apps/utilities/free_upx_portable">Free UPX</a><a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Updating drive letters</li>
+<li>Moving a file</li>
+</ul>
+</div>
+<div class="section" id="id8">
+<h2><a class="reference external" href="http://portableapps.com/apps/development/gvim_portable">gVim</a><a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Allowing multiple instances of portable and non-portable to mix</li>
+<li>Not needing to wait for the program to finish</li>
+<li>Command line arguments</li>
+<li>Environment variables</li>
+<li>Language switching</li>
+<li>Updating drive letters</li>
+</ul>
+</div>
+<div class="section" id="irfanview">
+<h2><a class="reference external" href="http://portableapps.com/apps/graphics_pictures/irfanview_portable">IrfanView</a><a class="headerlink" href="#irfanview" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Allowing directory moving</li>
+<li>Throw-away registry keys</li>
+<li>Updating drive letters and configuration files</li>
+</ul>
+</div>
+<div class="section" id="id10">
+<h2><a class="reference external" href="http://portableapps.com/apps/education/marble_portable">Marble</a><a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Working directory</li>
+<li>Registry key</li>
+<li>Pruning registry tree</li>
+<li>Moving a directory</li>
+<li>Qt registry key cleanup</li>
+</ul>
+</div>
+<div class="section" id="id11">
+<h2><a class="reference external" href="http://portableapps.com/apps/development/nsis_portable">NSIS</a><a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Multiple executables (including
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:ProgramExecutableWhenParameters"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutableWhenParameters</span></tt></a>)</li>
+<li>Registry key</li>
+<li>Updating drive letters</li>
+</ul>
+</div>
+<div class="section" id="id12">
+<h2><a class="reference external" href="http://portableapps.com/apps/games/openttd_portable">OpenTTD</a><a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Working directory</li>
+<li>Launch app after splash (can be fullscreen)</li>
+<li>No need for clean TEMP</li>
+<li>Not waiting for the app</li>
+<li>Full automatic language switching.</li>
+</ul>
+</div>
+<div class="section" id="id13">
+<h2><a class="reference external" href="http://portableapps.com/apps/internet/opera_portable">Opera</a><a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Registry key</li>
+<li>Writing INI strings</li>
+<li>Updating drive letters</li>
+<li>Moving a directory</li>
+<li>Language switching including <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageFile]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageFile]</span></tt></a> language
+preservation and <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageStrings]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageStrings]</span></tt></a> mappings</li>
+</ul>
+</div>
+<div class="section" id="paul-s-extreme-sound-stretch">
+<h2><a class="reference external" href="http://portableapps.com/apps/music_video/paul_stretch_portable">Paul&#8217;s Extreme Sound Stretch</a><a class="headerlink" href="#paul-s-extreme-sound-stretch" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Working directory</li>
+<li>Moving a directory</li>
+<li>Updating drive letters</li>
+</ul>
+</div>
+<div class="section" id="id15">
+<h2><a class="reference external" href="http://portableapps.com/apps/internet/pchat_portable">PChat</a><a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Language switching</li>
+<li>Environment variables</li>
+<li>Command line arguments</li>
+</ul>
+</div>
+<div class="section" id="id16">
+<h2><a class="reference external" href="http://portableapps.com/apps/utilities/regshot_portable">Regshot</a><a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Working directory</li>
+<li>Allowing directory moving</li>
+<li>Moving a file</li>
+<li>Updating drive letter and full package path</li>
+</ul>
+</div>
+<div class="section" id="id17">
+<h2><a class="reference external" href="http://portableapps.com/apps/music_video/smplayer_portable">SMPlayer</a><a class="headerlink" href="#id17" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Command line arguments</li>
+<li>Support enabled for <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:DirectoryMoveOK"><tt class="xref std std-ini-key docutils literal"><span class="pre">directory</span> <span class="pre">moving</span></tt></a>
+(though not yet released)</li>
+<li>Writing INI strings</li>
+<li>Updating drive letters</li>
+<li>Moving a directory</li>
+<li>Language switching including <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageFile]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageFile]</span></tt></a> language
+preservation and <a class="reference internal" href="../ref/launcher.ini/language.html#std:ini-section-[LanguageStrings]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageStrings]</span></tt></a> mappings</li>
+</ul>
+</div>
+<div class="section" id="sqlite-database-browser">
+<h2><a class="reference external" href="http://portableapps.com/apps/development/sqlite_database_browser_portable">SQLite Database Browser</a><a class="headerlink" href="#sqlite-database-browser" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Working directory (and that&#8217;s all - a good example of keeping it simple)</li>
+</ul>
+</div>
+<div class="section" id="id19">
+<h2><a class="reference external" href="http://portableapps.com/apps/games/watomic_portable">WAtomic</a><a class="headerlink" href="#id19" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Launch app after splash</li>
+<li>Moving files</li>
+<li>Pruning a directory if empty</li>
+</ul>
+</div>
+<div class="section" id="id20">
+<h2><a class="reference external" href="http://portableapps.com/apps/office/windjview_portable">WinDjView</a><a class="headerlink" href="#id20" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Allowing directory moving</li>
+<li>Registry key</li>
+<li>Registry value writing</li>
+<li>Pruning registry tree</li>
+<li>Drive letter updating</li>
+<li>Full automatic language switching</li>
+</ul>
+</div>
+<div class="section" id="zaz-http-portableapps-com-apps-games-zaz-portable">
+<h2><cite>Zaz &lt;http://portableapps.com/apps/games/zaz_portable&gt;</cite><a class="headerlink" href="#zaz-http-portableapps-com-apps-games-zaz-portable" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Working directory</li>
+<li>Launch app after splash</li>
+<li>Moving a directory</li>
+<li>Full automatic language switching</li>
+</ul>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Examples</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#apps-using-the-portableapps-com-launcher">Apps using the PortableApps.com Launcher</a><ul>
+<li><a class="reference internal" href="#id2">AssaultCube</a></li>
+<li><a class="reference internal" href="#id3">Audacity</a></li>
+<li><a class="reference internal" href="#id4">Console</a></li>
+<li><a class="reference internal" href="#id5">Converber</a></li>
+<li><a class="reference internal" href="#finance-explorer">Finance Explorer</a></li>
+<li><a class="reference internal" href="#id7">Free UPX</a></li>
+<li><a class="reference internal" href="#id8">gVim</a></li>
+<li><a class="reference internal" href="#irfanview">IrfanView</a></li>
+<li><a class="reference internal" href="#id10">Marble</a></li>
+<li><a class="reference internal" href="#id11">NSIS</a></li>
+<li><a class="reference internal" href="#id12">OpenTTD</a></li>
+<li><a class="reference internal" href="#id13">Opera</a></li>
+<li><a class="reference internal" href="#paul-s-extreme-sound-stretch">Paul&#8217;s Extreme Sound Stretch</a></li>
+<li><a class="reference internal" href="#id15">PChat</a></li>
+<li><a class="reference internal" href="#id16">Regshot</a></li>
+<li><a class="reference internal" href="#id17">SMPlayer</a></li>
+<li><a class="reference internal" href="#sqlite-database-browser">SQLite Database Browser</a></li>
+<li><a class="reference internal" href="#id19">WAtomic</a></li>
+<li><a class="reference internal" href="#id20">WinDjView</a></li>
+<li><a class="reference internal" href="#zaz-http-portableapps-com-apps-games-zaz-portable"><cite>Zaz &lt;http://portableapps.com/apps/games/zaz_portable&gt;</cite></a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="../features/developer.html">Features for the portable app developer</a></li>
+    
+    
+      <li>Next: <a href="scribus.html">Worked Example: Scribus</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+        <ul><li>Examples</li></ul>
+        
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="../features/developer.html" title="Features for the portable app developer">previous</a>  | <a href="../index.html" title="PortableApps.com Launcher 2.2 documentation" accesskey="U">up</a>  | <a href="scribus.html" title="Worked Example: Scribus">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

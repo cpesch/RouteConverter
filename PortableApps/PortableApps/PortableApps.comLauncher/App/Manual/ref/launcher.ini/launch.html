@@ -1,0 +1,690 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>[Launch] &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="launcher.ini" href="index.html" />
+    <link rel="next" title="[Activate]" href="activate.html" />
+    <link rel="prev" title="launcher.ini" href="index.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-launcher.ini-launch" class="page withsidebar">
+    
+  <div class="section" id="launch">
+<span id="std:ini-section-[Launch]"></span><h1>[Launch]<a class="headerlink" href="#launch" title="Permalink to this headline">¶</a></h1>
+<p>The <tt class="docutils literal"><span class="pre">[Launch]</span></tt> section provides details regarding the launching of the
+application and surrounding details. It&#8217;s also the &#8220;general&#8221; section for things
+which aren&#8217;t big enough to warrant their own section.</p>
+<div class="section" id="appname">
+<span id="std:ini-key-[Launch]:AppName"></span><h2>AppName<a class="headerlink" href="#appname" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Value: <tt class="docutils literal"><span class="pre">App</span> <span class="pre">Name</span></tt></div>
+<div class="line">Deprecated.</div>
+</div>
+<hr class="docutils" />
+<p>Specify the application name (non-portable version) here, for displaying in the
+&#8220;already running&#8221; error box. If this is not specified, the value will be
+obtained from the <tt class="docutils literal"><span class="pre">Name</span></tt> field in appinfo.ini, minus <tt class="docutils literal"><span class="pre">Portable</span></tt> or <tt class="docutils literal"><span class="pre">,</span>
+<span class="pre">Portable</span> <span class="pre">Edition</span></tt>. Please consider using the standard portable application
+naming scheme (&#8220;<em>AppName</em> Portable&#8221;) instead of specifying this value.</p>
+<p><strong>Example:</strong> for the program &#8220;App Name&#8221;, this value would be <tt class="docutils literal"><span class="pre">App</span> <span class="pre">Name</span></tt>
+(though it should be unset and <tt class="docutils literal"><span class="pre">Name</span></tt> in AppInfo.ini should be set to <tt class="docutils literal"><span class="pre">App</span>
+<span class="pre">Name</span> <span class="pre">Portable</span></tt> or <tt class="docutils literal"><span class="pre">App</span> <span class="pre">Name,</span> <span class="pre">Portable</span> <span class="pre">Edition</span></tt>.)</p>
+</div>
+<div class="section" id="programexecutable">
+<span id="std:ini-key-[Launch]:ProgramExecutable"></span><h2>ProgramExecutable<a class="headerlink" href="#programexecutable" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory.</div>
+</div>
+<hr class="docutils" />
+<p>Specify the program to be launched by the PortableApps.com Launcher here,
+relative to the App directory of the portable application.</p>
+<p>There is a special case for Java applications; after specifying
+<a class="reference internal" href="activate.html#std:ini-key-[Activate]:Java"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Activate]:Java</span></tt></a><tt class="docutils literal"><span class="pre">=require</span></tt> they can specify a value of
+<tt class="docutils literal"><span class="pre">java.exe</span></tt> or <tt class="docutils literal"><span class="pre">javaw.exe</span></tt> and it will be interpreted into the path to that
+executable in the Java Runtime Environment.</p>
+<p><strong>Example:</strong> inside the portable application package, the executable to run is
+at <tt class="docutils literal"><span class="pre">App\AppName\AppName.exe</span></tt>, so, after removing the <tt class="docutils literal"><span class="pre">App\</span></tt>,
+<a class="reference internal" href="#std:ini-key-[Launch]:ProgramExecutable"><tt class="xref std std-ini-key docutils literal"><span class="pre">ProgramExecutable</span></tt></a><tt class="docutils literal"><span class="pre">=AppName\AppName.exe</span></tt>.</p>
+<p>This is the lookup order for the various alternative forms of ProgramExecutable.
+At each level if the condition is not met or the value is not set, it goes on to
+the next.</p>
+<ul class="simple">
+<li><a class="reference internal" href="#std:ini-key-[Launch]:ProgramExecutableWhenParameters64"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutableWhenParameters64</span></tt></a> (only if 64-bit and
+parameters are given)</li>
+<li><a class="reference internal" href="#std:ini-key-[Launch]:ProgramExecutable64"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutable64</span></tt></a> (only if 64-bit)</li>
+<li><a class="reference internal" href="#std:ini-key-[Launch]:ProgramExecutableWhenParameters"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutableWhenParameters</span></tt></a> (only if parameters are
+given)</li>
+<li><a class="reference internal" href="#std:ini-key-[Launch]:ProgramExecutable"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutable</span></tt></a></li>
+</ul>
+</div>
+<div class="section" id="programexecutablewhenparameters">
+<span id="std:ini-key-[Launch]:ProgramExecutableWhenParameters"></span><h2>ProgramExecutableWhenParameters<a class="headerlink" href="#programexecutablewhenparameters" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>Specify the program to be launched by the PortableApps.com Launcher when
+command-line arguments are given here, relative to the App directory of the
+portable application. This has the effect of overriding <em class="xref std std-ref">ProgramExecutable</em> when specified if command-line arguments are
+given. If none are given, the value in ProgramExecutable will be used.</p>
+<p>All rules about Java for <a class="reference internal" href="#std:ini-key-[Launch]:ProgramExecutable"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutable</span></tt></a> hold with this
+value.</p>
+<p>This can be used for apps which launch a menu but the menu can be bypassed if
+parameters are passed. One example of this is the NSIS menu - when the program
+is launched, it is desirable for the menu, <tt class="docutils literal"><span class="pre">NSIS.exe</span></tt>, to be shown, but if a
+file is given to it in its command line, the NSIS compiler, <tt class="docutils literal"><span class="pre">makensisw.exe</span></tt>,
+should be launched, as the menu does not recognise file names given to it.</p>
+</div>
+<div class="section" id="programexecutable64">
+<span id="std:ini-key-[Launch]:ProgramExecutable64"></span><h2>ProgramExecutable64<a class="headerlink" href="#programexecutable64" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>An override for <em class="xref std std-ref">[Launch]:ProgramExecutable</em> when the portable app is
+running on a 64-bit operating system. Typically a portable app should not
+include a 64-bit version whether provided by the publisher or not, but if there
+are significant benefits in having a 64-bit version, or it is required for
+functionality (e.g. defragmentation or system information analysis), it may be
+included.</p>
+<p>All the rules of <em class="xref std std-ref">[Launch]:ProgramExecutable</em> hold for this.</p>
+</div>
+<div class="section" id="programexecutablewhenparameters64">
+<span id="std:ini-key-[Launch]:ProgramExecutableWhenParameters64"></span><h2>ProgramExecutableWhenParameters64<a class="headerlink" href="#programexecutablewhenparameters64" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>An override for <em class="xref std std-ref">[Launch]:ProgramExecutableWhenParameters</em> when the
+portable app is running on a 64-bit operating system. Typically a portable app
+should not include a 64-bit version whether provided by the publisher or not,
+but if there are significant benefits in having a 64-bit version, or it is
+required for functionality (e.g. defragmentation or system information
+analysis), it may be included.</p>
+<p>All the rules of <em class="xref std std-ref">[Launch]:ProgramExecutableWhenParameters</em> hold for this.</p>
+</div>
+<div class="section" id="commandlinearguments">
+<span id="std:ini-key-[Launch]:CommandLineArguments"></span><h2>CommandLineArguments<a class="headerlink" href="#commandlinearguments" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>If you need to pass any command line arguments to <a class="reference internal" href="#std:ini-key-[Launch]:ProgramExecutable"><tt class="xref std std-ini-key docutils literal"><span class="pre">ProgramExecutable</span></tt></a> to make it run or make it portable, specify them
+here. Remember that if your program is running from a path with spaces, you may
+need to put double quotation marks around the value, e.g. <tt class="docutils literal"><span class="pre">-d</span>
+<span class="pre">&quot;%PAL:DataDir%\settings&quot;</span></tt>. If you do so, you should put single or double
+quotation marks around the whole string, like this:
+<a class="reference internal" href="#std:ini-key-[Launch]:CommandLineArguments"><tt class="xref std std-ini-key docutils literal"><span class="pre">CommandLineArguments</span></tt></a><tt class="docutils literal"><span class="pre">='-d</span>
+<span class="pre">&quot;%PAL:DataDir%\settings&quot;'</span></tt>.</p>
+<p>Concerning the significance of quoting strings and how it will be interpreted,
+refer to <a class="reference internal" href="../../ini.html#ini-keys"><em>INI keys</em></a>.</p>
+<p>For Java applications, you will almost always need to specify parameters here.
+See <a class="reference internal" href="../../topics/java.html#java"><em>Making Java applications portable</em></a> for more information.</p>
+<p><strong>Example:</strong> the application being made portable accepts a
+<tt class="docutils literal"><span class="pre">--data-directory=</span></tt> command line argument to make it portable, but it does
+<em>not</em> require the string to be quoted:
+<a class="reference internal" href="#std:ini-key-[Launch]:CommandLineArguments"><tt class="xref std std-ini-key docutils literal"><span class="pre">CommandLineArguments</span></tt></a><tt class="docutils literal"><span class="pre">=--data-directory=%PAL:DataDir%\settings</span></tt></p>
+</div>
+<div class="section" id="workingdirectory">
+<span id="std:ini-key-[Launch]:WorkingDirectory"></span><h2>WorkingDirectory<a class="headerlink" href="#workingdirectory" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>If the application must be run from a certain working directory, either to
+store its settings there or so that it can find certain files critical to it,
+set it here. If the reason is so that it can find files, you may be able to
+circumvent this by placing the application&#8217;s directory in the <tt class="docutils literal"><span class="pre">PATH</span></tt>.  See
+<a class="reference internal" href="environment.html#std:ini-section-[Environment]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[Environment]</span></tt></a> for details on that technique.</p>
+<p>If possible, avoid using this as it will make relative files passed through the
+command line fail unless it is only a single file given (which will be
+automatically corrected).</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">%PAL:AppDir%\AppName</span></tt></p>
+</div>
+<div class="section" id="minos">
+<span id="std:ini-key-[Launch]:MinOS"></span><h2>MinOS<a class="headerlink" href="#minos" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: none / <tt class="docutils literal"><span class="pre">2000</span></tt> / <tt class="docutils literal"><span class="pre">XP</span></tt> / <tt class="docutils literal"><span class="pre">2003</span></tt> / <tt class="docutils literal"><span class="pre">Vista</span></tt> / <tt class="docutils literal"><span class="pre">2008</span></tt> / <tt class="docutils literal"><span class="pre">7</span></tt> / <tt class="docutils literal"><span class="pre">2008</span> <span class="pre">R2</span></tt></div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>If the application requires a certain operating system to run, specify the
+version here. The values provided above are in order of how they will be
+considered, so if for example you use the value <tt class="docutils literal"><span class="pre">Vista</span></tt>, it will tell the user
+that it won&#8217;t run on their operating system when they run it on Windows 2000,
+Windows XP or Windows Server 2003.</p>
+<p>There is no special value for Wine in Linux or Mac OS X; if it works, it works,
+if it doesn&#8217;t, it doesn&#8217;t.</p>
+</div>
+<div class="section" id="maxos">
+<span id="std:ini-key-[Launch]:MaxOS"></span><h2>MaxOS<a class="headerlink" href="#maxos" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: none / <tt class="docutils literal"><span class="pre">2000</span></tt> / <tt class="docutils literal"><span class="pre">XP</span></tt> / <tt class="docutils literal"><span class="pre">2003</span></tt> / <tt class="docutils literal"><span class="pre">Vista</span></tt> / <tt class="docutils literal"><span class="pre">2008</span></tt> / <tt class="docutils literal"><span class="pre">7</span></tt> / <tt class="docutils literal"><span class="pre">2008</span> <span class="pre">R2</span></tt></div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>If the application does not run above a certain version of Windows, specify that
+version here. Be cautious in doing this as often support will be improved in a
+later version of an application. The values provided above are in order of how
+they will be considered, so if for example you use the value <tt class="docutils literal"><span class="pre">Vista</span></tt>, it will
+tell the user that it won&#8217;t run on their operating system when they run it on
+Windows Server 2008, Windows 7 and Windows Server 2008 R2.</p>
+<p>There is no special value for Wine in Linux or Mac OS X; if it works, it works,
+if it doesn&#8217;t, it doesn&#8217;t.</p>
+</div>
+<div class="section" id="runasadmin">
+<span id="std:ini-key-[Launch]:RunAsAdmin"></span><h2>RunAsAdmin<a class="headerlink" href="#runasadmin" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">force</span></tt> / <tt class="docutils literal"><span class="pre">try</span></tt> / <tt class="docutils literal"><span class="pre">compile-force</span></tt> / none</div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 2.1: </span>added the <tt class="docutils literal"><span class="pre">compile-force</span></tt> value</p>
+<p>Setting this to <tt class="docutils literal"><span class="pre">force</span></tt> or <tt class="docutils literal"><span class="pre">try</span></tt> causes the user to be prompted to run the
+program as an administrator (or a UAC prompt on Windows Vista or Windows 7 when
+UAC is turned on). If the user cannot elevate to admin or cancels the operation
+or an error occurs, what happens next depends on the setting here.</p>
+<p>If the value is <tt class="docutils literal"><span class="pre">force</span></tt> then the portable application will quit, telling the
+user that it requires administrative privileges. General reasons for requiring
+administrative privileges are:</p>
+<ul class="simple">
+<li>being dependent upon services or drivers</li>
+<li>requiring settings which are stored in HKEY_LOCAL_MACHINE</li>
+</ul>
+<p>If the value is <tt class="docutils literal"><span class="pre">try</span></tt> then the user will be warned that some features of the
+portable application will not work. The application would like administrative
+privileges but they are not essential to the running of the application. General
+reasons for requesting (but not requiring) administrative privileges are:</p>
+<ul class="simple">
+<li>having extra features available with such privileges (such as unblocking
+certain firewall features, or optional improvement services, maybe to speed
+things up)</li>
+<li>storing settings in HKEY_LOCAL_MACHINE, but in a way which you can use the
+application without it, so that it works but loses settings while on that
+machine.</li>
+</ul>
+<p>It is worthwhile noting that just because an application stores its settings in
+HKEY_LOCAL_MACHINE does not mean that you must <tt class="docutils literal"><span class="pre">force</span></tt> running as
+administrator; it will often be valid to <tt class="docutils literal"><span class="pre">try</span></tt> instead, with the result that
+portable settings will not be loaded and no settings will be saved. In such a
+situation the recommended path of action is to contact the author of the
+original program and request that they modify their application to store its
+settings in HKEY_CURRENT_USER instead, which is probably where the settings
+should be.</p>
+<p>A special value, <tt class="docutils literal"><span class="pre">compile-force</span></tt>, is available for cases when <tt class="docutils literal"><span class="pre">force</span></tt>
+doesn&#8217;t work properly (there seem to be some cases with environment variables
+not working properly). Use it only if <tt class="docutils literal"><span class="pre">force</span></tt> doesn&#8217;t work, as it sets a flag
+in the executable so that the operating system handles running as admin rather
+than the launcher, so no friendly message is given to the user. Internally,
+this is the NSIS line <tt class="docutils literal"><span class="pre">RequestExecutionLevel</span> <span class="pre">admin</span></tt>. After setting this value
+you will need to regenerate the launcher. Also note that due to the way it
+works, the value <tt class="docutils literal"><span class="pre">compile-force</span></tt> is incompatible with the operating
+system-specific overrides below.</p>
+<p>You can override this value for specific operating systems with one or more of
+the values below. Sometimes an application may require administrative privileges
+on Vista and onwards but not on 2000, XP and 2003 (that is the usual division).
+In such a situation, you should probably set this to <tt class="docutils literal"><span class="pre">force</span></tt> and use values
+for 2000, XP and 2003, <tt class="docutils literal"><span class="pre">none</span></tt>, for future compatibility. On Linux or Mac with
+Wine, the user will always be reported as running as the administrator, and so
+you don&#8217;t need a special case for it.</p>
+</div>
+<div class="section" id="runasadmin2000">
+<span id="std:ini-key-[Launch]:RunAsAdmin2000"></span><h2>RunAsAdmin2000<a class="headerlink" href="#runasadmin2000" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">force</span></tt> / <tt class="docutils literal"><span class="pre">try</span></tt> / none</div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>If the application needs or can benefit from administrative privileges on
+Windows 2000, you can use this value to override <a class="reference internal" href="#std:ini-key-[Launch]:RunAsAdmin"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin</span></tt></a>.</p>
+</div>
+<div class="section" id="runasadminxp">
+<span id="std:ini-key-[Launch]:RunAsAdminXP"></span><h2>RunAsAdminXP<a class="headerlink" href="#runasadminxp" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">force</span></tt> / <tt class="docutils literal"><span class="pre">try</span></tt> / none</div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>If the application needs or can benefit from administrative privileges on
+Windows XP, you can use this value to override <a class="reference internal" href="#std:ini-key-[Launch]:RunAsAdmin"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin</span></tt></a>.</p>
+</div>
+<div class="section" id="runasadmin2003">
+<span id="std:ini-key-[Launch]:RunAsAdmin2003"></span><h2>RunAsAdmin2003<a class="headerlink" href="#runasadmin2003" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">force</span></tt> / <tt class="docutils literal"><span class="pre">try</span></tt> / none</div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>If the application needs or can benefit from administrative privileges on
+Windows Server 2003, you can use this value to override
+<a class="reference internal" href="#std:ini-key-[Launch]:RunAsAdmin"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin</span></tt></a>.</p>
+</div>
+<div class="section" id="runasadminvista">
+<span id="std:ini-key-[Launch]:RunAsAdminVista"></span><h2>RunAsAdminVista<a class="headerlink" href="#runasadminvista" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">force</span></tt> / <tt class="docutils literal"><span class="pre">try</span></tt> / none</div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>If the application needs or can benefit from administrative privileges on
+Windows Vista, you can use this value to override
+<a class="reference internal" href="#std:ini-key-[Launch]:RunAsAdmin"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin</span></tt></a>.</p>
+</div>
+<div class="section" id="runasadmin2008">
+<span id="std:ini-key-[Launch]:RunAsAdmin2008"></span><h2>RunAsAdmin2008<a class="headerlink" href="#runasadmin2008" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">force</span></tt> / <tt class="docutils literal"><span class="pre">try</span></tt> / none</div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>If the application needs or can benefit from administrative privileges on
+Windows Server 2008, you can use this value to override
+<a class="reference internal" href="#std:ini-key-[Launch]:RunAsAdmin"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin</span></tt></a>.</p>
+</div>
+<div class="section" id="runasadmin7">
+<span id="std:ini-key-[Launch]:RunAsAdmin7"></span><h2>RunAsAdmin7<a class="headerlink" href="#runasadmin7" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">force</span></tt> / <tt class="docutils literal"><span class="pre">try</span></tt> / none</div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>If the application needs or can benefit from administrative privileges on
+Windows 7, you can use this value to override <a class="reference internal" href="#std:ini-key-[Launch]:RunAsAdmin"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin</span></tt></a>.</p>
+</div>
+<div class="section" id="runasadmin2008r2">
+<span id="std:ini-key-[Launch]:RunAsAdmin2008R2"></span><h2>RunAsAdmin2008R2<a class="headerlink" href="#runasadmin2008r2" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">force</span></tt> / <tt class="docutils literal"><span class="pre">try</span></tt> / none</div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>If the application needs or can benefit from administrative privileges on
+Windows Server 2008 R2, you can use this value to override
+<a class="reference internal" href="#std:ini-key-[Launch]:RunAsAdmin"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:RunAsAdmin</span></tt></a>.</p>
+</div>
+<div class="section" id="cleantemp">
+<span id="std:ini-key-[Launch]:CleanTemp"></span><h2>CleanTemp<a class="headerlink" href="#cleantemp" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">true</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>Many applications leave things in the user&#8217;s &#8220;temporary&#8221; directory (called TEMP)
+and don&#8217;t clean them up. When not set (thus when set to <tt class="docutils literal"><span class="pre">true</span></tt>), this value
+assigns a contained TEMP directory to the application (in the format
+<tt class="docutils literal"><span class="pre">%TEMP%\AppNamePortableTemp</span></tt>) which is removed after the application is
+closed, thus not leaving anything behind.</p>
+<p>If <a class="reference internal" href="#std:ini-key-[Launch]:WaitForProgram"><tt class="xref std std-ini-key docutils literal"><span class="pre">WaitForProgram</span></tt></a> is set to <tt class="docutils literal"><span class="pre">false</span></tt>, this
+will still work, placing TEMP in <tt class="docutils literal"><span class="pre">Data\temp</span></tt>, but this may slow down some
+applications and may also clutter up the device while running. In this case the
+directory will not be deleted upon program completion, but rather the next time
+the application is started.</p>
+<p>If you test the application you are making portable thoroughly and it never
+leaves anything behind in TEMP, you can set this to <tt class="docutils literal"><span class="pre">false</span></tt> and the contained
+temporary directory will not be created.</p>
+</div>
+<div class="section" id="singleportableappinstance">
+<span id="std:ini-key-[Launch]:SinglePortableAppInstance"></span><h2>SinglePortableAppInstance<a class="headerlink" href="#singleportableappinstance" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If you only wish one instance of the portable version of the application to be
+run, set this to true. If it is set to true, if the launcher is started while
+another copy of the launcher is already running, the second instance will abort
+silently. If you wish to prevent a local and portable version of the application
+from running concurrently, look at <a class="reference internal" href="#std:ini-key-[Launch]:SingleAppInstance"><tt class="xref std std-ini-key docutils literal"><span class="pre">SingleAppInstance</span></tt></a>.</p>
+</div>
+<div class="section" id="singleappinstance">
+<span id="std:ini-key-[Launch]:SingleAppInstance"></span><h2>SingleAppInstance<a class="headerlink" href="#singleappinstance" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">true</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If you only wish one instance of the application, portable or local, to be run,
+omit this value. If it is set to <tt class="docutils literal"><span class="pre">true</span></tt> or omitted, if the launcher is
+started while a local copy of the application is already running, it will abort
+with an error message. This value only affects running a portable instance
+while a local instance is already running; if a second portable instance is
+launched, this value this value will not affect it.  See
+<a class="reference internal" href="#std:ini-key-[Launch]:SinglePortableAppInstance"><tt class="xref std std-ini-key docutils literal"><span class="pre">SinglePortableAppInstance</span></tt></a> for
+controlling that case.</p>
+<p>If, however, it is permissible for a portable version of the application to run
+concurrently with a local instance, you can set this to <tt class="docutils literal"><span class="pre">false</span></tt>.</p>
+<p>If the application stores settings in a local location like %APPDATA%, or in the
+registry, then it is not correct to set this to <tt class="docutils literal"><span class="pre">false</span></tt>. You should only set
+it to <tt class="docutils literal"><span class="pre">false</span></tt> in such a case as when it stores its settings in the
+executable&#8217;s directory or some path specified by an environment variable or
+command-line argument, and will not interfere with a local instance or vica
+versa.</p>
+</div>
+<div class="section" id="closeexe">
+<span id="std:ini-key-[Launch]:CloseEXE"></span><h2>CloseEXE<a class="headerlink" href="#closeexe" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">another_optional_app.exe</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If you wish to specify another executable to require to be closed before the
+portable application is started than the <a class="reference internal" href="#std:ini-key-[Launch]:ProgramExecutable"><tt class="xref std std-ini-key docutils literal"><span class="pre">ProgramExecutable</span></tt></a> entry, enter the file name in here. This is
+particularly useful with Java applications which use Launch4J. See
+<a class="reference internal" href="../../topics/java.html#java-launch4j"><em>Launch4J-based applications</em></a> for details on that.</p>
+</div>
+<div class="section" id="splashtime">
+<span id="std:ini-key-[Launch]:SplashTime"></span><h2>SplashTime<a class="headerlink" href="#splashtime" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Value: time to show splash screen in milliseconds</div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">1500</span></tt> (1.5 seconds)</div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If an application takes a long time to start you may wish to have the splash
+screen show for more than 1.5 seconds (1500ms). Specify the number of
+milliseconds (as an integer) here to change from it the default 1500.</p>
+<p>Use this value with extreme caution. No-one likes a splash screen staying on top
+of their screen for a minute and a half, stopping them from seeing what they
+were doing underneath.</p>
+</div>
+<div class="section" id="launchappaftersplash">
+<span id="std:ini-key-[Launch]:LaunchAppAfterSplash"></span><h2>LaunchAppAfterSplash<a class="headerlink" href="#launchappaftersplash" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>With full-screen, resolution-changing applications, running the application
+while the splash screen is active can confuse the program. If you observe this
+behaviour in your application, set this to true. (Otherwise avoid it as it may
+slow down program start-up.)</p>
+</div>
+<div class="section" id="waitforprogram">
+<span id="std:ini-key-[Launch]:WaitForProgram"></span><h2>WaitForProgram<a class="headerlink" href="#waitforprogram" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">true</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If you don&#8217;t need the launcher to wait for the conclusion of the application,
+set this to false. Note that you should only do this if you do not have registry
+entries to handle or files to move, for example if you can redirect all settings
+with command-line arguments or environment variables.</p>
+<p>This option is ignored when running locally.</p>
+</div>
+<div class="section" id="waitforotherinstances">
+<span id="std:ini-key-[Launch]:WaitForOtherInstances"></span><h2>WaitForOtherInstances<a class="headerlink" href="#waitforotherinstances" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">true</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If the application is single-instance (i.e. if you run another copy of it it
+won&#8217;t run but will activate the first one), and the application can&#8217;t restart
+itself, you can set this to false. If the application can restart itself at all,
+e.g. Firefox can, DO NOT set this to false, or else clean-up will start while
+the application is still running, which won&#8217;t be good for it.</p>
+</div>
+<div class="section" id="waitforexen">
+<span id="std:ini-key-[Launch]:WaitForEXE"></span><h2>WaitForEXE<em>N</em><a class="headerlink" href="#waitforexen" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Value: <tt class="docutils literal"><span class="pre">another_optional_app.exe</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If the program that you run is a launcher program which launches another
+executable, and you need to wait for that as well as (or instead of) the
+original program, specify its file name here, as <tt class="docutils literal"><span class="pre">WaitForEXE1</span></tt>=<tt class="docutils literal"><span class="pre">whatever.exe</span></tt>.  If you need more than one, use <tt class="docutils literal"><span class="pre">WaitForEXE2</span></tt>,
+<tt class="docutils literal"><span class="pre">WaitForEXE3</span></tt>, etc.</p>
+</div>
+<div class="section" id="refreshshellicons">
+<span id="std:ini-key-[Launch]:RefreshShellIcons"></span><h2>RefreshShellIcons<a class="headerlink" href="#refreshshellicons" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">before</span></tt> / <tt class="docutils literal"><span class="pre">after</span></tt> / <tt class="docutils literal"><span class="pre">both</span></tt> / none</div>
+<div class="line">Default: none</div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If the application does any registering of file type extensions which you handle
+or clean up, to make the new icon appear or to stop the portable one appearing,
+set this to one of the values. If it is just cleaning up at the end, <tt class="docutils literal"><span class="pre">after</span></tt>
+should be enough, but if you handle it with a <tt class="xref std std-ini-section docutils literal"><span class="pre">RegistryKeys</span></tt> value,
+you will need <tt class="docutils literal"><span class="pre">both</span></tt>.</p>
+</div>
+<div class="section" id="hidecommandlinewindow">
+<span id="std:ini-key-[Launch]:HideCommandLineWindow"></span><h2>HideCommandLineWindow<a class="headerlink" href="#hidecommandlinewindow" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If the application produces a command line window which you wish to hide (common
+in some open source games), you can set this to true to hide it.</p>
+<span class="target" id="moving-package-directory"></span></div>
+<div class="section" id="directorymoveok">
+<span id="std:ini-key-[Launch]:DirectoryMoveOK"></span><h2>DirectoryMoveOK<a class="headerlink" href="#directorymoveok" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">yes</span></tt> / <tt class="docutils literal"><span class="pre">warn</span></tt> / <tt class="docutils literal"><span class="pre">no</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">warn</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+<hr class="docutils" />
+<p>All portable apps should be designed to cope with changing drive letters (e.g.
+moving from <tt class="docutils literal"><span class="pre">X:\PortableApps\AppNamePortable</span></tt> to
+<tt class="docutils literal"><span class="pre">Y:\PortableApps\AppNamePortable</span></tt>), but with some portable apps it&#8217;s not
+practical to support moving the directory the package is stored in (e.g. moving
+from <tt class="docutils literal"><span class="pre">C:\Users\User\Desktop\AppNamePortable</span></tt> to
+<tt class="docutils literal"><span class="pre">X:\PortableApps\AppNamePortable</span></tt>).</p>
+<p>If you have developed the package well, directory moves will either not matter
+or be compensated for with <a class="reference internal" href="filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a> sections using things
+like the <a class="reference internal" href="../envsub.html#std:env-PAL:LastPackagePartialDir"><tt class="xref std std-env docutils literal"><span class="pre">%PAL:LastPackagePartialDir%</span></tt></a> and
+<a class="reference internal" href="../envsub.html#std:env-PAL:PackagePartialDir"><tt class="xref std std-env docutils literal"><span class="pre">%PAL:PackagePartialDir%</span></tt></a> environment variables.</p>
+<p>When many people make portable apps, they don&#8217;t consider what will happen when a
+user moves the directory, and so it may or may not work. Also historically it
+was not considered important at all and so no effort was normally put into
+making it work - it was unsupported behaviour. This is why the default is
+<tt class="docutils literal"><span class="pre">warn</span></tt>.</p>
+</div>
+<div class="section" id="nospacesinpath">
+<span id="std:ini-key-[Launch]:NoSpacesInPath"></span><h2>NoSpacesInPath<a class="headerlink" href="#nospacesinpath" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If the application will not function if you try to run it in a directory with
+spaces in the path, you can set this to true to provide a useful error message
+to the user in this situation.</p>
+</div>
+<div class="section" id="supportsunc">
+<span id="std:ini-key-[Launch]:SupportsUNC"></span><h2>SupportsUNC<a class="headerlink" href="#supportsunc" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">yes</span></tt> / <tt class="docutils literal"><span class="pre">warn</span></tt> / <tt class="docutils literal"><span class="pre">no</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">warn</span></tt></div>
+<div class="line">Optional.</div>
+</div>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.2.</span></p>
+<hr class="docutils" />
+<p>Sets if the launcher supports being run from an UNC path (i.e. in the form
+<tt class="docutils literal"><span class="pre">\\server\share\etc</span></tt>).</p>
+<p>Before this can validly be set to <tt class="docutils literal"><span class="pre">yes</span></tt>, you should test your portable app
+and make sure that it really does support UNC paths correctly. Some apps (or
+their portability wrapper) may corrupt data when not specially designed to cope
+with UNC paths, because of which the default is <tt class="docutils literal"><span class="pre">warn</span></tt>. When thus set to
+<tt class="docutils literal"><span class="pre">warn</span></tt> or omitted, the user will be notified that it may not work correctly
+and given a chance to exit.</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">[Launch]</a><ul>
+<li><a class="reference internal" href="#appname">AppName</a></li>
+<li><a class="reference internal" href="#programexecutable">ProgramExecutable</a></li>
+<li><a class="reference internal" href="#programexecutablewhenparameters">ProgramExecutableWhenParameters</a></li>
+<li><a class="reference internal" href="#programexecutable64">ProgramExecutable64</a></li>
+<li><a class="reference internal" href="#programexecutablewhenparameters64">ProgramExecutableWhenParameters64</a></li>
+<li><a class="reference internal" href="#commandlinearguments">CommandLineArguments</a></li>
+<li><a class="reference internal" href="#workingdirectory">WorkingDirectory</a></li>
+<li><a class="reference internal" href="#minos">MinOS</a></li>
+<li><a class="reference internal" href="#maxos">MaxOS</a></li>
+<li><a class="reference internal" href="#runasadmin">RunAsAdmin</a></li>
+<li><a class="reference internal" href="#runasadmin2000">RunAsAdmin2000</a></li>
+<li><a class="reference internal" href="#runasadminxp">RunAsAdminXP</a></li>
+<li><a class="reference internal" href="#runasadmin2003">RunAsAdmin2003</a></li>
+<li><a class="reference internal" href="#runasadminvista">RunAsAdminVista</a></li>
+<li><a class="reference internal" href="#runasadmin2008">RunAsAdmin2008</a></li>
+<li><a class="reference internal" href="#runasadmin7">RunAsAdmin7</a></li>
+<li><a class="reference internal" href="#runasadmin2008r2">RunAsAdmin2008R2</a></li>
+<li><a class="reference internal" href="#cleantemp">CleanTemp</a></li>
+<li><a class="reference internal" href="#singleportableappinstance">SinglePortableAppInstance</a></li>
+<li><a class="reference internal" href="#singleappinstance">SingleAppInstance</a></li>
+<li><a class="reference internal" href="#closeexe">CloseEXE</a></li>
+<li><a class="reference internal" href="#splashtime">SplashTime</a></li>
+<li><a class="reference internal" href="#launchappaftersplash">LaunchAppAfterSplash</a></li>
+<li><a class="reference internal" href="#waitforprogram">WaitForProgram</a></li>
+<li><a class="reference internal" href="#waitforotherinstances">WaitForOtherInstances</a></li>
+<li><a class="reference internal" href="#waitforexen">WaitForEXE<em>N</em></a></li>
+<li><a class="reference internal" href="#refreshshellicons">RefreshShellIcons</a></li>
+<li><a class="reference internal" href="#hidecommandlinewindow">HideCommandLineWindow</a></li>
+<li><a class="reference internal" href="#directorymoveok">DirectoryMoveOK</a></li>
+<li><a class="reference internal" href="#nospacesinpath">NoSpacesInPath</a></li>
+<li><a class="reference internal" href="#supportsunc">SupportsUNC</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="index.html">launcher.ini</a></li>
+    
+    
+      <li>Next: <a href="activate.html">[Activate]</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">launcher.ini</a>
+        
+        <ul><li>[Launch]</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="index.html" title="launcher.ini">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="activate.html" title="[Activate]">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

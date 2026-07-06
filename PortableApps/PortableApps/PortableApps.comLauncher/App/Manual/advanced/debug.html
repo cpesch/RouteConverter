@@ -1,0 +1,179 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Debugging the PortableApps.com Launcher &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Advanced usage of the PortableApps.com Launcher" href="index.html" />
+    <link rel="next" title="Working with development builds of the PortableApps.com Launcher" href="development.html" />
+    <link rel="prev" title="Segments" href="segments.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-advanced-debug" class="page withsidebar">
+    
+  <div class="section" id="debugging-the-portableapps-com-launcher">
+<span id="debug"></span><span id="index-0"></span><h1>Debugging the PortableApps.com Launcher<a class="headerlink" href="#debugging-the-portableapps-com-launcher" title="Permalink to this headline">¶</a></h1>
+<p>To debug the PortableApps.com Launcher, you will need the normal prerequisites
+for working with the PortableApps.com Launcher. See <a class="reference internal" href="../intro/quickstart.html#install-launcher"><em>Installing the PortableApps.com Launcher</em></a> for
+details on that process.</p>
+<p>Once you have a compile environment set up for the PortableApps.com Launcher,
+you can recompile it with debugging flags turned on. All debug flags go in the
+<a class="reference internal" href="#debug-nsh">Debug.nsh</a> file. This file should contain <a class="reference internal" href="#debug-flags"><em>debug flags</em></a> as
+listed below, like this:</p>
+<div class="highlight-python"><pre>!define DEBUG_ALL</pre>
+</div>
+<p>When you compile the Launcher with the Generator, it will find this file and
+turn on debugging.</p>
+<p>Remember to remove the debug file when doing release builds, or else people will
+end up with a build with debugging enabled, which is unlikely to be what you
+wanted.</p>
+<p>Debug messages will be output to the screen in message boxes and to a file
+<tt class="docutils literal"><span class="pre">Data\debug.log</span></tt> in your package unless otherwise specified by
+<tt class="docutils literal"><span class="pre">DEBUG_OUTPUT</span></tt> below.</p>
+<div class="section" id="debug-nsh">
+<span id="debug-file"></span><h2><tt class="docutils literal"><span class="pre">Debug.nsh</span></tt><a class="headerlink" href="#debug-nsh" title="Permalink to this headline">¶</a></h2>
+<p>All modifications to the PortableApps.com Launcher involving debugging go in a
+file <tt class="docutils literal"><span class="pre">Debug.nsh</span></tt> in the <tt class="docutils literal"><span class="pre">App\AppInfo\Launcher</span></tt> directory of a package.</p>
+<p><strong>Note:</strong> I am considering relocating this to <tt class="docutils literal"><span class="pre">App\AppInfo\Launcher\Debug.nsh</span></tt>
+before the release of 2.1. In a later release I plan on integrating it into the
+user interface of a utility which will do all that the Generator does and more,
+and then where it is won&#8217;t matter so much.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 2.1: </span>previously this file was <tt class="docutils literal"><span class="pre">Other\Source\PortableApps.comLauncherDebug.nsh</span></tt>.
+The Generator will move this file to the new location if it exists.</p>
+<div class="section" id="debug-flags">
+<span id="id1"></span><h3>Debug flags<a class="headerlink" href="#debug-flags" title="Permalink to this headline">¶</a></h3>
+<p>Here is a list of the debug flags available. See above for how to enable them.</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">DEBUG_ALL</span></tt></dt>
+<dd><p class="first">Debug (almost) everything. For the sake of verbosity, the &#8220;About to execute
+segment&#8221; and &#8220;Finished executing segment&#8221; debug messages are not shown unless
+<tt class="docutils literal"><span class="pre">DEBUG_SEGWRAP</span></tt> is turned on.</p>
+<p class="last">This is equivalent to <tt class="docutils literal"><span class="pre">DEBUG_GLOBAL</span></tt> and all
+<tt class="docutils literal"><span class="pre">DEBUG_SEGMENT_[segment</span> <span class="pre">name]</span></tt> flags being turned on.</p>
+</dd>
+<dt><tt class="docutils literal"><span class="pre">DEBUG_SEGWRAP</span></tt></dt>
+<dd>Show debug messages to announce when a <a class="reference internal" href="segments.html#segments"><em>segment</em></a> is
+about to be executed and when it has finished.</dd>
+<dt><tt class="docutils literal"><span class="pre">DEBUG_OUTPUT</span></tt> (values: <tt class="docutils literal"><span class="pre">file</span></tt>, <tt class="docutils literal"><span class="pre">messagebox</span></tt>, nothing)</dt>
+<dd><p class="first">By default debugging will write its output to a file <tt class="docutils literal"><span class="pre">Data\debug.log</span></tt> in
+the portable application package and show a message box which pauses
+execution and allows you to terminate execution. If you want it to only log
+to a file, set this to <tt class="docutils literal"><span class="pre">file</span></tt>, like this:</p>
+<div class="highlight-python"><pre>!define DEBUG_OUTPUT file</pre>
+</div>
+<p>If you want to only show the message boxes, set this to <tt class="docutils literal"><span class="pre">messagebox</span></tt>, like
+this:</p>
+<div class="highlight-python"><pre>!define DEBUG_OUTPUT messagebox</pre>
+</div>
+<p class="last">Any other value will cause debugging messages to not be shown. If you want
+both, leave this value out.</p>
+</dd>
+</dl>
+<p>To debug only certain <a class="reference internal" href="segments.html#segments"><em>segments</em></a>, there are more flags:</p>
+<dl class="docutils">
+<dt><tt class="docutils literal"><span class="pre">DEBUG_GLOBAL</span></tt></dt>
+<dd>Debug outside all segments.</dd>
+<dt><tt class="docutils literal"><span class="pre">DEBUG_SEGMENT_[segment</span> <span class="pre">name]</span></tt></dt>
+<dd>Debug the segment given by <tt class="docutils literal"><span class="pre">[segment</span> <span class="pre">name]</span></tt>, e.g.
+<tt class="docutils literal"><span class="pre">DEBUG_SEGMENT_RunAsAdmin</span></tt> to debug the RunAsAdmin segment.</dd>
+</dl>
+</div>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Debugging the PortableApps.com Launcher</a><ul>
+<li><a class="reference internal" href="#debug-nsh"><tt class="docutils literal"><span class="pre">Debug.nsh</span></tt></a><ul>
+<li><a class="reference internal" href="#debug-flags">Debug flags</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="segments.html">Segments</a></li>
+    
+    
+      <li>Next: <a href="development.html">Working with development builds of the PortableApps.com Launcher</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Advanced usage of the PortableApps.com Launcher</a>
+        
+        <ul><li>Debugging the PortableApps.com Launcher</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="segments.html" title="Segments">previous</a>  | <a href="index.html" title="Advanced usage of the PortableApps.com Launcher" accesskey="U">up</a>  | <a href="development.html" title="Working with development builds of the PortableApps.com Launcher">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

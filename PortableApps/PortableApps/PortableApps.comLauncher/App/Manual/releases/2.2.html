@@ -1,0 +1,160 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>PortableApps.com Launcher 2.2 release notes &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Release notes" href="index.html" />
+    <link rel="next" title="PortableApps.com Launcher 2.1 release notes" href="2.1.html" />
+    <link rel="prev" title="Release notes" href="index.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-releases-2.2" class="page withsidebar">
+    
+  <div class="section" id="portableapps-com-launcher-2-2-release-notes">
+<span id="releases-2-2"></span><span id="index-0"></span><h1>PortableApps.com Launcher 2.2 release notes<a class="headerlink" href="#portableapps-com-launcher-2-2-release-notes" title="Permalink to this headline">¶</a></h1>
+<p>This release improves the runtime state saving mechanism which was introduced
+in version 2.1, to improve stability and decrease the probability of portable
+apps getting stuck in a non-functional state which could occasionally happen.
+Several other minor but significant alterations have been made, as described
+below. To normal portable app developers, there will be no apparent changes,
+except for the desire that all apps now be checked for support of UNC paths.
+More significant changes are underway for 3.0 (the next planned non-maintenance
+release).</p>
+<div class="section" id="mutex-based-starting-stopping-checks">
+<h2>Mutex-based starting/stopping checks<a class="headerlink" href="#mutex-based-starting-stopping-checks" title="Permalink to this headline">¶</a></h2>
+<p>The starting/stopping checks introduced in 2.1 were switched from using the
+RuntimeData INI file to using mutexes. This change allows system-wide blocking
+of apps in those phases, where the current method works installation-wide,
+i.e. it will not work if you run the same app from different directories.</p>
+</div>
+<div class="section" id="pal-portableappsbasedir-and-portableappsbasedirectory">
+<h2><a class="reference internal" href="../ref/envsub.html#std:env-PAL:PortableAppsBaseDir"><tt class="xref std std-env docutils literal"><span class="pre">PAL:PortableAppsBaseDir</span></tt></a> and <tt class="docutils literal"><span class="pre">$PortableAppsBaseDirectory</span></tt><a class="headerlink" href="#pal-portableappsbasedir-and-portableappsbasedirectory" title="Permalink to this headline">¶</a></h2>
+<p>A new pair of directory environment variables,
+<tt class="xref std std-env docutils literal"><span class="pre">PAL:LastPortableAppsBaseDirectory</span></tt> and
+<tt class="xref std std-env docutils literal"><span class="pre">PAL:PortableAppsBaseDirectory</span></tt>, have been added. These allow developers
+to replace the path to all the PortableApps.com-related directories in a single
+pass. (The variables are available for use in custom code also.)</p>
+</div>
+<div class="section" id="unc-paths-supported">
+<h2>UNC paths supported<a class="headerlink" href="#unc-paths-supported" title="Permalink to this headline">¶</a></h2>
+<p>Running the launcher from UNC paths (i.e. unmapped network shares, of the form
+<tt class="docutils literal"><span class="pre">\\server\share\etc</span></tt>) is now supported; however, because there is risk of
+data corruption if an app doesn&#8217;t take care of such paths correctly, for now
+running portable apps from UNC paths will trigger a warning. It&#8217;s up for each
+developer to determine if their portable app supports UNC paths correctly and
+set <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:SupportsUNC"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:SupportsUNC</span></tt></a> accordingly.</p>
+<p>In view of this change, app developers should avoid using
+<a class="reference internal" href="../ref/envsub.html#std:env-PAL:DriveLetter"><tt class="xref std std-env docutils literal"><span class="pre">PAL:DriveLetter</span></tt></a> as its value is meaningless on a UNC path. If you have a
+case where you wish to use it, please <a class="reference internal" href="../help.html#help"><em>contact the PAL developers</em></a>
+and explain the situation, as they wish to gain an understanding as to what is
+needed here.</p>
+</div>
+<div class="section" id="running-from-program-files-is-now-forbidden">
+<h2>Running from Program Files is now forbidden<a class="headerlink" href="#running-from-program-files-is-now-forbidden" title="Permalink to this headline">¶</a></h2>
+<p>In former times portable apps would not always complain if they were run from
+the system&#8217;s Program Files directory, leading to quite a few support requests
+over time where people had installed their portable apps to Program Files, not
+realising that this wasn&#8217;t supported and didn&#8217;t work properly, wondering why it
+wasn&#8217;t working properly. This situation has now been remedied, and the
+PortableApps.com Launcher will now forbid execution from the Program Files
+directory (in line with a change in the PortableApps.com Installer forbidding
+installation into this directory).</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">PortableApps.com Launcher 2.2 release notes</a><ul>
+<li><a class="reference internal" href="#mutex-based-starting-stopping-checks">Mutex-based starting/stopping checks</a></li>
+<li><a class="reference internal" href="#pal-portableappsbasedir-and-portableappsbasedirectory"><tt class="docutils literal"><span class="pre">PAL:PortableAppsBaseDir</span></tt> and <tt class="docutils literal"><span class="pre">$PortableAppsBaseDirectory</span></tt></a></li>
+<li><a class="reference internal" href="#unc-paths-supported">UNC paths supported</a></li>
+<li><a class="reference internal" href="#running-from-program-files-is-now-forbidden">Running from Program Files is now forbidden</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="index.html">Release notes</a></li>
+    
+    
+      <li>Next: <a href="2.1.html">PortableApps.com Launcher 2.1 release notes</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Release notes</a>
+        
+        <ul><li>PortableApps.com Launcher 2.2 release notes</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="index.html" title="Release notes">previous</a>  | <a href="index.html" title="Release notes" accesskey="U">up</a>  | <a href="2.1.html" title="PortableApps.com Launcher 2.1 release notes">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

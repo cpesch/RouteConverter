@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Making Java applications portable &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Using the PortableApps.com Launcher" href="index.html" />
+    <link rel="next" title="Making Qt applications portable" href="qt.html" />
+    <link rel="prev" title="Languages" href="languages.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-topics-java" class="page withsidebar">
+    
+  <div class="section" id="making-java-applications-portable">
+<span id="java"></span><span id="index-0"></span><h1>Making Java applications portable<a class="headerlink" href="#making-java-applications-portable" title="Permalink to this headline">¶</a></h1>
+<p>There are many different languages and frameworks which applications can be
+written in, and they all have different ways of doing things. This document
+deals with the considerations in making Java applications portable.</p>
+<div class="section" id="turn-on-java-support">
+<h2>Turn on Java support<a class="headerlink" href="#turn-on-java-support" title="Permalink to this headline">¶</a></h2>
+<p>If your application uses Java at all, whether it requires it or can merely use
+it to benefit if it&#8217;s there, you will need to turn on Java support in
+<a class="reference internal" href="../ref/launcher.ini/index.html#ref-launcher-ini"><em>launcher.ini</em></a>. To do this you will need to set the value
+<a class="reference internal" href="../ref/launcher.ini/activate.html#std:ini-key-[Activate]:Java"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Activate]:Java</span></tt></a>; see that page for details on how to turn on Java
+support and what the different modes (<tt class="docutils literal"><span class="pre">try</span></tt> and <tt class="docutils literal"><span class="pre">force</span></tt>) mean.</p>
+</div>
+<div class="section" id="the-programexecutable">
+<h2>The <tt class="docutils literal"><span class="pre">ProgramExecutable</span></tt><a class="headerlink" href="#the-programexecutable" title="Permalink to this headline">¶</a></h2>
+<p>When you need to launch a Java application with <tt class="docutils literal"><span class="pre">java.exe</span></tt> or (more commonly)
+<tt class="docutils literal"><span class="pre">javaw.exe</span></tt>, set <a class="reference internal" href="../ref/launcher.ini/activate.html#std:ini-key-[Activate]:Java"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Activate]:Java</span></tt></a> to <tt class="docutils literal"><span class="pre">force</span></tt> and then you can set
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:ProgramExecutable"><tt class="xref std std-ini-key docutils literal"><span class="pre">ProgramExecutable</span></tt></a> to <tt class="docutils literal"><span class="pre">java.exe</span></tt> or <tt class="docutils literal"><span class="pre">javaw.exe</span></tt> and it
+will be rewritten to the path to that Java binary.</p>
+</div>
+<div class="section" id="build-systems-and-command-line-arguments">
+<h2>Build systems and command line arguments<a class="headerlink" href="#build-systems-and-command-line-arguments" title="Permalink to this headline">¶</a></h2>
+<p>There are a few different ways of making and building Java applications, each of
+which requires different techniques to handle portability.</p>
+<div class="section" id="eclipse-based-applications">
+<h3>Eclipse-based applications<a class="headerlink" href="#eclipse-based-applications" title="Permalink to this headline">¶</a></h3>
+<p>These seem to normally accept a command-line argument to the executable
+included, to specify the Java location to use. Try putting <tt class="docutils literal"><span class="pre">-vm</span>
+<span class="pre">&quot;%JAVA_HOME%\bin&quot;</span></tt> into <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:CommandLineArguments"><tt class="xref std std-ini-key docutils literal"><span class="pre">CommandLineArguments</span></tt></a> (your <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:ProgramExecutable"><tt class="xref std std-ini-key docutils literal"><span class="pre">ProgramExecutable</span></tt></a> will not be <tt class="docutils literal"><span class="pre">java.exe</span></tt> or <tt class="docutils literal"><span class="pre">javaw.exe</span></tt>).</p>
+</div>
+<div class="section" id="launch4j-based-applications">
+<span id="java-launch4j"></span><h3>Launch4J-based applications<a class="headerlink" href="#launch4j-based-applications" title="Permalink to this headline">¶</a></h3>
+<p>(This seems to be most applications.)</p>
+<p>These apps run an executable, which discovers Java from the registry, and run
+something which creates an executable in the JRE&#8217;s directory, in a subdirectory
+<tt class="docutils literal"><span class="pre">launch4j-tmp</span></tt>, which will run the Java application. Try running the base
+application (with a local JRE installation) and then use a program such as
+Microsoft SysInternals Process Explorer to look at the command line arguments
+which it then gets started with. In Process Explorer, right-click on the
+executable and click &#8220;Properties&#8221;, and copy the execution string. Also note the
+working directory.</p>
+<p>The problem with bypassing <tt class="docutils literal"><span class="pre">AppName.exe</span></tt> and directly calling <tt class="docutils literal"><span class="pre">javaw.exe</span></tt> is
+that <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:SingleAppInstance"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:SingleAppInstance</span></tt></a> no longer works correctly and must be
+set to false. Instead, if mixing local and portable instances is not valid, set
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:CloseEXE"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:CloseEXE</span></tt></a> to <tt class="docutils literal"><span class="pre">AppName.exe</span></tt>, so that the local version,
+still running <tt class="docutils literal"><span class="pre">AppName.exe</span></tt>, will be required to close before the portable
+application will start.</p>
+</div>
+<div class="section" id="others">
+<h3>Others<a class="headerlink" href="#others" title="Permalink to this headline">¶</a></h3>
+<p>If you come up against any other techniques or circumstances where other
+techniques would be better, please suggest them.</p>
+</div>
+</div>
+<div class="section" id="changing-the-settings-location">
+<h2>Changing the settings location<a class="headerlink" href="#changing-the-settings-location" title="Permalink to this headline">¶</a></h2>
+<p>Most Java applications store their settings in the location provided by the Java
+<tt class="docutils literal"><span class="pre">user.home</span></tt> constant. Fortunately for us, these values can be set in the
+Java command line. Any such value can be written with the <tt class="docutils literal"><span class="pre">-D</span></tt> argument, like
+this: <tt class="docutils literal"><span class="pre">-Duser.home=&quot;%PAL:DataDir%\settings&quot;</span></tt> (remember that quotes are
+normally a good idea for paths, just in case they include spaces).</p>
+</div>
+<div class="section" id="java-util-prefs">
+<span id="java-java-util-prefs"></span><h2><tt class="docutils literal"><span class="pre">java.util.prefs</span></tt><a class="headerlink" href="#java-util-prefs" title="Permalink to this headline">¶</a></h2>
+<p>One way of storing settings in Java applications is with <tt class="docutils literal"><span class="pre">java.util.prefs</span></tt>.
+This stores its settings in the registry, in
+<tt class="docutils literal"><span class="pre">HKCU\Software\JavaSoft\Prefs\[package</span> <span class="pre">path]</span></tt>, with the package path
+backslash-separated, so that for com.company.application, the key is
+<tt class="docutils literal"><span class="pre">HKCU\Software\JavaSoft\Prefs\com\company\application</span></tt>. With this you must
+save the full path, and then prune the tree back to <tt class="docutils literal"><span class="pre">HKCU\Software</span></tt> as long as
+it&#8217;s empty; this means you will do it like this:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Activate]</span>
+<span class="na">Registry</span><span class="o">=</span><span class="s">true</span>
+
+<span class="k">[RegistryKeys]</span>
+<span class="na">(file name)</span><span class="o">=</span><span class="s">HKCU\Software\JavaSoft\Prefs\com\company\application</span>
+
+<span class="k">[RegistryCleanupIfEmpty]</span>
+<span class="na">1</span><span class="o">=</span><span class="s">HKCU\Software\JavaSoft\Prefs\com\company</span>
+<span class="na">2</span><span class="o">=</span><span class="s">HKCU\Software\JavaSoft\Prefs\com</span>
+<span class="na">3</span><span class="o">=</span><span class="s">HKCU\Software\JavaSoft\Prefs</span>
+<span class="na">4</span><span class="o">=</span><span class="s">HKCU\Software\JavaSoft</span>
+</pre></div>
+</div>
+<p>This example will vary depending on the name of the package which is using
+<tt class="docutils literal"><span class="pre">java.util.prefs</span></tt>.</p>
+</div>
+<div class="section" id="an-example">
+<h2>An Example<a class="headerlink" href="#an-example" title="Permalink to this headline">¶</a></h2>
+<p>This example is of a hypothetical application called Jest (&#8216;cos it&#8217;s jest a test
+app and written in Java too). It&#8217;s written by a company called JestTech.</p>
+<p>Jest stores some things in <tt class="docutils literal"><span class="pre">user.home</span></tt>, but also uses <tt class="docutils literal"><span class="pre">java.util.prefs</span></tt> to
+store its settings in the registry. It requires up to one GB of a certain type
+of memory (the type that requires a command line argument <tt class="docutils literal"><span class="pre">-Xmx1024m</span></tt>). Its
+class path includes a couple of jar files in its own directory (in the portable
+package they end up as App\Jest\lib\foo.jar and App\Jest\lib\bar.jar with the
+main package being App\Jest\lib\jest.jar), but because of the deployment method
+used it requires <tt class="docutils literal"><span class="pre">javaws.jar</span></tt> from the JRE libraries. The Jest main class is
+<tt class="docutils literal"><span class="pre">com.jesttech.jest.Jest</span></tt>. The normal distribution method in Windows is with
+Launch4J in such a way that the executable is called Jest.exe (due to settings
+being in the registry, this means that Jest.exe must be closed before we start
+the portable version).</p>
+<p>One last thing: there&#8217;s an opportunity for convenience finding of documents by
+setting, in the registry key <tt class="docutils literal"><span class="pre">HKCU\Software\JavaSoft\Prefs\com\jesttech\jest</span></tt>,
+the value <tt class="docutils literal"><span class="pre">docsdir</span></tt>. It must be formatted in just the way <tt class="docutils literal"><span class="pre">java.util.prefs</span></tt>
+<a class="reference internal" href="../ref/envsub.html#ref-envsub-java-util-prefs"><em>likes it</em></a>.</p>
+<p>Here&#8217;s what we&#8217;d put into <tt class="docutils literal"><span class="pre">App\AppInfo\Launcher\JestPortable.ini</span></tt>.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[Launch]</span>
+<span class="na">ProgramExecutable</span><span class="o">=</span><span class="s">javaw.exe</span>
+<span class="na">CommandLineArguments</span><span class="o">=</span><span class="s">-Duser.home=&quot;%PAL:DataDir%\settings&quot; -Xmx1024m -classpath &quot;lib\Jest.jar;lib\foo.jar;lib\bar.jar;%JAVA_HOME%\lib\javaws.jar&quot; com.jesttech.jest.Jest</span>
+<span class="na">WorkingDirectory</span><span class="o">=</span><span class="s">%PAL:AppDir%\Jest</span>
+<span class="na">CloseEXE</span><span class="o">=</span><span class="s">Jest.exe</span>
+<span class="na">WaitForProgram</span><span class="o">=</span><span class="s">true</span>
+<span class="na">WaitForOtherInstances</span><span class="o">=</span><span class="s">false</span>
+
+<span class="k">[Activate]</span>
+<span class="na">Java</span><span class="o">=</span><span class="s">require</span>
+<span class="na">Registry</span><span class="o">=</span><span class="s">true</span>
+
+<span class="k">[FileWrite1]</span>
+<span class="na">Type</span><span class="o">=</span><span class="s">Replace</span>
+<span class="na">File</span><span class="o">=</span><span class="s">%PAL:DataDir%\settings\jest.reg</span>
+<span class="na">Find</span><span class="o">=</span><span class="s">%PAL:LastDrive%//</span>
+<span class="na">Replace</span><span class="o">=</span><span class="s">%PAL:CurrentDrive%//</span>
+
+<span class="k">[RegistryKeys]</span>
+<span class="na">jest</span><span class="o">=</span><span class="s">HKCU\Software\JavaSoft\Prefs\com\jesttech\jest</span>
+
+<span class="k">[RegistryCleanupIfEmpty]</span>
+<span class="na">1</span><span class="o">=</span><span class="s">HKCU\Software\JavaSoft\Prefs\com\jesttech</span>
+<span class="na">2</span><span class="o">=</span><span class="s">HKCU\Software\JavaSoft\Prefs\com</span>
+<span class="na">3</span><span class="o">=</span><span class="s">HKCU\Software\JavaSoft\Prefs</span>
+<span class="na">4</span><span class="o">=</span><span class="s">HKCU\Software\JavaSoft</span>
+
+<span class="k">[RegistryValueWrite]</span>
+<span class="na">HKCU\Software\JavaSoft\Prefs\com\jesttech\jest\docsdir</span><span class="o">=</span><span class="s">%PortableApps.comDocumentsDir:java.util.prefs%</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Making Java applications portable</a><ul>
+<li><a class="reference internal" href="#turn-on-java-support">Turn on Java support</a></li>
+<li><a class="reference internal" href="#the-programexecutable">The <tt class="docutils literal"><span class="pre">ProgramExecutable</span></tt></a></li>
+<li><a class="reference internal" href="#build-systems-and-command-line-arguments">Build systems and command line arguments</a><ul>
+<li><a class="reference internal" href="#eclipse-based-applications">Eclipse-based applications</a></li>
+<li><a class="reference internal" href="#launch4j-based-applications">Launch4J-based applications</a></li>
+<li><a class="reference internal" href="#others">Others</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#changing-the-settings-location">Changing the settings location</a></li>
+<li><a class="reference internal" href="#java-util-prefs"><tt class="docutils literal"><span class="pre">java.util.prefs</span></tt></a></li>
+<li><a class="reference internal" href="#an-example">An Example</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="languages.html">Languages</a></li>
+    
+    
+      <li>Next: <a href="qt.html">Making Qt applications portable</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Using the PortableApps.com Launcher</a>
+        
+        <ul><li>Making Java applications portable</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="languages.html" title="Languages">previous</a>  | <a href="index.html" title="Using the PortableApps.com Launcher" accesskey="U">up</a>  | <a href="qt.html" title="Making Qt applications portable">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

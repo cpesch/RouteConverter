@@ -1,0 +1,169 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>[RegistryKeys] &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="launcher.ini" href="index.html" />
+    <link rel="next" title="[QtKeysCleanup]" href="qt.html" />
+    <link rel="prev" title="[Environment]" href="environment.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-launcher.ini-registry" class="page withsidebar">
+    
+  <span class="target" id="ref-launcher-ini-registry"></span><div class="section" id="registrykeys">
+<span id="std:ini-section-[RegistryKeys]"></span><h1>[RegistryKeys]<a class="headerlink" href="#registrykeys" title="Permalink to this headline">¶</a></h1>
+<p><tt class="docutils literal"><span class="pre">[RegistryKeys]</span></tt> deals with registry keys for which to manage
+portability. They come in the form <tt class="docutils literal"><span class="pre">file</span> <span class="pre">name=registry</span> <span class="pre">key</span> <span class="pre">location</span></tt>; the
+<em>file name</em> is the location of the place where it is saved, which is in
+Data\settings\<em>file name</em>.reg. If you wish to have drive letters updated
+inside this, look at <a class="reference internal" href="filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a> with <a class="reference internal" href="filewriten.html#std:ini-key-[FileWriteN]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">Replace</span></tt>.</p>
+<p>If you do not wish to save the data of the registry key to a file but only
+want to keep it safe and throw away any changes, set the &#8220;file name&#8221; to <tt class="docutils literal"><span class="pre">-</span></tt>,
+so you end up with <tt class="docutils literal"><span class="pre">-=registry</span> <span class="pre">key</span> <span class="pre">location</span></tt>.</p>
+<p>Some more description of how this works and what it can be used to do is
+available in <a class="reference internal" href="../../topics/registry.html#registry"><em>Dealing with the registry</em></a>.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">appname_portable=HKCU\Software\AppName</span></tt></p>
+</div>
+<div class="section" id="registryvaluewrite">
+<span id="std:ini-section-[RegistryValueWrite]"></span><h1>[RegistryValueWrite]<a class="headerlink" href="#registryvaluewrite" title="Permalink to this headline">¶</a></h1>
+<p>These are registry values to set for running the portable application, useful
+for things like disabling file association writing. They come in the form
+<tt class="docutils literal"><span class="pre">HK??\*\Key\Value=REG_[TYPE]:[value]</span></tt>; the key name is the place in the
+registry, with the value appended to it after a final slash, and the value is of
+the form REG_<em>TYPE</em>:<em>value</em>; <em>REG_TYPE:</em> is optional, and defaults to
+<tt class="docutils literal"><span class="pre">REG_SZ</span></tt> (a string).</p>
+<p><strong>Note:</strong> if there is any possibility that the value does contain a colon,
+write the type explicitly.</p>
+<p><strong>Examples:</strong> <tt class="docutils literal"><span class="pre">HKCU\Software\AppName\Key\Value=REG_DWORD:16</span></tt>,
+<tt class="docutils literal"><span class="pre">HKCU\Software\AppName\Key\Value2=REG_SZ:%PAL:DataDir%</span></tt></p>
+</div>
+<div class="section" id="registrycleanupifempty">
+<span id="std:ini-section-[RegistryCleanupIfEmpty]"></span><h1>[RegistryCleanupIfEmpty]<a class="headerlink" href="#registrycleanupifempty" title="Permalink to this headline">¶</a></h1>
+<p>Key names are consecutive integers, starting at 1 (i.e. <tt class="docutils literal"><span class="pre">1</span></tt>, <tt class="docutils literal"><span class="pre">2</span></tt>, <tt class="docutils literal"><span class="pre">3</span></tt>, etc.)</p>
+<hr class="docutils" />
+<p>These are registry keys which get cleaned up after the application has run if
+they are empty. This is useful if there is a tree which will be left behind, for
+example, if something stores to HKEY_CURRENT_USER\Software\Publisher\AppName,
+when AppName is saved, Publisher will still be left, empty. Remove it with a
+line in here.</p>
+<p>Some more description of how this works and what it can be used to do is
+available in <a class="reference internal" href="../../topics/registry.html#registry-cleanupifempty"><em>Dealing with the registry</em></a>.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">1=HKCU\Software\Publisher</span></tt></p>
+</div>
+<div class="section" id="registrycleanupforce">
+<span id="std:ini-section-[RegistryCleanupForce]"></span><h1>[RegistryCleanupForce]<a class="headerlink" href="#registrycleanupforce" title="Permalink to this headline">¶</a></h1>
+<p>Key names are consecutive integers, starting at 1 (i.e. <tt class="docutils literal"><span class="pre">1</span></tt>, <tt class="docutils literal"><span class="pre">2</span></tt>, <tt class="docutils literal"><span class="pre">3</span></tt>, etc.)</p>
+<hr class="docutils" />
+<p>These are registry keys which get removed after the application has run. This is
+useful if there is a tree of useless information which will be left behind, for
+example, if something stores temporary data to
+HKEY_CURRENT_USER\Software\AppName\Temp. Remove it with a line in here.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">1=HKCU\Software\Publisher</span></tt></p>
+</div>
+<div class="section" id="registryvaluebackupdelete">
+<span id="std:ini-section-[RegistryValueBackupDelete]"></span><h1>[RegistryValueBackupDelete]<a class="headerlink" href="#registryvaluebackupdelete" title="Permalink to this headline">¶</a></h1>
+<p>Key names are consecutive integers, starting at 1 (i.e. <tt class="docutils literal"><span class="pre">1</span></tt>, <tt class="docutils literal"><span class="pre">2</span></tt>, <tt class="docutils literal"><span class="pre">3</span></tt>, etc.)</p>
+<hr class="docutils" />
+<p>These are registry values which get backed up before hand and restored later,
+but any value which may have been set while the portable application is running
+will be deleted. This can be useful for &#8220;dead&#8221; values which serve no purpose and
+so there is no point in saving them anywhere.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">1=HKCU\Software\Publisher\AppName\Value</span></tt></p>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">[RegistryKeys]</a></li>
+<li><a class="reference internal" href="#registryvaluewrite">[RegistryValueWrite]</a></li>
+<li><a class="reference internal" href="#registrycleanupifempty">[RegistryCleanupIfEmpty]</a></li>
+<li><a class="reference internal" href="#registrycleanupforce">[RegistryCleanupForce]</a></li>
+<li><a class="reference internal" href="#registryvaluebackupdelete">[RegistryValueBackupDelete]</a></li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="environment.html">[Environment]</a></li>
+    
+    
+      <li>Next: <a href="qt.html">[QtKeysCleanup]</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">launcher.ini</a>
+        
+        <ul><li>[RegistryKeys]</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="environment.html" title="[Environment]">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="qt.html" title="[QtKeysCleanup]">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

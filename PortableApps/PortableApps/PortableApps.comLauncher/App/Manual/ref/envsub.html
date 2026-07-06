@@ -1,0 +1,393 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Environment variable substitions &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Reference" href="index.html" />
+    <link rel="next" title="Advanced usage of the PortableApps.com Launcher" href="../advanced/index.html" />
+    <link rel="prev" title="8. PortableApps.com Format Version History and Discussion" href="paf/history.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-envsub" class="page withsidebar">
+    
+  <div class="section" id="environment-variable-substitions">
+<span id="ref-envsub"></span><span id="index-0"></span><h1>Environment variable substitions<a class="headerlink" href="#environment-variable-substitions" title="Permalink to this headline">¶</a></h1>
+<p>This document covers environment variable substition.</p>
+<p>Many of the values in <a class="reference internal" href="launcher.ini/index.html#ref-launcher-ini"><em>launcher.ini</em></a> are subject to
+environment variable substitions. This works by taking the input string and
+parsing environment variables, so that a chunk like <tt class="docutils literal"><span class="pre">%TEMP%</span></tt> will become
+something like <tt class="docutils literal"><span class="pre">C:\Users\user\AppData\Roaming\Temp</span></tt>. To make this more useful
+in making applications portable, a number of extra environment variables are
+provided. This document is primarily here to describe those values.</p>
+<p>For the purposes of this page, the portable app in question is installed to
+<tt class="docutils literal"><span class="pre">X:\PortableApps\AppNamePortable</span></tt> and last ran from the path
+<tt class="docutils literal"><span class="pre">W:\Apps\AppNamePortable</span></tt> (the use of a different path is explained below).</p>
+<p>These values can be used in any values marked &#8220;<a class="reference internal" href="#ref-envsub"><em>Environment variable substitions</em></a> apply.&#8221;. Other environment
+variables can also be used, but any directory variables will not have the
+alternative forms provided for these specific variables.</p>
+<div class="section" id="drive-variables">
+<span id="ref-envsub-drive"></span><h2>Drive variables<a class="headerlink" href="#drive-variables" title="Permalink to this headline">¶</a></h2>
+<p>These are a few variables for drive letter updating. In Live mode, these are the
+location of the portable device from which the application was run, <em>not</em> the
+application or data directory if <a class="reference internal" href="launcher.ini/livemode.html#std:ini-key-[LiveMode]:CopyApp"><tt class="xref std std-ini-key docutils literal"><span class="pre">[LiveMode]:CopyApp</span></tt></a> is set.</p>
+<p>Note that you cannot guarrantee the case that this variable will be in. It may
+be lower or upper case.</p>
+<div class="section" id="pal-drive">
+<span id="std:env-PAL:Drive"></span><h3>PAL:Drive<a class="headerlink" href="#pal-drive" title="Permalink to this headline">¶</a></h3>
+<p>The drive letter including a colon from which the portable app is running.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">X:</span></tt></p>
+</div>
+<div class="section" id="pal-lastdrive">
+<span id="std:env-PAL:LastDrive"></span><h3>PAL:LastDrive<a class="headerlink" href="#pal-lastdrive" title="Permalink to this headline">¶</a></h3>
+<p>The drive letter including a colon from which the portable app ran last.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">W:</span></tt></p>
+</div>
+<div class="section" id="pal-driveletter">
+<span id="std:env-PAL:DriveLetter"></span><h3>PAL:DriveLetter<a class="headerlink" href="#pal-driveletter" title="Permalink to this headline">¶</a></h3>
+<p>The drive letter from which the portable app is running, without a colon. Useful
+with <a class="reference internal" href="launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a> find and replace where the colon is not
+included in the path, e.g.  <tt class="docutils literal"><span class="pre">file:////%PAL:DriveLetter%/</span></tt> for <tt class="docutils literal"><span class="pre">file:////X/</span></tt>
+or even <tt class="docutils literal"><span class="pre">%PAL:DriveLetter%\:/</span></tt> for <tt class="docutils literal"><span class="pre">X\:/</span></tt>.</p>
+<p>If you wish your app to support UNC paths (see
+<a class="reference internal" href="launcher.ini/launch.html#std:ini-key-[Launch]:SupportsUNC"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:SupportsUNC</span></tt></a>), you should not use this. For UNC paths, this
+will be <tt class="docutils literal"><span class="pre">\</span></tt> (the first letter of the UNC path). Instead, you should figure
+out something probably in the custom code or <a class="reference external" href="help">ask for help</a>.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">X</span></tt></p>
+</div>
+<div class="section" id="pal-lastdriveletter">
+<span id="std:env-PAL:LastDriveLetter"></span><h3>PAL:LastDriveLetter<a class="headerlink" href="#pal-lastdriveletter" title="Permalink to this headline">¶</a></h3>
+<p>The drive letter from which the portable app ran last. Useful with
+<a class="reference internal" href="launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a> find and replace where the colon is not included in
+the path, e.g.  <tt class="docutils literal"><span class="pre">file:////%PAL:LastDriveLetter%/</span></tt> for <tt class="docutils literal"><span class="pre">file:////X/</span></tt> or even
+<tt class="docutils literal"><span class="pre">%PAL:LastDriveLetter%\:/</span></tt> for <tt class="docutils literal"><span class="pre">X\:/</span></tt>.</p>
+<p>See above for comments on UNC paths.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">W</span></tt></p>
+</div>
+</div>
+<div class="section" id="directory-variables">
+<span id="ref-envsub-directory"></span><h2>Directory variables<a class="headerlink" href="#directory-variables" title="Permalink to this headline">¶</a></h2>
+<p>Each variable fitting into this category gets several extra environment
+variables generated for it, for different forms they may be needed. For
+example, when dealing directly with Windows paths must be separated by a
+backslash (<tt class="docutils literal"><span class="pre">\</span></tt>), while with various other applications, for example
+applications ported from Linux, a forward slash (<tt class="docutils literal"><span class="pre">/</span></tt>) is often needed, or
+even a double backslash (<tt class="docutils literal"><span class="pre">\\</span></tt>), or something else.</p>
+<p id="ref-envsub-java-util-prefs">One complex example is with Java applications that use <tt class="docutils literal"><span class="pre">java.util.prefs</span></tt> to
+store their settings; <tt class="docutils literal"><span class="pre">java.util.prefs</span></tt> stores settings in the registry, but
+its path storage mechanism is unusual. The path gets stored with a forward
+slash as the separator, and then all characters <em>other</em> than a colon and
+lower-case letters are escaped with a slash (including the path separator), so
+that a Windows path like <tt class="docutils literal"><span class="pre">X:\PortableApps\AppNamePortable</span></tt> will become
+<tt class="docutils literal"><span class="pre">/X:///Portable/Apps///App/Name/Portable</span></tt>.</p>
+<p>Each environment variable listed in this section is currently available in four
+forms. For the environment variable listed as <tt class="docutils literal"><span class="pre">VARIABLE</span></tt>, here are the
+environment variables which will be available:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">%VARIABLE%</span></tt> &#8211; directory separator is a backslash (<tt class="docutils literal"><span class="pre">\</span></tt>).</li>
+<li><tt class="docutils literal"><span class="pre">%VARIABLE:ForwardSlash%</span></tt> &#8211; directory separator is a forward slash (<tt class="docutils literal"><span class="pre">/</span></tt>).</li>
+<li><tt class="docutils literal"><span class="pre">%VARIABLE:DoubleBackslash%</span></tt> &#8211; directory separator is a double backslash (<tt class="docutils literal"><span class="pre">\\</span></tt>).</li>
+<li><tt class="docutils literal"><span class="pre">%VARIABLE:java.util.prefs%</span></tt> &#8211; path is in a format for reading with <tt class="docutils literal"><span class="pre">java.util.prefs</span></tt> (see above).</li>
+</ul>
+<p>So, for the environment variable <a class="reference internal" href="#std:env-PAL:AppDir"><tt class="xref std std-env docutils literal"><span class="pre">PAL:AppDir</span></tt></a> with the value
+<tt class="docutils literal"><span class="pre">X:\PortableApps\AppNamePortable\App</span></tt>, the following environment variables
+will be available:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">%VARIABLE%</span></tt> &#8211; <tt class="docutils literal"><span class="pre">X:\PortableApps\AppNamePortable\App</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">%VARIABLE:ForwardSlash%</span></tt> &#8211; <tt class="docutils literal"><span class="pre">X:/PortableApps/AppNamePortable/App</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">%VARIABLE:DoubleBackslash%</span></tt> &#8211; <tt class="docutils literal"><span class="pre">X:\\PortableApps\\AppNamePortable\\App</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">%VARIABLE:java.util.prefs%</span></tt> &#8211; <tt class="docutils literal"><span class="pre">/X:///Portable/Apps///App/Name/Portable///App</span></tt></li>
+</ul>
+<p>Now on to the environment variables themselves.</p>
+<div class="section" id="pal-appdir">
+<span id="std:env-PAL:AppDir"></span><h3>PAL:AppDir<a class="headerlink" href="#pal-appdir" title="Permalink to this headline">¶</a></h3>
+<p>The path to the App directory which contains the portable app.</p>
+<p>When Live mode is not enabled, this will be
+<tt class="docutils literal"><span class="pre">X:\PortableApps\AppNamePortable\App</span></tt> and when Live mode is enabled it will
+be <tt class="docutils literal"><span class="pre">%TEMP%\AppNamePortableLive\App</span></tt> unless <a class="reference internal" href="launcher.ini/livemode.html#std:ini-key-[LiveMode]:CopyApp"><tt class="xref std std-ini-key docutils literal"><span class="pre">[LiveMode]:CopyApp</span></tt></a> is
+set to <tt class="docutils literal"><span class="pre">false</span></tt>.</p>
+</div>
+<div class="section" id="pal-datadir">
+<span id="std:env-PAL:DataDir"></span><h3>PAL:DataDir<a class="headerlink" href="#pal-datadir" title="Permalink to this headline">¶</a></h3>
+<p>The path to the Data directory which contains the portable app&#8217;s data.</p>
+<p>When Live mode is not enabled, this will be
+<tt class="docutils literal"><span class="pre">X:\PortableApps\AppNamePortable\Data</span></tt> and when Live mode is enabled it will
+be <tt class="docutils literal"><span class="pre">%TEMP%\AppNamePortableLive\Data</span></tt>.</p>
+</div>
+<div class="section" id="java-home">
+<span id="std:env-JAVA_HOME"></span><h3>JAVA_HOME<a class="headerlink" href="#java-home" title="Permalink to this headline">¶</a></h3>
+<p>When Java is found, this is set to the location where it was found, not
+including the &#8220;bin&#8221; directory or a filename like &#8220;javaw.exe&#8221;. This will be the
+Java Portable directory, e.g.  <tt class="docutils literal"><span class="pre">X:\PortableApps\CommonFiles\Java</span></tt>, or some
+local installation, e.g.  <tt class="docutils literal"><span class="pre">C:\Program</span> <span class="pre">Files\Java</span></tt>.</p>
+<p>This variable is only available with <a class="reference internal" href="launcher.ini/activate.html#std:ini-key-[Activate]:Java"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Activate]:Java</span></tt></a> set to <tt class="docutils literal"><span class="pre">find</span></tt>
+or <tt class="docutils literal"><span class="pre">require</span></tt>, but if it is <tt class="docutils literal"><span class="pre">find</span></tt>, the path it is set to may not exist (for
+<tt class="docutils literal"><span class="pre">require</span></tt> the launcher will abort if Java is not found).</p>
+</div>
+<div class="section" id="portableapps-comdocuments">
+<span id="std:env-PortableApps.comDocuments"></span><h3>PortableApps.comDocuments<a class="headerlink" href="#portableapps-comdocuments" title="Permalink to this headline">¶</a></h3>
+<p>The PortableApps.com Documents directory, normally <tt class="docutils literal"><span class="pre">X:\Documents</span></tt>. There is no
+guarrantee that this directory will exist.</p>
+</div>
+<div class="section" id="portableapps-compictures">
+<span id="std:env-PortableApps.comPictures"></span><h3>PortableApps.comPictures<a class="headerlink" href="#portableapps-compictures" title="Permalink to this headline">¶</a></h3>
+<p>The PortableApps.com Pictures directory, normally <tt class="docutils literal"><span class="pre">X:\Documents\Pictures</span></tt>. There is no
+guarrantee that this directory will exist.</p>
+</div>
+<div class="section" id="portableapps-commusic">
+<span id="std:env-PortableApps.comMusic"></span><h3>PortableApps.comMusic<a class="headerlink" href="#portableapps-commusic" title="Permalink to this headline">¶</a></h3>
+<p>The PortableApps.com Music directory, normally <tt class="docutils literal"><span class="pre">X:\Documents\Music</span></tt>. There is no
+guarrantee that this directory will exist.</p>
+</div>
+<div class="section" id="portableapps-comvideos">
+<span id="std:env-PortableApps.comVideos"></span><h3>PortableApps.comVideos<a class="headerlink" href="#portableapps-comvideos" title="Permalink to this headline">¶</a></h3>
+<p>The PortableApps.com Videos directory, normally <tt class="docutils literal"><span class="pre">X:\Documents\Videos</span></tt>. There is no
+guarrantee that this directory will exist.</p>
+</div>
+<div class="section" id="pal-portableappsdir">
+<span id="std:env-PAL:PortableAppsDir"></span><h3>PAL:PortableAppsDir<a class="headerlink" href="#pal-portableappsdir" title="Permalink to this headline">¶</a></h3>
+<p>The PortableApps.com PortableApps directory, normally <tt class="docutils literal"><span class="pre">X:\PortableApps</span></tt>. To be
+exact, this is the parent directory of the portable app package.</p>
+</div>
+<div class="section" id="pal-portableappsbasedir">
+<span id="std:env-PAL:PortableAppsBaseDir"></span><h3>PAL:PortableAppsBaseDir<a class="headerlink" href="#pal-portableappsbasedir" title="Permalink to this headline">¶</a></h3>
+<p>The base of the PortableApps.com directory hierachy, where
+<tt class="docutils literal"><span class="pre">PAL:PortableAppsDir</span></tt> and <tt class="docutils literal"><span class="pre">PortableApps.comDocuments</span></tt> are usually at.</p>
+</div>
+<div class="section" id="pal-lastportableappsbasedir">
+<span id="std:env-PAL:LastPortableAppsBaseDir"></span><h3>PAL:LastPortableAppsBaseDir<a class="headerlink" href="#pal-lastportableappsbasedir" title="Permalink to this headline">¶</a></h3>
+<p>The value of <tt class="docutils literal"><span class="pre">PAL:PortableAppsBaseDir</span></tt> from the previous run.</p>
+</div>
+<div class="section" id="userprofile">
+<span id="std:env-USERPROFILE"></span><h3>USERPROFILE<a class="headerlink" href="#userprofile" title="Permalink to this headline">¶</a></h3>
+<p>A local variable for copying to and from, e.g. <tt class="docutils literal"><span class="pre">C:\Documents</span> <span class="pre">and</span>
+<span class="pre">Settings\Username</span></tt> on XP and 2000, <tt class="docutils literal"><span class="pre">C:\Users\Username</span></tt> on Vista.</p>
+</div>
+<div class="section" id="allusersprofile">
+<span id="std:env-ALLUSERSPROFILE"></span><h3>ALLUSERSPROFILE<a class="headerlink" href="#allusersprofile" title="Permalink to this headline">¶</a></h3>
+<p>A local variable for copying to and from, e.g. <tt class="docutils literal"><span class="pre">C:\Documents</span> <span class="pre">and</span> <span class="pre">Settings\All</span>
+<span class="pre">Users</span></tt> on XP and 2000, <tt class="docutils literal"><span class="pre">C:\ProgramData</span></tt> on Vista.</p>
+<p>Most apps will need to use <a class="reference internal" href="#std:env-ALLUSERSAPPDATA"><tt class="xref std std-env docutils literal"><span class="pre">ALLUSERSAPPDATA</span></tt></a> instead of this because it
+includes the &#8220;Application Data&#8221; part on the end for Windows 2000 and XP.</p>
+</div>
+<div class="section" id="allusersappdata">
+<span id="std:env-ALLUSERSAPPDATA"></span><h3>ALLUSERSAPPDATA<a class="headerlink" href="#allusersappdata" title="Permalink to this headline">¶</a></h3>
+<p>A local variable for copying to and from, e.g. <tt class="docutils literal"><span class="pre">C:\Documents</span> <span class="pre">and</span> <span class="pre">Settings\All</span>
+<span class="pre">Users\Application</span> <span class="pre">Data</span></tt> on XP and 2000, <tt class="docutils literal"><span class="pre">C:\ProgramData</span></tt> on Vista.</p>
+<p>This variable does not exist in Windows itself and is added by the
+PortableApps.com Launcher. The difference between it and
+<a class="reference internal" href="#std:env-ALLUSERSPROFILE"><tt class="xref std std-env docutils literal"><span class="pre">ALLUSERSPROFILE</span></tt></a> above is that on Windows 2000 and XP it includes
+&#8220;Application Data&#8221; at the end. This is how it is normally used.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+</div>
+<div class="section" id="localappdata">
+<span id="std:env-LOCALAPPDATA"></span><h3>LOCALAPPDATA<a class="headerlink" href="#localappdata" title="Permalink to this headline">¶</a></h3>
+<p>A local variable for copying to and from, e.g. <tt class="docutils literal"><span class="pre">C:\Documents</span> <span class="pre">and</span>
+<span class="pre">Settings\Username\Local</span> <span class="pre">Settings\Application</span> <span class="pre">Data</span></tt> on XP and 2000,
+<tt class="docutils literal"><span class="pre">C:\Users\Username\AppData\Local</span></tt> on Vista.</p>
+</div>
+<div class="section" id="appdata">
+<span id="std:env-APPDATA"></span><h3>APPDATA<a class="headerlink" href="#appdata" title="Permalink to this headline">¶</a></h3>
+<p>A local variable for copying to and from, e.g. <tt class="docutils literal"><span class="pre">C:\Documents</span> <span class="pre">and</span>
+<span class="pre">Settings\Username\Application</span> <span class="pre">Data</span></tt> on XP and 2000,
+<tt class="docutils literal"><span class="pre">C:\Users\Username\AppData\Roaming</span></tt> on Vista.</p>
+</div>
+<div class="section" id="documents">
+<span id="std:env-DOCUMENTS"></span><h3>DOCUMENTS<a class="headerlink" href="#documents" title="Permalink to this headline">¶</a></h3>
+<p>A local variable for copying to and from, e.g. <tt class="docutils literal"><span class="pre">C:\Documents</span> <span class="pre">and</span>
+<span class="pre">Settings\Username\My</span> <span class="pre">Documents</span></tt> on XP and 2000, <tt class="docutils literal"><span class="pre">C:\Users\Username\Documents</span></tt>
+on Vista.</p>
+</div>
+<div class="section" id="temp">
+<span id="std:env-TEMP"></span><h3>TEMP<a class="headerlink" href="#temp" title="Permalink to this headline">¶</a></h3>
+<p>The temporary directory which the application will be given. If a contained
+temporary directory is assigned, this will be the assigned one.</p>
+</div>
+</div>
+<div class="section" id="partial-directory-variables">
+<span id="ref-envsub-partial-directory"></span><h2>Partial directory variables<a class="headerlink" href="#partial-directory-variables" title="Permalink to this headline">¶</a></h2>
+<p>For dealing with <a class="reference internal" href="launcher.ini/launch.html#moving-package-directory"><em>moving packages</em></a>, it&#8217;s often
+handy to be able to update a path without including the drive letter.  Like the
+<a class="reference internal" href="#ref-envsub-directory"><em>directory variables above</em></a>, these variables get the
+additional environment variables generated for them in different forms.</p>
+<p>As with <a class="reference internal" href="#ref-envsub-drive"><em>drive variables</em></a>, the case of these variables
+cannot be guarranteed. They may be lower or upper case.</p>
+<div class="section" id="pal-packagepartialdir">
+<span id="std:env-PAL:PackagePartialDir"></span><h3>PAL:PackagePartialDir<a class="headerlink" href="#pal-packagepartialdir" title="Permalink to this headline">¶</a></h3>
+<p>The path, minus the drive letter and colon, from which the portable app is
+running.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">\PortableApps\AppNamePortable</span></tt></p>
+</div>
+<div class="section" id="pal-lastpackagepartialdir">
+<span id="std:env-PAL:LastPackagePartialDir"></span><h3>PAL:LastPackagePartialDir<a class="headerlink" href="#pal-lastpackagepartialdir" title="Permalink to this headline">¶</a></h3>
+<p>The path, minus the drive letter and colon, from which the portable app ran
+last.</p>
+<p>The first time a portable app is run, this will be the same as
+<a class="reference internal" href="#std:env-PAL:PackagePartialDir"><tt class="xref std std-env docutils literal"><span class="pre">PAL:PackagePartialDir</span></tt></a> above. Thus in its normal use case as part of the
+<a class="reference internal" href="launcher.ini/filewriten.html#std:ini-key-[FileWriteN]:Find"><tt class="xref std std-ini-key docutils literal"><span class="pre">Find</span></tt></a> value in a <a class="reference internal" href="launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a>
+section, it will be the same as the <a class="reference internal" href="launcher.ini/filewriten.html#std:ini-key-[FileWriteN]:Replace"><tt class="xref std std-ini-key docutils literal"><span class="pre">Replace</span></tt></a>
+value and result in the replacement being skipped.</p>
+<p><strong>Example:</strong> <tt class="docutils literal"><span class="pre">\Apps\AppNamePortable</span></tt></p>
+</div>
+</div>
+<div class="section" id="language-variables">
+<span id="ref-envsub-language"></span><h2>Language variables<a class="headerlink" href="#language-variables" title="Permalink to this headline">¶</a></h2>
+<p>These variables are for language switching. Particularly of interest is
+%PAL:LanguageCustom%.</p>
+<p>A full table of all the values is available in <a class="reference internal" href="../topics/languages.html#languages-values"><em>Language variable values</em></a>.</p>
+<ul class="simple" id="std:env-PortableApps.comLanguageCode">
+<li><strong>PortableApps.comLanguageCode</strong> &#8211; e.g. &#8220;en&#8221;, &#8220;pt&#8221;, &#8220;pt-br&#8221;</li>
+</ul>
+<ul class="simple" id="std:env-PortableApps.comLocaleCode2">
+<li><strong>PortableApps.comLocaleCode2</strong> &#8211; e.g. &#8220;en&#8221;, &#8220;pt&#8221;, &#8220;pt&#8221;</li>
+</ul>
+<ul class="simple" id="std:env-PortableApps.comLocaleCode3">
+<li><strong>PortableApps.comLocaleCode3</strong> &#8211; e.g. &#8220;eng&#8221;, &#8220;por&#8221;, &#8220;por&#8221;</li>
+</ul>
+<ul class="simple" id="std:env-PortableApps.comLocaleglibc">
+<li><strong>PortableApps.comLocaleglibc</strong> &#8211; e.g. &#8220;en_US&#8221;, &#8220;pt&#8221;, &#8220;pt_BR&#8221;</li>
+</ul>
+<ul class="simple" id="std:env-PortableApps.comLocaleID">
+<li><strong>PortableApps.comLocaleID</strong> &#8211; e.g. &#8220;1033&#8221;, &#8220;2070&#8221;, &#8220;1046&#8221;</li>
+</ul>
+<ul class="simple" id="std:env-PortableApps.comLocaleWinName">
+<li><strong>PortableApps.comLocaleWinName</strong> &#8211; e.g. &#8220;LANG_ENGLISH&#8221;, &#8220;LANG_PORTUGUESE&#8221;,
+&#8220;LANG_PORTUGUESEBR&#8221;</li>
+</ul>
+<ul class="simple" id="std:env-PortableApps.comLocaleName">
+<li><strong>PortableApps.comLocaleName</strong> &#8211; e.g. &#8220;English&#8221;, &#8220;Portuguese&#8221;, &#8220;PortugueseBR&#8221;
+(note: these will be upper case until implemented in the PortableApps.com
+Platform)</li>
+</ul>
+<ul class="simple" id="std:env-PAL:LanguageCustom">
+<li><strong>PAL:LanguageCustom</strong> &#8211; a custom variable constructed in the
+<a class="reference internal" href="launcher.ini/language.html#std:ini-section-[Language]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[Language]</span></tt></a> and <a class="reference internal" href="launcher.ini/language.html#std:ini-section-[LanguageStrings]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageStrings]</span></tt></a> sections.</li>
+</ul>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Environment variable substitions</a><ul>
+<li><a class="reference internal" href="#drive-variables">Drive variables</a><ul>
+<li><a class="reference internal" href="#pal-drive">PAL:Drive</a></li>
+<li><a class="reference internal" href="#pal-lastdrive">PAL:LastDrive</a></li>
+<li><a class="reference internal" href="#pal-driveletter">PAL:DriveLetter</a></li>
+<li><a class="reference internal" href="#pal-lastdriveletter">PAL:LastDriveLetter</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#directory-variables">Directory variables</a><ul>
+<li><a class="reference internal" href="#pal-appdir">PAL:AppDir</a></li>
+<li><a class="reference internal" href="#pal-datadir">PAL:DataDir</a></li>
+<li><a class="reference internal" href="#java-home">JAVA_HOME</a></li>
+<li><a class="reference internal" href="#portableapps-comdocuments">PortableApps.comDocuments</a></li>
+<li><a class="reference internal" href="#portableapps-compictures">PortableApps.comPictures</a></li>
+<li><a class="reference internal" href="#portableapps-commusic">PortableApps.comMusic</a></li>
+<li><a class="reference internal" href="#portableapps-comvideos">PortableApps.comVideos</a></li>
+<li><a class="reference internal" href="#pal-portableappsdir">PAL:PortableAppsDir</a></li>
+<li><a class="reference internal" href="#pal-portableappsbasedir">PAL:PortableAppsBaseDir</a></li>
+<li><a class="reference internal" href="#pal-lastportableappsbasedir">PAL:LastPortableAppsBaseDir</a></li>
+<li><a class="reference internal" href="#userprofile">USERPROFILE</a></li>
+<li><a class="reference internal" href="#allusersprofile">ALLUSERSPROFILE</a></li>
+<li><a class="reference internal" href="#allusersappdata">ALLUSERSAPPDATA</a></li>
+<li><a class="reference internal" href="#localappdata">LOCALAPPDATA</a></li>
+<li><a class="reference internal" href="#appdata">APPDATA</a></li>
+<li><a class="reference internal" href="#documents">DOCUMENTS</a></li>
+<li><a class="reference internal" href="#temp">TEMP</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#partial-directory-variables">Partial directory variables</a><ul>
+<li><a class="reference internal" href="#pal-packagepartialdir">PAL:PackagePartialDir</a></li>
+<li><a class="reference internal" href="#pal-lastpackagepartialdir">PAL:LastPackagePartialDir</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#language-variables">Language variables</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="paf/history.html">8. PortableApps.com Format Version History and Discussion</a></li>
+    
+    
+      <li>Next: <a href="../advanced/index.html">Advanced usage of the PortableApps.com Launcher</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Reference</a>
+        
+        <ul><li>Environment variable substitions</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="paf/history.html" title="8. PortableApps.com Format Version History and Discussion">previous</a>  | <a href="index.html" title="Reference" accesskey="U">up</a>  | <a href="../advanced/index.html" title="Advanced usage of the PortableApps.com Launcher">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

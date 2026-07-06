@@ -1,0 +1,61 @@
+﻿LangString welcome ${LANG_IRISH} "Beidh an draoi seo treorú duit tríd an tsuiteáil de ${PORTABLEAPPNAMEDOUBLEDAMPERSANDS}.$\r$\n$\r$\nMá tá tú ag uasghrádú shuiteáil atá ann cheana féin de ${PORTABLEAPPNAMEDOUBLEDAMPERSANDS}, le do thoil dhúnadh roimh dul ar aghaidh.$\r$\n$\r$\nCliceáil Ar Aghaidh chun leanúint ar aghaidh."
+LangString finish ${LANG_IRISH} "${PORTABLEAPPNAMEDOUBLEDAMPERSANDS} suiteáilte ar do gléas. $\r$\n$\r$\nCliceáil Críochnaigh chun treoraí seo a dhúnadh."
+LangString runwarning ${LANG_IRISH} "Dún na cásanna ar fad de ${CLOSENAME} agus ansin cliceáil OK. Ní féidir leis an app iniompartha a uasghrádú cé go bhfuil sé ag rith."
+LangString invaliddirectory ${LANG_IRISH} "Is é an fillteán scríbe roghnaithe agat neamhbhailí. Roghnaigh fillteán bailí."
+LangString notenoughspace ${LANG_IRISH} "An gléas a roghnaigh tú a shuiteáil nach bhfuil go bhfuil go leor spáis saor in aisce do app."
+LangString checkforplatform ${LANG_IRISH} "Seiceáil do PortableApps.com Ardán"
+LangString refreshmenu ${LANG_IRISH} "Refreshing PortableApps.com Menu"
+LangString copylocalfilesnotfound ${LANG_IRISH} "cóipeanna an suiteálaí leagan áitiúil den iarratas agus déanann sé iniompartha. Ar an drochuair, ní raibh cóip áitiúil an t-iarratas a fuarthas. Is féidir leat reinstall nó cóip na comhaid féin a chur i gcrích a shuiteáil ag tráth níos déanaí. (EARRÁID: ní féidir $MISSINGFILEORPATH a fháil.) "
+LangString downloadfilemismatch ${LANG_IRISH} "an chóip íoslódáil de ${DownloadName} Ní bailí agus ní féidir iad a shuiteáil. Déan iarracht a shuiteáil arís."
+LangString downloadfailed ${LANG_IRISH} "Bhí an suiteálaí in ann a íoslódáil ${DownloadName} Beidh a shuiteáil an app iniompartha a bheith neamhiomlán gan é, le do thoil bain triail eile... (EARRÁID: $DOWNLOADRESULT)"
+LangString extractfailed ${LANG_IRISH} "Ba é an suiteálaí in ann an comhad riachtanach a bhaint as an comhad a íoslódáil. Beidh an suiteáil an app iniompartha a bheith neamhiomlán gan é."
+LangString downloading ${LANG_IRISH} "íoslódáil ${DownloadName}..."
+LangString prepareupgrade ${LANG_IRISH} "Ag ullmhú chun uasghrádú ${PORTABLEAPPNAME}..."
+LangString installingstatus ${LANG_IRISH} "Shuiteáil ${PORTABLEAPPNAME}..."
+LangString downloadremaining ${LANG_IRISH} "fágtha"
+LangString downloadconnecting ${LANG_IRISH} "Ceangal..."
+LangString downloadsecond ${LANG_IRISH} "dara"
+LangString downloadhour ${LANG_IRISH} "uair"
+LangString downloadminute ${LANG_IRISH} "nóiméad"
+LangString downloadplural ${LANG_IRISH} ""
+LangString downloadof ${LANG_IRISH} "de"
+
+LangString existingfileswarning ${LANG_IRISH} "Níl an fillteán a roghnaigh tú ($INSTDIR) an fillteán a shuiteáil caighdeánach do mbreiseán seo. Tá an fillteán comhaid laistigh fhéadfar a scriosadh nó a athrú. An bhfuil tú cinnte go dteastaíonn uait suiteáil a dhéanamh sa fillteán?"
+
+LangString platformsharedcustomlocation ${LANG_IRISH} "Roghnaigh suíomh saincheaptha ..."
+LangString platformsharednotfound ${LANG_IRISH} "Gan Aimsiú"
+
+LangString platforminstalltype ${LANG_IRISH} "Suiteáil Cineál"
+LangString platforminstalltypequestion ${LANG_IRISH} "Cén cineál suiteála beidh sé seo a bheith?"
+LangString platformnewinstall ${LANG_IRISH} "Nua Suiteáil"
+LangString platformnewinstalldetails ${LANG_IRISH} "cóip nua ar an Ardán PortableApps.com Suiteáil ar do ríomhaire áitiúil, tiomáint scamall, nó gléas iniompartha"
+LangString platformupgradeinstall ${LANG_IRISH} "Uasghrádú atá ann cheana Suiteáil"
+LangString platformupgradeinstalldetails ${LANG_IRISH} "cóip reatha an Ardán PortableApps.com Uasghrádú."
+
+LangString platforminstalllocation ${LANG_IRISH} "Suiteáil Suíomh"
+LangString platforminstalllocationquestion ${LANG_IRISH} "Cén áit ba mhaith leat do ardán a shuiteáil?"
+LangString platforminstalllocationcloud ${LANG_IRISH} "Cloud - shuiteáil i bhfillteán scamall synced (Dropbox, Google Drive, srl)"
+LangString platforminstalllocationportable ${LANG_IRISH} "Inaistrithe - shuiteáil do gléas iniompartha"
+LangString platforminstalllocationlocal ${LANG_IRISH} "Áitiúil - shuiteáil don úsáideoir faoi láthair, apps príobháideacha agus suímh"
+LangString platforminstalllocationlocalall ${LANG_IRISH} "Áitiúla Gach Úsáideoirí - shuiteáil do gach úsáideoir, roinnte apps agus i suímh"
+
+LangString platforminstallcloud ${LANG_IRISH} "Cloud Suiteáil"
+LangString platforminstallcloudquestion ${LANG_IRISH} "Cé acu eolaire scamall mhaith leat a shuiteáil go?"
+
+LangString platformupgrade ${LANG_IRISH} "Uasghrádú Ardán"
+LangString platformupgradequestion ${LANG_IRISH} "Cé acu ardán a shuiteáil mian leat chun uasghrádú a dhéanamh?"
+
+LangString platforminstallportable ${LANG_IRISH} "Inaistrithe Suiteáil"
+LangString platforminstallportablequestion ${LANG_IRISH} "Cé acu gléas iniompartha mhaith leat a shuiteáil go?"
+
+LangString platforminstalllocal ${LANG_IRISH} "Áitiúil Suiteáil"
+LangString platforminstalllocalquestion ${LANG_IRISH} "Cé acu cosán áitiúil a mhaith leat a shuiteáil go?"
+
+LangString platformconfirminstall ${LANG_IRISH} "Dearbhaigh Suiteáil"
+LangString platformconfirminstallsubhead ${LANG_IRISH} "Deimhnigh na sonraí do shuiteáil thíos"
+LangString platformconfirmintro ${LANG_IRISH} "Tá tú roghnaithe a shuiteáil go:"
+LangString platformconfirmoutro ${LANG_IRISH} "Clic Suiteáil chun tús a shuiteáil."
+
+LangString platformstartwithwindows ${LANG_IRISH} "go huathoibríoch tús an ardán le Windows"
+
+LangString platforminstallerlang ${LANG_IRISH} "Irish"

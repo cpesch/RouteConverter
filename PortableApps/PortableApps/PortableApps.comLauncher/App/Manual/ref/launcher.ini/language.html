@@ -1,0 +1,296 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>[Language] &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="launcher.ini" href="index.html" />
+    <link rel="next" title="[ServiceN]" href="services.html" />
+    <link rel="prev" title="[FilesMove]" href="filesystem.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-launcher.ini-language" class="page withsidebar">
+    
+  <div class="section" id="language">
+<span id="std:ini-section-[Language]"></span><h1>[Language]<a class="headerlink" href="#language" title="Permalink to this headline">¶</a></h1>
+<p>Many applications need quite complex language handling with unique names for
+languages, files which need checking, other validation and similar things. These
+two sections are designed to aid you to do this. They take input from the
+developer and manipulate values in the way specified to produce the environment
+variable <a class="reference internal" href="../envsub.html#std:env-PAL:LanguageCustom"><tt class="xref std std-env docutils literal"><span class="pre">%PAL:LanguageCustom%</span></tt></a> in the end which can
+be used in any values in the rest of the file marked &#8220;<a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.&#8221;.</p>
+<p>Details on how this is constructed are available in the document
+<a class="reference internal" href="../../topics/languages.html#languages-custom"><em>Setting a custom language environment variable</em></a>.</p>
+<div class="section" id="base">
+<span id="std:ini-key-[Language]:Base"></span><h2>Base<a class="headerlink" href="#base" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory if section used.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>The base string upon which languages are based. This should contain (and
+probably be) one of the <a class="reference internal" href="../envsub.html#ref-envsub-language"><em>language environment variables</em></a>.</p>
+</div>
+<div class="section" id="default">
+<span id="std:ini-key-[Language]:Default"></span><h2>Default<a class="headerlink" href="#default" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<p>If the base value is not found in the <a class="reference internal" href="#std:ini-section-[LanguageStrings]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[LanguageStrings]</span></tt></a> section,
+it will be set to this value. If this value is not set it will fall back to the
+base value.</p>
+</div>
+<div class="section" id="checkifexists">
+<span id="std:ini-key-[Language]:CheckIfExists"></span><h2>CheckIfExists<a class="headerlink" href="#checkifexists" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>Check if this file exists. To check for a directory add <tt class="docutils literal"><span class="pre">\*.*</span></tt> to the end. If
+the file does not exist it will fall back to the <a class="reference internal" href="#std:ini-key-[Language]:DefaultIfNotExists"><tt class="xref std std-ini-key docutils literal"><span class="pre">DefaultIfNotExists</span></tt></a> value.</p>
+</div>
+<div class="section" id="defaultifnotexists">
+<span id="std:ini-key-[Language]:DefaultIfNotExists"></span><h2>DefaultIfNotExists<a class="headerlink" href="#defaultifnotexists" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>If the file in <a class="reference internal" href="#std:ini-key-[Language]:CheckIfExists"><tt class="xref std std-ini-key docutils literal"><span class="pre">CheckIfExists</span></tt></a> did not
+exist, the custom language variable will be set to this value.</p>
+</div>
+</div>
+<div class="section" id="languagestrings">
+<span id="std:ini-section-[LanguageStrings]"></span><h1>[LanguageStrings]<a class="headerlink" href="#languagestrings" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line">Format: arbitrary INI pairs.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>Values in the <a class="reference internal" href="#std:ini-key-[Language]:Base"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Language]:Base</span></tt></a> will be looked up here by key name and
+the values returned after environment variable parsing.</p>
+</div>
+<div class="section" id="languagefile">
+<span id="std:ini-section-[LanguageFile]"></span><h1>[LanguageFile]<a class="headerlink" href="#languagefile" title="Permalink to this headline">¶</a></h1>
+<p>For reading the custom language variable from a file for when the portable
+application is not launched from the PortableApps.com Platform. The values
+which must be set depend on the <a class="reference internal" href="#std:ini-key-[LanguageFile]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>
+specified below.</p>
+<div class="section" id="type">
+<span id="std:ini-key-[LanguageFile]:Type"></span><h2>Type<a class="headerlink" href="#type" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">ConfigRead</span></tt>, <tt class="docutils literal"><span class="pre">INI</span></tt>, <tt class="docutils literal"><span class="pre">XML</span> <span class="pre">attribute</span></tt>, <tt class="docutils literal"><span class="pre">XML</span> <span class="pre">text</span></tt></div>
+<div class="line">Mandatory.</div>
+</div>
+<hr class="docutils" />
+<p>Specify the type of file reading which is to be used:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">ConfigRead</span></tt>: read arbitrary data to a file, the line on which to read
+being selected as one starting with the <a class="reference internal" href="#std:ini-key-[LanguageFile]:Entry"><tt class="xref std std-ini-key docutils literal"><span class="pre">Entry</span></tt></a>.</li>
+<li><tt class="docutils literal"><span class="pre">INI</span></tt>: read a string from an INI file.</li>
+<li><tt class="docutils literal"><span class="pre">XML</span> <span class="pre">attribute</span></tt>: read the string from an attribute value in an XML file.</li>
+<li><tt class="docutils literal"><span class="pre">XML</span> <span class="pre">text</span></tt>: read the string from a text node in an XML file.</li>
+</ul>
+<p>Both <tt class="docutils literal"><span class="pre">ConfigRead</span></tt> and <tt class="docutils literal"><span class="pre">INI</span></tt> are Unicode-compatible. The encoding (ANSI,
+UTF-8 or UTF-16LE) will be detected automatically from the file&#8217;s BOM.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 2.1: </span>previously <tt class="docutils literal"><span class="pre">ConfigRead</span></tt> was not able to read from UTF-16LE files.</p>
+</div>
+<div class="section" id="file">
+<span id="std:ini-key-[LanguageFile]:File"></span><h2>File<a class="headerlink" href="#file" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory.</div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>Specify the file which will the value will be read from.</p>
+</div>
+<div class="section" id="entry">
+<span id="std:ini-key-[LanguageFile]:Entry"></span><h2>Entry<a class="headerlink" href="#entry" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[LanguageFile]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">ConfigRead</span></tt>.</div>
+</div>
+<hr class="docutils" />
+<p>The value will be written to a line starting with this value. This should be
+set to the text to search for at the start of a line. In an INI-style file,
+this would be <tt class="docutils literal"><span class="pre">key=</span></tt>, and in an XML file it might be <tt class="docutils literal"><span class="pre">'</span>&nbsp;&nbsp;&nbsp;&nbsp; <span class="pre">&lt;config</span>
+<span class="pre">id=&quot;something&quot;&gt;'</span></tt>; note that you <strong>must</strong> include any leading whitespace
+which will be in the file, and if there is any leading or trailing whitespace
+you must quote the string with single (<tt class="docutils literal"><span class="pre">'</span></tt>) or double (<tt class="docutils literal"><span class="pre">&quot;</span></tt>) quotes.</p>
+<p>If you need to cut something off the end such as a quotation mark or a closing
+XML tag, see <a class="reference internal" href="#std:ini-key-[LanguageFile]:TrimRight"><tt class="xref std std-ini-key docutils literal"><span class="pre">[LanguageFile]:TrimRight</span></tt></a>.</p>
+</div>
+<div class="section" id="section">
+<span id="std:ini-key-[LanguageFile]:Section"></span><h2>Section<a class="headerlink" href="#section" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[LanguageFile]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">INI</span></tt>.</div>
+</div>
+<hr class="docutils" />
+<p>The INI section to read the value from.</p>
+</div>
+<div class="section" id="key">
+<span id="std:ini-key-[LanguageFile]:Key"></span><h2>Key<a class="headerlink" href="#key" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[LanguageFile]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">INI</span></tt>.</div>
+</div>
+<hr class="docutils" />
+<p>The INI key to read the value from.</p>
+</div>
+<div class="section" id="attribute">
+<span id="std:ini-key-[LanguageFile]:Attribute"></span><h2>Attribute<a class="headerlink" href="#attribute" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <a class="reference internal" href="#std:ini-key-[LanguageFile]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">XML</span> <span class="pre">attribute</span></tt></div>
+<div class="line"><a class="reference internal" href="../envsub.html#ref-envsub"><em>Environment variable substitions</em></a> apply.</div>
+</div>
+<hr class="docutils" />
+<p>The attribute to read the value from. See <a class="reference internal" href="../../topics/xml.html#xml"><em>Dealing with XML data</em></a> for more details.</p>
+</div>
+<div class="section" id="xpath">
+<span id="std:ini-key-[LanguageFile]:XPath"></span><h2>XPath<a class="headerlink" href="#xpath" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Mandatory for <tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span> <span class="pre">&lt;[LanguageFile]:Type</span></tt>=<tt class="docutils literal"><span class="pre">XML</span> <span class="pre">attribute</span></tt>, <tt class="docutils literal"><span class="pre">XML</span> <span class="pre">text</span></tt>.</div>
+</div>
+<hr class="docutils" />
+<p>Specify the <a class="reference external" href="http://en.wikipedia.org/wiki/XPath">XPath</a> to find the place to read from. It is a good idea to make
+sure that you have a solid understanding of how XPaths work and how to use them
+before writing one.</p>
+<p>For information about what this should look like, see <a class="reference internal" href="../../topics/xml.html#xml"><em>Dealing with XML data</em></a>.</p>
+</div>
+<div class="section" id="casesensitive">
+<span id="std:ini-key-[LanguageFile]:CaseSensitive"></span><h2>CaseSensitive<a class="headerlink" href="#casesensitive" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Values: <tt class="docutils literal"><span class="pre">true</span></tt> / <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Default: <tt class="docutils literal"><span class="pre">false</span></tt></div>
+<div class="line">Applies for <a class="reference internal" href="#std:ini-key-[LanguageFile]:Type"><tt class="xref std std-ini-key docutils literal"><span class="pre">Type</span></tt></a>=<tt class="docutils literal"><span class="pre">ConfigRead</span></tt>.</div>
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>Case sensitive searches are somewhat faster than case-insensitive searches. If
+you can do a case-sensitive ConfigRead, do.</p>
+</div>
+<div class="section" id="trimright">
+<span id="std:ini-key-[LanguageFile]:TrimRight"></span><h2>TrimRight<a class="headerlink" href="#trimright" title="Permalink to this headline">¶</a></h2>
+<div class="line-block">
+<div class="line">Optional.</div>
+</div>
+<hr class="docutils" />
+<p>If you need to remove something from the right of a line which you have read,
+for example if you want to get rid of a file extension, a quotation mark, a
+closing XML tag or similar, put the text in here and if it is at the end of
+the string it will be removed. Remember the rule about whitespace and
+quotation marks.</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">[Language]</a><ul>
+<li><a class="reference internal" href="#base">Base</a></li>
+<li><a class="reference internal" href="#default">Default</a></li>
+<li><a class="reference internal" href="#checkifexists">CheckIfExists</a></li>
+<li><a class="reference internal" href="#defaultifnotexists">DefaultIfNotExists</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#languagestrings">[LanguageStrings]</a></li>
+<li><a class="reference internal" href="#languagefile">[LanguageFile]</a><ul>
+<li><a class="reference internal" href="#type">Type</a></li>
+<li><a class="reference internal" href="#file">File</a></li>
+<li><a class="reference internal" href="#entry">Entry</a></li>
+<li><a class="reference internal" href="#section">Section</a></li>
+<li><a class="reference internal" href="#key">Key</a></li>
+<li><a class="reference internal" href="#attribute">Attribute</a></li>
+<li><a class="reference internal" href="#xpath">XPath</a></li>
+<li><a class="reference internal" href="#casesensitive">CaseSensitive</a></li>
+<li><a class="reference internal" href="#trimright">TrimRight</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="filesystem.html">[FilesMove]</a></li>
+    
+    
+      <li>Next: <a href="services.html">[Service<em>N</em>]</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">launcher.ini</a>
+        
+        <ul><li>[Language]</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="filesystem.html" title="[FilesMove]">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="services.html" title="[Service&lt;em&gt;N&lt;/em&gt;]">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

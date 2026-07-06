@@ -1,0 +1,151 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Files and directories &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Using the PortableApps.com Launcher" href="index.html" />
+    <link rel="next" title="Languages" href="languages.html" />
+    <link rel="prev" title="Dealing with the registry" href="registry.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-topics-files-and-directories" class="page withsidebar">
+    
+  <div class="section" id="files-and-directories">
+<span id="id1"></span><h1>Files and directories<a class="headerlink" href="#files-and-directories" title="Permalink to this headline">¶</a></h1>
+<p>One of the most common things with making applications portable is moving
+settings around. Ideally, an application is able to be made portable (or at
+least almost portable) with a command-line option or an environment variable to
+set its settings location, but most applications don&#8217;t support this. (TODO: a
+discussion of ways to improve base applications is in order.)</p>
+<p>Until I write more content in here, you should refer to the documentation for
+the <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[FilesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FilesMove]</span></tt></a>, <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesMove]</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesCleanupIfEmpty]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesCleanupIfEmpty]</span></tt></a> and
+<a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesCleanupForce]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesCleanupForce]</span></tt></a> sections of launcher.ini.</p>
+<p><em>This document is not complete</em></p>
+<div class="section" id="support-for-wildcards">
+<span id="wildcards"></span><span id="index-0"></span><h2>Support for wildcards<a class="headerlink" href="#support-for-wildcards" title="Permalink to this headline">¶</a></h2>
+<p>The PortableApps.com Launcher supports wildcard matching for several sections;
+<a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[FilesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FilesMove]</span></tt></a>, <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesMove]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesMove]</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a>, <a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesCleanupIfEmpty]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesCleanupIfEmpty]</span></tt></a> and
+<a class="reference internal" href="../ref/launcher.ini/filesystem.html#std:ini-section-[DirectoriesCleanupForce]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[DirectoriesCleanupForce]</span></tt></a>.  Here are the rules of the wildcard
+matching:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">*</span></tt> matches any number of characters</li>
+<li><tt class="docutils literal"><span class="pre">?</span></tt> matches one character</li>
+<li>Wildcards can be included at any level, but currently only at one level</li>
+</ul>
+<p><strong>Examples:</strong></p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">%PAL:DataDir%\File????.sw?</span></tt> is valid and will match in the Data directory
+files with names such as <tt class="docutils literal"><span class="pre">FileABCD.swp</span></tt>, <tt class="docutils literal"><span class="pre">File27X4.swo</span></tt>,
+<tt class="docutils literal"><span class="pre">File3_2!.sw_</span></tt>, but it will not match things like <tt class="docutils literal"><span class="pre">FileABC.swp</span></tt>,
+<tt class="docutils literal"><span class="pre">FileABCDE.swp</span></tt>, <tt class="docutils literal"><span class="pre">FileABCD.sw</span></tt> or <tt class="docutils literal"><span class="pre">FileABCD.swap</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">%PAL:DataDir%\*.ini</span></tt> is valid and will match in the Data directory files
+with names such as <tt class="docutils literal"><span class="pre">foo.ini</span></tt> and <tt class="docutils literal"><span class="pre">bar.ini</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">%PAL:DataDir%\*-???.ini</span></tt> is valid and will match in the Data directory
+files with names such as <tt class="docutils literal"><span class="pre">foo-123.ini</span></tt> and <tt class="docutils literal"><span class="pre">abcdef-ghi.ini</span></tt>, but not
+<tt class="docutils literal"><span class="pre">foo.ini</span></tt>.</li>
+<li><tt class="docutils literal"><span class="pre">%PAL:DataDir%\*\settings.ini</span></tt> is valid and will match all files called
+<tt class="docutils literal"><span class="pre">settings.ini</span></tt> in all subdirectories (one level deep, not recursively) of
+the Data directory.</li>
+<li><tt class="docutils literal"><span class="pre">%PAL:DataDir%\*\*.ini</span></tt> is <em>not</em> valid as wildcards are included at
+multiple levels.</li>
+</ul>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Files and directories</a><ul>
+<li><a class="reference internal" href="#support-for-wildcards">Support for wildcards</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="registry.html">Dealing with the registry</a></li>
+    
+    
+      <li>Next: <a href="languages.html">Languages</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Using the PortableApps.com Launcher</a>
+        
+        <ul><li>Files and directories</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="registry.html" title="Dealing with the registry">previous</a>  | <a href="index.html" title="Using the PortableApps.com Launcher" accesskey="U">up</a>  | <a href="languages.html" title="Languages">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

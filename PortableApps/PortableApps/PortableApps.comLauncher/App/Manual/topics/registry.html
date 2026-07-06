@@ -1,0 +1,270 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Dealing with the registry &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Using the PortableApps.com Launcher" href="index.html" />
+    <link rel="next" title="Files and directories" href="files-and-directories.html" />
+    <link rel="prev" title="Splash screens" href="splashscreen.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-topics-registry" class="page withsidebar">
+    
+  <div class="section" id="dealing-with-the-registry">
+<span id="registry"></span><span id="index-0"></span><h1>Dealing with the registry<a class="headerlink" href="#dealing-with-the-registry" title="Permalink to this headline">¶</a></h1>
+<p>Many applications store their data in the registry; when making such an
+application portable this data must be preserved.</p>
+<div class="section" id="making-registry-keys-portable">
+<h2>Making registry keys portable<a class="headerlink" href="#making-registry-keys-portable" title="Permalink to this headline">¶</a></h2>
+<p>With the PortableApps.com Launcher it&#8217;s easy to make a registry key that an
+application uses portable.</p>
+<p>First of all, when using any of the registry sections in your launcher
+configuration file, you must set <a class="reference internal" href="../ref/launcher.ini/activate.html#std:ini-key-[Activate]:Registry"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Activate]:Registry</span></tt></a> to <tt class="docutils literal"><span class="pre">true</span></tt>,
+or else they <strong>will not work</strong>. If something doesn&#8217;t seem to be working, check
+that value first. You probably didn&#8217;t set it.</p>
+<p>When you have an application that uses a key like
+<tt class="docutils literal"><span class="pre">HKEY_CURRENT_USER\Software\AppName</span></tt>, you can make that portable with a line
+in the <a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryKeys]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryKeys]</span></tt></a> section like this:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[RegistryKeys]</span>
+<span class="na">appname</span><span class="o">=</span><span class="s">HKCU\Software\AppName</span>
+</pre></div>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">appname</span></tt> refers to the filename (without the <tt class="docutils literal"><span class="pre">.reg</span></tt> extension) where it
+will be saved, inside the <tt class="docutils literal"><span class="pre">Data\settings</span></tt> directory of your package. This
+means that you can update drive letters and things like that inside
+<tt class="docutils literal"><span class="pre">%PAL:DataDir%\settings\appname.reg</span></tt>.</p>
+<p>If the registry key exists when the launcher comes to load the portable data, it
+will be backed up, and restored at the end, so that no data is lost.</p>
+<p id="registry-cleanupifempty">If the registry key you are wishing to save and make portable is deeper, like
+<tt class="docutils literal"><span class="pre">HKCU\Software\Publisher\AppName</span></tt>, then you need to make sure that the
+&#8220;Publisher&#8221; key is also deleted if it is empty, and not left behind. This also
+uses the <a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryCleanupIfEmpty]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryCleanupIfEmpty]</span></tt></a> section.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[RegistryKeys]</span>
+<span class="na">appname</span><span class="o">=</span><span class="s">HKCU\Software\Publisher\AppName</span>
+
+<span class="k">[RegistryCleanupIfEmpty]</span>
+<span class="na">1</span><span class="o">=</span><span class="s">HKCU\Software\Publisher</span>
+</pre></div>
+</div>
+<p>This also applies for more complex subtrees. (Try to think of more useful file
+names that &#8220;appname1&#8221; and &#8220;appname2&#8221; for your own applications.) In the example
+below, note that order is important. If the key numbers of the
+<a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryCleanupIfEmpty]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryCleanupIfEmpty]</span></tt></a> values were the other way round, it
+would try to delete <tt class="docutils literal"><span class="pre">HKCU\Software\Publisher</span></tt> first, and find that it wasn&#8217;t
+empty (because it would have <tt class="docutils literal"><span class="pre">Type</span></tt> in it) and so it wouldn&#8217;t be cleaned up.</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[RegistryKeys]</span>
+<span class="na">appname1</span><span class="o">=</span><span class="s">HKCU\Software\Publisher\Type\AppName</span>
+<span class="na">appname2</span><span class="o">=</span><span class="s">HKCU\Software\Publisher\AppNameConfig</span>
+
+<span class="k">[RegistryCleanupIfEmpty]</span>
+<span class="na">1</span><span class="o">=</span><span class="s">HKCU\Software\Publisher\Type</span>
+<span class="na">2</span><span class="o">=</span><span class="s">HKCU\Software\Publisher</span>
+</pre></div>
+</div>
+<p>Read the <a class="reference internal" href="../ref/launcher.ini/registry.html#ref-launcher-ini-registry"><em>launcher.ini registry reference</em></a> and
+the rest of this document for more information.</p>
+</div>
+<div class="section" id="hives">
+<h2>Hives<a class="headerlink" href="#hives" title="Permalink to this headline">¶</a></h2>
+<p>The registry is divided up into &#8220;hives&#8221; for storing data. Here is a list of the
+hives supported by the PortableApps.com Launcher:</p>
+<ul class="simple">
+<li><strong>HKEY_LOCAL_MACHINE</strong> (<strong>HKLM</strong>) &#8211; settings shared between users; requires
+administrative privileges to write to it</li>
+<li><strong>HKEY_CURRENT_USER</strong> (<strong>HKCU</strong>) &#8211; settings for the current user; requires no
+special permissions to write to it, but on restricted accounts certain methods
+of writing to it will not work.</li>
+<li><strong>HKEY_CLASSES_ROOT</strong> (<strong>HKCR</strong>) &#8211; a virtual hive constructed of an
+amalgamation of <tt class="docutils literal"><span class="pre">HKEY_LOCAL_MACHINE\Classes</span></tt> and
+<tt class="docutils literal"><span class="pre">HKEY_CURRENT_USER\Classes</span></tt> (<tt class="docutils literal"><span class="pre">HKEY_CURRENT_USER\Classes</span></tt> takes
+precedence). In your launcher configuration you should use <tt class="docutils literal"><span class="pre">HKCU\Classes</span></tt>
+for this value instead.</li>
+</ul>
+<p>The official format for hives is the four-letter abbreviation (<tt class="docutils literal"><span class="pre">HKLM</span></tt> or
+<tt class="docutils literal"><span class="pre">HKCU</span></tt>) instead of the long name.</p>
+<p><strong>A note on HKEY_USERS (HKU)</strong>: programs like Regshot use the full path to
+HKEY_CURRENT_USER, which includes the user ID. This means that anything like
+<tt class="docutils literal"><span class="pre">HKU\S-?-?-??-?????????-?????????-?????????-????</span></tt> (each <tt class="docutils literal"><span class="pre">?</span></tt> is a number)
+should be used as <tt class="docutils literal"><span class="pre">HKCU</span></tt>. There is also <tt class="docutils literal"><span class="pre">HKU\.DEFAULT</span></tt> which is the same as
+far as portability is concerned.</p>
+</div>
+<div class="section" id="keys-and-values-to-ignore">
+<h2>Keys and values to ignore<a class="headerlink" href="#keys-and-values-to-ignore" title="Permalink to this headline">¶</a></h2>
+<p>Lots of cache-type data is stored in the registry and other Windows settings
+which can be safely ignored when making a portable application. This section
+will gradually grow with lists of such values which you can ignore when making
+an application portable or when testing an application.</p>
+<p>These keys are in HKCU:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">SessionInformation\ProgramCount</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Cryptography\RNG\Seed</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\DirectDraw\MostRecentApplication</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\DirectInput\MostRecentApplication</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\SchedulingAgent</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedMRU</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\LastVisitedMRU</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\CurrentVersion\Explorer\ComDlg32\OpenSaveMRU</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\CurrentVersion\Explorer\UserAssist</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\CurrentVersion\Group</span> <span class="pre">Policy</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\ShellNoRoam\BagMRU</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\ShellNoRoam\Bags</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\ShellNoRoam\MUICache</span></tt></li>
+</ul>
+<p>These keys are in HKLM:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">Software\Microsoft\Windows\CurrentVersion\Reliability</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">System\ControlSet001</span></tt> (equivalent to <tt class="docutils literal"><span class="pre">System\CurrentControlSet</span></tt>)</li>
+<li><tt class="docutils literal"><span class="pre">System\CurrentControlSet\Control\DeviceClasses</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">System\CurrentControlSet\Services\*\Enum</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">System\CurrentControlSet\Services\SharedAccess</span></tt></li>
+<li><tt class="docutils literal"><span class="pre">System\CurrentControlSet\Services\swmidi</span></tt></li>
+</ul>
+<p>If you come up with more keys that can be ignored, please <a class="reference internal" href="../help.html#help"><em>contact Chris
+Morgan</em></a>.</p>
+</div>
+<div class="section" id="specific-registry-keys">
+<h2>Specific registry keys<a class="headerlink" href="#specific-registry-keys" title="Permalink to this headline">¶</a></h2>
+<p>Some registry keys have particular ways of dealing with them. These are listed
+here.</p>
+<div class="section" id="hkcu-software-javasoft-prefs">
+<h3><tt class="docutils literal"><span class="pre">HKCU\Software\JavaSoft\Prefs</span></tt><a class="headerlink" href="#hkcu-software-javasoft-prefs" title="Permalink to this headline">¶</a></h3>
+<p>Keys in here are from Java applications which use <a class="reference internal" href="java.html#java-java-util-prefs"><em>java.util.prefs</em></a>.
+See that page for tips on dealing with those registry keys.</p>
+</div>
+<div class="section" id="hkcu-software-trolltech">
+<h3><tt class="docutils literal"><span class="pre">HKCU\Software\Trolltech</span></tt><a class="headerlink" href="#hkcu-software-trolltech" title="Permalink to this headline">¶</a></h3>
+<p>Keys in this key are from Qt applications. See <a class="reference internal" href="qt.html#qt"><em>Making Qt applications portable</em></a> for details on what to
+do about them.</p>
+</div>
+<div class="section" id="hklm-software-classes-clsid-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+<h3><tt class="docutils literal"><span class="pre">HKLM\Software\Classes\CLSID\XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</span></tt><a class="headerlink" href="#hklm-software-classes-clsid-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" title="Permalink to this headline">¶</a></h3>
+<p>(Where <tt class="docutils literal"><span class="pre">X</span></tt> is a hexadecimal digit.)</p>
+<p>These are DLL servers and need registering. For the moment, this will block an
+app from being properly portable. Code to deal with this is due in version 2.2.</p>
+</div>
+</div>
+<div class="section" id="general-handling-of-registry-keys">
+<h2>General handling of registry keys<a class="headerlink" href="#general-handling-of-registry-keys" title="Permalink to this headline">¶</a></h2>
+<p>The normal way of dealing with registry keys in the launcher configuration file
+is with the
+<a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryKeys]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryKeys]</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryValueWrite]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryValueWrite]</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryCleanupIfEmpty]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryCleanupIfEmpty]</span></tt></a>,
+<a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryCleanupForce]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryCleanupForce]</span></tt></a> and
+<a class="reference internal" href="../ref/launcher.ini/registry.html#std:ini-section-[RegistryValueBackupDelete]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[RegistryValueBackupDelete]</span></tt></a> sections.</p>
+</div>
+<div class="section" id="detecting-changes">
+<span id="registry-detecting-changes"></span><h2>Detecting changes<a class="headerlink" href="#detecting-changes" title="Permalink to this headline">¶</a></h2>
+<p>In making a portable app, unless you know exactly what it&#8217;s going to be
+changing, you should monitor things like the registry, to see what keys you may
+need to deal with. The most popular tool in the PortableApps.com community for
+doing this is <a class="reference external" href="http://sourceforge.net/projects/regshot">Regshot</a>.</p>
+<p><em>This document is not complete</em></p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Dealing with the registry</a><ul>
+<li><a class="reference internal" href="#making-registry-keys-portable">Making registry keys portable</a></li>
+<li><a class="reference internal" href="#hives">Hives</a></li>
+<li><a class="reference internal" href="#keys-and-values-to-ignore">Keys and values to ignore</a></li>
+<li><a class="reference internal" href="#specific-registry-keys">Specific registry keys</a><ul>
+<li><a class="reference internal" href="#hkcu-software-javasoft-prefs"><tt class="docutils literal"><span class="pre">HKCU\Software\JavaSoft\Prefs</span></tt></a></li>
+<li><a class="reference internal" href="#hkcu-software-trolltech"><tt class="docutils literal"><span class="pre">HKCU\Software\Trolltech</span></tt></a></li>
+<li><a class="reference internal" href="#hklm-software-classes-clsid-xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"><tt class="docutils literal"><span class="pre">HKLM\Software\Classes\CLSID\XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX</span></tt></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#general-handling-of-registry-keys">General handling of registry keys</a></li>
+<li><a class="reference internal" href="#detecting-changes">Detecting changes</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="splashscreen.html">Splash screens</a></li>
+    
+    
+      <li>Next: <a href="files-and-directories.html">Files and directories</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Using the PortableApps.com Launcher</a>
+        
+        <ul><li>Dealing with the registry</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="splashscreen.html" title="Splash screens">previous</a>  | <a href="index.html" title="Using the PortableApps.com Launcher" accesskey="U">up</a>  | <a href="files-and-directories.html" title="Files and directories">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

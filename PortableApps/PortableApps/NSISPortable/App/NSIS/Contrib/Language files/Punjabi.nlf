@@ -1,0 +1,190 @@
+﻿# Header, don't edit
+NLF v6
+# Language ID
+1094
+# Font and size - dash (-) means default
+-
+-
+# Codepage - dash (-) means ASCII code page
+1200
+# RTL - anything else than RTL means LTR
+-
+# Translation by John T. Haller (machine translation)
+# ^Branding
+Nullsoft Install System %s
+# ^SetupCaption
+$(^Name) ਸੈੱਟਅੱਪ
+# ^UninstallCaption
+$(^Name) ਅਣਇੰਸਟੌਲ ਕਰੋ
+# ^LicenseSubCaption
+: ਲਾਇਸੰਸ ਇਕਰਾਰਨਾਮਾ
+# ^ComponentsSubCaption
+: ਇੰਸਟਾਲੇਸ਼ਨ ਵਿਕਲਪ
+# ^DirSubCaption
+: ਇੰਸਟਾਲੇਸ਼ਨ ਫੋਲਡਰ
+# ^InstallingSubCaption
+: ਇੰਸਟਾਲ ਕਰ ਰਿਹਾ ਹੈ
+# ^CompletedSubCaption
+: ਪੂਰਾ ਹੋਇਆ
+# ^UnComponentsSubCaption
+: ਅਣਇੰਸਟੌਲੇਸ਼ਨ ਵਿਕਲਪ
+# ^UnDirSubCaption
+: ਅਣਇੰਸਟੌਲੇਸ਼ਨ ਫੋਲਡਰ
+# ^ConfirmSubCaption
+: ਪੁਸ਼ਟੀ
+# ^UninstallingSubCaption
+: ਅਣਇੰਸਟੌਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ
+# ^UnCompletedSubCaption
+: ਪੂਰਾ ਹੋਇਆ
+# ^BackBtn
+< ਵਾਪਸ
+# ^NextBtn
+ਅਗਲਾ >
+# ^AgreeBtn
+ਮੈਂ ਸਹਿਮਤ ਹਾਂ l
+# ^AcceptBtn
+ਮੈਂ ਲਾਈਸੈਂਸ ਸਮਝੌਤੇ ਦੀਆਂ ਸ਼ਰਤਾਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਦਾ ਹਾਂ
+# ^DontAcceptBtn
+ਮੈਂ ਲਾਇਸੈਂਸ ਸਮਝੌਤੇ ਦੀਆਂ ਸ਼ਰਤਾਂ ਨੂੰ ਸਵੀਕਾਰ ਨਹੀਂ ਕਰਦਾ/ਕਰਦੀ ਹਾਂ
+# ^InstallBtn
+ਇੰਸਟਾਲ ਕਰੋ
+# ^UninstallBtn
+ਅਣਇੰਸਟੌਲ ਕਰੋ
+# ^CancelBtn
+ਰੱਦ ਕਰੋ
+# ^CloseBtn
+ਬੰਦ ਕਰੋ
+# ^BrowseBtn
+ਬਰਾਊਜ਼ ਕਰੋ...
+# ^ShowDetailsBtn
+ਵੇਰਵਾ ਦਿਖਾਓ
+# ^ClickNext
+ਜਾਰੀ ਰੱਖਣ ਲਈ ਅੱਗੇ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।
+# ^ClickInstall
+ਇੰਸਟਾਲੇਸ਼ਨ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇੰਸਟਾਲ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।
+# ^ClickUninstall
+ਅਣਇੰਸਟੌਲੇਸ਼ਨ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਅਣਇੰਸਟੌਲ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।
+# ^Name
+ਨਾਮ
+# ^Completed
+ਪੂਰਾ ਹੋਇਆ
+# ^LicenseText
+ਕਿਰਪਾ ਕਰਕੇ $(^NameDA) ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਲਾਇਸੈਂਸ ਸਮਝੌਤੇ ਦੀ ਸਮੀਖਿਆ ਕਰੋ। ਜੇਕਰ ਤੁਸੀਂ ਇਕਰਾਰਨਾਮੇ ਦੀਆਂ ਸਾਰੀਆਂ ਸ਼ਰਤਾਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਮੈਂ ਸਹਿਮਤ ਹਾਂ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।
+# ^LicenseTextCB
+ਕਿਰਪਾ ਕਰਕੇ $(^NameDA) ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਲਾਇਸੈਂਸ ਸਮਝੌਤੇ ਦੀ ਸਮੀਖਿਆ ਕਰੋ। ਜੇਕਰ ਤੁਸੀਂ ਇਕਰਾਰਨਾਮੇ ਦੀਆਂ ਸਾਰੀਆਂ ਸ਼ਰਤਾਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੇਠਾਂ ਦਿੱਤੇ ਚੈੱਕ ਬਾਕਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। $_CLICK
+# ^LicenseTextRB
+ਕਿਰਪਾ ਕਰਕੇ $(^NameDA) ਨੂੰ ਸਥਾਪਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਲਾਇਸੈਂਸ ਸਮਝੌਤੇ ਦੀ ਸਮੀਖਿਆ ਕਰੋ। ਜੇਕਰ ਤੁਸੀਂ ਇਕਰਾਰਨਾਮੇ ਦੀਆਂ ਸਾਰੀਆਂ ਸ਼ਰਤਾਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੇਠਾਂ ਦਿੱਤੇ ਪਹਿਲੇ ਵਿਕਲਪ ਨੂੰ ਚੁਣੋ। $_CLICK
+# ^UnLicenseText
+ਕਿਰਪਾ ਕਰਕੇ $(^NameDA) ਨੂੰ ਅਣਇੰਸਟੌਲ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਲਾਇਸੈਂਸ ਸਮਝੌਤੇ ਦੀ ਸਮੀਖਿਆ ਕਰੋ। ਜੇਕਰ ਤੁਸੀਂ ਇਕਰਾਰਨਾਮੇ ਦੀਆਂ ਸਾਰੀਆਂ ਸ਼ਰਤਾਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਮੈਂ ਸਹਿਮਤ ਹਾਂ 'ਤੇ ਕਲਿੱਕ ਕਰੋ।
+# ^UnLicenseTextCB
+ਕਿਰਪਾ ਕਰਕੇ $(^NameDA) ਨੂੰ ਅਣਇੰਸਟੌਲ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਲਾਇਸੈਂਸ ਸਮਝੌਤੇ ਦੀ ਸਮੀਖਿਆ ਕਰੋ। ਜੇਕਰ ਤੁਸੀਂ ਇਕਰਾਰਨਾਮੇ ਦੀਆਂ ਸਾਰੀਆਂ ਸ਼ਰਤਾਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੇਠਾਂ ਦਿੱਤੇ ਚੈੱਕ ਬਾਕਸ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। $_CLICK
+# ^UnLicenseTextRB
+ਕਿਰਪਾ ਕਰਕੇ $(^NameDA) ਨੂੰ ਅਣਇੰਸਟੌਲ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਲਾਇਸੈਂਸ ਸਮਝੌਤੇ ਦੀ ਸਮੀਖਿਆ ਕਰੋ। ਜੇਕਰ ਤੁਸੀਂ ਇਕਰਾਰਨਾਮੇ ਦੀਆਂ ਸਾਰੀਆਂ ਸ਼ਰਤਾਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਦੇ ਹੋ, ਤਾਂ ਹੇਠਾਂ ਦਿੱਤੇ ਪਹਿਲੇ ਵਿਕਲਪ ਨੂੰ ਚੁਣੋ। $_CLICK
+# ^Custom
+ਪ੍ਰਥਾ
+# ^ComponentsText
+ਉਹਨਾਂ ਭਾਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਜਿਹਨਾਂ ਨੂੰ ਤੁਸੀਂ ਸਥਾਪਿਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ ਅਤੇ ਉਹਨਾਂ ਭਾਗਾਂ ਨੂੰ ਹਟਾਓ ਜਿਹਨਾਂ ਨੂੰ ਤੁਸੀਂ ਸਥਾਪਿਤ ਨਹੀਂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ। $_CLICK
+# ^ComponentsSubText1
+ਇੰਸਟਾਲੇਸ਼ਨ ਦੀ ਕਿਸਮ ਚੁਣੋ:
+# ^ComponentsSubText2_NoInstTypes
+ਇੰਸਟਾਲ ਕਰਨ ਲਈ ਭਾਗ ਚੁਣੋ:
+# ^ComponentsSubText2
+ਜਾਂ, ਵਿਕਲਪਿਕ ਭਾਗਾਂ ਨੂੰ ਚੁਣੋ ਜੋ ਤੁਸੀਂ ਸਥਾਪਿਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ:
+# ^UnComponentsText
+ਉਹਨਾਂ ਭਾਗਾਂ ਦੀ ਜਾਂਚ ਕਰੋ ਜਿਹਨਾਂ ਨੂੰ ਤੁਸੀਂ ਅਣਇੰਸਟੌਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ ਅਤੇ ਉਹਨਾਂ ਭਾਗਾਂ ਨੂੰ ਅਣਚੈਕ ਕਰੋ ਜਿਹਨਾਂ ਨੂੰ ਤੁਸੀਂ ਅਣਇੰਸਟੌਲ ਨਹੀਂ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ। $_CLICK
+# ^UnComponentsSubText1
+ਅਣਇੰਸਟੌਲ ਦੀ ਕਿਸਮ ਚੁਣੋ:
+# ^UnComponentsSubText2_NoInstTypes
+ਅਣਇੰਸਟੌਲ ਕਰਨ ਲਈ ਭਾਗਾਂ ਦੀ ਚੋਣ ਕਰੋ:
+# ^UnComponentsSubText2
+ਜਾਂ, ਵਿਕਲਪਿਕ ਭਾਗਾਂ ਨੂੰ ਚੁਣੋ ਜੋ ਤੁਸੀਂ ਅਣਇੰਸਟੌਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ:
+# ^DirText
+ਸੈੱਟਅੱਪ ਹੇਠਾਂ ਦਿੱਤੇ ਫੋਲਡਰ ਵਿੱਚ $(^NameDA) ਨੂੰ ਸਥਾਪਤ ਕਰੇਗਾ। ਕਿਸੇ ਵੱਖਰੇ ਫੋਲਡਰ ਵਿੱਚ ਸਥਾਪਤ ਕਰਨ ਲਈ, ਬ੍ਰਾਊਜ਼ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਕੋਈ ਹੋਰ ਫੋਲਡਰ ਚੁਣੋ। $_CLICK
+# ^DirSubText
+ਟਿਕਾਣਾ ਫੋਲਡਰ
+# ^DirBrowseText
+$(^NameDA) ਨੂੰ ਇੰਸਟੌਲ ਕਰਨ ਲਈ ਫੋਲਡਰ ਚੁਣੋ:
+# ^UnDirText
+ਸੈੱਟਅੱਪ ਹੇਠਾਂ ਦਿੱਤੇ ਫੋਲਡਰ ਤੋਂ $(^NameDA) ਨੂੰ ਅਣਇੰਸਟੌਲ ਕਰ ਦੇਵੇਗਾ। ਕਿਸੇ ਵੱਖਰੇ ਫੋਲਡਰ ਤੋਂ ਅਣਇੰਸਟੌਲ ਕਰਨ ਲਈ, ਬ੍ਰਾਊਜ਼ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਕੋਈ ਹੋਰ ਫੋਲਡਰ ਚੁਣੋ। $_CLICK
+# ^UnDirSubText
+""
+# ^UnDirBrowseText
+$(^NameDA) ਨੂੰ ਅਣਇੰਸਟੌਲ ਕਰਨ ਲਈ ਫੋਲਡਰ ਚੁਣੋ:
+# ^SpaceAvailable
+"ਥਾਂ ਉਪਲਬਧ ਹੈ: "
+# ^SpaceRequired
+"ਥਾਂ ਦੀ ਲੋੜ ਹੈ: "
+# ^UninstallingText
+$(^NameDA) ਨੂੰ ਹੇਠਾਂ ਦਿੱਤੇ ਫੋਲਡਰ ਤੋਂ ਅਣਇੰਸਟੌਲ ਕੀਤਾ ਜਾਵੇਗਾ। $_CLICK
+# ^UninstallingSubText
+ਇਸ ਤੋਂ ਅਣਇੰਸਟੌਲ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ:
+# ^FileError
+ਲਿਖਣ ਲਈ ਫਾਈਲ ਖੋਲ੍ਹਣ ਵਿੱਚ ਗਲਤੀ: \r\n\r\n$0\r\n\r\nਇੰਸਟਾਲੇਸ਼ਨ ਨੂੰ ਰੋਕਣ ਲਈ ਅਬੋਰਟ 'ਤੇ ਕਲਿੱਕ ਕਰੋ,\r\nਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰੋ, ਜਾਂ\r\nਇਸ ਫਾਈਲ ਨੂੰ ਛੱਡਣ ਲਈ ਅਣਡਿੱਠ ਕਰੋ।
+# ^FileError_NoIgnore
+ਲਿਖਣ ਲਈ ਫਾਈਲ ਖੋਲ੍ਹਣ ਵਿੱਚ ਗਲਤੀ: \r\n\r\n$0\r\n\r\nਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਲਈ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ 'ਤੇ ਕਲਿੱਕ ਕਰੋ, ਜਾਂ\r\nਇੰਸਟਾਲੇਸ਼ਨ ਨੂੰ ਰੋਕਣ ਲਈ ਰੱਦ ਕਰੋ।
+# ^CantWrite
+"ਲਿਖ ਨਹੀਂ ਸਕਦਾ: "
+# ^CopyFailed
+ਕਾਪੀ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ
+# ^CopyTo
+"'ਤੇ ਕਾਪੀ ਕਰੋ "
+# ^Registering
+"ਰਜਿਸਟਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ: "
+# ^Unregistering
+"ਅਣਰਜਿਸਟਰ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ: "
+# ^SymbolNotFound
+"ਚਿੰਨ੍ਹ ਨਹੀਂ ਲੱਭ ਸਕਿਆ: "
+# ^CouldNotLoad
+"ਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ: "
+# ^CreateFolder
+"ਫੋਲਡਰ ਬਣਾਓ: "
+# ^CreateShortcut
+"ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ: "
+# ^CreatedUninstaller
+"ਅਨਇੰਸਟਾਲਰ ਬਣਾਇਆ ਗਿਆ: "
+# ^Delete
+"ਫਾਈਲ ਮਿਟਾਓ: "
+# ^DeleteOnReboot
+"ਰੀਬੂਟ ਕਰਨ 'ਤੇ ਮਿਟਾਓ: "
+# ^ErrorCreatingShortcut
+"ਸ਼ਾਰਟਕੱਟ ਬਣਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: "
+# ^ErrorCreating
+"ਬਣਾਉਣ ਵਿੱਚ ਤਰੁੱਟੀ: "
+# ^ErrorDecompressing
+ਡਾਟਾ ਡੀਕੰਪ੍ਰੈਸ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ! ਖਰਾਬ ਇੰਸਟਾਲਰ?
+# ^ErrorRegistering
+DLL ਰਜਿਸਟਰ ਕਰਨ ਵਿੱਚ ਤਰੁੱਟੀ
+# ^ExecShell
+"ExecShell: "
+# ^Exec
+"ਐਗਜ਼ੀਕਿਊਟ ਕਰੋ: "
+# ^Extract
+"ਐਬਸਟਰੈਕਟ: "
+# ^ErrorWriting
+"ਐਬਸਟਰੈਕਟ: ਫਾਈਲ ਵਿੱਚ ਲਿਖਣ ਵਿੱਚ ਗਲਤੀ "
+# ^InvalidOpcode
+ਇੰਸਟੌਲਰ ਖਰਾਬ ਹੋ ਗਿਆ: ਅਵੈਧ ਓਪਕੋਡ
+# ^NoOLE
+"ਲਈ ਕੋਈ OLE ਨਹੀਂ: "
+# ^OutputFolder
+"ਆਉਟਪੁੱਟ ਫੋਲਡਰ: "
+# ^RemoveFolder
+"ਫੋਲਡਰ ਹਟਾਓ: "
+# ^RenameOnReboot
+"ਰੀਬੂਟ ਕਰਨ 'ਤੇ ਨਾਮ ਬਦਲੋ: "
+# ^Rename
+"ਨਾਮ ਬਦਲੋ: "
+# ^Skipped
+"ਛੱਡਿਆ: "
+# ^CopyDetails
+ਕਲਿੱਪਬੋਰਡ ਵਿੱਚ ਵੇਰਵੇ ਕਾਪੀ ਕਰੋ
+# ^LogInstall
+ਲੌਗ ਇੰਸਟੌਲ ਕਰਨ ਦੀ ਪ੍ਰਕਿਰਿਆ
+# ^Byte
+ਬ
+# ^Kilo
+ ਕ
+# ^Mega
+ ਮ
+# ^Giga
+ ਗ

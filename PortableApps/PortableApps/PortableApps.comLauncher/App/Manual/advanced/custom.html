@@ -1,0 +1,255 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Custom code &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Advanced usage of the PortableApps.com Launcher" href="index.html" />
+    <link rel="next" title="Segments" href="segments.html" />
+    <link rel="prev" title="Advanced usage of the PortableApps.com Launcher" href="index.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-advanced-custom" class="page withsidebar">
+    
+  <div class="section" id="custom-code">
+<span id="index-0"></span><span id="id1"></span><h1>Custom code<a class="headerlink" href="#custom-code" title="Permalink to this headline">¶</a></h1>
+<p>The PortableApps.com Launcher is a very powerful launcher and is able to make
+almost any software portable. But sometimes, there&#8217;s something more needed which
+just isn&#8217;t supported by it. In such situations, the PortableApps.com Launcher
+still has you covered: you don&#8217;t need to write an entire custom launcher in
+<a class="reference internal" href="../glossary.html#term-nsis"><em class="xref std std-term">NSIS</em></a> (or another language) just because of that. You can still use the
+power of the PortableApps.com Launcher for almost all the launcher, and just
+write a small bit of custom code to do the last things which it can&#8217;t do itself.</p>
+<p>If your problem is that you need to disable a segment, because it&#8217;s doing
+something which makes your job impossible, first of all please <a class="reference internal" href="../help.html#help"><em>try to find
+a better way</em></a> as you&#8217;re probably not doing it how you should. If that
+fails, you can <a class="reference internal" href="#disabling-hooks-and-segments">disable hooks and segments</a>.</p>
+<div class="section" id="custom-nsh">
+<span id="custom-code-file"></span><h2><tt class="docutils literal"><span class="pre">Custom.nsh</span></tt><a class="headerlink" href="#custom-nsh" title="Permalink to this headline">¶</a></h2>
+<p>All modifications to the PortableApps.com Launcher which do not involve
+<a class="reference internal" href="debug.html#debug"><em>debugging</em></a> go in a file <tt class="docutils literal"><span class="pre">Custom.nsh</span></tt> in the <tt class="docutils literal"><span class="pre">Other\Source</span></tt>
+directory of a package.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 2.1: </span>previously this file was <tt class="docutils literal"><span class="pre">Other\Source\PortableApps.comLauncherCustom.nsh</span></tt>.
+The Generator will move this file to the new location if it exists.</p>
+</div>
+<div class="section" id="writing-a-custom-segment">
+<span id="custom-code-segment"></span><h2>Writing a custom segment<a class="headerlink" href="#writing-a-custom-segment" title="Permalink to this headline">¶</a></h2>
+<p>If there is something which you need to do in a launcher which is not possible
+in the PortableApps.com Launcher, you can write <a class="reference internal" href="../glossary.html#term-nsis"><em class="xref std std-term">NSIS</em></a> code for it
+yourself but still use the general framework and power of the PortableApps.com
+Launcher by writing a custom segment.</p>
+<p>To write a custom segment for your application, use the <a class="reference internal" href="#custom-nsh">Custom.nsh</a> file
+mentioned above.  You can look at <a class="reference internal" href="segments.html#segments"><em>other segments</em></a> for guidance
+on how to write a segment. This is the general structure for a segment:</p>
+<div class="highlight-python"><pre>${SegmentFile}
+
+Var [variables]
+
+${Segment[hook]}
+    ...
+!macroend
+
+${Segment[hook]}
+    ...
+!macroend
+
+...</pre>
+</div>
+<ol class="arabic simple">
+<li>The first line of the file is <tt class="docutils literal"><span class="pre">${SegmentFile}</span></tt>.</li>
+<li>Next comes any variables which may be required. Normally no variables will be
+required but some segments need variables.</li>
+</ol>
+<ol class="arabic" start="2">
+<li><p class="first">After this comes the hooks. Each hook is implemented like this:</p>
+<div class="highlight-python"><pre>${Segment[hook]}
+    [segment contents]
+!macroend</pre>
+</div>
+<p>A list of available hooks is available <a class="reference internal" href="segments.html#segments-hooks"><em>here</em></a>.</p>
+</li>
+<li><p class="first">A segment can use custom macros and Functions if it is desired, but they
+should be clearly identified as part of the segment. The general convention
+is to prefix a segment-specific macro or function with <em>_segment name_</em> so
+that the macro &#8220;Start&#8221; in the segment FilesMove became <tt class="docutils literal"><span class="pre">_FilesMove_Start</span></tt>.
+Such macros and functions as these should come above the variable
+definitions, immediately after the <tt class="docutils literal"><span class="pre">${SegmentFile}</span></tt> line.</p>
+</li>
+</ol>
+</div>
+<div class="section" id="disabling-hooks-and-segments">
+<span id="custom-code-disable"></span><h2>Disabling hooks and segments<a class="headerlink" href="#disabling-hooks-and-segments" title="Permalink to this headline">¶</a></h2>
+<p>If you ever need to disable a segment or hook, you can do so. In general though
+if you can possibly avoid doing it you should; you can very easily break the
+PortableApps.com Launcher by disabling certain things. In general I would
+recommend that you <a class="reference internal" href="../help.html#help"><em>ask</em></a> before doing it to see if there is a better
+way.</p>
+<p>All of these changes apply to <a class="reference internal" href="#custom-nsh">Custom.nsh</a>.</p>
+<p>To disable an inbuilt hook in a segment:</p>
+<div class="highlight-python"><pre>${DisableHook} Segment Hook</pre>
+</div>
+<p>To disable all hooks in an inbuilt segment (in short, to disable the segment):</p>
+<div class="highlight-python"><pre>${DisableSegment} Segment</pre>
+</div>
+</div>
+<div class="section" id="overriding-the-execution-step">
+<span id="custom-code-execute"></span><h2>Overriding the execution step<a class="headerlink" href="#overriding-the-execution-step" title="Permalink to this headline">¶</a></h2>
+<p>If you need to replace the execution step for an app, you can do so. Avoid doing
+it if you can as it will make the app not behave like most apps. Try
+<a class="reference internal" href="../help.html#help"><em>asking for help</em></a> before you do it, as there may be a better way.</p>
+<p>To override the Execute function completely, put into
+<a class="reference internal" href="#custom-nsh">Custom.nsh</a> code like this:</p>
+<div class="highlight-python"><pre>${OverrideExecute}
+    ...
+!macroend</pre>
+</div>
+<p>You would be well advised to take a look at the Execute function in the
+PortableApps.com Launcher before doing this,
+<tt class="docutils literal"><span class="pre">Other\Source\PortableApps.comLauncher.nsi</span></tt>.</p>
+</div>
+<div class="section" id="additional-features">
+<h2>Additional features<a class="headerlink" href="#additional-features" title="Permalink to this headline">¶</a></h2>
+<p>In addition to all standard NSIS features, there are a few extra macros
+available in the PortableApps.com Launcher which custom code can use.</p>
+<p>LogicLib is used extensively in the PortableApps.com Launcher, so LogicLib.nsh
+is already included. You can use LogicLib code structures without any extra
+code.</p>
+<div class="section" id="reading-values-from-launcher-ini">
+<h3>Reading values from launcher.ini<a class="headerlink" href="#reading-values-from-launcher-ini" title="Permalink to this headline">¶</a></h3>
+<p>Instead of using <tt class="docutils literal"><span class="pre">ReadINIStr</span></tt> for reading from the <a class="reference internal" href="../ref/launcher.ini/index.html#ref-launcher-ini"><em>launcher.ini file</em></a>, you can use <tt class="docutils literal"><span class="pre">${ReadLauncherConfig}</span></tt> or
+<tt class="docutils literal"><span class="pre">${ReadLauncherConfigWithDefault}</span></tt>.</p>
+<p><tt class="docutils literal"><span class="pre">${ReadLauncherConfig}</span></tt> is for reading a value from the launcher.ini file; it
+uses <tt class="docutils literal"><span class="pre">ReadINIStr</span></tt> internally, so the same rules apply; to check if a value did
+not exist, and is not merely empty, you can use <tt class="docutils literal"><span class="pre">${If}</span> <span class="pre">${Errors}</span></tt> etc.
+Remember to <tt class="docutils literal"><span class="pre">ClearErrors</span></tt> before depending on the error flag. Here is the
+syntax for ReadLauncherConfig:</p>
+<div class="highlight-python"><pre>${ReadLauncherConfig} $0 Section Key</pre>
+</div>
+<p><tt class="docutils literal"><span class="pre">${ReadLauncherConfigWithDefault}</span></tt> is as above, but if a value does not exist,
+a default value is put in:</p>
+<div class="highlight-python"><pre>${ReadLauncherConfigWithDefault} $0 Section Key Default</pre>
+</div>
+</div>
+<div class="section" id="allowing-extra-user-configuration">
+<h3>Allowing extra user configuration<a class="headerlink" href="#allowing-extra-user-configuration" title="Permalink to this headline">¶</a></h3>
+<p><tt class="docutils literal"><span class="pre">${ReadUserConfig}</span></tt> is used to get user configuration from the
+<tt class="docutils literal"><span class="pre">AppNamePortable.ini</span></tt> file in the root of the package (next to
+<tt class="docutils literal"><span class="pre">AppNamePortable.exe</span></tt>) which contains values like DisableSplashScreen and
+AdditionalParameters. Additional values for user configuration can be introduced
+with this:</p>
+<div class="highlight-python"><pre>${ReadUserConfig} $0 KeyName</pre>
+</div>
+<p>Then the user will be able to have a line in that file like this:</p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="na">KeyName</span><span class="o">=</span><span class="s">value</span>
+</pre></div>
+</div>
+<p>For boolean values (true or false, yes or no), the convention is to make the
+allowed values &#8220;true&#8221; or &#8220;false&#8221;.</p>
+<p>Additions like this should be documented in help.html.</p>
+<p class="versionchanged">
+<span class="versionmodified">Changed in version 2.1: </span><tt class="docutils literal"><span class="pre">${ReadUserOverrideConfig}</span></tt> became <tt class="docutils literal"><span class="pre">${ReadUserConfig}</span></tt></p>
+</div>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Custom code</a><ul>
+<li><a class="reference internal" href="#custom-nsh"><tt class="docutils literal"><span class="pre">Custom.nsh</span></tt></a></li>
+<li><a class="reference internal" href="#writing-a-custom-segment">Writing a custom segment</a></li>
+<li><a class="reference internal" href="#disabling-hooks-and-segments">Disabling hooks and segments</a></li>
+<li><a class="reference internal" href="#overriding-the-execution-step">Overriding the execution step</a></li>
+<li><a class="reference internal" href="#additional-features">Additional features</a><ul>
+<li><a class="reference internal" href="#reading-values-from-launcher-ini">Reading values from launcher.ini</a></li>
+<li><a class="reference internal" href="#allowing-extra-user-configuration">Allowing extra user configuration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="index.html">Advanced usage of the PortableApps.com Launcher</a></li>
+    
+    
+      <li>Next: <a href="segments.html">Segments</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Advanced usage of the PortableApps.com Launcher</a>
+        
+        <ul><li>Custom code</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="index.html" title="Advanced usage of the PortableApps.com Launcher">previous</a>  | <a href="index.html" title="Advanced usage of the PortableApps.com Launcher" accesskey="U">up</a>  | <a href="segments.html" title="Segments">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

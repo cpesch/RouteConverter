@@ -1,0 +1,494 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>5. PortableApps.com Installer (and installer.ini) &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="PortableApps.com Format™ Specification" href="index.html" />
+    <link rel="next" title="6. Host PC Modifications &amp; Portability" href="portability.html" />
+    <link rel="prev" title="4. PortableApps.com AppCompactor and AppCompactor.ini" href="appcompactor.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-paf-installer" class="page withsidebar">
+    
+  <div class="section" id="portableapps-com-installer-and-installer-ini">
+<span id="paf-installer"></span><h1>5. PortableApps.com Installer (and installer.ini)<a class="headerlink" href="#portableapps-com-installer-and-installer-ini" title="Permalink to this headline">¶</a></h1>
+<p>All apps in PortableApps.com Format must use the most recent PortableApps.com
+Installer available at <a class="reference external" href="http://portableapps.com/development">PortableApps.com/development</a>. The installer gets its
+configuration from the appinfo.ini file above as well as the optional
+installer.ini file which also resides in the AppInfo directory. The
+installer.ini file allows for more fine-grained control over the installation
+process as well as additional options like optional sections. The installer.ini
+consists of:</p>
+<p><strong>Please note that this example is only included to illustrate the possible
+options. It should not be included as-is in a project. For projects, an
+installer.ini should be created from scratch using only the features needed.</strong></p>
+<div class="highlight-ini"><div class="highlight"><pre><span class="k">[CheckRunning]</span>
+<span class="na">CloseEXE</span><span class="o">=</span><span class="s">Custom.exe</span>
+<span class="na">CloseName</span><span class="o">=</span><span class="s">AppName</span>
+
+<span class="k">[Source]</span>
+<span class="na">IncludeInstallerSource</span><span class="o">=</span><span class="s">false</span>
+
+<span class="k">[MainDirectories]</span>
+<span class="na">RemoveAppDirectory</span><span class="o">=</span><span class="s">true</span>
+<span class="na">RemoveDataDirectory</span><span class="o">=</span><span class="s">false</span>
+<span class="na">RemoveOtherDirectory</span><span class="o">=</span><span class="s">true</span>
+
+<span class="k">[OptionalComponents]</span>
+<span class="na">OptionalComponents</span><span class="o">=</span><span class="s">true</span>
+<span class="na">MainSectionTitle</span><span class="o">=</span><span class="s">AppName Portable (English) [Required]</span>
+<span class="na">MainSectionDescription</span><span class="o">=</span><span class="s">Install the portable app</span>
+<span class="na">OptionalSectionTitle</span><span class="o">=</span><span class="s">Additional Languages</span>
+<span class="na">OptionalSectionDescription</span><span class="o">=</span><span class="s">Add multilingual support for this app</span>
+<span class="na">OptionalSectionSelectedInstallType</span><span class="o">=</span><span class="s">Multilingual</span>
+<span class="na">OptionalSectionNotSelectedInstallType</span><span class="o">=</span><span class="s">English</span>
+<span class="na">OptionalSectionPreSelectedIfNonEnglishInstall</span><span class="o">=</span><span class="s">true</span>
+<span class="na">OptionalSectionInstalledWhenSilent</span><span class="o">=</span><span class="s">true</span>
+<span class="na">OptionalDirectory1</span><span class="o">=</span>
+<span class="na">OptionalFile1</span><span class="o">=</span>
+
+<span class="k">[CopyLocalFiles]</span>
+<span class="na">CopyLocalFiles</span><span class="o">=</span><span class="s">true</span>
+<span class="na">CopyFromRegPath</span><span class="o">=</span><span class="s">HKLM\Software\AppName</span>
+<span class="na">CopyFromRegKey</span><span class="o">=</span><span class="s">AppPath</span>
+<span class="na">CopyFromRegRemoveDirectories</span><span class="o">=</span><span class="s">2</span>
+<span class="na">CopyFromDirectory</span><span class="o">=</span><span class="s">%PROGRAMFILES%\AppName</span>
+<span class="na">CopyToDirectory</span><span class="o">=</span><span class="s">App\AppName</span>
+
+<span class="k">[DownloadFiles]</span>
+<span class="na">DownloadURL</span><span class="o">=</span>
+<span class="na">DownloadName</span><span class="o">=</span>
+<span class="na">DownloadFilename</span><span class="o">=</span>
+<span class="na">DownloadMD5</span><span class="o">=</span>
+<span class="na">DownloadTo</span><span class="o">=</span>
+<span class="na">AdditionalInstallSize</span><span class="o">=</span>
+<span class="na">Extract1To</span><span class="o">=</span>
+<span class="na">Extract1File</span><span class="o">=</span>
+<span class="na">AdvancedExtract1To</span><span class="o">=</span>
+<span class="na">AdvancedExtract1Filter</span><span class="o">=</span>
+<span class="na">DoubleExtractFilename</span><span class="o">=</span>
+<span class="na">DoubleExtract1To</span><span class="o">=</span>
+<span class="na">DoubleExtract1Filter</span><span class="o">=</span>
+
+<span class="k">[Languages]</span>
+<span class="na">ENGLISH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">AFRIKAANS</span><span class="o">=</span><span class="s">true</span>
+<span class="na">ALBANIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">ARABIC</span><span class="o">=</span><span class="s">true</span>
+<span class="na">ARMENIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">BASQUE</span><span class="o">=</span><span class="s">true</span>
+<span class="na">BELARUSIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">BOSNIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">BRETON</span><span class="o">=</span><span class="s">true</span>
+<span class="na">BULGARIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">CATALAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">CIBEMBA</span><span class="o">=</span><span class="s">true</span>
+<span class="na">CROATIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">CZECH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">DANISH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">DUTCH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">EFIK</span><span class="o">=</span><span class="s">true</span>
+<span class="na">ESPERANTO</span><span class="o">=</span><span class="s">true</span>
+<span class="na">ESTONIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">FARSI</span><span class="o">=</span><span class="s">true</span>
+<span class="na">FINNISH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">FRENCH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">GALICIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">GEORGIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">GERMAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">GREEK</span><span class="o">=</span><span class="s">true</span>
+<span class="na">HEBREW</span><span class="o">=</span><span class="s">true</span>
+<span class="na">HUNGARIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">ICELANDIC</span><span class="o">=</span><span class="s">true</span>
+<span class="na">IGBO</span><span class="o">=</span><span class="s">true</span>
+<span class="na">INDONESIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">IRISH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">ITALIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">JAPANESE</span><span class="o">=</span><span class="s">true</span>
+<span class="na">KHMER</span><span class="o">=</span><span class="s">true</span>
+<span class="na">KOREAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">KURDISH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">LATVIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">LITHUANIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">LUXEMBOURGISH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">MACEDONIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">MALAGASY</span><span class="o">=</span><span class="s">true</span>
+<span class="na">MALAY</span><span class="o">=</span><span class="s">true</span>
+<span class="na">MONGOLIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">NORWEGIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">NORWEGIANNYNORSK</span><span class="o">=</span><span class="s">true</span>
+<span class="na">PASHTO</span><span class="o">=</span><span class="s">true</span>
+<span class="na">POLISH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">PORTUGUESE</span><span class="o">=</span><span class="s">true</span>
+<span class="na">PORTUGUESEBR</span><span class="o">=</span><span class="s">true</span>
+<span class="na">ROMANIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">RUSSIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">SERBIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">SERBIANLATIN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">SIMPCHINESE</span><span class="o">=</span><span class="s">true</span>
+<span class="na">SLOVAK</span><span class="o">=</span><span class="s">true</span>
+<span class="na">SLOVENIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">SPANISH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">SPANISHINTERNATIONAL</span><span class="o">=</span><span class="s">true</span>
+<span class="na">SWAHILI</span><span class="o">=</span><span class="s">true</span>
+<span class="na">SWEDISH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">THAI</span><span class="o">=</span><span class="s">true</span>
+<span class="na">TRADCHINESE</span><span class="o">=</span><span class="s">true</span>
+<span class="na">TURKISH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">UKRAINIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">UZBEK</span><span class="o">=</span><span class="s">true</span>
+<span class="na">VALENCIAN</span><span class="o">=</span><span class="s">true</span>
+<span class="na">VIETNAMESE</span><span class="o">=</span><span class="s">true</span>
+<span class="na">WELSH</span><span class="o">=</span><span class="s">true</span>
+<span class="na">YORUBA</span><span class="o">=</span><span class="s">true</span>
+
+<span class="k">[DirectoriesToPreserve]</span>
+<span class="na">PreserveDirectory1</span><span class="o">=</span>
+
+<span class="k">[DirectoriesToRemove]</span>
+<span class="na">RemoveDirectory1</span><span class="o">=</span>
+
+<span class="k">[FilesToPreserve]</span>
+<span class="na">PreserveFile1</span><span class="o">=</span>
+
+<span class="k">[FilesToRemove]</span>
+<span class="na">RemoveFile1</span><span class="o">=</span>
+</pre></div>
+</div>
+<p>The entire installer.ini is optional. If it is omitted, the App and Other
+directories will be replaced and the installer will either be a single language
+(as specified in appinfo.ini) or multilingual and include all supported
+languages. The source for the installer will not be included.</p>
+<div class="section" id="within-the-optional-checkrunning-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[CheckRunning]</span></tt> section:<a class="headerlink" href="#within-the-optional-checkrunning-section" title="Permalink to this headline">¶</a></h2>
+<p><strong>CloseEXE</strong> (optional) allows you to assign a custom EXE to check for when
+upgrading. If the EXE is the same as that specified in the Control - Start
+option in appinfo.ini, this entry should be omitted from the installer.ini. If
+you don&#8217;t want to check if anything is running you can set <tt class="docutils literal"><span class="pre">CloseEXE=NONE</span></tt>
+(use uppercase) but this should be done with caution as a user could try to
+upgrade your app while it&#8217;s running.</p>
+<p><strong>CloseName</strong> (optional) allows you to assign a different name to what will be
+closed when upgrading. If the name is the same as the name of the portable app
+as specified in appinfo.ini then this entry should be omitted from the
+installer.ini.</p>
+</div>
+<div class="section" id="within-the-optional-source-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[Source]</span></tt> section:<a class="headerlink" href="#within-the-optional-source-section" title="Permalink to this headline">¶</a></h2>
+<p><strong>IncludeInstallerSource</strong> (optional) allows you to include the source to the
+PortableApps.com Installer to be installed with your portable app by setting it
+to true.</p>
+</div>
+<div class="section" id="within-the-optional-maindirectories-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[MainDirectories]</span></tt> section:<a class="headerlink" href="#within-the-optional-maindirectories-section" title="Permalink to this headline">¶</a></h2>
+<p><strong>RemoveAppDirectory, RemoveDataDirectory and RemoveOtherDirectory</strong> (optional)
+allow you to specify whether these directories will be removed or preserved when
+upgrading by installing a new version of your app over an existing one. By
+default, the App and Other directories are removed and the Data directory is
+preserved. If you wish to use these defaults, this section of installer.ini
+should be omitted. (Note that you can preserve specific directories and files
+below)</p>
+</div>
+<div class="section" id="within-the-optional-optionalcomponents-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[OptionalComponents]</span></tt> section:<a class="headerlink" href="#within-the-optional-optionalcomponents-section" title="Permalink to this headline">¶</a></h2>
+<p><strong>OptionalComponents</strong> - when set to true, this enables the installer to have an
+optional section. This is typically used to install additional languages within
+an app.</p>
+<p><strong>MainSectionTitle</strong> (optional) specifies the name that will appear for the
+first section of the installer. By default it will read &#8220;AppName Portable
+(English) [Required]&#8221; with AppName Portable being read from the appinfo.ini.
+This entry should be omitted if you are happy with the default.</p>
+<p><strong>MainSectionDescription</strong> (optional) specifies the description that will appear
+for the first section of the installer. By default it will read &#8220;Install the
+portable app&#8221;. This entry should be omitted if you are happy with the default.</p>
+<p><strong>OptionalSectionTitle</strong> (optional) specifies the name that will appear for the
+second/optional section of the installer. By default it will read &#8220;Additional
+Languages&#8221;. This entry should be omitted if you are happy with the default.</p>
+<p><strong>OptionalSectionDescription</strong> (optional) specifies the description that will
+appear for the second/optional section of the installer. By default it will read
+&#8220;Add multilingual support for this app&#8221;. This entry should be omitted if you are
+happy with the default.</p>
+<p><strong>OptionalSectionSelectedInstallType</strong> (optional) specifies the InstallType that
+will be written to appinfo.ini and displayed in the PortableApps.com Platform if
+the user installs the app with the optional section. By default it will read
+&#8220;Multilingual&#8221;. This entry should be omitted if you are happy with the default.</p>
+<p><strong>OptionalSectionNotSelectedInstallType</strong> (optional) specifies the InstallType
+that will be written to appinfo.ini and displayed in the PortableApps.com
+Platform if the user installs the app without the optional section. By default
+it will read &#8220;English&#8221;. This entry should be omitted if you are happy with the
+default.</p>
+<p><strong>OptionalSectionPreSelectedIfNonEnglishInstall</strong> (optional) specifies whether
+the optional section is selected by default if the user selected to run the
+installer in a language other than English. The default is true. This entry
+should be omitted if you are happy with the default.</p>
+<p><strong>OptionalSectionInstalledWhenSilent</strong> (optional) specifies whether or not the
+optional section is installed when the installer is running in silent mode when
+launched from the platform&#8217;s app installer. This entry defaults to true when the
+optional components are not additional languages.</p>
+<p><strong>OptionalDirectory1</strong> allows you to specify which directories are a part of the
+optional section of the installer. OptionalDirectory1 and higher are available
+for use. The path should be relative. So if you want the directory
+App\AppName\locales part of the optional section of the installer, you&#8217;d set
+<tt class="docutils literal"><span class="pre">OptionalDirectory1=App\AppName\locales</span></tt> in this section.</p>
+<p><strong>OptionalFile1</strong> allows you to specify which specific files are a part of the
+optional section of the installer. OptionalFile1 and higher are available for
+use. The path should be relative. So if you want the files App\AppName\*.lang
+part of the optional section of the installer, you&#8217;d set
+<tt class="docutils literal"><span class="pre">OptionalFile1=App\AppName\*.lang</span></tt> in this section.</p>
+<p><strong>Optional Section Note</strong>: You must use either OptionalDirectory1 or
+OptionalFile1 to specify files for inclusion in the optional section of the
+installer if you have one.</p>
+</div>
+<div class="section" id="within-the-optional-copylocalfiles-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[CopyLocalFiles]</span></tt> section:<a class="headerlink" href="#within-the-optional-copylocalfiles-section" title="Permalink to this headline">¶</a></h2>
+<p>This section is used to copy files in from a local installation of an
+application.</p>
+<p><strong>CopyLocalFiles</strong> is used to indicate that this section is enabled. It should
+be set to true.</p>
+<p><strong>CopyFromRegPath</strong> is used when the path to the local files is indicated within
+a key in the registry. Generally, this will be in the form of
+HKLM\Software\AppName.</p>
+<p><strong>CopyFromRegKey</strong> is used in conjunction with <tt class="docutils literal"><span class="pre">CopyFromRegPath</span></tt>. It indicates
+the Key within the registry path above that should be used.</p>
+<p><strong>CopyFromRegRemoveDirectories</strong> is used to indicate the number of directories
+to strip from the Key read in to arrive at the directory that should be copied.
+If the Key indicates a path to a file rather than a directory, it should be
+increased by one. For example, if the Key generally points to C:\Program
+Files\AppName\bin\AppName.exe and you wish to copy all the files in
+C:\Program Files\AppName, it would be set to 2: one to remove the file name
+AppName.exe and one to remove the &#8216;bin&#8217; directory from the path.</p>
+<p><strong>CopyFromDirectory</strong> is used to indicate the local directory to copy into the
+portable app. If used in conjunction with the registry entries above, it will be
+used as a fallback if the registry entry is missing or doesn&#8217;t point to a valid
+path. This entry is normally in the form <tt class="docutils literal"><span class="pre">%PROGRAMFILES%\AppName</span></tt>. Several
+environment variables are available including: %PROGRAMFILES%, %COMMONFILES%,
+%DESKTOP%, %WINDIR%, %SYSDIR%, %APPDATA%, %LOCALAPPDATA% and %TEMP%.</p>
+<p><strong>CopyToDirectory</strong> indicates the relative path within the portable app that the
+files will be copied to. This is usually in the form <tt class="docutils literal"><span class="pre">App\AppName</span></tt>. If the
+directory does not exist, it will be created.</p>
+</div>
+<div class="section" id="within-the-optional-downloadfiles-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[DownloadFiles]</span></tt> section:<a class="headerlink" href="#within-the-optional-downloadfiles-section" title="Permalink to this headline">¶</a></h2>
+<p>This section is used to download and optionally extract files from the internet.</p>
+<p><strong>DownloadURL</strong> specifies the URL to the file that will be downloaded. It is
+normally in the form <a class="reference external" href="http://example.com/path/filename">http://example.com/path/filename</a></p>
+<p><strong>DownloadName</strong> is the name that will be displayed while the file is
+downloaded. This must be a valid DOS name and should not include special
+characters like :, &#8221;, \, etc.</p>
+<p><strong>DownloadFilename</strong> is the name of the file that will be used while it is
+worked with locally. This should normally be the same as the filename from the
+DownloadURL. It is normally in the form filename.exe or filename.zip.</p>
+<p><strong>DownloadMD5</strong> is used to specify the MD5 hash of the file downloaded. This
+allows the installer to verify that the file has not changed since the installer
+was created. Use of this entry is <em>highly</em> recommended.</p>
+<p><strong>DownloadTo</strong> is optionally used if the downloaded file should just be copied
+into the portable app as-is. The entry is normally in the form <tt class="docutils literal"><span class="pre">App\AppName</span></tt>.
+This entry is not to be used with the extraction entries that follow.</p>
+<p><strong>AdditionalInstallSize</strong> is used to specify the size of the files that will be
+added to the files contained within the installer. The entry should be a number
+only and be in KB</p>
+<p><strong>Extract1To</strong> and <strong>Extract1File</strong> are used for simple extraction of files from
+ZIP files only. The Extract#To entries should specify the relative path to where
+the files will go within the installed portable app (typically App\AppName).
+The Extract#File is used to specify the name of the file to extract. No
+wildcards are permitted. Up to 10 entries in the form Extract1To/Extract1File,
+Extract2To/Extract2File may be made. Extract#To supports the use of <tt class="docutils literal"><span class="pre">&lt;ROOT&gt;</span></tt>
+to indicate the app&#8217;s root directory.</p>
+<p><strong>AdvancedExtract1To</strong> and <strong>AdvancedExtract1Filter</strong> are used for more advanced
+extraction from ZIP files as well as many installer EXEs. The AdvancedExtract#To
+entries should specify the relative path to where the files will go within the
+installed portable app (typically App\AppName). The AdvancedExtract#Filter
+entries are used to specify a filter for the files to be extracted and are in
+the same format used by 7-zip. Some examples include <em>.txt for all text files, *
+for all files, *a</em> for files that contain the letter a, Src\*.cpp for all cpp
+files within the src directory, etc. ** can be used to indicate all files in the
+archive recursively (including sub-directories). Up to 10 entries can be made.
+AdvancedExtract#To supports the use of <tt class="docutils literal"><span class="pre">&lt;ROOT&gt;</span></tt> to indicate the app&#8217;s root
+directory.</p>
+<p><strong>DoubleExtractFilename</strong> is used when a downloaded file contains an archive
+within an archive. The DoubleExtractFilename should be set to the name of the
+archive inside the archive. For example, if you are downloading a file called
+setup.exe which contains a file data.zip that has the files needed within it,
+DoubleExtractFilename would be set to data.zip. The <strong>DoubleExtract#To</strong> and
+<strong>DoubleExtract#Filter</strong> are performed on the extracted archive and are in the same
+format as AdvancedExtract1To and AdvancedExtract1Filter above. Up to 10 entries
+may be used. DoubleExtract#To supports the use of <tt class="docutils literal"><span class="pre">&lt;ROOT&gt;</span></tt> to indicate the app&#8217;s
+root directory.</p>
+</div>
+<div class="section" id="within-the-optional-languages-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[Languages]</span></tt> section:<a class="headerlink" href="#within-the-optional-languages-section" title="Permalink to this headline">¶</a></h2>
+<p>Each entry is used to specify whether that language is available as a user is
+installing the portable app and appinfo.ini is set to Multilingual. If this
+section is omitted, all languages are included. If this section is included,
+ENGLISH= is required. All other languages are optional and default to false.</p>
+</div>
+<div class="section" id="within-the-optional-directoriestopreserve-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[DirectoriesToPreserve]</span></tt> section:<a class="headerlink" href="#within-the-optional-directoriestopreserve-section" title="Permalink to this headline">¶</a></h2>
+<p>This section specifies directories that will be preserved even if a given
+directory (App, Data, Other) is set to be removed on an upgrade. Up to 10
+entries in the form of PreserveDirectory1, PreserveDirectory2, etc are
+available. Each should be in the relative paths within the app. If you wish to
+preserve the directory App\AppName\plugins, it would be entered as
+<tt class="docutils literal"><span class="pre">PreserveDirectory1=App\AppName\plugins</span></tt> within this section. If no
+directories need preserving, this section should be omitted.</p>
+</div>
+<div class="section" id="within-the-optional-directoriestoremove-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[DirectoriesToRemove]</span></tt> section:<a class="headerlink" href="#within-the-optional-directoriestoremove-section" title="Permalink to this headline">¶</a></h2>
+<p>This section specifies directories that will be removed even if a given
+directory (App, Data, Other) is set not to be removed on an upgrade. Up to 10
+entries in the form of RemoveDirectory1, RemoveDirectory2, etc are available.
+Each should be in the relative paths within the app. If you wish to remove the
+directory App\AppName\locales, it would be entered as
+<tt class="docutils literal"><span class="pre">RemoveDirectory1=App\AppName\locales</span></tt> within this section. If no directories
+need removing, this section should be omitted.</p>
+</div>
+<div class="section" id="within-the-optional-filestopreserve-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[FilesToPreserve]</span></tt> section:<a class="headerlink" href="#within-the-optional-filestopreserve-section" title="Permalink to this headline">¶</a></h2>
+<p>This section specifies files that will be preserved even if a given directory
+(App, Data, Other) is set to be removed on an upgrade. Up to 10 entries in the
+form of PreserveFile1, PreserveFile2, etc are available. Each should be in the
+relative paths within the app. If you wish to preserve the files
+App\AppName\*.hlp, it would be entered as <tt class="docutils literal"><span class="pre">PreserveFile1=App\AppName\*.hlp</span></tt>
+within this section. If no files need preserving, this section should be
+omitted.</p>
+</div>
+<div class="section" id="within-the-optional-filestoremove-section">
+<h2>Within the optional <tt class="docutils literal"><span class="pre">[FilesToRemove]</span></tt> section:<a class="headerlink" href="#within-the-optional-filestoremove-section" title="Permalink to this headline">¶</a></h2>
+<p>This section specifies files that will be removed even if a given directory
+(App, Data, Other) is set not to be removed on an upgrade. Up to 10 entries in
+the form of RemoveFile1, RemoveFile2, etc are available. Each should be in the
+relative paths within the app. If you wish to remove the files
+App\AppName\*.lang, it would be entered as <tt class="docutils literal"><span class="pre">RemoveFile1=App\AppName\*.lang</span></tt>
+within this section. If no files need removing, this section should be omitted.</p>
+<p>An <strong>End User License Agreement (EULA)</strong> or other licensing file can be
+displayed in the PortableApps.com Installer by including an EULA.txt or EULA.rtf
+file in the Other\Source directory. The PortableApps.com Installer will
+automatically locate it and configure it for use.</p>
+<p id="paf-installer-custom"><strong>Custom Code</strong> may be included with your installer by including a file called
+PortableApps.comInstallerCustom.nsh within the Other\Source directory. This
+file is coded in NSIS and can include 3 macros: CustomCodePreInstall (which is
+run before installation), CustomCodePostInstall (which is run after
+installation) and CustomCodeOptionalCleanup (which is run at the beginning of
+installation if the optional section of an installer is not selected, intended
+for use in app upgrades when the existing app may have had the optional section
+included). In addition to the standard NSIS functions, the following NSIS
+features are available: ConfigRead, ConfigReadS, ConfigWrite, ConfigWriteS,
+GetParent, GetRoot, VersionCompare and the LogicLib features of NSIS.</p>
+<p>The PortableApps.com Installer code itself should not be altered directly within
+the confines of it being a PortableApps.com Installer. As always, the source
+code is available under the GPL and may be freely modified and used in other
+GPL-licensed works.</p>
+<p>Every release of an app in PortableApps.com Format must use the current
+PortableApps.com Installer. If a larger application is being compiled that has a
+longer development and testing time, and a new version of the PortableApps.com
+Installer is released during testing of a release the version of the installer
+the app is currently using may be kept provided that the new Installer version
+is less than 30 days old on the day the application using the older version is
+released.</p>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../contents.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">5. PortableApps.com Installer (and installer.ini)</a><ul>
+<li><a class="reference internal" href="#within-the-optional-checkrunning-section">Within the optional <tt class="docutils literal"><span class="pre">[CheckRunning]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-source-section">Within the optional <tt class="docutils literal"><span class="pre">[Source]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-maindirectories-section">Within the optional <tt class="docutils literal"><span class="pre">[MainDirectories]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-optionalcomponents-section">Within the optional <tt class="docutils literal"><span class="pre">[OptionalComponents]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-copylocalfiles-section">Within the optional <tt class="docutils literal"><span class="pre">[CopyLocalFiles]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-downloadfiles-section">Within the optional <tt class="docutils literal"><span class="pre">[DownloadFiles]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-languages-section">Within the optional <tt class="docutils literal"><span class="pre">[Languages]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-directoriestopreserve-section">Within the optional <tt class="docutils literal"><span class="pre">[DirectoriesToPreserve]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-directoriestoremove-section">Within the optional <tt class="docutils literal"><span class="pre">[DirectoriesToRemove]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-filestopreserve-section">Within the optional <tt class="docutils literal"><span class="pre">[FilesToPreserve]</span></tt> section:</a></li>
+<li><a class="reference internal" href="#within-the-optional-filestoremove-section">Within the optional <tt class="docutils literal"><span class="pre">[FilesToRemove]</span></tt> section:</a></li>
+</ul>
+</li>
+</ul>
+
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="appcompactor.html">4. PortableApps.com AppCompactor and AppCompactor.ini</a></li>
+    
+    
+      <li>Next: <a href="portability.html">6. Host PC Modifications &amp; Portability</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">PortableApps.com Format™ Specification</a>
+        
+        <ul><li>5. PortableApps.com Installer (and installer.ini)</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="appcompactor.html" title="4. PortableApps.com AppCompactor and AppCompactor.ini">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="portability.html" title="6. Host PC Modifications &amp;amp; Portability">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

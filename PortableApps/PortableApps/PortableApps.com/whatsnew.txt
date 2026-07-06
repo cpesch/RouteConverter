@@ -1,0 +1,110 @@
+We've been operating at a loss much of this year. Recent donations have been helping a lot. Please donate if you can. Credit/debit, wire transfer, PayPal, crypto and more are accepted.
+
+* VERSION 30.1 [2025-09-27]
+
+UPDATED: 7-Zip to latest version
+UPDATED: Compiler to Delphi 13.0 for improved speed and stability
+
+* VERSION 30.0.4 [2025-07-15]
+
+UPDATED: Croatian Locale
+FIXED: Incorrect version in About
+
+* VERSION 30.0.3 [2025-07-14]
+
+ADDED: Specialized handling for Textify closing
+UPDATED: 7-Zip to latest version
+
+* VERSION 30.0.2 [2025-03-27]
+
+FIXED: Theme visual display issues, improved theme hovers
+FIXED: Themes show pink corners on XP or Vista/7 when Aero is disabled
+FIXED: App list click issues for some users
+UPDATED: Czech locale
+
+* VERSION 30.0.1 [2025-03-26]
+
+FIXED: Flat theme visual issues
+FIXED: 7-Zip not working on 32-bit Windows (updater/app store/backup)
+
+* VERSION 30.0 [2025-03-26]
+
+ADDED: Ability to disable app updates for specific apps
+ADDED: Specialized handling for Run-Command closing
+UPDATED: Compiler to Delphi 12.2 for improved speed and stability
+UPDATED: 7-Zip to latest version
+FIXED: Access violation when mouse over menu on start
+
+* VERSION 29.5.3 [2024-06-27]
+
+ADDED: .Net 8/9 support
+UPDATED: 7-Zip to latest version
+FIXED: Russian menu folder labels cut off when in large font mode
+
+* VERSION 29.5.2 [2024-05-30]
+
+UPDATED: 7-Zip to latest version
+FIXED: Command strings visible in backup details window
+
+* VERSION 29.5.1 [2024-05-08]
+
+UPDATED: Dutch and Russian locales
+UPDATED: Arabic installer locale
+FIXED: Empty ns*.tmp directory left TEMP after platform upgrade (fixed on subsequent upgrades)
+
+* VERSION 29.5 [2024-04-24]
+
+ADDED: Per-machine multi-monitor position saving
+ADDED: Czech, Danish, Dutch, Estonian, Hungarian, Indonesian, Lithuanian, Norwegian, Romanian, Slovak, Slovenian, Swedish, Turkish, Ukrainian platform installer welcome/license
+UPDATED: Latest Delphi compiler for improved performance and stability
+UPDATED: Arabic, French locales
+
+* VERSION 29.4 [2024-04-10]
+
+ADDED: Seamless automatic app taskbar pinning for Windows 7 through 11
+UPDATED: App Store/Updater confirm changed from Next to Install
+FIXED: Platform installer self-deletes when manually run from the platform on 64-bit Windows
+
+* VERSION 29.3 [2024-03-26]
+
+ADDED: Multi-monitor support - Platform remembers screen and position
+ADDED: Tooltip to PortableApps.com logo holiday decorations
+
+* VERSION 29.2.1 [2024-03-18]
+
+ADDED: Preserve custom PortableApps folder icon during upgrades
+ADDED: Prevent accidental Platform installs to paths inside existing installs
+FIXED: Languages in Options show incorrectly under XP/Vista/7 when using RTL locale
+FIXED: Errors show incorrectly in App Store/Updater when using RTL locale
+
+* VERSION 29.2 [2024-03-14]
+
+ADDED: Descriptions for multiple icon apps' additional icons
+ADDED: Preserve custom user folder icons on Documents et al during upgrades
+FIXED: Some compatible legacy apps not in App Store on Windows XP
+
+* VERSION 29.1.2 [2024-03-07]
+
+FIXED: Incompatibility between "Expand categories by default" and "Collapse categories..." options
+UPDATED: Croatian locale
+
+* VERSION 29.1.1 [2024-02-08]
+
+ADDED: Edge case handling for Windows XP 64-bit in App Store
+FIXED: LTR locales with parenthesis show incorrectly in Options locale dropdown when using an RTL locale
+UPDATED: German, Latvian locales
+
+* VERSION 29.1 [2024-02-01]
+
+ADDED: Secondary locale availability in App Store (Portuguese to PortugueseBR, etc)
+UPDATED: Improved App Store loading and processing speed
+UPDATED: Improved Updater speed
+UPDATED: Armenian, Belarusian, Bengali, Bosnian, Burmese, Catalan, Chinese (Simplified), Corsican, Esperanto, Estonian, Filipino, Finnish, Galician, Georgian, Icelandic, Igbo, Irish, Khmer, Kurdish, Latvian, Luxembourgish, Macedonian, Malagasy, Malay, Marathi, Mongolian, Pashto, Portuguese, Punjabi, Russian, ScotsGaelic, SerbianLatin, Sesotho, Slovenian, Sundanese, Swahili, Tamil, Tatar, Twi, Urdu, Uyghur, Uzbek, Welsh, Yoruba, Zulu locales
+
+* VERSION 29.0 [2024-01-18]
+
+ADDED: Freeware license filter (personal, education, business, open source only)
+ADDED: Edge case compatibility checks (Ex: apps that work with Windows 7 to 11 but not 8.0)
+UPDATED: Afrikaans, Albanian, Amharic, Arabic, Armenian, Basque, Bulgarian, ChineseSimplified, ChineseTraditional, Croatian, Czech, Danish, Dutch, English, EnglishGB, Farsi, Finnish, French, German, Greek, Hebrew, Hindi, Hungarian, Indonesian, Italian, Japanese, Korean, Lithuanian, Norwegian, Polish, Portuguese, PortugueseBrazilian, Romanian, Russian, Serbian, Slovak, Spanish, SpanishInternational, Swedish, Thai, Turkish, Ukrainian, Vietnamese locales
+
+Previous versions lised at: https://portableapps.com/platform/changelog

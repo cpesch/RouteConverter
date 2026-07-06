@@ -1,0 +1,160 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>64-bit applications &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../index.html" />
+    <link rel="up" title="Using the PortableApps.com Launcher" href="index.html" />
+    <link rel="next" title="Dealing with XML data" href="xml.html" />
+    <link rel="prev" title="Making games portable" href="games.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../index.html">Home</a>  |
+      <a title="Table of contents" href="../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../genindex.html">Index</a>  |
+      <a title="Search" href="../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-topics-64-bit" class="page withsidebar">
+    
+  <div class="section" id="bit-applications">
+<span id="bit"></span><span id="index-0"></span><h1>64-bit applications<a class="headerlink" href="#bit-applications" title="Permalink to this headline">¶</a></h1>
+<p>Many applications now available come in 32-bit and 64-bit builds. In general at
+PortableApps.com we don&#8217;t include 64-bit versions of apps in our packages. Our
+reasoning behind this is that almost all 32-bit apps work in 64-bit versions of
+Windows, and there is normally little or no performance benefit from running a
+native 64-bit app instead of its 32-bit build. So normally including a 64-bit
+build as well as a 32-bit build would just add to the size of a package
+(approximately doubling it) without any real benefit. For some more explanation
+of our policy on 64-bit apps and what happens with them, see <a class="reference external" href="http://portableapps.com/node/24371">64-bit Software:
+Where It Fits Into Portable Apps</a>.</p>
+<p>There are however some cases where there is benefit in including 64-bit builds
+of apps. The most common is for apps that utilise low-level functions in the
+operating system which don&#8217;t work in Wow64 (the 32-bit emulation part of a
+64-bit version of Windows). For example, <a class="reference external" href="http://portableapps.com/apps/utilities/jkdefrag_portable">JkDefrag Portable</a> includes both
+32-bit and 64-bit builds of JkDefrag, because the defragmentation must be run
+differently between the two architectures. The version to use is automatically
+selected by the launcher.</p>
+<p>Another app at PortableApps.com which includes both 32-bit and 64-bit builds is
+<a class="reference external" href="http://portableapps.com/apps/utilities/7zip_portable">7-Zip Portable</a>. A 32-bit build of 7-Zip does run on a 64-bit version of
+Windows, but with the processor-intensive compression, there is a noticeable
+difference in performance between the 32-bit build and the native 64-bit build:
+on a 64-bit operating system, the 64-bit build compresses and decompresses
+archives approximately 5-15% faster than the 32-bit build. However, recall that
+the 64-bit version will not run on a 32-bit operating system; this is the reason
+why the 64-bit version alone cannot comprise the app. Because the size
+difference was fairly small (less than a couple of megabytes), and the benefits
+were deemed to be significant enough, 7-Zip Portable is now provided with both
+32-bit and 64-bit builds included, automatically selected based on the base
+computer&#8217;s architecture.</p>
+<p>To support 64-bit apps, the PortableApps.com Launcher can select a different
+program executable to run from the normal one. The configuration for this is in
+the launcher.ini keys <a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:ProgramExecutable64"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutable64</span></tt></a> and
+<a class="reference internal" href="../ref/launcher.ini/launch.html#std:ini-key-[Launch]:ProgramExecutableWhenParameters64"><tt class="xref std std-ini-key docutils literal"><span class="pre">[Launch]:ProgramExecutableWhenParameters64</span></tt></a>.</p>
+<p>Some apps will have their 32-bit and 64-bit versions next to one another, for
+example in <tt class="docutils literal"><span class="pre">App\AppName\AppName.exe</span></tt> and <tt class="docutils literal"><span class="pre">App\AppName\AppName64.exe</span></tt>;
+sometimes however they will be in different directories &#8211;
+<tt class="docutils literal"><span class="pre">App\AppName\AppName.exe</span></tt> and <tt class="docutils literal"><span class="pre">App\AppName64\AppName.exe</span></tt>.</p>
+<p>It is possible that an environment variable will be needed to specify
+<tt class="docutils literal"><span class="pre">%PAL:AppDir%\AppName</span></tt> and <tt class="docutils literal"><span class="pre">%PAL:AppDir%\AppName64</span></tt>, depending on the
+architecture, so that a configuration file can be updated. If this is required,
+it can be done easily with <a class="reference internal" href="../advanced/custom.html#custom-code"><em>custom code</em></a>. A variable
+<tt class="docutils literal"><span class="pre">$Bits</span></tt> is provided which contains the value <tt class="docutils literal"><span class="pre">64</span></tt> for 64-bit computers and
+<tt class="docutils literal"><span class="pre">32</span></tt> for 32-bit computers. Here is how you might use it (note that it goes in
+the <a class="reference internal" href="../advanced/segments.html#segments-hooks"><em>Init hook</em></a>; <tt class="docutils literal"><span class="pre">$Bits</span></tt> is set up in <tt class="docutils literal"><span class="pre">.onInit</span></tt> and so
+it is ready for use):</p>
+<div class="highlight-python"><pre>${SegmentFile}
+
+${SegmentInit}
+    ${If} $Bits = 64
+        ${SetEnvironmentVariablesPath} FullAppDir $AppDirectory\AppName64
+    ${Else}
+        ${SetEnvironmentVariablesPath} FullAppDir $AppDirectory\AppName
+    ${EndIf}
+!macroend</pre>
+</div>
+<p>With this code, the environment variables <tt class="docutils literal"><span class="pre">FullAppDir</span></tt>, and also the
+additional environment variables <tt class="docutils literal"><span class="pre">FullAppDir:ForwardSlash</span></tt>, <a class="reference internal" href="../ref/envsub.html#ref-envsub-directory"><em>etc.</em></a> will be available for use in things like a
+<a class="reference internal" href="../ref/launcher.ini/filewriten.html#std:ini-section-[FileWriteN]"><tt class="xref std std-ini-section docutils literal"><span class="pre">[FileWriteN]</span></tt></a> section.</p>
+<p class="versionadded">
+<span class="versionmodified">New in version 2.1.</span></p>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="games.html">Making games portable</a></li>
+    
+    
+      <li>Next: <a href="xml.html">Dealing with XML data</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="index.html">Using the PortableApps.com Launcher</a>
+        
+        <ul><li>64-bit applications</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="games.html" title="Making games portable">previous</a>  | <a href="index.html" title="Using the PortableApps.com Launcher" accesskey="U">up</a>  | <a href="xml.html" title="Dealing with XML data">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

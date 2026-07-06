@@ -1,0 +1,134 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>3. Icons &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="PortableApps.com Format™ Specification" href="index.html" />
+    <link rel="next" title="4. PortableApps.com AppCompactor and AppCompactor.ini" href="appcompactor.html" />
+    <link rel="prev" title="2. AppInfo.ini (App Configuration)" href="appinfo.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-paf-icons" class="page withsidebar">
+    
+  <div class="section" id="icons">
+<span id="paf-icons"></span><h1>3. Icons<a class="headerlink" href="#icons" title="Permalink to this headline">¶</a></h1>
+<p>Within the <tt class="docutils literal"><span class="pre">AppNamePortable\App\AppInfo</span></tt> directory, the icons used by the
+PortableApps.com Installer and within the PortableApps.com Menu are located. The
+icons are included in ICO and PNG format. The main icon is called
+<tt class="docutils literal"><span class="pre">appicon.ico</span></tt>, <tt class="docutils literal"><span class="pre">appicon_16.png</span></tt>, <tt class="docutils literal"><span class="pre">appicon_32.png</span></tt> and
+<tt class="docutils literal"><span class="pre">appicon_128.png</span></tt>*. If the application also uses multiple icons (as detailed
+above), these additional icons are named as <tt class="docutils literal"><span class="pre">appicon1.ico</span></tt>
+(<tt class="docutils literal"><span class="pre">appicon1_16.png</span></tt> and <tt class="docutils literal"><span class="pre">appicon1_32.png</span></tt>), <tt class="docutils literal"><span class="pre">appicon2.ico</span></tt>, etc. The
+numbers correspond to Start1, Start2, etc within the Control section.</p>
+<p><em>* Note that the 128px variant is optional and not required by the installer to
+compile. However, publishers are encouraged to include this high-resolution icon
+for upcoming features in the platform.</em></p>
+<p>The PNG icons are 16x16 and 32x32 respectively and are in True Color format with
+alpha transparency.</p>
+<p>The ICO file is in Windows ICO format and contain the following 6 required
+formats as well as the optional Vista format if desired:</p>
+<ul class="simple">
+<li>16px - 256 color (8-bit)</li>
+<li>32px - 256 color (8-bit)</li>
+<li>48px - 256 color (8-bit)</li>
+<li>16px - True Color + Alpha (32-bit / XP format)</li>
+<li>32px - True Color + Alpha (32-bit / XP format)</li>
+<li>48px - True Color + Alpha (32-bit / XP format)</li>
+<li>256px - True Color + Alpha PNG (32-bit PNG / Vista format) *OPTIONAL</li>
+</ul>
+<p><em>* The 256px alpha size is optional. It is used by Windows Vista to display
+large and extra large icon sizes. Some publishers may wish to use include it for
+completeness but end users won&#8217;t normally see it.</em></p>
+<p><strong>ExtractIcon Note</strong> - In packages that make use of the ExtractIcon feature
+within appinfo.ini, the appicon.ico and PNG versions of the icon will not be
+used and may be omitted. A generic appicon.ico will be included for backwards
+compatibility.</p>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="appinfo.html">2. AppInfo.ini (App Configuration)</a></li>
+    
+    
+      <li>Next: <a href="appcompactor.html">4. PortableApps.com AppCompactor and AppCompactor.ini</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+          <ul><li><a href="index.html">PortableApps.com Format™ Specification</a>
+        
+        <ul><li>3. Icons</li></ul>
+        </li></ul></li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="appinfo.html" title="2. AppInfo.ini (App Configuration)">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="appcompactor.html" title="4. PortableApps.com AppCompactor and AppCompactor.ini">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

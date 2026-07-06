@@ -1,0 +1,217 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>launcher.ini &mdash; PortableApps.com Launcher 2.2 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.2',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+    <link rel="top" title="PortableApps.com Launcher 2.2 documentation" href="../../index.html" />
+    <link rel="up" title="Reference" href="../index.html" />
+    <link rel="next" title="[Launch]" href="launch.html" />
+    <link rel="prev" title="Reference" href="../index.html" />
+  </head>
+  <body>
+  <div class="header"><a href="http://portableapps.com/"><img src="../../_static/help_logo_top.png" alt="PortableApps.com - Your Digital Life, Anywhere" height="47" width="229"></a>
+    <div id="global-nav" class="nav">
+      <a title="Home page" href="../../index.html">Home</a>  |
+      <a title="Table of contents" href="../../contents.html">Table of contents</a>  |
+      <a title="Global index" href="../../genindex.html">Index</a>  |
+      <a title="Search" href="../../search.html">Search</a>  |
+      <a title="PortableApps.com" href="http://portableapps.com">PortableApps.com</a>
+    </div>
+  </div>
+  
+
+    <div class="document">
+  <div id="page-ref-launcher.ini-index" class="page withsidebar">
+    
+  <div class="section" id="launcher-ini">
+<span id="ref-launcher-ini"></span><span id="index-0"></span><h1>launcher.ini<a class="headerlink" href="#launcher-ini" title="Permalink to this headline">¶</a></h1>
+<div class="admonition-what-is-launcher-ini admonition">
+<p class="first admonition-title">What is launcher.ini?</p>
+<p class="last">The PortableApps.com Launcher is a universal launcher; it can make almost
+anything portable, but it needs to be told what to do so that it can make an
+application portable. It gets this information from a file in the
+<tt class="docutils literal"><span class="pre">App\AppInfo\Launcher</span></tt> directory of a portable application package called
+<tt class="docutils literal"><span class="pre">AppNamePortable.ini</span></tt>, where <em>AppNamePortable</em> is the base name of the
+launcher executable. To give this a solid name, we call it launcher.ini
+although it should in practice never be called this.</p>
+</div>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="launch.html">[Launch]</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#appname">AppName</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#programexecutable">ProgramExecutable</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#programexecutablewhenparameters">ProgramExecutableWhenParameters</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#programexecutable64">ProgramExecutable64</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#programexecutablewhenparameters64">ProgramExecutableWhenParameters64</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#commandlinearguments">CommandLineArguments</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#workingdirectory">WorkingDirectory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#minos">MinOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#maxos">MaxOS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#runasadmin">RunAsAdmin</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#runasadmin2000">RunAsAdmin2000</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#runasadminxp">RunAsAdminXP</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#runasadmin2003">RunAsAdmin2003</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#runasadminvista">RunAsAdminVista</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#runasadmin2008">RunAsAdmin2008</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#runasadmin7">RunAsAdmin7</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#runasadmin2008r2">RunAsAdmin2008R2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#cleantemp">CleanTemp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#singleportableappinstance">SinglePortableAppInstance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#singleappinstance">SingleAppInstance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#closeexe">CloseEXE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#splashtime">SplashTime</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#launchappaftersplash">LaunchAppAfterSplash</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#waitforprogram">WaitForProgram</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#waitforotherinstances">WaitForOtherInstances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#waitforexen">WaitForEXE<em>N</em></a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#refreshshellicons">RefreshShellIcons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#hidecommandlinewindow">HideCommandLineWindow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#directorymoveok">DirectoryMoveOK</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#nospacesinpath">NoSpacesInPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="launch.html#supportsunc">SupportsUNC</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="activate.html">[Activate]</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="activate.html#registry">Registry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="activate.html#java">Java</a></li>
+<li class="toctree-l2"><a class="reference internal" href="activate.html#xml">XML</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="livemode.html">[LiveMode]</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="livemode.html#copyapp">CopyApp</a></li>
+<li class="toctree-l2"><a class="reference internal" href="livemode.html#copydata">CopyData</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="environment.html">[Environment]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registry.html">[RegistryKeys]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registry.html#registryvaluewrite">[RegistryValueWrite]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registry.html#registrycleanupifempty">[RegistryCleanupIfEmpty]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registry.html#registrycleanupforce">[RegistryCleanupForce]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="registry.html#registryvaluebackupdelete">[RegistryValueBackupDelete]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="qt.html">[QtKeysCleanup]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filewriten.html">[FileWrite<em>N</em>]</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#type">Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#file">File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#entry">Entry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#section">Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#key">Key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#value">Value</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#find">Find</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#replace">Replace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#attribute">Attribute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#xpath">XPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#casesensitive">CaseSensitive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filewriten.html#encoding">Encoding</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="filesystem.html">[FilesMove]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filesystem.html#directoriesmove">[DirectoriesMove]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filesystem.html#directoriescleanupifempty">[DirectoriesCleanupIfEmpty]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="filesystem.html#directoriescleanupforce">[DirectoriesCleanupForce]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="language.html">[Language]</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="language.html#base">Base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#default">Default</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#checkifexists">CheckIfExists</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#defaultifnotexists">DefaultIfNotExists</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="language.html#languagestrings">[LanguageStrings]</a></li>
+<li class="toctree-l1"><a class="reference internal" href="language.html#languagefile">[LanguageFile]</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="language.html#type">Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#file">File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#entry">Entry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#section">Section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#key">Key</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#attribute">Attribute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#xpath">XPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#casesensitive">CaseSensitive</a></li>
+<li class="toctree-l2"><a class="reference internal" href="language.html#trimright">TrimRight</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="services.html">[Service<em>N</em>]</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="services.html#name">Name</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.html#path">Path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.html#type">Type</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.html#user">User</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.html#display">Display</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.html#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="services.html#ifexists">IfExists</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+  </div>
+
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3>Browse</h3>
+  <ul>
+    
+      <li>Previous: <a href="../index.html">Reference</a></li>
+    
+    
+      <li>Next: <a href="launch.html">[Launch]</a></li>
+    
+  </ul>
+  <h3>You are here:</h3>
+  <ul>
+      <li>
+        <a href="../../index.html">PortableApps.com Launcher 2.2 documentation</a>
+        
+          <ul><li><a href="../index.html">Reference</a>
+        
+        <ul><li>launcher.ini</li></ul>
+        </li></ul>
+      </li>
+  </ul>  
+
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+  <div class="footer">
+    <div class="nav">&laquo;     <a href="../index.html" title="Reference">previous</a>  | <a href="../index.html" title="Reference" accesskey="U">up</a>  | <a href="launch.html" title="[Launch]">next</a> &raquo;</div>
+  </div>
+
+  </body>
+</html>

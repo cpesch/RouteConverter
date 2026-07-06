@@ -1,0 +1,89 @@
+.. index:: Release notes; 2.1.1
+
+.. _releases-2.1.1:
+
+=============================================
+PortableApps.com Launcher 2.1.1 release notes
+=============================================
+
+This release is the first bug-fix release for the 2.1 line and incidentally the
+first bug-fix release for the PortableApps.com Launcher as a whole.
+
+Three of these bugs are related to the already-starting detection which was
+added in version 2.1. There were a few cases where the technique used was not
+dealt with properly. In version 2.2, it is planned that the mechanism used to
+flag it as "starting" will be changed from INI storage to mutexes, which will
+be a lot more reliable and will not be able to get into the stuck state which
+is common with a couple of these bugs.
+
+For more information about the 2.1 release, see :ref:`releases-2.1`.
+
+Development team
+================
+
+First of all, we have a new team member in the PortableApps.com Launcher
+development team: **Aluísio Augusto Silva Gonçalves** (known generally as
+**kAlug**). He started contributing shortly after the release of 2.1 and has
+done a number of the things on the 2.2 roadmap already, and has also identified
+and fixed some of the bugs found in this release while I have been busy doing
+mission work in India and so have had less time to spare on this than normal.
+The release of 2.1.1 would have taken quite a lot longer without him (and the
+delays have still been my fault, too). I thank kAlug for his contributions and
+am looking forward to further work with him. *--- Chris Morgan*
+
+Bugs fixed
+==========
+
+Tertiary launches don't work
+----------------------------
+
+One of the new features in 2.1 is detection of an already-starting instance of
+the portable app, which formerly could lead to data corruption. However, the
+"starting" flag was set for secondary launches, and so tertiary launches would
+fail to run while any instances were still running (depending slightly on the
+app configuration).
+
+Further details are available in the `bug report`_.
+
+.. _bug report: http://portableapps.com/node/28197
+
+Runtime data file left behind on host machine for secondary launches
+--------------------------------------------------------------------
+
+While investigating the bug mentioned above, another minor problem was found -
+a file ``runtimedata.ini`` was left behind in the plugin directory (which is a
+subdirectory with a name like ``nsXXXXXX`` in the user's TEMP directory) for
+all secondary instances. This has been fixed now.
+
+Live mode breaks after the first run on writeable medium
+--------------------------------------------------------
+
+In subsequent investigations `a third bug was found`_, related to the
+"starting" detection, in Live mode. If the source directory was writeable, the
+"starting" flag was set but never cleared, meaning that after the first run in
+Live mode the app would not start again without deleting the runtime data file
+manually. Now this does not break, though on a read-only medium the "starting"
+check won't function at all until 2.2.
+
+.. _a third bug was found: http://portableapps.com/node/28522
+
+Flaws in automatic language switching in nested launchers
+---------------------------------------------------------
+
+Previously, if an app not running from the PortableApps.com Platform launched
+another app, this other app would believe that the language had been set by the
+Platform, thus ignoring its own saved language, if any. The typical case for
+this is when an English-only app launches a multilingual app; formerly this
+would have ended up with the multilingual app being reset to English.  To
+resolve this, when the PortableApps.com Platform is missing, a special
+environment variable is set to indicate the fact which will be picked up by
+nested launchers, so that they have the option of using the last language used
+(as defined by the :ini-section:`[LanguageFile]` section in launcher.ini).
+
+Incompatibility between Live mode and :ini-key:`[Launch]:WaitForProgram`\ =\ ``false``
+--------------------------------------------------------------------------------------
+
+Previously, when the developer had set :ini-key:`[Launch]:WaitForProgram` to
+``false``, and Live mode had been enabled, the launcher would just exit after
+running the app, without cleaning up. Now, the value of ``WaitForProgram`` is
+simply ignored.

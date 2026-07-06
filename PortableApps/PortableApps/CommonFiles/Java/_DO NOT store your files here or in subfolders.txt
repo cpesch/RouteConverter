@@ -1,0 +1,1 @@
+All files within this folder and all subfolders will be deleted on each upgrade of this plugin.  Do not store any files within this folder or subfolders.
