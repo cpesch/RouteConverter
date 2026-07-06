@@ -84,13 +84,13 @@ public abstract class AbstractTablePopupMenu {
             // dispatch event again as a left mouse click for selections
             // (do not try to spare one of the three events)
             table.dispatchEvent(new MouseEvent((Component) e.getSource(), MOUSE_PRESSED, e.getWhen(),
-                    BUTTON1_MASK, e.getX(), e.getY(),
+                    BUTTON1_DOWN_MASK, e.getX(), e.getY(),
                     e.getClickCount(), false));
             table.dispatchEvent(new MouseEvent((Component) e.getSource(), MOUSE_RELEASED, e.getWhen(),
-                    BUTTON1_MASK, e.getX(), e.getY(),
+                    BUTTON1_DOWN_MASK, e.getX(), e.getY(),
                     e.getClickCount(), false));
             table.dispatchEvent(new MouseEvent((Component) e.getSource(), MOUSE_CLICKED, e.getWhen(),
-                    BUTTON1_MASK, e.getX(), e.getY(),
+                    BUTTON1_DOWN_MASK, e.getX(), e.getY(),
                     e.getClickCount(), false));
         }
     }
