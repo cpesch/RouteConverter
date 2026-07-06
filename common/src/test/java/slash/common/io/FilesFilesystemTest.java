@@ -38,7 +38,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static slash.common.io.Files.absolutize;
-import static slash.common.io.Files.asDialogString;
+import static slash.common.io.Files.asLogString;
 import static slash.common.io.Files.checkDirectory;
 import static slash.common.io.Files.checkFile;
 import static slash.common.io.Files.collectFiles;
@@ -236,11 +236,11 @@ public class FilesFilesystemTest {
     }
 
     @Test
-    public void asDialogStringHandlesNullEmptyAndMultipleEntries() {
-        assertEquals("null", asDialogString(null, false));
-        assertEquals("none", asDialogString(asList(), false));
+    public void asLogStringHandlesNullEmptyAndMultipleEntries() {
+        assertEquals("null", asLogString(null));
+        assertEquals("none", asLogString(asList()));
 
-        String joined = asDialogString(asList("one", "two", "three"), false);
+        String joined = asLogString(asList("one", "two", "three"));
         assertTrue(joined.contains(",\n"));
         assertTrue(joined.contains(" and\n"));
         assertTrue(joined.startsWith("'one'"));

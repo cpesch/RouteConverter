@@ -41,7 +41,7 @@ import static java.util.stream.Collectors.toList;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
-import static slash.common.io.Files.asDialogString;
+import static slash.navigation.gui.helpers.DialogStrings.asDialogString;
 
 /**
  * {@link Action} that downloads {@link RemoteMap}s from the {@link MapsforgeMapManager}.
@@ -88,7 +88,7 @@ public class DownloadMapsAction extends DialogAction {
             selectedMaps.add(map);
             selectedMapsNames.add(map.getUrl());
         }
-        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), asDialogString(selectedMapsNames, true)), getAction());
+        getNotificationManager().showNotification(format(RouteConverter.getBundle().getString("download-started"), asDialogString(selectedMapsNames)), getAction());
 
         executor.execute(new Runnable() {
             public void run() {

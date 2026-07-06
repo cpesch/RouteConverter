@@ -143,7 +143,7 @@ public class GraphManager {
 
         long end = currentTimeMillis();
         log.info(format("Collected %d local graph files %s in %d milliseconds",
-                files.size(), asDialogString(files, false), (end - start)));
+                files.size(), asLogString(files), (end - start)));
     }
 
     private void scanRemoteGraphs(List<DataSource> dataSources) {

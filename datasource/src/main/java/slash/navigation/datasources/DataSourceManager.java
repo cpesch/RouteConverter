@@ -38,7 +38,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
-import static slash.common.io.Files.asDialogString;
+import static slash.common.io.Files.asLogString;
 import static slash.common.io.Files.collectFiles;
 import static slash.navigation.download.Action.*;
 
@@ -137,7 +137,7 @@ public class DataSourceManager {
 
         long end = currentTimeMillis();
         log.info(format("Initialized %d data source files %s from %s in %d milliseconds",
-                dataSourceFiles.size(), asDialogString(dataSourceFiles, false), dataSourceDirectory, (end - start)));
+                dataSourceFiles.size(), asLogString(dataSourceFiles), dataSourceDirectory, (end - start)));
     }
 
     public void update(String editionId, String url, java.io.File directory) throws IOException, JAXBException {

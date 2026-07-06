@@ -58,7 +58,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static javax.swing.JOptionPane.*;
 import static slash.common.io.Directories.ensureDirectory;
-import static slash.common.io.Files.asDialogString;
+import static slash.common.io.Files.asLogString;
 import static slash.common.io.Transfer.formatSize;
 import static slash.common.io.Files.removeExtension;
 import static slash.navigation.download.Action.Extract;
@@ -178,7 +178,7 @@ public class GraphHopper extends BaseRoutingService {
             request.setCustomModel(customModel);
             GHResponse response = hopper.route(request);
             if (response.hasErrors()) {
-                String errors = asDialogString(response.getErrors(), false);
+                String errors = asLogString(response.getErrors());
                 log.severe(format("Error while routing between %s and %s: %s", from, to, errors));
 
                 boolean pointNotFound = !response.getErrors().isEmpty() && response.getErrors().get(0) instanceof DetailedIllegalArgumentException;
