@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -38,7 +38,7 @@ import slash.navigation.hgt.HgtFilesService;
 import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapView;
-import slash.navigation.mapview.mapsforge.MapViewCallbackOpenSource;
+import slash.navigation.mapview.mapsforge.MapsforgeMapViewCallback;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.nominatim.NominatimService;
 import slash.navigation.photon.PhotonService;
@@ -67,7 +67,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.*;
  * @author Christian Pesch
  */
 
-public class RouteConverterOpenSource extends RouteConverter {
+public class RouteConverter extends BaseRouteConverter {
     private HgtFilesService hgtFilesService;
     private MapsforgeMapManager mapsforgeMapManager;
     private LocalMap mapAfterStart;
@@ -76,7 +76,7 @@ public class RouteConverterOpenSource extends RouteConverter {
         // the macOS application menu ("About X", "Quit X") otherwise shows the main
         // class name; set it before AWT initializes so it reads "RouteConverter"
         System.setProperty("apple.awt.application.name", "RouteConverter");
-        launch(RouteConverterOpenSource.class, asList(RouteConverter.class.getPackage().getName() + ".Untranslated", RouteConverter.class.getName()), args);
+        launch(RouteConverter.class, asList(BaseRouteConverter.class.getPackage().getName() + ".Untranslated", "slash.navigation.converter.gui.RouteConverter"), args);
     }
 
     public String getEdition() {
@@ -127,8 +127,8 @@ public class RouteConverterOpenSource extends RouteConverter {
         return mapsforgeMapManager;
     }
 
-    protected MapViewCallbackOpenSource getMapViewCallback() {
-        return new MapViewCallbackOpenSourceImpl();
+    protected MapsforgeMapViewCallback getMapViewCallback() {
+        return new MapsforgeMapViewCallbackImpl();
     }
 
     protected void initializeElevationServices() {
@@ -179,7 +179,7 @@ public class RouteConverterOpenSource extends RouteConverter {
 
         configureRoutingServices();
 
-        getNotificationManager().showNotification(RouteConverter.getBundle().getString("routing-updated"),
+        getNotificationManager().showNotification(BaseRouteConverter.getBundle().getString("routing-updated"),
                 Application.getInstance().getContext().getActionManager().get("show-downloads"));
     }
 
@@ -228,7 +228,7 @@ public class RouteConverterOpenSource extends RouteConverter {
                 getMapsforgeMapManager().scanMaps();
                 getMapsforgeMapManager().scanThemes();
 
-                getNotificationManager().showNotification(RouteConverter.getBundle().getString("map-updated"),
+                getNotificationManager().showNotification(BaseRouteConverter.getBundle().getString("map-updated"),
                         Application.getInstance().getContext().getActionManager().get("show-maps"));
             } catch (IOException e) {
                 invokeLater(() -> {

@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -22,7 +22,7 @@ package slash.navigation.converter.gui.helpers;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.events.ContinousRange;
@@ -158,19 +158,19 @@ public class GeoTagger {
                             lastException[0] = e;
                         }
                         getNotificationManager().showNotification(MessageFormat.format(
-                                RouteConverter.getBundle().getString("add-photos-progress"), count[0]++, files.size()), cancelAction);
+                                BaseRouteConverter.getBundle().getString("add-photos-progress"), count[0]++, files.size()), cancelAction);
                     }
 
                     if (lastException[0] != null)
                         showError(frame,
-                                MessageFormat.format(RouteConverter.getBundle().getString("add-photos-error"), getLocalizedMessage(lastException[0])),
+                                MessageFormat.format(BaseRouteConverter.getBundle().getString("add-photos-error"), getLocalizedMessage(lastException[0])),
                                 frame.getTitle());
 
                 } finally {
                     invokeLater(new Runnable() {
                         public void run() {
                             getNotificationManager().showNotification(MessageFormat.format(
-                                    RouteConverter.getBundle().getString("add-photos-finished"), count[0]), null);
+                                    BaseRouteConverter.getBundle().getString("add-photos-finished"), count[0]), null);
                         }
                     });
                 }
@@ -188,7 +188,7 @@ public class GeoTagger {
         position.setTagState(NotTaggable);
         position.setClosestPositionForTagging(null);
 
-        PositionsModel originalPositionsModel = RouteConverter.getInstance().getConvertPanel().getPositionsModel();
+        PositionsModel originalPositionsModel = BaseRouteConverter.getInstance().getConvertPanel().getPositionsModel();
         int index = getClosestPositionByCoordinates(position);
         if (index != -1) {
             log.info("Tagging with closest position " + index + " by coordinates: " + position);
@@ -206,7 +206,7 @@ public class GeoTagger {
     }
 
     private int getClosestPositionByCoordinates(NavigationPosition position) {
-        PositionsModel originalPositionsModel = RouteConverter.getInstance().getConvertPanel().getPositionsModel();
+        PositionsModel originalPositionsModel = BaseRouteConverter.getInstance().getConvertPanel().getPositionsModel();
         double threshold = preferences.getDouble(CLOSEST_POSITION_BY_COORDINATES_THRESHOLD_PREFERENCE, 25);
         return position.hasCoordinates() ? originalPositionsModel.getClosestPosition(position.getLongitude(), position.getLatitude(), threshold) : -1;
     }
@@ -215,7 +215,7 @@ public class GeoTagger {
         if (!position.hasTime())
             return -1;
 
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         PositionsModel originalPositionsModel = r.getConvertPanel().getPositionsModel();
         CompactCalendar time = position.getTime();
         if (!time.getTimeZoneId().equals(r.getPhotoTimeZone().getTimeZoneId()))
@@ -274,7 +274,7 @@ public class GeoTagger {
                                 log.warning(format("Error while running operation %s on position %d: %s, %s", operation, index, e, printStackTrace(e)));
                                 lastException[0] = e;
                             }
-                            String progressMessage = RouteConverter.getBundle().getString(operation.getMessagePrefix() + "progress");
+                            String progressMessage = BaseRouteConverter.getBundle().getString(operation.getMessagePrefix() + "progress");
                             getNotificationManager().showNotification(MessageFormat.format(progressMessage, count[0]++, rows.length), cancelAction);
                         }
 
@@ -297,14 +297,14 @@ public class GeoTagger {
                     }).performMonotonicallyIncreasing(maximumRangeLength);
 
                     if (lastException[0] != null) {
-                        String errorMessage = RouteConverter.getBundle().getString(operation.getMessagePrefix() + "error");
+                        String errorMessage = BaseRouteConverter.getBundle().getString(operation.getMessagePrefix() + "error");
                         showError(frame,
                                 MessageFormat.format(errorMessage, getLocalizedMessage(lastException[0])), frame.getTitle());
                     }
                 } finally {
                     invokeLater(new Runnable() {
                         public void run() {
-                            String finishedMessage = RouteConverter.getBundle().getString(operation.getMessagePrefix() + "finished");
+                            String finishedMessage = BaseRouteConverter.getBundle().getString(operation.getMessagePrefix() + "finished");
                             getNotificationManager().showNotification(MessageFormat.format(finishedMessage, count[0]), null);
                         }
                     });
@@ -349,7 +349,7 @@ public class GeoTagger {
                 wgs84Position.setWaypointType(Photo);
                 wgs84Position.setOrigin(source);
 
-                PositionsModel originalPositionsModel = RouteConverter.getInstance().getConvertPanel().getPositionsModel();
+                PositionsModel originalPositionsModel = BaseRouteConverter.getInstance().getConvertPanel().getPositionsModel();
                 int index = originalPositionsModel.getIndex(wgs84Position);
                 originalPositionsModel.fireTableRowsUpdated(index, index, ALL_COLUMNS);
             }
@@ -392,7 +392,7 @@ public class GeoTagger {
     public void tagPhotos() {
         int[] rows = photosView.getSelectedRows();
         if (rows.length > 0) {
-            final TagStrategy tagStrategy = RouteConverter.getInstance().getTagStrategyPreference();
+            final TagStrategy tagStrategy = BaseRouteConverter.getInstance().getTagStrategyPreference();
 
             executeOperation(photosView, photosModel, rows, new Operation() {
                 public String getName() {

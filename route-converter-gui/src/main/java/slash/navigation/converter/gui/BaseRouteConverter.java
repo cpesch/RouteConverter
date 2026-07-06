@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -116,17 +116,21 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.UIHelper.*;
 
 /**
- * A small graphical user interface for the route conversion.
+ * The abstract base of the RouteConverter desktop application: a single-frame
+ * Swing GUI for route conversion, editing and map display. Concrete editions
+ * ({@code RouteConverter} and its {@code TimeAlbumPro} variant) subclass
+ * it and supply the edition-specific behaviour via {@link #getEdition()} and
+ * related hooks.
  *
  * @author Christian Pesch
  */
 
-public abstract class RouteConverter extends SingleFrameApplication {
-    protected static final Logger log = Logger.getLogger(RouteConverter.class.getName());
-    private static final Preferences preferences = Preferences.userNodeForPackage(RouteConverter.class);
+public abstract class BaseRouteConverter extends SingleFrameApplication {
+    protected static final Logger log = Logger.getLogger(BaseRouteConverter.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(BaseRouteConverter.class);
 
-    public static RouteConverter getInstance() {
-        return (RouteConverter) Application.getInstance();
+    public static BaseRouteConverter getInstance() {
+        return (BaseRouteConverter) Application.getInstance();
     }
 
     public static ResourceBundle getBundle() {
@@ -139,7 +143,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public static String getTitle() {
         Version version = parseVersionFromManifest();
-        String edition = RouteConverter.getInstance().getEdition();
+        String edition = BaseRouteConverter.getInstance().getEdition();
         String number = version.getVersion();
         if ("?".equals(number))
             number = "(local build)";
@@ -732,7 +736,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
     }
 
     public void sendChecksums(final Download download) {
-        final DataSource dataSource = RouteConverter.getInstance().getDataSourceManager().
+        final DataSource dataSource = BaseRouteConverter.getInstance().getDataSourceManager().
                 getDataSourceService().getDataSourceByUrlPrefix(download.getUrl());
         if (dataSource == null) {
             return;
@@ -933,7 +937,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
             // intentionally left empty
         }
         // really want the first available map view
-        return RouteConverter.this.getPreferredMapView();
+        return BaseRouteConverter.this.getPreferredMapView();
     }
 
     private void setMapViewPreference(MapViewImplementation mapView) {
@@ -1245,7 +1249,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     protected void initializeServices() {
         System.setProperty("rest", parseVersionFromManifest().getVersion());
-        RouteFeedback routeFeedback = new RouteFeedback(getApiUrl(), RouteConverter.getInstance().getCredentials());
+        RouteFeedback routeFeedback = new RouteFeedback(getApiUrl(), BaseRouteConverter.getInstance().getCredentials());
         routeServiceOperator = new RouteServiceOperator(getFrame(), routeFeedback);
         updateChecker = new UpdateChecker(routeFeedback);
         DownloadManager downloadManager = new DownloadManager(new File(getApplicationDirectory(), getEditionId() + "-queue.xml"));

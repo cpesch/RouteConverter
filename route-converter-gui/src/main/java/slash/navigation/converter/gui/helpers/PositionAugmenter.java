@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -24,7 +24,7 @@ import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.NumberingStrategy;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.models.PositionColumnValues;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.Application;
@@ -181,7 +181,7 @@ public class PositionAugmenter {
                                 }
                             }
                             getNotificationManager().showNotification(MessageFormat.format(
-                                    RouteConverter.getBundle().getString("augmenting-progress"), count[0]++, rows.length), cancelAction);
+                                    BaseRouteConverter.getBundle().getString("augmenting-progress"), count[0]++, rows.length), cancelAction);
                         }
 
                         public void performOnRange(final int firstIndex, final int lastIndex) {
@@ -201,14 +201,14 @@ public class PositionAugmenter {
                     }).performMonotonicallyIncreasing(maximumRangeLength);
 
                     if (lastException[0] != null && !isComputerOffline(lastException[0])) {
-                        String errorMessage = RouteConverter.getBundle().getString(operation.getMessagePrefix() + "error");
+                        String errorMessage = BaseRouteConverter.getBundle().getString(operation.getMessagePrefix() + "error");
                         showError(frame,
                                 MessageFormat.format(errorMessage, getLocalizedMessage(lastException[0])), frame.getTitle());
                     }
                 } finally {
                     if (lastException[0] == null || !isComputerOffline(lastException[0]))
                         invokeLater(() -> getNotificationManager().showNotification(MessageFormat.format(
-                                RouteConverter.getBundle().getString("augmenting-finished"), count[0]), null));
+                                BaseRouteConverter.getBundle().getString("augmenting-finished"), count[0]), null));
                 }
             }
         });
@@ -232,7 +232,7 @@ public class PositionAugmenter {
                     }
 
                     public boolean run(int index, NavigationPosition position) throws Exception {
-                        NavigationPosition coordinates = RouteConverter.getInstance().getGeocodingServiceFacade().getPositionFor(position.getDescription());
+                        NavigationPosition coordinates = BaseRouteConverter.getInstance().getGeocodingServiceFacade().getPositionFor(position.getDescription());
                         if (coordinates != null)
                             positionsModel.edit(index,
                                     new PositionColumnValues(asList(LONGITUDE_COLUMN_INDEX, LATITUDE_COLUMN_INDEX),
@@ -542,8 +542,8 @@ public class PositionAugmenter {
             return;
 
         int digitCount = widthInDigits(positionsModel.getRowCount() + 1);
-        NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
-        NumberingStrategy numberingStrategy = RouteConverter.getInstance().getNumberingStrategyPreference();
+        NumberPattern numberPattern = BaseRouteConverter.getInstance().getNumberPatternPreference();
+        NumberingStrategy numberingStrategy = BaseRouteConverter.getInstance().getNumberingStrategyPreference();
         processNumbers(positionsView, positionsModel, rows, digitCount, numberPattern, numberingStrategy, COORDINATE_PREDICATE);
     }
 
@@ -647,8 +647,8 @@ public class PositionAugmenter {
 
     public String createDescription(int index, String description) {
         if (description == null)
-            description = RouteConverter.getBundle().getString("new-position-name");
-        NumberPattern numberPattern = RouteConverter.getInstance().getNumberPatternPreference();
+            description = BaseRouteConverter.getBundle().getString("new-position-name");
+        NumberPattern numberPattern = BaseRouteConverter.getInstance().getNumberPatternPreference();
         String number = Integer.toString(index);
         return formatNumberedPosition(numberPattern, number, description);
     }

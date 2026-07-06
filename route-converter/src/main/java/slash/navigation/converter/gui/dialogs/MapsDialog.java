@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -23,8 +23,8 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.common.MapDescriptor;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.RouteConverter;
-import slash.navigation.converter.gui.RouteConverterOpenSource;
 import slash.navigation.converter.gui.actions.DeleteMapsAction;
 import slash.navigation.converter.gui.actions.DisplayMapAction;
 import slash.navigation.converter.gui.actions.DownloadMapsAction;
@@ -87,12 +87,12 @@ public class MapsDialog extends SimpleDialog {
     private JCheckBox checkBoxDownloadRoutingData;
 
     public MapsDialog() {
-        super(RouteConverter.getInstance().getFrame(), "maps");
-        setTitle(RouteConverter.getBundle().getString("maps-title"));
+        super(BaseRouteConverter.getInstance().getFrame(), "maps");
+        setTitle(BaseRouteConverter.getBundle().getString("maps-title"));
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
 
-        final RouteConverter r = RouteConverter.getInstance();
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         tableAvailableOnlineMaps.setModel(getMapsforgeMapManager().getAvailableOnlineMapsModel());
         tableAvailableOnlineMaps.setDefaultRenderer(Object.class, new TileMapTableCellRenderer());
@@ -249,7 +249,7 @@ public class MapsDialog extends SimpleDialog {
     }
 
     private void updateLabel() {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         List<MapDescriptor> selectedMaps = getSelectedMaps();
 
         RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
@@ -257,7 +257,7 @@ public class MapsDialog extends SimpleDialog {
                 routingService.calculateRemainingDownloadSize(selectedMaps) : 0;
         checkBoxDownloadRoutingData.setEnabled(routingServiceDownloadSize > 0);
         checkBoxDownloadRoutingData.setSelected(checkBoxDownloadRoutingData.isEnabled());
-        checkBoxDownloadRoutingData.setText(format(RouteConverter.getBundle().getString("download-routing-data"),
+        checkBoxDownloadRoutingData.setText(format(BaseRouteConverter.getBundle().getString("download-routing-data"),
                 formatSize(routingServiceDownloadSize), routingService.getName()));
 
         ElevationService elevationService = r.getElevationServiceFacade().getElevationService();
@@ -268,16 +268,16 @@ public class MapsDialog extends SimpleDialog {
         String elevationServiceName = elevationService instanceof AutomaticElevationService ?
                 ((AutomaticElevationService) elevationService).getPreferredDownloadName() :
                 elevationService.getName();
-        checkBoxDownloadElevationData.setText(format(RouteConverter.getBundle().getString("download-elevation-data"),
+        checkBoxDownloadElevationData.setText(format(BaseRouteConverter.getBundle().getString("download-elevation-data"),
                 formatSize(elevationServiceDownloadSize), elevationServiceName));
     }
 
     private MapsforgeMapManager getMapsforgeMapManager() {
-        return ((RouteConverterOpenSource) RouteConverter.getInstance()).getMapsforgeMapManager();
+        return ((RouteConverter) BaseRouteConverter.getInstance()).getMapsforgeMapManager();
     }
 
     private void close() {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         r.showMapBorder(null);
 
         ActionManager actionManager = r.getContext().getActionManager();

@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -23,7 +23,7 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.models.AddRouteCallback;
 import slash.navigation.converter.gui.models.CatalogModel;
 import slash.navigation.gui.SimpleDialog;
@@ -70,17 +70,17 @@ public class AddFileDialog extends SimpleDialog {
 
     public AddFileDialog(CatalogModel catalogModel, CategoryTreeNode categoryTreeNode,
                          String description, Double length, File file) {
-        super(RouteConverter.getInstance().getFrame(), "add-file");
+        super(BaseRouteConverter.getInstance().getFrame(), "add-file");
         this.catalogModel = catalogModel;
         this.category = categoryTreeNode;
         this.file = file;
-        setTitle(RouteConverter.getBundle().getString("add-file-title"));
+        setTitle(BaseRouteConverter.getBundle().getString("add-file-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonAdd);
 
         panelRemoteCategory.setVisible(category.isRemote());
-        labelLabel.setText(format(RouteConverter.getBundle().getString("add-file-label"), categoryTreeNode.getName()));
+        labelLabel.setText(format(BaseRouteConverter.getBundle().getString("add-file-label"), categoryTreeNode.getName()));
         textFieldFile.setText(createReadablePath(file));
         if (length != null)
             textFieldLength.setText(formatDoubleAsString(length / METERS_OF_A_KILOMETER, 1));
@@ -114,11 +114,11 @@ public class AddFileDialog extends SimpleDialog {
     }
 
     private void addFile() {
-        JFrame frame = RouteConverter.getInstance().getFrame();
+        JFrame frame = BaseRouteConverter.getInstance().getFrame();
 
         String description = textFieldDescription.getText();
         if (trim(description) == null) {
-            showError(frame, new JLabel(RouteConverter.getBundle().getString("add-route-no-description-error")),
+            showError(frame, new JLabel(BaseRouteConverter.getBundle().getString("add-route-no-description-error")),
                     frame.getTitle());
             return;
         }
@@ -126,7 +126,7 @@ public class AddFileDialog extends SimpleDialog {
         catalogModel.addRoute(category, description, file, null, new AddRouteCallback());
 
         dispose();
-        RouteConverter.getInstance().getContext().getNotificationManager().showNotification(RouteConverter.getBundle().getString("add-route-by-file-success"), null);
+        BaseRouteConverter.getInstance().getContext().getNotificationManager().showNotification(BaseRouteConverter.getBundle().getString("add-route-by-file-success"), null);
     }
 
     private void cancel() {

@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -26,7 +26,7 @@ import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.models.FindPlaceResultsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.renderer.AlternatingColorTableCellRenderer;
@@ -82,8 +82,8 @@ public class FindPlaceDialog extends SimpleDialog {
     private final FindPlaceResultsModel tableModel = new FindPlaceResultsModel();
 
     public FindPlaceDialog() {
-        super(RouteConverter.getInstance().getFrame(), "find-place");
-        setTitle(RouteConverter.getBundle().getString("find-place-title"));
+        super(BaseRouteConverter.getInstance().getFrame(), "find-place");
+        setTitle(BaseRouteConverter.getBundle().getString("find-place-title"));
         setContentPane(contentPane);
         // size the results table (the content), not the window: pack() then
         // yields a good default and WindowBounds derives the minimum from it
@@ -116,7 +116,7 @@ public class FindPlaceDialog extends SimpleDialog {
             }
         }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         textFieldSearch.setText(r.getFindPlacePreference());
         textFieldSearch.registerKeyboardAction(new DialogAction(this) {
@@ -193,7 +193,7 @@ public class FindPlaceDialog extends SimpleDialog {
     }
 
     private void handleSearchUpdate() {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         boolean existsSelectedResult = tableResult.getSelectedRowCount() > 0;
         buttonInsertPosition.setEnabled(existsSelectedResult);
         List<GeocodingResult> selectedValues = getSelectedResults();
@@ -205,7 +205,7 @@ public class FindPlaceDialog extends SimpleDialog {
     }
 
     private void searchPositions() throws IOException, ServiceUnavailableException {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         String address = textFieldSearch.getText();
         List<GeocodingResult> results = r.getGeocodingServiceFacade().getPositionsFor(address);
         tableModel.setResults(results);
@@ -222,7 +222,7 @@ public class FindPlaceDialog extends SimpleDialog {
     }
 
     private void insertPosition() {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
 
         int[] selectedRows = r.getConvertPanel().getPositionsView().getSelectedRows();
@@ -257,12 +257,12 @@ public class FindPlaceDialog extends SimpleDialog {
     }
 
     private void savePreferences() {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         r.setFindPlacePreference(textFieldSearch.getText());
     }
 
     private void close() {
-        RouteConverter.getInstance().showPositionMagnifier(null);
+        BaseRouteConverter.getInstance().showPositionMagnifier(null);
         savePreferences();
         dispose();
     }

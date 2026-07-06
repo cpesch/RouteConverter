@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -24,7 +24,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.common.SimpleNavigationPosition;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.actions.AddAudioAction;
 import slash.navigation.converter.gui.actions.DeletePositionAction;
 import slash.navigation.converter.gui.actions.PlayVoiceAction;
@@ -81,7 +81,7 @@ public class PointOfInterestPanel implements PanelInTab {
     }
 
     private void initialize() {
-        final RouteConverter r = RouteConverter.getInstance();
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         positionsModel = new FilteringPositionsModel<>(r.getConvertPanel().getPositionsModel(), new PointOfInterestPositionPredicate());
         tablePointsOfInterest.setModel(getPositionsModel());
@@ -180,7 +180,7 @@ public class PointOfInterestPanel implements PanelInTab {
         int[] selectedRows = tablePointsOfInterest.getSelectedRows();
         boolean existsASelectedPosition = selectedRows.length > 0;
 
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         ActionManager actionManager = r.getContext().getActionManager();
         actionManager.enableLocal("delete", POINTS_OF_INTEREST, existsASelectedPosition);
         actionManager.enable("play-voice", existsASelectedPosition);
@@ -198,7 +198,7 @@ public class PointOfInterestPanel implements PanelInTab {
 
     public void addAudio(Wgs84Position position, File file) {
         position.setOrigin(file);
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
         int index = positionsModel.getIndex(position);
         positionsModel.edit(index, new PositionColumnValues(DESCRIPTION_COLUMN_INDEX, file.getName().replaceAll(".wav", "")), true, true);

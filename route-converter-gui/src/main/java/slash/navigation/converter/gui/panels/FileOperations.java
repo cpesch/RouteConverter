@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -21,7 +21,7 @@ package slash.navigation.converter.gui.panels;
 
 import slash.navigation.babel.BabelException;
 import slash.navigation.base.*;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.dialogs.MaximumPositionCountDialog;
 import slash.navigation.copilot.CoPilotFormat;
 import slash.navigation.fpl.GarminFlightPlanFormat;
@@ -86,12 +86,12 @@ class FileOperations {
         if (!panel.confirmDiscard())
             return;
 
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         startWaitCursor(r.getFrame().getRootPane());
         try {
             Gpx11Format gpxFormat = new Gpx11Format();
             GpxRoute gpxRoute = new GpxRoute(gpxFormat);
-            gpxRoute.setName(MessageFormat.format(RouteConverter.getBundle().getString("new-positionlist-name"), 1));
+            gpxRoute.setName(MessageFormat.format(BaseRouteConverter.getBundle().getString("new-positionlist-name"), 1));
             panel.formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
             panel.urlModel.clear();
             panel.prepareForNewPositionList();
@@ -101,7 +101,7 @@ class FileOperations {
     }
 
     void openPositionList(final List<URL> urls, final List<NavigationFormat> formats) {
-        final RouteConverter r = RouteConverter.getInstance();
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         final URL url = urls.get(0);
         final String path = createReadablePath(url);
@@ -164,7 +164,7 @@ class FileOperations {
 
     void saveFile(File file, NavigationFormat format,
                   boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         if (file.getParent() != null)
             preferences.put(WRITE_PATH_PREFERENCE + format.getClass().getSimpleName(), file.getParent());
 
@@ -212,7 +212,7 @@ class FileOperations {
 
     private void saveFiles(File[] files, NavigationFormat format, BaseRoute route,
                            boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
-        final RouteConverter r = RouteConverter.getInstance();
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
         String targetsAsString = asDialogString(asList(files), true);
         startWaitCursor(r.getFrame().getRootPane());
         try {
@@ -257,7 +257,7 @@ class FileOperations {
                 source = route.getName();
 
             showError(r.getFrame(),
-                    MessageFormat.format(RouteConverter.getBundle().getString("save-error"), source, targetsAsString, getLocalizedMessage(t)),
+                    MessageFormat.format(BaseRouteConverter.getBundle().getString("save-error"), source, targetsAsString, getLocalizedMessage(t)),
                     r.getFrame().getTitle());
         } finally {
             stopWaitCursor(r.getFrame().getRootPane());
@@ -265,7 +265,7 @@ class FileOperations {
     }
 
     void appendPositionList(final int row, final List<URL> urls) {
-        final RouteConverter r = RouteConverter.getInstance();
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
         openExecutor.execute(() -> {
             try {
                 for (URL url : urls) {

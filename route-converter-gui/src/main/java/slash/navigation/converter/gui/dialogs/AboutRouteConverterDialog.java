@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -24,7 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.common.system.Platform;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
@@ -72,21 +72,21 @@ public class AboutRouteConverterDialog extends SimpleDialog {
     private JLabel labelLogo;
 
     public AboutRouteConverterDialog() {
-        super(RouteConverter.getInstance().getFrame(), "about");
-        setTitle(RouteConverter.getBundle().getString("about-title"));
+        super(BaseRouteConverter.getInstance().getFrame(), "about");
+        setTitle(BaseRouteConverter.getBundle().getString("about-title"));
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
 
         labelLogo.setIcon(new ImageIcon(new ImageIcon(getClass().getResource("/slash/navigation/converter/gui/RouteConverter.png"))
                 .getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH)));
 
-        final RouteConverter r = RouteConverter.getInstance();
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         enableLink(labelAbout, () -> startBrowserForRouteConverter(r.getFrame()));
         enableLink(labelResources, () -> startBrowserForRouteConverterResources(r.getFrame()));
         enableLink(labelContact, () -> startBrowserForRouteConverterForum(r.getFrame()));
 
-        String username = RouteConverter.getInstance().getUserNamePreference();
+        String username = BaseRouteConverter.getInstance().getUserNamePreference();
         if (username != null) {
             labelUserNameCaption.setText(captionOf("logged-in-as"));
             labelUserName.setText(username);
@@ -102,12 +102,12 @@ public class AboutRouteConverterDialog extends SimpleDialog {
             labelFeature.setVisible(true);
         }
 
-        labelRouteConverterVersion.setText(RouteConverter.getTitle());
+        labelRouteConverterVersion.setText(BaseRouteConverter.getTitle());
         labelJavaVersion.setText(Platform.getJava());
         labelOperatingSystem.setText(Platform.getPlatform());
 
         labelReportProblem.setText("<html><a href=\"\">" +
-                RouteConverter.getBundle().getString("about-report-problem") + "</a></html>");
+                BaseRouteConverter.getBundle().getString("about-report-problem") + "</a></html>");
         enableLink(labelReportProblem, () -> new SendErrorReportDialog().showWithPreferences());
 
         buttonCopySystemInfo.addActionListener(new DialogAction(this) {
@@ -146,7 +146,7 @@ public class AboutRouteConverterDialog extends SimpleDialog {
      * column and its value in the next, aligned with the version/Java/OS rows.
      */
     private static String captionOf(String key) {
-        String pattern = RouteConverter.getBundle().getString(key);
+        String pattern = BaseRouteConverter.getBundle().getString(key);
         int index = pattern.indexOf("{0}");
         return (index != -1 ? pattern.substring(0, index) : pattern).trim();
     }
@@ -172,7 +172,7 @@ public class AboutRouteConverterDialog extends SimpleDialog {
     }
 
     private static void copySystemInfo() {
-        String info = RouteConverter.getTitle() + "\n" + Platform.getJava() + "\n" + Platform.getPlatform();
+        String info = BaseRouteConverter.getTitle() + "\n" + Platform.getJava() + "\n" + Platform.getPlatform();
         Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(info), null);
     }
 

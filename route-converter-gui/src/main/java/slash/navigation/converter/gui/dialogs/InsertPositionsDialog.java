@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -25,7 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
@@ -58,11 +58,11 @@ public class InsertPositionsDialog extends SimpleDialog {
     private JButton buttonInsertAllWaypoints;
 
     public InsertPositionsDialog() {
-        super(RouteConverter.getInstance().getFrame(), "insert-positions");
-        setTitle(RouteConverter.getBundle().getString("insert-positions-title"));
+        super(BaseRouteConverter.getInstance().getFrame(), "insert-positions");
+        setTitle(BaseRouteConverter.getBundle().getString("insert-positions-title"));
         setContentPane(contentPane);
 
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         setMnemonic(buttonSelectAll, "select-all-action-mnemonic");
         buttonSelectAll.addActionListener(new DialogAction(this) {
@@ -117,9 +117,9 @@ public class InsertPositionsDialog extends SimpleDialog {
     }
 
     private void handlePositionsUpdate() {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         int selectedRowCount = r.getConvertPanel().getPositionsView().getSelectedRowCount();
-        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-positions"), selectedRowCount));
+        labelSelection.setText(MessageFormat.format(BaseRouteConverter.getBundle().getString("selected-positions"), selectedRowCount));
 
         boolean existsSelectedPosition = selectedRowCount > 0;
         buttonInsertAllWaypoints.setEnabled(existsSelectedPosition);
@@ -130,19 +130,19 @@ public class InsertPositionsDialog extends SimpleDialog {
     }
 
     private void selectAll() {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         r.getContext().getActionManager().run("select-all");
         int selectedRowCount = r.getConvertPanel().getPositionsView().getSelectedRowCount();
-        labelSelection.setText(MessageFormat.format(RouteConverter.getBundle().getString("selected-all-positions"), selectedRowCount));
+        labelSelection.setText(MessageFormat.format(BaseRouteConverter.getBundle().getString("selected-all-positions"), selectedRowCount));
     }
 
     private void clearSelection() {
-        RouteConverter.getInstance().clearSelection();
+        BaseRouteConverter.getInstance().clearSelection();
         handlePositionsUpdate();
     }
 
     private void insertAllWaypoints() {
-        RouteConverter.getInstance().getInsertPositionFacade().insertAllWaypoints();
+        BaseRouteConverter.getInstance().getInsertPositionFacade().insertAllWaypoints();
     }
 
     private void close() {

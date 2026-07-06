@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.common.DistanceAndTimeAggregator;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
@@ -33,7 +33,7 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.formatLatitu
 import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongitude;
 
 /**
- * Implements the common callbacks from the {@link MapView} for the RouteConverter services.
+ * Implements the common callbacks from the {@link MapView} for the BaseRouteConverter services.
  *
  * @author Christian Pesch
  */
@@ -41,7 +41,7 @@ import static slash.navigation.converter.gui.helpers.PositionHelper.formatLongit
 public abstract class MapViewCallbackImpl implements MapViewCallback {
 
     public String createDescription(int index, String description) {
-        return RouteConverter.getInstance().getPositionAugmenter().createDescription(index, description);
+        return BaseRouteConverter.getInstance().getPositionAugmenter().createDescription(index, description);
     }
 
     public String createCoordinates(Double longitude, Double latitude) {
@@ -49,38 +49,38 @@ public abstract class MapViewCallbackImpl implements MapViewCallback {
     }
 
     public void setSelectedPositions(int[] selectedPositions, boolean replaceSelection) {
-        RouteConverter.getInstance().getConvertPanel().getPositionsSelectionModel().setSelectedPositions(selectedPositions, replaceSelection);
+        BaseRouteConverter.getInstance().getConvertPanel().getPositionsSelectionModel().setSelectedPositions(selectedPositions, replaceSelection);
     }
 
     public void complementData(int[] rows, boolean description, boolean time, boolean elevation, boolean waitForDownload, boolean trackUndo) {
-        RouteConverter.getInstance().getPositionAugmenter().addData(rows, description, time, elevation, waitForDownload, trackUndo);
+        BaseRouteConverter.getInstance().getPositionAugmenter().addData(rows, description, time, elevation, waitForDownload, trackUndo);
     }
 
     public RoutingService getRoutingService() {
-        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingService();
+        return BaseRouteConverter.getInstance().getRoutingServiceFacade().getRoutingService();
     }
 
     public TravelMode getTravelMode() {
-        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().getTravelMode();
+        return BaseRouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().getTravelMode();
     }
 
     public TravelRestrictions getTravelRestrictions() {
-        return RouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().getTravelRestrictions();
+        return BaseRouteConverter.getInstance().getRoutingServiceFacade().getRoutingPreferencesModel().getTravelRestrictions();
     }
 
     public boolean isShowAllPositionsAfterLoading() {
-        return RouteConverter.getInstance().getShowAllPositionsAfterLoading().getBoolean();
+        return BaseRouteConverter.getInstance().getShowAllPositionsAfterLoading().getBoolean();
     }
 
     public boolean isRecenterAfterZooming() {
-        return RouteConverter.getInstance().getRecenterAfterZooming().getBoolean();
+        return BaseRouteConverter.getInstance().getRecenterAfterZooming().getBoolean();
     }
 
     public TileServerMapManager getTileServerMapManager() {
-        return RouteConverter.getInstance().getTileServerMapManager();
+        return BaseRouteConverter.getInstance().getTileServerMapManager();
     }
 
     public DistanceAndTimeAggregator getDistanceAndTimeAggregator() {
-        return RouteConverter.getInstance().getDistanceAndTimeAggregator();
+        return BaseRouteConverter.getInstance().getDistanceAndTimeAggregator();
     }
 }

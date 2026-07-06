@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -20,7 +20,7 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 
 import java.awt.*;
 import java.awt.desktop.OpenURIEvent;
@@ -40,7 +40,7 @@ import static java.awt.Desktop.isDesktopSupported;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 
 /**
- * Creates an application menu for Mac OS X for RouteConverter.
+ * Creates an application menu for Mac OS X for BaseRouteConverter.
  *
  * @author Christian Pesch
  */
@@ -97,14 +97,14 @@ public class ApplicationMenu {
                 log.warning("Cannot open file " + file + ": " + getLocalizedMessage(e));
             }
         }
-        ((RouteConverter)slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(urls);
+        ((BaseRouteConverter)slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(urls);
     }
 
     private void openUri(OpenURIEvent openURIEvent) {
         URI uri = openURIEvent.getURI();
         try {
             URL url = uri.toURL();
-            ((RouteConverter)slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(List.of(url));
+            ((BaseRouteConverter)slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(List.of(url));
         } catch (MalformedURLException e) {
             log.warning("Cannot open URI " + uri + ": " + getLocalizedMessage(e));
         }

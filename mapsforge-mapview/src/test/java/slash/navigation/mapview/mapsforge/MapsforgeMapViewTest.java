@@ -63,7 +63,7 @@ public class MapsforgeMapViewTest {
         mapManager = new MapsforgeMapManager(mock(), tileServerMapManager);
         mapManager.getAppliedThemeModel().setItem(mapManager.getAvailableThemesModel().getItem(0));
 
-        MapViewCallbackOpenSource callback = mock(MapViewCallbackOpenSource.class);
+        MapsforgeMapViewCallback callback = mock(MapsforgeMapViewCallback.class);
         when(callback.getMapsforgeMapManager()).thenReturn(mapManager);
 
         Field mapViewCallback = MapsforgeMapView.class.getDeclaredField("mapViewCallback");

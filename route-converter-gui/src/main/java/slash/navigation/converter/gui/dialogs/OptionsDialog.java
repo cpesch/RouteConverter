@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -32,7 +32,7 @@ import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NumberPattern;
 import slash.navigation.common.NumberingStrategy;
 import slash.navigation.common.UnitSystem;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
@@ -80,7 +80,7 @@ import static slash.navigation.common.NumberPattern.*;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
 import static slash.navigation.common.NumberingStrategy.Relative_Position_In_Current_Selection;
 import static slash.navigation.common.UnitSystem.*;
-import static slash.navigation.converter.gui.RouteConverter.*;
+import static slash.navigation.converter.gui.BaseRouteConverter.*;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.*;
 import static slash.navigation.converter.gui.models.FixMapMode.*;
 import static slash.navigation.googlemaps.GoogleMapsServer.*;
@@ -148,12 +148,12 @@ public class OptionsDialog extends SimpleDialog {
 
 
     public OptionsDialog() {
-        super(RouteConverter.getInstance().getFrame(), "options");
+        super(BaseRouteConverter.getInstance().getFrame(), "options");
         setTitle(getBundle().getString("options-title"));
         setContentPane(contentPane);
         getRootPane().setDefaultButton(buttonClose);
 
-        final RouteConverter r = RouteConverter.getInstance();
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         ComboBoxModel<Locale> localeModel = new DefaultComboBoxModel<>(new Locale[]{
                 ARABIA, BRAZIL, CATALAN, CHINA, CZECH, DENMARK, GERMANY, US, SPAIN, FRANCE, CROATIA,
@@ -209,7 +209,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         buttonChooseMapsPath.addActionListener(new FrameAction() {
             public void run() {
-                chooseDirectoryInto("choose-map-path", RouteConverter.getInstance().getMapView().getMapsPath(), textFieldMapsPath);
+                chooseDirectoryInto("choose-map-path", BaseRouteConverter.getInstance().getMapView().getMapsPath(), textFieldMapsPath);
             }
         });
         textFieldThemesPath.getDocument().addDocumentListener(new DocumentListener() {
@@ -235,7 +235,7 @@ public class OptionsDialog extends SimpleDialog {
         });
         buttonChooseThemesPath.addActionListener(new FrameAction() {
             public void run() {
-                chooseDirectoryInto("choose-theme-path", RouteConverter.getInstance().getMapView().getThemesPath(), textFieldThemesPath);
+                chooseDirectoryInto("choose-theme-path", BaseRouteConverter.getInstance().getMapView().getThemesPath(), textFieldThemesPath);
             }
         });
 
@@ -424,7 +424,7 @@ public class OptionsDialog extends SimpleDialog {
         buttonChooseRoutingServicePath.addActionListener(new FrameAction() {
             public void run() {
                 chooseDirectoryInto("choose-routing-service-path",
-                        RouteConverter.getInstance().getRoutingServiceFacade().getRoutingService().getPath(), textFieldRoutingServicePath);
+                        BaseRouteConverter.getInstance().getRoutingServiceFacade().getRoutingService().getPath(), textFieldRoutingServicePath);
             }
         });
         handleRoutingServiceUpdate();
@@ -512,7 +512,7 @@ public class OptionsDialog extends SimpleDialog {
         buttonChooseElevationServicePath.addActionListener(new FrameAction() {
             public void run() {
                 chooseDirectoryInto("choose-elevation-service-path",
-                        RouteConverter.getInstance().getElevationServiceFacade().getElevationService().getPath(), textFieldElevationServicePath);
+                        BaseRouteConverter.getInstance().getElevationServiceFacade().getElevationService().getPath(), textFieldElevationServicePath);
             }
         });
         handleElevationServiceUpdate();
@@ -629,7 +629,7 @@ public class OptionsDialog extends SimpleDialog {
     }
 
     private void restartMapView() {
-        RouteConverter r = RouteConverter.getInstance();
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
         r.setMapView(r.getMapViewPreference());
     }
 
@@ -655,7 +655,7 @@ public class OptionsDialog extends SimpleDialog {
     }
 
     private void handleMapServiceUpdate() {
-        MapView service = RouteConverter.getInstance().getMapView();
+        MapView service = BaseRouteConverter.getInstance().getMapView();
         boolean download = service != null && service.isDownload();
         textFieldMapsPath.setEnabled(download);
         textFieldMapsPath.setText(download ? service.getMapsPath() : "");
@@ -667,7 +667,7 @@ public class OptionsDialog extends SimpleDialog {
     }
 
     private void handleRoutingServiceUpdate() {
-        RoutingServiceFacade facade = RouteConverter.getInstance().getRoutingServiceFacade();
+        RoutingServiceFacade facade = BaseRouteConverter.getInstance().getRoutingServiceFacade();
         RoutingPreferencesModel preferences = facade.getRoutingPreferencesModel();
         RoutingService service = facade.getRoutingService();
         textFieldRoutingServicePath.setEnabled(service.isDownload());
@@ -687,7 +687,7 @@ public class OptionsDialog extends SimpleDialog {
     }
 
     private void updateTravelModes() {
-        RoutingServiceFacade facade = RouteConverter.getInstance().getRoutingServiceFacade();
+        RoutingServiceFacade facade = BaseRouteConverter.getInstance().getRoutingServiceFacade();
         RoutingPreferencesModel preferences = facade.getRoutingPreferencesModel();
         RoutingService service = facade.getRoutingService();
         MutableComboBoxModel<TravelMode> travelModeModel = new DefaultComboBoxModel<>();
@@ -701,20 +701,20 @@ public class OptionsDialog extends SimpleDialog {
     }
 
     private void handleElevationServiceUpdate() {
-        ElevationService service = RouteConverter.getInstance().getElevationServiceFacade().getElevationService();
+        ElevationService service = BaseRouteConverter.getInstance().getElevationServiceFacade().getElevationService();
         textFieldElevationServicePath.setEnabled(service.isDownload());
         textFieldElevationServicePath.setText(service.isDownload() ? service.getPath() : "");
         buttonChooseElevationServicePath.setEnabled(service.isDownload());
     }
 
     private void chooseDirectoryInto(String titleKey, String currentPath, JTextField textField) {
-        File directory = chooseDirectory(RouteConverter.getInstance().getFrame(), getBundle().getString(titleKey), currentPath);
+        File directory = chooseDirectory(BaseRouteConverter.getInstance().getFrame(), getBundle().getString(titleKey), currentPath);
         if (directory != null)
             textField.setText(directory.getAbsolutePath());
     }
 
     private void chooseBabelPath() {
-        File selected = chooseFile(RouteConverter.getInstance().getFrame(), getBundle().getString("choose-gpsbabel-path"),
+        File selected = chooseFile(BaseRouteConverter.getInstance().getFrame(), getBundle().getString("choose-gpsbabel-path"),
                 BabelFormat.getBabelPathPreference());
         if (selected != null)
             textFieldBabelPath.setText(selected.getAbsolutePath());

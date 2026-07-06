@@ -1,18 +1,18 @@
 /*
-    This file is part of RouteConverter.
+    This file is part of BaseRouteConverter.
 
-    RouteConverter is free software; you can redistribute it and/or modify
+    BaseRouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    RouteConverter is distributed in the hope that it will be useful,
+    BaseRouteConverter is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with RouteConverter; if not, write to the Free Software
+    along with BaseRouteConverter; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
@@ -24,7 +24,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.WaypointType;
-import slash.navigation.converter.gui.RouteConverter;
+import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.renderer.CountryCodeListCellRenderer;
 import slash.navigation.converter.gui.renderer.WaypointTypeListCellRenderer;
 import slash.navigation.fpl.CountryCode;
@@ -75,9 +75,9 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     private int index;
 
     public CompleteFlightPlanDialog(GarminFlightPlanRoute routeToComplete) {
-        super(RouteConverter.getInstance().getFrame(), "complete-flightplan");
+        super(BaseRouteConverter.getInstance().getFrame(), "complete-flightplan");
         this.route = routeToComplete;
-        setTitle(RouteConverter.getBundle().getString("complete-flight-plan-title"));
+        setTitle(BaseRouteConverter.getBundle().getString("complete-flight-plan-title"));
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonNextOrFinish);
@@ -167,7 +167,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
     }
 
     private void updateView() {
-        labelPosition.setText(format(RouteConverter.getBundle().getString("position-index"), index + 1, route.getPositionCount()));
+        labelPosition.setText(format(BaseRouteConverter.getBundle().getString("position-index"), index + 1, route.getPositionCount()));
         GarminFlightPlanPosition position = getPosition();
 
         textFieldIdentifier.setText(createValidIdentifier(position, route.getPositions()));
@@ -195,7 +195,7 @@ public class CompleteFlightPlanDialog extends SimpleDialog {
         buttonNextOrFinish.setEnabled(index < route.getPositionCount() && validCountryCode && validIdentifier &&
                 validDescription && validWaypointType);
         $$$loadButtonText$$$(buttonNextOrFinish, index == route.getPositionCount() - 1 ?
-                RouteConverter.getBundle().getString("finish") : RouteConverter.getBundle().getString("next"));
+                BaseRouteConverter.getBundle().getString("finish") : BaseRouteConverter.getBundle().getString("next"));
     }
 
     private void close() {
