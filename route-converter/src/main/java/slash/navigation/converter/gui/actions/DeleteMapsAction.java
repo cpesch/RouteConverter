@@ -32,6 +32,8 @@ import java.util.List;
 import static java.text.MessageFormat.format;
 import static javax.swing.JOptionPane.*;
 import static javax.swing.SwingUtilities.invokeLater;
+import static slash.navigation.gui.helpers.WindowHelper.showConfirm;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 
 /**
  * {@link Action} that deletes {@link LocalMap}s.
@@ -65,7 +67,7 @@ public class DeleteMapsAction extends DialogAction {
                 mapNames.append(", ");
         }
 
-        int confirm = showConfirmDialog(getDialog(), format(RouteConverter.getBundle().getString("confirm-delete-maps"), mapNames),
+        int confirm = showConfirm(getDialog(), format(RouteConverter.getBundle().getString("confirm-delete-maps"), mapNames),
                 getDialog().getTitle(), YES_NO_OPTION);
         if (confirm != YES_OPTION)
             return;
@@ -74,7 +76,7 @@ public class DeleteMapsAction extends DialogAction {
             mapManager.delete(selectedMaps);
         } catch (Exception e) {
             invokeLater(() -> {
-                showMessageDialog(getDialog(), format(RouteConverter.getBundle().getString("cannot-delete-maps"), e), getDialog().getTitle(), ERROR_MESSAGE);
+                showError(getDialog(), format(RouteConverter.getBundle().getString("cannot-delete-maps"), e), getDialog().getTitle());
             });
         }
     }

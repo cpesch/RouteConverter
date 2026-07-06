@@ -34,8 +34,7 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static javax.sound.sampled.LineEvent.Type.STOP;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ThreadHelper.safeJoin;
 
@@ -92,9 +91,8 @@ public class AudioPlayer {
                         playNext(file);
                 } catch (Exception e) {
                     log.severe(format("Cannot play audio file %s: %s", file, getLocalizedMessage(e)));
-                    showMessageDialog(frame,
-                            MessageFormat.format(Application.getInstance().getContext().getBundle().getString("cannot-play-voice"), file, e), frame.getTitle(),
-                            ERROR_MESSAGE);
+                    showError(frame,
+                            MessageFormat.format(Application.getInstance().getContext().getBundle().getString("cannot-play-voice"), file, e), frame.getTitle());
                 }
             }
         }, "AudioPlayer");

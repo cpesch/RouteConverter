@@ -36,10 +36,9 @@ import java.util.logging.Logger;
 
 import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newCachedThreadPool;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Files.asDialogString;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 
 /**
  * {@link Action} that downloads {@link RemoteTheme}s from the {@link MapsforgeMapManager}.
@@ -93,7 +92,7 @@ public class DownloadThemesAction extends DialogAction {
                     invokeLater(new Runnable() {
                         public void run() {
                             log.warning("Could not download maps: " + e);
-                            showMessageDialog(r.getFrame(), format(RouteConverter.getBundle().getString("scan-error"), e), r.getFrame().getTitle(), ERROR_MESSAGE);
+                            showError(r.getFrame(), format(RouteConverter.getBundle().getString("scan-error"), e), r.getFrame().getTitle());
                         }
                     });
                 }

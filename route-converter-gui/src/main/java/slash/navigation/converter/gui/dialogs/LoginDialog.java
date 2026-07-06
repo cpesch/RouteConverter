@@ -51,6 +51,8 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTerms;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
+import static slash.navigation.gui.helpers.WindowHelper.showInformation;
 
 /**
  * Dialog to login a user to the RouteService.
@@ -162,14 +164,14 @@ public class LoginDialog extends SimpleDialog {
 
         String userName = trim(textFieldLogin.getText());
         if (userName == null) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-no-username-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("login-no-username-error")),
+                    frame.getTitle());
             return;
         }
         String password = trim(new String(passwordLogin.getPassword()));
         if (password == null) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-no-password-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("login-no-password-error")),
+                    frame.getTitle());
             return;
         }
 
@@ -179,17 +181,17 @@ public class LoginDialog extends SimpleDialog {
             successful = true;
             RouteConverter.getInstance().setLogin(userName, password);
 
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-success")),
-                    frame.getTitle(), INFORMATION_MESSAGE);
+            showInformation(frame, new JLabel(RouteConverter.getBundle().getString("login-success")),
+                    frame.getTitle());
 
             dispose();
         } catch (UnAuthorizedException e) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("login-failure")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("login-failure")),
+                    frame.getTitle());
         } catch (Throwable t) {
             log.severe("Could not login: " + t);
-            showMessageDialog(frame, new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"),
-                    t.getClass().getSimpleName(), getLocalizedMessage(t))), frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"),
+                    t.getClass().getSimpleName(), getLocalizedMessage(t))), frame.getTitle());
         }
     }
 
@@ -198,46 +200,46 @@ public class LoginDialog extends SimpleDialog {
 
         String userName = trim(textFieldName.getText());
         if (userName == null || userName.length() < 4) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-username-too-short-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("register-username-too-short-error")),
+                    frame.getTitle());
             return;
         }
         String firstName = trim(textFieldFirstName.getText());
         if (firstName == null || firstName.length() < 3) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-first-name-too-short-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("register-first-name-too-short-error")),
+                    frame.getTitle());
             return;
         }
         String lastName = trim(textFieldLastName.getText());
         if (lastName == null || lastName.length() < 3) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-last-name-too-short-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("register-last-name-too-short-error")),
+                    frame.getTitle());
             return;
         }
 
         String email = trim(textFieldEMail.getText());
         if (email == null || !email.contains("@") || !email.contains(".")) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-email-invalid-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("register-email-invalid-error")),
+                    frame.getTitle());
             return;
         }
 
         String password = trim(new String(passwordRegister.getPassword()));
         if (password == null || password.length() < 4) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-password-too-short-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("register-password-too-short-error")),
+                    frame.getTitle());
             return;
         }
         String repeat = trim(new String(passwordRepeat.getPassword()));
         if (!password.equals(repeat)) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-password-do-not-match-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("register-password-do-not-match-error")),
+                    frame.getTitle());
             return;
         }
 
         if (!checkBoxAcceptTerms.isSelected()) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-terms-not-accepted-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("register-terms-not-accepted-error")),
+                    frame.getTitle());
             return;
         }
 
@@ -247,17 +249,17 @@ public class LoginDialog extends SimpleDialog {
             successful = true;
             RouteConverter.getInstance().setLogin(userName, password);
 
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-success")),
-                    frame.getTitle(), INFORMATION_MESSAGE);
+            showInformation(frame, new JLabel(RouteConverter.getBundle().getString("register-success")),
+                    frame.getTitle());
 
             dispose();
         } catch (DuplicateNameException e) {
-            showMessageDialog(frame, new JLabel(RouteConverter.getBundle().getString("register-username-exists-error")),
-                    frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(RouteConverter.getBundle().getString("register-username-exists-error")),
+                    frame.getTitle());
         } catch (Throwable t) {
             log.severe("Could not register: " + t);
-            showMessageDialog(frame, new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"),
-                    t.getClass().getSimpleName(), getLocalizedMessage(t))), frame.getTitle(), ERROR_MESSAGE);
+            showError(frame, new JLabel(MessageFormat.format(RouteConverter.getBundle().getString("route-service-error"),
+                    t.getClass().getSimpleName(), getLocalizedMessage(t))), frame.getTitle());
         }
     }
 

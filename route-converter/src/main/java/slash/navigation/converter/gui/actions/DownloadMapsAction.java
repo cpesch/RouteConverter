@@ -38,10 +38,9 @@ import java.util.logging.Logger;
 import static java.text.MessageFormat.format;
 import static java.util.concurrent.Executors.newCachedThreadPool;
 import static java.util.stream.Collectors.toList;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Files.asDialogString;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 
 /**
  * {@link Action} that downloads {@link RemoteMap}s from the {@link MapsforgeMapManager}.
@@ -107,7 +106,7 @@ public class DownloadMapsAction extends DialogAction {
                 } catch (Exception e) {
                     invokeLater(() -> {
                         log.warning("Could not download maps: " + e);
-                        showMessageDialog(getDialog(), format(RouteConverter.getBundle().getString("scan-error"), e), getDialog().getTitle(), ERROR_MESSAGE);
+                        showError(getDialog(), format(RouteConverter.getBundle().getString("scan-error"), e), getDialog().getTitle());
                     });
                 }
             }

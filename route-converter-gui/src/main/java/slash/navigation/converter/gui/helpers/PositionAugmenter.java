@@ -45,8 +45,7 @@ import java.util.logging.Logger;
 import static java.lang.Math.*;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
-import static javax.swing.JOptionPane.ERROR_MESSAGE;
-import static javax.swing.JOptionPane.showMessageDialog;
+import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.common.helpers.ExceptionHelper.*;
@@ -203,8 +202,8 @@ public class PositionAugmenter {
 
                     if (lastException[0] != null && !isComputerOffline(lastException[0])) {
                         String errorMessage = RouteConverter.getBundle().getString(operation.getMessagePrefix() + "error");
-                        showMessageDialog(frame,
-                                MessageFormat.format(errorMessage, getLocalizedMessage(lastException[0])), frame.getTitle(), ERROR_MESSAGE);
+                        showError(frame,
+                                MessageFormat.format(errorMessage, getLocalizedMessage(lastException[0])), frame.getTitle());
                     }
                 } finally {
                     if (lastException[0] == null || !isComputerOffline(lastException[0]))
