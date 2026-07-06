@@ -1,14 +1,16 @@
 ---
 name: 00008-review-code-coverage-tooling-and-baseline
-status: shipped
-phases_done: []
+status: closed
+phases_done: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]
 phases_next: []
-last_touched: 2026-06-04
+last_touched: 2026-07-06
 ---
 
 # 00008 - Coverage tooling, baseline, plan, and integration-test classification
 
 ## Status
+
+**Closed on July 6, 2026.** Coverage campaign complete across Phases 1-28: aggregate line coverage 40.54% (baseline) -> 46.03% (unit-only) / 46.11% (unit + hermetic IT). The pure-utility and domain-spine layer is thoroughly pinned; remaining uncovered lines are Swing UI (~61% of the gap), non-hermetic network/native code, and mechanical `asXxxFormat`/`asXxxPosition` delegations. 80% line is unreachable by unit + hermetic integration tests (ceiling ~54-55%); further gains require live-environment ITs or extracting logic out of Swing. See the dated "Verified on..." records below for per-phase detail.
 
 Implemented on June 4, 2026.
 
