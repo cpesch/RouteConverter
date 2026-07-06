@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="slash.navigation.converter.gui.dialogs.AboutRouteConverterDialog">
-  <grid id="64360" binding="contentPane" layout-manager="GridLayoutManager" row-count="1" column-count="1" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="64360" binding="contentPane" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="20" vgap="-1">
     <margin top="10" left="10" bottom="10" right="10"/>
     <constraints>
       <xy x="0" y="0" width="701" height="565"/>
@@ -8,10 +8,16 @@
     <properties/>
     <border type="none"/>
     <children>
+      <component id="logo1" class="javax.swing.JLabel" binding="labelLogo">
+        <constraints>
+          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
+        </constraints>
+        <properties/>
+      </component>
       <grid id="53e49" layout-manager="GridLayoutManager" row-count="8" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
+          <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties/>
         <border type="none"/>
@@ -30,14 +36,6 @@
             </constraints>
             <properties>
               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="about-routeconverter-contact"/>
-            </properties>
-          </component>
-          <component id="a4fc5" class="javax.swing.JLabel" binding="labelFeature">
-            <constraints>
-              <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <visible value="false"/>
             </properties>
           </component>
           <grid id="31e46" layout-manager="GridLayoutManager" row-count="1" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
@@ -69,7 +67,7 @@
             </constraints>
             <properties/>
           </component>
-          <grid id="f590c" layout-manager="GridLayoutManager" row-count="4" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+          <grid id="f590c" layout-manager="GridLayoutManager" row-count="6" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
             <margin top="0" left="0" bottom="0" right="0"/>
             <constraints>
               <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="3" indent="0" use-parent-layout="false"/>
@@ -77,25 +75,64 @@
             <properties/>
             <border type="none"/>
             <children>
-              <component id="d88de" class="javax.swing.JLabel">
+              <component id="un001" class="javax.swing.JLabel" binding="labelUserNameCaption">
                 <constraints>
                   <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
-                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="about-routeconverter-version"/>
+                  <visible value="false"/>
                 </properties>
               </component>
-              <component id="42d26" class="javax.swing.JLabel" binding="labelRouteConverterVersion">
+              <component id="un002" class="javax.swing.JLabel" binding="labelUserName">
                 <constraints>
                   <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
+                  <text value=""/>
+                  <visible value="false"/>
+                </properties>
+              </component>
+              <component id="ft001" class="javax.swing.JLabel" binding="labelFeatureCaption">
+                <constraints>
+                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <visible value="false"/>
+                </properties>
+              </component>
+              <component id="ft002" class="javax.swing.JLabel" binding="labelFeature">
+                <constraints>
+                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <visible value="false"/>
+                </properties>
+              </component>
+              <component id="d88de" class="javax.swing.JLabel">
+                <constraints>
+                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
+                  <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="about-routeconverter-version"/>
+                </properties>
+                <border type="empty">
+                  <size top="10" left="0" bottom="0" right="0"/>
+                </border>
+              </component>
+              <component id="42d26" class="javax.swing.JLabel" binding="labelRouteConverterVersion">
+                <constraints>
+                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="4" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                </constraints>
+                <properties>
                   <text value="?"/>
                 </properties>
+                <border type="empty">
+                  <size top="10" left="0" bottom="0" right="0"/>
+                </border>
               </component>
               <component id="5dfbe" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="about-java-version"/>
@@ -103,7 +140,7 @@
               </component>
               <component id="bc007" class="javax.swing.JLabel" binding="labelJavaVersion">
                 <constraints>
-                  <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="?"/>
@@ -111,7 +148,7 @@
               </component>
               <component id="os001" class="javax.swing.JLabel">
                 <constraints>
-                  <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="about-os-version"/>
@@ -119,7 +156,7 @@
               </component>
               <component id="os002" class="javax.swing.JLabel" binding="labelOperatingSystem">
                 <constraints>
-                  <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text value="?"/>
@@ -128,7 +165,7 @@
               <grid id="act01" layout-manager="GridLayoutManager" row-count="1" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
                 <margin top="6" left="0" bottom="0" right="0"/>
                 <constraints>
-                  <grid row="3" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="5" column="0" row-span="1" col-span="2" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties/>
                 <border type="none"/>
@@ -158,30 +195,12 @@
               </grid>
             </children>
           </grid>
-          <component id="8f13a" class="javax.swing.JLabel" binding="labelUserName">
-            <constraints>
-              <grid row="3" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <text value=""/>
-              <visible value="false"/>
-            </properties>
-          </component>
           <component id="637d9" class="javax.swing.JLabel" binding="labelResources">
             <constraints>
               <grid row="2" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="about-routeconverter-resources"/>
-            </properties>
-          </component>
-          <component id="cp001" class="javax.swing.JLabel" binding="labelCp">
-            <constraints>
-              <grid row="0" column="1" row-span="5" col-span="1" vsize-policy="3" hsize-policy="3" anchor="1" fill="0" indent="0" use-parent-layout="false"/>
-            </constraints>
-            <properties>
-              <icon value="slash/navigation/converter/gui/cp.png"/>
-              <opaque value="false"/>
             </properties>
           </component>
         </children>
