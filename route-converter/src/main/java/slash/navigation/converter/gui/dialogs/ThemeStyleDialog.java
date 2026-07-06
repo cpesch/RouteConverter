@@ -23,7 +23,7 @@ import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.converter.gui.BaseRouteConverter;
-import slash.navigation.converter.gui.RouteConverterOpenSource;
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.renderer.SimpleHeaderRenderer;
 import slash.navigation.converter.gui.renderer.ThemeStyleCategoryTableCellRenderer;
 import slash.navigation.gui.SimpleDialog;
@@ -102,7 +102,7 @@ public class ThemeStyleDialog extends SimpleDialog {
     }
 
     private MapsforgeMapManager getMapsforgeMapManager() {
-        return ((RouteConverterOpenSource) BaseRouteConverter.getInstance()).getMapsforgeMapManager();
+        return ((RouteConverter) BaseRouteConverter.getInstance()).getMapsforgeMapManager();
     }
 
     private void close() {

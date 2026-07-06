@@ -38,7 +38,7 @@ import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 import static slash.navigation.gui.helpers.WindowHelper.showError;
 
 /**
- * Implements the callbacks from the MapsforgeMapView to the RouteConverterOpenSource services.
+ * Implements the callbacks from the MapsforgeMapView to the RouteConverter services.
  *
  * @author Christian Pesch
  */
@@ -47,7 +47,7 @@ public class MapViewCallbackOpenSourceImpl extends MapViewCallbackImpl implement
     private static final Logger log = Logger.getLogger(MapViewCallbackOpenSourceImpl.class.getName());
 
     public MapsforgeMapManager getMapsforgeMapManager() {
-        return ((RouteConverterOpenSource) Application.getInstance()).getMapsforgeMapManager();
+        return ((RouteConverter) Application.getInstance()).getMapsforgeMapManager();
     }
 
     public ElevationService getElevationService() {

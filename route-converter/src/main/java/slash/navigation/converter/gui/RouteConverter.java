@@ -67,7 +67,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.*;
  * @author Christian Pesch
  */
 
-public class RouteConverterOpenSource extends BaseRouteConverter {
+public class RouteConverter extends BaseRouteConverter {
     private HgtFilesService hgtFilesService;
     private MapsforgeMapManager mapsforgeMapManager;
     private LocalMap mapAfterStart;
@@ -76,7 +76,7 @@ public class RouteConverterOpenSource extends BaseRouteConverter {
         // the macOS application menu ("About X", "Quit X") otherwise shows the main
         // class name; set it before AWT initializes so it reads "RouteConverter"
         System.setProperty("apple.awt.application.name", "RouteConverter");
-        launch(RouteConverterOpenSource.class, asList(BaseRouteConverter.class.getPackage().getName() + ".Untranslated", "slash.navigation.converter.gui.RouteConverter"), args);
+        launch(RouteConverter.class, asList(BaseRouteConverter.class.getPackage().getName() + ".Untranslated", "slash.navigation.converter.gui.RouteConverter"), args);
     }
 
     public String getEdition() {

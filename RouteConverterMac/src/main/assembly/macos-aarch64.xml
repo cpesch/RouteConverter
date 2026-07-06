@@ -17,7 +17,7 @@
     </fileSets>
     <files>
         <file>
-            <source>src/main/app-resources/MacOS/RouteConverterOpenSource</source>
+            <source>src/main/app-resources/MacOS/RouteConverter</source>
             <outputDirectory>/RouteConverter.app/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
             <lineEnding>lf</lineEnding>

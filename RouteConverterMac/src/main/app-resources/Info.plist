@@ -9,13 +9,13 @@
         <key>CFBundleAllowMixedLocalizations</key>
         <true/>
         <key>CFBundleExecutable</key>
-        <string>RouteConverterOpenSource</string>
+        <string>RouteConverter</string>
         <key>CFBundleGetInfoString</key>
-        <string>RouteConverterOpenSource for Mac OS X</string>
+        <string>RouteConverter for Mac OS X</string>
         <key>CFBundleIconFile</key>
         <string>RouteConverter.icns</string>
         <key>CFBundleIdentifier</key>
-        <string>slash.navigation.converter.gui.RouteConverterOpenSource</string>
+        <string>slash.navigation.converter.gui.RouteConverter</string>
         <key>CFBundleName</key>
         <string>RouteConverter</string>
         <key>CFBundlePackageType</key>

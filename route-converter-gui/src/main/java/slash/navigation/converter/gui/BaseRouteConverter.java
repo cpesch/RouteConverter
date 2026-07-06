@@ -118,7 +118,7 @@ import static slash.navigation.gui.helpers.UIHelper.*;
 /**
  * The abstract base of the RouteConverter desktop application: a single-frame
  * Swing GUI for route conversion, editing and map display. Concrete editions
- * ({@code RouteConverterOpenSource} and its {@code TimeAlbumPro} variant) subclass
+ * ({@code RouteConverter} and its {@code TimeAlbumPro} variant) subclass
  * it and supply the edition-specific behaviour via {@link #getEdition()} and
  * related hooks.
  *

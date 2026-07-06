@@ -25,7 +25,7 @@ import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.mapview.MapViewCallback;
 
 /**
- * Interface for callbacks from the {@link MapsforgeMapView} to the RouteConverterOpenSource services.
+ * Interface for callbacks from the {@link MapsforgeMapView} to the RouteConverter services.
  *
  * @author Christian Pesch
  */
