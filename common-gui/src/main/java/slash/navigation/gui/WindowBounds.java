@@ -33,9 +33,10 @@ import static slash.navigation.gui.SingleFrameApplication.*;
 /**
  * Restores and persists the size and location of a {@link Window} through
  * {@link Preferences}, and enforces a minimum size so a window can never be
- * shrunk small enough to become un-findable. This is the single source of the
- * bounds math shared by {@link SingleFrameApplication} (frames) and
- * {@link SimpleDialog} (dialogs); keys are namespaced by {@code keyPrefix}
+ * shrunk small enough to become un-findable. {@link SimpleDialog} (dialogs)
+ * uses this for the full restore/persist/min-clamp cycle; {@link SingleFrameApplication}
+ * (the main frame) keeps its own restore/persist logic and shares only the
+ * {@link #crop} clamping helper with it. Keys are namespaced by {@code keyPrefix}
  * (empty for the single main frame, {@code "dialogName-"} for dialogs).
  *
  * @author Christian Pesch
