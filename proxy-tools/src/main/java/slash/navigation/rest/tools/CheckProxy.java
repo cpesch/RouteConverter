@@ -20,6 +20,7 @@
 package slash.navigation.rest.tools;
 
 import org.apache.commons.cli.*;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.hc.client5.http.auth.AuthScope;
 import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
@@ -57,14 +58,17 @@ public class CheckProxy {
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
         options.addOption(Option.builder().argName(USERNAME_ARGUMENT).numberOfArgs(1).longOpt("username").
-                desc("Username for the proxy authentication").build());
+                desc("Username for the proxy authentication").get());
         options.addOption(Option.builder().argName(PASSWORD_ARGUMENT).numberOfArgs(1).longOpt("password").
-                desc("Password for the proxy authentication").build());
+                desc("Password for the proxy authentication").get());
         try {
             return parser.parse(options, args);
         } catch (ParseException e) {
-            HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp(getClass().getSimpleName(), options);
+            try {
+                HelpFormatter.builder().get().printHelp(getClass().getSimpleName(), null, options, null, false);
+            } catch (IOException ignored) {
+                // help output is best-effort
+            }
             throw e;
         }
     }

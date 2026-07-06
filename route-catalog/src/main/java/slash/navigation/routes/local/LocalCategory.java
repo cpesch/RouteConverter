@@ -29,6 +29,7 @@ import slash.navigation.routes.Route;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
+import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -104,7 +105,7 @@ public class LocalCategory implements Category {
         File newParent;
         String newName = encodeFileName(name);
         try {
-            newParent = parent != null ? new File(new URL(parent.getHref()).toURI()) : directory.getParentFile();
+            newParent = parent != null ? new File(new URI(parent.getHref())) : directory.getParentFile();
         } catch (URISyntaxException e) {
             throw new IOException(format("Cannot rename %s in %s to %s", directory, parent, name));
         }

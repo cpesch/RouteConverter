@@ -71,6 +71,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -367,7 +368,7 @@ public class BrowsePanel implements PanelInTab {
             urlString = route.route().getUrl();
             if (urlString == null)
                 return;
-            url = new URL(urlString);
+            url = URI.create(urlString).toURL();
         } catch (Throwable t) {
             getOperator().handleServiceError(t);
             return;

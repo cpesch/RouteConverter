@@ -382,7 +382,11 @@ public class ConvertPanel implements PanelInTab {
         for (PositionTableColumn column : tableColumnModel.getPreparedColumns())
             handleColumnVisibilityUpdate(column);
 
-        comboBoxPositionLists.setModel(formatAndRoutesModel);
+        // FormatAndRoutesModel extends the raw ComboBoxModel; narrow the unchecked
+        // conversion to this assignment rather than the whole initialize() method
+        @SuppressWarnings("unchecked")
+        ComboBoxModel<FormatAndRoutesModel> comboBoxModel = formatAndRoutesModel;
+        comboBoxPositionLists.setModel(comboBoxModel);
         comboBoxPositionLists.setRenderer(new RouteListCellRenderer());
         comboBoxPositionLists.addItemListener(e -> {
             if (e.getStateChange() == SELECTED) {

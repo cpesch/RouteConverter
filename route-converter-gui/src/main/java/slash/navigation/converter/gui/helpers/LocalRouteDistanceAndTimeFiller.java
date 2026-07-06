@@ -46,6 +46,7 @@ import java.util.logging.Logger;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static slash.common.io.Files.toFile;
+import static slash.common.io.Files.toUrl;
 
 /**
  * Fills the {@link RouteDistanceAndTimeCache} for routes of the local catalog by
@@ -161,7 +162,7 @@ public class LocalRouteDistanceAndTimeFiller {
 
     private static DistanceAndTime parseLocalRoute(String url) {
         try {
-            File file = toFile(new URL(url));
+            File file = toFile(toUrl(url));
             if (file == null || !file.exists())
                 return null;
 

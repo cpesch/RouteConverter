@@ -36,6 +36,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 import static slash.common.io.Files.toFile;
+import static slash.common.io.Files.toUrl;
 
 /**
  * Acts as a {@link UndoableEdit} for deleting {@link RouteModel}s of a {@link UndoCatalogModel}.
@@ -79,7 +80,7 @@ class DeleteRoutes extends AbstractUndoableEdit {
         for (int i = 0; i < categories.size(); i++) {
             String file = files.get(i);
             try {
-                catalogModel.addRoute(categories.get(i), descriptions.get(i), toFile(new URL(file)), urls.get(i), new AddRouteCallback(), false);
+                catalogModel.addRoute(categories.get(i), descriptions.get(i), toFile(toUrl(file)), urls.get(i), new AddRouteCallback(), false);
             } catch (MalformedURLException e) {
                 throw new IllegalStateException(format("Cannot create URL for %s", file));
             }
