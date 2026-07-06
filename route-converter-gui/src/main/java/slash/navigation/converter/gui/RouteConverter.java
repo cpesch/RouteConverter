@@ -94,6 +94,7 @@ import static slash.common.helpers.LocaleHelper.*;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.*;
+import static slash.navigation.gui.helpers.DialogStrings.asDialogString;
 import static slash.common.system.Platform.*;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
@@ -688,7 +689,7 @@ public abstract class RouteConverter extends SingleFrameApplication {
 
     public void handleOpenError(final Throwable throwable, final List<URL> urls) {
         invokeLater(() -> {
-            String dialogUrls = asDialogString(urls, true);
+            String dialogUrls = asDialogString(urls);
             log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + printStackTrace(throwable));
             showMessageDialog(frame, new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable))),
                     frame.getTitle(), ERROR_MESSAGE);

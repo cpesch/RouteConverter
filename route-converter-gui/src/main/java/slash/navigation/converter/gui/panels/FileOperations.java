@@ -53,6 +53,7 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Files.*;
+import static slash.navigation.gui.helpers.DialogStrings.asDialogString;
 import static slash.navigation.base.NavigationFormatConverter.convertRoute;
 import static slash.navigation.base.NavigationFormatParser.getNumberOfFilesToWriteFor;
 import static slash.navigation.gui.helpers.UIHelper.startWaitCursor;
