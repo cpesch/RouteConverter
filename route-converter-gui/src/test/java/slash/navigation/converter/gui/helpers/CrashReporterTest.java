@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.After;
 import org.junit.Test;
 import slash.common.log.CrashReportSpool;
 import slash.navigation.feedback.domain.CrashReportSender;
@@ -32,35 +31,8 @@ import java.util.List;
 
 import static java.nio.file.Files.createTempDirectory;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 public class CrashReporterTest {
-
-    @After
-    public void tearDown() {
-        CrashReporter.resetForTesting();
-    }
-
-    @Test
-    public void testOnlyOneDialogPerSession() {
-        CrashReporter.resetForTesting();
-
-        // the first captured crash claims the single dialog slot
-        assertTrue(CrashReporter.claimDialogSlot());
-        // further crashes in the same session only spool -- no second dialog
-        assertFalse(CrashReporter.claimDialogSlot());
-        assertFalse(CrashReporter.claimDialogSlot());
-    }
-
-    @Test
-    public void testResetReopensSlot() {
-        CrashReporter.resetForTesting();
-        assertTrue(CrashReporter.claimDialogSlot());
-
-        CrashReporter.resetForTesting();
-        assertTrue(CrashReporter.claimDialogSlot());
-    }
 
     private static class RecordingSender extends CrashReportSender {
         final List<String> sent = new ArrayList<>();
@@ -97,6 +69,19 @@ public class CrashReporterTest {
     }
 
     @Test
+    public void testOptOutOfferSpooledReportsDoesNothing() throws IOException {
+        CrashReportSpool spool = spoolWithReports(3);
+        RecordingSender sender = new RecordingSender(true);
+        CrashReporter reporter = new CrashReporter(spool, sender, () -> false, () -> "http://localhost/");
+
+        // opted out: the backlog is neither sent nor offered in a dialog -- it just stays spooled
+        reporter.offerSpooledReports();
+
+        assertEquals("opted out sends nothing", 0, sender.sent.size());
+        assertEquals("opted out keeps the whole backlog spooled", 3, spool.list().size());
+    }
+
+    @Test
     public void testOptedInSendsAndDeletesOnSuccess() throws IOException {
         CrashReportSpool spool = spoolWithReports(2);
         RecordingSender sender = new RecordingSender(true);
@@ -118,38 +103,5 @@ public class CrashReporterTest {
 
         assertEquals(2, sender.sent.size());
         assertEquals("a failed send must leave the report for the next launch", 2, spool.list().size());
-    }
-
-    @Test
-    public void testManualDialogDeletesOnlyReportsTheUserSent() throws IOException {
-        CrashReportSpool spool = spoolWithReports(3);
-        RecordingSender sender = new RecordingSender(true);
-        // the injected opener stands in for the Swing dialog: the user "sends" only the
-        // n:1 report and dismisses the rest
-        CrashReporter.DialogOpener opener = json -> json.contains("\"n\":1");
-        CrashReporter reporter = new CrashReporter(spool, sender, () -> false, () -> "http://localhost/", opener);
-
-        reporter.offerSpooledReportsInDialog();
-
-        assertEquals("only the sent report is deleted; dismissed ones are kept", 2, spool.list().size());
-        assertEquals("the manual path never uses the silent sender", 0, sender.sent.size());
-    }
-
-    @Test
-    public void testManualDialogOffersEveryReportAndDismissedKeepsAll() throws IOException {
-        CrashReportSpool spool = spoolWithReports(3);
-        RecordingSender sender = new RecordingSender(true);
-        List<String> opened = new ArrayList<>();
-        CrashReporter.DialogOpener opener = json -> {
-            opened.add(json);
-            return false;
-        };
-        CrashReporter reporter = new CrashReporter(spool, sender, () -> false, () -> "http://localhost/", opener);
-
-        reporter.offerSpooledReportsInDialog();
-
-        assertEquals("every spooled report is offered, not just the newest", 3, opened.size());
-        assertEquals("a report the user dismisses is kept for a later offer", 3, spool.list().size());
-        assertEquals(0, sender.sent.size());
     }
 }
