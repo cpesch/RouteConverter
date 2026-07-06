@@ -1,12 +1,38 @@
 ---
 name: 00016-dialog-sizing-and-message-bounding
-status: planned
-phases_done: [grill-plan]
-phases_next: [p1-windowbounds, p2-list-formatter, p3-windowhelper-wrappers, p4-joptionpane-migration, manual-ui-verification]
+status: in-flight
+phases_done: [grill-plan, p1-windowbounds, p2-list-formatter, p3-windowhelper-wrappers, p4-joptionpane-migration]
+phases_next: [manual-ui-verification]
 last_touched: 2026-07-06
 ---
 
 # 00016 - Dialog sizing cleanup + message-content bounding
+
+## Progress (2026-07-06)
+
+All four code phases implemented on separate branches, each unit/compile-verified;
+awaiting the manual-ui visual pass and merge.
+
+- **P1** `spec-00016-p1-windowbounds` — `WindowBounds` extracted; SimpleDialog
+  size-restore bug fixed, min-size floor, live persistence; FindPlaceDialog
+  table viewport. 9 unit tests + real-Window drive across two JVMs.
+- **P2** `spec-00016-p2-list-formatter` — `Files.asDialogString`→`asLogString`
+  (log-only); new capped/localized `DialogStrings`; 10 callers migrated.
+  30 unit tests + runtime bundle-key resolve.
+- **P3** `spec-00016-p3-windowhelper` — `WindowHelper` semantic wrappers +
+  600×400 scroll primitive + null-safe overload; dogfooded error handlers.
+  7 unit tests + real JOptionPane 3871px→474px.
+- **P4** `spec-00016-p4-joptionpane-migration` (stacked on P3) — ~80 JOptionPane
+  sites across 28 files routed through the wrappers; added
+  `showInput(..., initialValue)`. Full compile + diff review.
+
+Two sites left raw by design: the RouteConverter QUESTION-icon message dialog
+(no matching wrapper), and the graphhopper confirm (module has no common-gui
+dependency; wiring it would break layering).
+
+Branch topology: P1/P2/P3 branch off master independently; P4 is stacked on P3.
+
+## Goal
 
 ## Goal
 

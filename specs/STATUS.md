@@ -7,16 +7,17 @@ Active specs (`proposed`/`planned`/`in-flight`) live in `specs/`; done ones
 (`shipped`/`live`/`retired`) in `specs/done/`. When a spec's status crosses
 that line, `git mv` it to match and rerun this script.
 
-## Active (4) — planned / proposed / in-flight
+## Active (5) — planned / proposed / in-flight
 
 | Spec | Status | Phases done | Phases next | Last touched |
 |------|--------|-------------|-------------|--------------|
+| [00009-reduce-bundle-size-generically](./00009-reduce-bundle-size-generically.md) | `proposed` | — | — | 2026-06-13 |
 | [00010-migrate-java-17-to-25](./00010-migrate-java-17-to-25.md) | `in-flight` | — | — | 2026-06-13 |
 | [00013-waypoint-icons-from-style](./00013-waypoint-icons-from-style.md) | `proposed` | — | — | 2026-07-03 |
 | [00014-poi-category-overlay](./00014-poi-category-overlay.md) | `proposed` | — | — | 2026-07-03 |
-| [00016-dialog-sizing-and-message-bounding](./00016-dialog-sizing-and-message-bounding.md) | `planned` | grill-plan | p1-windowbounds, p2-list-formatter, p3-windowhelper-wrappers, p4-joptionpane-migration, manual-ui-verification | 2026-07-06 |
+| [00016-dialog-sizing-and-message-bounding](./00016-dialog-sizing-and-message-bounding.md) | `in-flight` | grill-plan, p1-windowbounds, p2-list-formatter, p3-windowhelper-wrappers, p4-joptionpane-migration | manual-ui-verification | 2026-07-06 |
 
-## Done (10) — shipped / live / retired (`specs/done/`)
+## Done (9) — shipped / live / retired (`specs/done/`)
 
 | Spec | Status | Phases done | Phases next | Last touched |
 |------|--------|-------------|-------------|--------------|
@@ -28,5 +29,4 @@ that line, `git mv` it to match and rerun this script.
 | [00006-automate-navigation-formats-lmx-fpl-jaxb-generation](./done/00006-automate-navigation-formats-lmx-fpl-jaxb-generation.md) | `shipped` | — | — | 2026-06-03 |
 | [00007-automate-navigation-formats-tcx-jaxb-generation](./done/00007-automate-navigation-formats-tcx-jaxb-generation.md) | `shipped` | — | — | 2026-06-03 |
 | [00008-review-code-coverage-tooling-and-baseline](./done/00008-review-code-coverage-tooling-and-baseline.md) | `shipped` | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28 | — | 2026-07-06 |
-| [00009-reduce-bundle-size-generically](./done/00009-reduce-bundle-size-generically.md) | `retired` | evaluate-minimizeJar, prototype-jdeps-jlink, trial-exclude-transitives | — | 2026-07-06 |
 | [00015-show-nonselected-lists-readonly](./done/00015-show-nonselected-lists-readonly.md) | `shipped` | readonly-mvp, manual-ui-verification | — | 2026-07-05 |
