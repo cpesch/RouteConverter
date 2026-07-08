@@ -1,17 +1,22 @@
 ---
 name: 00013-waypoint-icons-from-style
-status: proposed
+status: in-flight
 phases_done: []
 phases_next: []
-last_touched: 2026-07-03
+last_touched: 2026-07-08
 ---
 
 # 00013 - Per-waypoint icons from KML/KMZ (fetch + render real icons)
 
 ## Status
 
-Proposed. Created on July 3, 2026, from issue
+In-flight. Created on July 3, 2026, from issue
 [#89](https://github.com/cpesch/RouteConverter/issues/89) (Smig0l, 2024-08-06).
+Factory-ready implementation issue filed 2026-07-08 as
+[#142](https://github.com/cpesch/RouteConverter/issues/142) (all three phases in
+one issue; grilled via the feature-intake skill — awaits the `agent:approved`
+gate). Two parts deferred to follow-ups: real Google palette-icon CDN fetch, and
+real icons in non-selected/inactive lists.
 The issue thread stalled unanswered — the maintainer asked what fidelity was
 wanted ("match Google Earth exactly?") and got no reply. Fidelity tier decided
 by the maintainer on 2026-07-03: **tier (c) — fetch and render the actual
