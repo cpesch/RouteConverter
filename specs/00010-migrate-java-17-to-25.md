@@ -1,9 +1,9 @@
 ---
 name: 00010-migrate-java-17-to-25
 status: in-flight
-phases_done: []
-phases_next: []
-last_touched: 2026-06-13
+phases_done: [java21-floor-in-repo]
+phases_next: [publish-hosted-jre-21, smoke-launch-bundles-21, java25-bump]
+last_touched: 2026-07-08
 ---
 
 # 00010 - Migrate the toolchain from Java 17 to Java 25 (LTS)
