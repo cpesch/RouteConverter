@@ -47,7 +47,6 @@ import static slash.navigation.common.Bearing.calculateBearing;
 import static slash.navigation.googlemaps.GoogleMapsServer.getGoogleMapsServer;
 import static slash.navigation.googlemaps.GoogleUtil.unmarshalElevation;
 import static slash.navigation.googlemaps.GoogleUtil.unmarshalGeocode;
-import static slash.navigation.rest.HttpRequest.USER_AGENT;
 
 /**
  * Encapsulates REST access to the Google Elevation and Geocoding API Services.
@@ -83,9 +82,7 @@ public class GoogleService extends BaseGeocodingService implements ElevationServ
     }
 
     private Get get(String url) {
-        Get get = new Get(url);
-        get.setUserAgent(USER_AGENT);
-        return get;
+        return new Get(url);
     }
 
     private void checkForError(String url, String status) throws ServiceUnavailableException {
