@@ -22,6 +22,13 @@ source ~/.sdkman/bin/sdkman-init.sh && sdk use java 21   # pin may vary; `ls ~/.
 # run the app (build the runnable Linux jar, then launch it):
 ./mvnw --batch-mode -pl RouteConverterLinux -am package
 java -jar RouteConverterLinux/target/RouteConverterLinux.jar
+
+# just want the jar? skip the (flaky, network-dependent) tests with the project's
+# OWN properties — plain -DskipTests is IGNORED (surefire binds <skipTests> to
+# ${skip.unit.tests}), and -Dmaven.test.skip breaks the build because ~18 modules
+# depend on sibling test-jars:
+./mvnw --batch-mode -pl RouteConverterLinux -am package \
+  -Dskip.unit.tests=true -Dskip.integration.tests=true
 ```
 
 Integration tests are split by Maven profile: `./mvnw -Phermetic-integration-test verify`
