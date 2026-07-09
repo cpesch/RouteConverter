@@ -64,6 +64,10 @@ public class ColorModel {
         }
     }
 
+    public Color getDefaultColor() {
+        return new Color(decodeInt(defaultValue), true);
+    }
+
     public void setColor(Color color) {
         preferences.put(preferencesPrefix + COLOR_SUFFIX, toString(color));
         fireChanged();

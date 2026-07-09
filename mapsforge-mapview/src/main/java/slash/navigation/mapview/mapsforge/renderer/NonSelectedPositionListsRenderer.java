@@ -36,8 +36,9 @@ import slash.navigation.mapview.mapsforge.lines.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.base.RouteCharacteristics.Route;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
@@ -68,6 +69,7 @@ public class NonSelectedPositionListsRenderer {
     private final IntegerModel trackLineWidthModel;
     private final GraphicFactory graphicFactory;
     private final GroupLayer layer = new GroupLayer();
+    private final AtomicBoolean updatePending = new AtomicBoolean(false);
     private Bitmap waypointIcon;
 
     public NonSelectedPositionListsRenderer(MapsforgeMapView mapView, PositionListsModel positionListsModel,
@@ -88,28 +90,40 @@ public class NonSelectedPositionListsRenderer {
     }
 
     public void update() {
-        invokeInAwtEventQueue(new Runnable() {
-            public void run() {
-                // GroupLayer.draw()/onDestroy() iterate the plain ArrayList layers under
-                // synchronized(this) on the render thread; hold the same monitor while we
-                // clear and repopulate here on the EDT to avoid a ConcurrentModificationException
-                synchronized (layer) {
-                    layer.layers.clear();
-
-                    List<BaseRoute> routes = positionListsModel.getRoutes();
-                    BaseRoute selectedRoute = positionListsModel.getSelectedRoute();
-                    if (routes != null) {
-                        for (BaseRoute route : routes) {
-                            if (route == null || route == selectedRoute)
-                                continue;
-                            addPositionList(route);
-                        }
-                    }
-                }
-
-                layer.requestRedraw();
-            }
+        // The route/track/waypoint color pickers (JColorChooser) and line-width spinners
+        // fire a flood of change events while dragged, each reaching here via the map view's
+        // repaintPositionListListener. Coalesce them: schedule a single deferred rebuild on
+        // the EDT instead of running a full clear+repopulate synchronously per event - the
+        // synchronous version (spec 00015 as shipped) janks the Options color dialog when a
+        // multi-list file is loaded. The rebuild reads the latest model state, so collapsing
+        // several pending requests into one loses nothing.
+        if (!updatePending.compareAndSet(false, true))
+            return;
+        invokeLater(() -> {
+            updatePending.set(false);
+            rebuild();
         });
+    }
+
+    private void rebuild() {
+        // GroupLayer.draw()/onDestroy() iterate the plain ArrayList layers under
+        // synchronized(this) on the render thread; hold the same monitor while we
+        // clear and repopulate here on the EDT to avoid a ConcurrentModificationException
+        synchronized (layer) {
+            layer.layers.clear();
+
+            List<BaseRoute> routes = positionListsModel.getRoutes();
+            BaseRoute selectedRoute = positionListsModel.getSelectedRoute();
+            if (routes != null) {
+                for (BaseRoute route : routes) {
+                    if (route == null || route == selectedRoute)
+                        continue;
+                    addPositionList(route);
+                }
+            }
+        }
+
+        layer.requestRedraw();
     }
 
     @SuppressWarnings("unchecked")

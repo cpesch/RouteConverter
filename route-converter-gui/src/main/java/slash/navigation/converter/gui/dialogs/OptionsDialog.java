@@ -36,6 +36,7 @@ import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
+import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.FixMapMode;
 import slash.navigation.converter.gui.renderer.*;
 import slash.navigation.elevation.ElevationService;
@@ -588,15 +589,9 @@ public class OptionsDialog extends SimpleDialog {
         radioButtonV1000UTC.setSelected(!ColumbusV1000Device.getUseLocalTimeZone());
         radioButtonV1000LocalTime.addChangeListener(e -> ColumbusV1000Device.setUseLocalTimeZone(radioButtonV1000LocalTime.isSelected()));
 
-        colorChooserRoute.setColor(r.getMapPreferencesModel().getRouteColorModel().getColor());
-        reducePanels(colorChooserRoute);
-        colorChooserRoute.getSelectionModel().addChangeListener(e -> r.getMapPreferencesModel().getRouteColorModel().setColor(colorChooserRoute.getColor()));
-        colorChooserTrack.setColor(r.getMapPreferencesModel().getTrackColorModel().getColor());
-        reducePanels(colorChooserTrack);
-        colorChooserTrack.getSelectionModel().addChangeListener(e -> r.getMapPreferencesModel().getTrackColorModel().setColor(colorChooserTrack.getColor()));
-        colorChooserWaypoint.setColor(r.getMapPreferencesModel().getWaypointColorModel().getColor());
-        reducePanels(colorChooserWaypoint);
-        colorChooserWaypoint.getSelectionModel().addChangeListener(e -> r.getMapPreferencesModel().getWaypointColorModel().setColor(colorChooserWaypoint.getColor()));
+        setupColorChooser(colorChooserRoute, r.getMapPreferencesModel().getRouteColorModel());
+        setupColorChooser(colorChooserTrack, r.getMapPreferencesModel().getTrackColorModel());
+        setupColorChooser(colorChooserWaypoint, r.getMapPreferencesModel().getWaypointColorModel());
         lineWidthSpinnerRoute.setModel(new SpinnerNumberModel(r.getMapPreferencesModel().getRouteLineWidthModel().getInteger().intValue(), 1, 20, 1));
         lineWidthSpinnerRoute.addChangeListener(e -> r.getMapPreferencesModel().getRouteLineWidthModel().setInteger((Integer) lineWidthSpinnerRoute.getValue()));
         lineWidthSpinnerTrack.setModel(new SpinnerNumberModel(r.getMapPreferencesModel().getTrackLineWidthModel().getInteger().intValue(), 1, 20, 1));
@@ -643,6 +638,30 @@ public class OptionsDialog extends SimpleDialog {
                     "\u6837\u672c(S)", "HSV(H)", "HSL(L)"
             )
     );
+
+    private void setupColorChooser(JColorChooser chooser, ColorModel colorModel) {
+        chooser.setColor(colorModel.getColor());
+        reducePanels(chooser);
+        chooser.getSelectionModel().addChangeListener(e -> colorModel.setColor(chooser.getColor()));
+
+        // add a right-aligned "reset to default color" button directly below the chooser:
+        // wrap the chooser in place (keeping its original grid cell) so the button sits
+        // beneath it. Clicking it sets the chooser to the model's built-in default, which
+        // propagates to the model - and on to the map - via the selection listener above.
+        JButton resetButton = new JButton(getBundle().getString("reset-color"));
+        resetButton.addActionListener(e -> chooser.setColor(colorModel.getDefaultColor()));
+
+        Container parent = chooser.getParent();
+        GridConstraints constraints = ((GridLayoutManager) parent.getLayout()).getConstraintsForComponent(chooser);
+        parent.remove(chooser);
+
+        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        buttons.add(resetButton);
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.add(chooser, BorderLayout.CENTER);
+        wrapper.add(buttons, BorderLayout.SOUTH);
+        parent.add(wrapper, constraints);
+    }
 
     private void reducePanels(JColorChooser chooser) {
         chooser.setPreviewPanel(new JPanel());

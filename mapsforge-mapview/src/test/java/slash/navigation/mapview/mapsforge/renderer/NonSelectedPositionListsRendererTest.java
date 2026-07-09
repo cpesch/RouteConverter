@@ -20,11 +20,76 @@
 package slash.navigation.mapview.mapsforge.renderer;
 
 import org.junit.Test;
+import org.mapsforge.core.graphics.GraphicFactory;
+import slash.navigation.base.BaseRoute;
+import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.converter.gui.models.PositionListsModel;
+import slash.navigation.gui.models.IntegerModel;
+import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 
+import javax.swing.event.ListDataListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.awt.EventQueue.invokeAndWait;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 import static slash.navigation.mapview.mapsforge.renderer.NonSelectedPositionListsRenderer.lighten;
 
 public class NonSelectedPositionListsRendererTest {
+
+    /**
+     * A {@link PositionListsModel} with no routes that counts how often the renderer reads it -
+     * one read per actual rebuild. No routes means the rebuild touches no other collaborator.
+     */
+    private static class CountingPositionListsModel implements PositionListsModel {
+        final AtomicInteger reads = new AtomicInteger();
+        public List<BaseRoute> getRoutes() { reads.incrementAndGet(); return new ArrayList<>(); }
+        public BaseRoute getSelectedRoute() { return null; }
+        public void addListDataListener(ListDataListener l) { }
+        public void removeListDataListener(ListDataListener l) { }
+    }
+
+    private NonSelectedPositionListsRenderer newRenderer(PositionListsModel model) {
+        return new NonSelectedPositionListsRenderer(mock(MapsforgeMapView.class), model,
+                mock(ColorModel.class), mock(ColorModel.class),
+                mock(IntegerModel.class), mock(IntegerModel.class), mock(GraphicFactory.class));
+    }
+
+    @Test
+    public void updateDefersTheRebuildInsteadOfRunningItOnTheEventThread() throws Exception {
+        CountingPositionListsModel model = new CountingPositionListsModel();
+        NonSelectedPositionListsRenderer renderer = newRenderer(model);
+
+        // spec 00015 regression: a color/line-width change reaches update() on the EDT; the
+        // rebuild must NOT run synchronously inside that event (it janks the Options dialog),
+        // so no read has happened yet by the time the event returns
+        invokeAndWait(() -> {
+            renderer.update();
+            assertEquals("rebuild must be deferred, not run inline during the change event",
+                    0, model.reads.get());
+        });
+
+        invokeAndWait(() -> { });   // drain the EDT so the deferred rebuild runs
+        assertEquals("deferred rebuild runs exactly once after the event returns",
+                1, model.reads.get());
+    }
+
+    @Test
+    public void rapidUpdatesCoalesceIntoASingleRebuild() throws Exception {
+        CountingPositionListsModel model = new CountingPositionListsModel();
+        NonSelectedPositionListsRenderer renderer = newRenderer(model);
+
+        // simulate a JColorChooser drag: many update() calls within one EDT event
+        invokeAndWait(() -> {
+            for (int i = 0; i < 50; i++)
+                renderer.update();
+        });
+
+        invokeAndWait(() -> { });   // drain the EDT
+        assertEquals("50 rapid updates must coalesce into a single rebuild", 1, model.reads.get());
+    }
 
     @Test
     public void factorZeroKeepsTheColor() {
