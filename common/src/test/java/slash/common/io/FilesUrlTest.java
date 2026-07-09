@@ -74,7 +74,9 @@ public class FilesUrlTest {
         // spaces are illegal in a URI -> file fallback keeps leniency of the old new URL(String)
         URL url = toUrl("/some/dir/with space/track.gpx");
         assertEquals("file", url.getProtocol());
-        assertEquals(new File("/some/dir/with space/track.gpx"), new File(url.toURI()));
+        // compare absolute forms: new File(url.toURI()) round-trips to getAbsoluteFile(), which on
+        // Windows carries a drive letter while a bare "/some/..." File stays drive-relative
+        assertEquals(new File("/some/dir/with space/track.gpx").getAbsoluteFile(), new File(url.toURI()));
     }
 
     @Test
