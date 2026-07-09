@@ -199,7 +199,8 @@ public class UpdateChecker {
     private void offerJavaUpdate(Window window, UpdateResult result) {
         String message = format(BaseRouteConverter.getBundle().getString("confirm-java-update"),
                 result.getMyJavaVersion(), result.getLatestJavaVersion());
-        showUpdateMessage(window, message, "https://adoptium.net/de/temurin/releases?version=17");
+        int javaMajor = new Version(result.getLatestJavaVersion()).getMajor();
+        showUpdateMessage(window, message, "https://adoptium.net/temurin/releases/?version=" + javaMajor);
     }
 
     public void implicitCheck(final Window window) {
