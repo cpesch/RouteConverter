@@ -170,6 +170,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
+    private static final String INSERT_STRAIGHT_LINE_INTERVAL_PREFERENCE = "insertStraightLineInterval";
     private static final String FIND_PLACE_PREFERENCE = "findPlace";
     private static final String PHOTO_TIMEZONE_PREFERENCE = "photoTimeZone";
     private static final String TAG_STRATEGY_PREFERENCE = "tagStrategy";
@@ -522,6 +523,14 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     public void setSelectByOrderPreference(int selectByOrderPreference) {
         preferences.putInt(SELECT_BY_ORDER_PREFERENCE, selectByOrderPreference);
+    }
+
+    public int getInsertStraightLineIntervalPreference() {
+        return preferences.getInt(INSERT_STRAIGHT_LINE_INTERVAL_PREFERENCE, 100);
+    }
+
+    public void setInsertStraightLineIntervalPreference(int insertStraightLineIntervalPreference) {
+        preferences.putInt(INSERT_STRAIGHT_LINE_INTERVAL_PREFERENCE, insertStraightLineIntervalPreference);
     }
 
     public double getSelectBySignificancePreference() {
