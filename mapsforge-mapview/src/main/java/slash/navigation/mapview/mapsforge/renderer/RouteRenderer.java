@@ -56,7 +56,7 @@ public class RouteRenderer {
     private static final Logger log = Logger.getLogger(RouteRenderer.class.getName());
 
     private final Object notificationMutex = new Object();
-    private boolean drawingRoute, drawingBeeline;
+    private boolean drawingRoute, drawingStraightLine;
 
     private final MapsforgeMapView mapView;
     private final MapsforgeMapViewCallback mapViewCallback;
@@ -96,7 +96,7 @@ public class RouteRenderer {
     }
 
     private void internalRenderRoute(String mapIdentifier, List<PairWithLayer> pairWithLayers, Runnable invokeAfterRenderingRunnable) {
-        drawBeeline(pairWithLayers);
+        drawStraightLine(pairWithLayers);
         synchronized (notificationMutex) {
             if(!drawingRoute)
                 return;
@@ -109,7 +109,7 @@ public class RouteRenderer {
                 return;
         }
 
-        waitForBeelineRendering();
+        waitForStraightLineRendering();
         synchronized (notificationMutex) {
             if(!drawingRoute)
                 return;
@@ -135,10 +135,10 @@ public class RouteRenderer {
         }
     }
 
-    private void waitForBeelineRendering() {
+    private void waitForStraightLineRendering() {
         while (true) {
             synchronized (notificationMutex) {
-                if (!drawingBeeline)
+                if (!drawingStraightLine)
                     return;
             }
 
@@ -161,9 +161,9 @@ public class RouteRenderer {
             future.process();
     }
 
-    private void drawBeeline(List<PairWithLayer> pairWithLayers) {
+    private void drawStraightLine(List<PairWithLayer> pairWithLayers) {
         synchronized (notificationMutex) {
-            drawingBeeline = true;
+            drawingStraightLine = true;
         }
         try {
             for (PairWithLayer pairWithLayer : pairWithLayers) {
@@ -180,7 +180,7 @@ public class RouteRenderer {
             }
         } finally {
             synchronized (notificationMutex) {
-                drawingBeeline = false;
+                drawingStraightLine = false;
             }
         }
     }
@@ -288,3 +288,4 @@ public class RouteRenderer {
         return result;
     }
 }
+
