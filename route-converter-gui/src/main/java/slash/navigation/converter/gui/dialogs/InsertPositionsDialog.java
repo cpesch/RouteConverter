@@ -32,7 +32,11 @@ import slash.navigation.gui.SimpleDialog;
 import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
@@ -92,6 +96,24 @@ public class InsertPositionsDialog extends SimpleDialog {
 
         straightLineInterval = new IntegerDocument(r.getInsertStraightLineIntervalPreference());
         textFieldStraightLineInterval.setDocument(straightLineInterval);
+        straightLineInterval.addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                updateInsertStraightLineEnabled();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                updateInsertStraightLineEnabled();
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                updateInsertStraightLineEnabled();
+            }
+        });
+        textFieldStraightLineInterval.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                textFieldStraightLineInterval.selectAll();
+            }
+        });
 
         setMnemonic(buttonInsertStraightLine, "insert-straight-line-action-mnemonic");
         buttonInsertStraightLine.addActionListener(new DialogAction(this) {
@@ -147,7 +169,7 @@ public class InsertPositionsDialog extends SimpleDialog {
         boolean existsSelectedPosition = selectedRowCount > 0;
         buttonInsertAllWaypoints.setEnabled(existsSelectedPosition);
         buttonClearSelection.setEnabled(existsSelectedPosition);
-        buttonInsertStraightLine.setEnabled(selectedRowCount >= 2);
+        updateInsertStraightLineEnabled();
 
         boolean notAllPositionsSelected = r.getConvertPanel().getPositionsView().getRowCount() > selectedRowCount;
         buttonSelectAll.setEnabled(notAllPositionsSelected);
@@ -167,6 +189,11 @@ public class InsertPositionsDialog extends SimpleDialog {
 
     private void insertAllWaypoints() {
         BaseRouteConverter.getInstance().getInsertPositionFacade().insertAllWaypoints();
+    }
+
+    private void updateInsertStraightLineEnabled() {
+        int selectedRowCount = BaseRouteConverter.getInstance().getConvertPanel().getPositionsView().getSelectedRowCount();
+        buttonInsertStraightLine.setEnabled(selectedRowCount >= 2 && straightLineInterval.getInt() > 0);
     }
 
     private void insertStraightLinePositions() {
@@ -222,15 +249,15 @@ public class InsertPositionsDialog extends SimpleDialog {
         panel3.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel4, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
+        panel1.add(panel4, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 4), null, null, 0, false));
         final JPanel panel5 = new JPanel();
-        panel5.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel5.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel5, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
-        panel5.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel5.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         buttonInsertAllWaypoints = new JButton();
         this.$$$loadButtonText$$$(buttonInsertAllWaypoints, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "insert-all-waypoints"));
-        panel5.add(buttonInsertAllWaypoints, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel5.add(buttonInsertAllWaypoints, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label2 = new JLabel();
         this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "insert-positions"));
         panel5.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
@@ -250,7 +277,7 @@ public class InsertPositionsDialog extends SimpleDialog {
         panel6.add(spacer3, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         buttonInsertStraightLine = new JButton();
         this.$$$loadButtonText$$$(buttonInsertStraightLine, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "insert-straight-line-action"));
-        panel6.add(buttonInsertStraightLine, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel6.add(buttonInsertStraightLine, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new GridLayoutManager(1, 2, new Insets(10, 0, 0, 0), -1, -1));
         panel1.add(panel7, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
