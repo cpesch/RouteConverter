@@ -41,6 +41,7 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Transfer.toArray;
+import static slash.navigation.common.Interpolation.interpolate;
 import static slash.navigation.gui.helpers.WindowHelper.getFrame;
 import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
@@ -63,6 +64,63 @@ public class InsertPositionFacade {
     }
 
     private final ExecutorService executor = createSingleThreadExecutor("InsertPositions");
+
+    public void insertStraightLinePositions(final int intervalMetres) {
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
+        int[] selectedRows = r.getConvertPanel().getPositionsView().getSelectedRows();
+        r.clearSelection();
+
+        executor.execute(() -> {
+            try {
+                doInsertStraightLinePositions(intervalMetres, selectedRows);
+            } catch (Exception e) {
+                log.severe(format("Cannot insert positions: %s, %s", e, printStackTrace(e)));
+                showError(getFrame(), format(Application.getInstance().getContext().getBundle().getString("cannot-insert-positions"), getLocalizedMessage(e)),
+                        getFrame().getTitle());
+            }
+        });
+    }
+
+    private void doInsertStraightLinePositions(int intervalMetres, int[] selectedRows) throws InvocationTargetException, InterruptedException {
+        if (intervalMetres <= 0)
+            return;
+
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
+        PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
+
+        List<NavigationPosition> selectedPositions = new ArrayList<>();
+        for (int selectedRow : selectedRows) {
+            NavigationPosition position = positionsModel.getPosition(selectedRow);
+            if (position.hasCoordinates())
+                selectedPositions.add(position);
+        }
+
+        List<Integer> insertedPositions = new ArrayList<>();
+        for (int i = 0; i < selectedPositions.size() - 1; i++) {
+            NavigationPosition from = selectedPositions.get(i);
+            NavigationPosition to = selectedPositions.get(i + 1);
+
+            List<double[]> interior = interpolate(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude(), intervalMetres);
+            if (interior.isEmpty())
+                continue;
+
+            final List<BaseNavigationPosition> positions = new ArrayList<>();
+            for (double[] longitudeAndLatitude : interior)
+                positions.add(positionsModel.getRoute().createPosition(longitudeAndLatitude[0], longitudeAndLatitude[1], null, null, null, null));
+
+            // recompute per pair: earlier inserts shift the successor's index
+            final int insertRow = positionsModel.getIndex(from) + 1;
+
+            // wait for adding to positions model to be completed before inserting the next positions
+            invokeAndWait(() -> positionsModel.add(insertRow, positions));
+
+            for (int j = 0; j < positions.size(); j++)
+                insertedPositions.add(insertRow + j);
+        }
+
+        if (!insertedPositions.isEmpty())
+            invokeLater(() -> r.getPositionAugmenter().addData(toArray(insertedPositions), false, true, true, false, false));
+    }
 
     private void insertWithRoutingService(final RoutingService routingService, final int[] selectedRows) {
         executor.execute(() -> {
