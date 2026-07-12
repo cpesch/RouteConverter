@@ -30,6 +30,7 @@ import slash.navigation.tcx.Tcx2Format;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import static java.lang.Math.min;
 import static java.util.Arrays.asList;
@@ -43,6 +44,10 @@ public class RecentFormatsModelTest {
 
     @Before
     public void setUp() {
+        // Pin the limit: getMaximumCount() reads the persistent "maximumRecentFormatCount"
+        // preference from the shared user store, which may hold any value from a prior app
+        // run — otherwise this test is flaky (e.g. "expected 4 but was 3" when it is < LIMIT).
+        Preferences.userNodeForPackage(RecentFormatsModel.class).putInt("maximumRecentFormatCount", LIMIT);
         recentFormatsModel.removeAllFormats();
     }
 
