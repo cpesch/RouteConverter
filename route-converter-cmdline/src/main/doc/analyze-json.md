@@ -36,7 +36,7 @@ stdout carries only the JSON payload.
 | `bbox.east`       | number          | maximum longitude |
 | `bbox.west`       | number          | minimum longitude |
 | `lengthM`         | integer or null | total length in metres, summed over all lists; `null` if not computable |
-| `lengthKind`      | string or null  | `"track"` \| `"beeline"` \| `"routed"` (see below); `null` exactly when `lengthM` is `null` (no length computable) |
+| `lengthKind`      | string or null  | `"track"` \| `"straight-line"` \| `"routed"` (see below); `null` exactly when `lengthM` is `null` (no length computable) |
 | `durationS`       | integer or null | total duration in seconds derived from position timestamps only; `null` if no timestamps |
 | `elevationGainM`  | integer or null | cumulative ascent in metres; `null` if no elevation data |
 | `elevationLossM`  | integer or null | cumulative descent in metres; `null` if no elevation data |
@@ -51,23 +51,23 @@ them from `bbox` centre via point-in-polygon (keeps geo data out of Java).
 
 - **Track** characteristic → `track` (recorded GPS track length, measured
   point-to-point along the recorded geometry).
-- **Waypoints** characteristic → `beeline` (straight-line length between the
+- **Waypoints** characteristic → `straight-line` (the direct distance between the
   points; never routed).
 - **Route** characteristic (planned routes) → depends on `--brouter-segments`:
   - **routed** when `--brouter-segments <dir>` is given, the list falls inside
     the BRouter `.rd5` segment coverage in that directory, and every leg
     routes successfully. The reported length is the sum of the on-road leg
     distances between consecutive route points.
-  - **beeline** otherwise — no `--brouter-segments` given, the directory does
+  - **straight-line** otherwise — no `--brouter-segments` given, the directory does
     not exist, the list is outside coverage, the route fails to route (routing
     error, timeout, no segment), or the routed length comes back materially
-    shorter than the straight-line beeline through the same points (impossible
+    shorter than the straight-line distance through the same points (impossible
     for an on-road route, so the result is distrusted). A partially-covered
-    route is reported wholly as `beeline`, never as a mix, so the label never
+    route is reported wholly as `straight-line`, never as a mix, so the label never
     over-promises.
 
 Routing is best-effort and never aborts the run: any BRouter failure degrades
-that list to `beeline` and the JSON is still emitted.
+that list to `straight-line` and the JSON is still emitted.
 
 ### BRouter profile
 
@@ -75,10 +75,10 @@ Routed lengths use the **`trekking`** profile (BRouter's general-purpose
 bike/foot profile), bundled with the command-line tool. Planned catalog routes
 are predominantly cycling and hiking tours; trekking follows both roads and
 paths, giving a plausible on-road length across the widest range of routes,
-whereas a car-only profile would refuse footpaths and fall back to beeline on
+whereas a car-only profile would refuse footpaths and fall back to straight-line on
 exactly those tours. The profile and its `lookups.dat` must match the lookup
 version of the `.rd5` segments on disk; a mismatch makes routing fail and the
-list falls back to `beeline`.
+list falls back to `straight-line`.
 
 ### Routing vs. the client
 
@@ -88,6 +88,6 @@ Maps for Route lists). `lengthKind=routed` labels the method, not a specific
 router.
 
 File-level aggregation of a mixed file reports the least-certain kind present:
-`beeline` if any list is beeline, else `routed` if any list is routed, else
+`straight-line` if any list is straight-line, else `routed` if any list is routed, else
 `track`. If no list has a computable length (`lengthM` is `null`) then
 `lengthKind` is `null` too.
