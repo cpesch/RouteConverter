@@ -39,11 +39,18 @@ public class CombinedResourceBundle extends ResourceBundle {
 
     public void load() {
         bundleNames.forEach(bundleName -> {
-            ResourceBundle bundle = getBundle(bundleName);
-            Enumeration<String> keysEnumeration = bundle.getKeys();
-            ArrayList<String> keysList = list(keysEnumeration);
-            keysList.forEach(key -> resources.put(key, bundle.getString(key)));
+            // Load English first as a fallback, then let the active-locale bundle override
+            // it. There is no no-suffix base bundle (English lives in *_en.properties), so a
+            // key present only in the English bundle would otherwise have no fallback and
+            // throw MissingResourceException for every other locale - e.g. the list-none /
+            // list-and / list-more keys used by DialogStrings on a German UI.
+            merge(getBundle(bundleName, Locale.ENGLISH));
+            merge(getBundle(bundleName));
         });
+    }
+
+    private void merge(ResourceBundle bundle) {
+        list(bundle.getKeys()).forEach(key -> resources.put(key, bundle.getString(key)));
     }
 
     public Object handleGetObject(String key) {

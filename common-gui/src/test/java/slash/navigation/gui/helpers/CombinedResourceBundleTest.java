@@ -24,6 +24,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 import static java.util.Arrays.asList;
@@ -38,6 +39,8 @@ import static org.junit.Assert.*;
 public class CombinedResourceBundleTest {
     private static final String BUNDLE_1 = "slash.navigation.gui.helpers.testbundle1";
     private static final String BUNDLE_2 = "slash.navigation.gui.helpers.testbundle2";
+    // testbundle3 has _en and _de variants (no no-suffix base), mirroring the app bundles
+    private static final String BUNDLE_3 = "slash.navigation.gui.helpers.testbundle3";
 
     private static CombinedResourceBundle load(String... bundleNames) {
         CombinedResourceBundle bundle = new CombinedResourceBundle(asList(bundleNames));
@@ -67,6 +70,23 @@ public class CombinedResourceBundleTest {
         Collections.sort(keys);
 
         assertEquals(asList("key.a", "key.b", "key.shared"), keys);
+    }
+
+    @Test
+    public void englishActsAsFallbackForKeysMissingInTheActiveLocale() {
+        Locale previous = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.GERMAN);
+            CombinedResourceBundle bundle = load(BUNDLE_3);
+
+            // key present only in the *_en bundle must fall back to English, not throw
+            assertEquals("english-value", bundle.getString("only.in.english"));
+            // active-locale keys still resolve, and override English on shared keys
+            assertEquals("german-value", bundle.getString("only.in.german"));
+            assertEquals("german-shared", bundle.getString("shared.key"));
+        } finally {
+            Locale.setDefault(previous);
+        }
     }
 
     @Test
