@@ -46,6 +46,15 @@ exception: the **maven-resources-plugin `<encoding>` stays `ISO-8859-1`** — re
 multi-byte encoding throws `MalformedInputException` on binary bytes. Don't "helpfully"
 flip it to UTF-8.
 
+**i18n keys.** UI strings live in `RouteConverter_<lang>.properties`; there is **no**
+no-suffix base bundle. `CombinedResourceBundle` loads English (`_en`) as a fallback
+first, so a key missing in the active locale degrades to English instead of throwing
+`MissingResourceException`. Practical rule: **add every new UI key to both `_en` and
+`_de`** (German is the maintainer's co-primary locale) — `ResourceBundleTest.everyEnglishKeyIsTranslatedInGerman`
+fails the build on an `_en` key with no `_de` translation. Other locales may lag and
+fall back to English. (History: keys added to `_en` only once crashed the German Save As
+dialog before the fallback existed.)
+
 ## Module layout
 
 Reactor modules are in the root `pom.xml`. Roughly:
