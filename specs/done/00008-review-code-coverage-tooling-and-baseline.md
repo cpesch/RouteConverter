@@ -1098,7 +1098,7 @@ These still exercise real file, parser, writer, round-trip, or multi-format inte
     - **39 new tests, all passing in Surefire**
     - JaCoCo gates confirmed green for `photon` (35% threshold), `kml` (8% threshold), `route-catalog` (no explicit threshold yet)
 8. **Phase 7 (June 7, 2026) ? pure-logic coverage across 7 modules:**
-    - `routing-service` ? 24 tests: `TravelMode`, `TravelRestrictions`, `RoutingResult`, `Beeline`
+    - `routing-service` ? 24 tests: `TravelMode`, `TravelRestrictions`, `RoutingResult`, `StraightLine`
     - `geocoding-service` ? 16 tests: `GeocodingResult`, `SimpleCategorizedNavigationPosition`
     - `common` ? 21 tests: `ExceptionHelper`, `TokenReplacingReader`, `FileFileFilter`
     - `common-navigation` ? 27 tests: `BoundingBox`, `LongitudeAndLatitude`
