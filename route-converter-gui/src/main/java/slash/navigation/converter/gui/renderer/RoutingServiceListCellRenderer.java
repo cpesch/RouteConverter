@@ -46,11 +46,11 @@ public class RoutingServiceListCellRenderer extends DefaultListCellRenderer {
         return label;
     }
 
-    // Decouples the displayed label from RoutingService#getName(), which is a frozen
-    // persistence id (stored as the routingService preference and as a key suffix for the
-    // per-service travel-mode/avoid preferences - see RoutingPreferencesModel). A service with
-    // a "routing-service-<name>" bundle key gets a localized label (e.g. Beeline -> "Straight
-    // line" / "Luftlinie"); every other service falls back to its raw name unchanged.
+    // Decouples the displayed label from RoutingService#getName(), which is the persisted
+    // id (stored as the routingService preference and as a key suffix for the per-service
+    // travel-mode/avoid preferences - see RoutingPreferencesModel). A service with a
+    // "routing-service-<name>" bundle key gets a localized label (e.g. StraightLine ->
+    // "Straight line" / "Luftlinie"); every other service falls back to its raw name unchanged.
     private String getLabelFor(RoutingService service) {
         String name = service.getName();
         try {

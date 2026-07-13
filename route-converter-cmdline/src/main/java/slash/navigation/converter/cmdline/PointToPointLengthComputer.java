@@ -27,7 +27,7 @@ import static slash.navigation.base.RouteCharacteristics.Track;
 /**
  * Default {@link RouteLengthComputer}: measures a position list point-to-point
  * along its recorded geometry. Track lists yield a {@code track} length; Route
- * and Waypoints lists yield a straight-line {@code beeline} length (no routing).
+ * and Waypoints lists yield a {@code straight-line} length (no routing).
  *
  * @author Christian Pesch
  */
@@ -36,7 +36,7 @@ public class PointToPointLengthComputer implements RouteLengthComputer {
         if (route.getPositionCount() < 2)
             return null;
         double meters = route.getDistance();
-        String kind = route.getCharacteristics() == Track ? "track" : "beeline";
+        String kind = route.getCharacteristics() == Track ? "track" : "straight-line";
         return new LengthResult(meters, kind);
     }
 }

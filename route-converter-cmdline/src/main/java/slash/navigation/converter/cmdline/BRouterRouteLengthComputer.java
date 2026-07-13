@@ -42,7 +42,7 @@ import static slash.navigation.common.Bearing.calculateBearing;
  * A Route list is routed in a single call over all of its coordinates, and the
  * total on-road distance is reported. If the route cannot be routed (no segment
  * coverage, routing error, timeout, missing profile) the whole list falls back
- * to the straight-line {@code beeline} length, so the label never over-promises
+ * to the {@code straight-line} length, so the label never over-promises
  * and a partially-covered route is never reported as a mix. Routing failures
  * never propagate: {@link #computeLength} never throws for a routing problem, so
  * the analyzer always emits its JSON.
@@ -61,7 +61,7 @@ public class BRouterRouteLengthComputer implements RouteLengthComputer {
     // an on-road route can never be shorter than the straight line through the
     // same points; allow 1% for rounding/projection slack before treating a
     // "routed" length as impossible and distrusting it
-    private static final double BEELINE_SANITY_EPSILON = 0.01;
+    private static final double STRAIGHT_LINE_SANITY_EPSILON = 0.01;
 
     private final RouteLengthComputer fallback = new PointToPointLengthComputer();
     private final RouteRouter routeRouter;
@@ -118,23 +118,23 @@ public class BRouterRouteLengthComputer implements RouteLengthComputer {
 
         Double routedMeters = safeRoute(longitudes, latitudes);
         if (routedMeters == null) {
-            log.info("BRouter could not route the list; falling back to beeline for this list");
+            log.info("BRouter could not route the list; falling back to straight line for this list");
             return fallback.computeLength(route);
         }
 
-        // Sanity: an on-road route cannot be shorter than the beeline through the
-        // same points. A routed length materially below the beeline signals a
-        // wrong/partial result, so distrust it and fall back to beeline.
-        double beelineMeters = beelineMeters(longitudes, latitudes);
-        if (routedMeters < beelineMeters * (1 - BEELINE_SANITY_EPSILON)) {
-            log.warning(format("BRouter routed length %.0f m is shorter than the %.0f m beeline; falling back to beeline",
-                    routedMeters, beelineMeters));
+        // Sanity: an on-road route cannot be shorter than the straight line through
+        // the same points. A routed length materially below the straight line signals
+        // a wrong/partial result, so distrust it and fall back to the straight line.
+        double straightLineMeters = straightLineMeters(longitudes, latitudes);
+        if (routedMeters < straightLineMeters * (1 - STRAIGHT_LINE_SANITY_EPSILON)) {
+            log.warning(format("BRouter routed length %.0f m is shorter than the %.0f m straight line; falling back to straight line",
+                    routedMeters, straightLineMeters));
             return fallback.computeLength(route);
         }
         return new LengthResult(routedMeters, "routed");
     }
 
-    private static double beelineMeters(double[] longitudes, double[] latitudes) {
+    private static double straightLineMeters(double[] longitudes, double[] latitudes) {
         double meters = 0;
         for (int i = 1; i < longitudes.length; i++)
             meters += calculateBearing(longitudes[i - 1], latitudes[i - 1], longitudes[i], latitudes[i]).getDistance();

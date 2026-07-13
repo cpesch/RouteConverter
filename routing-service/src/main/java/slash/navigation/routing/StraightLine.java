@@ -34,16 +34,19 @@ import static slash.navigation.routing.RoutingResult.Validity.Invalid;
 import static slash.navigation.routing.TravelRestrictions.NO_RESTRICTIONS;
 
 /**
- * A routing service that does no routing, i.e. returns beelines.
+ * A routing service that does no routing, i.e. returns straight-line distances.
  *
  * @author Christian Pesch
  */
 
-public class Beeline extends BaseRoutingService {
-    private static final TravelMode BEELINE = new TravelMode("Beeline");
+public class StraightLine extends BaseRoutingService {
+    private static final TravelMode STRAIGHT_LINE = new TravelMode("StraightLine");
 
     public String getName() {
-        return "Beeline";
+        // Stored as the routingService preference and used as a preference-key suffix
+        // (see RoutingPreferencesModel); the display label is localized in
+        // RoutingServiceListCellRenderer via the routing-service-straightline bundle key.
+        return "StraightLine";
     }
 
     public boolean isInitialized() {
@@ -55,7 +58,7 @@ public class Beeline extends BaseRoutingService {
     }
 
     public List<TravelMode> getAvailableTravelModes() {
-        return singletonList(BEELINE);
+        return singletonList(STRAIGHT_LINE);
     }
 
     public TravelRestrictions getAvailableTravelRestrictions() {
@@ -63,7 +66,7 @@ public class Beeline extends BaseRoutingService {
     }
 
     public TravelMode getPreferredTravelMode() {
-        return BEELINE;
+        return STRAIGHT_LINE;
     }
 
     public String getPath() {

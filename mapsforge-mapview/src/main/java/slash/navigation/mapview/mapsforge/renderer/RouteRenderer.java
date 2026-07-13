@@ -212,7 +212,7 @@ public class RouteRenderer {
             if (!pairWithLayer.hasCoordinates())
                 continue;
 
-            // first calculate route, then remove beeline layer then add polyline layer from routing
+            // first calculate route, then remove straight-line layer then add polyline layer from routing
             Layer layer = pairWithLayer.getLayer();
             IntermediateRoute intermediateRoute = calculateRoute(routingService, future, pairWithLayer);
 

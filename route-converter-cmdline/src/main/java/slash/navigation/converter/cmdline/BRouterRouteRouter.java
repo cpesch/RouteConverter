@@ -53,14 +53,14 @@ import static slash.navigation.common.Bearing.calculateBearing;
  * <p>
  * Routing is all-or-nothing: if the engine reports an error or finds no track
  * (no segment coverage, timeout, missing profile) the method returns {@code null}
- * and the caller falls the whole list back to a straight-line beeline length, so
+ * and the caller falls the whole list back to a straight-line length, so
  * the label never over-promises (specs/00055).
  * <p>
  * Profile choice: {@code trekking} — BRouter's general-purpose bike/foot
  * profile. Planned routes in the RouteConverter catalog are predominantly
  * cycling and hiking tours; trekking follows both roads and paths, so it yields
  * a plausible on-road length across the widest range of catalog routes. A
- * car-only profile would refuse footpaths and fail (fall back to beeline) on
+ * car-only profile would refuse footpaths and fail (fall back to straight-line) on
  * exactly those tours. The profile and its {@code lookups.dat} ship as
  * resources under {@code slash/navigation/converter/cmdline/brouter/} and are
  * extracted to a temporary directory on first use.
@@ -78,11 +78,11 @@ class BRouterRouteRouter implements RouteRouter {
     private static final String RESOURCE_PREFIX = "brouter/";
     private static final long MINIMUM_TIMEOUT = 10000L;
     // whole-route budget (was a per-leg cap): a route routed in one engine call
-    // gets a single timeout scaled with its total beeline, so raise the cap
-    // accordingly. Five minutes still bounds a hostile route so it can never
+    // gets a single timeout scaled with its total straight-line length, so raise
+    // the cap accordingly. Five minutes still bounds a hostile route so it can never
     // wedge a batch of analyze runs.
     private static final long MAXIMUM_TIMEOUT = 300000L;
-    // metres of beeline that buy one extra millisecond of routing budget,
+    // metres of straight line that buy one extra millisecond of routing budget,
     // matching slash.navigation.brouter.BRouter#getRouteBetween (bearing / 15.0)
     private static final double METERS_PER_MILLISECOND = 15.0;
 
@@ -134,10 +134,10 @@ class BRouterRouteRouter implements RouteRouter {
      * of analyze runs.
      */
     private long timeoutFor(double[] longitudes, double[] latitudes) {
-        double beelineMeters = 0;
+        double straightLineMeters = 0;
         for (int i = 1; i < longitudes.length; i++)
-            beelineMeters += calculateBearing(longitudes[i - 1], latitudes[i - 1], longitudes[i], latitudes[i]).getDistance();
-        long timeout = (long) (MINIMUM_TIMEOUT + beelineMeters / METERS_PER_MILLISECOND);
+            straightLineMeters += calculateBearing(longitudes[i - 1], latitudes[i - 1], longitudes[i], latitudes[i]).getDistance();
+        long timeout = (long) (MINIMUM_TIMEOUT + straightLineMeters / METERS_PER_MILLISECOND);
         return Math.min(timeout, MAXIMUM_TIMEOUT);
     }
 

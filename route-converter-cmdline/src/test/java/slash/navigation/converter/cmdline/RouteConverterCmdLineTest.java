@@ -31,7 +31,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Covers the {@code --brouter-segments} argument handling of
  * {@link RouteConverterCmdLine#createLengthComputer}: a dangling option and a
- * non-existent directory both degrade to the point-to-point (beeline) computer
+ * non-existent directory both degrade to the point-to-point (straight-line) computer
  * so the analyze run still emits JSON, while an existing directory selects the
  * BRouter-backed computer (specs/00055).
  */
@@ -46,7 +46,7 @@ public class RouteConverterCmdLineTest {
 
     @Test
     public void danglingBRouterSegmentsOptionUsesPointToPoint() {
-        // --brouter-segments given without a directory argument: warn and beeline
+        // --brouter-segments given without a directory argument: warn and straight-line
         RouteLengthComputer computer = RouteConverterCmdLine.createLengthComputer(
                 new String[]{"analyze", "route.gpx", "--brouter-segments"});
         assertTrue(computer.getClass().getName(), computer instanceof PointToPointLengthComputer);

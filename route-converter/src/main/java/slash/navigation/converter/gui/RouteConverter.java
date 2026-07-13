@@ -44,7 +44,7 @@ import slash.navigation.nominatim.NominatimService;
 import slash.navigation.photon.PhotonService;
 import slash.navigation.pois.mapsforge.MapsforgeMapGeocodingService;
 import slash.navigation.pois.mapsforge.MapsforgePoiGeocodingService;
-import slash.navigation.routing.Beeline;
+import slash.navigation.routing.StraightLine;
 
 import javax.swing.*;
 import java.io.File;
@@ -167,8 +167,8 @@ public class RouteConverter extends BaseRouteConverter {
     }
 
     protected void initializeRoutingServices() {
-        Beeline beeline = new Beeline();
-        getRoutingServiceFacade().addRoutingService(beeline);
+        StraightLine straightLine = new StraightLine();
+        getRoutingServiceFacade().addRoutingService(straightLine);
 
         BRouter router = new BRouter(getDownloadManager());
         getRoutingServiceFacade().addRoutingService(router);

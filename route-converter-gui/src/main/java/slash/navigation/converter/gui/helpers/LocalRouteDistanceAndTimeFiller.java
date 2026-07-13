@@ -53,7 +53,7 @@ import static slash.common.io.Files.toUrl;
  * parsing their files in a background thread - one file at a time, bounded queue,
  * rows fill progressively as results arrive.
  *
- * Length is the beeline distance between the positions, duration is taken from
+ * Length is the straight-line distance between the positions, duration is taken from
  * the timestamps of the positions.
  *
  * Per-file results are coalesced: rather than notifying the table once per parsed

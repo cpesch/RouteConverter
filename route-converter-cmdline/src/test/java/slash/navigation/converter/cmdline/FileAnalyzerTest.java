@@ -84,16 +84,16 @@ public class FileAnalyzerTest {
     }
 
     @Test
-    public void routeFileWithBRouterButNoSegmentsStillEmitsBeelineJson() throws IOException, URISyntaxException {
+    public void routeFileWithBRouterButNoSegmentsStillEmitsStraightLineJson() throws IOException, URISyntaxException {
         // wiring the BRouter computer at a non-existent segments directory must
-        // never crash the analyze run: JSON is still produced, kind is beeline
+        // never crash the analyze run: JSON is still produced, kind is straight-line
         File missing = new File(System.getProperty("java.io.tmpdir"), "no-such-brouter-segments-dir");
         FileAnalyzer brouterAnalyzer = new FileAnalyzer(new CmdLineNavigationFormatRegistry(),
                 new BRouterRouteLengthComputer(missing));
 
         File source = resource("analyze-route.gpx");
         String json = brouterAnalyzer.analyze(source);
-        assertTrue(json, json.contains("\"lengthKind\":\"beeline\""));
+        assertTrue(json, json.contains("\"lengthKind\":\"straight-line\""));
         assertTrue(json, json.contains("\"positionLists\":1"));
     }
 

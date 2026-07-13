@@ -39,10 +39,10 @@ import static org.junit.Assert.assertTrue;
 
 /**
  * Exercises {@link BRouterRouteLengthComputer} through the {@code RouteRouter}
- * seam so the routed and beeline-fallback logic are covered without real
+ * seam so the routed and straight-line-fallback logic are covered without real
  * {@code .rd5} segments (specs/00055 P2b). One case drives the production
  * {@link BRouterRouteRouter} against a non-existent segments directory to prove
- * the real path degrades to beeline rather than crashing.
+ * the real path degrades to straight-line rather than crashing.
  */
 public class BRouterRouteLengthComputerTest {
 
@@ -60,7 +60,7 @@ public class BRouterRouteLengthComputerTest {
         assertEquals(RouteCharacteristics.Route, route.getCharacteristics());
 
         // routing must be one call over all three route points, and the routed
-        // distance must be plausibly >= the straight-line beeline
+        // distance must be plausibly >= the straight-line
         int[] calls = {0};
         int[] pointCount = {0};
         double routedMeters = route.getDistance() + 5000.0;
@@ -79,19 +79,19 @@ public class BRouterRouteLengthComputerTest {
     }
 
     @Test
-    public void routeTypeFallsBackToBeelineWhenRoutingFails() throws IOException, URISyntaxException {
+    public void routeTypeFallsBackToStraightLineWhenRoutingFails() throws IOException, URISyntaxException {
         BaseRoute<?, ?> route = firstRoute("analyze-route.gpx");
 
         BRouterRouteLengthComputer.RouteRouter fake = (longitudes, latitudes) -> null;
         RouteLengthComputer computer = new BRouterRouteLengthComputer(fake);
 
         RouteLengthComputer.LengthResult result = computer.computeLength(route);
-        assertEquals("beeline", result.kind());
+        assertEquals("straight-line", result.kind());
         assertEquals(route.getDistance(), result.meters(), 0.0001);
     }
 
     @Test
-    public void routeTypeTreatsRoutingExceptionAsFailureAndFallsBackToBeeline() throws IOException, URISyntaxException {
+    public void routeTypeTreatsRoutingExceptionAsFailureAndFallsBackToStraightLine() throws IOException, URISyntaxException {
         BaseRoute<?, ?> route = firstRoute("analyze-route.gpx");
 
         BRouterRouteLengthComputer.RouteRouter throwing = (longitudes, latitudes) -> {
@@ -100,22 +100,22 @@ public class BRouterRouteLengthComputerTest {
         RouteLengthComputer computer = new BRouterRouteLengthComputer(throwing);
 
         RouteLengthComputer.LengthResult result = computer.computeLength(route);
-        assertEquals("beeline", result.kind());
+        assertEquals("straight-line", result.kind());
         assertEquals(route.getDistance(), result.meters(), 0.0001);
     }
 
     @Test
-    public void impossiblyShortRoutedLengthIsDistrustedAndFallsBackToBeeline() throws IOException, URISyntaxException {
+    public void impossiblyShortRoutedLengthIsDistrustedAndFallsBackToStraightLine() throws IOException, URISyntaxException {
         BaseRoute<?, ?> route = firstRoute("analyze-route.gpx");
 
-        // a routed length far below the beeline through the same points is
+        // a routed length far below the straight-line through the same points is
         // impossible (routing can never be shorter than the straight line), so
-        // it must be distrusted and reported as beeline
+        // it must be distrusted and reported as straight-line
         BRouterRouteLengthComputer.RouteRouter tooShort = (longitudes, latitudes) -> 1.0;
         RouteLengthComputer computer = new BRouterRouteLengthComputer(tooShort);
 
         RouteLengthComputer.LengthResult result = computer.computeLength(route);
-        assertEquals("beeline", result.kind());
+        assertEquals("straight-line", result.kind());
         assertEquals(route.getDistance(), result.meters(), 0.0001);
     }
 
@@ -135,14 +135,14 @@ public class BRouterRouteLengthComputerTest {
     }
 
     @Test
-    public void realBRouterWithoutSegmentsFallsBackToBeeline() throws IOException, URISyntaxException {
+    public void realBRouterWithoutSegmentsFallsBackToStraightLine() throws IOException, URISyntaxException {
         BaseRoute<?, ?> route = firstRoute("analyze-route.gpx");
 
         File missing = new File(System.getProperty("java.io.tmpdir"), "no-such-brouter-segments-dir");
         RouteLengthComputer computer = new BRouterRouteLengthComputer(missing);
 
         RouteLengthComputer.LengthResult result = computer.computeLength(route);
-        assertEquals("beeline", result.kind());
+        assertEquals("straight-line", result.kind());
         assertEquals(route.getDistance(), result.meters(), 0.0001);
     }
 

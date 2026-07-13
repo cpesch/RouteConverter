@@ -27,10 +27,10 @@ import slash.navigation.base.BaseRoute;
  * <p>
  * This is the extension seam for BRouter (specs/00055 P3): the default
  * {@link PointToPointLengthComputer} measures recorded geometry point-to-point
- * (track length) and reports planned Route/Waypoints lists as {@code beeline}.
+ * (track length) and reports planned Route/Waypoints lists as {@code straight-line}.
  * A future BRouter-backed implementation will route Route-type lists that fall
  * inside its rd5 segment coverage and report {@code routed} on-road distances,
- * falling back to beeline outside coverage. Nothing else in the analyzer needs
+ * falling back to straight-line outside coverage. Nothing else in the analyzer needs
  * to change: swap the {@code RouteLengthComputer} instance in
  * {@link FileAnalyzer}.
  *
@@ -46,7 +46,7 @@ public interface RouteLengthComputer {
 
     /**
      * @param meters length of the position list in metres
-     * @param kind   {@code "track"}, {@code "beeline"} or {@code "routed"}
+     * @param kind   {@code "track"}, {@code "straight-line"} or {@code "routed"}
      */
     record LengthResult(double meters, String kind) {
     }

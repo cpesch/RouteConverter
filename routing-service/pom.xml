@@ -36,7 +36,7 @@
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
                                             <!-- Ratcheted down from 0.50 → 0.10 on 2026-06-07: actual is 0.14
-                                                 (3 abstract/concrete classes + 3 interfaces; only Beeline/RoutingResult/
+                                                 (3 abstract/concrete classes + 3 interfaces; only StraightLine/RoutingResult/
                                                  TravelMode/TravelRestrictions tested). 0.10 floor prevents regression;
                                                  raise back toward 0.50 once BaseRoutingService / RoutingPreferencesModel /
                                                  SecondCounter get tests. -->

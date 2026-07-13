@@ -123,7 +123,7 @@ public class RouteConverterCmdLine {
      * {@code .rd5} segments, Route-characteristic (planned) position lists inside
      * coverage are routed on-road and reported as {@code routed}; without the
      * option, or for lists outside coverage / that fail to route, they fall back
-     * to {@code beeline} (see {@link BRouterRouteLengthComputer}). Tracks and
+     * to {@code straight-line} (see {@link BRouterRouteLengthComputer}). Tracks and
      * waypoint lists are always measured point-to-point.
      */
     private int analyze(String[] args) {
@@ -155,13 +155,13 @@ public class RouteConverterCmdLine {
      * Picks the BRouter-backed computer when {@code --brouter-segments <dir>}
      * names an existing directory, otherwise the point-to-point default. A
      * missing or non-existent directory is not fatal: everything is measured as
-     * beeline/track so the analyze run still emits JSON.
+     * straight-line/track so the analyze run still emits JSON.
      */
     static RouteLengthComputer createLengthComputer(String[] args) {
         for (int i = 2; i < args.length; i++) {
             if ("--brouter-segments".equals(args[i])) {
                 if (i == args.length - 1) {
-                    log.warning("--brouter-segments requires a directory argument; using beeline lengths");
+                    log.warning("--brouter-segments requires a directory argument; using straight-line lengths");
                     break;
                 }
                 File segments = absolutize(new File(args[i + 1]));
@@ -169,7 +169,7 @@ public class RouteConverterCmdLine {
                     log.info("Using BRouter segments from " + segments.getAbsolutePath() + " for routed lengths");
                     return new BRouterRouteLengthComputer(segments);
                 }
-                log.warning("BRouter segments directory '" + segments.getAbsolutePath() + "' does not exist; using beeline lengths");
+                log.warning("BRouter segments directory '" + segments.getAbsolutePath() + "' does not exist; using straight-line lengths");
                 break;
             }
         }

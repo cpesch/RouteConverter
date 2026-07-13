@@ -198,13 +198,13 @@ public class FileAnalyzer {
 
     /**
      * File-level length kind: report the least-certain kind present so the label
-     * never over-promises. beeline (straight-line) beats routed beats track.
+     * never over-promises. straight-line beats routed beats track.
      */
     private static String combineKind(String current, String next) {
         if (current == null)
             return next;
-        if ("beeline".equals(current) || "beeline".equals(next))
-            return "beeline";
+        if ("straight-line".equals(current) || "straight-line".equals(next))
+            return "straight-line";
         if ("routed".equals(current) || "routed".equals(next))
             return "routed";
         return "track";

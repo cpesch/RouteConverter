@@ -33,48 +33,48 @@ import static org.junit.Assert.assertTrue;
 import static slash.navigation.routing.RoutingResult.Validity.Invalid;
 import static slash.navigation.routing.TravelRestrictions.NO_RESTRICTIONS;
 
-public class BeelineTest {
+public class StraightLineTest {
 
-    private final Beeline beeline = new Beeline();
+    private final StraightLine straightLine = new StraightLine();
 
     @Test
     public void testGetName() {
-        assertEquals("Beeline", beeline.getName());
+        assertEquals("StraightLine", straightLine.getName());
     }
 
     @Test
     public void testIsInitialized() {
-        assertTrue(beeline.isInitialized());
+        assertTrue(straightLine.isInitialized());
     }
 
     @Test
     public void testIsDownload() {
-        assertFalse(beeline.isDownload());
+        assertFalse(straightLine.isDownload());
     }
 
     @Test
     public void testGetAvailableTravelModes() {
-        List<TravelMode> modes = beeline.getAvailableTravelModes();
+        List<TravelMode> modes = straightLine.getAvailableTravelModes();
         assertNotNull(modes);
         assertEquals(1, modes.size());
-        assertEquals("Beeline", modes.get(0).name());
+        assertEquals("StraightLine", modes.get(0).name());
     }
 
     @Test
     public void testGetPreferredTravelMode() {
-        assertEquals("Beeline", beeline.getPreferredTravelMode().name());
+        assertEquals("StraightLine", straightLine.getPreferredTravelMode().name());
     }
 
     @Test
     public void testGetAvailableTravelRestrictions() {
-        assertEquals(NO_RESTRICTIONS, beeline.getAvailableTravelRestrictions());
+        assertEquals(NO_RESTRICTIONS, straightLine.getAvailableTravelRestrictions());
     }
 
     @Test
     public void testGetRouteBetweenReturnsInvalidWithTwoPositions() {
         SimpleNavigationPosition from = new SimpleNavigationPosition(0.0, 0.0);
         SimpleNavigationPosition to = new SimpleNavigationPosition(1.0, 1.0);
-        RoutingResult result = Beeline.getRouteBetween(from, to);
+        RoutingResult result = StraightLine.getRouteBetween(from, to);
         assertNotNull(result);
         assertEquals(Invalid, result.validity());
         assertEquals(2, result.positions().size());
@@ -84,7 +84,7 @@ public class BeelineTest {
     public void testGetRouteBetweenDistanceIsPositive() {
         SimpleNavigationPosition from = new SimpleNavigationPosition(8.0, 47.0);
         SimpleNavigationPosition to = new SimpleNavigationPosition(9.0, 48.0);
-        RoutingResult result = Beeline.getRouteBetween(from, to);
+        RoutingResult result = StraightLine.getRouteBetween(from, to);
         assertNotNull(result.distanceAndTime());
         assertTrue("Distance should be positive", result.distanceAndTime().distance() > 0);
     }
@@ -92,22 +92,22 @@ public class BeelineTest {
     @Test
     public void testGetRouteBetweenSamePositionZeroDistance() {
         SimpleNavigationPosition pos = new SimpleNavigationPosition(10.0, 50.0);
-        RoutingResult result = Beeline.getRouteBetween(pos, pos);
+        RoutingResult result = StraightLine.getRouteBetween(pos, pos);
         assertEquals(0.0, result.distanceAndTime().distance(), 0.001);
     }
 
     @Test
     public void testGetSnapToRoadPositionReturnsNull() {
         SimpleNavigationPosition pos = new SimpleNavigationPosition(10.0, 50.0);
-        assertNull(beeline.getSnapToRoadPosition(pos));
+        assertNull(straightLine.getSnapToRoadPosition(pos));
     }
 
     @Test
     public void testInstanceMethodDelegatesToStatic() {
         SimpleNavigationPosition from = new SimpleNavigationPosition(8.0, 47.0);
         SimpleNavigationPosition to = new SimpleNavigationPosition(9.0, 48.0);
-        RoutingResult via_static = Beeline.getRouteBetween(from, to);
-        RoutingResult via_instance = beeline.getRouteBetween(from, to, beeline.getPreferredTravelMode(), NO_RESTRICTIONS);
+        RoutingResult via_static = StraightLine.getRouteBetween(from, to);
+        RoutingResult via_instance = straightLine.getRouteBetween(from, to, straightLine.getPreferredTravelMode(), NO_RESTRICTIONS);
         assertEquals(via_static.validity(), via_instance.validity());
         assertEquals(via_static.distanceAndTime().distance(), via_instance.distanceAndTime().distance(), 0.001);
     }
