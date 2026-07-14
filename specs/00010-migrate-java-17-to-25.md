@@ -1,9 +1,9 @@
 ---
 name: 00010-migrate-java-17-to-25
 status: in-flight
-phases_done: [java21-floor-in-repo]
-phases_next: [publish-hosted-jre-21, smoke-launch-bundles-21, java25-bump]
-last_touched: 2026-07-08
+phases_done: [java21-floor-in-repo, publish-hosted-jre-21]
+phases_next: [smoke-launch-bundles-21, java25-bump]
+last_touched: 2026-07-13
 ---
 
 # 00010 - Migrate the toolchain from Java 17 to Java 25 (LTS)
@@ -41,9 +41,10 @@ module is *required* at startup. Left the module list unchanged; restoring the
 total-memory telemetry field by adding `jdk.management` is a separate minor decision.
 
 **Remaining (gated CI/human, not doable locally):**
-- Republish the hosted stripped JREs at **21.0.11** via `build-mac-jre.yml` /
-  `build-windows-jre.yml` (Mac x64+aarch64, Windows x64). Until then, release/bundle
-  builds that fetch `jre-21.0.11-*-stripped.zip` will 404.
+- ~~Republish the hosted stripped JREs at **21.0.11**~~ — **done 2026-07-13**: dispatched
+  `build-mac-jre.yml` / `build-windows-jre.yml`; all three artifacts published and verified
+  HTTP 200 (`mac x64` 35.6 MB, `mac aarch64` 34.4 MB, `windows x64` 34.6 MB) at
+  `static.routeconverter.com/build/{mac,windows}/jre-21.0.11-*-stripped.zip`.
 - Smoke-launch every bundle (Mac `.app` x64+aarch64, Windows `.exe`/bundle/portable,
   Linux) with `scripts/verify-runtime.sh`; confirm `java -version` reports 21.0.11
   and no startup `NoClassDefFound`.
