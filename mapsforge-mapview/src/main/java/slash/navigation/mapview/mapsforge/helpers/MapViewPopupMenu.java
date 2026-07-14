@@ -47,9 +47,14 @@ public class MapViewPopupMenu extends MouseAdapter {
         component.addMouseListener(this);
     }
 
-    public void mousePressed(MouseEvent e) {
+    private ActionManager getActionManager() {
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         actionManager.setLocalName(MAP);
+        return actionManager;
+    }
+
+    public void mousePressed(MouseEvent e) {
+        ActionManager actionManager = getActionManager();
 
         if (e.isPopupTrigger()) {
             popupMenu.show(component, e.getX(), e.getY());
@@ -72,11 +77,9 @@ public class MapViewPopupMenu extends MouseAdapter {
     }
 
     public void mouseReleased(MouseEvent e) {
-        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
-        actionManager.setLocalName(MAP);
+        ActionManager actionManager = getActionManager();
 
         if (e.isPopupTrigger())
             popupMenu.show(component, e.getX(), e.getY());
     }
 }
-
