@@ -434,7 +434,7 @@ public class GraphHopper extends BaseRoutingService {
         Action action = Action.valueOf(downloadable.getDataSource().getAction());
         File file = action.equals(Extract) ? createDirectory(downloadable) : createFile(downloadable);
         return downloadManager.queueForDownload(getName() + " Routing Data: " + uri, url, action,
-                new FileAndChecksum(file, downloadable.getLatestChecksum()), null);
+                FileAndChecksum.forChecksums(file, downloadable.getChecksums()), null);
     }
 
     public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {

@@ -209,6 +209,44 @@ public class ValidatorTest {
         assertTrue(v.isChecksumsValid());
     }
 
+    // --- match-any-known-good-checksum (GitHub #155) ---
+
+    @Test
+    public void checksumsValidWhenActualMatchesNonLatestChecksum() throws IOException {
+        // the real file's checksum is present but is NOT the latest in the list; a decoy with a later
+        // last-modified and a wrong SHA-1 would win getLatestChecksum(). Match-any must still validate.
+        Checksum real = Checksum.createChecksum(target, true);
+        assertNotNull(real);
+        Checksum decoyLatest = new Checksum(fromMillis(target.lastModified() + 100000L), 9999L, "wrong-sha1");
+
+        FileAndChecksum fac = FileAndChecksum.forChecksums(target, Arrays.asList(decoyLatest, real));
+        Download d = new Download("desc", "http://example.com/f", Copy, fac, null);
+
+        Validator v = new Validator(d);
+        assertTrue(v.isChecksumsValid());
+    }
+
+    @Test
+    public void checksumsInvalidWhenActualMatchesNoChecksum() throws IOException {
+        Checksum wrong1 = new Checksum(null, target.length() + 1L, "wrong-sha1");
+        Checksum wrong2 = new Checksum(null, target.length() + 2L, "another-wrong-sha1");
+
+        FileAndChecksum fac = FileAndChecksum.forChecksums(target, Arrays.asList(wrong1, wrong2));
+        Download d = new Download("desc", "http://example.com/f", Copy, fac, null);
+
+        Validator v = new Validator(d);
+        assertFalse(v.isChecksumsValid());
+    }
+
+    @Test
+    public void checksumsValidWhenExpectedChecksumsListIsEmpty() throws IOException {
+        FileAndChecksum fac = FileAndChecksum.forChecksums(target, java.util.Collections.<Checksum>emptyList());
+        Download d = new Download("desc", "http://example.com/f", Copy, fac, null);
+
+        Validator v = new Validator(d);
+        assertTrue(v.isChecksumsValid());
+    }
+
     // --- expectedChecksumIsCurrentChecksum ---
 
     @Test

@@ -245,7 +245,7 @@ public class DataSourceManager {
 
         downloadManager.addOrUpdateInQueue(dataSource.getName() + ": " + downloadable.getUri(),
                 dataSource.getBaseUrl() + downloadable.getUri(), action,
-                new FileAndChecksum(target, downloadable.getLatestChecksum()),
+                FileAndChecksum.forChecksums(target, downloadable.getChecksums()),
                 asFragments(directory, downloadable.getFragments(), action.equals(Extract)));
     }
 
@@ -258,7 +258,7 @@ public class DataSourceManager {
 
         return downloadManager.queueForDownload(dataSource.getName() + ": " + downloadable.getUri(),
                 dataSource.getBaseUrl() + downloadable.getUri(), action,
-                new FileAndChecksum(target, downloadable.getLatestChecksum()),
+                FileAndChecksum.forChecksums(target, downloadable.getChecksums()),
                 asFragments(target, downloadable.getFragments(), false));
     }
 
@@ -271,7 +271,7 @@ public class DataSourceManager {
         for (Fragment<Downloadable> fragment : fragments) {
             String key = fragment.getKey();
             File target = new File(useDirectoryParent ? directory.getParentFile() : directory, key);
-            result.add(new FileAndChecksum(target, fragment.getLatestChecksum()));
+            result.add(FileAndChecksum.forChecksums(target, fragment.getChecksums()));
         }
         return result;
     }
