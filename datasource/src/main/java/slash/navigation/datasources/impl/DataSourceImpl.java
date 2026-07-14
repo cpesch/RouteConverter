@@ -128,21 +128,19 @@ public class DataSourceImpl implements DataSource {
 
     public Downloadable getDownloadableBySHA1(String sha1) {
         initialize();
-        for(Downloadable downloadable : downloadableMap.values()) {
-            Checksum checksum = downloadable.getLatestChecksum();
-            if(checksum != null && sha1.equals(checksum.getSHA1()))
-                return downloadable;
-        }
+        for(Downloadable downloadable : downloadableMap.values())
+            for(Checksum checksum : downloadable.getChecksums())
+                if(checksum != null && sha1.equals(checksum.getSHA1()))
+                    return downloadable;
         return null;
     }
 
     public Fragment<Downloadable> getFragmentBySHA1(String sha1) {
         initialize();
-        for(Fragment<Downloadable> fragment : fragmentMap.values()) {
-            Checksum checksum = fragment.getLatestChecksum();
-            if(checksum != null && sha1.equals(checksum.getSHA1()))
-                return fragment;
-        }
+        for(Fragment<Downloadable> fragment : fragmentMap.values())
+            for(Checksum checksum : fragment.getChecksums())
+                if(checksum != null && sha1.equals(checksum.getSHA1()))
+                    return fragment;
         return null;
     }
 

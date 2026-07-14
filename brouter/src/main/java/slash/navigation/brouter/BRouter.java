@@ -414,7 +414,7 @@ public class BRouter extends BaseRoutingService {
         String uri = downloadable.getUri();
         String url = getSegmentsBaseUrl() + uri;
         return downloadManager.queueForDownload(getName() + " Routing Segment: " + uri, url, Action.valueOf(getSegments().getAction()),
-                new FileAndChecksum(createSegmentFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+                FileAndChecksum.forChecksums(createSegmentFile(downloadable.getUri()), downloadable.getChecksums()), null);
     }
 
     public void downloadRoutingData(List<MapDescriptor> mapDescriptors) {
@@ -523,7 +523,7 @@ public class BRouter extends BaseRoutingService {
         String uri = downloadable.getUri();
         String url = getProfilesBaseUrl() + uri;
         downloadManager.queueForDownload(getName() + " Routing Profile: " + uri, url, Action.valueOf(getProfiles().getAction()),
-                new FileAndChecksum(createProfileFile(downloadable.getUri()), downloadable.getLatestChecksum()), null);
+                FileAndChecksum.forChecksums(createProfileFile(downloadable.getUri()), downloadable.getChecksums()), null);
     }
 
     public void downloadProfiles() {
