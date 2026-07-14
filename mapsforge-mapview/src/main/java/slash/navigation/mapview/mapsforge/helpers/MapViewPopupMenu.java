@@ -49,10 +49,10 @@ public class MapViewPopupMenu extends MouseAdapter {
     }
 
     public void mousePressed(MouseEvent e) {
-        if (isLeftMouseButton(e)) {
-            ActionManager actionManager = Application.getInstance().getContext().getActionManager();
-            actionManager.setLocalName(MAP);
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        actionManager.setLocalName(MAP);
 
+        if (isLeftMouseButton(e)) {
             boolean shiftKey = e.isShiftDown();
             boolean altKey = e.isAltDown();
             boolean ctrlKey = e.isControlDown();
@@ -70,3 +70,4 @@ public class MapViewPopupMenu extends MouseAdapter {
         }
     }
 }
+
