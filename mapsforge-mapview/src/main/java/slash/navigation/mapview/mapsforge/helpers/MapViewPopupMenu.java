@@ -29,7 +29,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static javax.swing.SwingUtilities.isLeftMouseButton;
-import static javax.swing.SwingUtilities.isRightMouseButton;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
 
 /**
@@ -49,10 +48,15 @@ public class MapViewPopupMenu extends MouseAdapter {
     }
 
     public void mousePressed(MouseEvent e) {
-        if (isLeftMouseButton(e)) {
-            ActionManager actionManager = Application.getInstance().getContext().getActionManager();
-            actionManager.setLocalName(MAP);
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        actionManager.setLocalName(MAP);
 
+        if (e.isPopupTrigger()) {
+            popupMenu.show(component, e.getX(), e.getY());
+            return;
+        }
+
+        if (isLeftMouseButton(e)) {
             boolean shiftKey = e.isShiftDown();
             boolean altKey = e.isAltDown();
             boolean ctrlKey = e.isControlDown();
@@ -64,9 +68,15 @@ public class MapViewPopupMenu extends MouseAdapter {
                 actionManager.run("new-position");
             else if (!shiftKey && altKey && ctrlKey)
                 actionManager.run("delete");
-
-        } else if (isRightMouseButton(e)) {
-            popupMenu.show(component, e.getX(), e.getY());
         }
     }
+
+    public void mouseReleased(MouseEvent e) {
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        actionManager.setLocalName(MAP);
+
+        if (e.isPopupTrigger())
+            popupMenu.show(component, e.getX(), e.getY());
+    }
 }
+
