@@ -1,9 +1,9 @@
 ---
 name: 00010-migrate-java-17-to-25
 status: in-flight
-phases_done: [java21-floor-in-repo, publish-hosted-jre-21]
-phases_next: [smoke-launch-bundles-21, java25-bump]
-last_touched: 2026-07-13
+phases_done: [java21-floor-in-repo, publish-hosted-jre-21, smoke-launch-bundles-21]
+phases_next: [java25-bump]
+last_touched: 2026-07-14
 ---
 
 # 00010 - Migrate the toolchain from Java 17 to Java 25 (LTS)
@@ -45,9 +45,15 @@ total-memory telemetry field by adding `jdk.management` is a separate minor deci
   `build-mac-jre.yml` / `build-windows-jre.yml`; all three artifacts published and verified
   HTTP 200 (`mac x64` 35.6 MB, `mac aarch64` 34.4 MB, `windows x64` 34.6 MB) at
   `static.routeconverter.com/build/{mac,windows}/jre-21.0.11-*-stripped.zip`.
-- Smoke-launch every bundle (Mac `.app` x64+aarch64, Windows `.exe`/bundle/portable,
-  Linux) with `scripts/verify-runtime.sh`; confirm `java -version` reports 21.0.11
-  and no startup `NoClassDefFound`.
+- ~~Smoke-launch every bundle with `scripts/verify-runtime.sh`~~ — **done 2026-07-14**: the
+  post-publish Prerelease run (build-linux-mac + build-windows + publish all green) built
+  every bundle against the hosted `jre-21.0.11` and passed `verify-runtime.sh`, which gates
+  all three platforms via the shared jlink module list (no `NoClassDefFound`). A literal
+  hands-on boot of the native Mac `.app` / Windows `.exe` remains the only non-CI check.
+
+**With that the Java 21 floor is complete** (knobs 2+3 in-repo, hosted JREs published,
+runtime verified). Only the 25 bump remains:
+
 - **25 is still the eventual goal** — repeat knobs 1–3 against 25 once the 21 floor
   is proven in production.
 
