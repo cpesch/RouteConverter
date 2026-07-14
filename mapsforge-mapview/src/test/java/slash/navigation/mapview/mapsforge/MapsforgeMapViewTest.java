@@ -21,27 +21,41 @@ package slash.navigation.mapview.mapsforge;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleMenu;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.converter.gui.models.ColorModel;
+import slash.navigation.converter.gui.models.PositionListsModel;
+import slash.navigation.gui.models.IntegerModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.tileserver.TileServerMapManager;
+import slash.navigation.mapview.mapsforge.renderer.NonSelectedPositionListsRenderer;
+import slash.navigation.mapview.mapsforge.updater.UpdateDecoupler;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.ListDataListener;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.awt.EventQueue.invokeAndWait;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -215,4 +229,57 @@ public class MapsforgeMapViewTest {
         field.setAccessible(true);
         return field.get(mapView);
     }
+
+    // --- non-selected position list rebuild coalescing (issue #150 / spec 00015) --------------
+    // repaintPositionListListener is the ChangeListener field that initialize() wires onto
+    // RouteColorModel, RouteLineWidthModel, TrackColorModel, TrackLineWidthModel and
+    // WaypointColorModel; driving it directly (instead of the full initialize() GUI bootstrap)
+    // still exercises the real production listener instance and its delegation to
+    // NonSelectedPositionListsRenderer.update(), whose own coalescing is unit-tested in
+    // NonSelectedPositionListsRendererTest.
+
+    private static class CountingPositionListsModel implements PositionListsModel {
+        final AtomicInteger rebuilds = new AtomicInteger();
+        public List<BaseRoute> getRoutes() { rebuilds.incrementAndGet(); return new ArrayList<>(); }
+        public BaseRoute getSelectedRoute() { return null; }
+        public void addListDataListener(ListDataListener l) { }
+        public void removeListDataListener(ListDataListener l) { }
+    }
+
+    @Test
+    public void testColorChangeCoalescesNonSelectedPositionListsRebuild() throws Exception {
+        CountingPositionListsModel positionListsModel = new CountingPositionListsModel();
+        NonSelectedPositionListsRenderer renderer = new NonSelectedPositionListsRenderer(mapView, positionListsModel,
+                mock(ColorModel.class), mock(ColorModel.class), mock(IntegerModel.class), mock(IntegerModel.class),
+                mock(GraphicFactory.class));
+        setField(mapView, "nonSelectedPositionListsRenderer", renderer);
+        setField(mapView, "updateDecoupler", mock(UpdateDecoupler.class));
+
+        ChangeListener repaintPositionListListener = (ChangeListener) getField(mapView, "repaintPositionListListener");
+
+        // simulate several route/track/waypoint color + line-width change events reaching the
+        // same listener field within one drag, as RouteColorModel/TrackLineWidthModel/... do
+        invokeAndWait(() -> {
+            for (int i = 0; i < 5; i++)
+                repaintPositionListListener.stateChanged(new ChangeEvent(this));
+        });
+
+        invokeAndWait(() -> { });   // drain the EDT so the deferred rebuild runs
+
+        assertEquals("multiple color/line-width change events must coalesce into a single non-selected rebuild",
+                1, positionListsModel.rebuilds.get());
+    }
+
+    private static void setField(Object target, String fieldName, Object value) throws Exception {
+        Field field = MapsforgeMapView.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    private static Object getField(Object target, String fieldName) throws Exception {
+        Field field = MapsforgeMapView.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(target);
+    }
 }
+
