@@ -29,7 +29,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import static javax.swing.SwingUtilities.isLeftMouseButton;
-import static javax.swing.SwingUtilities.isRightMouseButton;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
 
 /**
@@ -53,6 +52,8 @@ public class MapViewPopupMenu extends MouseAdapter {
         actionManager.setLocalName(MAP);
 
         if (isLeftMouseButton(e)) {
+            // left-button gestures always run their action, so Ctrl+click stays "new position"
+            // on every platform (on macOS Ctrl+click is also a popup trigger - ignore that here)
             boolean shiftKey = e.isShiftDown();
             boolean altKey = e.isAltDown();
             boolean ctrlKey = e.isControlDown();
@@ -64,10 +65,19 @@ public class MapViewPopupMenu extends MouseAdapter {
                 actionManager.run("new-position");
             else if (!shiftKey && altKey && ctrlKey)
                 actionManager.run("delete");
-
-        } else if (isRightMouseButton(e)) {
+        } else if (e.isPopupTrigger()) {
             popupMenu.show(component, e.getX(), e.getY());
         }
+    }
+
+    public void mouseReleased(MouseEvent e) {
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        actionManager.setLocalName(MAP);
+
+        // show the popup on release too, for platforms that fire the popup trigger there
+        // (Windows); never for a left-button gesture, keeping Ctrl+click as "new position"
+        if (!isLeftMouseButton(e) && e.isPopupTrigger())
+            popupMenu.show(component, e.getX(), e.getY());
     }
 }
 
