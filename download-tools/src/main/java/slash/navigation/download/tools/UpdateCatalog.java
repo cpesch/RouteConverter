@@ -368,11 +368,20 @@ public class UpdateCatalog extends BaseDownloadTool {
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
         setId(line.getOptionValue(ID_ARGUMENT));
-        setDataSourcesServer(line.getOptionValue(DATASOURCES_SERVER_ARGUMENT));
-        setDataSourcesUserName(line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT));
-        setDataSourcesPassword(line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT));
+        // Server and credentials may come from the environment instead of the
+        // command line, so a scheduled runner (e.g. a systemd unit) can inject
+        // them via EnvironmentFile without the password landing in the process
+        // argv / journal command line (GitHub #161).
+        setDataSourcesServer(optionOrEnv(line, DATASOURCES_SERVER_ARGUMENT, "DATASOURCES_SERVER"));
+        setDataSourcesUserName(optionOrEnv(line, DATASOURCES_USERNAME_ARGUMENT, "DATASOURCES_USERNAME"));
+        setDataSourcesPassword(optionOrEnv(line, DATASOURCES_PASSWORD_ARGUMENT, "DATASOURCES_PASSWORD"));
         mirror = new java.io.File(line.getOptionValue(MIRROR_ARGUMENT));
         update();
+    }
+
+    private static String optionOrEnv(CommandLine line, String option, String envName) {
+        String value = line.getOptionValue(option);
+        return value != null ? value : System.getenv(envName);
     }
 
     @SuppressWarnings("AccessStaticViaInstance")
