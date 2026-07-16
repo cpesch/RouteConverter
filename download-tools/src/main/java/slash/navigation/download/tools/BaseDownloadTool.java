@@ -27,6 +27,8 @@ import slash.navigation.rest.SimpleCredentials;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -45,7 +47,11 @@ public class BaseDownloadTool {
     protected static final String DATASOURCES_SERVER_ARGUMENT = "server";
     protected static final String DATASOURCES_USERNAME_ARGUMENT = "username";
     protected static final String DATASOURCES_PASSWORD_ARGUMENT = "password";
-    protected static final String DATASOURCES_PASSWORD_ENVIRONMENT_VARIABLE = "PASSWORD";
+    protected static final String DATASOURCES_PASSWORD_FILE_ARGUMENT = "password-file";
+    // Read when the CLI flags are omitted, so a systemd unit / cron job never
+    // has to put the password on the command line (visible in ps / the journal).
+    protected static final String DATASOURCES_USERNAME_ENVIRONMENT_VARIABLE = "DATASOURCES_USERNAME";
+    protected static final String DATASOURCES_PASSWORD_ENVIRONMENT_VARIABLE = "DATASOURCES_PASSWORD";
     protected static final int MAXIMUM_UPDATE_COUNT = 10;
 
     private String url, id, dataSourcesServer, dataSourcesUserName, dataSourcesPassword;
@@ -75,6 +81,8 @@ public class BaseDownloadTool {
     }
 
     public void setDataSourcesUserName(String dataSourcesUserName) {
+        if (dataSourcesUserName == null)
+            dataSourcesUserName = System.getenv(DATASOURCES_USERNAME_ENVIRONMENT_VARIABLE);
         this.dataSourcesUserName = dataSourcesUserName;
     }
 
@@ -82,6 +90,15 @@ public class BaseDownloadTool {
         if(dataSourcesPassword == null)
             dataSourcesPassword = System.getenv(DATASOURCES_PASSWORD_ENVIRONMENT_VARIABLE);
         this.dataSourcesPassword = dataSourcesPassword;
+    }
+
+    /**
+     * Reads a password from a file (e.g. a systemd credentials mount) instead of the
+     * command line, so it never appears in argv; trims a trailing newline so a plain
+     * {@code echo password > file} works.
+     */
+    protected String readDataSourcesPasswordFile(File passwordFile) throws IOException {
+        return Files.readString(passwordFile.toPath(), StandardCharsets.UTF_8).trim();
     }
 
     protected boolean hasDataSourcesServer() {
@@ -123,3 +140,4 @@ public class BaseDownloadTool {
         return ensureDirectory(new File(getSnapshotDirectory(), "datasources"));
     }
 }
+
