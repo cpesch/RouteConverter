@@ -368,20 +368,21 @@ public class UpdateCatalog extends BaseDownloadTool {
     private void run(String[] args) throws Exception {
         CommandLine line = parseCommandLine(args);
         setId(line.getOptionValue(ID_ARGUMENT));
-        // Server and credentials may come from the environment instead of the
-        // command line, so a scheduled runner (e.g. a systemd unit) can inject
-        // them via EnvironmentFile without the password landing in the process
-        // argv / journal command line (GitHub #161).
-        setDataSourcesServer(optionOrEnv(line, DATASOURCES_SERVER_ARGUMENT, "DATASOURCES_SERVER"));
-        setDataSourcesUserName(optionOrEnv(line, DATASOURCES_USERNAME_ARGUMENT, "DATASOURCES_USERNAME"));
-        setDataSourcesPassword(optionOrEnv(line, DATASOURCES_PASSWORD_ARGUMENT, "DATASOURCES_PASSWORD"));
+        // Username/password fall back to DATASOURCES_USERNAME/PASSWORD env vars in
+        // the setters (BaseDownloadTool); the password additionally supports
+        // --password-file, so a scheduled runner (e.g. a systemd unit) never puts
+        // the password on argv / in the journal command line (GitHub #161).
+        setDataSourcesServer(line.getOptionValue(DATASOURCES_SERVER_ARGUMENT));
+        setDataSourcesUserName(line.getOptionValue(DATASOURCES_USERNAME_ARGUMENT));
+
+        String passwordFile = line.getOptionValue(DATASOURCES_PASSWORD_FILE_ARGUMENT);
+        if (passwordFile != null)
+            setDataSourcesPassword(readDataSourcesPasswordFile(new java.io.File(passwordFile)));
+        else
+            setDataSourcesPassword(line.getOptionValue(DATASOURCES_PASSWORD_ARGUMENT));
+
         mirror = new java.io.File(line.getOptionValue(MIRROR_ARGUMENT));
         update();
-    }
-
-    private static String optionOrEnv(CommandLine line, String option, String envName) {
-        String value = line.getOptionValue(option);
-        return value != null ? value : System.getenv(envName);
     }
 
     @SuppressWarnings("AccessStaticViaInstance")
@@ -393,9 +394,11 @@ public class UpdateCatalog extends BaseDownloadTool {
         options.addOption(Option.builder().argName(DATASOURCES_SERVER_ARGUMENT).numberOfArgs(1).longOpt("server").
                 desc("Data sources server").get());
         options.addOption(Option.builder().argName(DATASOURCES_USERNAME_ARGUMENT).numberOfArgs(1).longOpt("username").
-                desc("Data sources server user name").get());
+                desc("Data sources server user name; falls back to the DATASOURCES_USERNAME environment variable").get());
         options.addOption(Option.builder().argName(DATASOURCES_PASSWORD_ARGUMENT).numberOfArgs(1).longOpt("password").
-                desc("Data sources server password").get());
+                desc("Data sources server password; falls back to the DATASOURCES_PASSWORD environment variable").get());
+        options.addOption(Option.builder().argName(DATASOURCES_PASSWORD_FILE_ARGUMENT).numberOfArgs(1).longOpt("password-file").
+                desc("Path to a file containing the data sources server password, so it never appears on the command line").get());
         options.addOption(Option.builder().argName(MIRROR_ARGUMENT).numberOfArgs(1).required().longOpt("mirror").
                 desc("Filesystem path to mirror resources").get());
         try {
@@ -418,3 +421,4 @@ public class UpdateCatalog extends BaseDownloadTool {
         exit(0);
     }
 }
+
