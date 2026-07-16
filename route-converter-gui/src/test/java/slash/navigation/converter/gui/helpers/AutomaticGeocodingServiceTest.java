@@ -27,12 +27,16 @@ import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.prefs.Preferences;
 
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class AutomaticGeocodingServiceTest {
     @Test
@@ -59,6 +63,51 @@ public class AutomaticGeocodingServiceTest {
             assertEquals("Mapsforge Map", results.get(1).getGeocodingServiceName());
             assertEquals("Nominatim", results.get(2).getGeocodingServiceName());
             assertEquals("GeoNames", results.get(3).getGeocodingServiceName());
+        } finally {
+            preferences.removeNode();
+        }
+    }
+
+    @Test
+    public void returnsEmptyForNoMatchesEvenWhenAServiceFails() throws Exception {
+        // issue #9: searching a place that does not exist (e.g. "mannheim hofgarten")
+        // must not raise an error just because an incidental service (here: Google)
+        // is denied/over-limit. A reachable service returning no matches is a valid
+        // empty result, not a failure.
+        Preferences preferences = Preferences.userRoot().node("/RouteConverter-test/" + getClass().getName() + "/" + UUID.randomUUID());
+        try {
+            GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
+            AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
+            facade.addGeocodingService(automatic);
+            facade.addGeocodingService(new TestGeocodingService("Nominatim", emptyList()));
+            facade.addGeocodingService(new FailingGeocodingService("Google Maps"));
+
+            List<GeocodingResult> results = automatic.getPositionsFor("mannheim hofgarten");
+
+            assertTrue(results.isEmpty());
+        } finally {
+            preferences.removeNode();
+        }
+    }
+
+    @Test
+    public void throwsWhenEveryServiceFails() throws Exception {
+        // Total failure (e.g. offline) still surfaces the error rather than
+        // masquerading as "no matches".
+        Preferences preferences = Preferences.userRoot().node("/RouteConverter-test/" + getClass().getName() + "/" + UUID.randomUUID());
+        try {
+            GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
+            AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
+            facade.addGeocodingService(automatic);
+            facade.addGeocodingService(new FailingGeocodingService("Nominatim"));
+            facade.addGeocodingService(new FailingGeocodingService("Google Maps"));
+
+            try {
+                automatic.getPositionsFor("anything");
+                fail("expected IOException when no service can complete a query");
+            } catch (IOException expected) {
+                // expected
+            }
         } finally {
             preferences.removeNode();
         }
@@ -97,6 +146,34 @@ public class AutomaticGeocodingServiceTest {
 
         public String getAddressFor(NavigationPosition position) {
             return null;
+        }
+    }
+
+    private static class FailingGeocodingService extends BaseGeocodingService {
+        private final String name;
+
+        private FailingGeocodingService(String name) {
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isDownload() {
+            return false;
+        }
+
+        public boolean isOverQueryLimit() {
+            return false;
+        }
+
+        public List<GeocodingResult> getPositionsFor(String address) throws IOException {
+            throw new IOException("service unavailable");
+        }
+
+        public String getAddressFor(NavigationPosition position) throws IOException {
+            throw new IOException("service unavailable");
         }
     }
 }
