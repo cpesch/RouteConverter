@@ -63,7 +63,7 @@ public class ExternalPrograms {
     }
 
     public static void startBrowserForTranslation(Window window) {
-        startBrowser(window, "https://hosted.weblate.org/engage/routeconverter/");
+        startBrowser(window, "https://hosted.weblate.org/engage/routeconverter2/");
     }
 
     public static void startBrowserForGoogleAPIKey(Window window) {

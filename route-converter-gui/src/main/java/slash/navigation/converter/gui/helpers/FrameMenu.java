@@ -126,6 +126,7 @@ public class FrameMenu {
         helpMenu.add(createItem("help-topics"));
         helpMenu.add(createItem("check-for-update"));
         helpMenu.add(createItem("send-error-report"));
+        helpMenu.add(createItem("show-translation"));
         if (!isMac())
             helpMenu.add(createItem("show-about"));
 
