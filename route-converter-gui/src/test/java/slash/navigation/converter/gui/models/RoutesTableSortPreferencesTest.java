@@ -21,13 +21,11 @@ package slash.navigation.converter.gui.models;
 
 import org.junit.Before;
 import org.junit.Test;
+import slash.navigation.gui.models.InMemoryPreferences;
 
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.prefs.AbstractPreferences;
 import java.util.prefs.Preferences;
 
 import static java.util.Collections.emptyList;
@@ -50,55 +48,8 @@ public class RoutesTableSortPreferencesTest {
 
     @Before
     public void setUp() {
-        node = new InMemoryPreferences(null, "");
+        node = new InMemoryPreferences();
         preferences = new RoutesTableSortPreferences(node, "routes");
-    }
-
-    /**
-     * A minimal synchronous, in-memory {@link Preferences} implementation for the test.
-     */
-    private static class InMemoryPreferences extends AbstractPreferences {
-        private final Map<String, String> values = new HashMap<>();
-        private final Map<String, InMemoryPreferences> children = new HashMap<>();
-
-        InMemoryPreferences(AbstractPreferences parent, String name) {
-            super(parent, name);
-        }
-
-        protected void putSpi(String key, String value) {
-            values.put(key, value);
-        }
-
-        protected String getSpi(String key) {
-            return values.get(key);
-        }
-
-        protected void removeSpi(String key) {
-            values.remove(key);
-        }
-
-        protected void removeNodeSpi() {
-            values.clear();
-            children.clear();
-        }
-
-        protected String[] keysSpi() {
-            return values.keySet().toArray(new String[0]);
-        }
-
-        protected String[] childrenNamesSpi() {
-            return children.keySet().toArray(new String[0]);
-        }
-
-        protected AbstractPreferences childSpi(String name) {
-            return children.computeIfAbsent(name, n -> new InMemoryPreferences(this, n));
-        }
-
-        protected void syncSpi() {
-        }
-
-        protected void flushSpi() {
-        }
     }
 
     @Test

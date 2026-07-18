@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.models;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import slash.navigation.gui.models.InMemoryPreferences;
 
 import java.io.File;
 import java.io.IOException;

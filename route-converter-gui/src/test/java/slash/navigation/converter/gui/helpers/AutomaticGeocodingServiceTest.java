@@ -26,10 +26,10 @@ import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
+import slash.navigation.gui.models.InMemoryPreferences;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.prefs.Preferences;
 
 import static org.junit.Assert.assertEquals;
@@ -37,31 +37,27 @@ import static org.junit.Assert.assertEquals;
 public class AutomaticGeocodingServiceTest {
     @Test
     public void prefersOfflineMapsforgePoiBeforeMapAndOnlineResults() throws Exception {
-        Preferences preferences = Preferences.userRoot().node("/RouteConverter-test/" + getClass().getName() + "/" + UUID.randomUUID());
-        try {
-            GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
-            AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
-            GeocodingService mapsforgePoi = new TestGeocodingService("Mapsforge POI", singletonPositions("offline-poi"));
-            GeocodingService mapsforgeMap = new TestGeocodingService("Mapsforge Map", singletonPositions("offline-map"));
-            GeocodingService nominatim = new TestGeocodingService("Nominatim", singletonPositions("online"));
-            GeocodingService geonames = new TestGeocodingService("GeoNames", singletonPositions("backup"));
+        Preferences preferences = new InMemoryPreferences();
+        GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
+        AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
+        GeocodingService mapsforgePoi = new TestGeocodingService("Mapsforge POI", singletonPositions("offline-poi"));
+        GeocodingService mapsforgeMap = new TestGeocodingService("Mapsforge Map", singletonPositions("offline-map"));
+        GeocodingService nominatim = new TestGeocodingService("Nominatim", singletonPositions("online"));
+        GeocodingService geonames = new TestGeocodingService("GeoNames", singletonPositions("backup"));
 
-            facade.addGeocodingService(automatic);
-            facade.addGeocodingService(geonames);
-            facade.addGeocodingService(nominatim);
-            facade.addGeocodingService(mapsforgeMap);
-            facade.addGeocodingService(mapsforgePoi);
+        facade.addGeocodingService(automatic);
+        facade.addGeocodingService(geonames);
+        facade.addGeocodingService(nominatim);
+        facade.addGeocodingService(mapsforgeMap);
+        facade.addGeocodingService(mapsforgePoi);
 
-            List<GeocodingResult> results = automatic.getPositionsFor("Berlin");
+        List<GeocodingResult> results = automatic.getPositionsFor("Berlin");
 
-            assertEquals(4, results.size());
-            assertEquals("Mapsforge POI", results.get(0).getGeocodingServiceName());
-            assertEquals("Mapsforge Map", results.get(1).getGeocodingServiceName());
-            assertEquals("Nominatim", results.get(2).getGeocodingServiceName());
-            assertEquals("GeoNames", results.get(3).getGeocodingServiceName());
-        } finally {
-            preferences.removeNode();
-        }
+        assertEquals(4, results.size());
+        assertEquals("Mapsforge POI", results.get(0).getGeocodingServiceName());
+        assertEquals("Mapsforge Map", results.get(1).getGeocodingServiceName());
+        assertEquals("Nominatim", results.get(2).getGeocodingServiceName());
+        assertEquals("GeoNames", results.get(3).getGeocodingServiceName());
     }
 
     private List<CategorizedNavigationPosition> singletonPositions(String description) {

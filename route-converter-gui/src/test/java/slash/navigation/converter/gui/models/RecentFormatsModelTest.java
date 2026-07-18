@@ -25,6 +25,7 @@ import org.junit.Test;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.gui.models.InMemoryPreferences;
 import slash.navigation.kml.Kml22Format;
 import slash.navigation.tcx.Tcx2Format;
 
