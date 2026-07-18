@@ -58,8 +58,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
@@ -103,7 +101,6 @@ import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.common.NumberPattern.Number_Space_Then_Description;
 import static slash.navigation.common.NumberingStrategy.Absolute_Position_Within_Position_List;
-import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
 import static slash.navigation.converter.gui.helpers.MapViewImplementation.JavaFX8;
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_In_Subdirectory;
 import static slash.navigation.converter.gui.models.LocalActionConstants.POSITIONS;
@@ -187,8 +184,6 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     private static final String ADD_AUDIO_PREFERENCE = "addAudio";
     private static final String UPLOAD_ROUTE_PREFERENCE = "uploadRoute";
 
-    private static final String SHOWED_MISSING_TRANSLATOR_PREFERENCE = "showedMissingTranslator-3.0"; // versioned preference
-
     private static final String SEND_CRASH_REPORTS_PREFERENCE = "sendCrashReports";
     private static final String ASKED_SEND_CRASH_REPORTS_PREFERENCE = "askedSendCrashReports-3.0"; // versioned preference
 
@@ -238,7 +233,6 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         checkJavaPrequisites();
         checkForGoogleMapsAPIKey();
         show();
-        checkForMissingTranslator();
         askForCrashReportConsent();
         updateChecker.implicitCheck(getFrame());
         crashReporter.offerSpooledReports();
@@ -287,30 +281,6 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
                 getTitle(), parseVersionFromManifest().getOperationSystem(), Locale.getDefault(), getJava(), getPlatform(), getMaximumMemory()));
         log.info(format("java.io.tmpdir: %s, user.home: %s, Application directory: %s, Temporary directory: %s",
                 System.getProperty("java.io.tmpdir"), System.getProperty("user.home"), getApplicationDirectory(), getTemporaryDirectory()));
-    }
-
-    private List<String> getLanguagesWithActiveTranslators() {
-        List<Locale> localesOfActiveTranslators = asList(CATALAN, CROATIA, DENMARK, GERMANY, ITALY, NEDERLANDS, PORTUGAL, SPAIN, TAMIL, US);
-        List<String> results = new ArrayList<>();
-        for (Locale locale : localesOfActiveTranslators) {
-            results.add(locale.getLanguage());
-        }
-        return results;
-    }
-
-    protected void checkForMissingTranslator() {
-        List<String> activeLanguages = getLanguagesWithActiveTranslators();
-        String language = Locale.getDefault().getLanguage();
-        if (!activeLanguages.contains(language) && !preferences.getBoolean(SHOWED_MISSING_TRANSLATOR_PREFERENCE, false)) {
-            JLabel labelTranslatorMissing = new JLabel(MessageFormat.format(getBundle().getString("translator-missing"), language));
-            labelTranslatorMissing.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent me) {
-                    startBrowserForTranslation(getFrame());
-                }
-            });
-            showMessageDialog(getFrame(), labelTranslatorMissing, getTitle(), QUESTION_MESSAGE);
-            preferences.putBoolean(SHOWED_MISSING_TRANSLATOR_PREFERENCE, true);
-        }
     }
 
     /**
@@ -1301,6 +1271,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         actionManager.register("help-topics", new HelpTopicsAction());
         actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
         actionManager.register("send-error-report", new SendErrorReportAction());
+        actionManager.register("show-translation", new ShowTranslationAction());
         actionManager.register("show-about", createAboutAction());
     }
 
