@@ -21,21 +21,18 @@
 package slash.navigation.converter.gui;
 
 import org.junit.Test;
+import slash.navigation.converter.gui.helpers.RouteConverterLocales;
 
 import java.util.*;
 import java.util.logging.Logger;
 
-import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Locale.*;
 import static org.junit.Assert.fail;
-import static slash.common.helpers.LocaleHelper.*;
 
 public class ResourceBundleTest {
     private static final Logger log = Logger.getLogger(ResourceBundleTest.class.getName());
-    private final List<Locale> LOCALES = asList(ARABIA, BRAZIL, CATALAN, CHINA, CROATIA, CZECH, DENMARK,
-            FINLAND, FRANCE, GERMANY, ITALY, JAPAN, KOREA, LATVIAN, HUNGARY, NEDERLANDS, NORWAY_BOKMAL, POLAND,
-            PORTUGAL, RUSSIA, SERBIA, SLOVAKIA, SPAIN, TAMIL, TURKEY, UKRAINE, US);
+    private final List<Locale> LOCALES = RouteConverterLocales.SUPPORTED_LOCALES;
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
             return singletonList(new Locale(locale.getLanguage()));
@@ -89,7 +86,7 @@ public class ResourceBundleTest {
     private static boolean isDefaultOnlyKey(String key) {
         return key.startsWith("locale-") || key.startsWith("map-view-") || key.endsWith("-icon") ||
                 key.endsWith("-mnemonic") || key.endsWith("-keystroke") || key.endsWith("-keystroke-mac") ||
-                key.equals("help-set") || key.equals("translator-missing") || key.startsWith("waypoint-type-") ||
+                key.equals("help-set") || key.startsWith("waypoint-type-") ||
                 key.equals("FileChooser.acceptAllFileFilterText");
     }
 
@@ -131,6 +128,56 @@ public class ResourceBundleTest {
                     log.fine("key " + key + " is not translated in " + locale);
             }
         }
+    }
+
+    /**
+     * Every locale offered in the user interface must have a translation bundle. Forward-only:
+     * bundle files without a supported locale (near-empty translations kept for the translation
+     * platform) are fine.
+     */
+    @Test
+    public void everySupportedLocaleHasBundle() {
+        // country-aware candidates (nb_NO, pt_BR) but neither root bundle nor default locale fallback
+        ResourceBundle.Control noRootControl = new ResourceBundle.Control() {
+            public List<Locale> getCandidateLocales(String baseName, Locale locale) {
+                List<Locale> result = new ArrayList<>(super.getCandidateLocales(baseName, locale));
+                result.remove(Locale.ROOT);
+                return result;
+            }
+
+            public Locale getFallbackLocale(String baseName, Locale locale) {
+                return null;
+            }
+        };
+
+        List<Locale> missing = new ArrayList<>();
+        for (Locale locale : RouteConverterLocales.SUPPORTED_LOCALES) {
+            try {
+                ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", locale, noRootControl);
+            } catch (MissingResourceException e) {
+                missing.add(locale);
+            }
+        }
+        if (!missing.isEmpty())
+            fail("no translation bundle for supported locales " + missing +
+                    " - add RouteConverter_<language>.properties or remove the locale from RouteConverterLocales.SUPPORTED_LOCALES");
+    }
+
+    /**
+     * Untranslated.properties holds developer-owned, language-independent values; the
+     * RouteConverter bundles hold translations. A key in both would make one silently
+     * shadow the other at runtime.
+     */
+    @Test
+    public void englishAndUntranslatedAreDisjoint() {
+        ResourceBundle english = ResourceBundle.getBundle("slash/navigation/converter/gui/RouteConverter", US, NO_FALLBACK_CONTROL);
+        ResourceBundle untranslated = ResourceBundle.getBundle("slash/navigation/converter/gui/Untranslated", ROOT, NO_FALLBACK_CONTROL);
+
+        Set<String> overlap = new TreeSet<>(Collections.list(english.getKeys()));
+        overlap.retainAll(Collections.list(untranslated.getKeys()));
+        if (!overlap.isEmpty())
+            fail("keys present in both RouteConverter_en.properties and Untranslated.properties: " + overlap +
+                    " - keep each key in exactly one of the two files");
     }
 
     @Test
