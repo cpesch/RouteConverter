@@ -24,6 +24,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import slash.common.io.Transfer;
+import slash.common.helpers.DateTimeParserException;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModelCallback;
@@ -37,6 +38,7 @@ import java.util.TimeZone;
 import static org.mockito.Mockito.*;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
 import static org.junit.Assert.*;
+import static slash.common.io.Transfer.formatTime;
 
 public class PositionsModelCallbackImplTest {
     private static final Locale SWEDISH = new Locale("sv", "SE");
@@ -62,6 +64,27 @@ public class PositionsModelCallbackImplTest {
     @After
     public void tearDown() {
         Locale.setDefault(originalLocale);
+    }
+
+    @Test
+    public void testTimeEditStringRoundTripForRepresentativeTimes() throws DateTimeParserException {
+        CompactCalendar reference1970 = cal(1970, 1, 1, 0, 0, 0);
+        int[][] representativeTimes = {{0, 0, 0}, {9, 0, 0}, {23, 59, 59}};
+        for (int[] hms : representativeTimes) {
+            CompactCalendar time = cal(1970, 1, 1, hms[0], hms[1], hms[2]);
+            String editString = formatTime(time);
+            Calendar parsed = Transfer.getTimeFormat(ZONE_UTC.getID()).parse(editString, reference1970);
+            assertEquals(time.getTimeInMillis(), parsed.getTimeInMillis());
+        }
+    }
+
+    @Test
+    public void testTimeEditStringIsNotCompactCalendarToString() throws DateTimeParserException {
+        CompactCalendar time = cal(1970, 1, 1, 9, 0, 0);
+        String editString = formatTime(time);
+        assertNotEquals(time.toString(), editString);
+        // must be parseable by the H:mm:ss time format, unlike CompactCalendar#toString()
+        Transfer.getTimeFormat(ZONE_UTC.getID()).parse(editString, time);
     }
 
     @Test
