@@ -12,7 +12,7 @@
 
     <properties>
         <!-- keep in sync with brouter/pom.xml: the analyze BRouter length seam reuses these -->
-        <brouter.version>1.7.8</brouter.version>
+        <brouter.version>1.7.10</brouter.version>
     </properties>
 
     <dependencies>
