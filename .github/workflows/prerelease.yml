@@ -45,8 +45,17 @@ jobs:
       # for release.yml. (rc-meta specs/00043.)
     secrets: inherit
 
+  sign-mac:
+    needs: build-linux-mac
+    uses: ./.github/workflows/_sign-mac.yml
+    with:
+      unsigned-artefact: prerelease-linux-mac
+      signed-artefact:   mac-signed-prerelease
+      retention-days:    7
+    secrets: inherit
+
   publish:
-    needs: [build-linux-mac, build-windows]
+    needs: [build-linux-mac, build-windows, sign-mac]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v8
@@ -57,6 +66,18 @@ jobs:
         run: |
           mkdir -p artefacts
           find incoming -mindepth 2 -type f -exec mv -t artefacts/ {} +
+          ls -la artefacts/
+      - name: Overlay signed Mac app zips
+        # mac-signed-prerelease is outside the prerelease-* pattern above, so it
+        # is downloaded separately and copied LAST — the signed RouteConverterMac
+        # zips deterministically replace the unsigned ones from build-linux-mac.
+        uses: actions/download-artifact@v8
+        with:
+          name: mac-signed-prerelease
+          path: mac-signed
+      - name: Apply signed Mac overlay
+        run: |
+          cp mac-signed/RouteConverterMac-*-app.zip artefacts/
           ls -la artefacts/
       - name: Configure SSH
         env:
