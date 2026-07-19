@@ -181,6 +181,19 @@ public class MapsforgeMapView extends BaseMapView {
             case DELETE -> this.overlayManager.delete(e.getFirstRow(), e.getLastRow());
         }
     };
+    private final TableModelListener availableMapsListener = e -> {
+        // The online tile-server list loads asynchronously (scanTileServers) after
+        // the first render, so at startup a persisted online map isn't resolvable
+        // yet and the displayed-map model falls back to the OpenStreetMap default.
+        // Once the list arrives, re-apply the persisted selection if it now
+        // resolves to a map that isn't the one currently on screen. Mirrors the
+        // offline re-scan re-apply in RouteConverter#scanLocalMapsAndThemes.
+        if (this.mapsToLayers.isEmpty())
+            return; // not rendered yet — the first render applies what resolves
+        LocalMap displayed = getMapManager().getDisplayedMapModel().getItem();
+        if (displayed != null && !this.mapsToLayers.containsKey(displayed))
+            handleMapAndThemeUpdate(false, false);
+    };
     private final ChangeListener shadedHillsListener = e -> {
         handleShadedHills();
         handleMapAndThemeUpdate(false, false);
@@ -463,6 +476,7 @@ public class MapsforgeMapView extends BaseMapView {
         });
 
         getMapManager().getDisplayedMapModel().addChangeListener(displayedMapListener);
+        getMapManager().getAvailableMapsModel().addTableModelListener(availableMapsListener);
         getMapManager().getAppliedThemeModel().addChangeListener(appliedThemeListener);
         getMapManager().getAppliedThemeStyleModel().addChangeListener(appliedThemeStyleListener);
         mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().addTableModelListener(appliedOverlayListener);
@@ -727,6 +741,7 @@ public class MapsforgeMapView extends BaseMapView {
 
     public void dispose() {
         getMapManager().getDisplayedMapModel().removeChangeListener(displayedMapListener);
+        getMapManager().getAvailableMapsModel().removeTableModelListener(availableMapsListener);
         getMapManager().getAppliedThemeModel().removeChangeListener(appliedThemeListener);
         getMapManager().getAppliedThemeStyleModel().removeChangeListener(appliedThemeStyleListener);
         mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().removeTableModelListener(appliedOverlayListener);
