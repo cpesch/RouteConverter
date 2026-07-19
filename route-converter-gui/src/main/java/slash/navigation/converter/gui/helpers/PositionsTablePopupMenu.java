@@ -53,6 +53,7 @@ public class PositionsTablePopupMenu extends AbstractTablePopupMenu {
         completeMenu.add(createItem("add-address"));
         completeMenu.add(createItem("add-speed"));
         completeMenu.add(createItem("add-time"));
+        completeMenu.add(createItem("add-departure-time"));
         completeMenu.add(createItem("add-number"));
         menu.add(completeMenu);
         menu.add(createItem("snap-to-road"));
