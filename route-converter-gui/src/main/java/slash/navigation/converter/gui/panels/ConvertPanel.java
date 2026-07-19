@@ -341,6 +341,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.register("add-address", new AddAddressToPositionsAction());
         actionManager.register("add-speed", new AddSpeedToPositionsAction());
         actionManager.register("add-time", new AddTimeToPositionsAction());
+        actionManager.register("add-departure-time", new AddDepartureTimeToPositionsAction());
         actionManager.register("add-number", new AddNumberToPositionsAction());
         actionManager.register("split-positionlist", new SplitPositionListAction(getPositionsView(), positionsModel, getFormatAndRoutesModel()));
         actionManager.register("import-positionlist", new ImportPositionListAction(this));
@@ -707,6 +708,7 @@ public class ConvertPanel implements PanelInTab {
         actionManager.enable("add-address", existsASelectedPosition);
         actionManager.enable("add-speed", existsASelectedPosition);
         actionManager.enable("add-time", existsASelectedPosition);
+        actionManager.enable("add-departure-time", existsMoreThanOnePosition);
         actionManager.enable("add-number", existsASelectedPosition);
         actionManager.enable("split-positionlist", existsASelectedPosition && supportsMultipleRoutes);
 
