@@ -45,6 +45,7 @@ import slash.navigation.download.Checksum;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.feedback.domain.RouteFeedback;
 import slash.navigation.gui.Application;
+import slash.navigation.gui.ApplicationContext;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.*;
 import slash.navigation.gui.models.BooleanModel;
@@ -67,12 +68,12 @@ import java.lang.reflect.Method;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.List;
+import java.util.Locale;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static com.intellij.uiDesigner.core.GridConstraints.*;
-import static java.awt.event.KeyEvent.VK_F1;
 import static java.awt.event.KeyEvent.VK_HELP;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.abs;
@@ -81,7 +82,6 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.Locale.*;
-import static javax.help.CSH.setHelpIDString;
 import static javax.swing.JOptionPane.*;
 import static slash.navigation.gui.helpers.WindowHelper.showConfirm;
 import static slash.navigation.gui.helpers.WindowHelper.showError;
@@ -1292,20 +1292,20 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     private void initializeHelp() {
-        getContext().setHelpBrokerUrl(System.getProperty("help", "https://www.routeconverter.com/javahelp.hs"));
+        ApplicationContext context = getContext();
+        context.setHelpBaseUrl(System.getProperty("help"));     // optional dev override; null resolves by locale
+        context.getHelpManager().setLocale(Locale.getDefault().getLanguage());
+        context.getHelpManager().installF1KeyListener();         // F1 -> topic of nearest named ancestor
 
-        // delay JavaHelp initialization
-        ActionListener actionListener = event -> getContext().getActionManager().run("help-topics", event);
+        ActionListener actionListener = event -> context.getActionManager().run("help-topics", event);
         frame.getRootPane().registerKeyboardAction(actionListener,
                 getKeyStroke(VK_HELP, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        frame.getRootPane().registerKeyboardAction(actionListener,
-                getKeyStroke(VK_F1, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
-        setHelpIDString(frame.getRootPane(), "home");
-        setHelpIDString(browsePanel, "browse-route-catalog");
-        setHelpIDString(convertPanel, "convert-gps-data");
-        setHelpIDString(mapPanel, "map");
-        setHelpIDString(profilePanel, "profile-graph");
+        frame.getRootPane().setName("home");
+        browsePanel.setName("browse-route-catalog");
+        convertPanel.setName("convert-gps-data");
+        mapPanel.setName("map");
+        profilePanel.setName("profile-graph");
     }
 
     public String getApiUrl() {
