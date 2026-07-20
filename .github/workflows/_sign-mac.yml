@@ -148,20 +148,21 @@ jobs:
                     --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" {}
             fi
 
-            # 1b) Mach-O dylibs EMBEDDED inside the fat jar. notarytool scans
+            # 1b) Mach-O natives EMBEDDED inside the fat jar. notarytool scans
             # inside jars; sqlite-jdbc (via mapsforge-poi/mbtiles) ships
             # org/sqlite/native/Mac/{x86_64,aarch64}/libsqlitejdbc.dylib, which
             # are unsigned Mach-O and would fail notarisation. Extract-sign-repack
-            # each in place, BEFORE the bundle is sealed. Non-Mach-O natives
+            # each in place, BEFORE the bundle is sealed. Match both macOS native
+            # extensions (.dylib and .jnilib, e.g. JNA); non-Mach-O natives
             # (Linux .so, Windows .dll) are ignored by notarisation, so skipped.
             # bash-3.2 safe (macOS default): no mapfile/associative arrays.
             find "$APP/Contents/Java" -name '*.jar' -type f -print0 \
             | while IFS= read -r -d '' JAR; do
                 JAR="$(cd "$(dirname "$JAR")" && pwd)/$(basename "$JAR")"   # absolutise for `zip -u`
-                dylibs=$(unzip -Z1 "$JAR" 2>/dev/null | grep -E '\.dylib$' || true)
-                [ -z "$dylibs" ] && continue
+                natives=$(unzip -Z1 "$JAR" 2>/dev/null | grep -E '\.(dylib|jnilib)$' || true)
+                [ -z "$natives" ] && continue
                 jtmp="$RUNNER_TEMP/jar-$arch"; rm -rf "$jtmp"; mkdir -p "$jtmp"
-                printf '%s\n' "$dylibs" | while IFS= read -r d; do
+                printf '%s\n' "$natives" | while IFS= read -r d; do
                   [ -z "$d" ] && continue
                   unzip -o -q "$JAR" "$d" -d "$jtmp"
                   codesign --force "${RUNTIME_FLAGS[@]}" \
@@ -175,6 +176,39 @@ jobs:
             codesign --force "${RUNTIME_FLAGS[@]}" \
               --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" "$APP"
             codesign --verify --deep --strict --verbose=2 "$APP"
+
+            # 3) GUARD: codesign --deep does NOT recurse into jars, so a Mach-O
+            # nested in a jar that step 1b missed (a new native dep, or a native
+            # under an unexpected extension) would sail through unsigned and only
+            # blow up at notarytool. Verify by magic (file(1)), not by trusting
+            # the sign glob. Candidate set = the native-ish extensions plus
+            # extensionless entries; the magic check then drops non-Mach-O
+            # (Linux .so = ELF, Windows .dll = PE), so this stays cheap without
+            # extracting the whole fat jar. A .fail marker carries the verdict out
+            # of the pipe subshells (bash-3.2: no shared flag across `|`). Ad-hoc
+            # signatures pass codesign --verify, so this also gates the dry-run.
+            guard="$RUNNER_TEMP/guard-$arch"; rm -rf "$guard"; mkdir -p "$guard"
+            find "$APP/Contents/Java" -name '*.jar' -type f -print0 \
+            | while IFS= read -r -d '' JAR; do
+                cands=$(unzip -Z1 "$JAR" 2>/dev/null \
+                          | grep -iE '\.(dylib|jnilib|so|dll)$|/[^/.]+$' || true)
+                [ -z "$cands" ] && continue
+                x="$guard/x"; rm -rf "$x"; mkdir -p "$x"
+                printf '%s\n' "$cands" | while IFS= read -r e; do
+                  [ -z "$e" ] && continue
+                  unzip -o -q "$JAR" "$e" -d "$x" 2>/dev/null || continue
+                  f="$x/$e"
+                  file "$f" | grep -q 'Mach-O' || continue      # skip ELF/PE/text
+                  if ! codesign --verify --strict "$f" 2>/dev/null; then
+                    echo "::error::unsigned Mach-O in $(basename "$JAR"): $e"
+                    touch "$guard/.fail"
+                  fi
+                done
+              done
+            if [ -f "$guard/.fail" ]; then
+              echo "::error::embedded Mach-O signing guard FAILED ($arch) — extend the step 1b glob"
+              exit 1
+            fi
 
             if [[ "$REAL" == "true" ]]; then
               # notarytool wants a container, not a raw .app
