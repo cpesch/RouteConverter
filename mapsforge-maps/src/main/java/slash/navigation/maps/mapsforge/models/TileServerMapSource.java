@@ -79,6 +79,13 @@ public class TileServerMapSource extends AbstractTileSource {
         this.alpha = alpha;
     }
 
+    static String appendApiKey(String url, String apiKey, boolean mapbox) {
+        if (apiKey == null)
+            return url;
+        String param = mapbox ? "access_token" : "apikey";
+        return url + (url.contains("?") ? "&" : "?") + param + "=" + apiKey;
+    }
+
     public URL getTileUrl(Tile tile) throws MalformedURLException {
         // Integer.toString() avoids points that group digits
         String url = AlephFormatter.str(tileServer.urlPattern())
@@ -88,8 +95,7 @@ public class TileServerMapSource extends AbstractTileSource {
                 .arg("tiley", Integer.toString(tile.tileY))
                 .arg("zoom", Integer.toString(tile.zoomLevel))
                 .fmt();
-        if(getApiKey() != null)
-            url += ("?apikey=" + getApiKey());
+        url = appendApiKey(url, getApiKey(), tileServer.copyright().toLowerCase().contains("mapbox"));
         return URI.create(url).toURL();
     }
 }

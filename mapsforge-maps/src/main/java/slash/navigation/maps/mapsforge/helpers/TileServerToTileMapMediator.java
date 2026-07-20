@@ -38,6 +38,7 @@ import static javax.swing.event.TableModelEvent.*;
 
 public class TileServerToTileMapMediator {
     private static final String THUNDER_FOREST_API_KEY = APIKeyRegistry.getInstance().getAPIKey("thunderforest", "map");
+    private static final String MAPBOX_API_KEY = APIKeyRegistry.getInstance().getAPIKey("mapbox", "map");
     private final ItemTableModel<TileServer> sourceModel;
     private final ItemTableModel<TileDownloadMap> destinationModel;
     private TableModelListener listener;
@@ -65,7 +66,9 @@ public class TileServerToTileMapMediator {
         TileServerMapSource tileSource = new TileServerMapSource(tileServer);
         if (THUNDER_FOREST_API_KEY != null && tileServer.copyright().toLowerCase().contains("thunderforest"))
             tileSource.setApiKey(THUNDER_FOREST_API_KEY);
-        if (tileServer.copyright().toLowerCase().contains("OpenStreetMap"))
+        if (MAPBOX_API_KEY != null && tileServer.copyright().toLowerCase().contains("mapbox"))
+            tileSource.setApiKey(MAPBOX_API_KEY);
+        if (tileServer.copyright().toLowerCase().contains("openstreetmap"))
             tileSource.setReferer("https://www.routeconverter.com");
 
         return new TileDownloadMap(tileServer.id(), tileServer.description(), tileServer.active(), tileSource, tileServer.copyrightText());
