@@ -46,7 +46,6 @@ import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_DELETE;
 import static java.lang.Integer.MAX_VALUE;
-import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
@@ -144,7 +143,7 @@ public class PointOfInterestPanel implements PanelInTab {
         registerAction(buttonAddAudio, "add-audio");
         registerAction(buttonDeletePointsOfInterest, "delete-points-of-interest");
 
-        setHelpIDString(tablePointsOfInterest, "point-of-interest-list");
+        tablePointsOfInterest.setName("point-of-interest-list");
 
         handlePositionsUpdate();
         for (PositionTableColumn column : tableColumnModel.getPreparedColumns())

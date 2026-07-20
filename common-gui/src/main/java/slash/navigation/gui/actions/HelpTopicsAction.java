@@ -21,40 +21,15 @@
 package slash.navigation.gui.actions;
 
 import slash.navigation.gui.Application;
-import slash.navigation.gui.helpers.WindowHelper;
-
-import javax.help.*;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.net.MalformedURLException;
-
-import static java.awt.event.KeyEvent.VK_ESCAPE;
-import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
-import static javax.swing.KeyStroke.getKeyStroke;
 
 /**
- * Open the {@link HelpSet help}.
+ * Open the web-based help table of contents (specs/00030 §11).
  *
  * @author Christian Pesch
  */
 
 public class HelpTopicsAction extends FrameAction {
-    public void run() throws HelpSetException, MalformedURLException {
-        HelpBroker broker = Application.getInstance().getContext().getHelpBroker();
-        CSH.DisplayHelpFromFocus helpFromFocus = new CSH.DisplayHelpFromFocus(broker);
-        helpFromFocus.actionPerformed(getEvent());
-        final Window window = ((DefaultHelpBroker) broker).getWindowPresentation().getHelpWindow();
-        if (window != null)
-            window.setIconImage(WindowHelper.getFrame().getIconImage());
-        if (window instanceof JFrame) {
-            JRootPane rootPane = ((JFrame) window).getRootPane();
-            rootPane.registerKeyboardAction(new ActionListener() {
-                public void actionPerformed(ActionEvent e) {
-                    window.setVisible(false);
-                }
-            }, getKeyStroke(VK_ESCAPE, 0), WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
-        }
+    public void run() {
+        Application.getInstance().getContext().getHelpManager().openContents();
     }
 }

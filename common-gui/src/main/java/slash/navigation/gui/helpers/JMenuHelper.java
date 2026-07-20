@@ -143,6 +143,7 @@ public class JMenuHelper {
         String text = component.getText();
         String toolTipText = component.getToolTipText();
         Icon icon = component.getIcon();
+        component.setName(name);    // F1 help topic-id carrier (specs/00030 §11.4), mirrors initializeItem
         component.setAction(Application.getInstance().getContext().getActionManager().get(name));
         component.setText(text);
         component.setToolTipText(toolTipText);

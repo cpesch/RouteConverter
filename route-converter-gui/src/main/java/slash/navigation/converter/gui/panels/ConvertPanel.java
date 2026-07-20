@@ -81,7 +81,6 @@ import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
@@ -371,7 +370,7 @@ public class ConvertPanel implements PanelInTab {
         buttonRenamePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/rename-route.png"));
         buttonDeletePositionList.setIcon(IconLoader.getIcon("/slash/navigation/converter/gui/16/delete-action.png"));
 
-        setHelpIDString(tablePositions, "position-list");
+        tablePositions.setName("position-list");
 
         formatAndRoutesModel.addModifiedListener(e -> actionManager.enable("save", formatAndRoutesModel.isModified() &&
                 formatAndRoutesModel.getFormat() != null &&

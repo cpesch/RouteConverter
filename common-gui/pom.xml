@@ -28,10 +28,6 @@
             <artifactId>iconloader</artifactId>
             <version>1.0.1</version>
         </dependency>
-        <dependency>
-            <groupId>javax.help</groupId>
-            <artifactId>javahelp</artifactId>
-        </dependency>
     </dependencies>
 
     <build>
