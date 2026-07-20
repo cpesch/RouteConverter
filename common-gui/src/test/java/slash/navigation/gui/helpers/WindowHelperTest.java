@@ -20,9 +20,11 @@
 
 package slash.navigation.gui.helpers;
 
+import org.junit.Assume;
 import org.junit.Test;
 
 import javax.swing.*;
+import java.awt.*;
 
 import static org.junit.Assert.*;
 import static slash.navigation.gui.helpers.WindowHelper.boundMessage;
@@ -58,6 +60,7 @@ public class WindowHelperTest {
 
     @Test
     public void boundMessageWrapsLongTextInScrollPane() {
+        Assume.assumeFalse(GraphicsEnvironment.isHeadless());
         Object bound = boundMessage("line\n".repeat(20));
         assertTrue(bound instanceof JScrollPane);
     }
