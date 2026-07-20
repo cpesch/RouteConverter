@@ -484,18 +484,23 @@ public class MapsforgeMapView extends BaseMapView {
 
     public void setBackgroundMap(File backgroundMap) {
         long length = backgroundMap.length();
+        Layer builtLayer;
         try {
             // createBackgroundLayer validates the mapsforge header via new MapFile, so a truncated
             // or wrong-content file (e.g. a stale world.map that never re-downloaded) throws here.
             // Without this guard the exception escaped silently on the EDT and the map just stayed
             // blank with nothing in the log.
-            backgroundLayer = tileLayerFactory.createBackgroundLayer(backgroundMap);
-            handleBackground();
-            log.info(format("Loaded background map %s (%d bytes)", backgroundMap, length));
+            builtLayer = tileLayerFactory.createBackgroundLayer(backgroundMap);
         } catch (Exception e) {
             backgroundLayer = null;
             log.severe(format("Cannot load background map %s (%d bytes): %s", backgroundMap, length, e));
+            return;
         }
+        // the layer is built now; a no-op inside handleBackground() (e.g. no map displayed
+        // yet) must not discard it, since nothing would rebuild it afterwards
+        backgroundLayer = builtLayer;
+        handleBackground();
+        log.info(format("Loaded background map %s (%d bytes)", backgroundMap, length));
     }
 
     public void updateMapAndThemesAfterDirectoryScanning() {
@@ -669,14 +674,14 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private void handleBackground() {
-        if (backgroundLayer == null)
-            return;
-
         Layers layers = getLayerManager().getLayers();
-        layers.remove(backgroundLayer);
+        if (backgroundLayer != null)
+            layers.remove(backgroundLayer);
 
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
-        if (map.getType().equals(Mapsforge))
+        boolean shouldAttach = BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null,
+                map != null, map != null && map.getType().equals(Mapsforge));
+        if (shouldAttach)
             layers.add(0, backgroundLayer);
     }
 
