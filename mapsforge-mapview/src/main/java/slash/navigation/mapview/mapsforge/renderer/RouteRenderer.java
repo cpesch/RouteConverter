@@ -221,11 +221,7 @@ public class RouteRenderer {
             mapView.removeLayer(layer);
             pairWithLayer.setLayer(null);
 
-            Paint routePaint = switch (intermediateRoute.quality()) {
-                case Valid -> paint;
-                case Detour -> getDetourPaint();
-                case Invalid -> getRouteNotValidPaint();
-            };
+            Paint routePaint = choosePaint(intermediateRoute.quality(), paint);
             Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.positions()), routePaint, mapView.getTileSize());
             pairWithLayer.setLayer(polyline);
             mapView.addLayer(polyline);
@@ -234,6 +230,15 @@ public class RouteRenderer {
 
     private int getRouteLineWidth() {
         return routeLineWidthModel.getInteger();
+    }
+
+    // package-private seam so tests can exercise the quality-to-paint mapping without a live map view
+    Paint choosePaint(RouteQuality quality, Paint validPaint) {
+        return switch (quality) {
+            case Valid -> validPaint;
+            case Detour -> getDetourPaint();
+            case Invalid -> getRouteNotValidPaint();
+        };
     }
 
     private Paint getRouteDownloadingPaint() {
