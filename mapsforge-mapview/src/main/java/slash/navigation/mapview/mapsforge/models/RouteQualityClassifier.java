@@ -30,7 +30,6 @@ import static slash.navigation.mapview.mapsforge.models.RouteQuality.Valid;
  *
  * @author Christian Pesch
  */
-
 public class RouteQualityClassifier {
     private static final double DETOUR_RATIO = 5.0;
     private static final double DETOUR_MIN_EXCESS_METERS = 1000.0;

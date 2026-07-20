@@ -24,5 +24,4 @@ package slash.navigation.mapview.mapsforge.models;
  *
  * @author Christian Pesch
  */
-
 public enum RouteQuality {Valid, Detour, Invalid}
