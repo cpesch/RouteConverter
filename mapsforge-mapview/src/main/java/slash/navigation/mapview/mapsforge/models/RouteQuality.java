@@ -19,15 +19,10 @@
 */
 package slash.navigation.mapview.mapsforge.models;
 
-import org.mapsforge.core.model.LatLong;
-import slash.navigation.common.NavigationPosition;
-
-import java.util.List;
-
 /**
- * A container for a {@link List} of {@link LatLong} and the {@link RouteQuality} of the route they present.
+ * The render quality of a routed route leg.
  *
  * @author Christian Pesch
  */
-public record IntermediateRoute(List<NavigationPosition> positions, RouteQuality quality) {
-}
+
+public enum RouteQuality {Valid, Detour, Invalid}
