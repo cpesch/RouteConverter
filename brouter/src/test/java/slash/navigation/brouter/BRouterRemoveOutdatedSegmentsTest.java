@@ -46,8 +46,10 @@ public class BRouterRemoveOutdatedSegmentsTest {
     private static final int EXPECTED_VERSION = 11;
     private static final int OUTDATED_VERSION = 10;
 
+    private static final int NEWER_VERSION = 12;
+
     private BRouter router;
-    private File directory, current, outdated;
+    private File directory, current, outdated, newer;
 
     @Before
     public void setUp() throws IOException {
@@ -56,6 +58,7 @@ public class BRouterRemoveOutdatedSegmentsTest {
         writeLookups(new File(directory, "lookups.dat"), EXPECTED_VERSION);
         current = writeSegment(new File(directory, "E0_N0.rd5"), EXPECTED_VERSION);
         outdated = writeSegment(new File(directory, "W5_N0.rd5"), OUTDATED_VERSION);
+        newer = writeSegment(new File(directory, "E5_N0.rd5"), NEWER_VERSION);
 
         DataSource profiles = mock(DataSource.class);
         when(profiles.getDirectory()).thenReturn(DIRECTORY);
@@ -79,6 +82,7 @@ public class BRouterRemoveOutdatedSegmentsTest {
     public void testRemoveOutdatedSegments() {
         assertTrue("segment with matching lookup version must be kept", current.exists());
         assertFalse("segment with outdated lookup version must be removed", outdated.exists());
+        assertTrue("segment newer than a stale lookups.dat must be kept to avoid a re-download loop", newer.exists());
     }
 
     private static void writeLookups(File file, int version) throws IOException {
