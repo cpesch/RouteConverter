@@ -109,7 +109,41 @@ public class BRouter extends BaseRoutingService {
             log.severe(format("Error while writing storage config: %s", getLocalizedMessage(e)));
         }
 
+        refreshLookupsIfStale();
         removeOutdatedSegments();
+    }
+
+    /**
+     * Blocks until a locally cached {@code lookups.dat} that no longer matches the latest expected
+     * checksum has been re-downloaded. Must run before {@link #removeOutdatedSegments()}, which reads
+     * the local file's embedded lookup version synchronously right afterwards: a stale {@code
+     * lookups.dat} would otherwise make {@code removeOutdatedSegments()} misjudge already-current
+     * segments as outdated and delete them, and the fixed-up version would only take effect after a
+     * restart. Does nothing if the file is missing (nothing to compare against yet -- handled by the
+     * regular, asynchronous {@link #downloadProfiles()} instead), the datasource has no matching entry,
+     * or no download manager is available (e.g. in hermetic tests).
+     */
+    private void refreshLookupsIfStale() {
+        if (downloadManager == null)
+            return;
+
+        File lookups = new File(getProfilesDirectory(), LOOKUPS_DAT);
+        if (!lookups.exists())
+            return;
+
+        Downloadable downloadable = getProfiles().getDownloadable(LOOKUPS_DAT);
+        if (downloadable == null)
+            return;
+
+        try {
+            Checksum actual = createChecksum(lookups, true);
+            if (actual == null || profileFileNeedsRefresh(actual.getSHA1(), actual.getContentLength(), downloadable.getChecksums())) {
+                Download download = downloadProfile(downloadable);
+                downloadManager.waitForCompletion(Collections.singletonList(download));
+            }
+        } catch (IOException e) {
+            log.warning(format("Cannot calculate checksum for profile %s: %s", lookups, getLocalizedMessage(e)));
+        }
     }
 
     /**
@@ -519,10 +553,10 @@ public class BRouter extends BaseRoutingService {
     }
 
 
-    private void downloadProfile(Downloadable downloadable) {
+    private Download downloadProfile(Downloadable downloadable) {
         String uri = downloadable.getUri();
         String url = getProfilesBaseUrl() + uri;
-        downloadManager.queueForDownload(getName() + " Routing Profile: " + uri, url, Action.valueOf(getProfiles().getAction()),
+        return downloadManager.queueForDownload(getName() + " Routing Profile: " + uri, url, Action.valueOf(getProfiles().getAction()),
                 FileAndChecksum.forChecksums(createProfileFile(downloadable.getUri()), downloadable.getChecksums()), null);
     }
 
