@@ -526,11 +526,39 @@ public class BRouter extends BaseRoutingService {
                 FileAndChecksum.forChecksums(createProfileFile(downloadable.getUri()), downloadable.getChecksums()), null);
     }
 
+    /**
+     * Returns {@code true} if a local profile file with the given actual SHA-1 and content length
+     * must be re-downloaded because it does not match the latest expected checksum (by
+     * {@link Checksum#getLastModified()}) among {@code expectedChecksums}. Returns {@code false}
+     * when {@code expectedChecksums} is null/empty (undecidable -- keep the existing file).
+     */
+    static boolean profileFileNeedsRefresh(String localSha1, Long localContentLength, List<Checksum> expectedChecksums) {
+        if (expectedChecksums == null || expectedChecksums.isEmpty())
+            return false;
+
+        Checksum latest = Checksum.getLatestChecksum(expectedChecksums);
+        if (latest == null)
+            return false;
+
+        return !Objects.equals(localSha1, latest.getSHA1()) || !Objects.equals(localContentLength, latest.getContentLength());
+    }
+
     public void downloadProfiles() {
         if (isInitialized()) {
             for (Downloadable downloadable : getProfiles().getFiles()) {
-                if (!createProfileFile(downloadable.getUri()).exists())
+                File file = createProfileFile(downloadable.getUri());
+                if (!file.exists()) {
                     downloadProfile(downloadable);
+                    continue;
+                }
+
+                try {
+                    Checksum actual = createChecksum(file, true);
+                    if (actual != null && profileFileNeedsRefresh(actual.getSHA1(), actual.getContentLength(), downloadable.getChecksums()))
+                        downloadProfile(downloadable);
+                } catch (IOException e) {
+                    log.warning(format("Cannot calculate checksum for profile %s: %s", file, getLocalizedMessage(e)));
+                }
             }
         }
     }
