@@ -20,6 +20,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.common.type.CompactCalendar;
+import slash.navigation.common.ArrivalTimeCalculator;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.NumberPattern;
@@ -489,6 +490,68 @@ public class PositionAugmenter {
         int[] rows = positionsView.getSelectedRows();
         if (rows.length > 0)
             processTimes(positionsView, positionsModel, rows, COORDINATE_PREDICATE);
+    }
+
+    private void processDepartureTimes(final JTable positionsTable,
+                                       final PositionsModel positionsModel,
+                                       final int[] rows,
+                                       final CompactCalendar[] arrivalTimes,
+                                       final OverwritePredicate predicate) {
+        executeOperation(positionsTable, positionsModel, rows, false, predicate,
+                new Operation() {
+                    public String getName() {
+                        return "DepartureTimePositionAugmenter";
+                    }
+
+                    public int getColumnIndex() {
+                        return DATE_TIME_COLUMN_INDEX;
+                    }
+
+                    public void performOnStart() {
+                    }
+
+                    public boolean run(int index, NavigationPosition position) {
+                        CompactCalendar previousTime = position.getTime();
+                        CompactCalendar nextTime = arrivalTimes[index];
+                        boolean changed = nextTime != null && !nextTime.equals(previousTime);
+                        if (changed)
+                            positionsModel.edit(index, new PositionColumnValues(DATE_TIME_COLUMN_INDEX, nextTime), false, true);
+                        return changed;
+                    }
+
+                    public String getMessagePrefix() {
+                        return "add-departure-time-";
+                    }
+                }
+        );
+    }
+
+    /**
+     * Sets a departure time and overwrites every position's time with its arrival
+     * time of day, computed from the route's cumulative routing durations. Shows
+     * {@code add-departure-time-error} and makes no change when the route has no
+     * computed travel times.
+     *
+     * @param departure the departure time for the first position of the route
+     */
+    public void addDepartureTimes(CompactCalendar departure) {
+        int rowCount = positionsModel.getRowCount();
+        if (rowCount == 0)
+            return;
+
+        int[] rows = new int[rowCount];
+        for (int i = 0; i < rowCount; i++)
+            rows[i] = i;
+
+        long[] cumulativeMillisFromStart = positionsModel.getTimesFromStart(rows);
+        if (cumulativeMillisFromStart == null || cumulativeMillisFromStart.length == 0 ||
+                cumulativeMillisFromStart[cumulativeMillisFromStart.length - 1] == 0) {
+            showError(frame, BaseRouteConverter.getBundle().getString("add-departure-time-error"), frame.getTitle());
+            return;
+        }
+
+        CompactCalendar[] arrivalTimes = ArrivalTimeCalculator.calculateArrivalTimes(departure, cumulativeMillisFromStart);
+        processDepartureTimes(positionsView, positionsModel, rows, arrivalTimes, TAUTOLOGY_PREDICATE);
     }
 
 

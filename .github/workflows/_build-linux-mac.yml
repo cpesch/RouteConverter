@@ -102,6 +102,13 @@ jobs:
           cp RouteConverterMac/target/RouteConverterMac-x64-app.zip artefacts/
           cp RouteConverterMac/target/RouteConverterMac-aarch64-app.zip artefacts/
           cp RouteConverterCmdLine/target/RouteConverterCmdLine.* artefacts/
+          # Internal ops tools consumed by the rc-meta update-catalog timer
+          # (keeps the brouter-segments checksum set current, #155/#156/#161).
+          # UpdateCatalog only *updates* a catalog that SnapshotCatalog must
+          # download locally first, so both jars ship. Not user-facing, so they
+          # are published unsigned like a plain jar.
+          cp download-tools/target/SnapshotCatalog.jar artefacts/
+          cp download-tools/target/UpdateCatalog.jar artefacts/
           cp TimeAlbumProLinux/target/TimeAlbumProLinux.* artefacts/
           cp TimeAlbumProMac/target/TimeAlbumProMac-x64-app.zip artefacts/
           cp TimeAlbumProMac/target/TimeAlbumProMac-aarch64-app.zip artefacts/

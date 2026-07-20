@@ -31,11 +31,11 @@ import java.util.prefs.AbstractPreferences;
  *
  * @author Christian Pesch
  */
-class InMemoryPreferences extends AbstractPreferences {
+public class InMemoryPreferences extends AbstractPreferences {
     private final Map<String, String> values = new ConcurrentHashMap<>();
     private final Map<String, InMemoryPreferences> children = new ConcurrentHashMap<>();
 
-    InMemoryPreferences() {
+    public InMemoryPreferences() {
         super(null, "");
     }
 

@@ -11,7 +11,7 @@
     </parent>
 
     <properties>
-        <brouter.version>1.7.8</brouter.version>
+        <brouter.version>1.7.10</brouter.version>
     </properties>
 
     <dependencies>

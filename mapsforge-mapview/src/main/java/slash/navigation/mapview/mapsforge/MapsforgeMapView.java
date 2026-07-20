@@ -181,6 +181,19 @@ public class MapsforgeMapView extends BaseMapView {
             case DELETE -> this.overlayManager.delete(e.getFirstRow(), e.getLastRow());
         }
     };
+    private final TableModelListener availableMapsListener = e -> {
+        // The online tile-server list loads asynchronously (scanTileServers) after
+        // the first render, so at startup a persisted online map isn't resolvable
+        // yet and the displayed-map model falls back to the OpenStreetMap default.
+        // Once the list arrives, re-apply the persisted selection if it now
+        // resolves to a map that isn't the one currently on screen. Mirrors the
+        // offline re-scan re-apply in RouteConverter#scanLocalMapsAndThemes.
+        if (this.mapsToLayers.isEmpty())
+            return; // not rendered yet — the first render applies what resolves
+        LocalMap displayed = getMapManager().getDisplayedMapModel().getItem();
+        if (displayed != null && !this.mapsToLayers.containsKey(displayed))
+            handleMapAndThemeUpdate(false, false);
+    };
     private final ChangeListener shadedHillsListener = e -> {
         handleShadedHills();
         handleMapAndThemeUpdate(false, false);
@@ -463,6 +476,7 @@ public class MapsforgeMapView extends BaseMapView {
         });
 
         getMapManager().getDisplayedMapModel().addChangeListener(displayedMapListener);
+        getMapManager().getAvailableMapsModel().addTableModelListener(availableMapsListener);
         getMapManager().getAppliedThemeModel().addChangeListener(appliedThemeListener);
         getMapManager().getAppliedThemeStyleModel().addChangeListener(appliedThemeStyleListener);
         mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().addTableModelListener(appliedOverlayListener);
@@ -470,18 +484,23 @@ public class MapsforgeMapView extends BaseMapView {
 
     public void setBackgroundMap(File backgroundMap) {
         long length = backgroundMap.length();
+        Layer builtLayer;
         try {
             // createBackgroundLayer validates the mapsforge header via new MapFile, so a truncated
             // or wrong-content file (e.g. a stale world.map that never re-downloaded) throws here.
             // Without this guard the exception escaped silently on the EDT and the map just stayed
             // blank with nothing in the log.
-            backgroundLayer = tileLayerFactory.createBackgroundLayer(backgroundMap);
-            handleBackground();
-            log.info(format("Loaded background map %s (%d bytes)", backgroundMap, length));
+            builtLayer = tileLayerFactory.createBackgroundLayer(backgroundMap);
         } catch (Exception e) {
             backgroundLayer = null;
             log.severe(format("Cannot load background map %s (%d bytes): %s", backgroundMap, length, e));
+            return;
         }
+        // the layer is built now; a no-op inside handleBackground() (e.g. no map displayed
+        // yet) must not discard it, since nothing would rebuild it afterwards
+        backgroundLayer = builtLayer;
+        handleBackground();
+        log.info(format("Loaded background map %s (%d bytes)", backgroundMap, length));
     }
 
     public void updateMapAndThemesAfterDirectoryScanning() {
@@ -655,14 +674,12 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private void handleBackground() {
-        if (backgroundLayer == null)
-            return;
-
         Layers layers = getLayerManager().getLayers();
-        layers.remove(backgroundLayer);
+        if (backgroundLayer != null)
+            layers.remove(backgroundLayer);
 
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
-        if (map.getType().equals(Mapsforge))
+        if (BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null, map != null))
             layers.add(0, backgroundLayer);
     }
 
@@ -727,6 +744,7 @@ public class MapsforgeMapView extends BaseMapView {
 
     public void dispose() {
         getMapManager().getDisplayedMapModel().removeChangeListener(displayedMapListener);
+        getMapManager().getAvailableMapsModel().removeTableModelListener(availableMapsListener);
         getMapManager().getAppliedThemeModel().removeChangeListener(appliedThemeListener);
         getMapManager().getAppliedThemeStyleModel().removeChangeListener(appliedThemeStyleListener);
         mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().removeTableModelListener(appliedOverlayListener);

@@ -20,7 +20,6 @@
 
 package slash.navigation.converter.gui.helpers;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.NavigationPosition;
@@ -29,13 +28,12 @@ import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
+import slash.navigation.gui.models.InMemoryPreferences;
 
 import javax.naming.ServiceUnavailableException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static org.junit.Assert.assertEquals;
@@ -46,17 +44,7 @@ public class GeocodingServiceFacadeTest {
 
     @Before
     public void setUp() {
-        preferences = Preferences.userRoot().node("/RouteConverter-test/" + getClass().getName() + "/" + UUID.randomUUID());
-    }
-
-    @After
-    public void tearDown() {
-        try {
-            preferences.removeNode();
-        } catch (BackingStoreException e) {
-            // ignore flaky java.util.prefs file-lock contention on the userRoot backing store;
-            // the node lives under a random UUID and does not affect other tests
-        }
+        preferences = new InMemoryPreferences();
     }
 
     @Test

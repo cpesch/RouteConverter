@@ -32,6 +32,8 @@ import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.mapview.mapsforge.lines.Line;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.models.IntermediateRoute;
+import slash.navigation.mapview.mapsforge.models.RouteQuality;
+import slash.navigation.mapview.mapsforge.models.RouteQualityClassifier;
 import slash.navigation.mapview.mapsforge.updater.PairWithLayer;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;
@@ -219,7 +221,12 @@ public class RouteRenderer {
             mapView.removeLayer(layer);
             pairWithLayer.setLayer(null);
 
-            Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.positions()), intermediateRoute.valid() ? paint : getRouteNotValidPaint(), mapView.getTileSize());
+            Paint routePaint = switch (intermediateRoute.quality()) {
+                case Valid -> paint;
+                case Detour -> getDetourPaint();
+                case Invalid -> getRouteNotValidPaint();
+            };
+            Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.positions()), routePaint, mapView.getTileSize());
             pairWithLayer.setLayer(polyline);
             mapView.addLayer(polyline);
         }
@@ -244,17 +251,29 @@ public class RouteRenderer {
         return paint;
     }
 
+    private Paint getDetourPaint() {
+        Paint paint = graphicFactory.createPaint();
+        paint.setColor(0xFFFFA500);
+        paint.setStrokeWidth(getRouteLineWidth());
+        return paint;
+    }
+
     private IntermediateRoute calculateRoute(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {
         List<NavigationPosition> positions = new ArrayList<>();
         positions.add(pairWithLayer.getFirst());
 
         RoutingResult result = calculateResult(routingService, future, pairWithLayer);
-        if (result.validity().equals(Valid)) {
+        boolean routable = result.validity().equals(Valid);
+        Double routedMeters = result.distanceAndTime() != null ? result.distanceAndTime().distance() : null;
+        Double straightLineMeters = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());
+        RouteQuality quality = RouteQualityClassifier.classify(routable, straightLineMeters, routedMeters);
+
+        if (!quality.equals(RouteQuality.Invalid)) {
             positions.addAll(result.positions());
             pairWithLayer.setDistanceAndTime(result.distanceAndTime());
         }
         positions.add(pairWithLayer.getSecond());
-        return new IntermediateRoute(positions, result.validity().equals(Valid));
+        return new IntermediateRoute(positions, quality);
     }
 
     private RoutingResult calculateResult(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {

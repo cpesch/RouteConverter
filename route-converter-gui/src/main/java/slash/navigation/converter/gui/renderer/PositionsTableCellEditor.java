@@ -92,12 +92,16 @@ public abstract class PositionsTableCellEditor extends AlternatingColorTableCell
         editor.removeCellEditorListener(l);
     }
 
+    protected String formatEditValue(Object value) {
+        return value == null ? "" : value.toString();
+    }
+
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         if (value instanceof NavigationPosition position) {
             Object editedValue = extractValue(position);
             return editor.getTableCellEditorComponent(table, editedValue, isSelected, row, column);
         } else
-            return editor.getTableCellEditorComponent(table, value, isSelected, row, column);
+            return editor.getTableCellEditorComponent(table, formatEditValue(value), isSelected, row, column);
     }
 
     protected abstract String extractValue(NavigationPosition position);

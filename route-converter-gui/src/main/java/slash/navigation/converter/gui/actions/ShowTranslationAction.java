@@ -17,17 +17,22 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
-package slash.navigation.mapview.mapsforge.models;
 
-import org.mapsforge.core.model.LatLong;
-import slash.navigation.common.NavigationPosition;
+package slash.navigation.converter.gui.actions;
 
-import java.util.List;
+import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.helpers.WindowHelper;
+
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForTranslation;
 
 /**
- * A container for a {@link List} of {@link LatLong} and the {@link RouteQuality} of the route they present.
+ * Opens the translation platform in the browser.
  *
  * @author Christian Pesch
  */
-public record IntermediateRoute(List<NavigationPosition> positions, RouteQuality quality) {
+
+public class ShowTranslationAction extends FrameAction {
+    public void run() {
+        startBrowserForTranslation(WindowHelper.getFrame());
+    }
 }

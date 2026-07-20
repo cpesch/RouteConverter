@@ -63,8 +63,6 @@ public class TimeAlbumPro extends RouteConverter {
         return true;
     }
 
-    protected void checkForMissingTranslator() {}
-
     protected SingletonDialogAction createAboutAction() {
         return new ShowAboutTimeAlbumProAction();
     }

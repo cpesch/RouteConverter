@@ -122,6 +122,8 @@ public class OverlayPositionsModel implements PositionsModel {
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
+        if (columnIndex == TIME_COLUMN_INDEX && getRoute().getCharacteristics().equals(Route))
+            return false;
         return delegate.isCellEditable(rowIndex, columnIndex);
     }
 

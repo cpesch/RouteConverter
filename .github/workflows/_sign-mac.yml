@@ -1,0 +1,230 @@
+name: _sign-mac
+
+# Reusable workflow: consumes the unsigned RouteConverterMac-{x64,aarch64}-app.zip
+# artefacts produced by _build-linux-mac.yml, code-signs each RouteConverter.app
+# with a Hardened Runtime on a macos-latest runner, then (creds present)
+# notarises + staples. Re-zips and uploads the signed app zips under a name that
+# does NOT match the caller's prerelease-*/release-* flatten pattern, so publish
+# overlays them explicitly (see prerelease.yml / release.yml).
+#
+# Called by:
+#   - prerelease.yml (signed-artefact: mac-signed-prerelease)
+#   - release.yml    (signed-artefact: mac-signed-release)
+#
+# CREDENTIAL GATE — the whole Apple path is conditional on the four MACOS_*
+# secrets being set:
+#   creds present -> Developer ID Application signing + notarytool + stapler
+#   creds ABSENT  -> ad-hoc signing (--sign -); notarise/staple SKIPPED
+# So this workflow runs green with NO Apple Developer subscription, and flips to
+# real signing the moment the secrets land — no YAML rewrite.
+#
+# codesign is applied inner-out: every nested Mach-O (JRE dylibs/binaries,
+# jnilibs) first, then the .app bundle last with the entitlements. --deep is
+# NEVER used to sign a notarised bundle (notarytool rejects deep-signed nested
+# code); --deep is only used to *verify*.
+#
+# See rc-meta specs (macOS signing prep).
+
+on:
+  workflow_call:
+    inputs:
+      unsigned-artefact:
+        description: 'Name of the artefact holding the unsigned Mac app zips'
+        required: true
+        type: string
+      signed-artefact:
+        description: 'Name for the uploaded signed artefact'
+        required: true
+        type: string
+      retention-days:
+        description: 'Retention in days for the signed artefact'
+        required: false
+        type: number
+        default: 7
+    secrets:
+      MACOS_CERTIFICATE_BASE64:
+        # base64 of the Developer ID Application .p12 (cert + private key)
+        required: false
+      MACOS_CERTIFICATE_PASSWORD:
+        # password used when exporting the .p12
+        required: false
+      MACOS_SIGN_IDENTITY:
+        # "Developer ID Application: Name (TEAMID)"
+        required: false
+      MACOS_NOTARY_PROFILE_B64:
+        # base64 of JSON {"appleId":"..","teamId":"..","password":"app-specific-pw"}
+        required: false
+
+jobs:
+  sign:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: ${{ inputs.unsigned-artefact }}
+          path: unsigned/
+
+      - name: Resolve signing mode
+        id: mode
+        env:
+          CERT_B64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
+        run: |
+          if [[ -n "$CERT_B64" ]]; then
+            echo "real=true"  >> "$GITHUB_OUTPUT"
+            echo "::notice::MACOS_CERTIFICATE_BASE64 present -> Developer ID signing + notarisation"
+          else
+            echo "real=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::No Apple certificate secret -> AD-HOC signing, notarisation SKIPPED"
+          fi
+
+      - name: Import Developer ID certificate
+        if: steps.mode.outputs.real == 'true'
+        env:
+          CERT_B64: ${{ secrets.MACOS_CERTIFICATE_BASE64 }}
+          CERT_PW:  ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          KEYCHAIN="$RUNNER_TEMP/rc-signing.keychain-db"
+          KC_PW=$(uuidgen)                                   # throwaway keychain password
+          echo "$CERT_B64" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security create-keychain -p "$KC_PW" "$KEYCHAIN"
+          security set-keychain-settings -lut 3600 "$KEYCHAIN"   # auto-lock guard
+          security unlock-keychain -p "$KC_PW" "$KEYCHAIN"
+          security import "$RUNNER_TEMP/cert.p12" -k "$KEYCHAIN" \
+            -P "$CERT_PW" -T /usr/bin/codesign
+          # allow codesign to use the key without an interactive prompt
+          security set-key-partition-list -S apple-tool:,apple:,codesign: \
+            -k "$KC_PW" "$KEYCHAIN" >/dev/null
+          # make the temp keychain searchable alongside login.keychain
+          security list-keychains -d user -s "$KEYCHAIN" login.keychain-db
+          rm -f "$RUNNER_TEMP/cert.p12"
+
+      - name: Sign, (notarise), staple
+        env:
+          REAL:         ${{ steps.mode.outputs.real }}
+          IDENTITY:     ${{ secrets.MACOS_SIGN_IDENTITY }}
+          NOTARY_B64:   ${{ secrets.MACOS_NOTARY_PROFILE_B64 }}
+          ENTITLEMENTS: ${{ github.workspace }}/.github/signing/entitlements.plist
+        run: |
+          set -euo pipefail
+          mkdir -p signed
+
+          if [[ "$REAL" == "true" ]]; then
+            SIGN_ID="$IDENTITY"
+            RUNTIME_FLAGS=(--options runtime --timestamp)    # Hardened Runtime + secure timestamp
+            NP="$RUNNER_TEMP/notary.json"
+            echo "$NOTARY_B64" | base64 --decode > "$NP"
+            xcrun notarytool store-credentials rc-notary \
+              --apple-id "$(jq -r .appleId  "$NP")" \
+              --team-id  "$(jq -r .teamId   "$NP")" \
+              --password "$(jq -r .password "$NP")" >/dev/null
+            rm -f "$NP"
+          else
+            SIGN_ID="-"                                      # ad-hoc
+            RUNTIME_FLAGS=(--options runtime)                # no --timestamp for ad-hoc
+          fi
+
+          for arch in x64 aarch64; do
+            zip="unsigned/RouteConverterMac-${arch}-app.zip"
+            [[ -f "$zip" ]] || { echo "::error::missing $zip in ${{ inputs.unsigned-artefact }}"; exit 1; }
+            work="$RUNNER_TEMP/$arch"; rm -rf "$work"; mkdir -p "$work"
+            ditto -x -k "$zip" "$work"
+            APP="$work/RouteConverter.app"
+            [[ -d "$APP" ]] || { echo "::error::no RouteConverter.app inside $zip"; exit 1; }
+
+            # 1) inner Mach-O: JRE dylibs, .jnilib, jspawnhelper
+            find "$APP/Contents" \
+                 \( -name '*.dylib' -o -name '*.jnilib' -o -name 'jspawnhelper' \) \
+                 -type f -print0 \
+              | xargs -0 -I{} codesign --force "${RUNTIME_FLAGS[@]}" \
+                  --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" {}
+
+            # JRE executables under Contents/bin (java, etc.)
+            if [[ -d "$APP/Contents/bin" ]]; then
+              find "$APP/Contents/bin" -type f -print0 \
+                | xargs -0 -I{} codesign --force "${RUNTIME_FLAGS[@]}" \
+                    --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" {}
+            fi
+
+            # 1b) Mach-O natives EMBEDDED inside the fat jar. notarytool scans
+            # inside jars; sqlite-jdbc (via mapsforge-poi/mbtiles) ships
+            # org/sqlite/native/Mac/{x86_64,aarch64}/libsqlitejdbc.dylib, which
+            # are unsigned Mach-O and would fail notarisation. Extract-sign-repack
+            # each in place, BEFORE the bundle is sealed. Match both macOS native
+            # extensions (.dylib and .jnilib, e.g. JNA); non-Mach-O natives
+            # (Linux .so, Windows .dll) are ignored by notarisation, so skipped.
+            # bash-3.2 safe (macOS default): no mapfile/associative arrays.
+            find "$APP/Contents/Java" -name '*.jar' -type f -print0 \
+            | while IFS= read -r -d '' JAR; do
+                JAR="$(cd "$(dirname "$JAR")" && pwd)/$(basename "$JAR")"   # absolutise for `zip -u`
+                natives=$(unzip -Z1 "$JAR" 2>/dev/null | grep -E '\.(dylib|jnilib)$' || true)
+                [ -z "$natives" ] && continue
+                jtmp="$RUNNER_TEMP/jar-$arch"; rm -rf "$jtmp"; mkdir -p "$jtmp"
+                printf '%s\n' "$natives" | while IFS= read -r d; do
+                  [ -z "$d" ] && continue
+                  unzip -o -q "$JAR" "$d" -d "$jtmp"
+                  codesign --force "${RUNTIME_FLAGS[@]}" \
+                    --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" "$jtmp/$d"
+                  ( cd "$jtmp" && zip -q "$JAR" "$d" )       # replace entry in the jar
+                  echo "signed embedded $d in $(basename "$JAR")"
+                done
+              done
+
+            # 2) the bundle LAST (covers the launcher + Info.plist seal)
+            codesign --force "${RUNTIME_FLAGS[@]}" \
+              --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" "$APP"
+            codesign --verify --deep --strict --verbose=2 "$APP"
+
+            # 3) GUARD: codesign --deep does NOT recurse into jars, so a Mach-O
+            # nested in a jar that step 1b missed (a new native dep, or a native
+            # under an unexpected extension) would sail through unsigned and only
+            # blow up at notarytool. Verify by magic (file(1)), not by trusting
+            # the sign glob. Candidate set = the native-ish extensions plus
+            # extensionless entries; the magic check then drops non-Mach-O
+            # (Linux .so = ELF, Windows .dll = PE), so this stays cheap without
+            # extracting the whole fat jar. A .fail marker carries the verdict out
+            # of the pipe subshells (bash-3.2: no shared flag across `|`). Ad-hoc
+            # signatures pass codesign --verify, so this also gates the dry-run.
+            guard="$RUNNER_TEMP/guard-$arch"; rm -rf "$guard"; mkdir -p "$guard"
+            find "$APP/Contents/Java" -name '*.jar' -type f -print0 \
+            | while IFS= read -r -d '' JAR; do
+                cands=$(unzip -Z1 "$JAR" 2>/dev/null \
+                          | grep -iE '\.(dylib|jnilib|so|dll)$|/[^/.]+$' || true)
+                [ -z "$cands" ] && continue
+                x="$guard/x"; rm -rf "$x"; mkdir -p "$x"
+                printf '%s\n' "$cands" | while IFS= read -r e; do
+                  [ -z "$e" ] && continue
+                  unzip -o -q "$JAR" "$e" -d "$x" 2>/dev/null || continue
+                  f="$x/$e"
+                  file "$f" | grep -q 'Mach-O' || continue      # skip ELF/PE/text
+                  if ! codesign --verify --strict "$f" 2>/dev/null; then
+                    echo "::error::unsigned Mach-O in $(basename "$JAR"): $e"
+                    touch "$guard/.fail"
+                  fi
+                done
+              done
+            if [ -f "$guard/.fail" ]; then
+              echo "::error::embedded Mach-O signing guard FAILED ($arch) — extend the step 1b glob"
+              exit 1
+            fi
+
+            if [[ "$REAL" == "true" ]]; then
+              # notarytool wants a container, not a raw .app
+              subm="$RUNNER_TEMP/RouteConverterMac-${arch}.zip"
+              ditto -c -k --keepParent "$APP" "$subm"
+              xcrun notarytool submit "$subm" --keychain-profile rc-notary --wait
+              xcrun stapler staple "$APP"
+              xcrun stapler validate "$APP"
+            fi
+
+            ditto -c -k --keepParent "$APP" "signed/RouteConverterMac-${arch}-app.zip"
+          done
+          ls -la signed/
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ inputs.signed-artefact }}
+          path: signed/
+          retention-days: ${{ inputs.retention-days }}

@@ -35,6 +35,7 @@ import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
+import slash.navigation.converter.gui.helpers.RouteConverterLocales;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.FixMapMode;
@@ -156,11 +157,7 @@ public class OptionsDialog extends SimpleDialog {
 
         final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
-        ComboBoxModel<Locale> localeModel = new DefaultComboBoxModel<>(new Locale[]{
-                ARABIA, BRAZIL, CATALAN, CHINA, CZECH, DENMARK, GERMANY, US, SPAIN, FRANCE, CROATIA,
-                ITALY, JAPAN, KOREA, LATVIAN, HUNGARY, NEDERLANDS, NORWAY_BOKMAL, POLAND, PORTUGAL, RUSSIA,
-                SLOVAKIA, FINLAND, SERBIA, TAMIL, TURKEY, UKRAINE, ROOT
-        });
+        ComboBoxModel<Locale> localeModel = new DefaultComboBoxModel<>(RouteConverterLocales.toChooserLocales());
         localeModel.setSelectedItem(Application.getInstance().getLocale());
         comboBoxLocale.setModel(localeModel);
         comboBoxLocale.setRenderer(new LocaleListCellRenderer());

@@ -36,16 +36,21 @@ import static java.lang.Math.min;
  */
 
 public class RecentFormatsModel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(RecentFormatsModel.class);
     private static final String RECENT_FORMATS_PREFERENCE = "recentFormats";
     private static final String RECENT_FORMAT_PREFERENCE = "recentFormat";
     private static final String MAXIMUM_RECENT_FORMAT_COUNT_PREFERENCE = "maximumRecentFormatCount";
     private static final char FIRST_CHAR = 'a';
 
     private final NavigationFormatRegistry navigationFormatRegistry;
+    private final Preferences preferences;
 
     public RecentFormatsModel(NavigationFormatRegistry navigationFormatRegistry) {
+        this(navigationFormatRegistry, Preferences.userNodeForPackage(RecentFormatsModel.class));
+    }
+
+    public RecentFormatsModel(NavigationFormatRegistry navigationFormatRegistry, Preferences preferences) {
         this.navigationFormatRegistry = navigationFormatRegistry;
+        this.preferences = preferences;
     }
 
     private int getMaximumCount() {

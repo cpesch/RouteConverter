@@ -25,6 +25,7 @@ import org.junit.Test;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.gui.models.InMemoryPreferences;
 import slash.navigation.kml.Kml22Format;
 import slash.navigation.tcx.Tcx2Format;
 
@@ -39,16 +40,19 @@ import static org.junit.Assert.assertEquals;
 
 public class RecentFormatsModelTest {
     private static final int LIMIT = 5;
+    private static final String MAXIMUM_RECENT_FORMAT_COUNT_PREFERENCE = "maximumRecentFormatCount";
+
     private final NavigationFormatRegistry registry = new NavigationFormatRegistry();
-    private final RecentFormatsModel recentFormatsModel = new RecentFormatsModel(registry);
+    private RecentFormatsModel recentFormatsModel;
 
     @Before
     public void setUp() {
-        // Pin the limit: getMaximumCount() reads the persistent "maximumRecentFormatCount"
-        // preference from the shared user store, which may hold any value from a prior app
-        // run — otherwise this test is flaky (e.g. "expected 4 but was 3" when it is < LIMIT).
-        Preferences.userNodeForPackage(RecentFormatsModel.class).putInt("maximumRecentFormatCount", LIMIT);
-        recentFormatsModel.removeAllFormats();
+        // In-memory preferences isolate the test from the shared user store: parallel
+        // surefire forks all write java.util.prefs through the same OS backing store,
+        // which can clobber unflushed changes (e.g. "expected 4 but was 3" in testLimit).
+        Preferences preferences = new InMemoryPreferences();
+        preferences.putInt(MAXIMUM_RECENT_FORMAT_COUNT_PREFERENCE, LIMIT);
+        recentFormatsModel = new RecentFormatsModel(registry, preferences);
     }
 
     @Test

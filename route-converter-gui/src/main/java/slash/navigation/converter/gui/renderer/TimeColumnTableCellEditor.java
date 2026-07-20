@@ -43,4 +43,10 @@ public class TimeColumnTableCellEditor extends GenericColumnTableCellEditor {
         } else
             label.setText("");
     }
+
+    protected String formatEditValue(Object value) {
+        if (value instanceof CompactCalendar time)
+            return formatTime(time);
+        return super.formatEditValue(value);
+    }
 }

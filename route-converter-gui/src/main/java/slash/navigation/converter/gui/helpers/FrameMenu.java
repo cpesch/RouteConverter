@@ -81,6 +81,7 @@ public class FrameMenu {
         completeMenu.add(createItem("add-address"));
         completeMenu.add(createItem("add-speed"));
         completeMenu.add(createItem("add-time"));
+        completeMenu.add(createItem("add-departure-time"));
         completeMenu.add(createItem("add-number"));
         positionMenu.add(completeMenu);
         positionMenu.add(createItem("snap-to-road"));
@@ -126,6 +127,7 @@ public class FrameMenu {
         helpMenu.add(createItem("help-topics"));
         helpMenu.add(createItem("check-for-update"));
         helpMenu.add(createItem("send-error-report"));
+        helpMenu.add(createItem("show-translation"));
         if (!isMac())
             helpMenu.add(createItem("show-about"));
 
