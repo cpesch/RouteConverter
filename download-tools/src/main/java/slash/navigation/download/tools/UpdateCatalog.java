@@ -124,6 +124,22 @@ public class UpdateCatalog extends BaseDownloadTool {
         return result.size() > MAX_CHECKSUMS_PER_FILE ? new ArrayList<>(result.subList(0, MAX_CHECKSUMS_PER_FILE)) : result;
     }
 
+    // head() never yields a SHA-1 (see below), so for downloadables this tool only ever HEADs
+    // (anything but .zip/.pbf, e.g. BRouter's nightly-rebuilt .rd5 segment tiles), a historical
+    // checksum that still carries one can never be recomputed/refreshed here. Left in place, a
+    // stale SHA-1 is authoritative in Validator.matches() and permanently fails validation for
+    // freshly rebuilt content once nothing keeps re-adding a matching no-SHA-1 entry (see GitHub
+    // #190). Drop it so validation falls back to size + last-modified + localLaterThanRemote.
+    static List<Checksum> dropSha1(List<Checksum> checksums) {
+        if (checksums == null)
+            return null;
+        List<Checksum> result = new ArrayList<>(checksums.size());
+        for (Checksum checksum : checksums)
+            result.add(checksum.getSHA1() != null ?
+                    new Checksum(checksum.getLastModified(), checksum.getContentLength(), null) : checksum);
+        return result;
+    }
+
     private void updateFile(DatasourceType datasourceType, File file) throws IOException {
         String url = datasourceType.getBaseUrl() + file.getUri();
 
@@ -138,7 +154,10 @@ public class UpdateCatalog extends BaseDownloadTool {
         }
 
         Checksum checksum = download.getFile().getActualChecksum();
-        FileType fileType = createFileType(file.getUri(), mergeChecksums(file.getChecksums(), checksum), null);
+        // only .zip/.pbf get a header-parsing GET below; every other file (e.g. .rd5) is HEAD-only
+        boolean headOnly = !file.getUri().endsWith(DOT_ZIP) && !file.getUri().endsWith(DOT_PBF);
+        List<Checksum> existingChecksums = headOnly ? dropSha1(file.getChecksums()) : file.getChecksums();
+        FileType fileType = createFileType(file.getUri(), mergeChecksums(existingChecksums, checksum), null);
         datasourceType.getFile().add(fileType);
 
         if (file.getUri().endsWith(DOT_ZIP)) {
