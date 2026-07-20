@@ -679,9 +679,7 @@ public class MapsforgeMapView extends BaseMapView {
             layers.remove(backgroundLayer);
 
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
-        boolean shouldAttach = BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null,
-                map != null, map != null && map.getType().equals(Mapsforge));
-        if (shouldAttach)
+        if (BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null, map != null))
             layers.add(0, backgroundLayer);
     }
 

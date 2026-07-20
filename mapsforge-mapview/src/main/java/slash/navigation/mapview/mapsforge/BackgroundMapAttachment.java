@@ -24,6 +24,14 @@ package slash.navigation.mapview.mapsforge;
  * base layer, independent of the order in which the async background map
  * download (Path B) and the EDT map/theme layer-stack build (Path A) run.
  *
+ * The world map is a global, low-detail base layer: it belongs underneath every
+ * displayed map regardless of type, not just Mapsforge maps. It fills the area a
+ * partial offline map (Mapsforge/MBTiles) does not cover, and it keeps the
+ * offline edition usable when its only selectable map is the online OpenStreetMap
+ * default and those tiles cannot be reached - without it the map stays gray.
+ * The background sits at layer index 0, so an opaque map on top hides it and
+ * there is no visible cost when the displayed map does render.
+ *
  * @author Christian Pesch
  */
 
@@ -34,14 +42,9 @@ public class BackgroundMapAttachment {
     /**
      * @param layerReady            whether the background layer has been built successfully
      * @param hasDisplayedMap       whether a map is currently displayed
-     * @param displayedMapIsMapsforge whether the displayed map is of type Mapsforge
      * @return true iff the world-map background layer should be attached as the base layer now
      */
-    public static boolean shouldAttachBackground(boolean layerReady, boolean hasDisplayedMap, boolean displayedMapIsMapsforge) {
-        if (!layerReady)
-            return false;
-        if (!hasDisplayedMap)
-            return false;
-        return displayedMapIsMapsforge;
+    public static boolean shouldAttachBackground(boolean layerReady, boolean hasDisplayedMap) {
+        return layerReady && hasDisplayedMap;
     }
 }

@@ -33,21 +33,20 @@ import static slash.navigation.mapview.mapsforge.BackgroundMapAttachment.shouldA
 public class BackgroundMapAttachmentTest {
     @Test
     public void doesNotAttachWhenLayerNotReady() {
-        assertFalse(shouldAttachBackground(false, true, true));
+        assertFalse(shouldAttachBackground(false, true));
     }
 
     @Test
     public void doesNotAttachWhenLayerReadyButNoDisplayedMap() {
-        assertFalse(shouldAttachBackground(true, false, false));
+        assertFalse(shouldAttachBackground(true, false));
     }
 
     @Test
-    public void doesNotAttachWhenLayerReadyAndDisplayedMapIsNotMapsforge() {
-        assertFalse(shouldAttachBackground(true, true, false));
-    }
-
-    @Test
-    public void attachesWhenLayerReadyAndDisplayedMapIsMapsforge() {
-        assertTrue(shouldAttachBackground(true, true, true));
+    public void attachesWhenLayerReadyAndAnyMapDisplayed() {
+        // the world map is a global base layer: it belongs under every displayed
+        // map type (Download/Mapsforge/MBTiles), so an offline edition whose only
+        // selectable map is the online OpenStreetMap default still shows a map
+        // instead of staying gray when those tiles cannot be reached
+        assertTrue(shouldAttachBackground(true, true));
     }
 }
