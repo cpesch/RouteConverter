@@ -105,6 +105,10 @@ public class ExternalPrograms {
         startBrowser(window, "https://www.geonames.org/login");
     }
 
+    public static void startBrowserForMapboxApiKey(Window window) {
+        startBrowser(window, "https://account.mapbox.com/access-tokens/");
+    }
+
     public static void startBrowser(Window window, String uri) {
         try {
             if (!isDesktopSupported())

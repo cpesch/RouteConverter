@@ -142,9 +142,11 @@ public class OptionsDialog extends SimpleDialog {
     private JComboBox<GeocodingService> comboBoxGeocodingService;
     private JTextField textFieldGoogleApiKey;
     private JTextField textFieldThunderforestApiKey;
+    private JTextField textFieldMapboxApiKey;
     private JTextField textFieldGeonamesUserName;
     private JLabel labelGoogleApiKey;
     private JLabel labelThunderforestApiKey;
+    private JLabel labelMapboxApiKey;
     private JLabel labelGeonamesUserName;
     private JCheckBox checkBoxSendCrashReports;
 
@@ -317,6 +319,28 @@ public class OptionsDialog extends SimpleDialog {
         textFieldThunderforestApiKey.getDocument().addDocumentListener(new DocumentListener() {
             public void insertUpdate(DocumentEvent e) {
                 APIKeyRegistry.getInstance().setAPIKeyPreference("thunderforest", trimApiKey(textFieldThunderforestApiKey.getText()));
+                restartMapView();
+            }
+
+            public void removeUpdate(DocumentEvent e) {
+                insertUpdate(e);
+            }
+
+            public void changedUpdate(DocumentEvent e) {
+                insertUpdate(e);
+            }
+        });
+
+        labelMapboxApiKey.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent me) {
+                startBrowserForMapboxApiKey(OptionsDialog.this);
+            }
+        });
+        // first setText then adding the listener to avoid #restartMapView() on initialization
+        textFieldMapboxApiKey.setText(APIKeyRegistry.getInstance().getAPIKeyPreference("mapbox"));
+        textFieldMapboxApiKey.getDocument().addDocumentListener(new DocumentListener() {
+            public void insertUpdate(DocumentEvent e) {
+                APIKeyRegistry.getInstance().setAPIKeyPreference("mapbox", trimApiKey(textFieldMapboxApiKey.getText()));
                 restartMapView();
             }
 
@@ -1136,23 +1160,28 @@ public class OptionsDialog extends SimpleDialog {
         panel33.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
         panel32.add(panel33, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel34 = new JPanel();
-        panel34.setLayout(new GridLayoutManager(5, 2, new Insets(3, 3, 3, 3), -1, -1));
+        panel34.setLayout(new GridLayoutManager(6, 2, new Insets(3, 3, 3, 3), -1, -1));
         panel26.add(panel34, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         textFieldGoogleApiKey = new JTextField();
         panel34.add(textFieldGoogleApiKey, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         textFieldThunderforestApiKey = new JTextField();
         panel34.add(textFieldThunderforestApiKey, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        textFieldMapboxApiKey = new JTextField();
+        panel34.add(textFieldMapboxApiKey, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         labelGoogleApiKey = new JLabel();
         this.$$$loadLabelText$$$(labelGoogleApiKey, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "google-maps-api-key"));
         panel34.add(labelGoogleApiKey, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelThunderforestApiKey = new JLabel();
         this.$$$loadLabelText$$$(labelThunderforestApiKey, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "thunderforest-api-key"));
         panel34.add(labelThunderforestApiKey, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelMapboxApiKey = new JLabel();
+        this.$$$loadLabelText$$$(labelMapboxApiKey, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "mapbox-api-key"));
+        panel34.add(labelMapboxApiKey, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelGeonamesUserName = new JLabel();
         this.$$$loadLabelText$$$(labelGeonamesUserName, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "geonames-user-name"));
-        panel34.add(labelGeonamesUserName, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel34.add(labelGeonamesUserName, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldGeonamesUserName = new JTextField();
-        panel34.add(textFieldGeonamesUserName, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
+        panel34.add(textFieldGeonamesUserName, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JSeparator separator12 = new JSeparator();
         panel34.add(separator12, new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JLabel label45 = new JLabel();
