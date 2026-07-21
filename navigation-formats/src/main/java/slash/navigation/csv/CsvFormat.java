@@ -31,11 +31,11 @@ import slash.navigation.common.NavigationPosition;
 
 import java.io.*;
 import java.util.*;
-import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
+import static slash.common.io.InputOutput.readAsReaderPreferringUtf8;
 import static slash.common.io.Transfer.*;
 
 /**
@@ -45,7 +45,6 @@ import static slash.common.io.Transfer.*;
  */
 
 public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
-    private static final Logger log = Logger.getLogger(CsvFormat.class.getName());
 
     public String getExtension() {
         return ".csv";
@@ -79,33 +78,10 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
     }
 
     public void read(InputStream source, ParserContext<CsvRoute> context) throws IOException {
-        // +1 since CsvDecoder is reading until the buffer is completely processed plus one to allow for #reset()
-        source.mark(source.available() + 1);
-        if(!read(source, UTF8_ENCODING, context)) {
-            source.reset();
-
-            if(!read(source, ISO_LATIN1_ENCODING, context))
+        try (Reader reader = readAsReaderPreferringUtf8(source)) {
+            if (!read(new BufferedReader(reader), context))
                 throw new IllegalArgumentException(format("Format %s cannot find positions; exiting", getName()));
         }
-    }
-
-    protected boolean read(InputStream source, String encoding, ParserContext<CsvRoute> context) throws IOException {
-        log.info(format("Reading CSV with column separator %c and encoding %s", getColumnSeparator(), encoding));
-
-        try (Reader reader = new InputStreamReader(source, encoding)) {
-            return read(new BufferedReader(reader), context);
-        }
-    }
-
-    private boolean containsGarbage(Map<String, String> map) {
-        for (String key : map.keySet()) {
-            if (isIsoLatin1ButReadWithUtf8(key))
-                return true;
-            String value = map.get(key);
-            if (isIsoLatin1ButReadWithUtf8(value))
-                return true;
-        }
-        return false;
     }
 
     protected boolean read(Reader reader, ParserContext<CsvRoute> context) throws IOException {
@@ -117,10 +93,6 @@ public abstract class CsvFormat extends BaseNavigationFormat<CsvRoute> {
             MappingIterator<LinkedHashMap<String, String>> iterator = objectReader.readValues(reader);
             while (iterator.hasNext()) {
                 LinkedHashMap<String, String> rowAsMap = iterator.next();
-                if (containsGarbage(rowAsMap)) {
-                    log.warning(format("Found garbage for format %s: %s", getName(), rowAsMap));
-                    return false;
-                }
                 CsvPosition position = new CsvPosition(transformRead(rowAsMap));
 
                 // skip positions without any reasonable data to make format less greedy
