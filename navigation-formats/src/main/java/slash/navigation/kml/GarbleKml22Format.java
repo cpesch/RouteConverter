@@ -26,8 +26,9 @@ import slash.navigation.kml.binding22.KmlType;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 
+import static slash.common.io.InputOutput.readAsReaderPreferringUtf8;
 import static slash.navigation.kml.KmlUtil.unmarshal22;
 
 /**
@@ -47,7 +48,7 @@ public class GarbleKml22Format extends Kml22Format implements GarbleNavigationFo
     }
 
     public void read(InputStream source, ParserContext<KmlRoute> context) throws IOException {
-        try (InputStreamReader reader = new InputStreamReader(source)) {
+        try (Reader reader = readAsReaderPreferringUtf8(source)) {
             KmlType kmlType = unmarshal22(reader);
             process(kmlType, context);
         }

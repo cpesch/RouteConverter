@@ -21,8 +21,13 @@
 package slash.common.io;
 
 import java.io.*;
+import java.nio.ByteBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 
+import static java.nio.charset.CodingErrorAction.REPORT;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.IOUtils.copyLarge;
 
@@ -55,5 +60,27 @@ public class InputOutput {
 
     public static String readFileToString(File file) throws IOException {
         return new String(readBytes(new FileInputStream(file)), UTF_8);
+    }
+
+    private static final Charset WINDOWS_1252 = Charset.forName("windows-1252");
+
+    /**
+     * Returns a {@link Reader} for legacy/garbled XML that carries no encoding declaration: decodes as
+     * UTF-8 when the bytes are valid UTF-8, otherwise falls back to Windows-1252 (the common legacy code
+     * page). Deterministic and independent of the platform default charset, which changed to UTF-8 in
+     * JDK 18 (JEP 400) and previously made this depend on the host locale.
+     */
+    public static Reader readAsReaderPreferringUtf8(InputStream input) throws IOException {
+        byte[] bytes = readBytes(input);
+        return new StringReader(new String(bytes, isValidUtf8(bytes) ? UTF_8 : WINDOWS_1252));
+    }
+
+    private static boolean isValidUtf8(byte[] bytes) {
+        try {
+            UTF_8.newDecoder().onMalformedInput(REPORT).onUnmappableCharacter(REPORT).decode(ByteBuffer.wrap(bytes));
+            return true;
+        } catch (CharacterCodingException e) {
+            return false;
+        }
     }
 }

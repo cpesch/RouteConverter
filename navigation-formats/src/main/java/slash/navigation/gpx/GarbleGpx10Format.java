@@ -26,8 +26,9 @@ import slash.navigation.gpx.binding10.Gpx;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 
+import static slash.common.io.InputOutput.readAsReaderPreferringUtf8;
 import static slash.navigation.gpx.GpxUtil.unmarshal10;
 
 /**
@@ -46,7 +47,7 @@ public class GarbleGpx10Format extends Gpx10Format implements GarbleNavigationFo
     }
 
     public void read(InputStream source, ParserContext<GpxRoute> context) throws IOException {
-        try (InputStreamReader reader = new InputStreamReader(source)) {
+        try (Reader reader = readAsReaderPreferringUtf8(source)) {
             Gpx gpx = unmarshal10(reader);
             process(gpx, context);
         }
