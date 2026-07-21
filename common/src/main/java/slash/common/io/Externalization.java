@@ -26,6 +26,7 @@ import java.net.URLConnection;
 import java.util.logging.Logger;
 
 import static java.lang.Long.MAX_VALUE;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Files.extractFileName;
 import static slash.common.io.InputOutput.copyAndClose;
@@ -79,8 +80,8 @@ public class Externalization {
 
         File target = getTempFile(fileName.replace(".", "_" + targetInfix + "."));
         log.info("Extracting " + fileName + " to " + target);
-        Reader reader = new TokenReplacingReader(new InputStreamReader(inputStream), tokenResolver);
-        FileWriter writer = new FileWriter(target);
+        Reader reader = new TokenReplacingReader(new InputStreamReader(inputStream, UTF_8), tokenResolver);
+        FileWriter writer = new FileWriter(target, UTF_8);
         copyAndClose(reader, writer);
         return target;
     }
