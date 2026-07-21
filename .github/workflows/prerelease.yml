@@ -24,10 +24,12 @@ jobs:
     with:
       artefact-name: prerelease-linux-mac
       retention-days: 7
-      sign: true
-      # prereleases stay on test-signing (auto, no approval gate). Production
-      # release-signing requires manual approval in the SignPath app — reserved
-      # for release.yml. (rc-meta specs/00043.)
+      sign: false
+      # Prereleases are NOT submitted to SignPath — SignPath signing is reserved
+      # for real releases (release.yml, release-signing) to conserve the OSS
+      # artifact-data-volume quota, which daily prerelease signing was draining
+      # (rc-meta specs/00043). Mac notarisation (sign-mac) is Apple Developer ID,
+      # not SignPath, so it is unaffected and still runs below.
     secrets: inherit
 
   build-windows:
@@ -39,10 +41,11 @@ jobs:
     with:
       artefact-name: prerelease-windows
       retention-days: 7
-      sign: true
-      # prereleases stay on test-signing (auto, no approval gate). Production
-      # release-signing requires manual approval in the SignPath app — reserved
-      # for release.yml. (rc-meta specs/00043.)
+      sign: false
+      # Prereleases are NOT submitted to SignPath — SignPath signing is reserved
+      # for real releases (release.yml, release-signing) to conserve the OSS
+      # artifact-data-volume quota, which daily prerelease signing was draining
+      # (rc-meta specs/00043).
     secrets: inherit
 
   sign-mac:
