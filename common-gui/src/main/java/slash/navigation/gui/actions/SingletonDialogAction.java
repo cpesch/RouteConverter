@@ -29,11 +29,16 @@ import slash.navigation.gui.SimpleDialog;
  */
 
 public abstract class SingletonDialogAction extends FrameAction {
+    private SimpleDialog dialog;
 
     protected abstract SimpleDialog createDialog();
 
     public void run() {
-        SimpleDialog dialog = createDialog();
+        if (dialog != null && dialog.isShowing()) {
+            dialog.toFront();
+            return;
+        }
+        dialog = createDialog();
         dialog.showWithPreferences();
         dialog.toFront();
         dialog.setVisible(true);
