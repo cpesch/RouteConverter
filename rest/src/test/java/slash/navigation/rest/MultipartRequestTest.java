@@ -71,4 +71,33 @@ public class MultipartRequestTest {
         assertFalse("the multipart part must not leak into a raw body request",
                 new String(actual, UTF_8).contains("ignored-multipart-part"));
     }
+
+    @Test
+    public void testAddStringEncodesUmlautsAsUtf8TextPlain() throws IOException {
+        Post request = new Post("http://localhost/");
+        request.addString("description", "Zwischenpunkt einfügen: Straße, Grüße");
+        request.prepareEntity();
+
+        byte[] payload = request.getMethod().getEntity().getContent().readAllBytes();
+        String asLatin1 = new String(payload, java.nio.charset.StandardCharsets.ISO_8859_1);
+        // the part must be text/plain with a UTF-8 charset, so servers decode umlauts correctly
+        assertTrue("part must be text/plain, was:\n" + asLatin1, asLatin1.contains("text/plain"));
+        assertTrue("part charset must be UTF-8, was:\n" + asLatin1, asLatin1.toUpperCase().contains("UTF-8"));
+        // "ü" must appear as its UTF-8 bytes (0xC3 0xBC), not a single ISO-8859-1 byte (0xFC)
+        assertTrue("umlaut must be UTF-8 encoded",
+                indexOf(payload, "ü".getBytes(UTF_8)) >= 0);
+        assertFalse("umlaut must not be ISO-8859-1 encoded",
+                indexOf(payload, "ü".getBytes(java.nio.charset.StandardCharsets.ISO_8859_1)) >= 0);
+    }
+
+    private static int indexOf(byte[] haystack, byte[] needle) {
+        outer:
+        for (int i = 0; i <= haystack.length - needle.length; i++) {
+            for (int j = 0; j < needle.length; j++)
+                if (haystack[i + j] != needle[j])
+                    continue outer;
+            return i;
+        }
+        return -1;
+    }
 }

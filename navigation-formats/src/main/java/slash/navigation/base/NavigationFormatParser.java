@@ -116,7 +116,10 @@ public class NavigationFormatParser {
                     if (firstSuccessfulFormat == null)
                         firstSuccessfulFormat = format;
                 } catch (Exception e) {
-                    log.severe(format("Error reading with %s: %s", format, e));
+                    // probing tries every candidate format in turn, so a format declining a file it does
+                    // not handle (e.g. Gpx11Format on a GPX 1.0 file, before Gpx10Format reads it) is normal
+                    // control flow, not an error - keep it at fine so it does not raise a false alarm
+                    log.fine(format("Cannot read with %s, trying next format: %s", format, e));
                 }
 
                 if (context.getRoutes().size() > routeCountBefore) {

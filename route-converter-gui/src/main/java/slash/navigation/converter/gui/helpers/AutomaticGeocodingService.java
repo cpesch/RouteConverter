@@ -61,6 +61,7 @@ public class AutomaticGeocodingService extends BaseGeocodingService {
 
     public List<GeocodingResult> getPositionsFor(String address) throws IOException, ServiceUnavailableException {
         IOException lastException = null;
+        boolean queriedAnyService = false;
         List<GeocodingResult> results = new ArrayList<>();
 
         for (GeocodingService service : sortByBestEffort(geocodingServiceFacade.getGeocodingServices())) {
@@ -69,6 +70,7 @@ public class AutomaticGeocodingService extends BaseGeocodingService {
                     continue;
 
                 List<GeocodingResult> geocodingResults = service.getPositionsFor(address);
+                queriedAnyService = true;
                 if (geocodingResults != null && !geocodingResults.isEmpty()) {
                     results.addAll(geocodingResults);
                     log.fine("Used " + service.getName() + " to retrieve positions " + geocodingResults + " for " + address);
@@ -82,10 +84,17 @@ public class AutomaticGeocodingService extends BaseGeocodingService {
         if(!results.isEmpty())
             return results;
 
-        if(lastException != null)
+        // No matches. Only surface an error if NO service could complete a query
+        // (e.g. offline); an empty result from a reachable service is a legitimate
+        // "no matches", not an error. Otherwise an incidental failure of a single
+        // service (e.g. Google denied/over-limit) turned a valid empty search into
+        // an error dialog, but only when the search happened to find nothing —
+        // searches that found results masked the same exception (issue #9,
+        // reproduced with "mannheim hofgarten").
+        if(!queriedAnyService && lastException != null)
             throw lastException;
-        else
-            return null;
+
+        return results;
     }
 
     public String getAddressFor(NavigationPosition position) throws IOException, ServiceUnavailableException {
