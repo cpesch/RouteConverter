@@ -108,7 +108,7 @@
                         <executions>
                             <execution>
                                 <id>compile-native-launcher</id>
-                                <phase>generate-resources</phase>
+                                <phase>prepare-package</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
