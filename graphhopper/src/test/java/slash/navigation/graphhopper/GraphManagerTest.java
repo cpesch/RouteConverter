@@ -4,6 +4,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.datasources.DataSource;
 
 import java.io.File;
@@ -216,6 +217,21 @@ public class GraphManagerTest {
         File directory = graphManager.getDirectory(createDataSource("unused"));
 
         assertEquals(existingDirectory.getAbsolutePath(), directory.getAbsolutePath());
+    }
+
+    @Test
+    public void testMatchesReturnsFalseForMapWithoutBoundingBoxInsteadOfThrowing() {
+        slash.navigation.datasources.File germany = mock(slash.navigation.datasources.File.class);
+        when(germany.getUri()).thenReturn("germany.pbf");
+        when(germany.getBoundingBox()).thenReturn(new BoundingBox(20.0, 20.0, 5.0, 5.0));
+
+        GraphDescriptor descriptor = new GraphDescriptor(GraphManager.GraphType.PBF, null, germany);
+
+        MapDescriptor mapDescriptorWithoutBoundingBox = mock(MapDescriptor.class);
+        when(mapDescriptorWithoutBoundingBox.getIdentifier()).thenReturn("unrelated-map");
+        when(mapDescriptorWithoutBoundingBox.getBoundingBox()).thenReturn(null);
+
+        assertFalse(descriptor.matches(mapDescriptorWithoutBoundingBox));
     }
 
     private static DataSource createDataSource(String directoryName) {
