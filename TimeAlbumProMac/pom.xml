@@ -113,17 +113,10 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>clang</executable>
+                                    <executable>/bin/sh</executable>
                                     <arguments>
-                                        <argument>-arch</argument>
-                                        <argument>x86_64</argument>
-                                        <argument>-arch</argument>
-                                        <argument>arm64</argument>
-                                        <argument>-framework</argument>
-                                        <argument>Cocoa</argument>
-                                        <argument>-o</argument>
-                                        <argument>${project.build.directory}/TimeAlbumPro</argument>
-                                        <argument>${basedir}/../mac-launcher/JavaAppLauncher.m</argument>
+                                        <argument>-c</argument>
+                                        <argument>mkdir -p "${project.build.directory}" &amp;&amp; clang -arch x86_64 -arch arm64 -framework Cocoa -o "${project.build.directory}/TimeAlbumPro" "${basedir}/../mac-launcher/JavaAppLauncher.m"</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
