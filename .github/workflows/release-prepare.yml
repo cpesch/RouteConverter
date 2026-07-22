@@ -64,7 +64,7 @@ jobs:
           }
           echo "ok: release=$rv  development=$dv"
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0      # release-plugin needs full history + tags
           # RC_RELEASE_PUSH_TOKEN: fine-grained PAT scoped
@@ -79,7 +79,7 @@ jobs:
           distribution: zulu
           java-version: '21'
 
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
