@@ -57,6 +57,10 @@ public class PendingOpenUrls {
      */
     public synchronized List<URL> release(List<URL> initialArgs) {
         released = true;
+        // Note: URL#equals()/hashCode() perform host resolution (a blocking DNS call) for
+        // URLs with a non-empty host. Harmless here since only file:// URLs with an empty
+        // host flow through this method; if this class is ever used for remote URLs,
+        // dedupe by URI (or String) instead to avoid a network call on the EDT.
         LinkedHashSet<URL> merged = new LinkedHashSet<>(initialArgs);
         merged.addAll(buffered);
         buffered.clear();
