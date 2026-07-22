@@ -74,48 +74,22 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>x64</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${basedir}/src/main/assembly/macos-x64.xml</descriptor>
-                            </descriptors>
-                            <finalName>RouteConverterMac</finalName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>aarch64</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${basedir}/src/main/assembly/macos-aarch64.xml</descriptor>
-                            </descriptors>
-                            <finalName>RouteConverterMac</finalName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
     <profiles>
         <profile>
             <!-- Compiles the shared mac-launcher/JavaAppLauncher.m stub (see
-                 issue #206) into a universal (x86_64 + arm64) binary that the
-                 macos-{x64,aarch64}.xml assemblies install as
-                 Contents/MacOS/RouteConverter. clang + the Cocoa framework are
-                 only available on a macOS host, hence the OS-family gate. -->
+                 issue #206) into a universal (x86_64 + arm64) binary and only
+                 then assembles the macos-{x64,aarch64}.xml app bundles that
+                 install it as Contents/MacOS/RouteConverter. clang + the
+                 Cocoa framework (and the resulting target/RouteConverter the
+                 assembly descriptors require) are only available on a macOS
+                 host, hence both the compile step and the assembly
+                 executions live behind this OS-family gate — on non-mac CI
+                 hosts (e.g. the ubuntu-latest `mvn verify` matrix) the module
+                 still builds/tests the shaded jar, it just skips producing
+                 the .app zip. -->
             <id>mac-native-launcher</id>
             <activation>
                 <os>
@@ -148,6 +122,37 @@
                                         <argument>${project.build.directory}/RouteConverter</argument>
                                         <argument>${basedir}/../mac-launcher/JavaAppLauncher.m</argument>
                                     </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>x64</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>${basedir}/src/main/assembly/macos-x64.xml</descriptor>
+                                    </descriptors>
+                                    <finalName>RouteConverterMac</finalName>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>aarch64</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>${basedir}/src/main/assembly/macos-aarch64.xml</descriptor>
+                                    </descriptors>
+                                    <finalName>RouteConverterMac</finalName>
                                 </configuration>
                             </execution>
                         </executions>
