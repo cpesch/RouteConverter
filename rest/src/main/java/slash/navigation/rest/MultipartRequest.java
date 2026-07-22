@@ -60,7 +60,10 @@ abstract class MultipartRequest extends HttpRequest {
     }
 
     public void addString(String name, String value) {
-        getBuilder().addTextBody(name, value, ContentType.APPLICATION_JSON);
+        // text/plain with an explicit UTF-8 charset: a plain form field is not JSON, and labelling it
+        // application/json makes some multipart parsers ignore the charset and decode the UTF-8 bytes as
+        // ISO-8859-1, turning umlauts into mojibake (e.g. "ü" -> "Ã¼") in error reports and descriptions
+        getBuilder().addTextBody(name, value, ContentType.TEXT_PLAIN.withCharset(StandardCharsets.UTF_8));
     }
 
     /**
