@@ -17,10 +17,9 @@
     </fileSets>
     <files>
         <file>
-            <source>src/main/app-resources/MacOS/RouteConverter</source>
+            <source>target/RouteConverter</source>
             <outputDirectory>/RouteConverter.app/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
-            <lineEnding>lf</lineEnding>
         </file>
         <file>
             <source>src/main/app-resources/Resources/RouteConverter.icns</source>

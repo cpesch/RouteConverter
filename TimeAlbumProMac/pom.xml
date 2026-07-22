@@ -112,6 +112,54 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <!-- Compiles the shared mac-launcher/JavaAppLauncher.m stub (see
+                 issue #206) into a universal (x86_64 + arm64) binary that the
+                 macos-{x64,aarch64}.xml assemblies install as
+                 Contents/MacOS/TimeAlbumPro. clang + the Cocoa framework are
+                 only available on a macOS host, hence the OS-family gate. -->
+            <id>mac-native-launcher</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>compile-native-launcher</id>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>clang</executable>
+                                    <arguments>
+                                        <argument>-arch</argument>
+                                        <argument>x86_64</argument>
+                                        <argument>-arch</argument>
+                                        <argument>arm64</argument>
+                                        <argument>-framework</argument>
+                                        <argument>Cocoa</argument>
+                                        <argument>-o</argument>
+                                        <argument>${project.build.directory}/TimeAlbumPro</argument>
+                                        <argument>${basedir}/../mac-launcher/JavaAppLauncher.m</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>

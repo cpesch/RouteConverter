@@ -17,10 +17,9 @@
     </fileSets>
     <files>
         <file>
-            <source>src/main/app-resources/MacOS/TimeAlbumPro</source>
+            <source>target/TimeAlbumPro</source>
             <outputDirectory>/TimeAlbumPro.app/Contents/MacOS/</outputDirectory>
             <fileMode>755</fileMode>
-            <lineEnding>lf</lineEnding>
         </file>
         <file>
             <source>src/main/app-resources/Resources/TimeAlbumPro.icns</source>
