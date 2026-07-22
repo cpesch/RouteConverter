@@ -46,7 +46,7 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Resolve JRE version from pom (single source of truth)
         id: jre
@@ -64,7 +64,7 @@ jobs:
         with:
           distribution: temurin
           java-version: ${{ steps.jre.outputs.version }}
-      - uses: actions/cache@v5
+      - uses: actions/cache@v6
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
@@ -84,7 +84,7 @@ jobs:
 
       - name: Cache stripped JRE
         id: jre-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: jre-cache
           key: ${{ env.JRE_BASE }}-v1
@@ -124,7 +124,7 @@ jobs:
 
       - name: Cache PortableApps.com Installer
         id: pa-cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: pa-installer/extracted
           key: pa-installer-v1
