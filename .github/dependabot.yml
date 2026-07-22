@@ -1,0 +1,35 @@
+# Dependency-update proposals. Bots propose, CI validates (build.yml runs the
+# Java matrix on every in-repo branch push), a human merges — no auto-merge.
+#
+# Deliberately NOT configured:
+# - registries: dependencies resolved only from mvn.routeconverter.com
+#   (slash.*, org.btools, repackaged legacy jars) are out of Dependabot's
+#   scope by design; "unable to find" log lines for them are expected.
+# - <jre.version> is a maintainer-controlled property (JRE bundling), not a
+#   dependency; JDK retargets are planned work, never bot bumps.
+version: 2
+updates:
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    # Minor + patch bumps arrive as one grouped PR; majors stay individual
+    # PRs so they are impossible to overlook.
+    groups:
+      maven-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
