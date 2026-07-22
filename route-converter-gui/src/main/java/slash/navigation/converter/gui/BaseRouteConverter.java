@@ -222,6 +222,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
             new Dimension(0, 0), new Dimension(0, 0), new Dimension(MAX_VALUE, 300), 0, true);
 
     private LazyTabInitializer tabInitializer;
+    private final PendingOpenUrls pendingOpenUrls = new PendingOpenUrls();
 
     // application lifecycle callbacks
 
@@ -229,6 +230,10 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     protected void startup() {
         startupStartMillis = System.currentTimeMillis();
+        // register the open-file handler first so AppKit + its odoc Apple Event handler
+        // arm as early as possible -- a cold macOS "Open with" launch delivers the odoc
+        // event within the first seconds of JVM boot, before the rest of startup runs
+        new ApplicationMenu(pendingOpenUrls).addApplicationMenuItems();
         initializeDiagnostics();
         checkJavaPrequisites();
         checkForGoogleMapsAPIKey();
@@ -259,12 +264,12 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     protected void parseInitialArgs(String[] args) {
         log.info("Processing initial arguments: " + Arrays.toString(args));
-        if (args.length > 0) {
-            List<URL> urls = toUrls(args);
-            log.info("Processing urls: " + urls);
-            getConvertPanel().openUrls(urls);
-        } else {
+        List<URL> urls = pendingOpenUrls.release(toUrls(args));
+        log.info("Processing urls: " + urls);
+        if (urls.isEmpty()) {
             getConvertPanel().newFile();
+        } else {
+            getConvertPanel().openUrls(urls);
         }
     }
 
@@ -339,7 +344,6 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     private void openFrame() {
         createFrame(getTitle(), "/slash/navigation/converter/gui/" + getProduct() + ".png", contentPane, null, new FrameMenu().createMenuBar());
-        new ApplicationMenu().addApplicationMenuItems();
         new Thread(() -> invokeLater(() -> {
             openFrame(contentPane);
             log.info(format("Frame shown %d ms after startup", millisSinceStartup()));

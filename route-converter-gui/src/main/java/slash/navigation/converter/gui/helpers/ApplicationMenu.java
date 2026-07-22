@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.common.PendingOpenUrls;
 import slash.navigation.converter.gui.BaseRouteConverter;
 
 import java.awt.*;
@@ -37,6 +38,7 @@ import java.util.logging.Logger;
 
 import static java.awt.Desktop.Action.*;
 import static java.awt.Desktop.isDesktopSupported;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 
 /**
@@ -47,6 +49,12 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 
 public class ApplicationMenu {
     private static final Logger log = Logger.getLogger(ApplicationMenu.class.getName());
+
+    private final PendingOpenUrls pendingOpenUrls;
+
+    public ApplicationMenu(PendingOpenUrls pendingOpenUrls) {
+        this.pendingOpenUrls = pendingOpenUrls;
+    }
 
     public void addApplicationMenuItems() {
         if (!isDesktopSupported())
@@ -97,14 +105,21 @@ public class ApplicationMenu {
                 log.warning("Cannot open file " + file + ": " + getLocalizedMessage(e));
             }
         }
-        ((BaseRouteConverter)slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(urls);
+
+        if (pendingOpenUrls.addOrDefer(urls))
+            return;
+        invokeLater(() -> ((BaseRouteConverter) slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(urls));
     }
 
     private void openUri(OpenURIEvent openURIEvent) {
         URI uri = openURIEvent.getURI();
         try {
             URL url = uri.toURL();
-            ((BaseRouteConverter)slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(List.of(url));
+            List<URL> urls = List.of(url);
+
+            if (pendingOpenUrls.addOrDefer(urls))
+                return;
+            invokeLater(() -> ((BaseRouteConverter) slash.navigation.gui.Application.getInstance()).getConvertPanel().openUrls(urls));
         } catch (MalformedURLException e) {
             log.warning("Cannot open URI " + uri + ": " + getLocalizedMessage(e));
         }
