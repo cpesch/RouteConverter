@@ -23,6 +23,7 @@ package slash.common.log;
 import java.io.*;
 import java.util.logging.*;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.logging.Level.*;
 import static slash.common.io.Directories.getTemporaryDirectory;
 
@@ -157,7 +158,7 @@ public class LoggingHelper {
     private String readFile(File file) throws IOException {
         StringBuilder buffer = new StringBuilder();
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(file, UTF_8))) {
             while (buffer.length() < LOG_SIZE) {
                 String line = reader.readLine();
                 if (line == null)

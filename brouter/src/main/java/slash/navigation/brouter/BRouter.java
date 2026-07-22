@@ -148,10 +148,17 @@ public class BRouter extends BaseRoutingService {
 
     /**
      * Reads the lookup version bundled with the BRouter library (from {@code lookups.dat}) and
-     * removes any locally cached {@code .rd5} segment whose embedded lookup version differs. Such
-     * segments predate a BRouter format bump and would otherwise make routing fail hard with
+     * removes any locally cached {@code .rd5} segment whose embedded lookup version is <em>older</em>.
+     * Such segments predate a BRouter format bump and would otherwise make routing fail hard with
      * "lookup version mismatch (old rd5?)". Removed segments are re-downloaded on demand by the
      * regular routing path, so this method only deletes and never starts a download itself.
+     * <p>
+     * Segments that are <em>newer</em> than the local {@code lookups.dat} are deliberately kept: that
+     * skew means {@code lookups.dat} itself is stale (the profiles datasource has not caught up with a
+     * BRouter format bump yet, so {@link #refreshLookupsIfStale()} could not update it). Deleting them
+     * would only trigger a re-download of the same newer version on the next routing request and again
+     * on the next launch -- an endless re-download loop of large segment files. We log an actionable
+     * hint instead and leave the segment in place.
      */
     void removeOutdatedSegments() {
         File lookups = new File(getProfilesDirectory(), LOOKUPS_DAT);
@@ -178,6 +185,13 @@ public class BRouter extends BaseRoutingService {
             }
             if (version == expectedVersion)
                 continue;
+
+            if (version > expectedVersion) {
+                log.warning(format("Keeping BRouter segment %s with newer lookup version %d than %s (%d): " +
+                                "the profiles datasource is stale, deleting would only re-download the same version",
+                        file, version, LOOKUPS_DAT, expectedVersion));
+                continue;
+            }
 
             log.warning(format("Removing outdated BRouter segment %s with lookup version %d (expected %d)", file, version, expectedVersion));
             if (!file.delete())

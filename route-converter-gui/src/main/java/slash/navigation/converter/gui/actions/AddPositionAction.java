@@ -56,12 +56,15 @@ public class AddPositionAction extends FrameAction {
         this.positionsSelectionModel = positionsSelectionModel;
     }
 
+    /**
+     * The center of the segment starting at {@code row}, i.e. between {@code row} and {@code row + 1}.
+     * Returns {@code null} only when there is no such segment (row is out of range or the last row) or
+     * a coordinate is missing, in which case the caller falls back to the map center.
+     */
     private NavigationPosition calculateCenter(int row) {
-        // if there is only one position or it is the first or last row, choose the map center
-        if (row >= positionsModel.getRowCount() - 1 || row == positionsModel.getRowCount())
+        if (row < 0 || row >= positionsModel.getRowCount() - 1)
             return null;
         NavigationPosition position = positionsModel.getPosition(row);
-        // otherwise center between given positions
         NavigationPosition second = positionsModel.getPosition(row + 1);
         if (!second.hasCoordinates() || !position.hasCoordinates())
             return null;
@@ -82,22 +85,28 @@ public class AddPositionAction extends FrameAction {
     public void run() {
         List<NavigationPosition> insertedPositions = new ArrayList<>();
         int[] rowIndices = revert(table.getSelectedRows());
-        // append to table if there is nothing selected
+        int rowCount = positionsModel.getRowCount();
+        // nothing selected: bisect the last segment so the new position lands on the route
         boolean areRowsSelected = rowIndices.length > 0;
         if (!areRowsSelected)
-            rowIndices = new int[]{table.getRowCount()};
+            rowIndices = new int[]{rowCount >= 2 ? rowCount - 2 : table.getRowCount()};
         boolean hasInsertedRowInMapCenter = false;
         for (int row : rowIndices) {
-            int insertRow = row > positionsModel.getRowCount() - 1 ? row : row + 1;
-
-            NavigationPosition center = areRowsSelected ? calculateCenter(row) :
-                    positionsModel.getRowCount() > 0 ? calculateCenter(positionsModel.getRowCount() - 1) : null;
+            // bisect the segment after the selected position; for the last position there is no
+            // following segment, so bisect the one before it instead - either way the new position
+            // lands on the route rather than at the (view-dependent, possibly off-route) map center
+            int segmentRow = row >= rowCount - 1 && rowCount >= 2 ? rowCount - 2 : row;
+            NavigationPosition center = calculateCenter(segmentRow);
+            int insertRow;
             if (center == null) {
-                // only insert row in map center once
+                // no segment to bisect (empty list or a single position): seed at the map center once
                 if (hasInsertedRowInMapCenter)
                     continue;
                 center = BaseRouteConverter.getInstance().getMapCenter();
                 hasInsertedRowInMapCenter = true;
+                insertRow = Math.min(row + 1, rowCount);
+            } else {
+                insertRow = segmentRow + 1;
             }
 
             insertedPositions.add(insertPosition(insertRow, center));

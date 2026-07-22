@@ -43,7 +43,8 @@ class GraphDescriptor {
 
     private boolean matchesBoundingBox(MapDescriptor mapDescriptor) {
         BoundingBox fileBoundingBox = getBoundingBox();
-        return fileBoundingBox != null && fileBoundingBox.contains(mapDescriptor.getBoundingBox());
+        BoundingBox mapBoundingBox = mapDescriptor.getBoundingBox();
+        return fileBoundingBox != null && mapBoundingBox != null && fileBoundingBox.contains(mapBoundingBox);
     }
 
     public boolean matches(MapDescriptor mapDescriptor) {

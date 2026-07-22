@@ -30,11 +30,12 @@ import slash.navigation.viamichelin.binding.*;
 import jakarta.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.common.io.InputOutput.readAsReaderPreferringUtf8;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
@@ -106,7 +107,7 @@ public class ViaMichelinFormat extends XmlNavigationFormat<ViaMichelinRoute> {
     }
 
     public void read(InputStream source, ParserContext<ViaMichelinRoute> context) throws IOException {
-        try (InputStreamReader reader = new InputStreamReader(source)) {
+        try (Reader reader = readAsReaderPreferringUtf8(source)) {
             PoiList poiList = unmarshal(reader);
             context.appendRoute(process(poiList));
         }

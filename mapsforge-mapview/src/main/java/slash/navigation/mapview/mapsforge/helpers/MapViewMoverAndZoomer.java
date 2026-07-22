@@ -99,9 +99,12 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
             LatLong latLong = projection.fromPixels(e.getX() + markerAndDelta.deltaX(), e.getY() + markerAndDelta.deltaY());
             DraggableMarker marker = markerAndDelta.marker();
             marker.onDrop(latLong);
-            markerAndDelta = null;
             stopWaitCursor(mapView);
         }
+        // clear the pressed-on-marker state on every release: a plain click on a marker (no drag)
+        // must not leave isMousePressedOnMarker() stuck true, which would suppress selecting that
+        // position and let a subsequent "new position" fall back to the map center (off the route)
+        markerAndDelta = null;
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {

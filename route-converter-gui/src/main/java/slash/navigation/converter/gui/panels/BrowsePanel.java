@@ -86,7 +86,6 @@ import static java.awt.datatransfer.DataFlavor.stringFlavor;
 import static java.awt.event.InputEvent.SHIFT_DOWN_MASK;
 import static java.awt.event.KeyEvent.*;
 import static java.util.Collections.singletonList;
-import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static slash.navigation.gui.helpers.WindowHelper.showError;
@@ -178,8 +177,8 @@ public class BrowsePanel implements PanelInTab {
         registerAction(buttonRenameRoute, "rename-route");
         registerAction(buttonDeleteRoute, "delete-route");
 
-        setHelpIDString(treeCategories, "category-tree");
-        setHelpIDString(tableRoutes, "route-list");
+        treeCategories.setName("category-tree");
+        tableRoutes.setName("route-list");
 
         initializeCategoryTree();
         RouteMetadataSource routeMetadataSource = initializeMetadataSources(r);

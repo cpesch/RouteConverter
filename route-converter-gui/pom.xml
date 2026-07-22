@@ -167,9 +167,5 @@
             <groupId>com.intellij</groupId>
             <artifactId>forms-rt</artifactId>
         </dependency>
-        <dependency>
-            <groupId>javax.help</groupId>
-            <artifactId>javahelp</artifactId>
-        </dependency>
     </dependencies>
 </project>

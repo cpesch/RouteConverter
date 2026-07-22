@@ -25,6 +25,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.Assert.*;
@@ -106,6 +107,34 @@ public class InputOutputTest {
         }
         String result = InputOutput.readFileToString(file);
         assertEquals(content, result);
+    }
+
+    private static String toString(Reader reader) throws IOException {
+        StringWriter writer = new StringWriter();
+        InputOutput.copyAndClose(reader, writer);
+        return writer.toString();
+    }
+
+    @Test
+    public void testReadAsReaderPreferringUtf8DecodesUtf8() throws IOException {
+        String text = "Grün Ö Ä ß Straße";
+        Reader reader = InputOutput.readAsReaderPreferringUtf8(new ByteArrayInputStream(text.getBytes(StandardCharsets.UTF_8)));
+        assertEquals(text, toString(reader));
+    }
+
+    @Test
+    public void testReadAsReaderPreferringUtf8FallsBackToWindows1252() throws IOException {
+        String text = "Grün Ö Ä ß Straße";
+        byte[] ansi = text.getBytes(Charset.forName("windows-1252")); // not valid UTF-8
+        Reader reader = InputOutput.readAsReaderPreferringUtf8(new ByteArrayInputStream(ansi));
+        assertEquals(text, toString(reader));
+    }
+
+    @Test
+    public void testReadAsReaderPreferringUtf8PlainAscii() throws IOException {
+        String text = "plain ascii 123";
+        Reader reader = InputOutput.readAsReaderPreferringUtf8(new ByteArrayInputStream(text.getBytes(StandardCharsets.US_ASCII)));
+        assertEquals(text, toString(reader));
     }
 }
 

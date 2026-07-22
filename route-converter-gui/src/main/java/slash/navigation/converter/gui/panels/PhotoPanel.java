@@ -68,7 +68,6 @@ import java.util.prefs.Preferences;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_DELETE;
 import static java.lang.Integer.MAX_VALUE;
-import static javax.help.CSH.setHelpIDString;
 import static javax.swing.DropMode.ON;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
@@ -184,7 +183,7 @@ public class PhotoPanel implements PanelInTab {
         registerAction(buttonAddPhotos, "add-photos");
         registerAction(buttonTagPhotos, "tag-photos");
 
-        setHelpIDString(tablePhotos, "photo-list");
+        tablePhotos.setName("photo-list");
 
         comboBoxFilterPhotoPredicate.setModel(FILTER_PREDICATE_MODEL);
         comboBoxFilterPhotoPredicate.setSelectedItem(getFilterPredicatePreference());
