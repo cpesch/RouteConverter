@@ -58,6 +58,9 @@ jobs:
         env:
           DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
         run: |
+          # maven-javadoc-plugin 3.x writes the aggregate report under
+          # target/reports/apidocs (was target/site/apidocs pre-3.x); the old
+          # path no longer exists, which failed this rsync ("No such file").
           rsync -av --delete --omit-dir-times --no-perms \
-            target/site/apidocs/ \
+            target/reports/apidocs/ \
             "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/javadoc/"
