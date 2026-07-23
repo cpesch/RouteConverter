@@ -3,8 +3,11 @@ name: Mirror gitea master
 # Keeps github master a superset of the gitea factory master by merging gitea -> github on a
 # schedule. The two masters take commits independently (Dependabot + maintainer on github,
 # factory PRs on gitea), so this is a non-destructive merge, not a force-mirror: a clean merge
-# is pushed, a conflict opens an issue for manual reconciliation. Reuses the release tokens, so
-# no new secrets are needed.
+# is pushed, a conflict opens an issue for manual reconciliation.
+#
+# Secrets: RC_RELEASE_PUSH_TOKEN (github PAT, pushes master) and RC_SITE_GITEA_HOST (gitea host)
+# already exist; GITEA_MIRROR_TOKEN must be added - a gitea token with READ access to
+# rc/RouteConverter (RC_SITE_DISPATCH_TOKEN only reaches rc-site, so it cannot be reused here).
 
 on:
   schedule:
@@ -32,7 +35,7 @@ jobs:
 
       - name: Merge gitea master into github master
         env:
-          GITEA_TOKEN: ${{ secrets.RC_SITE_DISPATCH_TOKEN }}
+          GITEA_TOKEN: ${{ secrets.GITEA_MIRROR_TOKEN }}
           GITEA_HOST: ${{ secrets.RC_SITE_GITEA_HOST }}
           GH_TOKEN: ${{ github.token }}
         run: |
