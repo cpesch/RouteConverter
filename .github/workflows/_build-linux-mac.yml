@@ -114,6 +114,36 @@ jobs:
           scripts/verify-runtime.sh \
             RouteConverterLinux/target/RouteConverterLinux.jar \
             RouteConverterCmdLine/target/RouteConverterCmdLine.jar
+      - name: Smoke-check assembled .app bundles
+        # Fail loudly here (not at a downstream cp / at runtime) if a bundle is
+        # missing its universal launcher stub, JRE, or jar -- the failure modes
+        # behind the 2026-07 Open-with regression + the mislocated assembly.
+        # Runs on ubuntu, so use `file` (not the macOS-only `lipo`) to confirm
+        # the stub is a fat Mach-O with both arches.
+        run: |
+          set -euo pipefail
+          check() {  # $1 = app-zip, $2 = executable/app name
+            local zip="$1" exe="$2" app="$2.app" t
+            echo "== $zip =="
+            unzip -l "$zip" | grep -qE "${app}/Contents/MacOS/${exe}\$"  || { echo "::error::$zip: missing MacOS/${exe}"; exit 1; }
+            unzip -l "$zip" | grep -qE "${app}/Contents/bin/java\$"       || { echo "::error::$zip: missing bin/java"; exit 1; }
+            unzip -l "$zip" | grep -qE "${app}/Contents/Java/.+\.jar\$"   || { echo "::error::$zip: missing Java/*.jar"; exit 1; }
+            t="$(mktemp -d)"
+            unzip -q "$zip" "${app}/Contents/MacOS/${exe}" -d "$t"
+            local info; info="$(file -b "$t/${app}/Contents/MacOS/${exe}")"
+            echo "  stub: $info"
+            case "$info" in
+              *"universal binary"*|*"Mach-O universal"*) : ;;
+              *) echo "::error::$zip: MacOS/${exe} is not a universal Mach-O"; exit 1 ;;
+            esac
+            printf '%s' "$info" | grep -q x86_64 && printf '%s' "$info" | grep -q arm64 \
+              || { echo "::error::$zip: MacOS/${exe} missing an arch (need x86_64 + arm64)"; exit 1; }
+            echo "  OK"
+          }
+          check RouteConverterMac/target/RouteConverterMac-x64-app.zip     RouteConverter
+          check RouteConverterMac/target/RouteConverterMac-aarch64-app.zip RouteConverter
+          check TimeAlbumProMac/target/TimeAlbumProMac-x64-app.zip         TimeAlbumPro
+          check TimeAlbumProMac/target/TimeAlbumProMac-aarch64-app.zip     TimeAlbumPro
       - name: Stage artefacts
         run: |
           mkdir -p artefacts
