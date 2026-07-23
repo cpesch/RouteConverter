@@ -2,11 +2,11 @@
 
 ## Supported Versions
 
-| Version              | Supported          |
-| --------------------- | ------------------ |
-| Latest stable release  | ✅ |
-| Current prerelease     | ✅ |
-| Older releases         | ❌ |
+| Version               | Supported |
+| --------------------- | --------- |
+| Latest stable release | ✅        |
+| Current prerelease    | ✅        |
+| Older releases        | ❌        |
 
 Fixes land in the next release only — there are no backported patches for
 older versions. Please always update to the latest stable release (or try
