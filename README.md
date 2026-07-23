@@ -49,19 +49,9 @@ CI builds and tests on **Java 21 and 25** plus a Windows smoke build.
 ## Contributing
 
 Contributions are very welcome — bug fixes, new formats, UI improvements,
-translations. 🎉
-
-- **Pull requests:** fork, branch, and open a PR against `master`. Keep your diff
-  small and focused, match the surrounding code style, and add tests for your
-  change. A maintainer reviews and merges every PR.
-- **Conventions:** see [`AGENTS.md`](AGENTS.md) for the project layout, module
-  layering, build/test commands, and code conventions (GPL header, JAXB test
-  objects, IntelliJ GUI Designer `.form` files, …).
-- **Translations** go through Weblate, not direct edits:
-  [hosted.weblate.org/projects/routeconverter](https://hosted.weblate.org/projects/routeconverter/).
-- **Issues:** https://github.com/cpesch/RouteConverter/issues
-
-Contributors are listed in [`CONTRIBUTORS.txt`](CONTRIBUTORS.txt).
+translations. 🎉 See [`CONTRIBUTING.md`](CONTRIBUTING.md) for how to report
+bugs, open pull requests, and translate the app. Contributors are listed in
+[`CONTRIBUTORS.txt`](CONTRIBUTORS.txt).
 
 ### IDE setup (IntelliJ IDEA)
 

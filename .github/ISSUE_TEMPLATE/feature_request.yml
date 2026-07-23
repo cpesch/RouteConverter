@@ -1,0 +1,26 @@
+name: Feature request
+description: Suggest an idea or improvement for RouteConverter.
+title: "[feature] "
+labels: []
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What can't you do today?
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How would you like this to work?
+    validations:
+      required: false
+  - type: input
+    id: formats
+    attributes:
+      label: Formats / devices affected
+      placeholder: "e.g. GPX, Garmin GPSMAP 66i"
+    validations:
+      required: false

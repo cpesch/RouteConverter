@@ -1,0 +1,59 @@
+name: Bug report
+description: Report something that isn't working as expected.
+title: "[bug] "
+labels: []
+body:
+  - type: input
+    id: version
+    attributes:
+      label: RouteConverter version
+      description: The exact version you're using.
+      placeholder: "2.34 / prerelease 2026-07-20"
+    validations:
+      required: true
+  - type: dropdown
+    id: channel
+    attributes:
+      label: Channel
+      options:
+        - Stable
+        - Prerelease
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: Operating system
+      options:
+        - Windows
+        - macOS
+        - Linux
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: A clear description of the problem.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: How can we reproduce this?
+    validations:
+      required: false
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+      description: What did you expect to happen instead?
+    validations:
+      required: false
+  - type: markdown
+    attributes:
+      value: |
+        If your bug is about a specific file, please attach a minimal sample
+        GPS file that shows the problem — strip any private data (home
+        coordinates, timestamps) from it first.
