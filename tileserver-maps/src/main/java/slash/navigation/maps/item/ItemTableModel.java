@@ -22,6 +22,7 @@ package slash.navigation.maps.item;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -32,10 +33,16 @@ import java.util.List;
 
 public class ItemTableModel<T extends Item> extends AbstractTableModel {
     private final int columnCount;
+    private final Comparator<? super T> comparator;
     private final List<T> items = new ArrayList<>();
 
     public ItemTableModel(int columnCount) {
+        this(columnCount, null);
+    }
+
+    public ItemTableModel(int columnCount, Comparator<? super T> comparator) {
         this.columnCount = columnCount;
+        this.comparator = comparator;
     }
 
     public List<T> getItems() {
@@ -82,7 +89,21 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
         return items.contains(item);
     }
 
+    static <T> int sortedIndex(List<T> items, T item, Comparator<? super T> comparator) {
+        int i = 0;
+        while (i < items.size() && comparator.compare(items.get(i), item) <= 0)
+            i++;
+        return i;
+    }
+
     private void addItem(T item) {
+        if (comparator != null) {
+            int index = sortedIndex(items, item, comparator);
+            items.add(index, item);
+            fireTableRowsInserted(index, index);
+            return;
+        }
+
         if (!items.add(item))
             throw new IllegalArgumentException("Item " + item + " not added to " + items);
 

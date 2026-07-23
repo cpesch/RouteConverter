@@ -19,10 +19,12 @@
 */
 package slash.navigation.maps.mapsforge.models;
 
+import slash.navigation.maps.item.Item;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 
 import javax.swing.table.TableModel;
+import java.util.Comparator;
 
 /**
  * Acts as a {@link TableModel} for {@link TileDownloadMap}s
@@ -35,7 +37,7 @@ public class TileMapTableModel extends ItemTableModel<TileDownloadMap> {
     public static final int ACTIVE_COLUMN = 1;
 
     public TileMapTableModel() {
-        super(2);
+        super(2, Comparator.comparing(Item::description, String.CASE_INSENSITIVE_ORDER));
     }
 
     public Class<?> getColumnClass(int columnIndex) {

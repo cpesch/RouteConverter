@@ -25,6 +25,7 @@ import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.Downloadable;
 import slash.navigation.download.Download;
 import slash.navigation.gui.models.FilteringTableModel;
+import slash.navigation.maps.item.Item;
 import slash.navigation.maps.item.ItemModel;
 import slash.navigation.maps.item.ItemTableModel;
 import slash.navigation.maps.mapsforge.helpers.ActiveTileMapPredicate;
@@ -80,7 +81,8 @@ public class MapsforgeMapManager {
 
     private final DataSourceManager dataSourceManager;
     private final ItemTableModel<TileDownloadMap> availableOnlineMapsModel = new TileMapTableModel();
-    private final ItemTableModel<LocalMap> availableOfflineMapsModel = new ItemTableModel<>(1);
+    private final ItemTableModel<LocalMap> availableOfflineMapsModel = new ItemTableModel<>(1,
+            Comparator.comparing(Item::description, String.CASE_INSENSITIVE_ORDER));
     private final JoinedItemTableModel<LocalMap> availableMapsModel = new JoinedItemTableModel<>(availableOfflineMapsModel,
             new FilteringTableModel<>(availableOnlineMapsModel, new ActiveTileMapPredicate()));
     private final ItemTableModel<LocalTheme> availableThemesModel = new ItemTableModel<>(1);
