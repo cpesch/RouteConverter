@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: RouteConverter forum
+    url: https://forum.routeconverter.com/
+    about: Usage questions and discussion.
+  - name: Website FAQ
+    url: https://www.routeconverter.com/faq/en
+    about: Frequently asked questions.
