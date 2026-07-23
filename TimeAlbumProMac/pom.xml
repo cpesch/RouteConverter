@@ -77,22 +77,56 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Assemble the macos-{x64,aarch64}.xml .app bundles. This runs on
+                 the LINUX assembly runner (_build-linux-mac.yml), which is where
+                 the release .app zips are produced, so it must NOT be gated to a
+                 macOS host. The universal Contents/MacOS/TimeAlbumPro stub it
+                 installs is fetched from static.routeconverter.com into
+                 target/TimeAlbumPro by that workflow (built on macOS in
+                 build-mac-jre.yml); on a local macOS build the mac-native-launcher
+                 profile below compiles it into the same path instead. -->
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>x64</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${basedir}/src/main/assembly/macos-x64.xml</descriptor>
+                            </descriptors>
+                            <finalName>TimeAlbumProMac</finalName>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>aarch64</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>${basedir}/src/main/assembly/macos-aarch64.xml</descriptor>
+                            </descriptors>
+                            <finalName>TimeAlbumProMac</finalName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
     <profiles>
         <profile>
-            <!-- Compiles the shared mac-launcher/JavaAppLauncher.m stub (see
-                 issue #206) into a universal (x86_64 + arm64) binary and only
-                 then assembles the macos-{x64,aarch64}.xml app bundles that
-                 install it as Contents/MacOS/TimeAlbumPro. clang + the Cocoa
-                 framework (and the resulting target/TimeAlbumPro the
-                 assembly descriptors require) are only available on a macOS
-                 host, hence both the compile step and the assembly
-                 executions live behind this OS-family gate — on non-mac CI
-                 hosts (e.g. the ubuntu-latest `mvn verify` matrix) the module
-                 still builds/tests the shaded jar, it just skips producing
-                 the .app zip. -->
+            <!-- LOCAL macOS build only: compile the shared
+                 mac-launcher/JavaAppLauncher.m stub (issue #206) into the
+                 universal target/TimeAlbumPro that the assembly descriptors
+                 require. On CI the Linux assembly runner fetches the hosted
+                 stub instead (see the assembly comment above), so this gate
+                 keeps clang — unavailable off macOS — from breaking that build. -->
             <id>mac-native-launcher</id>
             <activation>
                 <os>
@@ -118,37 +152,6 @@
                                         <argument>-c</argument>
                                         <argument>mkdir -p "${project.build.directory}" &amp;&amp; clang -arch x86_64 -arch arm64 -framework Cocoa -o "${project.build.directory}/TimeAlbumPro" "${basedir}/../mac-launcher/JavaAppLauncher.m"</argument>
                                     </arguments>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <executions>
-                            <execution>
-                                <id>x64</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <descriptors>
-                                        <descriptor>${basedir}/src/main/assembly/macos-x64.xml</descriptor>
-                                    </descriptors>
-                                    <finalName>TimeAlbumProMac</finalName>
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>aarch64</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                                <configuration>
-                                    <descriptors>
-                                        <descriptor>${basedir}/src/main/assembly/macos-aarch64.xml</descriptor>
-                                    </descriptors>
-                                    <finalName>TimeAlbumProMac</finalName>
                                 </configuration>
                             </execution>
                         </executions>
