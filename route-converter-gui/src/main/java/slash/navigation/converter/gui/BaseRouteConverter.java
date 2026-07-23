@@ -856,7 +856,16 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     public NavigationPosition getMapCenter() {
-        return isMapViewAvailable() ? getMapView().getCenter() : new SimpleNavigationPosition(-41.0, 41.0);
+        if (isMapViewAvailable())
+            return getMapView().getCenter();
+        // no map view: fall back to the center of the current route instead of a fixed point in the
+        // Atlantic, so a position inserted through this fallback stays near the user's data
+        if (getConvertPanel() != null) {
+            var route = getConvertPanel().getPositionsModel().getRoute();
+            if (route != null && !route.getPositions().isEmpty())
+                return BoundingBox.asBoundingBox(route.getPositions()).getCenter();
+        }
+        return new SimpleNavigationPosition(0.0, 0.0);
     }
 
     public BoundingBox getMapBoundingBox() {
