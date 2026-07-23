@@ -32,6 +32,7 @@ on:
     paths:
       - 'pom.xml'
       - 'scripts/jre-modules.txt'
+      - 'mac-launcher/JavaAppLauncher.m'
       - '.github/workflows/build-mac-jre.yml'
 
 concurrency:
@@ -133,6 +134,24 @@ jobs:
             rm -f  "$OUT/lib/server/Xusage.txt"
           done
 
+      - name: Compile universal launcher stub
+        # The .app is assembled on a Linux runner (_build-linux-mac.yml), which
+        # cannot compile a macOS Cocoa Mach-O. Build the universal (x86_64 +
+        # arm64) stub here on macOS and host it alongside the JREs; the Linux
+        # assembly fetches it. Source: mac-launcher/JavaAppLauncher.m (also the
+        # local-mac build path via the RouteConverterMac/TimeAlbumProMac pom
+        # profile). One byte-identical stub serves both apps (it introspects its
+        # own bundle at runtime).
+        shell: bash
+        run: |
+          set -euo pipefail
+          clang -arch x86_64 -arch arm64 -framework Cocoa \
+            -o macos-launcher-stub mac-launcher/JavaAppLauncher.m
+          lipo -info macos-launcher-stub
+          shasum -a 256 macos-launcher-stub \
+            | awk '{print $1"  macos-launcher-stub"}' > macos-launcher-stub.sha256
+          cat macos-launcher-stub.sha256
+
       - name: Show full JRE trees
         shell: bash
         env:
@@ -170,6 +189,8 @@ jobs:
             jre-${{ steps.jdk.outputs.version }}-aarch64-stripped.zip.sha256
             jre-${{ steps.jdk.outputs.version }}-x64-stripped.zip
             jre-${{ steps.jdk.outputs.version }}-x64-stripped.zip.sha256
+            macos-launcher-stub
+            macos-launcher-stub.sha256
           retention-days: 30
 
   publish:

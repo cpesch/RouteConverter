@@ -79,6 +79,22 @@ jobs:
             done
             rm -f "$zip" "${zip}.sha256"
           done
+      - name: Fetch hosted macOS launcher stub
+        # The .app's Contents/MacOS/<App> is a universal Cocoa Mach-O that cannot
+        # be compiled on this Linux runner; build-mac-jre.yml builds + hosts it.
+        # One byte-identical stub serves both apps (it resolves its jar/icon/name
+        # from its own bundle at runtime), installed under each app's name. The
+        # macos-{x64,aarch64}.xml assemblies copy target/<App> into the bundle.
+        run: |
+          set -euo pipefail
+          base_url=https://static.routeconverter.com/build/mac
+          curl_opts=(-fsSL --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 30)
+          curl "${curl_opts[@]}" -o macos-launcher-stub        "${base_url}/macos-launcher-stub"
+          curl "${curl_opts[@]}" -o macos-launcher-stub.sha256 "${base_url}/macos-launcher-stub.sha256"
+          sha256sum -c macos-launcher-stub.sha256
+          install -D -m 0755 macos-launcher-stub RouteConverterMac/target/RouteConverter
+          install -D -m 0755 macos-launcher-stub TimeAlbumProMac/target/TimeAlbumPro
+          rm -f macos-launcher-stub macos-launcher-stub.sha256
       - name: Build
         # github.run_number is the CALLER workflow's run number — same
         # value the inline jobs used before Phase 5.2.
