@@ -335,7 +335,12 @@ public class BRouter extends BaseRoutingService {
 
             RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory(), createWaypoints(from, to), routingContext);
             routingEngine.quite = true;
-            routingEngine.doRun(preferences.getLong("routingTimeout", routingTimeout));
+            try {
+                routingEngine.doRun(preferences.getLong("routingTimeout", routingTimeout));
+            } catch (RuntimeException e) {
+                log.severe(format("Error while routing between %s and %s: %s", from, to, getLocalizedMessage(e)));
+                return new RoutingResult(asList(from, to), new DistanceAndTime(bearing, null), Invalid);
+            }
 
             if (routingEngine.getErrorMessage() != null)
                 log.severe(format("Error while routing between %s and %s: %s", from, to, routingEngine.getErrorMessage()));
@@ -373,7 +378,7 @@ public class BRouter extends BaseRoutingService {
         return (long)((s + 0.5) * 1000);
     }
 
-    private List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {
+    List<OsmNodeNamed> createWaypoints(NavigationPosition from, NavigationPosition to) {
         List<OsmNodeNamed> result = new ArrayList<>();
         result.add(asOsmNodeNamed(from.getDescription(), from.getLongitude(), from.getLatitude()));
         result.add(asOsmNodeNamed(to.getDescription(), to.getLongitude(), to.getLatitude()));
@@ -382,7 +387,9 @@ public class BRouter extends BaseRoutingService {
 
     private OsmNodeNamed asOsmNodeNamed(String name, Double toLongitude, Double toLatitude) {
         OsmNodeNamed result = new OsmNodeNamed();
-        result.name = name;
+        // a freshly added position may not have a description yet (reverse geocoding still
+        // pending); BRouter's RoutingEngine requires a non-null name (e.g. startWp.name.startsWith(...))
+        result.name = name != null ? name : "";
         result.ilon = asLongitude(toLongitude);
         result.ilat = asLatitude(toLatitude);
         return result;

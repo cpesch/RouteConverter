@@ -19,13 +19,17 @@
 */
 package slash.navigation.brouter;
 
+import btools.router.OsmNodeNamed;
 import org.junit.Test;
+import slash.navigation.common.SimpleNavigationPosition;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class BRouterTest {
     private final BRouter router = new BRouter(null);
@@ -67,5 +71,19 @@ public class BRouterTest {
     public void testCreateFileKeys() {
         assertEquals(new HashSet<>(asList("E5_N45.rd5", "E10_N45.rd5")), router.createFileKeys(9.9859064, 49.7386072));
         assertEquals(new HashSet<>(asList("E5_N45.rd5", "E10_N45.rd5")), router.createFileKeys(9.988344, 49.7386959));
+    }
+
+    @Test
+    public void testCreateWaypointsWithNullDescriptionDoesNotProduceNullName() {
+        // a freshly added position (before reverse geocoding resolves a description) has description == null
+        SimpleNavigationPosition from = new SimpleNavigationPosition(-3.629092777185068, 37.13627094135279);
+        SimpleNavigationPosition to = new SimpleNavigationPosition(-3.6289927771850676, 37.136370941352794);
+
+        List<OsmNodeNamed> waypoints = router.createWaypoints(from, to);
+
+        assertEquals(2, waypoints.size());
+        for (OsmNodeNamed waypoint : waypoints) {
+            assertNotNull(waypoint.name);
+        }
     }
 }
