@@ -92,8 +92,8 @@ jobs:
           curl "${curl_opts[@]}" -o macos-launcher-stub        "${base_url}/macos-launcher-stub"
           curl "${curl_opts[@]}" -o macos-launcher-stub.sha256 "${base_url}/macos-launcher-stub.sha256"
           sha256sum -c macos-launcher-stub.sha256
-          install -m 0755 macos-launcher-stub RouteConverterMac/target/RouteConverter
-          install -m 0755 macos-launcher-stub TimeAlbumProMac/target/TimeAlbumPro
+          install -D -m 0755 macos-launcher-stub RouteConverterMac/target/RouteConverter
+          install -D -m 0755 macos-launcher-stub TimeAlbumProMac/target/TimeAlbumPro
           rm -f macos-launcher-stub macos-launcher-stub.sha256
       - name: Build
         # github.run_number is the CALLER workflow's run number — same
