@@ -31,6 +31,7 @@ import slash.navigation.gui.models.InMemoryPreferences;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.prefs.Preferences;
 
 import static java.util.Collections.emptyList;
