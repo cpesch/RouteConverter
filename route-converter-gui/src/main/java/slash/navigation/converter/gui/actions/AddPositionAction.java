@@ -71,6 +71,18 @@ public class AddPositionAction extends FrameAction {
         return asBoundingBox(asList(second, position)).getCenter();
     }
 
+    /**
+     * The row whose following segment the "+" bisects, given a selected {@code row}: the selected row
+     * itself, or - when it is the last position - the segment before it, so the inserted position always
+     * lands on the route. Returns -1 when the route has fewer than two positions (nothing to bisect, the
+     * caller seeds at the map center). The result is always a valid segment start in [0, rowCount - 2].
+     */
+    static int segmentRowToBisect(int row, int rowCount) {
+        if (rowCount < 2)
+            return -1;
+        return row >= rowCount - 1 ? rowCount - 2 : row;
+    }
+
     private PositionAugmenter getBatchPositionAugmenter() {
         return BaseRouteConverter.getInstance().getPositionAugmenter();
     }
@@ -86,17 +98,14 @@ public class AddPositionAction extends FrameAction {
         List<NavigationPosition> insertedPositions = new ArrayList<>();
         int[] rowIndices = revert(table.getSelectedRows());
         int rowCount = positionsModel.getRowCount();
-        // nothing selected: bisect the last segment so the new position lands on the route
-        boolean areRowsSelected = rowIndices.length > 0;
-        if (!areRowsSelected)
-            rowIndices = new int[]{rowCount >= 2 ? rowCount - 2 : table.getRowCount()};
+        // nothing selected: behave as if the last position were selected, so the new position is inserted
+        // into the last segment of the route rather than dumped at the (view-dependent) map center
+        if (rowIndices.length == 0)
+            rowIndices = new int[]{rowCount - 1};
         boolean hasInsertedRowInMapCenter = false;
         for (int row : rowIndices) {
-            // bisect the segment after the selected position; for the last position there is no
-            // following segment, so bisect the one before it instead - either way the new position
-            // lands on the route rather than at the (view-dependent, possibly off-route) map center
-            int segmentRow = row >= rowCount - 1 && rowCount >= 2 ? rowCount - 2 : row;
-            NavigationPosition center = calculateCenter(segmentRow);
+            int segmentRow = segmentRowToBisect(row, rowCount);
+            NavigationPosition center = segmentRow < 0 ? null : calculateCenter(segmentRow);
             int insertRow;
             if (center == null) {
                 // no segment to bisect (empty list or a single position): seed at the map center once

@@ -136,7 +136,9 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
                     }
                 }
             } else {
-                log.warning(format("Found garbage for format %s: %s", getName(), line));
+                // fine, not warning: during multi-format probing every non-NMEA file trips this for its
+                // first lines, which spammed the log; a genuine over-limit garble still throws below
+                log.fine(format("Found garbage for format %s: %s", getName(), line));
 
                 // exception for Mobile Navigator 6: accept that the first line may be garbled
                 if (lineCount++ > getGarbleCount())
