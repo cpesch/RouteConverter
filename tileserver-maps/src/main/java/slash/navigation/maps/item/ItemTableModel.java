@@ -90,10 +90,15 @@ public class ItemTableModel<T extends Item> extends AbstractTableModel {
     }
 
     static <T> int sortedIndex(List<T> items, T item, Comparator<? super T> comparator) {
-        int i = 0;
-        while (i < items.size() && comparator.compare(items.get(i), item) <= 0)
-            i++;
-        return i;
+        int low = 0, high = items.size();
+        while (low < high) {
+            int mid = (low + high) >>> 1;
+            if (comparator.compare(items.get(mid), item) <= 0)
+                low = mid + 1;
+            else
+                high = mid;
+        }
+        return low;
     }
 
     private void addItem(T item) {
