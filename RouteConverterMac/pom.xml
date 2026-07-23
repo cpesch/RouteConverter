@@ -79,17 +79,12 @@
 
     <profiles>
         <profile>
-            <!-- Compiles the shared mac-launcher/JavaAppLauncher.m stub (see
-                 issue #206) into a universal (x86_64 + arm64) binary and only
-                 then assembles the macos-{x64,aarch64}.xml app bundles that
-                 install it as Contents/MacOS/RouteConverter. clang + the
-                 Cocoa framework (and the resulting target/RouteConverter the
-                 assembly descriptors require) are only available on a macOS
-                 host, hence both the compile step and the assembly
-                 executions live behind this OS-family gate — on non-mac CI
-                 hosts (e.g. the ubuntu-latest `mvn verify` matrix) the module
-                 still builds/tests the shaded jar, it just skips producing
-                 the .app zip. -->
+            <!-- LOCAL macOS build only: compile the shared
+                 mac-launcher/JavaAppLauncher.m stub (issue #206) into the
+                 universal target/RouteConverter that the assembly descriptors
+                 require. On CI the Linux assembly runner fetches the hosted
+                 stub instead (see the assembly comment above), so this gate
+                 keeps clang — unavailable off macOS — from breaking that build. -->
             <id>mac-native-launcher</id>
             <activation>
                 <os>
@@ -119,6 +114,25 @@
                             </execution>
                         </executions>
                     </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Assemble the macos-{x64,aarch64}.xml .app bundles. Enabled with
+                 -DmacApp. The release/prerelease Linux runner (_build-linux-mac.yml)
+                 passes it after fetching the universal Contents/MacOS/RouteConverter
+                 stub into target/RouteConverter; on a local macOS build pass -DmacApp
+                 too (the mac-native-launcher profile above compiles that stub). The
+                 plain `mvn verify` CI omits it, so RouteConverterMac only builds its
+                 shaded jar there and does not fail on the (absent) stub. -->
+            <id>mac-app</id>
+            <activation>
+                <property>
+                    <name>macApp</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
