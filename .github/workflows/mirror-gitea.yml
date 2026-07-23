@@ -1,0 +1,63 @@
+name: Mirror gitea master
+
+# Keeps github master a superset of the gitea factory master by merging gitea -> github on a
+# schedule. The two masters take commits independently (Dependabot + maintainer on github,
+# factory PRs on gitea), so this is a non-destructive merge, not a force-mirror: a clean merge
+# is pushed, a conflict opens an issue for manual reconciliation. Reuses the release tokens, so
+# no new secrets are needed.
+
+on:
+  schedule:
+    - cron: '17 */3 * * *'   # every 3 hours
+  workflow_dispatch:
+
+concurrency:
+  group: mirror-gitea
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: master
+          fetch-depth: 0
+          # a PAT that can push master; the workflow-issued GITHUB_TOKEN cannot bypass branch protection
+          token: ${{ secrets.RC_RELEASE_PUSH_TOKEN }}
+
+      - name: Merge gitea master into github master
+        env:
+          GITEA_TOKEN: ${{ secrets.RC_SITE_DISPATCH_TOKEN }}
+          GITEA_HOST: ${{ secrets.RC_SITE_GITEA_HOST }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name "routeconverter-mirror"
+          git config user.email "mirror@routeconverter.com"
+
+          git remote add gitea "https://x-access-token:${GITEA_TOKEN}@${GITEA_HOST}/rc/RouteConverter.git"
+          git fetch --no-tags gitea master
+
+          if [ -z "$(git rev-list origin/master..gitea/master)" ]; then
+            echo "github master already contains gitea master; nothing to mirror."
+            exit 0
+          fi
+
+          echo "Merging gitea/master into github master..."
+          if git merge --no-ff --no-edit -m "Mirror gitea master into github master" gitea/master; then
+            git push origin HEAD:master
+            echo "Mirrored gitea master into github master."
+          else
+            git merge --abort
+            echo "::warning::gitea->github mirror hit a merge conflict; manual reconciliation needed."
+            gh issue create \
+              --title "Mirror: gitea->github needs manual reconciliation" \
+              --body "The scheduled gitea->github mirror could not auto-merge because of a conflict. Reconcile the two masters by hand (git fetch gitea && git merge gitea/master), then push. See the recurring workflow-config-guard add/add on actions/checkout version." \
+              || true
+            exit 1
+          fi
