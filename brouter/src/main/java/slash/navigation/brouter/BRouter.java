@@ -100,13 +100,16 @@ public class BRouter extends BaseRoutingService {
         this.profiles = profiles;
         this.segments = segments;
 
-        File storageConfig = new File(getSegmentsDirectory(), "storageconfig.txt");
-        try {
-            PrintWriter writer = new PrintWriter(storageConfig);
-            writer.println("secondary_segment_dir=" + getSegmentsDirectory().getPath());
-            writer.close();
-        } catch (FileNotFoundException e) {
-            log.severe(format("Error while writing storage config: %s", getLocalizedMessage(e)));
+        File segmentsDirectory = getSegmentsDirectory();
+        if (segmentsDirectory != null) {
+            File storageConfig = new File(segmentsDirectory, "storageconfig.txt");
+            try {
+                PrintWriter writer = new PrintWriter(storageConfig);
+                writer.println("secondary_segment_dir=" + segmentsDirectory.getPath());
+                writer.close();
+            } catch (FileNotFoundException e) {
+                log.severe(format("Error while writing storage config: %s", getLocalizedMessage(e)));
+            }
         }
 
         refreshLookupsIfStale();
@@ -127,7 +130,11 @@ public class BRouter extends BaseRoutingService {
         if (downloadManager == null)
             return;
 
-        File lookups = new File(getProfilesDirectory(), LOOKUPS_DAT);
+        File profilesDirectory = getProfilesDirectory();
+        if (profilesDirectory == null)
+            return;
+
+        File lookups = new File(profilesDirectory, LOOKUPS_DAT);
         if (!lookups.exists())
             return;
 
@@ -161,7 +168,15 @@ public class BRouter extends BaseRoutingService {
      * hint instead and leave the segment in place.
      */
     void removeOutdatedSegments() {
-        File lookups = new File(getProfilesDirectory(), LOOKUPS_DAT);
+        File profilesDirectory = getProfilesDirectory();
+        if (profilesDirectory == null)
+            return;
+
+        File segmentsDirectory = getSegmentsDirectory();
+        if (segmentsDirectory == null)
+            return;
+
+        File lookups = new File(profilesDirectory, LOOKUPS_DAT);
         if (!lookups.exists())
             return;
 
@@ -175,7 +190,7 @@ public class BRouter extends BaseRoutingService {
             return;
         }
 
-        for (File file : collectFiles(getSegmentsDirectory(), DOT_RD5)) {
+        for (File file : collectFiles(segmentsDirectory, DOT_RD5)) {
             int version;
             try {
                 version = PhysicalFile.checkVersionIntegrity(file);
@@ -308,6 +323,11 @@ public class BRouter extends BaseRoutingService {
                 log.warning(format("Cannot route between %s and %s: no profiles directory found", from, to));
                 return new RoutingResult(asList(from, to), new DistanceAndTime(calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), null), Invalid);
             }
+            File segmentsDirectory = getSegmentsDirectory();
+            if(segmentsDirectory == null) {
+                log.warning(format("Cannot route between %s and %s: no segments directory found", from, to));
+                return new RoutingResult(asList(from, to), new DistanceAndTime(calculateBearing(from.getLongitude(), from.getLatitude(), to.getLongitude(), to.getLatitude()).getDistance(), null), Invalid);
+            }
             File profile = new File(profilesDirectory, travelMode.name() + ".brf");
             if (!profile.exists()) {
                 profile = new File(profilesDirectory, getPreferredTravelMode().name() + ".brf");
@@ -333,7 +353,7 @@ public class BRouter extends BaseRoutingService {
             RoutingContext routingContext = new RoutingContext();
             routingContext.localFunction = profile.getPath();
 
-            RoutingEngine routingEngine = new RoutingEngine(null, null, getSegmentsDirectory(), createWaypoints(from, to), routingContext);
+            RoutingEngine routingEngine = new RoutingEngine(null, null, segmentsDirectory, createWaypoints(from, to), routingContext);
             routingEngine.quite = true;
             routingEngine.doRun(preferences.getLong("routingTimeout", routingTimeout));
 
