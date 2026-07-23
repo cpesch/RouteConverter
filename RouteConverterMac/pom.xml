@@ -74,45 +74,6 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Assemble the macos-{x64,aarch64}.xml .app bundles. This runs on
-                 the LINUX assembly runner (_build-linux-mac.yml), which is where
-                 the release .app zips are produced, so it must NOT be gated to a
-                 macOS host. The universal Contents/MacOS/RouteConverter stub it
-                 installs is fetched from static.routeconverter.com into
-                 target/RouteConverter by that workflow (built on macOS in
-                 build-mac-jre.yml); on a local macOS build the mac-native-launcher
-                 profile below compiles it into the same path instead. -->
-            <plugin>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>x64</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${basedir}/src/main/assembly/macos-x64.xml</descriptor>
-                            </descriptors>
-                            <finalName>RouteConverterMac</finalName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>aarch64</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>single</goal>
-                        </goals>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>${basedir}/src/main/assembly/macos-aarch64.xml</descriptor>
-                            </descriptors>
-                            <finalName>RouteConverterMac</finalName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
 
@@ -149,6 +110,56 @@
                                         <argument>-c</argument>
                                         <argument>mkdir -p "${project.build.directory}" &amp;&amp; clang -arch x86_64 -arch arm64 -framework Cocoa -o "${project.build.directory}/RouteConverter" "${basedir}/../mac-launcher/JavaAppLauncher.m"</argument>
                                     </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <!-- Assemble the macos-{x64,aarch64}.xml .app bundles. Enabled with
+                 -DmacApp. The release/prerelease Linux runner (_build-linux-mac.yml)
+                 passes it after fetching the universal Contents/MacOS/RouteConverter
+                 stub into target/RouteConverter; on a local macOS build pass -DmacApp
+                 too (the mac-native-launcher profile above compiles that stub). The
+                 plain `mvn verify` CI omits it, so RouteConverterMac only builds its
+                 shaded jar there and does not fail on the (absent) stub. -->
+            <id>mac-app</id>
+            <activation>
+                <property>
+                    <name>macApp</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>x64</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>${basedir}/src/main/assembly/macos-x64.xml</descriptor>
+                                    </descriptors>
+                                    <finalName>RouteConverterMac</finalName>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>aarch64</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>${basedir}/src/main/assembly/macos-aarch64.xml</descriptor>
+                                    </descriptors>
+                                    <finalName>RouteConverterMac</finalName>
                                 </configuration>
                             </execution>
                         </executions>
