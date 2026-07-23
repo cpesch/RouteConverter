@@ -251,7 +251,6 @@
                         -->
                         <doclint>none</doclint>
                         <failOnError>false</failOnError>
-                        <additionalparam>-Xdoclint:none</additionalparam>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -506,7 +505,6 @@
                     </excludePackageNames>
                     <doclint>none</doclint>
                     <failOnError>false</failOnError>
-                    <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
                 <reportSets>
                     <reportSet>
