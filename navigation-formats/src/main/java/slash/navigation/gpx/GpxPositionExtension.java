@@ -52,9 +52,15 @@ public class GpxPositionExtension {
     private static final Set<String> WELL_KNOWN_ELEMENT_NAMES = new HashSet<>(asList("course", "heading", "speed", "temperature"));
 
     private final WptType wptType;
+    private final boolean speedInKilometerPerHour;
 
     GpxPositionExtension(WptType wptType) {
+        this(wptType, false);
+    }
+
+    GpxPositionExtension(WptType wptType, boolean speedInKilometerPerHour) {
         this.wptType = wptType;
+        this.speedInKilometerPerHour = speedInKilometerPerHour;
     }
 
     Set<GpxExtensionType> getExtensionTypes() {
@@ -171,7 +177,7 @@ public class GpxPositionExtension {
                 value -> value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint
                         ? msToKmh(trackPoint.getSpeed()) : null,
                 name -> "speed".equalsIgnoreCase(name),
-                text -> msToKmh(parseDouble(text)));
+                text -> speedInKilometerPerHour ? parseDouble(text) : msToKmh(parseDouble(text)));
     }
 
     public void setSpeed(Double speed) {
@@ -184,7 +190,7 @@ public class GpxPositionExtension {
                     return false;
                 },
                 name -> "speed".equalsIgnoreCase(name),
-                element -> element.setTextContent(formatSpeedAsString(kmhToMs(speed))),
+                element -> element.setTextContent(formatSpeedAsString(speedInKilometerPerHour ? speed : kmhToMs(speed))),
                 trackPoint -> trackPoint.setSpeed(formatSpeedAsDouble(kmhToMs(speed))));
     }
 

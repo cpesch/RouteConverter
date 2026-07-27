@@ -837,6 +837,37 @@ public class Gpx11ExtensionsTest {
     }
 
     @Test
+    public void testColumbusGnssCreatorReadsBareSpeedAsKmh() throws Exception {
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"Columbus GNSS\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<extensions><speed>18.1</speed></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        GpxPosition position = getFirstPositionOfFirstRoute(readGpx(source));
+
+        assertDoubleEquals(18.1, position.getSpeed());
+    }
+
+    @Test
+    public void testColumbusGnssCreatorRoundtripKeepsBareSpeedValue() throws Exception {
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"Columbus GNSS\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<extensions><speed>18.1</speed></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        List<GpxRoute> routes = readGpx(source);
+        GpxPosition position = getFirstPositionOfFirstRoute(routes);
+
+        position.setSpeed(18.1);
+
+        String after = writeGpx(routes);
+        assertTrue(after.contains("<speed>18.1</speed>"));
+        assertFalse(after.contains("<speed>5.0"));
+    }
+
+    @Test
     public void testReadAndUpdateHeadingSpeedTemperatureViaDomElements() throws Exception {
         String source =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
