@@ -868,6 +868,51 @@ public class Gpx11ExtensionsTest {
     }
 
     @Test
+    public void testReadHdopFromDomElement() throws Exception {
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"Columbus GNSS\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<extensions><hdop>0.8</hdop></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        GpxPosition position = getFirstPositionOfFirstRoute(readGpx(source));
+
+        assertDoubleEquals(0.8, position.getHdop());
+    }
+
+    @Test
+    public void testStandardHdopWinsOverExtensionHdop() throws Exception {
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"Columbus GNSS\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<hdop>1.5</hdop>" +
+                "<extensions><hdop>0.8</hdop></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        GpxPosition position = getFirstPositionOfFirstRoute(readGpx(source));
+
+        assertDoubleEquals(1.5, position.getHdop());
+    }
+
+    @Test
+    public void testUpdateHdopDomElementInPlace() throws Exception {
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"Columbus GNSS\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<extensions><hdop>0.8</hdop></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        List<GpxRoute> routes = readGpx(source);
+        GpxPosition position = getFirstPositionOfFirstRoute(routes);
+
+        position.getPositionExtension().setHdop(1.2);
+
+        String after = writeGpx(routes);
+        // bare <hdop> updated in place inside <extensions>, no additional hdop element created there
+        assertTrue(after.contains("<extensions><hdop>1.2</hdop></extensions>"));
+    }
+
+    @Test
     public void testReadAndUpdateHeadingSpeedTemperatureViaDomElements() throws Exception {
         String source =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
