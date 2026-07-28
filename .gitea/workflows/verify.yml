@@ -1,0 +1,82 @@
+# PR verification for factory workspaces (Option A of rc-meta#200,
+# specs/00069-factory-computational-verification.md).
+#
+# CANONICAL COPY lives in rc-meta at factory/verify/verify.yml.template.
+# Deployed to <target repo>/.gitea/workflows/verify.yml (e.g.
+# rc/RouteConverter). Keep the two in sync — edit here, then re-deploy.
+#
+# Runs the repo's own test suite on the `verify` runner label: a separate
+# act_runner instance whose job container (verify-runner image) carries NO
+# secrets — see bootstrap-server/render-act-runner-verify-config.sh. The
+# code under test is agent-authored (untrusted); that is why:
+#   - checkout uses persist-credentials: false (no token left in .git/config)
+#   - the mvn step gets no secrets in env
+#   - the workflow-level GITEA_TOKEN is only referenced in the report step
+#
+# Triggers:
+#   - pull_request: human-pushed PRs (maintainer, manual branches)
+#   - workflow_dispatch: the factory (builder/patcher) dispatches explicitly
+#     after pushing with its PAT — Actions-token-adjacent pushes cannot be
+#     relied on to fire events (loop guard; memory gitea-actions-token-push).
+#     Input `pr` carries the PR number for the failure comment.
+name: verify
+on:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: 'PR number to report the verdict on (optional)'
+        required: false
+        default: ''
+
+concurrency:
+  group: verify-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: verify
+    timeout-minutes: 45
+    steps:
+      - name: checkout (no persisted credentials)
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: run test suite
+        id: mvn
+        shell: bash
+        run: |
+          set -uo pipefail
+          # mvnw when the repo carries the wrapper (pinned maven), distro
+          # mvn otherwise. -DskipITs: unit tests only — integration tests
+          # need network fixtures the jail doesn't provide.
+          if [[ -x ./mvnw ]]; then MVN=./mvnw; else MVN=mvn; fi
+          RC=0
+          "$MVN" -B -ntp -DskipITs test 2>&1 | tee /tmp/verify-mvn.log | tail -c 200000 || RC=$?
+          echo "rc=$RC" >> "$GITHUB_OUTPUT"
+          # Failure summary for the PR comment: last reactor summary +
+          # first failed-test blocks, capped hard.
+          {
+            grep -E "^\[ERROR\]|^\[INFO\] BUILD|Tests run:" /tmp/verify-mvn.log | tail -60
+          } > /tmp/verify-summary.txt || true
+          exit "$RC"
+
+      - name: report failure on PR
+        if: failure()
+        shell: bash
+        env:
+          GITEA_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -uo pipefail
+          # PR number: dispatch input, or the pull_request event payload.
+          PR='${{ github.event.inputs.pr || github.event.pull_request.number }}'
+          [[ -n "$PR" ]] || { echo "no PR number — skip comment"; exit 0; }
+          SUMMARY="$(head -c 4000 /tmp/verify-summary.txt 2>/dev/null || echo 'no summary captured')"
+          BODY="$(jq -n --arg s "$SUMMARY" --arg run "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{body: ("🤖 **verify failed** — test suite did not pass.\n\n```\n" + $s + "\n```\n\n[Workflow run](" + $run + ")")}')"
+          curl -sSf -X POST \
+            -H "Authorization: token $GITEA_TOKEN" \
+            -H "Content-Type: application/json" \
+            "${GITHUB_API_URL}/repos/${GITHUB_REPOSITORY}/issues/${PR}/comments" \
+            --data "$BODY" || echo "::warning::verify failure comment POST failed"
