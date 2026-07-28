@@ -50,6 +50,8 @@ import static slash.navigation.gpx.GpxExtensionType.*;
 
 public class GpxPositionExtension {
     private static final Set<String> WELL_KNOWN_ELEMENT_NAMES = new HashSet<>(asList("course", "heading", "speed", "temperature", "hdop"));
+    // Columbus GNSS firmware namespace for cb:spd (km/h, always) and cb:crs (course over ground, degrees)
+    private static final String CBGPS_NAMESPACE_URI = "https://cbgps.com/gpx/v1";
 
     private final WptType wptType;
     private final boolean speedInKilometerPerHour;
@@ -93,12 +95,46 @@ public class GpxPositionExtension {
         return WELL_KNOWN_ELEMENT_NAMES.contains(element.getLocalName().toLowerCase());
     }
 
+    // Matches a plain DOM element by local name only (namespace-agnostic), reproducing the
+    // matching behavior the readExtension/writeExtension DOM branch used before namespace-aware
+    // matches (e.g. Columbus GNSS's cb: namespace) were introduced.
+    private static Predicate<Element> byName(String... names) {
+        Set<String> nameSet = new HashSet<>(asList(names));
+        return element -> nameSet.contains(element.getLocalName().toLowerCase());
+    }
+
+    // Adapts a readExtension() name predicate (already used for JAXBElement local-name
+    // matching) into a Predicate<Element>, so the well-known names for a field are declared
+    // once instead of once per predicate type.
+    private static Predicate<Element> byLocalName(Predicate<String> matchesName) {
+        return element -> matchesName.test(element.getLocalName());
+    }
+
+    // Matches a plain DOM element by local name within the Columbus GNSS cb: namespace.
+    private static Predicate<Element> byCbName(String... names) {
+        Set<String> nameSet = new HashSet<>(asList(names));
+        return element -> CBGPS_NAMESPACE_URI.equals(element.getNamespaceURI())
+                && nameSet.contains(element.getLocalName().toLowerCase());
+    }
+
+    // Finds the first plain DOM element in <extensions> matching the given predicate, or null.
+    private Element findElement(Predicate<Element> matchesElement) {
+        ExtensionsType extensions = wptType.getExtensions();
+        if (extensions == null)
+            return null;
+        for (Object any : extensions.getAny())
+            if (any instanceof Element element && matchesElement.test(element))
+                return element;
+        return null;
+    }
+
     // Walks the wpt <extensions>, returning the first non-null value produced either
     // from a typed extension (fromExtension) or from a plain DOM element whose local
     // name matches (parseElement). Centralises the JAXBElement-vs-Element walk that the
     // get*() accessors used to each re-implement.
     private <R> R readExtension(Function<Object, R> fromExtension,
                                 Predicate<String> matchesElementName,
+                                Predicate<Element> matchesElement,
                                 Function<String, R> parseElement) {
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions == null)
@@ -113,7 +149,7 @@ public class GpxPositionExtension {
                 if (result == null && jaxbElement.getValue() != null
                         && matchesElementName.test(jaxbElement.getName().getLocalPart()))
                     result = parseElement.apply(jaxbElement.getValue().toString());
-            } else if (any instanceof Element element && matchesElementName.test(element.getLocalName()))
+            } else if (any instanceof Element element && matchesElement.test(element))
                 result = parseElement.apply(element.getTextContent());
             if (result != null)
                 return result;
@@ -122,10 +158,12 @@ public class GpxPositionExtension {
     }
 
     public Double getHeading() {
+        Predicate<String> matchesName = name -> "course".equalsIgnoreCase(name) || "heading".equalsIgnoreCase(name);
         return readExtension(
                 value -> value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint
                         ? formatDouble(trackPoint.getCourse()) : null,
-                name -> "course".equalsIgnoreCase(name) || "heading".equalsIgnoreCase(name),
+                matchesName,
+                byLocalName(matchesName).or(byCbName("crs")),
                 text -> parseDouble(text));
     }
 
@@ -133,7 +171,7 @@ public class GpxPositionExtension {
     // matched, appends a fresh TrackPointExtension v2 carrying it. Centralises the
     // find-or-create write that the set*() accessors used to each re-implement.
     private void writeExtension(Predicate<Object> updateExtension,
-                                Predicate<String> matchesElementName,
+                                Predicate<Element> matchesElement,
                                 Consumer<Element> updateElement,
                                 Consumer<slash.navigation.gpx.trackpoint2.TrackPointExtensionT> populateNewTrackpoint2) {
         if (wptType.getExtensions() == null)
@@ -144,7 +182,7 @@ public class GpxPositionExtension {
             if (any instanceof JAXBElement<?> jaxbElement) {
                 if (updateExtension.test(jaxbElement.getValue()))
                     found = true;
-            } else if (any instanceof Element element && matchesElementName.test(element.getLocalName())) {
+            } else if (any instanceof Element element && matchesElement.test(element)) {
                 updateElement.accept(element);
                 found = true;
             }
@@ -167,15 +205,17 @@ public class GpxPositionExtension {
                     }
                     return false;
                 },
-                name -> "course".equalsIgnoreCase(name) || "heading".equalsIgnoreCase(name),
+                byName("course", "heading").or(byCbName("crs")),
                 element -> element.setTextContent(formatHeadingAsString(heading)),
                 trackPoint -> trackPoint.setCourse(formatHeading(heading)));
     }
 
     public Double getHdop() {
+        Predicate<String> matchesName = name -> "hdop".equalsIgnoreCase(name);
         return readExtension(
                 value -> null,
-                name -> "hdop".equalsIgnoreCase(name),
+                matchesName,
+                byLocalName(matchesName),
                 text -> parseDouble(text));
     }
 
@@ -196,14 +236,28 @@ public class GpxPositionExtension {
     }
 
     public Double getSpeed() {
+        // cb:spd (Columbus GNSS) is always km/h by definition of that namespace, regardless
+        // of the creator-flag-driven unit of a bare <speed> - check it before the generic walk.
+        Element cbSpeed = findElement(byCbName("spd"));
+        if (cbSpeed != null)
+            return parseDouble(cbSpeed.getTextContent());
+
+        Predicate<String> matchesName = name -> "speed".equalsIgnoreCase(name);
         return readExtension(
                 value -> value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint
                         ? msToKmh(trackPoint.getSpeed()) : null,
-                name -> "speed".equalsIgnoreCase(name),
+                matchesName,
+                byLocalName(matchesName),
                 text -> speedInKilometerPerHour ? parseDouble(text) : msToKmh(parseDouble(text)));
     }
 
     public void setSpeed(Double speed) {
+        // Updates every matching existing extension in one pass - a bare <speed> (unit per
+        // speedInKilometerPerHour) and/or a cb:spd (always km/h, no conversion) and/or a typed
+        // trackpoint2 - so a position carrying more than one representation never ends up with
+        // stale, contradicting values in the ones left untouched. Only creates a fresh typed
+        // trackpoint2 (the standard representation) when nothing existed to update; never
+        // creates a cb: element.
         writeExtension(
                 value -> {
                     if (value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
@@ -212,12 +266,15 @@ public class GpxPositionExtension {
                     }
                     return false;
                 },
-                name -> "speed".equalsIgnoreCase(name),
-                element -> element.setTextContent(formatSpeedAsString(speedInKilometerPerHour ? speed : kmhToMs(speed))),
+                byName("speed").or(byCbName("spd")),
+                element -> element.setTextContent(byCbName("spd").test(element) ?
+                        formatSpeedAsString(speed) :
+                        formatSpeedAsString(speedInKilometerPerHour ? speed : kmhToMs(speed))),
                 trackPoint -> trackPoint.setSpeed(formatSpeedAsDouble(kmhToMs(speed))));
     }
 
     public Double getTemperature() {
+        Predicate<String> matchesName = name -> "temperature".equalsIgnoreCase(name);
         return readExtension(
                 value -> {
                     if (value instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint)
@@ -232,7 +289,8 @@ public class GpxPositionExtension {
                     }
                     return null;
                 },
-                name -> "temperature".equalsIgnoreCase(name),
+                matchesName,
+                byLocalName(matchesName),
                 text -> parseDouble(text));
     }
 
@@ -257,12 +315,13 @@ public class GpxPositionExtension {
                     }
                     return false;
                 },
-                name -> "temperature".equalsIgnoreCase(name),
+                byName("temperature"),
                 element -> element.setTextContent(formatTemperatureAsString(temperature)),
                 trackPoint -> trackPoint.setAtemp(formatTemperatureAsDouble(temperature)));
     }
 
     public Short getHeartBeat() {
+        Predicate<String> matchesName = name -> "hr".equalsIgnoreCase(name);
         return readExtension(
                 value -> {
                     if (value instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint)
@@ -271,7 +330,8 @@ public class GpxPositionExtension {
                         return trackPoint.getHr();
                     return null;
                 },
-                name -> "hr".equalsIgnoreCase(name),
+                matchesName,
+                byLocalName(matchesName),
                 text -> parseShort(text));
     }
 
@@ -288,7 +348,7 @@ public class GpxPositionExtension {
                     }
                     return false;
                 },
-                name -> "hr".equalsIgnoreCase(name),
+                byName("hr"),
                 element -> element.setTextContent(formatShortAsString(heartBeat)),
                 trackPoint -> trackPoint.setHr(heartBeat));
     }
