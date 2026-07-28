@@ -36,6 +36,7 @@ import static java.util.Locale.GERMAN;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
 import static slash.common.type.CompactCalendar.*;
+import static slash.navigation.common.UnitSystem.Metric;
 import static slash.navigation.converter.gui.helpers.PositionHelper.*;
 
 public class PositionHelperTest {
@@ -149,6 +150,23 @@ public class PositionHelperTest {
     public void testExtractHdopReturnsEmptyForNullHdop() {
         Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
         assertEquals("", extractHdop(position));
+    }
+
+    // ---- formatElevation (unit system locked explicitly, not preference-driven) ----
+
+    @Test
+    public void testFormatElevation() {
+        assertEquals("52.00 m", formatElevation(52.0, Metric));
+    }
+
+    @Test
+    public void testFormatElevationWithHalf() {
+        assertEquals("52.50 m", formatElevation(52.5, Metric));
+    }
+
+    @Test
+    public void testFormatElevationReturnsEmptyForNullElevation() {
+        assertEquals("", formatElevation(null));
     }
 
     // ---- extractFile ----
