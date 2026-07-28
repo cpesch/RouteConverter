@@ -138,6 +138,32 @@ public class PositionHelper {
         return format("%d bpm", round(heartBeat));
     }
 
+    public static String formatHeading(Double heading) {
+        if (heading == null)
+            return "";
+        return Transfer.formatDoubleAsString(heading, 2) + "\u00B0";
+    }
+
+    public static String extractHeading(NavigationPosition position) {
+        Double heading = null;
+        if (position instanceof Wgs84Position wgs84Position)
+            heading = wgs84Position.getHeading();
+        return formatHeading(heading);
+    }
+
+    public static String formatHdop(Double hdop) {
+        if (hdop == null)
+            return "";
+        return Transfer.formatDoubleAsString(hdop, 2);
+    }
+
+    public static String extractHdop(NavigationPosition position) {
+        Double hdop = null;
+        if (position instanceof Wgs84Position wgs84Position)
+            hdop = wgs84Position.getHdop();
+        return formatHdop(hdop);
+    }
+
     // date
 
     public static String formatDate(CompactCalendar time, String timeZone) {

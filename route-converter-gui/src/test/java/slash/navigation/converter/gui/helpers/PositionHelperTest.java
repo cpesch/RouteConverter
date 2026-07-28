@@ -109,6 +109,48 @@ public class PositionHelperTest {
         assertEquals("", extractHeartBeat(position));
     }
 
+    // ---- extractHeading / extractHdop ----
+
+    @Test
+    public void testExtractHeading() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setHeading(212.0);
+        assertEquals("212.00\u00B0", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHeadingWithZero() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setHeading(0.0);
+        assertEquals("0.00\u00B0", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHeadingReturnsEmptyForNullHeading() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHdop() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setHdop(1.75);
+        assertEquals("1.75", extractHdop(position));
+    }
+
+    @Test
+    public void testExtractHdopWithHalf() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setHdop(0.5);
+        assertEquals("0.50", extractHdop(position));
+    }
+
+    @Test
+    public void testExtractHdopReturnsEmptyForNullHdop() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractHdop(position));
+    }
+
     // ---- extractFile ----
 
     @Test
