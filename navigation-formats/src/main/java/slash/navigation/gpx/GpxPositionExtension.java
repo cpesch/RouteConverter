@@ -103,6 +103,13 @@ public class GpxPositionExtension {
         return element -> nameSet.contains(element.getLocalName().toLowerCase());
     }
 
+    // Adapts a readExtension() name predicate (already used for JAXBElement local-name
+    // matching) into a Predicate<Element>, so the well-known names for a field are declared
+    // once instead of once per predicate type.
+    private static Predicate<Element> byLocalName(Predicate<String> matchesName) {
+        return element -> matchesName.test(element.getLocalName());
+    }
+
     // Matches a plain DOM element by local name within the Columbus GNSS cb: namespace.
     private static Predicate<Element> byCbName(String... names) {
         Set<String> nameSet = new HashSet<>(asList(names));
@@ -151,11 +158,12 @@ public class GpxPositionExtension {
     }
 
     public Double getHeading() {
+        Predicate<String> matchesName = name -> "course".equalsIgnoreCase(name) || "heading".equalsIgnoreCase(name);
         return readExtension(
                 value -> value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint
                         ? formatDouble(trackPoint.getCourse()) : null,
-                name -> "course".equalsIgnoreCase(name) || "heading".equalsIgnoreCase(name),
-                byName("course", "heading").or(byCbName("crs")),
+                matchesName,
+                byLocalName(matchesName).or(byCbName("crs")),
                 text -> parseDouble(text));
     }
 
@@ -203,10 +211,11 @@ public class GpxPositionExtension {
     }
 
     public Double getHdop() {
+        Predicate<String> matchesName = name -> "hdop".equalsIgnoreCase(name);
         return readExtension(
                 value -> null,
-                name -> "hdop".equalsIgnoreCase(name),
-                byName("hdop"),
+                matchesName,
+                byLocalName(matchesName),
                 text -> parseDouble(text));
     }
 
@@ -233,11 +242,12 @@ public class GpxPositionExtension {
         if (cbSpeed != null)
             return parseDouble(cbSpeed.getTextContent());
 
+        Predicate<String> matchesName = name -> "speed".equalsIgnoreCase(name);
         return readExtension(
                 value -> value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint
                         ? msToKmh(trackPoint.getSpeed()) : null,
-                name -> "speed".equalsIgnoreCase(name),
-                byName("speed"),
+                matchesName,
+                byLocalName(matchesName),
                 text -> speedInKilometerPerHour ? parseDouble(text) : msToKmh(parseDouble(text)));
     }
 
@@ -264,6 +274,7 @@ public class GpxPositionExtension {
     }
 
     public Double getTemperature() {
+        Predicate<String> matchesName = name -> "temperature".equalsIgnoreCase(name);
         return readExtension(
                 value -> {
                     if (value instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT trackPoint)
@@ -278,8 +289,8 @@ public class GpxPositionExtension {
                     }
                     return null;
                 },
-                name -> "temperature".equalsIgnoreCase(name),
-                byName("temperature"),
+                matchesName,
+                byLocalName(matchesName),
                 text -> parseDouble(text));
     }
 
@@ -310,6 +321,7 @@ public class GpxPositionExtension {
     }
 
     public Short getHeartBeat() {
+        Predicate<String> matchesName = name -> "hr".equalsIgnoreCase(name);
         return readExtension(
                 value -> {
                     if (value instanceof slash.navigation.gpx.trackpoint1.TrackPointExtensionT trackPoint)
@@ -318,8 +330,8 @@ public class GpxPositionExtension {
                         return trackPoint.getHr();
                     return null;
                 },
-                name -> "hr".equalsIgnoreCase(name),
-                byName("hr"),
+                matchesName,
+                byLocalName(matchesName),
                 text -> parseShort(text));
     }
 
