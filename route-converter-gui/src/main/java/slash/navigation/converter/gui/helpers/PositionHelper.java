@@ -74,8 +74,14 @@ public class PositionHelper {
         if (elevation == null)
             return "";
         UnitSystem unitSystem = BaseRouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        return formatElevation(elevation, unitSystem);
+    }
+
+    // package-private seam: lets PositionHelperTest lock the unit system explicitly,
+    // without needing a running BaseRouteConverter instance (GUI is untestable headless)
+    static String formatElevation(double elevation, UnitSystem unitSystem) {
         double elevationInUnit = unitSystem.valueToUnit(elevation);
-        return format("%s %s", roundFraction(elevationInUnit, 1), unitSystem.getElevationName());
+        return format("%s %s", Transfer.formatDoubleAsString(elevationInUnit, 2), unitSystem.getElevationName());
     }
 
     public static String extractElevation(NavigationPosition position) {
