@@ -74,8 +74,14 @@ public class PositionHelper {
         if (elevation == null)
             return "";
         UnitSystem unitSystem = BaseRouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        return formatElevation(elevation, unitSystem);
+    }
+
+    // package-private seam: lets PositionHelperTest lock the unit system explicitly,
+    // without needing a running BaseRouteConverter instance (GUI is untestable headless)
+    static String formatElevation(double elevation, UnitSystem unitSystem) {
         double elevationInUnit = unitSystem.valueToUnit(elevation);
-        return format("%s %s", roundFraction(elevationInUnit, 1), unitSystem.getElevationName());
+        return format("%s %s", Transfer.formatDoubleAsString(elevationInUnit, 2), unitSystem.getElevationName());
     }
 
     public static String extractElevation(NavigationPosition position) {
@@ -136,6 +142,32 @@ public class PositionHelper {
         if(heartBeat == null)
             return "";
         return format("%d bpm", round(heartBeat));
+    }
+
+    public static String formatHeading(Double heading) {
+        if (heading == null)
+            return "";
+        return Transfer.formatDoubleAsString(heading, 2) + "\u00B0";
+    }
+
+    public static String extractHeading(NavigationPosition position) {
+        Double heading = null;
+        if (position instanceof Wgs84Position wgs84Position)
+            heading = wgs84Position.getHeading();
+        return formatHeading(heading);
+    }
+
+    public static String formatHdop(Double hdop) {
+        if (hdop == null)
+            return "";
+        return Transfer.formatDoubleAsString(hdop, 2);
+    }
+
+    public static String extractHdop(NavigationPosition position) {
+        Double hdop = null;
+        if (position instanceof Wgs84Position wgs84Position)
+            hdop = wgs84Position.getHdop();
+        return formatHdop(hdop);
     }
 
     // date

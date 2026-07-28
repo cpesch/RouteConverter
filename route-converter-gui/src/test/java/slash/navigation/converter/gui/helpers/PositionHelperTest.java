@@ -36,6 +36,7 @@ import static java.util.Locale.GERMAN;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.calendar;
 import static slash.common.type.CompactCalendar.*;
+import static slash.navigation.common.UnitSystem.Metric;
 import static slash.navigation.converter.gui.helpers.PositionHelper.*;
 
 public class PositionHelperTest {
@@ -107,6 +108,65 @@ public class PositionHelperTest {
     public void testExtractHeartBeatReturnsEmptyForNonSensorPosition() {
         Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
         assertEquals("", extractHeartBeat(position));
+    }
+
+    // ---- extractHeading / extractHdop ----
+
+    @Test
+    public void testExtractHeading() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setHeading(212.0);
+        assertEquals("212.00\u00B0", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHeadingWithZero() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setHeading(0.0);
+        assertEquals("0.00\u00B0", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHeadingReturnsEmptyForNullHeading() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHdop() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setHdop(1.75);
+        assertEquals("1.75", extractHdop(position));
+    }
+
+    @Test
+    public void testExtractHdopWithHalf() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setHdop(0.5);
+        assertEquals("0.50", extractHdop(position));
+    }
+
+    @Test
+    public void testExtractHdopReturnsEmptyForNullHdop() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractHdop(position));
+    }
+
+    // ---- formatElevation (unit system locked explicitly, not preference-driven) ----
+
+    @Test
+    public void testFormatElevation() {
+        assertEquals("52.00 m", formatElevation(52.0, Metric));
+    }
+
+    @Test
+    public void testFormatElevationWithHalf() {
+        assertEquals("52.50 m", formatElevation(52.5, Metric));
+    }
+
+    @Test
+    public void testFormatElevationReturnsEmptyForNullElevation() {
+        assertEquals("", formatElevation(null));
     }
 
     // ---- extractFile ----

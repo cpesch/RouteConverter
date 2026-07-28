@@ -39,8 +39,10 @@ import static slash.navigation.base.RouteComments.parseDescription;
 
 public class Wgs84Position extends BaseNavigationPosition implements ExtendedSensorNavigationPosition {
     protected Double longitude, latitude, heading, pressure, temperature, hdop, vdop, pdop;
+    protected Double accelerationX, accelerationY, accelerationZ;
     protected String description;
     protected Integer satellites;
+    protected Integer fixQuality;
     protected WaypointType waypointType;
     private Double elevation, speed;
     private Short heartBeat;
@@ -185,6 +187,38 @@ public class Wgs84Position extends BaseNavigationPosition implements ExtendedSen
         this.satellites = satellites;
     }
 
+    public Integer getFixQuality() {
+        return fixQuality;
+    }
+
+    public void setFixQuality(Integer fixQuality) {
+        this.fixQuality = fixQuality;
+    }
+
+    public Double getAccelerationX() {
+        return accelerationX;
+    }
+
+    public void setAccelerationX(Double accelerationX) {
+        this.accelerationX = accelerationX;
+    }
+
+    public Double getAccelerationY() {
+        return accelerationY;
+    }
+
+    public void setAccelerationY(Double accelerationY) {
+        this.accelerationY = accelerationY;
+    }
+
+    public Double getAccelerationZ() {
+        return accelerationZ;
+    }
+
+    public void setAccelerationZ(Double accelerationZ) {
+        this.accelerationZ = accelerationZ;
+    }
+
     public/*for tests*/ Object getOrigin() {
         return origin;
     }
@@ -257,7 +291,11 @@ public class Wgs84Position extends BaseNavigationPosition implements ExtendedSen
                 Objects.equals(hdop, that.hdop) &&
                 Objects.equals(pdop, that.pdop) &&
                 Objects.equals(vdop, that.vdop) &&
-                Objects.equals(satellites, that.satellites);
+                Objects.equals(satellites, that.satellites) &&
+                Objects.equals(fixQuality, that.fixQuality) &&
+                Objects.equals(accelerationX, that.accelerationX) &&
+                Objects.equals(accelerationY, that.accelerationY) &&
+                Objects.equals(accelerationZ, that.accelerationZ);
     }
 
     public int hashCode() {
@@ -272,6 +310,10 @@ public class Wgs84Position extends BaseNavigationPosition implements ExtendedSen
         result = 31 * result + (pdop != null ? pdop.hashCode() : 0);
         result = 31 * result + (vdop != null ? vdop.hashCode() : 0);
         result = 31 * result + (satellites != null ? satellites.hashCode() : 0);
+        result = 31 * result + (fixQuality != null ? fixQuality.hashCode() : 0);
+        result = 31 * result + (accelerationX != null ? accelerationX.hashCode() : 0);
+        result = 31 * result + (accelerationY != null ? accelerationY.hashCode() : 0);
+        result = 31 * result + (accelerationZ != null ? accelerationZ.hashCode() : 0);
         return result;
     }
 }
