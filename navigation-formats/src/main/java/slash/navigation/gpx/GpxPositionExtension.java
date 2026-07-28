@@ -49,7 +49,7 @@ import static slash.navigation.gpx.GpxExtensionType.*;
  */
 
 public class GpxPositionExtension {
-    private static final Set<String> WELL_KNOWN_ELEMENT_NAMES = new HashSet<>(asList("course", "heading", "speed", "temperature"));
+    private static final Set<String> WELL_KNOWN_ELEMENT_NAMES = new HashSet<>(asList("course", "heading", "speed", "temperature", "hdop"));
 
     private final WptType wptType;
     private final boolean speedInKilometerPerHour;
@@ -170,6 +170,29 @@ public class GpxPositionExtension {
                 name -> "course".equalsIgnoreCase(name) || "heading".equalsIgnoreCase(name),
                 element -> element.setTextContent(formatHeadingAsString(heading)),
                 trackPoint -> trackPoint.setCourse(formatHeading(heading)));
+    }
+
+    public Double getHdop() {
+        return readExtension(
+                value -> null,
+                name -> "hdop".equalsIgnoreCase(name),
+                text -> parseDouble(text));
+    }
+
+    // No typed extension (TrackPointExtensionT) carries hdop, so unlike setHeading()/setSpeed()
+    // this must not fall back to creating one - it only updates an existing bare <hdop> element.
+    // The standard <hdop> child of <trkpt> (written by Gpx11Format.createWptType) remains the
+    // canonical output for converted positions.
+    public void setHdop(Double hdop) {
+        ExtensionsType extensions = wptType.getExtensions();
+        if (extensions == null)
+            return;
+        for (Object any : extensions.getAny()) {
+            if (any instanceof Element element && "hdop".equalsIgnoreCase(element.getLocalName())) {
+                element.setTextContent(formatAccuracyAsString(hdop));
+                return;
+            }
+        }
     }
 
     public Double getSpeed() {
