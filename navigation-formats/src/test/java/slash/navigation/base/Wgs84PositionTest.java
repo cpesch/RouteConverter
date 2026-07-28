@@ -165,5 +165,75 @@ public class Wgs84PositionTest {
         Wgs84Position pos = new Wgs84Position(null, null, null, null, null, null);
         assertFalse(pos.hasCoordinates());
     }
+
+    @Test
+    public void testSetAndGetAccelerationX() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setAccelerationX(0.15);
+        assertEquals(0.15, pos.getAccelerationX(), 0.0001);
+    }
+
+    @Test
+    public void testSetAndGetAccelerationY() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setAccelerationY(-0.25);
+        assertEquals(-0.25, pos.getAccelerationY(), 0.0001);
+    }
+
+    @Test
+    public void testSetAndGetAccelerationZ() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setAccelerationZ(1.02);
+        assertEquals(1.02, pos.getAccelerationZ(), 0.0001);
+    }
+
+    @Test
+    public void testAccelerationDefaultsAreNull() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertNull(pos.getAccelerationX());
+        assertNull(pos.getAccelerationY());
+        assertNull(pos.getAccelerationZ());
+    }
+
+    @Test
+    public void testSetAndGetFixQuality() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setFixQuality(4);
+        assertEquals(Integer.valueOf(4), pos.getFixQuality());
+    }
+
+    @Test
+    public void testFixQualityDefaultIsNull() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertNull(pos.getFixQuality());
+    }
+
+    @Test
+    public void testEqualsUnchangedWhenAllFourNewFieldsNull() {
+        Wgs84Position a = new Wgs84Position(10.0, 50.0, 200.0, null, null, "Munich");
+        Wgs84Position b = new Wgs84Position(10.0, 50.0, 200.0, null, null, "Munich");
+        assertEquals(a, b);
+        assertEquals(a.hashCode(), b.hashCode());
+    }
+
+    @Test
+    public void testNotEqualDifferentAccelerationX() {
+        Wgs84Position a = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        a.setAccelerationX(0.1);
+        Wgs84Position b = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        b.setAccelerationX(0.2);
+        assertNotEquals(a, b);
+        assertNotEquals(a.hashCode(), b.hashCode());
+    }
+
+    @Test
+    public void testNotEqualDifferentFixQuality() {
+        Wgs84Position a = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        a.setFixQuality(1);
+        Wgs84Position b = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        b.setFixQuality(2);
+        assertNotEquals(a, b);
+        assertNotEquals(a.hashCode(), b.hashCode());
+    }
 }
 
