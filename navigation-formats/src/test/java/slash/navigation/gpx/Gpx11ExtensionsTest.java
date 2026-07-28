@@ -956,6 +956,34 @@ public class Gpx11ExtensionsTest {
     }
 
     @Test
+    public void testUpdateSpeedUpdatesAllExistingRepresentationsConsistently() throws Exception {
+        // a position carrying both a bare <speed> and a cb:spd (e.g. re-saved by another tool)
+        // must have BOTH updated to the new value - setSpeed() must not update only one and
+        // leave the other stale/contradicting.
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx version=\"1.1\" creator=\"Columbus GNSS\" xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:cb=\"https://cbgps.com/gpx/v1\">" +
+                "<trk><trkseg><trkpt lat=\"26.0983295\" lon=\"119.2648235\">" +
+                "<extensions><speed>3.4</speed><cb:spd>3.4</cb:spd></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        List<GpxRoute> routes = readGpx(source);
+        GpxPosition position = getFirstPositionOfFirstRoute(routes);
+
+        position.setSpeed(7.2);
+
+        String after = writeGpx(routes);
+        // both elements updated, none left behind with the old, now-contradicting value
+        assertFalse(after.contains("3.4"));
+        assertTrue(after.contains("<speed>7.2</speed>"));
+        assertTrue(after.contains("cb:spd>7.2<"));
+        // no additional (e.g. trackpoint2) extension element created since existing ones matched
+        assertFalse(after.contains(":TrackPointExtension"));
+
+        GpxPosition position2 = getFirstPositionOfFirstRoute(readGpx(after));
+        assertDoubleEquals(7.2, position2.getSpeed());
+    }
+
+    @Test
     public void testBareSpdWithoutNamespaceIgnored() throws Exception {
         String source =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +

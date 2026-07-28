@@ -242,13 +242,12 @@ public class GpxPositionExtension {
     }
 
     public void setSpeed(Double speed) {
-        // Update a matched cb:spd in place with the km/h value (no conversion); never create one.
-        Element cbSpeed = findElement(byCbName("spd"));
-        if (cbSpeed != null) {
-            cbSpeed.setTextContent(formatSpeedAsString(speed));
-            return;
-        }
-
+        // Updates every matching existing extension in one pass - a bare <speed> (unit per
+        // speedInKilometerPerHour) and/or a cb:spd (always km/h, no conversion) and/or a typed
+        // trackpoint2 - so a position carrying more than one representation never ends up with
+        // stale, contradicting values in the ones left untouched. Only creates a fresh typed
+        // trackpoint2 (the standard representation) when nothing existed to update; never
+        // creates a cb: element.
         writeExtension(
                 value -> {
                     if (value instanceof slash.navigation.gpx.trackpoint2.TrackPointExtensionT trackPoint) {
@@ -257,8 +256,10 @@ public class GpxPositionExtension {
                     }
                     return false;
                 },
-                byName("speed"),
-                element -> element.setTextContent(formatSpeedAsString(speedInKilometerPerHour ? speed : kmhToMs(speed))),
+                byName("speed").or(byCbName("spd")),
+                element -> element.setTextContent(byCbName("spd").test(element) ?
+                        formatSpeedAsString(speed) :
+                        formatSpeedAsString(speedInKilometerPerHour ? speed : kmhToMs(speed))),
                 trackPoint -> trackPoint.setSpeed(formatSpeedAsDouble(kmhToMs(speed))));
     }
 
