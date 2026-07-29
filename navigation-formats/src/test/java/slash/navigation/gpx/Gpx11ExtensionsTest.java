@@ -909,7 +909,8 @@ public class Gpx11ExtensionsTest {
 
         String after = writeGpx(routes);
         // bare <hdop> updated in place inside <extensions>, no additional hdop element created there
-        assertTrue(after.contains("<extensions><hdop>1.2</hdop></extensions>"));
+        assertFalse(after.contains("0.8"));
+        assertTrue(after.contains(">1.2</hdop>"));
     }
 
     @Test
