@@ -62,7 +62,7 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
         this(formatDouble(longitude), formatDouble(latitude), formatDouble(elevation), speed, time, description, origin);
         if (heading != null)
             this.heading = heading;
-        setHdop(formatDouble(hdop));
+        super.setHdop(formatDouble(hdop));
         setPdop(formatDouble(pdop));
         setVdop(formatDouble(vdop));
         setSatellites(formatInt(satellites));
@@ -74,7 +74,9 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
                        BigInteger satellites, Object origin) {
         this(formatDouble(longitude), formatDouble(latitude), formatDouble(elevation), null, time, description, origin);
         this.positionExtension = positionExtension;
-        setHdop(formatDouble(hdop));
+        // super, not setHdop(): reading a file must not write back into its extensions. The value
+        // here is already the one Gpx11Format resolved from <trkpt><hdop> or the extension.
+        super.setHdop(formatDouble(hdop));
         setPdop(formatDouble(pdop));
         setVdop(formatDouble(vdop));
         setSatellites(formatInt(satellites));
@@ -134,6 +136,15 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
 
     void setPositionExtension(GpxPositionExtension positionExtension) {
         this.positionExtension = positionExtension;
+    }
+
+    // Unlike heading/speed/temperature, hdop also has a canonical home outside the extensions -
+    // the <hdop> child of <trkpt>, which Gpx11Format writes from this field. Both are written, so
+    // both must be updated or the file ends up contradicting itself.
+    public void setHdop(Double hdop) {
+        super.setHdop(hdop);
+        if (getPositionExtension() != null)
+            getPositionExtension().setHdop(hdop);
     }
 
     public Double getHeading() {

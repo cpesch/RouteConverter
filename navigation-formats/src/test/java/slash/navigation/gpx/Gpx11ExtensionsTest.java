@@ -919,6 +919,49 @@ public class Gpx11ExtensionsTest {
     }
 
     @Test
+    public void testUpdateHdopUpdatesTheTrkptElementAndTheExtensionTogether() throws Exception {
+        // <trkpt><hdop> and a bare <hdop> inside <extensions> are both written, so setting the
+        // value must update both - leaving either behind writes a file contradicting itself
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"Columbus GNSS\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<hdop>1.5</hdop>" +
+                "<extensions><hdop>0.8</hdop></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        List<GpxRoute> routes = readGpx(source);
+        GpxPosition position = getFirstPositionOfFirstRoute(routes);
+
+        position.setHdop(1.2);
+
+        String after = writeGpx(routes);
+        assertTrue(withoutFormatting(after).contains("<hdop>1.2</hdop><extensions><hdop>1.2</hdop></extensions>"));
+        // neither of the two old values survived anywhere
+        assertFalse(after.contains(">1.5<"));
+        assertFalse(after.contains(">0.8<"));
+    }
+
+    @Test
+    public void testUpdateHdopUpdatesEveryExtensionRepresentation() throws Exception {
+        // more than one bare <hdop> in <extensions> (e.g. re-saved by another tool): every one is
+        // updated, not just the first
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"Columbus GNSS\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<extensions><hdop>0.8</hdop><hdop>0.9</hdop></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        List<GpxRoute> routes = readGpx(source);
+        GpxPosition position = getFirstPositionOfFirstRoute(routes);
+
+        position.setHdop(1.2);
+
+        String after = writeGpx(routes);
+        assertTrue(withoutFormatting(after).contains("<extensions><hdop>1.2</hdop><hdop>1.2</hdop></extensions>"));
+        assertFalse(after.contains(">0.9<"));
+    }
+
+    @Test
     public void testReadCbSpdAsKmhAndCbCrsAsHeading() throws Exception {
         String source =
                 "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
