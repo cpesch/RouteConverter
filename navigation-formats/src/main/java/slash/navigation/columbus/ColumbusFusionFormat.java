@@ -112,14 +112,6 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
         return "Columbus Fusion (*" + getExtension() + ")";
     }
 
-    public boolean isSupportsWriting() {
-        return true;
-    }
-
-    public boolean isSupportsReading() {
-        return true;
-    }
-
     protected Pattern getLinePattern() {
         return LINE_GNSS;
     }
