@@ -19,6 +19,7 @@
 */
 package slash.navigation.columbus;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
@@ -27,27 +28,42 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
+import static slash.navigation.base.WaypointType.Waypoint;
 import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
 import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
 
 /**
- * Reads Columbus Fusion track (.csv) files, a read-only GNSS track format with
- * three possible column layouts (GNSS/GNSS+SAT/GNSS+SAT+FIX), distinguished by
- * the second header line. Empty tag/date columns carry forward from the
- * previous row.
+ * Reads and writes Columbus Fusion track (.csv) files, a GNSS track format with
+ * five possible column layouts (GNSS/GNSS+SAT/GNSS+SAT+FIX/GNSS+IMU/IMU),
+ * distinguished by the Type directive and the second header line. Empty tag/date
+ * columns carry forward from the previous row.
+ *
+ * The two acceleration layouts sample at 10-20 Hz: only the row carrying a time
+ * value becomes a position - with the first acceleration triple of that second -
+ * while the continuation rows are consumed silently. IMU positions have no
+ * coordinates at all, just time and acceleration.
+ *
+ * Writing always emits the widest GNSS+SAT+FIX layout, so that satellites, hdop
+ * and fix quality survive a roundtrip; columns without a value stay empty.
  *
  * @author Christian Pesch
  */
 public class ColumbusFusionFormat extends ColumbusGpsFormat {
     private static final Pattern FORMAT_DIRECTIVE_PATTERN =
-            Pattern.compile("#\\s*Format=ColumbusFusion;\\s*Version=[\\d.]+;\\s*Type=GNSS\\s*");
+            Pattern.compile("#\\s*Format=ColumbusFusion;\\s*Version=[\\d.]+;\\s*Type=(GNSS\\+IMU|GNSS|IMU)\\s*");
 
     private static final Pattern COLUMN_HEADER_GNSS_PATTERN =
             Pattern.compile("\\s*tag,date,time,lat,lon,alt,speed,heading\\s*");
@@ -55,15 +71,30 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
             Pattern.compile("\\s*tag,date,time,lat,lon,alt,speed,heading,sat,hdop\\s*");
     private static final Pattern COLUMN_HEADER_GNSS_SAT_FIX_PATTERN =
             Pattern.compile("\\s*tag,date,time,lat,lon,alt,speed,heading,sat,hdop,fix\\s*");
+    private static final Pattern COLUMN_HEADER_GNSS_IMU_PATTERN =
+            Pattern.compile("\\s*tag,date,time,lat,lon,alt,speed,heading,ax,ay,az\\s*");
+    private static final Pattern COLUMN_HEADER_IMU_PATTERN =
+            Pattern.compile("\\s*tag,date,time,ax,ay,az\\s*");
 
+    private static final String FORMAT_DIRECTIVE = "# Format=ColumbusFusion; Version=1.0; Type=GNSS";
+    private static final String COLUMN_HEADER_GNSS_SAT_FIX = "tag,date,time,lat,lon,alt,speed,heading,sat,hdop,fix";
+
+    private static final Set<String> WRITABLE_TAG_VALUES = new HashSet<>(asList("C", "D", "G", "T"));
+
+    // layout ids, historically the column count of the layout
+    static final int LAYOUT_IMU = 6;
     static final int LAYOUT_GNSS = 8;
     static final int LAYOUT_GNSS_SAT = 10;
     static final int LAYOUT_GNSS_SAT_FIX = 11;
+    static final int LAYOUT_GNSS_IMU = 12;
 
     private static final String S = ",";
     private static final String TAG = "([CDGT]?)", DATE = "(\\d*)", TIME = "(\\d+)",
             LATLON = "(-?[\\d.]+)", ALT = "([-\\d.]*)", SPEED = "([\\d.]*)", HEAD = "([\\d.]*)",
             SAT = "(\\d*)", HDOP = "([\\d.]*)", FIX = "(\\d*)";
+    // the acceleration layouts leave every column but ax/ay/az empty on their continuation rows
+    private static final String OPTIONAL_TIME = "(\\d*)", OPTIONAL_LATLON = "(-?[\\d.]*)",
+            ACCELERATION = "(-?[\\d.]*)";
 
     private static final Pattern LINE_GNSS = Pattern.compile(
             TAG + S + DATE + S + TIME + S + LATLON + S + LATLON + S + ALT + S + SPEED + S + HEAD);
@@ -71,13 +102,18 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
             TAG + S + DATE + S + TIME + S + LATLON + S + LATLON + S + ALT + S + SPEED + S + HEAD + S + SAT + S + HDOP);
     private static final Pattern LINE_GNSS_SAT_FIX = Pattern.compile(
             TAG + S + DATE + S + TIME + S + LATLON + S + LATLON + S + ALT + S + SPEED + S + HEAD + S + SAT + S + HDOP + S + FIX);
+    private static final Pattern LINE_GNSS_IMU = Pattern.compile(
+            TAG + S + DATE + S + OPTIONAL_TIME + S + OPTIONAL_LATLON + S + OPTIONAL_LATLON + S + ALT + S + SPEED + S + HEAD +
+                    S + ACCELERATION + S + ACCELERATION + S + ACCELERATION);
+    private static final Pattern LINE_IMU = Pattern.compile(
+            TAG + S + DATE + S + OPTIONAL_TIME + S + ACCELERATION + S + ACCELERATION + S + ACCELERATION);
 
     public String getName() {
         return "Columbus Fusion (*" + getExtension() + ")";
     }
 
     public boolean isSupportsWriting() {
-        return false;
+        return true;
     }
 
     public boolean isSupportsReading() {
@@ -97,7 +133,7 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
     }
 
     protected String getHeader() {
-        return "# Format=ColumbusFusion; Version=1.0; Type=GNSS\ntag,date,time,lat,lon,alt,speed,heading";
+        return FORMAT_DIRECTIVE + "\n" + COLUMN_HEADER_GNSS_SAT_FIX;
     }
 
     protected boolean isPosition(String line) {
@@ -110,13 +146,16 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
 
     private boolean matchesAnyLine(String line) {
         return LINE_GNSS.matcher(line).matches() || LINE_GNSS_SAT.matcher(line).matches() ||
-                LINE_GNSS_SAT_FIX.matcher(line).matches();
+                LINE_GNSS_SAT_FIX.matcher(line).matches() || LINE_GNSS_IMU.matcher(line).matches() ||
+                LINE_IMU.matcher(line).matches();
     }
 
     private boolean isColumnHeader(String line) {
         return COLUMN_HEADER_GNSS_PATTERN.matcher(line).matches() ||
                 COLUMN_HEADER_GNSS_SAT_PATTERN.matcher(line).matches() ||
-                COLUMN_HEADER_GNSS_SAT_FIX_PATTERN.matcher(line).matches();
+                COLUMN_HEADER_GNSS_SAT_FIX_PATTERN.matcher(line).matches() ||
+                COLUMN_HEADER_GNSS_IMU_PATTERN.matcher(line).matches() ||
+                COLUMN_HEADER_IMU_PATTERN.matcher(line).matches();
     }
 
     int detectLayout(String columnHeaderLine) {
@@ -124,6 +163,10 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
             return LAYOUT_GNSS_SAT_FIX;
         if (COLUMN_HEADER_GNSS_SAT_PATTERN.matcher(columnHeaderLine).matches())
             return LAYOUT_GNSS_SAT;
+        if (COLUMN_HEADER_GNSS_IMU_PATTERN.matcher(columnHeaderLine).matches())
+            return LAYOUT_GNSS_IMU;
+        if (COLUMN_HEADER_IMU_PATTERN.matcher(columnHeaderLine).matches())
+            return LAYOUT_IMU;
         if (COLUMN_HEADER_GNSS_PATTERN.matcher(columnHeaderLine).matches())
             return LAYOUT_GNSS;
         return -1;
@@ -135,9 +178,17 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
                 return LINE_GNSS_SAT_FIX;
             case LAYOUT_GNSS_SAT:
                 return LINE_GNSS_SAT;
+            case LAYOUT_GNSS_IMU:
+                return LINE_GNSS_IMU;
+            case LAYOUT_IMU:
+                return LINE_IMU;
             default:
                 return LINE_GNSS;
         }
+    }
+
+    private boolean isAccelerationLayout(int layout) {
+        return layout == LAYOUT_GNSS_IMU || layout == LAYOUT_IMU;
     }
 
     public void read(BufferedReader reader, String encoding, ParserContext context) throws IOException {
@@ -178,6 +229,11 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
             }
             garbleCount = getGarbleCount();
 
+            // a continuation row of an acceleration layout carries a further sample of the
+            // current second only - a valid line, but not a position of its own
+            if (isAccelerationLayout(layout) && trim(lineMatcher.group(3)) == null)
+                continue;
+
             String tag = trim(lineMatcher.group(1));
             if (tag == null)
                 tag = previousTag;
@@ -196,7 +252,7 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
     }
 
     public Wgs84Position parsePosition(String line, ParserContext context) {
-        for (int candidate : new int[]{LAYOUT_GNSS_SAT_FIX, LAYOUT_GNSS_SAT, LAYOUT_GNSS}) {
+        for (int candidate : new int[]{LAYOUT_GNSS_SAT_FIX, LAYOUT_GNSS_SAT, LAYOUT_GNSS_IMU, LAYOUT_GNSS, LAYOUT_IMU}) {
             Matcher lineMatcher = linePatternFor(candidate).matcher(line);
             if (lineMatcher.matches()) {
                 String tag = trim(lineMatcher.group(1));
@@ -210,6 +266,9 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
     }
 
     private Wgs84Position parseRow(Matcher lineMatcher, String tag, String date, int layout, int index) {
+        if (layout == LAYOUT_IMU)
+            return parseImuRow(lineMatcher, tag, date, index);
+
         String time = lineMatcher.group(3);
         Double latitude = parseDouble(lineMatcher.group(4));
         Double longitude = parseDouble(lineMatcher.group(5));
@@ -219,7 +278,7 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
 
         WaypointType waypointType = parseTag(tag);
 
-        slash.common.io.CompactCalendar dateAndTime = parseDateAndTime(date, time);
+        CompactCalendar dateAndTime = parseDateAndTime(date, time);
         if (dateAndTime != null && getUseLocalTimeZone())
             dateAndTime = dateAndTime.asUTCTimeInTimeZone(TimeZone.getTimeZone(getTimeZone()));
 
@@ -235,8 +294,35 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
         }
         if (layout == LAYOUT_GNSS_SAT_FIX)
             position.setFixQuality(parseInteger(lineMatcher.group(11)));
+        if (layout == LAYOUT_GNSS_IMU)
+            setAcceleration(position, lineMatcher, 9);
 
         return position;
+    }
+
+    /**
+     * IMU rows have no coordinates at all - just time, tag and the first acceleration
+     * triple of that second.
+     */
+    private Wgs84Position parseImuRow(Matcher lineMatcher, String tag, String date, int index) {
+        WaypointType waypointType = parseTag(tag);
+
+        CompactCalendar dateAndTime = parseDateAndTime(date, lineMatcher.group(3));
+        if (dateAndTime != null && getUseLocalTimeZone())
+            dateAndTime = dateAndTime.asUTCTimeInTimeZone(TimeZone.getTimeZone(getTimeZone()));
+
+        String description = parseDescription("", String.valueOf(index + 1), waypointType);
+
+        Wgs84Position position = new Wgs84Position(null, null, null, null, dateAndTime, description);
+        position.setWaypointType(waypointType);
+        setAcceleration(position, lineMatcher, 4);
+        return position;
+    }
+
+    private void setAcceleration(Wgs84Position position, Matcher lineMatcher, int firstGroup) {
+        position.setAccelerationX(parseDouble(lineMatcher.group(firstGroup)));
+        position.setAccelerationY(parseDouble(lineMatcher.group(firstGroup + 1)));
+        position.setAccelerationZ(parseDouble(lineMatcher.group(firstGroup + 2)));
     }
 
     private Integer parseInteger(String string) {
@@ -250,7 +336,55 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
         }
     }
 
+    /**
+     * Inverts the device-local to UTC conversion applied while reading.
+     */
+    private CompactCalendar asDeviceLocalTime(CompactCalendar time, TimeZone timeZone) {
+        long timeInMillis = time.getTimeInMillis();
+        return fromMillisAndTimeZone(timeInMillis + timeZone.getOffset(timeInMillis), "UTC");
+    }
+
+    /**
+     * Fusion lines only allow the tags C, D, G and T, so any other waypoint type
+     * falls back to a plain track point.
+     */
+    private String formatFusionTag(Wgs84Position position) {
+        String tag = formatTag(position);
+        return tag != null && WRITABLE_TAG_VALUES.contains(tag) ? tag : Waypoint.value();
+    }
+
+    /**
+     * Formats with the full precision of the value, since Fusion files carry up to
+     * seven fraction digits for coordinates and a fixed fraction count would truncate them.
+     */
+    private String formatDoubleOrEmpty(Double aDouble) {
+        return aDouble != null ? formatDoubleAsString(aDouble) : "";
+    }
+
+    private String formatIntegerOrEmpty(Integer anInteger) {
+        return anInteger != null ? formatIntAsString(anInteger) : "";
+    }
+
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        throw new UnsupportedOperationException("Columbus Fusion format is read-only");
+        CompactCalendar time = position.getTime();
+        if (time != null && getUseLocalTimeZone())
+            time = asDeviceLocalTime(time, TimeZone.getTimeZone(getTimeZone()));
+
+        String date = formatDate(time);
+        String timeOfDay = formatTime(time);
+        if (timeOfDay.isEmpty())
+            timeOfDay = "000000";
+
+        writer.println(formatFusionTag(position) + S +
+                date + S +
+                timeOfDay + S +
+                formatDoubleAsString(position.getLatitude()) + S +
+                formatDoubleAsString(position.getLongitude()) + S +
+                formatDoubleOrEmpty(position.getElevation()) + S +
+                formatDoubleOrEmpty(position.getSpeed()) + S +
+                formatDoubleOrEmpty(position.getHeading()) + S +
+                formatIntegerOrEmpty(position.getSatellites()) + S +
+                formatDoubleOrEmpty(position.getHdop()) + S +
+                formatIntegerOrEmpty(position.getFixQuality()));
     }
 }

@@ -22,6 +22,7 @@ package slash.navigation.base;
 import slash.navigation.babel.*;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.bcr.MTP0809Format;
+import slash.navigation.columbus.ColumbusFusionFormat;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.columbus.ColumbusGpsType2Format;
@@ -132,6 +133,7 @@ public class NavigationFormatRegistry {
         addFormat(GlopusFormat.class);
         addFormat(ColumbusGpsType1Format.class);
         addFormat(ColumbusGpsType2Format.class);
+        addFormat(ColumbusFusionFormat.class);
         addFormat(QstarzQ1000Format.class);
         addFormat(Iblue747Format.class);
         addFormat(SygicAsciiFormat.class);

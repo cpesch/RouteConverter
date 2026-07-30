@@ -84,6 +84,12 @@ public class Gpx11ExtensionsTest {
         return outputStream.toString(StandardCharsets.UTF_8);
     }
 
+    // Removes the writer's indentation between elements, so a test can assert on the
+    // element structure it cares about as one contiguous string.
+    private String withoutFormatting(String xml) {
+        return xml.replaceAll(">\\s+<", "><");
+    }
+
 
     @Test
     public void testReadTrekbuddy0984TypedCourseAndSpeed() throws Exception {
@@ -909,7 +915,7 @@ public class Gpx11ExtensionsTest {
 
         String after = writeGpx(routes);
         // bare <hdop> updated in place inside <extensions>, no additional hdop element created there
-        assertTrue(after.contains("<extensions><hdop>1.2</hdop></extensions>"));
+        assertTrue(withoutFormatting(after).contains("<extensions><hdop>1.2</hdop></extensions>"));
     }
 
     @Test
@@ -972,15 +978,39 @@ public class Gpx11ExtensionsTest {
         position.setSpeed(7.2);
 
         String after = writeGpx(routes);
-        // both elements updated, none left behind with the old, now-contradicting value
-        assertFalse(after.contains("3.4"));
+        // both elements updated, none left behind with the old, now-contradicting value.
+        // Match the element-text form: a bare "3.4" also matches the <metadata> timestamp
+        // (e.g. <time>2026-07-30T15:48:43.409Z</time>), which fails ~2% of runs by clock alone.
+        assertFalse(after.contains(">3.4<"));
+        // the bare element no longer carries a namespace declaration it doesn't use, so match it
+        // exactly; cb:spd keeps the one it needs, hence the element boundaries below
         assertTrue(after.contains("<speed>7.2</speed>"));
-        assertTrue(after.contains("cb:spd>7.2<"));
+        assertTrue(after.contains(">7.2</cb:spd>"));
         // no additional (e.g. trackpoint2) extension element created since existing ones matched
         assertFalse(after.contains(":TrackPointExtension"));
 
         GpxPosition position2 = getFirstPositionOfFirstRoute(readGpx(after));
         assertDoubleEquals(7.2, position2.getSpeed());
+    }
+
+    @Test
+    public void testPreservedExtensionsKeepOnlyTheNamespaceDeclarationsTheyUse() throws Exception {
+        // the unmarshaller copies every namespace declaration that was in scope onto the DOM
+        // elements it preserves, so a plain read/write round-trip used to decorate them with
+        // declarations they never reference
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx version=\"1.1\" creator=\"Columbus GNSS\" xmlns=\"http://www.topografix.com/GPX/1/1\" xmlns:cb=\"https://cbgps.com/gpx/v1\" xmlns:zz=\"urn:example:unused\">" +
+                "<trk><trkseg><trkpt lat=\"26.0983295\" lon=\"119.2648235\">" +
+                "<extensions><cb:spd>3.4</cb:spd></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+
+        String after = writeGpx(readGpx(source));
+
+        // cb:spd is in that namespace, so it keeps the declaration it needs
+        assertTrue(after.contains(">3.4</cb:spd>"));
+        // the declaration nothing references is gone
+        assertFalse(after.contains("urn:example:unused"));
     }
 
     @Test

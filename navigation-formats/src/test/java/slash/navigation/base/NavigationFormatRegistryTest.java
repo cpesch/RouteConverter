@@ -21,6 +21,7 @@ package slash.navigation.base;
 
 import org.junit.Test;
 import slash.navigation.babel.TomTomPoiFormat;
+import slash.navigation.columbus.ColumbusFusionFormat;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.columbus.ColumbusGpsType2Format;
 import slash.navigation.columbus.GarbleColumbusGpsType1Format;
@@ -66,6 +67,7 @@ public class NavigationFormatRegistryTest {
         assertEquals(Route66Format.class, formats.get(index++).getClass());
         assertEquals(ColumbusGpsType1Format.class, formats.get(index++).getClass());
         assertEquals(ColumbusGpsType2Format.class, formats.get(index++).getClass());
+        assertEquals(ColumbusFusionFormat.class, formats.get(index++).getClass());
         assertEquals(QstarzQ1000Format.class, formats.get(index++).getClass());
         assertEquals(Iblue747Format.class, formats.get(index++).getClass());
         assertEquals(CsvCommaFormat.class, formats.get(index++).getClass());

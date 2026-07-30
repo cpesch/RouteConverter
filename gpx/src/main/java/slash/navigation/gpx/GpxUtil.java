@@ -20,12 +20,23 @@
 
 package slash.navigation.gpx;
 
+import org.w3c.dom.Attr;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 import slash.navigation.gpx.binding10.Gpx;
+import slash.navigation.gpx.binding11.ExtensionsType;
 import slash.navigation.gpx.binding11.GpxType;
+import slash.navigation.gpx.binding11.MetadataType;
+import slash.navigation.gpx.binding11.RteType;
+import slash.navigation.gpx.binding11.TrkType;
+import slash.navigation.gpx.binding11.TrksegType;
+import slash.navigation.gpx.binding11.WptType;
 
 import jakarta.xml.bind.*;
 import javax.xml.namespace.QName;
@@ -34,6 +45,12 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
 
 import static slash.common.helpers.JAXBHelper.*;
 
@@ -139,11 +156,88 @@ public class GpxUtil {
         return unmarshal11Internal(new InputSource(in));
     }
 
+    /**
+     * The JAXB unmarshaller materializes extension elements it has no binding for as DOM elements and
+     * copies all namespace declarations that were in scope in the parsed document onto them. Marshalling
+     * writes those declarations out verbatim, so a bare {@code <speed>} read from a document whose root
+     * declared {@code xmlns:cb} is written as {@code <speed xmlns:cb="...">}. Drop the declarations that
+     * the element and its descendants don't use.
+     */
+    private static void removeUnusedNamespaceDeclarations(Element element) {
+        Set<String> usedNamespaceUris = new HashSet<>();
+        collectUsedNamespaceUris(element, usedNamespaceUris);
+
+        List<Attr> unused = new ArrayList<>();
+        NamedNodeMap attributes = element.getAttributes();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Attr attribute = (Attr) attributes.item(i);
+            // only prefixed declarations, the default namespace decides the element's own name
+            if (XMLNS_ATTRIBUTE_NS_URI.equals(attribute.getNamespaceURI()) && attribute.getPrefix() != null &&
+                    !usedNamespaceUris.contains(attribute.getValue()))
+                unused.add(attribute);
+        }
+        for (Attr attribute : unused)
+            element.removeAttributeNode(attribute);
+    }
+
+    private static void collectUsedNamespaceUris(Node node, Set<String> namespaceUris) {
+        if (node.getNamespaceURI() != null)
+            namespaceUris.add(node.getNamespaceURI());
+
+        NamedNodeMap attributes = node.getAttributes();
+        if (attributes != null)
+            for (int i = 0; i < attributes.getLength(); i++) {
+                Node attribute = attributes.item(i);
+                if (!XMLNS_ATTRIBUTE_NS_URI.equals(attribute.getNamespaceURI()) && attribute.getNamespaceURI() != null)
+                    namespaceUris.add(attribute.getNamespaceURI());
+            }
+
+        NodeList children = node.getChildNodes();
+        for (int i = 0; i < children.getLength(); i++)
+            collectUsedNamespaceUris(children.item(i), namespaceUris);
+    }
+
+    private static void removeUnusedNamespaceDeclarations(ExtensionsType extensions) {
+        if (extensions == null)
+            return;
+        for (Object any : extensions.getAny())
+            if (any instanceof Element)
+                removeUnusedNamespaceDeclarations((Element) any);
+    }
+
+    private static void removeUnusedNamespaceDeclarations(GpxType gpxType) {
+        removeUnusedNamespaceDeclarations(gpxType.getExtensions());
+
+        MetadataType metadata = gpxType.getMetadata();
+        if (metadata != null)
+            removeUnusedNamespaceDeclarations(metadata.getExtensions());
+
+        for (WptType wpt : gpxType.getWpt())
+            removeUnusedNamespaceDeclarations(wpt.getExtensions());
+
+        for (RteType rte : gpxType.getRte()) {
+            removeUnusedNamespaceDeclarations(rte.getExtensions());
+            for (WptType rtept : rte.getRtept())
+                removeUnusedNamespaceDeclarations(rtept.getExtensions());
+        }
+
+        for (TrkType trk : gpxType.getTrk()) {
+            removeUnusedNamespaceDeclarations(trk.getExtensions());
+            for (TrksegType trkseg : trk.getTrkseg()) {
+                removeUnusedNamespaceDeclarations(trkseg.getExtensions());
+                for (WptType trkpt : trkseg.getTrkpt())
+                    removeUnusedNamespaceDeclarations(trkpt.getExtensions());
+            }
+        }
+    }
+
     public static void marshal11(GpxType gpxType, Writer writer) throws JAXBException {
+        removeUnusedNamespaceDeclarations(gpxType);
         newMarshaller11().marshal(new slash.navigation.gpx.binding11.ObjectFactory().createGpx(gpxType), writer);
     }
 
     public static void marshal11(GpxType gpxType, OutputStream outputStream) throws JAXBException {
+        removeUnusedNamespaceDeclarations(gpxType);
         try {
             try {
                 newMarshaller11().marshal(new slash.navigation.gpx.binding11.ObjectFactory().createGpx(gpxType), outputStream);
