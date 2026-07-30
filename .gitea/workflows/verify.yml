@@ -43,6 +43,25 @@ jobs:
         with:
           persist-credentials: false
 
+      # A compile break is the cheapest failure to detect and the most
+      # expensive to mistake for a test failure: navigation-formats did not
+      # compile for a day after RouteConverter #43 merged, because the breakage
+      # surfaced as a red test job among other red test jobs. This gate fails in
+      # seconds with only the compiler errors in its summary.
+      - name: compile (fast gate)
+        id: compile
+        shell: bash
+        run: |
+          set -uo pipefail
+          if [[ -x ./mvnw ]]; then MVN=./mvnw; else MVN=mvn; fi
+          RC=0
+          "$MVN" -B -ntp -DskipTests compile 2>&1 | tee /tmp/verify-compile.log | tail -c 200000 || RC=$?
+          if [[ "$RC" -ne 0 ]]; then
+            grep -E "^\[ERROR\]" /tmp/verify-compile.log | head -60 > /tmp/verify-summary.txt || true
+            : > /tmp/verify-compile-failed
+          fi
+          exit "$RC"
+
       - name: run test suite
         id: mvn
         shell: bash
@@ -81,7 +100,11 @@ jobs:
           # output). Anchor the verdict on real build output, and report an
           # infra fault as inconclusive — the action there is re-dispatch, not
           # debugging the diff.
-          if grep -qE '^\[INFO\] BUILD (SUCCESS|FAILURE)|Tests run:' /tmp/verify-mvn.log 2>/dev/null; then
+          # the compile gate runs first, so its failure leaves no mvn test log
+          # at all — name it instead of calling the run inconclusive
+          if [[ -e /tmp/verify-compile-failed ]]; then
+            HEADLINE='🤖 **verify failed** — the sources do not compile (the test suite never ran).'
+          elif grep -qE '^\[INFO\] BUILD (SUCCESS|FAILURE)|Tests run:' /tmp/verify-mvn.log 2>/dev/null; then
             HEADLINE='🤖 **verify failed** — test suite did not pass.'
           else
             HEADLINE='🤖 **verify inconclusive** — the runner produced no build output (infra fault, not your diff). Re-dispatch verify on this branch.'
