@@ -64,12 +64,15 @@ public class ColumbusFusionFormatTest {
     @Test
     public void testIsValidHeaderDirective() {
         assertTrue(format.isValidLine("# Format=ColumbusFusion; Version=1.0; Type=GNSS"));
-        assertFalse(format.isValidLine("# Format=ColumbusFusion; Version=1.0; Type=GNSS+IMU"));
-        assertFalse(format.isValidLine("# Format=ColumbusFusion; Version=1.0; Type=IMU"));
+        assertTrue(format.isValidLine("# Format=ColumbusFusion; Version=1.0; Type=GNSS+IMU"));
+        assertTrue(format.isValidLine("# Format=ColumbusFusion; Version=1.0; Type=IMU"));
+        assertFalse(format.isValidLine("# Format=ColumbusFusion; Version=1.0; Type=MAGNETOMETER"));
 
         assertTrue(format.isValidLine("tag,date,time,lat,lon,alt,speed,heading"));
         assertTrue(format.isValidLine("tag,date,time,lat,lon,alt,speed,heading,sat,hdop"));
         assertTrue(format.isValidLine("tag,date,time,lat,lon,alt,speed,heading,sat,hdop,fix"));
+        assertTrue(format.isValidLine("tag,date,time,lat,lon,alt,speed,heading,ax,ay,az"));
+        assertTrue(format.isValidLine("tag,date,time,ax,ay,az"));
 
         assertEquals(ColumbusFusionFormat.LAYOUT_GNSS,
                 format.detectLayout("tag,date,time,lat,lon,alt,speed,heading"));
@@ -77,6 +80,101 @@ public class ColumbusFusionFormatTest {
                 format.detectLayout("tag,date,time,lat,lon,alt,speed,heading,sat,hdop"));
         assertEquals(ColumbusFusionFormat.LAYOUT_GNSS_SAT_FIX,
                 format.detectLayout("tag,date,time,lat,lon,alt,speed,heading,sat,hdop,fix"));
+        assertEquals(ColumbusFusionFormat.LAYOUT_GNSS_IMU,
+                format.detectLayout("tag,date,time,lat,lon,alt,speed,heading,ax,ay,az"));
+        assertEquals(ColumbusFusionFormat.LAYOUT_IMU,
+                format.detectLayout("tag,date,time,ax,ay,az"));
+    }
+
+    // --- acceleration layouts ---
+
+    @Test
+    public void testParseGnssImuFirstSamplePerSecond() throws IOException {
+        List<Wgs84Position> positions = format.parseBody(reader(
+                "T,260707,210037,26.0789597,119.2996178,14.5,0.1,0.0,-0.30,0.05,1.08",
+                ",,,,,,,,-0.27,0.05,1.02",
+                ",,210038,26.0789597,119.2996178,14.5,0.0,0.0,-0.33,0.09,1.05"
+        ), ColumbusFusionFormat.LAYOUT_GNSS_IMU);
+
+        assertEquals(2, positions.size());
+        assertEquals(-0.30, positions.get(0).getAccelerationX(), 0.0);
+        assertEquals(0.05, positions.get(0).getAccelerationY(), 0.0);
+        assertEquals(1.08, positions.get(0).getAccelerationZ(), 0.0);
+        assertEquals(-0.33, positions.get(1).getAccelerationX(), 0.0);
+        assertEquals(0.09, positions.get(1).getAccelerationY(), 0.0);
+        assertEquals(1.05, positions.get(1).getAccelerationZ(), 0.0);
+        assertEquals(26.0789597, positions.get(0).getLatitude(), 0.0);
+        assertEquals(119.2996178, positions.get(0).getLongitude(), 0.0);
+    }
+
+    @Test
+    public void testGnssImuManyContinuationRows() throws IOException {
+        String[] lines = new String[21];
+        lines[0] = "T,260707,210037,26.0789597,119.2996178,14.5,0.1,0.0,-0.30,0.05,1.08";
+        for (int i = 1; i < 20; i++)
+            lines[i] = ",,,,,,,,-0.27,0.05,1.02";
+        lines[20] = ",,210038,26.0789597,119.2996178,14.5,0.0,0.0,-0.33,0.09,1.05";
+
+        List<Wgs84Position> positions = format.parseBody(reader(lines), ColumbusFusionFormat.LAYOUT_GNSS_IMU);
+
+        assertEquals(2, positions.size());
+    }
+
+    @Test
+    public void testParseImuFile() throws Exception {
+        ignoreLocalTimeZone(() -> {
+            List<Wgs84Position> positions = format.parseBody(reader(
+                    "T,260709,042922,-0.02,0.04,1.09",
+                    ",,,-0.02,0.04,1.06",
+                    ",,042923,-0.04,0.06,1.09"
+            ), ColumbusFusionFormat.LAYOUT_IMU);
+
+            assertEquals(2, positions.size());
+            for (Wgs84Position position : positions) {
+                assertNull(position.getLongitude());
+                assertNull(position.getLatitude());
+                assertNull(position.getElevation());
+            }
+            assertEquals("042922", format.formatTime(positions.get(0).getTime()));
+            assertEquals(-0.02, positions.get(0).getAccelerationX(), 0.0);
+            assertEquals(0.04, positions.get(0).getAccelerationY(), 0.0);
+            assertEquals(1.09, positions.get(0).getAccelerationZ(), 0.0);
+            assertEquals(-0.04, positions.get(1).getAccelerationX(), 0.0);
+            assertEquals(1.09, positions.get(1).getAccelerationZ(), 0.0);
+        });
+    }
+
+    @Test
+    public void testImuCarryForwardDate() throws Exception {
+        ignoreLocalTimeZone(() -> {
+            List<Wgs84Position> positions = format.parseBody(reader(
+                    "T,260709,042922,-0.02,0.04,1.09",
+                    ",,042923,-0.04,0.06,1.09"
+            ), ColumbusFusionFormat.LAYOUT_IMU);
+
+            assertEquals(2, positions.size());
+            assertEquals("260709", format.formatDate(positions.get(1).getTime()));
+            assertEquals(WaypointType.Waypoint, positions.get(1).getWaypointType());
+        });
+    }
+
+    @Test
+    public void testReadGnssImuFile() throws IOException {
+        BufferedReader bufferedReader = reader(
+                "# Format=ColumbusFusion; Version=1.0; Type=GNSS+IMU",
+                "tag,date,time,lat,lon,alt,speed,heading,ax,ay,az",
+                "T,260707,210037,26.0789597,119.2996178,14.5,0.1,0.0,-0.30,0.05,1.08",
+                ",,,,,,,,-0.27,0.05,1.02",
+                "C,260707,210038,26.0789597,119.2996178,14.5,0.0,0.0,-0.33,0.09,1.05"
+        );
+
+        assertTrue(format.isValidLine(bufferedReader.readLine()));
+        int layout = format.detectLayout(bufferedReader.readLine());
+        assertEquals(ColumbusFusionFormat.LAYOUT_GNSS_IMU, layout);
+
+        List<Wgs84Position> positions = format.parseBody(bufferedReader, layout);
+        assertEquals(2, positions.size());
+        assertEquals(WaypointType.PointOfInterestC, positions.get(1).getWaypointType());
     }
 
     @Test
