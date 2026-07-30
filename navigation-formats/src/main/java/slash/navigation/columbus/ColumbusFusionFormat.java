@@ -173,18 +173,13 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
     }
 
     private Pattern linePatternFor(int layout) {
-        switch (layout) {
-            case LAYOUT_GNSS_SAT_FIX:
-                return LINE_GNSS_SAT_FIX;
-            case LAYOUT_GNSS_SAT:
-                return LINE_GNSS_SAT;
-            case LAYOUT_GNSS_IMU:
-                return LINE_GNSS_IMU;
-            case LAYOUT_IMU:
-                return LINE_IMU;
-            default:
-                return LINE_GNSS;
-        }
+        return switch (layout) {
+            case LAYOUT_GNSS_SAT_FIX -> LINE_GNSS_SAT_FIX;
+            case LAYOUT_GNSS_SAT -> LINE_GNSS_SAT;
+            case LAYOUT_GNSS_IMU -> LINE_GNSS_IMU;
+            case LAYOUT_IMU -> LINE_IMU;
+            default -> LINE_GNSS;
+        };
     }
 
     private boolean isAccelerationLayout(int layout) {
