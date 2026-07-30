@@ -119,6 +119,11 @@ public class ColumbusGpsType1Format extends ColumbusGpsFormat {
         position.setPdop(parseDouble(lineMatcher.group(15)));
         position.setHdop(parseDouble(lineMatcher.group(16)));
         position.setVdop(parseDouble(lineMatcher.group(17)));
+        String valid = trim(lineMatcher.group(14));
+        if ("SPS".equalsIgnoreCase(valid))
+            position.setFixQuality(1);
+        else if ("DGPS".equalsIgnoreCase(valid))
+            position.setFixQuality(2);
         return position;
     }
 
@@ -129,12 +134,13 @@ public class ColumbusGpsType1Format extends ColumbusGpsFormat {
         String hdop = fillWithZeros(position.getHdop() != null ? formatAccuracyAsString(position.getHdop()) : "", 5);
         String vdop = fillWithZeros(position.getVdop() != null ? formatAccuracyAsString(position.getVdop()) : "", 5);
         String description = !isDefaultDescription(position.getDescription()) ? position.getDescription() : "";
+        String valid = position.getFixQuality() != null && position.getFixQuality() == 2 ? "DGPS" : "SPS";
 
         writer.println(formatCommonPrefix(position, index) + SEPARATOR +
                 speed + SEPARATOR +
                 heading + SEPARATOR +
                 "3D" + SEPARATOR +
-                "SPS" + SEPARATOR +
+                valid + SEPARATOR +
                 pdop + SEPARATOR +
                 hdop + SEPARATOR +
                 vdop + SEPARATOR +

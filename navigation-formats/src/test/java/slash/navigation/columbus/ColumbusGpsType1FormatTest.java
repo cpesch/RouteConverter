@@ -25,6 +25,8 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.DateFormat;
 
 import static org.junit.Assert.*;
@@ -85,12 +87,19 @@ public class ColumbusGpsType1FormatTest {
         assertDoubleEquals(1.6, position.getPdop());
         assertDoubleEquals(1.3, position.getHdop());
         assertDoubleEquals(0.9, position.getVdop());
+        assertEquals(Integer.valueOf(1), position.getFixQuality());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2009, 5, 8, 8, 48, 15);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
         assertEquals(expected, actual);
         assertEquals(expectedCal, position.getTime());
         assertEquals("VOX02971.wav", position.getDescription());
+    }
+
+    @Test
+    public void testParsePositionDgps() {
+        Wgs84Position position = format.parsePosition("1150  ,T,090522,150532,48.206931N,016.372713E,-5   ,0   ,0  ,2D,DGPS ,2.3  ,2.1  ,1.0  ,", new ParserContextImpl());
+        assertEquals(Integer.valueOf(2), position.getFixQuality());
     }
 
     @Test
@@ -103,6 +112,7 @@ public class ColumbusGpsType1FormatTest {
         assertDoubleEquals(206.0, position.getHeading());
         assertNull(position.getHdop());
         assertNull(position.getSatellites());
+        assertNull(position.getFixQuality());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2009, 4, 21, 6, 10, 58);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -130,5 +140,44 @@ public class ColumbusGpsType1FormatTest {
     public void testParseTypeBPOIDPosition() {
         Wgs84Position position = format.parsePosition("8     ,D,090421,061058,47.797278S,013.049739W,502  ,8   ,206,", new ParserContextImpl());
         assertEquals("PointOfInterestD 8", position.getDescription());
+    }
+
+    @Test
+    public void testWritePositionWithDgpsFixQuality() {
+        Wgs84Position position = new Wgs84Position(16.321871, 48.132451, 319.0, 12.0, calendar(2009, 5, 8, 8, 48, 15), null);
+        position.setFixQuality(2);
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        format.writePosition(position, printWriter, 1, true);
+        printWriter.flush();
+        assertTrue(stringWriter.toString().contains(",DGPS,"));
+    }
+
+    @Test
+    public void testWritePositionWithSpsOrNullFixQuality() {
+        Wgs84Position position = new Wgs84Position(16.321871, 48.132451, 319.0, 12.0, calendar(2009, 5, 8, 8, 48, 15), null);
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        format.writePosition(position, printWriter, 1, true);
+        printWriter.flush();
+        assertTrue(stringWriter.toString().contains(",SPS,"));
+
+        position.setFixQuality(1);
+        StringWriter stringWriter2 = new StringWriter();
+        PrintWriter printWriter2 = new PrintWriter(stringWriter2);
+        format.writePosition(position, printWriter2, 1, true);
+        printWriter2.flush();
+        assertTrue(stringWriter2.toString().contains(",SPS,"));
+    }
+
+    @Test
+    public void testWritePositionCollapsesOtherFixQualityToSps() {
+        Wgs84Position position = new Wgs84Position(16.321871, 48.132451, 319.0, 12.0, calendar(2009, 5, 8, 8, 48, 15), null);
+        position.setFixQuality(4);
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        format.writePosition(position, printWriter, 1, true);
+        printWriter.flush();
+        assertTrue(stringWriter.toString().contains(",SPS,"));
     }
 }
