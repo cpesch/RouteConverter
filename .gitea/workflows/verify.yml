@@ -73,8 +73,22 @@ jobs:
           PR='${{ github.event.inputs.pr || github.event.pull_request.number }}'
           [[ -n "$PR" ]] || { echo "no PR number — skip comment"; exit 0; }
           SUMMARY="$(head -c 4000 /tmp/verify-summary.txt 2>/dev/null || echo 'no summary captured')"
-          BODY="$(jq -n --arg s "$SUMMARY" --arg run "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
-            '{body: ("🤖 **verify failed** — test suite did not pass.\n\n```\n" + $s + "\n```\n\n[Workflow run](" + $run + ")")}')"
+          # A red job did not necessarily test anything. When the runner loses
+          # its docker exec ("failed to inspect exec: … No such exec instance")
+          # the mvn step dies without producing any output, and claiming "test
+          # suite did not pass" then accuses whatever merged last of a fault it
+          # does not have (seen 2026-07-30: a 134-line master log, zero Maven
+          # output). Anchor the verdict on real build output, and report an
+          # infra fault as inconclusive — the action there is re-dispatch, not
+          # debugging the diff.
+          if grep -qE '^\[INFO\] BUILD (SUCCESS|FAILURE)|Tests run:' /tmp/verify-mvn.log 2>/dev/null; then
+            HEADLINE='🤖 **verify failed** — test suite did not pass.'
+          else
+            HEADLINE='🤖 **verify inconclusive** — the runner produced no build output (infra fault, not your diff). Re-dispatch verify on this branch.'
+            echo "::warning::verify inconclusive: no Maven output in /tmp/verify-mvn.log — runner fault, not a test failure"
+          fi
+          BODY="$(jq -n --arg h "$HEADLINE" --arg s "$SUMMARY" --arg run "${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            '{body: ($h + "\n\n```\n" + $s + "\n```\n\n[Workflow run](" + $run + ")")}')"
           curl -sSf -X POST \
             -H "Authorization: token $GITEA_TOKEN" \
             -H "Content-Type: application/json" \
