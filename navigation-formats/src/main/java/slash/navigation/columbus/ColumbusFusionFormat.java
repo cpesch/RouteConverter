@@ -19,6 +19,7 @@
 */
 package slash.navigation.columbus;
 
+import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
@@ -219,7 +220,7 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
 
         WaypointType waypointType = parseTag(tag);
 
-        slash.common.io.CompactCalendar dateAndTime = parseDateAndTime(date, time);
+        CompactCalendar dateAndTime = parseDateAndTime(date, time);
         if (dateAndTime != null && getUseLocalTimeZone())
             dateAndTime = dateAndTime.asUTCTimeInTimeZone(TimeZone.getTimeZone(getTimeZone()));
 
