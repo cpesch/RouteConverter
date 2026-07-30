@@ -25,13 +25,20 @@ import slash.navigation.base.Wgs84Position;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static slash.navigation.base.ConvertBase.ignoreLocalTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.setTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 
 public class ColumbusFusionFormatTest {
     private final ColumbusFusionFormat format = new ColumbusFusionFormat();
@@ -49,9 +56,9 @@ public class ColumbusFusionFormatTest {
     }
 
     @Test
-    public void testSupportsReadingOnly() {
+    public void testSupportsReadingAndWriting() {
         assertTrue(format.isSupportsReading());
-        assertFalse(format.isSupportsWriting());
+        assertTrue(format.isSupportsWriting());
     }
 
     @Test
@@ -74,7 +81,7 @@ public class ColumbusFusionFormatTest {
 
     @Test
     public void testParseGnssPosition() {
-        Wgs84Position position = format.parsePosition("T,20240115,101530,52.5200,13.4050,34.0,12.3,88.0", null);
+        Wgs84Position position = format.parsePosition("T,240115,101530,52.5200,13.4050,34.0,12.3,88.0", null);
         assertEquals(52.5200, position.getLatitude(), 0.0);
         assertEquals(13.4050, position.getLongitude(), 0.0);
         assertEquals(34.0, position.getElevation(), 0.0);
@@ -86,7 +93,7 @@ public class ColumbusFusionFormatTest {
     @Test
     public void testParseSatHdopLayout() throws IOException {
         List<Wgs84Position> positions = format.parseBody(
-                reader("T,20240115,101530,52.5200,13.4050,34.0,12.3,88.0,7,1.2"),
+                reader("T,240115,101530,52.5200,13.4050,34.0,12.3,88.0,7,1.2"),
                 ColumbusFusionFormat.LAYOUT_GNSS_SAT);
         assertEquals(1, positions.size());
         assertEquals(Integer.valueOf(7), positions.get(0).getSatellites());
@@ -97,7 +104,7 @@ public class ColumbusFusionFormatTest {
     @Test
     public void testParseReservedFixColumn() throws IOException {
         List<Wgs84Position> positions = format.parseBody(
-                reader("T,20240115,101530,52.5200,13.4050,34.0,12.3,88.0,7,1.2,3"),
+                reader("T,240115,101530,52.5200,13.4050,34.0,12.3,88.0,7,1.2,3"),
                 ColumbusFusionFormat.LAYOUT_GNSS_SAT_FIX);
         assertEquals(1, positions.size());
         assertEquals(Integer.valueOf(3), positions.get(0).getFixQuality());
@@ -106,7 +113,7 @@ public class ColumbusFusionFormatTest {
     @Test
     public void testCarryForwardTagAndDate() throws IOException {
         List<Wgs84Position> positions = format.parseBody(reader(
-                "T,20240115,101530,52.5200,13.4050,34.0,12.3,88.0",
+                "T,240115,101530,52.5200,13.4050,34.0,12.3,88.0",
                 ",,101531,52.5201,13.4051,34.1,12.4,88.1"
         ), ColumbusFusionFormat.LAYOUT_GNSS);
         assertEquals(2, positions.size());
@@ -116,7 +123,7 @@ public class ColumbusFusionFormatTest {
 
     @Test
     public void testNegativeCoordinates() {
-        Wgs84Position position = format.parsePosition("T,20240115,101530,-33.8688,-70.9,10.0,5.0,270.0", null);
+        Wgs84Position position = format.parsePosition("T,240115,101530,-33.8688,-70.9,10.0,5.0,270.0", null);
         assertEquals(-33.8688, position.getLatitude(), 0.0);
         assertEquals(-70.9, position.getLongitude(), 0.0);
     }
@@ -133,8 +140,8 @@ public class ColumbusFusionFormatTest {
         BufferedReader bufferedReader = reader(
                 "# Format=ColumbusFusion; Version=1.0; Type=GNSS",
                 "tag,date,time,lat,lon,alt,speed,heading",
-                "T,20240115,101530,52.5200,13.4050,34.0,12.3,88.0",
-                "C,20240115,101540,52.5210,13.4060,35.0,0.0,0.0",
+                "T,240115,101530,52.5200,13.4050,34.0,12.3,88.0",
+                "C,240115,101540,52.5210,13.4060,35.0,0.0,0.0",
                 ",,101550,52.5220,13.4070,36.0,5.0,10.0"
         );
 
@@ -147,5 +154,121 @@ public class ColumbusFusionFormatTest {
         assertEquals(WaypointType.Waypoint, positions.get(0).getWaypointType());
         assertEquals(WaypointType.PointOfInterestC, positions.get(1).getWaypointType());
         assertEquals(WaypointType.PointOfInterestC, positions.get(2).getWaypointType());
+    }
+
+    @Test
+    public void testParseSixDigitDate() throws Exception {
+        ignoreLocalTimeZone(() -> {
+            Wgs84Position position = format.parsePosition("T,240115,101530,52.5200,13.4050,34.0,12.3,88.0", null);
+            assertEquals("240115", format.formatDate(position.getTime()));
+            assertEquals("101530", format.formatTime(position.getTime()));
+        });
+    }
+
+    // --- writing ---
+
+    private String write(Wgs84Position position) {
+        StringWriter output = new StringWriter();
+        PrintWriter writer = new PrintWriter(output);
+        format.writePosition(position, writer, 0, true);
+        writer.flush();
+        return output.toString().trim();
+    }
+
+    @Test
+    public void testWriteHeaderUsesWidestLayout() {
+        String[] headerLines = format.getHeader().split("\n");
+        assertEquals(2, headerLines.length);
+        assertTrue(format.isValidLine(headerLines[0]));
+        assertEquals(ColumbusFusionFormat.LAYOUT_GNSS_SAT_FIX, format.detectLayout(headerLines[1]));
+    }
+
+    @Test
+    public void testWritePositionRoundtrip() throws Exception {
+        ignoreLocalTimeZone(() -> {
+            Wgs84Position position = format.parsePosition("T,240115,101530,52.52,13.405,34.0,12.3,88.0,7,1.2,3", null);
+
+            String line = write(position);
+            assertEquals("T,240115,101530,52.52,13.405,34.0,12.3,88.0,7,1.2,3", line);
+            assertTrue(format.isPosition(line));
+
+            Wgs84Position reread = format.parsePosition(line, null);
+            assertEquals(position.getLatitude(), reread.getLatitude());
+            assertEquals(position.getLongitude(), reread.getLongitude());
+            assertEquals(position.getElevation(), reread.getElevation());
+            assertEquals(position.getSpeed(), reread.getSpeed());
+            assertEquals(position.getHeading(), reread.getHeading());
+            assertEquals(position.getSatellites(), reread.getSatellites());
+            assertEquals(position.getHdop(), reread.getHdop());
+            assertEquals(position.getFixQuality(), reread.getFixQuality());
+            assertEquals(position.getTime().getTimeInMillis(), reread.getTime().getTimeInMillis());
+        });
+    }
+
+    @Test
+    public void testWriteNegativeCoordinates() {
+        Wgs84Position position = format.parsePosition("T,240115,101530,-33.8688,-70.9,10.0,5.0,270.0", null);
+
+        String line = write(position);
+        assertTrue(line.contains(",-33.8688,-70.9,"));
+        assertTrue(format.isPosition(line));
+    }
+
+    @Test
+    public void testWriteLeavesUnknownColumnsEmpty() {
+        Wgs84Position position = new Wgs84Position(13.405, 52.52, null, null, null, null);
+
+        String line = write(position);
+        assertEquals("T,,000000,52.52,13.405,,,,,,", line);
+        assertTrue(format.isPosition(line));
+
+        Wgs84Position reread = format.parsePosition(line, null);
+        assertNull(reread.getElevation());
+        assertNull(reread.getSpeed());
+        assertNull(reread.getHeading());
+        assertNull(reread.getSatellites());
+        assertNull(reread.getHdop());
+        assertNull(reread.getFixQuality());
+        assertNull(reread.getTime());
+    }
+
+    @Test
+    public void testWriteFallsBackToTrackTagForUnsupportedWaypointTypes() {
+        Wgs84Position position = new Wgs84Position(13.405, 52.52, null, null, null, "VOX00014.wav");
+        position.setWaypointType(WaypointType.Voice);
+
+        String line = write(position);
+        assertTrue(line.startsWith("T,"));
+        assertTrue(format.isPosition(line));
+    }
+
+    @Test
+    public void testWritePreservesSupportedTags() {
+        for (WaypointType waypointType : new WaypointType[]{WaypointType.PointOfInterestC,
+                WaypointType.PointOfInterestD, WaypointType.Parking, WaypointType.Waypoint}) {
+            Wgs84Position position = new Wgs84Position(13.405, 52.52, null, null, null, null);
+            position.setWaypointType(waypointType);
+
+            String line = write(position);
+            assertTrue(line.startsWith(waypointType.value() + ","));
+            assertEquals(waypointType, format.parsePosition(line, null).getWaypointType());
+        }
+    }
+
+    @Test
+    public void testWriteInvertsDeviceLocalTimeZoneConversion() {
+        boolean useLocalTimeZone = getUseLocalTimeZone();
+        String timeZone = getTimeZone();
+        try {
+            setUseLocalTimeZone(true);
+            setTimeZone("Europe/Berlin");
+
+            // 240115 101530 is device-local time, read as UTC-shifted, so writing must shift back
+            Wgs84Position position = format.parsePosition("T,240115,101530,52.52,13.405,34.0,12.3,88.0", null);
+            assertTrue(write(position).startsWith("T,240115,101530,"));
+        } finally {
+            setUseLocalTimeZone(useLocalTimeZone);
+            setTimeZone(timeZone);
+        }
     }
 }

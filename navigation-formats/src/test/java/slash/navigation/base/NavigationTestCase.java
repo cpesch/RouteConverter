@@ -26,6 +26,7 @@ import slash.common.type.CompactCalendar;
 import slash.navigation.babel.*;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrPosition;
+import slash.navigation.columbus.ColumbusFusionFormat;
 import slash.navigation.columbus.ColumbusGpsBinaryFormat;
 import slash.navigation.columbus.ColumbusGpsFormat;
 import slash.navigation.columbus.ColumbusGpsType1Format;
@@ -500,10 +501,12 @@ public abstract class NavigationTestCase extends TestCase {
             targetHdop = nmeaPosition.getHdop();
         }
 
-        if ((sourceFormat instanceof ColumbusGpsType1Format || sourceFormat instanceof GoPalTrackFormat ||
+        if ((sourceFormat instanceof ColumbusFusionFormat || sourceFormat instanceof ColumbusGpsType1Format ||
+                sourceFormat instanceof GoPalTrackFormat ||
                 sourceFormat instanceof GpxFormat || sourceFormat instanceof NmeaFormat ||
                 sourceFormat instanceof QstarzQ1000Format) &&
-                (targetFormat instanceof ColumbusGpsType1Format || targetFormat instanceof GoPalTrackFormat ||
+                (targetFormat instanceof ColumbusFusionFormat || targetFormat instanceof ColumbusGpsType1Format ||
+                        targetFormat instanceof GoPalTrackFormat ||
                         targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format ||
                         targetFormat instanceof NmeaFormat || targetFormat instanceof QstarzQ1000Format)) {
             assertEquals("Hdop " + index + " does not match", targetHdop, sourceHdop);
@@ -585,9 +588,11 @@ public abstract class NavigationTestCase extends TestCase {
             targetSatellites = nmeaPosition.getSatellites();
         }
 
-        if ((sourceFormat instanceof GpxFormat || sourceFormat instanceof GoPalTrackFormat ||
+        if ((sourceFormat instanceof ColumbusFusionFormat || sourceFormat instanceof GpxFormat ||
+                sourceFormat instanceof GoPalTrackFormat ||
                 sourceFormat instanceof NmeaFormat || sourceFormat instanceof QstarzQ1000Format) &&
-                (targetFormat instanceof Gpx10Format || targetFormat instanceof Gpx11Format ||
+                (targetFormat instanceof ColumbusFusionFormat || targetFormat instanceof Gpx10Format ||
+                        targetFormat instanceof Gpx11Format ||
                         targetFormat instanceof GoPalTrackFormat || targetFormat instanceof NmeaFormat ||
                         targetFormat instanceof QstarzQ1000Format)) {
             assertEquals("Satellites " + index + " does not match", targetSatellites, sourceSatellites);

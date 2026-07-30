@@ -28,21 +28,31 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.asList;
+import static slash.common.io.Transfer.formatDoubleAsString;
+import static slash.common.io.Transfer.formatIntAsString;
 import static slash.common.io.Transfer.parseDouble;
 import static slash.common.io.Transfer.trim;
+import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
+import static slash.navigation.base.WaypointType.Waypoint;
 import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
 import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
 
 /**
- * Reads Columbus Fusion track (.csv) files, a read-only GNSS track format with
+ * Reads and writes Columbus Fusion track (.csv) files, a GNSS track format with
  * three possible column layouts (GNSS/GNSS+SAT/GNSS+SAT+FIX), distinguished by
  * the second header line. Empty tag/date columns carry forward from the
  * previous row.
+ *
+ * Writing always emits the widest GNSS+SAT+FIX layout, so that satellites, hdop
+ * and fix quality survive a roundtrip; columns without a value stay empty.
  *
  * @author Christian Pesch
  */
@@ -56,6 +66,11 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
             Pattern.compile("\\s*tag,date,time,lat,lon,alt,speed,heading,sat,hdop\\s*");
     private static final Pattern COLUMN_HEADER_GNSS_SAT_FIX_PATTERN =
             Pattern.compile("\\s*tag,date,time,lat,lon,alt,speed,heading,sat,hdop,fix\\s*");
+
+    private static final String FORMAT_DIRECTIVE = "# Format=ColumbusFusion; Version=1.0; Type=GNSS";
+    private static final String COLUMN_HEADER_GNSS_SAT_FIX = "tag,date,time,lat,lon,alt,speed,heading,sat,hdop,fix";
+
+    private static final Set<String> WRITABLE_TAG_VALUES = new HashSet<>(asList("C", "D", "G", "T"));
 
     static final int LAYOUT_GNSS = 8;
     static final int LAYOUT_GNSS_SAT = 10;
@@ -78,7 +93,7 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
     }
 
     public boolean isSupportsWriting() {
-        return false;
+        return true;
     }
 
     public boolean isSupportsReading() {
@@ -98,7 +113,7 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
     }
 
     protected String getHeader() {
-        return "# Format=ColumbusFusion; Version=1.0; Type=GNSS\ntag,date,time,lat,lon,alt,speed,heading";
+        return FORMAT_DIRECTIVE + "\n" + COLUMN_HEADER_GNSS_SAT_FIX;
     }
 
     protected boolean isPosition(String line) {
@@ -251,7 +266,55 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
         }
     }
 
+    /**
+     * Inverts the device-local to UTC conversion applied while reading.
+     */
+    private CompactCalendar asDeviceLocalTime(CompactCalendar time, TimeZone timeZone) {
+        long timeInMillis = time.getTimeInMillis();
+        return fromMillisAndTimeZone(timeInMillis + timeZone.getOffset(timeInMillis), "UTC");
+    }
+
+    /**
+     * Fusion lines only allow the tags C, D, G and T, so any other waypoint type
+     * falls back to a plain track point.
+     */
+    private String formatFusionTag(Wgs84Position position) {
+        String tag = formatTag(position);
+        return tag != null && WRITABLE_TAG_VALUES.contains(tag) ? tag : Waypoint.value();
+    }
+
+    /**
+     * Formats with the full precision of the value, since Fusion files carry up to
+     * seven fraction digits for coordinates and a fixed fraction count would truncate them.
+     */
+    private String formatDoubleOrEmpty(Double aDouble) {
+        return aDouble != null ? formatDoubleAsString(aDouble) : "";
+    }
+
+    private String formatIntegerOrEmpty(Integer anInteger) {
+        return anInteger != null ? formatIntAsString(anInteger) : "";
+    }
+
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
-        throw new UnsupportedOperationException("Columbus Fusion format is read-only");
+        CompactCalendar time = position.getTime();
+        if (time != null && getUseLocalTimeZone())
+            time = asDeviceLocalTime(time, TimeZone.getTimeZone(getTimeZone()));
+
+        String date = formatDate(time);
+        String timeOfDay = formatTime(time);
+        if (timeOfDay.isEmpty())
+            timeOfDay = "000000";
+
+        writer.println(formatFusionTag(position) + S +
+                date + S +
+                timeOfDay + S +
+                formatDoubleAsString(position.getLatitude()) + S +
+                formatDoubleAsString(position.getLongitude()) + S +
+                formatDoubleOrEmpty(position.getElevation()) + S +
+                formatDoubleOrEmpty(position.getSpeed()) + S +
+                formatDoubleOrEmpty(position.getHeading()) + S +
+                formatIntegerOrEmpty(position.getSatellites()) + S +
+                formatDoubleOrEmpty(position.getHdop()) + S +
+                formatIntegerOrEmpty(position.getFixQuality()));
     }
 }
