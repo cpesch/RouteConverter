@@ -20,25 +20,33 @@
 package slash.navigation.gpx;
 
 import org.junit.Test;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.gpx.binding11.*;
 
 import jakarta.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static javax.xml.XMLConstants.XMLNS_ATTRIBUTE_NS_URI;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.navigation.common.NavigationConversion.formatPosition;
 import static slash.navigation.gpx.GpxExtensionType.*;
+import static slash.navigation.gpx.GpxUtil.GPX_11_NAMESPACE_URI;
 import static slash.navigation.gpx.GpxUtil.toXml;
 
 public class Gpx11ExtensionsTest {
@@ -84,10 +92,101 @@ public class Gpx11ExtensionsTest {
         return outputStream.toString(StandardCharsets.UTF_8);
     }
 
-    // Removes the writer's indentation between elements, so a test can assert on the
-    // element structure it cares about as one contiguous string.
-    private String withoutFormatting(String xml) {
-        return xml.replaceAll(">\\s+<", "><");
+    // Assertions below read the written document back instead of matching substrings of it.
+    // Indentation, attribute order and the namespace declarations the marshaller happens to
+    // place on an element then stop mattering, and a value can no longer collide with an
+    // unrelated part of the document (a bare "3.4" also matches the <metadata> timestamp).
+
+    private Element parse(String xml) throws Exception {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setNamespaceAware(true);
+        return factory.newDocumentBuilder()
+                .parse(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)))
+                .getDocumentElement();
+    }
+
+    // The first <trkpt> (or <wpt>, or <rtept>) of the written document.
+    private Element firstPositionElement(String xml) throws Exception {
+        Element gpx = parse(xml);
+        for (String name : asList("trkpt", "rtept", "wpt")) {
+            NodeList found = gpx.getElementsByTagNameNS(GPX_11_NAMESPACE_URI, name);
+            if (found.getLength() > 0)
+                return (Element) found.item(0);
+        }
+        return null;
+    }
+
+    // Direct children of the first position's <extensions>, in document order. Empty when the
+    // position has no <extensions> at all.
+    private List<Element> writtenExtensions(String xml) throws Exception {
+        List<Element> result = new ArrayList<>();
+        Element position = firstPositionElement(xml);
+        if (position == null)
+            return result;
+        for (Node child = position.getFirstChild(); child != null; child = child.getNextSibling())
+            if (child instanceof Element element && "extensions".equals(element.getLocalName()))
+                for (Node any = element.getFirstChild(); any != null; any = any.getNextSibling())
+                    if (any instanceof Element extension)
+                        result.add(extension);
+        return result;
+    }
+
+    // Local names of the direct children of the first position's <extensions>, in document order.
+    private List<String> writtenExtensionNames(String xml) throws Exception {
+        List<String> result = new ArrayList<>();
+        for (Element extension : writtenExtensions(xml))
+            result.add(extension.getLocalName());
+        return result;
+    }
+
+    // Every namespace URI declared by an xmlns:* attribute anywhere in the document.
+    private List<String> declaredNamespaceUris(String xml) throws Exception {
+        List<String> result = new ArrayList<>();
+        collectDeclaredNamespaceUris(parse(xml), result);
+        return result;
+    }
+
+    private void collectDeclaredNamespaceUris(Element element, List<String> result) {
+        NamedNodeMap attributes = element.getAttributes();
+        for (int i = 0; i < attributes.getLength(); i++) {
+            Node attribute = attributes.item(i);
+            if (XMLNS_ATTRIBUTE_NS_URI.equals(attribute.getNamespaceURI()))
+                result.add(attribute.getNodeValue());
+        }
+        for (Node child = element.getFirstChild(); child != null; child = child.getNextSibling())
+            if (child instanceof Element childElement)
+                collectDeclaredNamespaceUris(childElement, result);
+    }
+
+    private boolean hasExtensions(String xml) throws Exception {
+        Element position = firstPositionElement(xml);
+        if (position == null)
+            return false;
+        for (Node child = position.getFirstChild(); child != null; child = child.getNextSibling())
+            if (child instanceof Element element && "extensions".equals(element.getLocalName()))
+                return true;
+        return false;
+    }
+
+    // Text content of the direct children of the first position's <extensions> whose local name
+    // matches, one entry per element so a stale duplicate left behind is visible.
+    private List<String> writtenExtensionValues(String xml, String localName) throws Exception {
+        List<String> result = new ArrayList<>();
+        for (Element extension : writtenExtensions(xml))
+            if (localName.equals(extension.getLocalName()))
+                result.add(extension.getTextContent());
+        return result;
+    }
+
+    // Text content of a direct child of the first position element, e.g. the standard <hdop>.
+    private String writtenChildValue(String xml, String localName) throws Exception {
+        Element position = firstPositionElement(xml);
+        if (position == null)
+            return null;
+        for (Node child = position.getFirstChild(); child != null; child = child.getNextSibling())
+            if (child instanceof Element element && localName.equals(element.getLocalName()))
+                return element.getTextContent();
+        return null;
     }
 
 
@@ -164,8 +263,8 @@ public class Gpx11ExtensionsTest {
         GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
         assertNull(position3.getHeading());
         assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
-        assertFalse(after2.contains("<extensions"));
-        assertFalse(after2.contains(":TrackPointExtension"));
+        // the last value is gone, so the whole <extensions> element is gone with it
+        assertFalse(hasExtensions(after2));
     }
 
     @Test
@@ -238,8 +337,8 @@ public class Gpx11ExtensionsTest {
         assertNull(position3.getHeading());
         assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
         // setting heading to null removes the complete extensions element
-        assertFalse(after2.contains("<extensions"));
-        assertFalse(after2.contains(":TrackPointExtension"));
+        // the last value is gone, so the whole <extensions> element is gone with it
+        assertFalse(hasExtensions(after2));
     }
 
 
@@ -295,8 +394,8 @@ public class Gpx11ExtensionsTest {
         GpxPosition position3 = getFirstPositionOfFirstRoute(routes3);
         assertNull(position3.getSpeed());
         assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
-        assertFalse(after2.contains("<extensions"));
-        assertFalse(after2.contains(":TrackPointExtension"));
+        // the last value is gone, so the whole <extensions> element is gone with it
+        assertFalse(hasExtensions(after2));
     }
 
     @Test
@@ -369,8 +468,8 @@ public class Gpx11ExtensionsTest {
         assertNull(position3.getSpeed());
         assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
         // setting speed to null removes the complete extensions element
-        assertFalse(after2.contains("<extensions"));
-        assertFalse(after2.contains(":TrackPointExtension"));
+        // the last value is gone, so the whole <extensions> element is gone with it
+        assertFalse(hasExtensions(after2));
     }
 
 
@@ -426,8 +525,8 @@ public class Gpx11ExtensionsTest {
         assertNull(position3.getTemperature());
         assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
         // setting temperature to null removes the complete extensions element
-        assertFalse(after2.contains("<extensions"));
-        assertFalse(after2.contains(":TrackPointExtension"));
+        // the last value is gone, so the whole <extensions> element is gone with it
+        assertFalse(hasExtensions(after2));
     }
 
     @Test
@@ -561,8 +660,8 @@ public class Gpx11ExtensionsTest {
 
         assertEquals(new HashSet<>(), position4.getPositionExtension().getExtensionTypes());
         // setting temperature to null twice removes the complete extensions element
-        assertFalse(after3.contains("<extensions"));
-        assertFalse(after3.contains(":TrackPointExtension"));
+        // the last value is gone, so the whole <extensions> element is gone with it
+        assertFalse(hasExtensions(after3));
     }
 
     @Test
@@ -612,8 +711,8 @@ public class Gpx11ExtensionsTest {
 
         assertEquals(new HashSet<>(), position4.getPositionExtension().getExtensionTypes());
         // setting temperature to null twice removes the complete extensions element
-        assertFalse(after3.contains("<extensions"));
-        assertFalse(after3.contains(":TrackPointExtension"));
+        // the last value is gone, so the whole <extensions> element is gone with it
+        assertFalse(hasExtensions(after3));
     }
 
     @Test
@@ -649,8 +748,8 @@ public class Gpx11ExtensionsTest {
         assertNull(position3.getTemperature());
         assertEquals(new HashSet<>(), position3.getPositionExtension().getExtensionTypes());
         // setting temperature to null removes the complete extensions element
-        assertFalse(after2.contains("<extensions"));
-        assertFalse(after2.contains(":TrackPointExtension"));
+        // the last value is gone, so the whole <extensions> element is gone with it
+        assertFalse(hasExtensions(after2));
     }
 
     @Test
@@ -915,7 +1014,50 @@ public class Gpx11ExtensionsTest {
 
         String after = writeGpx(routes);
         // bare <hdop> updated in place inside <extensions>, no additional hdop element created there
-        assertTrue(withoutFormatting(after).contains("<extensions><hdop>1.2</hdop></extensions>"));
+        assertEquals(singletonList("1.2"), writtenExtensionValues(after, "hdop"));
+    }
+
+    @Test
+    public void testUpdateHdopUpdatesTheTrkptElementAndTheExtensionTogether() throws Exception {
+        // <trkpt><hdop> and a bare <hdop> inside <extensions> are both written, so setting the
+        // value must update both - leaving either behind writes a file contradicting itself
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"Columbus GNSS\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<hdop>1.5</hdop>" +
+                "<extensions><hdop>0.8</hdop></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        List<GpxRoute> routes = readGpx(source);
+        GpxPosition position = getFirstPositionOfFirstRoute(routes);
+
+        position.setHdop(1.2);
+
+        String after = writeGpx(routes);
+        // the standard <hdop> child of <trkpt> and the one inside <extensions> agree, and neither
+        // of the two old values survived in either place
+        assertEquals("1.2", writtenChildValue(after, "hdop"));
+        assertEquals(singletonList("1.2"), writtenExtensionValues(after, "hdop"));
+    }
+
+    @Test
+    public void testUpdateHdopUpdatesEveryExtensionRepresentation() throws Exception {
+        // more than one bare <hdop> in <extensions> (e.g. re-saved by another tool): every one is
+        // updated, not just the first
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"Columbus GNSS\">" +
+                "<trk><trkseg><trkpt lat=\"1.0\" lon=\"2.0\">" +
+                "<extensions><hdop>0.8</hdop><hdop>0.9</hdop></extensions>" +
+                "</trkpt></trkseg></trk></gpx>";
+        List<GpxRoute> routes = readGpx(source);
+        GpxPosition position = getFirstPositionOfFirstRoute(routes);
+
+        position.setHdop(1.2);
+
+        String after = writeGpx(routes);
+        // both representations updated, neither left behind at its old value
+        assertEquals(asList("1.2", "1.2"), writtenExtensionValues(after, "hdop"));
     }
 
     @Test
@@ -950,10 +1092,10 @@ public class Gpx11ExtensionsTest {
         position.setHeading(120.2);
 
         String after = writeGpx(routes);
-        // still namespaced cb: elements, no new (e.g. trackpoint2) extension elements created
-        assertTrue(after.contains("cb:spd"));
-        assertTrue(after.contains("cb:crs"));
-        assertFalse(after.contains(":TrackPointExtension"));
+        // still the same two cb: elements, in their namespace, and no new (e.g. trackpoint2) ones
+        assertEquals(asList("spd", "crs"), writtenExtensionNames(after));
+        for (Element extension : writtenExtensions(after))
+            assertEquals("https://cbgps.com/gpx/v1", extension.getNamespaceURI());
 
         // values round-trip unchanged through the updated cb: elements
         GpxPosition position2 = getFirstPositionOfFirstRoute(readGpx(after));
@@ -978,16 +1120,11 @@ public class Gpx11ExtensionsTest {
         position.setSpeed(7.2);
 
         String after = writeGpx(routes);
-        // both elements updated, none left behind with the old, now-contradicting value.
-        // Match the element-text form: a bare "3.4" also matches the <metadata> timestamp
-        // (e.g. <time>2026-07-30T15:48:43.409Z</time>), which fails ~2% of runs by clock alone.
-        assertFalse(after.contains(">3.4<"));
-        // the bare element no longer carries a namespace declaration it doesn't use, so match it
-        // exactly; cb:spd keeps the one it needs, hence the element boundaries below
-        assertTrue(after.contains("<speed>7.2</speed>"));
-        assertTrue(after.contains(">7.2</cb:spd>"));
-        // no additional (e.g. trackpoint2) extension element created since existing ones matched
-        assertFalse(after.contains(":TrackPointExtension"));
+        // both elements updated, neither left behind with the old, now-contradicting value
+        assertEquals(singletonList("7.2"), writtenExtensionValues(after, "speed"));
+        assertEquals(singletonList("7.2"), writtenExtensionValues(after, "spd"));
+        // exactly the two that were there - no additional (e.g. trackpoint2) element created
+        assertEquals(asList("speed", "spd"), writtenExtensionNames(after));
 
         GpxPosition position2 = getFirstPositionOfFirstRoute(readGpx(after));
         assertDoubleEquals(7.2, position2.getSpeed());
@@ -1007,10 +1144,14 @@ public class Gpx11ExtensionsTest {
 
         String after = writeGpx(readGpx(source));
 
+        Element spd = writtenExtensions(after).get(0);
         // cb:spd is in that namespace, so it keeps the declaration it needs
-        assertTrue(after.contains(">3.4</cb:spd>"));
-        // the declaration nothing references is gone
-        assertFalse(after.contains("urn:example:unused"));
+        assertEquals("https://cbgps.com/gpx/v1", spd.getNamespaceURI());
+        assertEquals("3.4", spd.getTextContent());
+        assertTrue(declaredNamespaceUris(after).contains("https://cbgps.com/gpx/v1"));
+        // the declaration nothing references is gone - checked across the whole document, not just
+        // this element, since the marshaller is free to place a declaration on any ancestor
+        assertFalse(declaredNamespaceUris(after).contains("urn:example:unused"));
     }
 
     @Test

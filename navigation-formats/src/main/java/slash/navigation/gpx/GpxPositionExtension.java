@@ -227,11 +227,11 @@ public class GpxPositionExtension {
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions == null)
             return;
+        // every matching element, not just the first - like setSpeed(), so a position carrying more
+        // than one representation never keeps a stale, contradicting value in the ones left behind
         for (Object any : extensions.getAny()) {
-            if (any instanceof Element element && "hdop".equalsIgnoreCase(element.getLocalName())) {
+            if (any instanceof Element element && "hdop".equalsIgnoreCase(element.getLocalName()))
                 element.setTextContent(formatAccuracyAsString(hdop));
-                return;
-            }
         }
     }
 

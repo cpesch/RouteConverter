@@ -447,4 +447,42 @@ public class GpxUtilTest {
         assertEquals("filter-test", gpx.getCreator());
     }
 
+    // ---- namespace declarations on preserved extension elements ----
+
+    @Test
+    public void testDropsUnusedNamespaceDeclarationsAtEveryExtensionsLevel() throws IOException {
+        // The unmarshaller copies every namespace declaration that was in scope onto the DOM
+        // elements it preserves, so marshalling wrote them out again even where nothing referenced
+        // them. Dropping them walks the GpxType graph by hand, one branch per type that carries an
+        // ExtensionsType - this covers all eight of them at once, so a branch that is missed (or a
+        // newly bound type whose extensions are never visited) fails here.
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx version=\"1.1\" creator=\"graph-test\" xmlns=\"http://www.topografix.com/GPX/1/1\"" +
+                " xmlns:cb=\"https://cbgps.com/gpx/v1\" xmlns:zz=\"urn:example:unused\">" +
+                "<metadata><extensions><cb:metadata>1</cb:metadata></extensions></metadata>" +
+                "<wpt lat=\"1.0\" lon=\"2.0\"><extensions><cb:wpt>2</cb:wpt></extensions></wpt>" +
+                "<rte><extensions><cb:rte>3</cb:rte></extensions>" +
+                "<rtept lat=\"1.0\" lon=\"2.0\"><extensions><cb:rtept>4</cb:rtept></extensions></rtept></rte>" +
+                "<trk><extensions><cb:trk>5</cb:trk></extensions>" +
+                "<trkseg><trkpt lat=\"1.0\" lon=\"2.0\"><extensions><cb:trkpt>6</cb:trkpt></extensions></trkpt>" +
+                "<extensions><cb:trkseg>7</cb:trkseg></extensions></trkseg></trk>" +
+                "<extensions><cb:gpx>8</cb:gpx></extensions>" +
+                "</gpx>";
+
+        String after = toXml(unmarshal11(source));
+
+        // every preserved element kept the declaration it actually uses
+        assertTrue(after.contains(">1</cb:metadata>"));
+        assertTrue(after.contains(">2</cb:wpt>"));
+        assertTrue(after.contains(">3</cb:rte>"));
+        assertTrue(after.contains(">4</cb:rtept>"));
+        assertTrue(after.contains(">5</cb:trk>"));
+        assertTrue(after.contains(">6</cb:trkpt>"));
+        assertTrue(after.contains(">7</cb:trkseg>"));
+        assertTrue(after.contains(">8</cb:gpx>"));
+        // and none of them kept the one nothing references
+        assertFalse(after.contains("urn:example:unused"));
+    }
+
 }
