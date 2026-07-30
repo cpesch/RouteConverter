@@ -978,8 +978,10 @@ public class Gpx11ExtensionsTest {
         position.setSpeed(7.2);
 
         String after = writeGpx(routes);
-        // both elements updated, none left behind with the old, now-contradicting value
-        assertFalse(after.contains("3.4"));
+        // both elements updated, none left behind with the old, now-contradicting value.
+        // Match the element-text form: a bare "3.4" also matches the <metadata> timestamp
+        // (e.g. <time>2026-07-30T15:48:43.409Z</time>), which fails ~2% of runs by clock alone.
+        assertFalse(after.contains(">3.4<"));
         // the writer carries the source's cb: namespace declaration onto every preserved DOM
         // element, so match on the element boundaries instead of on a bare start tag
         assertTrue(after.contains(">7.2</speed>"));
