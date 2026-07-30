@@ -20,6 +20,7 @@
 package slash.navigation.columbus;
 
 import org.junit.Test;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 
@@ -368,5 +369,88 @@ public class ColumbusFusionFormatTest {
             setUseLocalTimeZone(useLocalTimeZone);
             setTimeZone(timeZone);
         }
+    }
+
+    // --- writing positions that have no coordinates ---
+
+    private String writeRoute(List<Wgs84Position> positions) {
+        StringWriter output = new StringWriter();
+        PrintWriter writer = new PrintWriter(output);
+        format.writeHeader(writer, format.createRoute(RouteCharacteristics.Track, null, positions));
+        for (Wgs84Position position : positions)
+            format.writePosition(position, writer, 0, true);
+        writer.flush();
+        return output.toString();
+    }
+
+    private List<Wgs84Position> reread(String written) throws IOException {
+        BufferedReader reader = new BufferedReader(new StringReader(written));
+        reader.readLine();
+        return format.parseBody(reader, format.detectLayout(reader.readLine()));
+    }
+
+    @Test
+    public void testWriteImuPositionsDoesNotInventCoordinates() throws Exception {
+        ignoreLocalTimeZone(() -> {
+            List<Wgs84Position> positions = format.parseBody(reader(
+                    "T,260709,042922,-0.02,0.04,1.09",
+                    ",,042923,-0.04,0.06,1.09"
+            ), ColumbusFusionFormat.LAYOUT_IMU);
+
+            String written = writeRoute(positions);
+            // a GNSS layout would have to write these as 0.0 - see detectWriteLayout
+            assertFalse(written.contains("0.0,0.0"));
+            assertEquals(ColumbusFusionFormat.LAYOUT_IMU,
+                    format.detectLayout(written.split("\n")[1]));
+
+            List<Wgs84Position> back = reread(written);
+            assertEquals(positions.size(), back.size());
+            for (int i = 0; i < positions.size(); i++) {
+                assertNull(back.get(i).getLatitude());
+                assertNull(back.get(i).getLongitude());
+                assertEquals(positions.get(i).getAccelerationX(), back.get(i).getAccelerationX());
+                assertEquals(positions.get(i).getAccelerationY(), back.get(i).getAccelerationY());
+                assertEquals(positions.get(i).getAccelerationZ(), back.get(i).getAccelerationZ());
+                assertEquals(positions.get(i).getTime(), back.get(i).getTime());
+            }
+        });
+    }
+
+    @Test
+    public void testWriteMixedPositionsKeepsBothCoordinatesAndAcceleration() throws Exception {
+        ignoreLocalTimeZone(() -> {
+            List<Wgs84Position> positions = format.parseBody(reader(
+                    "T,260709,042922,26.0983295,119.2648235,18.9,3.4,120.2,-0.02,0.04,1.09",
+                    "T,260709,042923,,,,,,-0.04,0.06,1.09"
+            ), ColumbusFusionFormat.LAYOUT_GNSS_IMU);
+            assertEquals(2, positions.size());
+
+            String written = writeRoute(positions);
+            assertEquals(ColumbusFusionFormat.LAYOUT_GNSS_IMU,
+                    format.detectLayout(written.split("\n")[1]));
+
+            List<Wgs84Position> back = reread(written);
+            assertEquals(2, back.size());
+            assertEquals(positions.get(0).getLatitude(), back.get(0).getLatitude());
+            assertEquals(positions.get(0).getLongitude(), back.get(0).getLongitude());
+            assertNull(back.get(1).getLatitude());
+            assertNull(back.get(1).getLongitude());
+            for (int i = 0; i < 2; i++)
+                assertEquals(positions.get(i).getAccelerationZ(), back.get(i).getAccelerationZ());
+        });
+    }
+
+    @Test
+    public void testWriteKeepsWidestGnssLayoutWhenEveryPositionHasCoordinates() throws Exception {
+        ignoreLocalTimeZone(() -> {
+            List<Wgs84Position> positions = format.parseBody(reader(
+                    "T,240115,101530,52.52,13.405,34.0,12.3,88.0,7,1.2,3"
+            ), ColumbusFusionFormat.LAYOUT_GNSS_SAT_FIX);
+
+            String written = writeRoute(positions);
+            assertEquals(ColumbusFusionFormat.LAYOUT_GNSS_SAT_FIX,
+                    format.detectLayout(written.split("\n")[1]));
+            assertTrue(written.contains("T,240115,101530,52.52,13.405,34.0,12.3,88.0,7,1.2,3"));
+        });
     }
 }

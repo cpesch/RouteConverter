@@ -21,6 +21,7 @@ package slash.navigation.columbus;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
+import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
 
@@ -56,8 +57,11 @@ import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
  * while the continuation rows are consumed silently. IMU positions have no
  * coordinates at all, just time and acceleration.
  *
- * Writing always emits the widest GNSS+SAT+FIX layout, so that satellites, hdop
- * and fix quality survive a roundtrip; columns without a value stay empty.
+ * Writing picks the layout from the data: a route with coordinates throughout emits
+ * the widest GNSS+SAT+FIX layout, so that satellites, hdop and fix quality survive a
+ * roundtrip, while a route whose positions carry no coordinates emits IMU (or GNSS+IMU
+ * when only some of them do), whose lat/lon columns may be empty. Columns without a
+ * value stay empty.
  *
  * @author Christian Pesch
  */
@@ -77,7 +81,11 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
             Pattern.compile("\\s*tag,date,time,ax,ay,az\\s*");
 
     private static final String FORMAT_DIRECTIVE = "# Format=ColumbusFusion; Version=1.0; Type=GNSS";
+    private static final String FORMAT_DIRECTIVE_GNSS_IMU = "# Format=ColumbusFusion; Version=1.0; Type=GNSS+IMU";
+    private static final String FORMAT_DIRECTIVE_IMU = "# Format=ColumbusFusion; Version=1.0; Type=IMU";
     private static final String COLUMN_HEADER_GNSS_SAT_FIX = "tag,date,time,lat,lon,alt,speed,heading,sat,hdop,fix";
+    private static final String COLUMN_HEADER_GNSS_IMU = "tag,date,time,lat,lon,alt,speed,heading,ax,ay,az";
+    private static final String COLUMN_HEADER_IMU = "tag,date,time,ax,ay,az";
 
     private static final Set<String> WRITABLE_TAG_VALUES = new HashSet<>(asList("C", "D", "G", "T"));
 
@@ -87,6 +95,14 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
     static final int LAYOUT_GNSS_SAT = 10;
     static final int LAYOUT_GNSS_SAT_FIX = 11;
     static final int LAYOUT_GNSS_IMU = 12;
+
+    /**
+     * Layout of the file currently being written, chosen from the route by
+     * writeHeader() and read by the writePosition() calls that follow it. Safe as
+     * instance state because one write() drives header-then-positions in order;
+     * the read path stays stateless, taking its layout as a parameter.
+     */
+    private int writeLayout = LAYOUT_GNSS_SAT_FIX;
 
     private static final String S = ",";
     private static final String TAG = "([CDGT]?)", DATE = "(\\d*)", TIME = "(\\d+)",
@@ -133,7 +149,50 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
     }
 
     protected String getHeader() {
-        return FORMAT_DIRECTIVE + "\n" + COLUMN_HEADER_GNSS_SAT_FIX;
+        return headerFor(writeLayout);
+    }
+
+    private String headerFor(int layout) {
+        switch (layout) {
+            case LAYOUT_IMU:
+                return FORMAT_DIRECTIVE_IMU + "\n" + COLUMN_HEADER_IMU;
+            case LAYOUT_GNSS_IMU:
+                return FORMAT_DIRECTIVE_GNSS_IMU + "\n" + COLUMN_HEADER_GNSS_IMU;
+            default:
+                return FORMAT_DIRECTIVE + "\n" + COLUMN_HEADER_GNSS_SAT_FIX;
+        }
+    }
+
+    /**
+     * Picks the layout to write from the data, because not every position fits every
+     * layout: IMU positions carry no coordinates, and the GNSS layouts have no column
+     * that can hold their absence - lat/lon there must match {@code (-?[\d.]+)}, so
+     * writing them as empty produces a line the reader rejects, and writing them via
+     * {@code formatDoubleAsString} produced a literal 0.0, silently turning
+     * accelerometer samples into positions off the coast of Africa.
+     *
+     * A route whose positions all lack coordinates round-trips as IMU; a mixed route
+     * as GNSS+IMU, whose lat/lon and time columns are optional. Anything with
+     * coordinates throughout keeps the widest GNSS layout, unchanged.
+     */
+    private int detectWriteLayout(SimpleRoute route) {
+        boolean anyWithoutCoordinates = false, allWithoutCoordinates = true;
+        for (Object position : route.getPositions()) {
+            Wgs84Position wgs84Position = (Wgs84Position) position;
+            if (wgs84Position.getLatitude() == null || wgs84Position.getLongitude() == null)
+                anyWithoutCoordinates = true;
+            else
+                allWithoutCoordinates = false;
+        }
+
+        if (anyWithoutCoordinates)
+            return allWithoutCoordinates ? LAYOUT_IMU : LAYOUT_GNSS_IMU;
+        return LAYOUT_GNSS_SAT_FIX;
+    }
+
+    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
+        writeLayout = detectWriteLayout(route);
+        writer.println(headerFor(writeLayout));
     }
 
     protected boolean isPosition(String line) {
@@ -375,16 +434,38 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
         if (timeOfDay.isEmpty())
             timeOfDay = "000000";
 
-        writer.println(formatFusionTag(position) + S +
-                date + S +
-                timeOfDay + S +
-                formatDoubleAsString(position.getLatitude()) + S +
-                formatDoubleAsString(position.getLongitude()) + S +
-                formatDoubleOrEmpty(position.getElevation()) + S +
-                formatDoubleOrEmpty(position.getSpeed()) + S +
-                formatDoubleOrEmpty(position.getHeading()) + S +
-                formatIntegerOrEmpty(position.getSatellites()) + S +
-                formatDoubleOrEmpty(position.getHdop()) + S +
-                formatIntegerOrEmpty(position.getFixQuality()));
+        String prefix = formatFusionTag(position) + S + date + S + timeOfDay + S;
+
+        switch (writeLayout) {
+            case LAYOUT_IMU:
+                writer.println(prefix +
+                        formatDoubleOrEmpty(position.getAccelerationX()) + S +
+                        formatDoubleOrEmpty(position.getAccelerationY()) + S +
+                        formatDoubleOrEmpty(position.getAccelerationZ()));
+                break;
+
+            case LAYOUT_GNSS_IMU:
+                writer.println(prefix +
+                        formatDoubleOrEmpty(position.getLatitude()) + S +
+                        formatDoubleOrEmpty(position.getLongitude()) + S +
+                        formatDoubleOrEmpty(position.getElevation()) + S +
+                        formatDoubleOrEmpty(position.getSpeed()) + S +
+                        formatDoubleOrEmpty(position.getHeading()) + S +
+                        formatDoubleOrEmpty(position.getAccelerationX()) + S +
+                        formatDoubleOrEmpty(position.getAccelerationY()) + S +
+                        formatDoubleOrEmpty(position.getAccelerationZ()));
+                break;
+
+            default:
+                writer.println(prefix +
+                        formatDoubleAsString(position.getLatitude()) + S +
+                        formatDoubleAsString(position.getLongitude()) + S +
+                        formatDoubleOrEmpty(position.getElevation()) + S +
+                        formatDoubleOrEmpty(position.getSpeed()) + S +
+                        formatDoubleOrEmpty(position.getHeading()) + S +
+                        formatIntegerOrEmpty(position.getSatellites()) + S +
+                        formatDoubleOrEmpty(position.getHdop()) + S +
+                        formatIntegerOrEmpty(position.getFixQuality()));
+        }
     }
 }
