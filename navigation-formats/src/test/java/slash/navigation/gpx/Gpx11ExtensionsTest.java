@@ -84,6 +84,12 @@ public class Gpx11ExtensionsTest {
         return outputStream.toString(StandardCharsets.UTF_8);
     }
 
+    // Removes the writer's indentation between elements, so a test can assert on the
+    // element structure it cares about as one contiguous string.
+    private String withoutFormatting(String xml) {
+        return xml.replaceAll(">\\s+<", "><");
+    }
+
 
     @Test
     public void testReadTrekbuddy0984TypedCourseAndSpeed() throws Exception {
@@ -909,7 +915,7 @@ public class Gpx11ExtensionsTest {
 
         String after = writeGpx(routes);
         // bare <hdop> updated in place inside <extensions>, no additional hdop element created there
-        assertTrue(after.contains("<extensions><hdop>1.2</hdop></extensions>"));
+        assertTrue(withoutFormatting(after).contains("<extensions><hdop>1.2</hdop></extensions>"));
     }
 
     @Test
@@ -974,8 +980,10 @@ public class Gpx11ExtensionsTest {
         String after = writeGpx(routes);
         // both elements updated, none left behind with the old, now-contradicting value
         assertFalse(after.contains("3.4"));
-        assertTrue(after.contains("<speed>7.2</speed>"));
-        assertTrue(after.contains("cb:spd>7.2<"));
+        // the writer carries the source's cb: namespace declaration onto every preserved DOM
+        // element, so match on the element boundaries instead of on a bare start tag
+        assertTrue(after.contains(">7.2</speed>"));
+        assertTrue(after.contains(">7.2</cb:spd>"));
         // no additional (e.g. trackpoint2) extension element created since existing ones matched
         assertFalse(after.contains(":TrackPointExtension"));
 
