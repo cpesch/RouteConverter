@@ -139,6 +139,8 @@ public abstract class RouteComments {
     }
 
     public static boolean isDefaultDescription(String description) {
+        if (description == null)
+            return false;
         Matcher matcher = DEFAULT_DESCRIPTION_PATTERN.matcher(description);
         return matcher.matches();
     }
