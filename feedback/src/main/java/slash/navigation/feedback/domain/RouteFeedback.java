@@ -129,7 +129,7 @@ public class RouteFeedback {
         request.addString("log", logOutput);
         request.addString("description", description);
         request.addString("locale", getDefault().toString());
-        if (file != null)
+        if (file != null && file.isFile())
             request.addFile("file", file);
 
         String result = request.executeAsString();
