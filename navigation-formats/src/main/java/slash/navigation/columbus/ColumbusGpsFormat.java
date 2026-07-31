@@ -38,6 +38,8 @@ import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.WaypointType.*;
+import static slash.navigation.columbus.ColumbusV1000Device.getTimeZone;
+import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
 
 /**
  * The base of all Columbus GPS formats.
@@ -236,6 +238,20 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
      */
     protected CompactCalendar getTimeToWrite(Wgs84Position position) {
         return position.getTime();
+    }
+
+    /**
+     * Shared {@link #getTimeToWrite} body for the formats that do convert device-local
+     * time to UTC on read (Type2, Fusion) — both inverted it identically, so it lives
+     * here once instead of twice. Not the base {@link #getTimeToWrite} default itself,
+     * since Type1 must keep the plain no-conversion behaviour regardless of the
+     * use-local-time-zone preference (it never converts on read either).
+     */
+    protected CompactCalendar getDeviceLocalTimeToWrite(Wgs84Position position) {
+        CompactCalendar time = position.getTime();
+        if (time == null || !getUseLocalTimeZone())
+            return time;
+        return asDeviceLocalTime(time, TimeZone.getTimeZone(getTimeZone()));
     }
 
     /**

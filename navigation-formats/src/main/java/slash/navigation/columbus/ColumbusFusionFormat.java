@@ -386,13 +386,11 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
      * parseRow()/parseImuRow() convert the file's device-local time to UTC, so writing
      * must convert back. Uses the shared, DST-correct inverse in ColumbusGpsFormat —
      * the private single-step version here shifted an hour around a transition
-     * (013000 came back as 023000 on the 2026-10-25 Berlin fall-back).
+     * (013000 came back as 023000 on the 2026-10-25 Berlin fall-back). Shares the
+     * inversion with Type2 via {@link ColumbusGpsFormat#getDeviceLocalTimeToWrite}.
      */
     protected CompactCalendar getTimeToWrite(Wgs84Position position) {
-        CompactCalendar time = position.getTime();
-        if (time == null || !getUseLocalTimeZone())
-            return time;
-        return asDeviceLocalTime(time, TimeZone.getTimeZone(getTimeZone()));
+        return getDeviceLocalTimeToWrite(position);
     }
 
     /**

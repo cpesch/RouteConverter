@@ -111,13 +111,11 @@ public class ColumbusGpsType2Format extends ColumbusGpsFormat {
     /**
      * parsePosition() converts the file's device-local time to UTC, so writing must
      * convert back — without this every roundtrip shifted by the zone offset
-     * (152059 read as 14:20:59Z was written back as "142059").
+     * (152059 read as 14:20:59Z was written back as "142059"). Shares the inversion
+     * with Fusion via {@link ColumbusGpsFormat#getDeviceLocalTimeToWrite}.
      */
     protected CompactCalendar getTimeToWrite(Wgs84Position position) {
-        CompactCalendar time = position.getTime();
-        if (time == null || !getUseLocalTimeZone())
-            return time;
-        return asDeviceLocalTime(time, TimeZone.getTimeZone(getTimeZone()));
+        return getDeviceLocalTimeToWrite(position);
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {
