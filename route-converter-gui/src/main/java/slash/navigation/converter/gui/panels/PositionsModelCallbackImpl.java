@@ -92,6 +92,18 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             case HDOP_COLUMN_INDEX -> {
                 return PositionHelper.extractHdop(position);
             }
+            case QUALITY_COLUMN_INDEX -> {
+                return PositionHelper.extractFixQuality(position);
+            }
+            case ACCELERATION_X_COLUMN_INDEX -> {
+                return PositionHelper.extractAccelerationX(position);
+            }
+            case ACCELERATION_Y_COLUMN_INDEX -> {
+                return PositionHelper.extractAccelerationY(position);
+            }
+            case ACCELERATION_Z_COLUMN_INDEX -> {
+                return PositionHelper.extractAccelerationZ(position);
+            }
         }
         throw new IllegalArgumentException("Column " + columnIndex + " does not exist");
     }
