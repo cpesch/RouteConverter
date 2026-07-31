@@ -115,6 +115,7 @@ public class RouteCommentsTest {
         assertFalse(isDefaultDescription("abc Position"));
         assertFalse(isDefaultDescription("Position abc"));
         assertFalse(isDefaultDescription("abc Position abc"));
+        assertFalse(isDefaultDescription(null));
     }
 
     @Test
