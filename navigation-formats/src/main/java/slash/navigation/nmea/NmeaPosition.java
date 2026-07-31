@@ -43,6 +43,7 @@ public class NmeaPosition extends BaseNavigationPosition {
     private Double heading, hdop, vdop, pdop;
     private String description;
     protected Integer satellites;
+    protected Integer fixQuality;
     private Double elevation;
     private Double speed;
     private CompactCalendar time;
@@ -167,6 +168,14 @@ public class NmeaPosition extends BaseNavigationPosition {
         this.satellites = satellites;
     }
 
+    public Integer getFixQuality() {
+        return fixQuality;
+    }
+
+    public void setFixQuality(Integer fixQuality) {
+        this.fixQuality = fixQuality;
+    }
+
 
     public GpxPosition asGpxPosition() {
         GpxPosition position = super.asGpxPosition();
@@ -195,6 +204,7 @@ public class NmeaPosition extends BaseNavigationPosition {
         position.setPdop(getPdop());
         position.setVdop(getVdop());
         position.setSatellites(getSatellites());
+        position.setFixQuality(getFixQuality());
         return position;
     }
 
@@ -214,7 +224,9 @@ public class NmeaPosition extends BaseNavigationPosition {
                 Objects.equals(hdop, that.hdop) &&
                 Objects.equals(pdop, that.pdop) &&
                 Objects.equals(vdop, that.vdop) &&
-                Objects.equals(satellites, that.satellites);    }
+                Objects.equals(satellites, that.satellites) &&
+                Objects.equals(fixQuality, that.fixQuality);
+    }
 
     public int hashCode() {
         int result;
@@ -228,6 +240,7 @@ public class NmeaPosition extends BaseNavigationPosition {
         result = 31 * result + (pdop != null ? pdop.hashCode() : 0);
         result = 31 * result + (vdop != null ? vdop.hashCode() : 0);
         result = 31 * result + (satellites != null ? satellites.hashCode() : 0);
+        result = 31 * result + (fixQuality != null ? fixQuality.hashCode() : 0);
         return result;
     }
 }

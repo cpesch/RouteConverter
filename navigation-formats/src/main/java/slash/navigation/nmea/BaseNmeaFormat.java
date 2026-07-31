@@ -193,6 +193,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             position.setVdop(toBeMergedInto.getVdop());
         if (isEmpty(position.getSatellites()) && !isEmpty(toBeMergedInto.getSatellites()))
             position.setSatellites(toBeMergedInto.getSatellites());
+        if (isEmpty(position.getFixQuality()) && !isEmpty(toBeMergedInto.getFixQuality()))
+            position.setFixQuality(toBeMergedInto.getFixQuality());
     }
 
     private boolean isStartDateEqual(CompactCalendar compactCalendar1, CompactCalendar compactCalendar2) {
