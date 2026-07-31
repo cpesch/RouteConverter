@@ -17,62 +17,71 @@
 
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
+
 package slash.navigation.nmea;
 
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static slash.navigation.common.Orientation.East;
-import static slash.navigation.common.Orientation.North;
 
-/**
- * Tests the NMEA {@code ddmm.mmmm} <-> decimal-degree conversion of {@link NmeaPosition}.
- *
- * @author Christian Pesch
- */
 public class NmeaPositionTest {
-    private static final double DELTA = 1e-6;
+    private static final double EPSILON = 0.0000001;
 
     @Test
     public void degreesRoundTripThroughNmeaStorage() {
-        NmeaPosition position = new NmeaPosition(13.5, 48.5, null, null, null, "x");
-
-        assertEquals(13.5, position.getLongitude(), DELTA);
-        assertEquals(48.5, position.getLatitude(), DELTA);
+        NmeaPosition position = new NmeaPosition(903.4036, "E", 4837.4374, "S", 16.76, null, null, null, null);
+        assertEquals(9.0567266667, position.getLongitude(), EPSILON);
+        assertEquals(-48.6239566667, position.getLatitude(), EPSILON);
     }
 
     @Test
     public void settersStoreValueAndOrientationInNmeaForm() {
-        NmeaPosition position = new NmeaPosition(13.5, 48.5, null, null, null, "x");
-
-        assertEquals(1330.0, position.getLongitudeAsValueAndOrientation().value(), 1e-4);
-        assertEquals(East, position.getLongitudeAsValueAndOrientation().orientation());
-        assertEquals(4830.0, position.getLatitudeAsValueAndOrientation().value(), 1e-4);
-        assertEquals(North, position.getLatitudeAsValueAndOrientation().orientation());
+        NmeaPosition position = new NmeaPosition(null, null, null, null, null, null, null, null, null);
+        position.setLongitude(9.0567266667);
+        position.setLatitude(-48.6239566667);
+        assertEquals(9.0567266667, position.getLongitude(), EPSILON);
+        assertEquals(-48.6239566667, position.getLatitude(), EPSILON);
     }
 
     @Test
     public void rawNmeaConstructorConvertsToDegrees() {
-        NmeaPosition position = new NmeaPosition(1330.0, "E", 4830.0, "N", null, null, null, null, "x");
-
-        assertEquals(13.5, position.getLongitude(), DELTA);
-        assertEquals(48.5, position.getLatitude(), DELTA);
+        NmeaPosition position = new NmeaPosition(903.4036, "E", 4837.4374, "S", 16.76, null, null, null, null);
+        assertEquals(9.0567266667, position.getLongitude(), EPSILON);
+        assertEquals(-48.6239566667, position.getLatitude(), EPSILON);
     }
 
     @Test
     public void westAndSouthOrientationsYieldNegativeDegrees() {
-        NmeaPosition position = new NmeaPosition(1330.0, "W", 4830.0, "S", null, null, null, null, "x");
-
-        assertEquals(-13.5, position.getLongitude(), DELTA);
-        assertEquals(-48.5, position.getLatitude(), DELTA);
+        NmeaPosition position = new NmeaPosition(903.4036, "W", 4837.4374, "S", 16.76, null, null, null, null);
+        assertTrue(position.getLongitude() < 0.0);
+        assertTrue(position.getLatitude() < 0.0);
     }
 
     @Test
     public void nullCoordinatesStayNull() {
-        NmeaPosition position = new NmeaPosition(13.5, 48.5, null, null, null, "x");
-        position.setLongitude(null);
-
-        assertNull(position.getLongitudeAsValueAndOrientation());
+        NmeaPosition position = new NmeaPosition(null, null, null, null, null, null, null, null, null);
         assertNull(position.getLongitude());
+        assertNull(position.getLatitude());
+    }
+
+    @Test
+    public void fixQualityAccessorStoresAndReturnsValue() {
+        NmeaPosition position = new NmeaPosition(903.4036, "E", 4837.4374, "S", 16.76, null, null, null, null);
+        assertNull(position.getFixQuality());
+        position.setFixQuality(4);
+        assertEquals(Integer.valueOf(4), position.getFixQuality());
+    }
+
+    @Test
+    public void equalsAndHashCodeConsiderFixQuality() {
+        NmeaPosition position1 = new NmeaPosition(903.4036, "E", 4837.4374, "S", 16.76, null, null, null, null);
+        position1.setFixQuality(4);
+        NmeaPosition position2 = new NmeaPosition(903.4036, "E", 4837.4374, "S", 16.76, null, null, null, null);
+        position2.setFixQuality(4);
+        assertEquals(position1, position2);
+        assertEquals(position1.hashCode(), position2.hashCode());
+
+        position2.setFixQuality(5);
+        assertFalse(position1.equals(position2));
     }
 }

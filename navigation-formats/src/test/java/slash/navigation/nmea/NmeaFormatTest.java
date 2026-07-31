@@ -24,10 +24,12 @@ import org.junit.Test;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.ParserContextImpl;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.SimpleRoute;
 
 import java.io.*;
 import java.text.DateFormat;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -236,6 +238,8 @@ public class NmeaFormatTest {
         assertDoubleEquals(-48.6239566667, position.getLatitude());
         assertDoubleEquals(16.76, position.getElevation());
         assertEquals(Integer.valueOf(8), position.getSatellites());
+        assertEquals(Integer.valueOf(1), position.getFixQuality());
+        assertDoubleEquals(1.25, position.getHdop());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(1970, 1, 1, 13, 4, 41, 89);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -255,6 +259,8 @@ public class NmeaFormatTest {
         assertDoubleEquals(48.954852, position.getLatitude());
         assertDoubleEquals(265.2, position.getElevation());
         assertEquals(Integer.valueOf(12), position.getSatellites());
+        assertEquals(Integer.valueOf(2), position.getFixQuality());
+        assertDoubleEquals(0.65, position.getHdop());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(1970, 1, 1, 16, 26, 22, 0);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -443,6 +449,10 @@ public class NmeaFormatTest {
         assertDoubleEquals(48.6239566667, position.getLatitude());
         assertDoubleEquals(2.835, position.getSpeed());
         assertDoubleEquals(16.76, position.getElevation());
+        // heading 0.0 is isEmpty() for merging, so it is not carried over from RMC/VTG
+        assertNull(position.getHeading());
+        assertEquals(Integer.valueOf(1), position.getFixQuality());
+        assertDoubleEquals(1.25, position.getHdop());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2013, 7, 29, 13, 4, 41);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -496,6 +506,8 @@ public class NmeaFormatTest {
         assertDoubleEquals(48.6239566667, position.getLatitude());
         assertDoubleEquals(5.5560129, position.getSpeed());
         assertDoubleEquals(-48.7654, position.getElevation());
+        assertEquals(Integer.valueOf(1), position.getFixQuality());
+        assertDoubleEquals(0.0, position.getHdop());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
         CompactCalendar expectedCal = calendar(2007, 7, 26, 13, 40, 12);
         String expected = DateFormat.getDateTimeInstance().format(expectedCal.getTime());
@@ -508,7 +520,7 @@ public class NmeaFormatTest {
         String eol = System.getProperty("line.separator");
         String expectedLines =
                 "$GPRMC,134012.000,A,4837.4374,N,00903.4036,E,3.0,,260707,,A*69" + eol +
-                "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,8,,-48.8,M,,M,,*4F" + eol +
+                "$GPGGA,134012.000,4837.4374,N,00903.4036,E,1,8,0.0,-48.8,M,,M,,*61" + eol +
                 "$GPZDA,134012.000,26,07,2007,,*55" + eol +
                 "$GPVTG,,T,,M,3.0,N,5.6,K,A*23" + eol;
         assertEquals(expectedLines, writer.getBuffer().toString());
@@ -523,6 +535,10 @@ public class NmeaFormatTest {
         assertDoubleEquals(9.0567266667, position2.getLongitude());
         assertDoubleEquals(48.6239566667, position2.getLatitude());
         assertDoubleEquals(-48.8, position2.getElevation());
+        assertEquals(Integer.valueOf(1), position2.getFixQuality());
+        // hdop 0.0 is isEmpty() for merging: the GGA sentence is merged into the
+        // RMC-anchored position on reread, which drops the 0.0
+        assertNull(position2.getHdop());
         String actual2 = DateFormat.getDateTimeInstance().format(position2.getTime().getTime());
         assertEquals(expected, actual2);
         assertEquals(expectedCal, position2.getTime());
@@ -579,5 +595,45 @@ public class NmeaFormatTest {
         assertNull(position.getLongitude());
         assertNull(position.getLatitude());
         assertNull(position.getElevation());
+    }
+
+    @Test
+    public void testWriteAndParseFixQualityAndHdop() throws IOException {
+        NmeaPosition position = new NmeaPosition(9.0567266667, 48.6239566667, 16.76, null,
+                calendar(2013, 7, 29, 13, 4, 41), null);
+        position.setSatellites(8);
+        position.setFixQuality(2);
+        position.setHdop(1.3);
+
+        NmeaRoute route = format.createRoute(RouteCharacteristics.Track, null, Collections.singletonList(position));
+        StringWriter writer = new StringWriter();
+        format.write(route, new PrintWriter(writer), 0, 1);
+        String written = writer.getBuffer().toString();
+        assertTrue(written.contains(",2,8,1.3,"));
+
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(new StringReader(written)), ISO_LATIN1_ENCODING, context);
+        NmeaPosition reread = context.getRoutes().get(0).getPositions().get(0);
+        assertEquals(Integer.valueOf(2), reread.getFixQuality());
+        assertDoubleEquals(1.3, reread.getHdop());
+    }
+
+    @Test
+    public void testWriteFixQualityAndHdopFallbackWhenUnset() throws IOException {
+        NmeaPosition position = new NmeaPosition(9.0567266667, 48.6239566667, 16.76, null,
+                calendar(2013, 7, 29, 13, 4, 41), null);
+        position.setSatellites(8);
+
+        NmeaRoute route = format.createRoute(RouteCharacteristics.Track, null, Collections.singletonList(position));
+        StringWriter writer = new StringWriter();
+        format.write(route, new PrintWriter(writer), 0, 1);
+        String written = writer.getBuffer().toString();
+        assertTrue(written.contains(",1,8,,"));
+
+        ParserContext<NmeaRoute> context = new ParserContextImpl<>();
+        format.read(new BufferedReader(new StringReader(written)), ISO_LATIN1_ENCODING, context);
+        NmeaPosition reread = context.getRoutes().get(0).getPositions().get(0);
+        assertEquals(Integer.valueOf(1), reread.getFixQuality());
+        assertNull(reread.getHdop());
     }
 }

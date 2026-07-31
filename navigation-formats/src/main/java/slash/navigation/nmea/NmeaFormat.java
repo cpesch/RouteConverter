@@ -91,9 +91,9 @@ public class NmeaFormat extends BaseNmeaFormat {
             compile(BEGIN_OF_LINE + "GGA" + SEPARATOR + "([\\d\\.]*)" + SEPARATOR +
                     "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\s\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
-                    "([\\d+])" + SEPARATOR +         // Fix quality, 0=invalid
+                    "([\\d])" + SEPARATOR +          // Fix quality, 0=invalid
                     "([\\d]*)" + SEPARATOR +         // Number of satellites in view, 00 - 12
-                    "[\\d\\.]*" + SEPARATOR +
+                    "([\\d\\.]*)" + SEPARATOR +      // HDOP
                     "(-?[\\d\\.]*)" + SEPARATOR +    // Antenna Altitude above/below mean-sea-level (geoid)
                     "M" + SEPARATOR +
                     "[-?\\d\\.]*" + SEPARATOR +
@@ -262,11 +262,15 @@ public class NmeaFormat extends BaseNmeaFormat {
             String northOrSouth = ggaMatcher.group(3);
             String longitude = ggaMatcher.group(4);
             String westOrEast = ggaMatcher.group(5);
+            String fixQuality = ggaMatcher.group(6);
             String satellites = ggaMatcher.group(7);
-            String altitude = ggaMatcher.group(8);
+            String hdop = ggaMatcher.group(8);
+            String altitude = ggaMatcher.group(9);
             NmeaPosition position = new NmeaPosition(parseDouble(longitude), westOrEast, parseDouble(latitude), northOrSouth,
                     parseDouble(altitude), null, null, parseTime(time), null);
             position.setSatellites(parseInteger(satellites));
+            position.setFixQuality(parseInteger(fixQuality));
+            position.setHdop(parseDouble(hdop));
             return position;
         }
 
@@ -394,6 +398,8 @@ public class NmeaFormat extends BaseNmeaFormat {
         String latitude = formatLatitude(latitudeAsValueAndOrientation.value());
         String northOrSouth = latitudeAsValueAndOrientation.orientation().value();
         String satellites = position.getSatellites() != null ? formatIntAsString(position.getSatellites()) : "";
+        String fixQuality = position.getFixQuality() != null ? formatIntAsString(position.getFixQuality()) : "1";
+        String ggaHdop = formatAccuracy(position.getHdop());
         String description = escape(position.getDescription(), SEPARATOR, ';', null);
         String time = formatTime(position.getTime());
         String date = formatDate(position.getTime());
@@ -409,7 +415,7 @@ public class NmeaFormat extends BaseNmeaFormat {
         // $GPGGA,130441.89,5239.3154,N,00907.7011,E,1,08,1.25,16.76,M,46.79,M,,*6D
         if(!time.isEmpty() || !altitude.isEmpty() || !satellites.isEmpty()) {
             String gga = "GPGGA" + SEPARATOR + time + SEPARATOR + latitude + SEPARATOR + northOrSouth + SEPARATOR +
-                    longitude + SEPARATOR + westOrEast + SEPARATOR + "1" + SEPARATOR + satellites + SEPARATOR + SEPARATOR +
+                    longitude + SEPARATOR + westOrEast + SEPARATOR + fixQuality + SEPARATOR + satellites + SEPARATOR + ggaHdop + SEPARATOR +
                     altitude + SEPARATOR + "M" + SEPARATOR + SEPARATOR + "M" + SEPARATOR + SEPARATOR;
             writeSentence(writer, gga);
         }
@@ -439,7 +445,8 @@ public class NmeaFormat extends BaseNmeaFormat {
             writeSentence(writer, vtg);
         }
 
-        if (position.getHdop() != null || position.getPdop() != null || position.getVdop() != null) {
+        // hdop alone is already carried by the GGA sentence; write a GSA only for pdop/vdop
+        if (position.getPdop() != null || position.getVdop() != null) {
             String hdop = formatAccuracy(position.getHdop());
             String pdop = formatAccuracy(position.getPdop());
             String vdop = formatAccuracy(position.getVdop());
