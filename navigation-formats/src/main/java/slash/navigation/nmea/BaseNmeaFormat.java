@@ -1,7 +1,5 @@
 /*
     This file is part of RouteConverter.
-        if (isEmpty(position.getFixQuality()) && !isEmpty(toBeMergedInto.getFixQuality()))
-            position.setFixQuality(toBeMergedInto.getFixQuality());
 
     RouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -195,6 +193,8 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
             position.setVdop(toBeMergedInto.getVdop());
         if (isEmpty(position.getSatellites()) && !isEmpty(toBeMergedInto.getSatellites()))
             position.setSatellites(toBeMergedInto.getSatellites());
+        if (isEmpty(position.getFixQuality()) && !isEmpty(toBeMergedInto.getFixQuality()))
+            position.setFixQuality(toBeMergedInto.getFixQuality());
     }
 
     private boolean isStartDateEqual(CompactCalendar compactCalendar1, CompactCalendar compactCalendar2) {
