@@ -449,7 +449,8 @@ public class NmeaFormatTest {
         assertDoubleEquals(48.6239566667, position.getLatitude());
         assertDoubleEquals(2.835, position.getSpeed());
         assertDoubleEquals(16.76, position.getElevation());
-        assertDoubleEquals(0.0, position.getHeading());
+        // heading 0.0 is isEmpty() for merging, so it is not carried over from RMC/VTG
+        assertNull(position.getHeading());
         assertEquals(Integer.valueOf(1), position.getFixQuality());
         assertDoubleEquals(1.25, position.getHdop());
         String actual = DateFormat.getDateTimeInstance().format(position.getTime().getTime());
@@ -535,7 +536,9 @@ public class NmeaFormatTest {
         assertDoubleEquals(48.6239566667, position2.getLatitude());
         assertDoubleEquals(-48.8, position2.getElevation());
         assertEquals(Integer.valueOf(1), position2.getFixQuality());
-        assertDoubleEquals(0.0, position2.getHdop());
+        // hdop 0.0 is isEmpty() for merging: the GGA sentence is merged into the
+        // RMC-anchored position on reread, which drops the 0.0
+        assertNull(position2.getHdop());
         String actual2 = DateFormat.getDateTimeInstance().format(position2.getTime().getTime());
         assertEquals(expected, actual2);
         assertEquals(expectedCal, position2.getTime());

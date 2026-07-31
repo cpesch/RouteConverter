@@ -445,7 +445,8 @@ public class NmeaFormat extends BaseNmeaFormat {
             writeSentence(writer, vtg);
         }
 
-        if (position.getHdop() != null || position.getPdop() != null || position.getVdop() != null) {
+        // hdop alone is already carried by the GGA sentence; write a GSA only for pdop/vdop
+        if (position.getPdop() != null || position.getVdop() != null) {
             String hdop = formatAccuracy(position.getHdop());
             String pdop = formatAccuracy(position.getPdop());
             String vdop = formatAccuracy(position.getVdop());
