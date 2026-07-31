@@ -152,6 +152,76 @@ public class PositionHelperTest {
         assertEquals("", extractHdop(position));
     }
 
+    // ---- extractFixQuality / extractAccelerationX, Y, Z ----
+
+    @Test
+    public void testExtractFixQuality() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setFixQuality(4);
+        assertEquals("4", extractFixQuality(position));
+    }
+
+    @Test
+    public void testExtractFixQualityWithZero() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setFixQuality(0);
+        assertEquals("0", extractFixQuality(position));
+    }
+
+    @Test
+    public void testExtractFixQualityReturnsEmptyForNullFixQuality() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractFixQuality(position));
+    }
+
+    @Test
+    public void testExtractAccelerationXIsSignedWithTwoDecimals() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setAccelerationX(-0.3);
+        assertEquals("-0.30", extractAccelerationX(position));
+    }
+
+    @Test
+    public void testExtractAccelerationXTruncatesExtraDecimals() {
+        // same fixed-fraction formatting as heading and hdop: Transfer#formatDoubleAsString
+        // pads to and truncates at the requested fraction count, it does not round
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setAccelerationX(1.075);
+        assertEquals("1.07", extractAccelerationX(position));
+    }
+
+    @Test
+    public void testExtractAccelerationXReturnsEmptyForNullAccelerationX() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractAccelerationX(position));
+    }
+
+    @Test
+    public void testExtractAccelerationY() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setAccelerationY(1.08);
+        assertEquals("1.08", extractAccelerationY(position));
+    }
+
+    @Test
+    public void testExtractAccelerationYReturnsEmptyForNullAccelerationY() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractAccelerationY(position));
+    }
+
+    @Test
+    public void testExtractAccelerationZ() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setAccelerationZ(-9.81);
+        assertEquals("-9.81", extractAccelerationZ(position));
+    }
+
+    @Test
+    public void testExtractAccelerationZReturnsEmptyForNullAccelerationZ() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractAccelerationZ(position));
+    }
+
     // ---- formatElevation (unit system locked explicitly, not preference-driven) ----
 
     @Test

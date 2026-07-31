@@ -170,6 +170,46 @@ public class PositionHelper {
         return formatHdop(hdop);
     }
 
+    public static String formatFixQuality(Integer fixQuality) {
+        if (fixQuality == null)
+            return "";
+        return Transfer.formatIntAsString(fixQuality);
+    }
+
+    public static String extractFixQuality(NavigationPosition position) {
+        Integer fixQuality = null;
+        if (position instanceof Wgs84Position wgs84Position)
+            fixQuality = wgs84Position.getFixQuality();
+        return formatFixQuality(fixQuality);
+    }
+
+    public static String formatAcceleration(Double acceleration) {
+        if (acceleration == null)
+            return "";
+        return Transfer.formatDoubleAsString(acceleration, 2);
+    }
+
+    public static String extractAccelerationX(NavigationPosition position) {
+        Double acceleration = null;
+        if (position instanceof Wgs84Position wgs84Position)
+            acceleration = wgs84Position.getAccelerationX();
+        return formatAcceleration(acceleration);
+    }
+
+    public static String extractAccelerationY(NavigationPosition position) {
+        Double acceleration = null;
+        if (position instanceof Wgs84Position wgs84Position)
+            acceleration = wgs84Position.getAccelerationY();
+        return formatAcceleration(acceleration);
+    }
+
+    public static String extractAccelerationZ(NavigationPosition position) {
+        Double acceleration = null;
+        if (position instanceof Wgs84Position wgs84Position)
+            acceleration = wgs84Position.getAccelerationZ();
+        return formatAcceleration(acceleration);
+    }
+
     // date
 
     public static String formatDate(CompactCalendar time, String timeZone) {

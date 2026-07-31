@@ -50,6 +50,10 @@ public class PositionsTableColumnModel extends AbstractTableColumnModel {
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);
         predefineColumn(HEADING_COLUMN_INDEX, "heading", getMaxWidth("999.99\u00B0", 15), false, new HeadingColumnTableCellEditor(), headerRenderer);
         predefineColumn(HDOP_COLUMN_INDEX, "hdop", getMaxWidth("99.99", 15), false, new HdopColumnTableCellEditor(), headerRenderer);
+        predefineColumn(QUALITY_COLUMN_INDEX, "quality", getMaxWidth("9", 15), false, new QualityColumnTableCellEditor(), headerRenderer);
+        predefineColumn(ACCELERATION_X_COLUMN_INDEX, "acceleration-x", getMaxWidth("-99.99", 15), false, new AccelerationXColumnTableCellEditor(), headerRenderer);
+        predefineColumn(ACCELERATION_Y_COLUMN_INDEX, "acceleration-y", getMaxWidth("-99.99", 15), false, new AccelerationYColumnTableCellEditor(), headerRenderer);
+        predefineColumn(ACCELERATION_Z_COLUMN_INDEX, "acceleration-z", getMaxWidth("-99.99", 15), false, new AccelerationZColumnTableCellEditor(), headerRenderer);
         predefineColumn(TEMPERATURE_COLUMN_INDEX, "temperature", getMaxWidth("100\u00B0C", 5), false, new TemperatureColumnTableCellEditor(), headerRenderer);
         predefineColumn(PRESSURE_COLUMN_INDEX, "pressure", getMaxWidth("1150 hPa", 5), false, new PressureColumnTableCellEditor(), headerRenderer);
         predefineColumn(HEART_BEAT_COLUMN_INDEX, "heartbeat", getMaxWidth("180 bpm", 5), false, new HeartBeatColumnTableCellEditor(), headerRenderer);
