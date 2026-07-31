@@ -189,7 +189,7 @@ public class RouteConverter extends BaseRouteConverter {
 
     private void configureRoutingServices() {
         DataSource brouterProfiles = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-profiles");
-        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments-4");
+        DataSource brouterSegments = getDataSourceManager().getDataSourceService().getDataSourceById("brouter-segments");
         if (brouterProfiles != null || brouterSegments != null) {
             BRouter router = getRoutingServiceFacade().getRoutingService(BRouter.class);
             router.setProfilesAndSegments(brouterProfiles, brouterSegments);
