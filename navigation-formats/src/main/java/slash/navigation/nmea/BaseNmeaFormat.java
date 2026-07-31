@@ -1,5 +1,7 @@
 /*
     This file is part of RouteConverter.
+        if (isEmpty(position.getFixQuality()) && !isEmpty(toBeMergedInto.getFixQuality()))
+            position.setFixQuality(toBeMergedInto.getFixQuality());
 
     RouteConverter is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
