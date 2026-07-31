@@ -26,6 +26,7 @@ import slash.navigation.common.NavigationPosition;
 import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,6 +34,7 @@ import java.util.regex.Pattern;
 import static java.lang.Math.abs;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.createDateFormat;
+import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
 import static slash.common.type.CompactCalendar.parseDate;
 import static slash.navigation.base.RouteCharacteristics.Track;
 import static slash.navigation.base.WaypointType.*;
@@ -226,9 +228,35 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
      * Formats the leading columns shared by all Columbus line formats up to and
      * including height: index, tag, date, time, latitude+hemisphere, longitude+hemisphere, height.
      */
+    /**
+     * The time to write for this position. Formats that convert the device-local time
+     * of a file to UTC while reading must invert that here, or every roundtrip shifts
+     * by the zone offset — see {@link #asDeviceLocalTime}. Default: no conversion, for
+     * the formats that do not convert on read either (Type1).
+     */
+    protected CompactCalendar getTimeToWrite(Wgs84Position position) {
+        return position.getTime();
+    }
+
+    /**
+     * Inverts {@link CompactCalendar#asUTCTimeInTimeZone}, which stores
+     * {@code local - offset(local)} where {@code local} is the file's wall clock read as
+     * UTC. Recovering {@code local} from that needs the offset *at the local instant*, not
+     * at the UTC one: the two are an offset apart, so around a DST transition they differ
+     * and a single-step {@code utc + offset(utc)} lands an hour out. One refinement pass
+     * settles it everywhere except inside the fall-back hour, which the file cannot
+     * disambiguate anyway (it records no offset).
+     */
+    protected CompactCalendar asDeviceLocalTime(CompactCalendar time, TimeZone timeZone) {
+        long utc = time.getTimeInMillis();
+        long local = utc + timeZone.getOffset(utc);
+        return fromMillisAndTimeZone(utc + timeZone.getOffset(local), "UTC");
+    }
+
     protected String formatCommonPrefix(Wgs84Position position, int index) {
-        String date = fillWithZeros(formatDate(position.getTime()), 6);
-        String time = fillWithZeros(formatTime(position.getTime()), 6);
+        CompactCalendar timeToWrite = getTimeToWrite(position);
+        String date = fillWithZeros(formatDate(timeToWrite), 6);
+        String time = fillWithZeros(formatTime(timeToWrite), 6);
         String latitude = formatDoubleAsString(abs(position.getLatitude()), 6);
         String longitude = formatDoubleAsString(abs(position.getLongitude()), 6);
         String height = fillWithZeros(position.getElevation() != null ? formatIntAsString(position.getElevation().intValue()) : "0", 5);
