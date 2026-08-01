@@ -35,6 +35,9 @@ on:
       - 'mac-launcher/JavaAppLauncher.m'
       - '.github/workflows/build-mac-jre.yml'
 
+permissions:
+  contents: read
+
 concurrency:
   group: build-mac-jre
   cancel-in-progress: true
