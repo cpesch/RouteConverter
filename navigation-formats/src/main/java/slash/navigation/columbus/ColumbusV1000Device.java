@@ -29,9 +29,18 @@ import java.util.prefs.Preferences;
  * @author Christian Pesch
  */
 public class ColumbusV1000Device {
-    private static final Preferences preferences = Preferences.userNodeForPackage(ColumbusV1000Device.class);
+    private static Preferences preferences = Preferences.userNodeForPackage(ColumbusV1000Device.class);
     private static final String TIMEZONE_PREFERENCE = "timeZone";
     private static final String USE_LOCAL_TIMEZONE_PREFERENCE = "useLocalTimeZone";
+
+    /**
+     * Test seam — swaps the backing store so tests don't race on the shared OS-level
+     * Preferences node under concurrent multi-fork test execution. Do not call from
+     * production code.
+     */
+    public static void setPreferences(Preferences preferences) {
+        ColumbusV1000Device.preferences = preferences;
+    }
 
     public static boolean getUseLocalTimeZone() {
         return preferences.getBoolean(USE_LOCAL_TIMEZONE_PREFERENCE, true);

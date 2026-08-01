@@ -26,7 +26,7 @@ import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.GeocodingService;
 import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
-import slash.navigation.gui.models.InMemoryPreferences;
+import slash.common.prefs.InMemoryPreferences;
 
 import java.io.IOException;
 import java.util.ArrayList;
