@@ -59,6 +59,10 @@ public class TimeAlbumPro extends RouteConverter {
         return true;
     }
 
+    public boolean isWaypointTypeCountsEnabled() {
+        return true;
+    }
+
     protected boolean isPhotosEnabled() {
         return true;
     }
