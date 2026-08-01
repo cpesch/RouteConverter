@@ -371,6 +371,7 @@ public class ColumbusFusionFormatTest {
         }
     }
 
+
     // --- writing positions that have no coordinates ---
 
     private String writeRoute(List<Wgs84Position> positions) {

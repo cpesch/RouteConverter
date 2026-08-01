@@ -26,6 +26,7 @@ import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
 
 import java.text.DateFormat;
+import java.util.TimeZone;
 
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
@@ -129,5 +130,31 @@ public class ColumbusGpsType2FormatTest {
             assertEquals(expected, actual);
             assertEquals(expectedCal, position.getTime());
         });
+    }
+
+    /**
+     * asDeviceLocalTime() must invert asUTCTimeInTimeZone() exactly — the write path of
+     * every format that converts device-local time on read depends on it. Type2 read
+     * converted but write did not, so a roundtrip lost the whole offset (152059 came back
+     * as 142059); the inverse itself then has to be exact across a DST transition too,
+     * where a naive utc + offset(utc) lands an hour out because utc and local sit on
+     * opposite sides of the change.
+     *
+     * Deliberately tests the pure conversion instead of driving writePosition() through
+     * ColumbusV1000Device: that state is persistent user preferences shared across
+     * surefire's parallel forks (forkCount 1.5C), so mutating it races other tests.
+     */
+    @Test
+    public void testAsDeviceLocalTimeInvertsAsUTCTimeInTimeZone() {
+        TimeZone berlin = TimeZone.getTimeZone("Europe/Berlin");
+        for (CompactCalendar deviceLocal : new CompactCalendar[]{
+                calendar(2016, 3, 25, 15, 20, 59),   // CET, no transition nearby
+                calendar(2016, 7, 14, 12, 0, 0),     // CEST, no transition nearby
+                calendar(2026, 10, 25, 1, 30, 0),    // the hour Berlin leaves CEST
+                calendar(2026, 3, 29, 3, 30, 0)}) {  // the hour Berlin enters CEST
+            CompactCalendar asUtc = deviceLocal.asUTCTimeInTimeZone(berlin);
+            assertEquals(deviceLocal.getTimeInMillis(),
+                    format.asDeviceLocalTime(asUtc, berlin).getTimeInMillis());
+        }
     }
 }
