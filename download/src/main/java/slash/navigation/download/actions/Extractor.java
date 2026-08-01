@@ -50,16 +50,6 @@ public class Extractor {
         this.listener = listener;
     }
 
-    private File validatedDestinationFile(File destination, String entryName) throws IOException {
-        File canonicalDestination = destination.getCanonicalFile();
-        File candidate = new File(canonicalDestination, entryName).getCanonicalFile();
-        String destinationPath = canonicalDestination.getPath();
-        String candidatePath = candidate.getPath();
-        if (!candidatePath.equals(destinationPath) && !candidatePath.startsWith(destinationPath + File.separator))
-            throw new IOException(format("Bad zip entry outside destination directory: %s", entryName));
-        return candidate;
-    }
-
     private void doExtract(File tempFile, File destination, boolean flatten) throws IOException {
         File canonicalDestination = destination.getCanonicalFile();
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(tempFile))) {
@@ -67,17 +57,21 @@ public class Extractor {
             while (entry != null) {
                 if (entry.isDirectory()) {
                     if (!flatten) {
-                        File directory = validatedDestinationFile(canonicalDestination, entry.getName());
+                        File directory = new File(canonicalDestination, entry.getName());
+                        if (!directory.toPath().normalize().startsWith(canonicalDestination.toPath()))
+                            throw new IOException(format("Bad zip entry outside destination directory: %s", entry.getName()));
                         handleDirectory(directory, entry);
                     }
 
                 } else {
                     File extracted;
                     if(flatten)
-                        extracted = validatedDestinationFile(canonicalDestination, lastPathFragment(entry.getName(), MAX_VALUE));
+                        extracted = new File(canonicalDestination, lastPathFragment(entry.getName(), MAX_VALUE));
                     else {
-                        extracted = validatedDestinationFile(canonicalDestination, entry.getName());
+                        extracted = new File(canonicalDestination, entry.getName());
                     }
+                    if (!extracted.toPath().normalize().startsWith(canonicalDestination.toPath()))
+                        throw new IOException(format("Bad zip entry outside destination directory: %s", entry.getName()));
                     File directory = extracted.getParentFile();
                     handleDirectory(directory, entry);
 
