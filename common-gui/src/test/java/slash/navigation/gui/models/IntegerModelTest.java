@@ -21,6 +21,7 @@
 package slash.navigation.gui.models;
 
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;

@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.gui.models;
+package slash.common.prefs;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

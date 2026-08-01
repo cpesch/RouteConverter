@@ -19,7 +19,9 @@
 */
 package slash.navigation.columbus;
 
+import org.junit.Before;
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
@@ -43,6 +45,11 @@ import static slash.navigation.columbus.ColumbusV1000Device.setUseLocalTimeZone;
 
 public class ColumbusFusionFormatTest {
     private final ColumbusFusionFormat format = new ColumbusFusionFormat();
+
+    @Before
+    public void setUp() {
+        ColumbusV1000Device.setPreferences(new InMemoryPreferences());
+    }
 
     private static BufferedReader reader(String... lines) {
         StringBuilder builder = new StringBuilder();

@@ -1,27 +1,17 @@
 package slash.navigation.columbus;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class ColumbusV1000DeviceTest {
-    private boolean useLocalTimeZone;
-    private String timeZone;
-
     @Before
     public void setUp() {
-        useLocalTimeZone = ColumbusV1000Device.getUseLocalTimeZone();
-        timeZone = ColumbusV1000Device.getTimeZone();
-    }
-
-    @After
-    public void tearDown() {
-        ColumbusV1000Device.setUseLocalTimeZone(useLocalTimeZone);
-        ColumbusV1000Device.setTimeZone(timeZone);
+        ColumbusV1000Device.setPreferences(new InMemoryPreferences());
     }
 
     @Test

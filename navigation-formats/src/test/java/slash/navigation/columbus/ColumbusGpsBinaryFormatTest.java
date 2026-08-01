@@ -1,8 +1,8 @@
 package slash.navigation.columbus;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 
 import java.nio.ByteBuffer;
 
@@ -17,17 +17,11 @@ import static slash.navigation.base.WaypointType.Waypoint;
 
 public class ColumbusGpsBinaryFormatTest {
     private final ColumbusGpsBinaryFormat format = new ColumbusGpsBinaryFormat();
-    private boolean useLocalTimeZone;
 
     @Before
     public void setUp() {
-        useLocalTimeZone = ColumbusV1000Device.getUseLocalTimeZone();
+        ColumbusV1000Device.setPreferences(new InMemoryPreferences());
         ColumbusV1000Device.setUseLocalTimeZone(false);
-    }
-
-    @After
-    public void tearDown() {
-        ColumbusV1000Device.setUseLocalTimeZone(useLocalTimeZone);
     }
 
     @Test

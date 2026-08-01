@@ -20,7 +20,9 @@
 
 package slash.navigation.columbus;
 
+import org.junit.Before;
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.Wgs84Position;
@@ -36,6 +38,11 @@ import static slash.navigation.columbus.ColumbusV1000Device.*;
 
 public class ColumbusGpsType2FormatTest {
     private final ColumbusGpsType2Format format = new ColumbusGpsType2Format();
+
+    @Before
+    public void setUp() {
+        ColumbusV1000Device.setPreferences(new InMemoryPreferences());
+    }
 
     @Test
     public void testIsValidLine() {

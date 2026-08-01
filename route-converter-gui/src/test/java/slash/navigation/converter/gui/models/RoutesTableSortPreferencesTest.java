@@ -21,7 +21,7 @@ package slash.navigation.converter.gui.models;
 
 import org.junit.Before;
 import org.junit.Test;
-import slash.navigation.gui.models.InMemoryPreferences;
+import slash.common.prefs.InMemoryPreferences;
 
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
