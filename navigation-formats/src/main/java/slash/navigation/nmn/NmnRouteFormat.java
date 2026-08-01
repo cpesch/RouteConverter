@@ -561,7 +561,10 @@ public class NmnRouteFormat extends SimpleFormat<Wgs84Route> {
                 (byte) 0x90, (byte) 0xF9, (byte) 0x46, (byte) 0x27,
                 (byte) 0x0A, (byte) 0x00, (byte) 0x00, (byte) 0x00
         };
-        rawData[0] += positionNo; //erhöht sich mit jedem Punkt
+        int rawData0 = rawData[0] + positionNo; //erhöht sich mit jedem Punkt
+        if (rawData0 < Byte.MIN_VALUE || rawData0 > Byte.MAX_VALUE)
+            throw new IllegalArgumentException("positionNo out of byte range: " + positionNo);
+        rawData[0] = (byte) rawData0;
         byteBuffer.put(rawData);
 
         //Countrycode
