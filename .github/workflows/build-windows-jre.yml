@@ -31,6 +31,9 @@ concurrency:
   group: build-windows-jre
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: windows-latest
