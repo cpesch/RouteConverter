@@ -944,6 +944,10 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         return false;
     }
 
+    public boolean isWaypointTypeCountsEnabled() {
+        return false;
+    }
+
     public boolean isPointsOfInterestPanelSelected() {
         return tabbedPane.getSelectedComponent().equals(pointOfInterestPanel);
     }

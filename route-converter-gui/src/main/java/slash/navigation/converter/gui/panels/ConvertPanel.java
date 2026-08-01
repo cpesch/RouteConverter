@@ -145,6 +145,10 @@ public class ConvertPanel implements PanelInTab {
     private JLabel labelDuration;
     private JLabel labelOverallAscend;
     private JLabel labelOverallDescend;
+    private JLabel labelParkingCountCaption;
+    private JLabel labelParkingCount;
+    private JLabel labelPoiCountCaption;
+    private JLabel labelPoiCount;
     private JTable tablePositions;
     private JComboBox<FormatAndRoutesModel> comboBoxPositionLists;
     private JComboBox<RouteCharacteristics> comboBoxRouteCharacteristics;
@@ -206,6 +210,13 @@ public class ConvertPanel implements PanelInTab {
         new PositionsCountToJLabelAdapter(positionsModel, labelPositions);
         new LengthToJLabelAdapter(positionsModel, r.getDistanceAndTimeAggregator(), labelLength, labelDuration);
         new ElevationToJLabelAdapter(positionsModel, labelOverallAscend, labelOverallDescend);
+
+        boolean waypointTypeCountsEnabled = r.isWaypointTypeCountsEnabled();
+        labelParkingCountCaption.setVisible(waypointTypeCountsEnabled);
+        labelParkingCount.setVisible(waypointTypeCountsEnabled);
+        labelPoiCountCaption.setVisible(waypointTypeCountsEnabled);
+        labelPoiCount.setVisible(waypointTypeCountsEnabled);
+        new WaypointTypeCountToJLabelAdapter(positionsModel, labelParkingCount, labelPoiCount);
 
         formatAndRoutesModel.addListDataListener(new AbstractListDataListener() {
             public void process(ListDataEvent e) {
@@ -935,7 +946,7 @@ public class ConvertPanel implements PanelInTab {
         this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "format"));
         convertPanel.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(2, 5, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(3, 5, new Insets(0, 0, 0, 0), -1, -1));
         convertPanel.add(panel2, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         labelPositions = new JLabel();
         labelPositions.setHorizontalAlignment(2);
@@ -984,6 +995,26 @@ public class ConvertPanel implements PanelInTab {
         labelOverallAscend.setHorizontalTextPosition(2);
         labelOverallAscend.setText("-");
         panel2.add(labelOverallAscend, new GridConstraints(1, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelParkingCountCaption = new JLabel();
+        labelParkingCountCaption.setHorizontalAlignment(4);
+        labelParkingCountCaption.setHorizontalTextPosition(4);
+        this.$$$loadLabelText$$$(labelParkingCountCaption, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "parking-count"));
+        panel2.add(labelParkingCountCaption, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelParkingCount = new JLabel();
+        labelParkingCount.setHorizontalAlignment(2);
+        labelParkingCount.setHorizontalTextPosition(2);
+        labelParkingCount.setText("-");
+        panel2.add(labelParkingCount, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelPoiCountCaption = new JLabel();
+        labelPoiCountCaption.setHorizontalAlignment(4);
+        labelPoiCountCaption.setHorizontalTextPosition(4);
+        this.$$$loadLabelText$$$(labelPoiCountCaption, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "poi-count"));
+        panel2.add(labelPoiCountCaption, new GridConstraints(2, 3, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelPoiCount = new JLabel();
+        labelPoiCount.setHorizontalAlignment(2);
+        labelPoiCount.setHorizontalTextPosition(2);
+        labelPoiCount.setText("-");
+        panel2.add(labelPoiCount, new GridConstraints(2, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelPositionLists = new JLabel();
         labelPositionLists.setHorizontalAlignment(2);
         labelPositionLists.setHorizontalTextPosition(2);
