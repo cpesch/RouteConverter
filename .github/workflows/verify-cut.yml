@@ -16,9 +16,11 @@ jobs:
         id: ctx
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
+          RUN_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
         run: |
-          TAG='${{ github.event.workflow_run.head_branch }}'
-          CONCLUSION='${{ github.event.workflow_run.conclusion }}'
+          TAG="$HEAD_BRANCH"
+          CONCLUSION="$RUN_CONCLUSION"
           echo "tag=$TAG"               >> "$GITHUB_OUTPUT"
           echo "conclusion=$CONCLUSION" >> "$GITHUB_OUTPUT"
           echo "release run tag=$TAG conclusion=$CONCLUSION"
