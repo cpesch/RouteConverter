@@ -29,6 +29,9 @@ concurrency:
   group: javadoc
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   publish-javadoc:
     runs-on: ubuntu-latest
