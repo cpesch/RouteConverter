@@ -90,6 +90,33 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
         return null;
     }
 
+    // GGA fix quality (0-7, NMEA semantics); case-insensitive per GPX 1.0/1.1 <fix> enum.
+    static Integer parseFix(String fix) {
+        if (fix == null)
+            return null;
+        return switch (fix.toLowerCase()) {
+            case "none" -> 0;
+            case "2d" -> 1;
+            case "3d" -> 1;
+            case "dgps" -> 2;
+            case "pps" -> 3;
+            default -> null;
+        };
+    }
+
+    // Lossless subset only: fix quality 1 (SPS, no 2d/3d dimension) and 4-7 (RTK, no GPX
+    // equivalent) have no faithful <fix> value, so they are omitted rather than fabricated.
+    static String formatFix(Integer fixQuality) {
+        if (fixQuality == null)
+            return null;
+        return switch (fixQuality) {
+            case 0 -> "none";
+            case 2 -> "dgps";
+            case 3 -> "pps";
+            default -> null;
+        };
+    }
+
     protected boolean isWriteAccuracy() {
         return preferences.getBoolean("writeAccuracy", true);
     }
