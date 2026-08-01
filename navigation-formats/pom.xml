@@ -187,7 +187,9 @@
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration combine.self="override">
                             <skipTests>${skip.unit.tests}</skipTests>
-                            <forkCount>1.5C</forkCount>
+                            <!-- forkCount=1: see the forkCount note on this module's default
+                                 maven-surefire-plugin configuration above. -->
+                            <forkCount>1</forkCount>
                             <includes>
                                 <include>**/*Test.java</include>
                                 <include>**/*IT.java</include>
@@ -201,6 +203,24 @@
 
     <build>
         <plugins>
+            <plugin>
+                <!-- Several Columbus tests (ColumbusGpsBinaryFormatTest, ColumbusFusionFormatTest, ...)
+                     toggle ColumbusV1000Device's useLocalTimeZone/timeZone flags, which are backed by
+                     java.util.prefs.Preferences: a process-external, OS-shared store (Windows Registry,
+                     ~/.java/.userPrefs, ...), not JVM-local state. The root pom's forkCount=1.5C runs
+                     several test-class forks concurrently, so two of these tests can land in different
+                     forked JVMs at the same time and race on that shared store - one test's setUp/finally
+                     flips useLocalTimeZone/timeZone while another test's parseTime() is mid-assertion,
+                     producing an exact device-timezone-offset time shift (seen as e.g. Europe/Berlin's
+                     1-hour winter offset). forkCount=1 makes this module's tests run sequentially in one
+                     JVM, removing the race. See the "Java 21 on Windows" intermittent CI failures on
+                     PR #243 for the observed symptom. -->
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <forkCount>1</forkCount>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
