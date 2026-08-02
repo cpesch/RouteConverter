@@ -116,14 +116,28 @@ public class PositionHelperTest {
     public void testExtractHeading() {
         Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
         position.setHeading(212.0);
-        assertEquals("212.00\u00B0", extractHeading(position));
+        assertEquals("212\u00B0", extractHeading(position));
     }
 
     @Test
     public void testExtractHeadingWithZero() {
         Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
         position.setHeading(0.0);
-        assertEquals("0.00\u00B0", extractHeading(position));
+        assertEquals("0\u00B0", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHeadingWithOneDecimalDigit() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setHeading(301.3);
+        assertEquals("301.3\u00B0", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHeadingWithTwoDecimalDigits() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setHeading(212.34);
+        assertEquals("212.34\u00B0", extractHeading(position));
     }
 
     @Test
@@ -226,12 +240,33 @@ public class PositionHelperTest {
 
     @Test
     public void testFormatElevation() {
-        assertEquals("52.00 m", formatElevation(52.0, Metric));
+        assertEquals("52 m", formatElevation(52.0, Metric));
     }
 
     @Test
     public void testFormatElevationWithHalf() {
-        assertEquals("52.50 m", formatElevation(52.5, Metric));
+        assertEquals("52.5 m", formatElevation(52.5, Metric));
+    }
+
+    @Test
+    public void testFormatElevationWithOneDecimalDigit() {
+        assertEquals("17.2 m", formatElevation(17.2, Metric));
+    }
+
+    @Test
+    public void testFormatElevationWithTwoDecimalDigits() {
+        assertEquals("17.23 m", formatElevation(17.23, Metric));
+        assertEquals("52.55 m", formatElevation(52.55, Metric));
+    }
+
+    @Test
+    public void testFormatElevationRoundsRatherThanTruncates() {
+        assertEquals("52.55 m", formatElevation(52.554, Metric));
+    }
+
+    @Test
+    public void testFormatElevationRoundsHalfUp() {
+        assertEquals("52.56 m", formatElevation(52.555, Metric));
     }
 
     @Test
