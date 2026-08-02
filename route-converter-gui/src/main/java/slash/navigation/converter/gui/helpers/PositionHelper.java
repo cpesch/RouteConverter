@@ -81,7 +81,19 @@ public class PositionHelper {
     // without needing a running BaseRouteConverter instance (GUI is untestable headless)
     static String formatElevation(double elevation, UnitSystem unitSystem) {
         double elevationInUnit = unitSystem.valueToUnit(elevation);
-        return format("%s %s", Transfer.formatDoubleAsString(elevationInUnit, 2), unitSystem.getElevationName());
+        return format("%s %s", formatRoundedTrimmed(elevationInUnit), unitSystem.getElevationName());
+    }
+
+    // Rounds to two fraction digits, then formats without padding: 17.2 -> "17.2", 52.0 -> "52".
+    // Transfer#formatDoubleAsString(Double, int) alone would truncate rather than round (1.075 -> "1.07"),
+    // so the value is rounded first via roundFraction and only then formatted and trimmed.
+    private static String formatRoundedTrimmed(double value) {
+        String formatted = Transfer.formatDoubleAsString(roundFraction(value, 2), 2);
+        if (formatted.indexOf('.') >= 0) {
+            formatted = formatted.replaceAll("0+$", "");
+            formatted = formatted.replaceAll("\\.$", "");
+        }
+        return formatted;
     }
 
     public static String extractElevation(NavigationPosition position) {
@@ -147,7 +159,7 @@ public class PositionHelper {
     public static String formatHeading(Double heading) {
         if (heading == null)
             return "";
-        return Transfer.formatDoubleAsString(heading, 2) + "\u00B0";
+        return formatRoundedTrimmed(heading) + "\u00B0";
     }
 
     public static String extractHeading(NavigationPosition position) {
