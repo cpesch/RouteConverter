@@ -43,6 +43,7 @@ public class UnitConversion {
     private UnitConversion() {
     }
 
+    /** Exact feet-to-meters conversion factor (1 foot = 0.3048 meters). */
     private static final double METER_OF_A_FEET = 0.3048;
     private static final double KILOMETER_OF_A_NAUTIC_MILE = 1.8520043;
     private static final double KILOMETER_OF_A_STATUTE_MILE = 1.609344;
