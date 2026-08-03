@@ -177,7 +177,7 @@
             <id>local-with-samples</id>
             <activation>
                 <file>
-                    <exists>../navigation-formats-samples/src-rc-samples</exists>
+                    <exists>../navigation-formats-samples/src-rc-samples.bak</exists>
                 </file>
             </activation>
             <build>
