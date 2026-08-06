@@ -91,7 +91,7 @@ public class NmeaFormat extends BaseNmeaFormat {
             compile(BEGIN_OF_LINE + "GGA" + SEPARATOR + "([\\d\\.]*)" + SEPARATOR +
                     "([\\s\\d\\.]+)" + SEPARATOR + "([NS])" + SEPARATOR +
                     "([\\s\\d\\.]+)" + SEPARATOR + "([WE])" + SEPARATOR +
-                    "([\\d])" + SEPARATOR +          // Fix quality, 0=invalid
+                    "([0-7])" + SEPARATOR +          // Fix quality, 0=invalid, domain 0-7 (NMEA GGA quality)
                     "([\\d]*)" + SEPARATOR +         // Number of satellites in view, 00 - 12
                     "([\\d\\.]*)" + SEPARATOR +      // HDOP
                     "(-?[\\d\\.]*)" + SEPARATOR +    // Antenna Altitude above/below mean-sea-level (geoid)

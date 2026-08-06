@@ -217,6 +217,33 @@ public class ColumbusFusionFormatTest {
     }
 
     @Test
+    public void testFixQualityAcceptsLowerBoundaryZero() throws IOException {
+        List<Wgs84Position> positions = format.parseBody(
+                reader("T,240115,101530,52.5200,13.4050,34.0,12.3,88.0,7,1.2,0"),
+                ColumbusFusionFormat.LAYOUT_GNSS_SAT_FIX);
+        assertEquals(1, positions.size());
+        assertEquals(Integer.valueOf(0), positions.get(0).getFixQuality());
+    }
+
+    @Test
+    public void testFixQualityAcceptsUpperBoundarySeven() throws IOException {
+        List<Wgs84Position> positions = format.parseBody(
+                reader("T,240115,101530,52.5200,13.4050,34.0,12.3,88.0,7,1.2,7"),
+                ColumbusFusionFormat.LAYOUT_GNSS_SAT_FIX);
+        assertEquals(1, positions.size());
+        assertEquals(Integer.valueOf(7), positions.get(0).getFixQuality());
+    }
+
+    @Test
+    public void testFixQualityRejectsOutOfDomainValue() throws IOException {
+        List<Wgs84Position> positions = format.parseBody(
+                reader("T,240115,101530,52.5200,13.4050,34.0,12.3,88.0,7,1.2,9"),
+                ColumbusFusionFormat.LAYOUT_GNSS_SAT_FIX);
+        assertEquals(1, positions.size());
+        assertNull(positions.get(0).getFixQuality());
+    }
+
+    @Test
     public void testCarryForwardTagAndDate() throws IOException {
         List<Wgs84Position> positions = format.parseBody(reader(
                 "T,240115,101530,52.5200,13.4050,34.0,12.3,88.0",
