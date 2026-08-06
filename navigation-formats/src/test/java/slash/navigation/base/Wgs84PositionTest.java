@@ -94,6 +94,21 @@ public class Wgs84PositionTest {
     }
 
     @Test
+    public void testAsGpxPositionCopiesWaypointType() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setWaypointType(WaypointType.Parking);
+        assertEquals(WaypointType.Parking, pos.asGpxPosition().getWaypointType());
+    }
+
+    @Test
+    public void testWaypointTypeRoundTripsThroughGpxPosition() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setWaypointType(WaypointType.Parking);
+        Wgs84Position roundTripped = pos.asGpxPosition().asWgs84Position();
+        assertEquals(WaypointType.Parking, roundTripped.getWaypointType());
+    }
+
+    @Test
     public void testSetAndGetHeading() {
         Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
         pos.setHeading(270.0);
