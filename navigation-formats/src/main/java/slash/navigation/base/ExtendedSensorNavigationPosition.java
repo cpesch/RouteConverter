@@ -61,10 +61,37 @@ public interface ExtendedSensorNavigationPosition extends NavigationPosition {
     Short getHeartBeat();
     void setHeartBeat(Short heartBeat);
 
+    /**
+     * Return the acceleration on the x-axis in g
+     *
+     * @return the acceleration on the x-axis in g
+     */
+    Double getAccelerationX();
+    void setAccelerationX(Double accelerationX);
+
+    /**
+     * Return the acceleration on the y-axis in g
+     *
+     * @return the acceleration on the y-axis in g
+     */
+    Double getAccelerationY();
+    void setAccelerationY(Double accelerationY);
+
+    /**
+     * Return the acceleration on the z-axis in g
+     *
+     * @return the acceleration on the z-axis in g
+     */
+    Double getAccelerationZ();
+    void setAccelerationZ(Double accelerationZ);
+
     static void transferExtendedSensorData(ExtendedSensorNavigationPosition from, ExtendedSensorNavigationPosition to) {
         to.setHeading(from.getHeading());
         to.setPressure(from.getPressure());
         to.setTemperature(from.getTemperature());
         to.setHeartBeat(from.getHeartBeat());
+        to.setAccelerationX(from.getAccelerationX());
+        to.setAccelerationY(from.getAccelerationY());
+        to.setAccelerationZ(from.getAccelerationZ());
     }
 }

@@ -21,6 +21,7 @@
 package slash.navigation.base;
 
 import org.junit.Test;
+import slash.navigation.gpx.GpxPosition;
 
 import static org.junit.Assert.*;
 
@@ -256,6 +257,30 @@ public class Wgs84PositionTest {
         pos.setFixQuality(4);
         Wgs84Position roundTripped = pos.asNmeaPosition().asWgs84Position();
         assertEquals(Integer.valueOf(4), roundTripped.getFixQuality());
+    }
+
+    @Test
+    public void testAsGpxPositionCopiesAcceleration() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setAccelerationX(0.1);
+        pos.setAccelerationY(0.2);
+        pos.setAccelerationZ(0.3);
+        GpxPosition gpxPosition = pos.asGpxPosition();
+        assertEquals(0.1, gpxPosition.getAccelerationX(), 0.0001);
+        assertEquals(0.2, gpxPosition.getAccelerationY(), 0.0001);
+        assertEquals(0.3, gpxPosition.getAccelerationZ(), 0.0001);
+    }
+
+    @Test
+    public void testAccelerationRoundTripsThroughGpxPosition() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setAccelerationX(0.1);
+        pos.setAccelerationY(0.2);
+        pos.setAccelerationZ(0.3);
+        Wgs84Position roundTripped = pos.asGpxPosition().asWgs84Position();
+        assertEquals(0.1, roundTripped.getAccelerationX(), 0.0001);
+        assertEquals(0.2, roundTripped.getAccelerationY(), 0.0001);
+        assertEquals(0.3, roundTripped.getAccelerationZ(), 0.0001);
     }
 }
 
