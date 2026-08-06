@@ -101,5 +101,17 @@ public class ColumbusGnssGpxReadIT {
 
         NmeaPosition first = (NmeaPosition) route.getPosition(0);
         assertNotNull(first.getHeading());
+
+        boolean foundHdopAndFixQuality = false;
+        for (int i = 0; i < route.getPositionCount(); i++) {
+            NmeaPosition position = (NmeaPosition) route.getPosition(i);
+            Double hdop = position.getHdop();
+            Integer fixQuality = position.getFixQuality();
+            if (hdop != null && fixQuality != null && fixQuality >= 0 && fixQuality <= 7) {
+                foundHdopAndFixQuality = true;
+                break;
+            }
+        }
+        assertTrue("Expected at least one position with non-null hdop and fixQuality in 0..7", foundHdopAndFixQuality);
     }
 }
