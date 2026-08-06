@@ -84,4 +84,11 @@ public class NmeaPositionTest {
         position2.setFixQuality(5);
         assertFalse(position1.equals(position2));
     }
+
+    @Test
+    public void asGpxPositionCopiesFixQuality() {
+        NmeaPosition position = new NmeaPosition(903.4036, "E", 4837.4374, "S", 16.76, null, null, null, null);
+        position.setFixQuality(2);
+        assertEquals(Integer.valueOf(2), position.asGpxPosition().getFixQuality());
+    }
 }

@@ -235,5 +235,27 @@ public class Wgs84PositionTest {
         assertNotEquals(a, b);
         assertNotEquals(a.hashCode(), b.hashCode());
     }
+
+    @Test
+    public void testAsGpxPositionCopiesFixQuality() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setFixQuality(4);
+        assertEquals(Integer.valueOf(4), pos.asGpxPosition().getFixQuality());
+    }
+
+    @Test
+    public void testAsNmeaPositionCopiesFixQuality() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setFixQuality(4);
+        assertEquals(Integer.valueOf(4), pos.asNmeaPosition().getFixQuality());
+    }
+
+    @Test
+    public void testFixQualityRoundTripsThroughNmeaPosition() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setFixQuality(4);
+        Wgs84Position roundTripped = pos.asNmeaPosition().asWgs84Position();
+        assertEquals(Integer.valueOf(4), roundTripped.getFixQuality());
+    }
 }
 

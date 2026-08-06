@@ -253,6 +253,7 @@ public class Wgs84Position extends BaseNavigationPosition implements ExtendedSen
         position.setPdop(getPdop());
         position.setVdop(getVdop());
         position.setSatellites(getSatellites());
+        position.setFixQuality(getFixQuality());
         return position;
     }
 
@@ -263,6 +264,7 @@ public class Wgs84Position extends BaseNavigationPosition implements ExtendedSen
         position.setPdop(getPdop());
         position.setVdop(getVdop());
         position.setSatellites(getSatellites());
+        position.setFixQuality(getFixQuality());
         return position;
     }
 

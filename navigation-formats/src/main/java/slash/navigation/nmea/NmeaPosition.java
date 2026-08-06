@@ -184,6 +184,7 @@ public class NmeaPosition extends BaseNavigationPosition {
         position.setPdop(getPdop());
         position.setVdop(getVdop());
         position.setSatellites(getSatellites());
+        position.setFixQuality(getFixQuality());
         return position;
     }
 
