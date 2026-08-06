@@ -636,4 +636,16 @@ public class NmeaFormatTest {
         assertEquals(Integer.valueOf(1), reread.getFixQuality());
         assertNull(reread.getHdop());
     }
+
+    @Test
+    public void testGGAAcceptsFixQualityAtUpperBoundary() {
+        NmeaPosition position = format.parsePosition("$GPGGA,130441.89,4837.4374,S,00903.4036,E,7,08,1.25,16.76,M,46.79,M,,*6D");
+        assertEquals(Integer.valueOf(7), position.getFixQuality());
+    }
+
+    @Test
+    public void testGGARejectsOutOfDomainFixQuality() {
+        assertFalse(format.isPosition("$GPGGA,130441.89,4837.4374,S,00903.4036,E,8,08,1.25,16.76,M,46.79,M,,*6D"));
+        assertFalse(format.isPosition("$GPGGA,130441.89,4837.4374,S,00903.4036,E,9,08,1.25,16.76,M,46.79,M,,*6D"));
+    }
 }

@@ -442,7 +442,8 @@ public class Gpx11Format extends GpxFormat {
         GpxType gpxType = recycleGpxType(route);
         if (gpxType == null)
             gpxType = objectFactory.createGpxType();
-        gpxType.setCreator(getCreator());
+        if (gpxType.getCreator() == null || !gpxType.getCreator().startsWith("Columbus GNSS"))
+            gpxType.setCreator(getCreator());
         gpxType.setVersion(VERSION);
 
         if (isWriteMetaData()) {
@@ -467,7 +468,8 @@ public class Gpx11Format extends GpxFormat {
         }
         if (gpxType == null)
             gpxType = objectFactory.createGpxType();
-        gpxType.setCreator(getCreator());
+        if (gpxType.getCreator() == null || !gpxType.getCreator().startsWith("Columbus GNSS"))
+            gpxType.setCreator(getCreator());
         gpxType.setVersion(VERSION);
 
         GpxRoute routeForMetadata = null;

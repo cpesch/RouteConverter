@@ -338,8 +338,10 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
             position.setSatellites(parseInteger(lineMatcher.group(9)));
             position.setHdop(parseDouble(lineMatcher.group(10)));
         }
-        if (layout == LAYOUT_GNSS_SAT_FIX)
-            position.setFixQuality(parseInteger(lineMatcher.group(11)));
+        if (layout == LAYOUT_GNSS_SAT_FIX) {
+            Integer fixQuality = parseInteger(lineMatcher.group(11));
+            position.setFixQuality(isValidFixQuality(fixQuality) ? fixQuality : null);
+        }
         if (layout == LAYOUT_GNSS_IMU)
             setAcceleration(position, lineMatcher, 9);
 
@@ -380,6 +382,15 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    /**
+     * The Fusion fix column is NMEA GGA quality, domain 0-7 (spec 00063 A6); a
+     * value outside that range is garbage on the line rather than a different
+     * quality, so it is dropped instead of stored or clamped.
+     */
+    private boolean isValidFixQuality(Integer fixQuality) {
+        return fixQuality != null && fixQuality >= 0 && fixQuality <= 7;
     }
 
     /**

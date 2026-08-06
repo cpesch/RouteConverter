@@ -21,6 +21,7 @@
 package slash.navigation.base;
 
 import org.junit.Test;
+import slash.navigation.gpx.GpxPosition;
 
 import static org.junit.Assert.*;
 
@@ -90,6 +91,21 @@ public class Wgs84PositionTest {
     public void testWaypointTypeDefaultIsNull() {
         Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
         assertNull(pos.getWaypointType());
+    }
+
+    @Test
+    public void testAsGpxPositionCopiesWaypointType() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setWaypointType(WaypointType.Parking);
+        assertEquals(WaypointType.Parking, pos.asGpxPosition().getWaypointType());
+    }
+
+    @Test
+    public void testWaypointTypeRoundTripsThroughGpxPosition() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setWaypointType(WaypointType.Parking);
+        Wgs84Position roundTripped = pos.asGpxPosition().asWgs84Position();
+        assertEquals(WaypointType.Parking, roundTripped.getWaypointType());
     }
 
     @Test
@@ -234,6 +250,52 @@ public class Wgs84PositionTest {
         b.setFixQuality(2);
         assertNotEquals(a, b);
         assertNotEquals(a.hashCode(), b.hashCode());
+    }
+
+    @Test
+    public void testAsGpxPositionCopiesFixQuality() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setFixQuality(4);
+        assertEquals(Integer.valueOf(4), pos.asGpxPosition().getFixQuality());
+    }
+
+    @Test
+    public void testAsNmeaPositionCopiesFixQuality() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setFixQuality(4);
+        assertEquals(Integer.valueOf(4), pos.asNmeaPosition().getFixQuality());
+    }
+
+    @Test
+    public void testFixQualityRoundTripsThroughNmeaPosition() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setFixQuality(4);
+        Wgs84Position roundTripped = pos.asNmeaPosition().asWgs84Position();
+        assertEquals(Integer.valueOf(4), roundTripped.getFixQuality());
+    }
+
+    @Test
+    public void testAsGpxPositionCopiesAcceleration() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setAccelerationX(0.1);
+        pos.setAccelerationY(0.2);
+        pos.setAccelerationZ(0.3);
+        GpxPosition gpxPosition = pos.asGpxPosition();
+        assertEquals(0.1, gpxPosition.getAccelerationX(), 0.0001);
+        assertEquals(0.2, gpxPosition.getAccelerationY(), 0.0001);
+        assertEquals(0.3, gpxPosition.getAccelerationZ(), 0.0001);
+    }
+
+    @Test
+    public void testAccelerationRoundTripsThroughGpxPosition() {
+        Wgs84Position pos = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        pos.setAccelerationX(0.1);
+        pos.setAccelerationY(0.2);
+        pos.setAccelerationZ(0.3);
+        Wgs84Position roundTripped = pos.asGpxPosition().asWgs84Position();
+        assertEquals(0.1, roundTripped.getAccelerationX(), 0.0001);
+        assertEquals(0.2, roundTripped.getAccelerationY(), 0.0001);
+        assertEquals(0.3, roundTripped.getAccelerationZ(), 0.0001);
     }
 }
 
