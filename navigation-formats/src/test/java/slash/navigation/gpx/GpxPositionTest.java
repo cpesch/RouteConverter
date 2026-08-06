@@ -96,4 +96,65 @@ public class GpxPositionTest {
         assertEquals(one.hashCode(), same.hashCode());
         assertNotEquals(one, different);
     }
+
+    @Test
+    public void fixQualityDifferenceMakesPositionsUnequal() {
+        GpxPosition one = new GpxPosition(13.5, 48.5, null, null, null, null);
+        one.setFixQuality(4);
+        GpxPosition other = new GpxPosition(13.5, 48.5, null, null, null, null);
+        other.setFixQuality(5);
+
+        assertNotEquals(one, other);
+        assertNotEquals(one.hashCode(), other.hashCode());
+    }
+
+    @Test
+    public void accelerationXDifferenceMakesPositionsUnequal() {
+        GpxPosition one = new GpxPosition(13.5, 48.5, null, null, null, null);
+        one.setAccelerationX(0.1);
+        GpxPosition other = new GpxPosition(13.5, 48.5, null, null, null, null);
+        other.setAccelerationX(0.2);
+
+        assertNotEquals(one, other);
+        assertNotEquals(one.hashCode(), other.hashCode());
+    }
+
+    @Test
+    public void accelerationYDifferenceMakesPositionsUnequal() {
+        GpxPosition one = new GpxPosition(13.5, 48.5, null, null, null, null);
+        one.setAccelerationY(0.1);
+        GpxPosition other = new GpxPosition(13.5, 48.5, null, null, null, null);
+        other.setAccelerationY(0.2);
+
+        assertNotEquals(one, other);
+        assertNotEquals(one.hashCode(), other.hashCode());
+    }
+
+    @Test
+    public void accelerationZDifferenceMakesPositionsUnequal() {
+        GpxPosition one = new GpxPosition(13.5, 48.5, null, null, null, null);
+        one.setAccelerationZ(0.1);
+        GpxPosition other = new GpxPosition(13.5, 48.5, null, null, null, null);
+        other.setAccelerationZ(0.2);
+
+        assertNotEquals(one, other);
+        assertNotEquals(one.hashCode(), other.hashCode());
+    }
+
+    @Test
+    public void equalFixQualityAndAccelerationKeepPositionsEqual() {
+        GpxPosition one = new GpxPosition(13.5, 48.5, null, null, null, null);
+        one.setFixQuality(4);
+        one.setAccelerationX(0.1);
+        one.setAccelerationY(0.2);
+        one.setAccelerationZ(0.3);
+        GpxPosition other = new GpxPosition(13.5, 48.5, null, null, null, null);
+        other.setFixQuality(4);
+        other.setAccelerationX(0.1);
+        other.setAccelerationY(0.2);
+        other.setAccelerationZ(0.3);
+
+        assertEquals(one, other);
+        assertEquals(one.hashCode(), other.hashCode());
+    }
 }
