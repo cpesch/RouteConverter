@@ -45,6 +45,7 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
     private static final String DATE_AND_TIME_WITHOUT_SECONDS_FORMAT = "dd.MM.yy HH:mm";
 
     private final Map<String, String> rowAsMap;
+    private Double accelerationX, accelerationY, accelerationZ;
 
     public CsvPosition(Map<String, String> rowAsMap) {
         this.rowAsMap = rowAsMap;
@@ -211,6 +212,30 @@ public class CsvPosition extends BaseNavigationPosition implements ExtendedSenso
 
     public void setHeading(Double heading) {
         setValueAsDouble(Heading, heading);
+    }
+
+    public Double getAccelerationX() {
+        return accelerationX;
+    }
+
+    public void setAccelerationX(Double accelerationX) {
+        this.accelerationX = accelerationX;
+    }
+
+    public Double getAccelerationY() {
+        return accelerationY;
+    }
+
+    public void setAccelerationY(Double accelerationY) {
+        this.accelerationY = accelerationY;
+    }
+
+    public Double getAccelerationZ() {
+        return accelerationZ;
+    }
+
+    public void setAccelerationZ(Double accelerationZ) {
+        this.accelerationZ = accelerationZ;
     }
 
     public String getDescription() {

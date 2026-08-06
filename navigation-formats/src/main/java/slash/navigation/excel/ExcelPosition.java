@@ -42,6 +42,7 @@ import static slash.navigation.excel.ColumnTypeToRowIndexMapping.DEFAULT;
 public class ExcelPosition extends BaseNavigationPosition implements ExtendedSensorNavigationPosition {
     private ColumnTypeToRowIndexMapping mapping = DEFAULT;
     private final Row row;
+    private Double accelerationX, accelerationY, accelerationZ;
 
     public ExcelPosition(Row row, ColumnTypeToRowIndexMapping mapping) {
         this.row = row;
@@ -213,6 +214,30 @@ public class ExcelPosition extends BaseNavigationPosition implements ExtendedSen
 
     public void setHeading(Double heading) {
         setCellAsDouble(Heading, heading);
+    }
+
+    public Double getAccelerationX() {
+        return accelerationX;
+    }
+
+    public void setAccelerationX(Double accelerationX) {
+        this.accelerationX = accelerationX;
+    }
+
+    public Double getAccelerationY() {
+        return accelerationY;
+    }
+
+    public void setAccelerationY(Double accelerationY) {
+        this.accelerationY = accelerationY;
+    }
+
+    public Double getAccelerationZ() {
+        return accelerationZ;
+    }
+
+    public void setAccelerationZ(Double accelerationZ) {
+        this.accelerationZ = accelerationZ;
     }
 
     public String getDescription() {
