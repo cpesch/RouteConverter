@@ -1,5 +1,16 @@
 # Release notes
 
+## Unreleased
+
+### New features
+
+- Added Columbus Fusion track format (Type=GNSS, GNSS with satellite info, GNSS+IMU, IMU) with device-local timestamps, waypoint/POI/parking tags, and 3-axis acceleration
+- Added Columbus GNSS GPX support: course/hdop extensions, correct km/h speed for current firmware, cb: namespace extensions and standard hdop for new firmware
+- Added position list columns: Heading, HDOP, Quality, acceleration (ax/ay/az) — hidden by default, enable via the column header context menu
+- Added Parking count and POI count to the track description (TimeAlbum Pro)
+- Elevation, heading, HDOP and acceleration are shown with two decimal places
+- NMEA: GGA fix quality and HDOP are now read and written; GPX fix element and Columbus Type 1 VALID column map to the quality attribute
+
 ## 3.5 — 2026-07-03
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.5
