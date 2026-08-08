@@ -117,4 +117,39 @@ public class CrashReportSenderTest {
             System.clearProperty(SECRET_PROPERTY);
         }
     }
+
+    @Test
+    public void testSendWithPlaceholderSecretDoesNotPost() {
+        System.clearProperty(SECRET_PROPERTY);
+        CrashReportSender.resetDefaultSecretWarningForTesting();
+
+        final boolean[] posted = {false};
+        CrashReportSender sender = new CrashReportSender() {
+            boolean post(String url, String json, String signature) {
+                posted[0] = true;
+                return true;
+            }
+        };
+
+        assertFalse(sender.send("https://api.routeconverter.com/", "{\"schema_version\":1}"));
+        assertFalse("a placeholder-signed report must not be posted", posted[0]);
+    }
+
+    @Test
+    public void testSendWithConfiguredSecretStillPosts() {
+        System.setProperty(SECRET_PROPERTY, "a-real-injected-secret");
+        CrashReportSender.resetDefaultSecretWarningForTesting();
+
+        final String[] signatureSeen = {null};
+        CrashReportSender sender = new CrashReportSender() {
+            boolean post(String url, String json, String signature) {
+                signatureSeen[0] = signature;
+                return true;
+            }
+        };
+
+        assertTrue(sender.send("https://api.routeconverter.com/", "{\"schema_version\":1}"));
+        assertTrue("a real secret must produce a non-empty signature",
+                signatureSeen[0] != null && !signatureSeen[0].isEmpty());
+    }
 }

@@ -89,6 +89,10 @@ public class CrashReportSender {
                 return false;
             }
             warnIfDefaultSecret();
+            if (DEFAULT_SECRET.equals(secret())) {
+                log.log(FINE, "Not sending crash report: placeholder secret, keeping it spooled");
+                return false;
+            }
             String signature = sign(secret(), body);
             return post(apiUrl + CRASH_REPORT_URI, json, signature);
         } catch (Exception e) {
