@@ -1,6 +1,6 @@
 ---
 name: 00018-rawtypes-generics-campaign
-status: draft
+status: proposed
 phases_done: [measure, spike-navigation-formats]
 phases_next: [decide-approach, close-navigation-formats, route-converter-gui, tail-modules, gate]
 last_touched: 2026-08-08
@@ -10,7 +10,7 @@ last_touched: 2026-08-08
 
 ## Status
 
-`draft`. The measurement and a throwaway spike are done and reported below; the
+`proposed`. The measurement and a throwaway spike are done and reported below; the
 approach decision in [Decision needed](#decision-needed) is **not** made. Do not
 approve any implementation issue from this document until that section is
 resolved.
