@@ -36,6 +36,21 @@ runs only the hermetic ITs (the default coverage set); the live-service ITs
 (`*ServiceIT`, `DownloadManagerIT`, `RemoteRouteIT`, …) need network/credentials and
 run via `-Pintegration-test` / `-Ptest-all`.
 
+**The build is warning-free and enforced.** `<failOnWarning>true</failOnWarning>` on
+maven-compiler-plugin (spec 00017 Scope B, PR #268) turns javac warnings into build
+failures — a warning you introduce fails CI on all three matrix jobs. It only catches
+**default-lint** warnings, though: plain `deprecation` and `unchecked` are javac *notes*
+and still pass, so a canary built on those compiles green and proves nothing. The
+categories that actually hold a line are the ones named explicitly in `<compilerArgs>`.
+The `-Xlint` bulk (`rawtypes` 318, `serial` 117, `this-escape` 57) is deliberately NOT
+enabled — see tracking issue #256 and spec `00018-rawtypes-generics-campaign`.
+
+To re-measure that backlog: maven-compiler-plugin 3.15 **ignores**
+`-Dmaven.compiler.compilerArgument=-Xlint:all`, so the flag has to go into the root pom
+as `<compilerArgs><arg>-Xlint:all</arg></compilerArgs>`; and run with
+`MAVEN_OPTS="-Duser.language=en -Duser.country=US"` or javac emits localised messages
+that cannot be bucketed by category.
+
 CI runs the test matrix on **Java 21, 25** (21 is the minimum) plus a Windows smoke build.
 The bundled-JRE version is the single source of truth `<jre.version>` in the root
 `pom.xml` — keep it in sync with the CI `setup-java` version on JDK bumps.
