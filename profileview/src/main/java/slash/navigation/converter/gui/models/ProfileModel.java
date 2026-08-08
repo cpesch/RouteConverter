@@ -85,12 +85,16 @@ public class ProfileModel extends PositionsModelToXYSeriesSynchronizer {
         getSeries().setFireSeriesChanged(false);
 
         int itemCount = getSeries().getItemCount();
-        if (itemCount > 0 && firstRow < itemCount - 1)
+        if (itemCount > 0 && firstRow < itemCount)
             getSeries().delete(firstRow, itemCount - 1);
 
         BaseRoute route = getPositions().getRoute();
-        if (route == null)
+        if (route == null) {
+            // re-enable and fire events even without a route or the series stays silent forever
+            getSeries().setFireSeriesChanged(true);
+            getSeries().fireSeriesChanged();
             return;
+        }
 
         int lastRow = getPositions().getRowCount() - 1;
         if (firstRow <= lastRow && lastRow >= 0) {
