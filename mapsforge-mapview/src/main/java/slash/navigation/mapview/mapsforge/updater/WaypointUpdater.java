@@ -50,7 +50,10 @@ public class WaypointUpdater implements EventMapUpdater {
         List<PositionWithLayer> added = new ArrayList<>();
         for (int i = firstRow; i <= validLastRow; i++) {
             PositionWithLayer positionWithLayer = new PositionWithLayer(positionsModel.getPosition(i));
-            positionWithLayers.add(i, positionWithLayer);
+            // clamp the insertion index to this updater's own list: a stale firstRow/lastRow
+            // from an event queued before a later file already advanced the live model must
+            // never exceed positionWithLayers.size(), or List.add throws IndexOutOfBoundsException
+            positionWithLayers.add(min(i, positionWithLayers.size()), positionWithLayer);
             added.add(positionWithLayer);
         }
 

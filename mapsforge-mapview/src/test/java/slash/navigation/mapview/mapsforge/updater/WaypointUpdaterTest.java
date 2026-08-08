@@ -113,6 +113,30 @@ public class WaypointUpdaterTest {
     }
 
     @Test
+    public void testAddClampsInsertionIndexToOwnListWhenModelRowCountRacesAhead() {
+        PositionsModel positionsModel = mock(PositionsModel.class);
+        when(positionsModel.getPosition(0)).thenReturn(p1);
+        when(positionsModel.getRowCount()).thenReturn(1);
+        WaypointOperation waypointOperation = mock(WaypointOperation.class);
+
+        WaypointUpdater waypointUpdater = new WaypointUpdater(positionsModel, waypointOperation);
+        waypointUpdater.handleAdd(0, 0);
+
+        assertEquals(singletonList(w1), waypointUpdater.getPositionWithLayers());
+
+        // simulate the live model racing ahead of this updater's own state (later files
+        // already appended) before the event for row 5 executes -- an insertion index
+        // beyond the updater's own list must not throw IndexOutOfBoundsException
+        when(positionsModel.getPosition(5)).thenReturn(p2);
+        when(positionsModel.getRowCount()).thenReturn(50);
+
+        waypointUpdater.handleAdd(5, 5);
+
+        assertEquals(asList(w1, w2), waypointUpdater.getPositionWithLayers());
+        verify(waypointOperation, times(1)).add(singletonList(w2));
+    }
+
+    @Test
     public void testRemove() {
         PositionsModel positionsModel = mock(PositionsModel.class);
         when(positionsModel.getPosition(0)).thenReturn(p1);

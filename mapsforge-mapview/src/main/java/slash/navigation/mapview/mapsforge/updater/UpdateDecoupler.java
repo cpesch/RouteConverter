@@ -24,8 +24,10 @@ import slash.navigation.converter.gui.models.PositionsModel;
 
 import java.util.concurrent.ExecutorService;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 import static java.lang.Integer.MAX_VALUE;
+import static java.lang.String.format;
 import static javax.swing.event.TableModelEvent.*;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -39,6 +41,8 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 
 public class UpdateDecoupler {
+    private static final Logger log = Logger.getLogger(UpdateDecoupler.class.getName());
+
     private final ExecutorService executor;
     private final PositionsModel positionsModel;
     private final Function<RouteCharacteristics, EventMapUpdater> updaterFactory;
@@ -58,23 +62,48 @@ public class UpdateDecoupler {
 
     public void replaceRoute() {
         executor.execute(() -> {
-            // remove all from previous event map updater
-            eventMapUpdater.handleRemove(0, MAX_VALUE);
+            try {
+                // remove all from previous event map updater
+                eventMapUpdater.handleRemove(0, MAX_VALUE);
 
-            // select current event map updater and let him add all
-            eventMapUpdater = updaterFactory.apply(positionsModel.getRoute().getCharacteristics());
-            eventMapUpdater.handleAdd(0, positionsModel.getRowCount() - 1);
+                // select current event map updater and let him add all
+                eventMapUpdater = updaterFactory.apply(positionsModel.getRoute().getCharacteristics());
+                eventMapUpdater.handleAdd(0, positionsModel.getRowCount() - 1);
+            } catch (RuntimeException e) {
+                log.severe("Cannot replace route: " + e);
+                rebuild(e);
+            }
         });
     }
 
     public void handleUpdate(final int eventType, final int firstRow, final int lastRow) {
         executor.execute(() -> {
-            switch (eventType) {
-                case INSERT -> eventMapUpdater.handleAdd(firstRow, lastRow);
-                case UPDATE -> eventMapUpdater.handleUpdate(firstRow, lastRow);
-                case DELETE -> eventMapUpdater.handleRemove(firstRow, lastRow);
+            try {
+                switch (eventType) {
+                    case INSERT -> eventMapUpdater.handleAdd(firstRow, lastRow);
+                    case UPDATE -> eventMapUpdater.handleUpdate(firstRow, lastRow);
+                    case DELETE -> eventMapUpdater.handleRemove(firstRow, lastRow);
+                }
+            } catch (RuntimeException e) {
+                log.severe(format("Cannot handle event type %d for rows %d..%d: %s", eventType, firstRow, lastRow, e));
+                rebuild(e);
             }
         });
+    }
+
+    // Self-heals a desynced updater instead of leaving it broken for the rest of the session:
+    // a queued event racing a later file's already-applied rows previously desynced the
+    // updater's own state permanently (see TrackUpdater/WaypointUpdater). The failing event is
+    // not fed to the crash reporter since this rebuild is expected to recover on its own.
+    private void rebuild(RuntimeException cause) {
+        try {
+            eventMapUpdater.handleRemove(0, MAX_VALUE);
+            int rowCount = positionsModel.getRowCount();
+            if (rowCount > 0)
+                eventMapUpdater.handleAdd(0, rowCount - 1);
+        } catch (RuntimeException e) {
+            log.severe("Cannot rebuild after " + cause + ": " + e);
+        }
     }
 
     public void dispose() {

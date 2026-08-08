@@ -115,4 +115,32 @@ public class UpdateDecouplerTest {
         verify(waypointUpdater).handleRemove(0, MAX_VALUE);
         verify(routeUpdater).handleAdd(0, 9);
     }
+
+    @Test
+    public void insertThatThrowsTriggersRebuildOfTheCurrentUpdater() throws Exception {
+        when(positionsModel.getRowCount()).thenReturn(5);
+        doThrow(new IndexOutOfBoundsException("boom")).when(waypointUpdater).handleAdd(2, 5);
+
+        decoupler.handleUpdate(INSERT, 2, 5);
+        awaitQueuedWork();
+
+        verify(waypointUpdater).handleAdd(2, 5);
+        verify(waypointUpdater).handleRemove(0, MAX_VALUE);
+        verify(waypointUpdater).handleAdd(0, 4);
+    }
+
+    @Test
+    public void executorKeepsProcessingEventsWhenTheRebuildItselfThrows() throws Exception {
+        when(positionsModel.getRowCount()).thenReturn(0);
+        doThrow(new IndexOutOfBoundsException("boom")).when(waypointUpdater).handleAdd(0, 3);
+        doThrow(new IllegalStateException("still broken")).when(waypointUpdater).handleRemove(0, MAX_VALUE);
+
+        decoupler.handleUpdate(INSERT, 0, 3);
+        awaitQueuedWork();
+
+        decoupler.handleUpdate(UPDATE, 1, 1);
+        awaitQueuedWork();
+
+        verify(waypointUpdater).handleUpdate(1, 1);
+    }
 }
