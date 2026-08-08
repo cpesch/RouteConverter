@@ -1,8 +1,8 @@
 ---
 name: 00018-rawtypes-generics-campaign
-status: proposed
-phases_done: [measure, spike-navigation-formats]
-phases_next: [decide-approach, close-navigation-formats, route-converter-gui, tail-modules, gate]
+status: planned
+phases_done: [measure, spike-navigation-formats, decide-approach]
+phases_next: [close-navigation-formats, route-converter-gui, tail-modules, gate]
 last_touched: 2026-08-08
 ---
 
@@ -10,10 +10,9 @@ last_touched: 2026-08-08
 
 ## Status
 
-`proposed`. The measurement and a throwaway spike are done and reported below; the
-approach decision in [Decision needed](#decision-needed) is **not** made. Do not
-approve any implementation issue from this document until that section is
-resolved.
+`planned`. Approach decided by the maintainer 2026-08-08 — see
+[Decision](#decision-2026-08-08). Phases 1–4 below are now buildable; each still
+wants its own issue with the usual locked decisions before approval.
 
 Successor to spec 00017. Scope A (deprecated APIs, hand-written unchecked)
 shipped in PR #139; Scope B (`failOnWarning` + the build-helper locale noise)
@@ -125,52 +124,96 @@ Two caveats on the spike, stated plainly because they bound what it proves:
   names and a `.class` literal) before it compiled. A real implementation is
   hand-work or a much more careful transform.
 
-## Decision needed
+## Decision (2026-08-08)
 
-Three viable approaches. The spike says all three are cheaper than "rewrite the
-format hierarchy", but they differ in what they buy.
+**Chosen: A for main sources, C for test sources, plus a hand-fix of the two
+real defects the spike exposed in `NavigationFormatParser`.** Rationale and the
+rejected alternatives are recorded below so this is not re-litigated.
 
-**A. Wildcard closure + casts at the capture sites.**
-Parameterise the bounds and every raw reference; at the ~5 capture sites in
-`NavigationFormatParser` and friends, add `@SuppressWarnings("unchecked")` with
-a comment naming the lost linkage. Spike-validated for `navigation-formats/main`
-(82 → 0, 14 residual errors). Mechanical, reviewable, no signature redesign.
-Cost: the casts are exactly the type-safety hole `rawtypes` was warning about —
-we trade 318 warnings for ~5 documented unchecked casts.
+### Correction to the spike's framing
 
-**B. Real F-bounded generics.**
-`NavigationFormat<R extends BaseRoute<P, F>, P extends BaseNavigationPosition, F
-extends BaseNavigationFormat<R, P, F>>`, threaded through every route and format
-class. Removes the warnings *and* the capture problem, no casts. Cost: a
-3-parameter mutually recursive signature on ~80 classes, and every consumer
-declaration in route-converter-gui / cmdline / mapview grows with it. This is
-the "cascades through BaseRoute" risk spec 00017 Q5 flagged.
+The earlier draft said this approach "trades 318 warnings for ~5 documented
+unchecked casts". **That was wrong, and it was the sentence the decision hung
+on.** `NavigationFormatParser.commentRoutes` and `.preprocessRoute` already
+carry `@SuppressWarnings("unchecked")` on master. A adds no type hole; it leaves
+the two existing suppressions exactly where they are while making the other
+~179 main-source sites genuinely checked.
 
-**C. Do not enable `-Xlint:rawtypes`.**
-Same disposition as `serial` in #256: the category is off by default, so the
-decision costs nothing to implement. The hierarchy keeps working as it has for
-years, and the 318 warnings stay invisible.
+### Two of the 14 residual errors are real defects, not type-system friction
 
-Recommendation: **A, scoped to main sources, and C for the test sources.** A is
-spike-validated and its cost is five documented casts. The 124 test-source hits
-buy nothing — `NavigationTestCase` alone is 49 of them, and test helpers taking
-raw routes is a readability question, not a correctness one. B is the only
-option that is actually *correct*, but a 3-parameter recursive signature across
-80 classes in a converter with 82 formats and thin test coverage of the parse
-paths is a poor trade for zero behaviour change.
+- `commentRoutes` iterates a `List<BaseRoute<?, ?>>` with a loop variable
+  declared `BaseRoute<BaseNavigationPosition, BaseNavigationFormat<?>>`.
+  Generics are invariant, so that is not a supertype of
+  `BaseRoute<GpxPosition, GpxFormat>` — the raw type was hiding a straightforward
+  invariance bug. Fixing the loop variable to `BaseRoute<?, ?>` is a strict
+  improvement and needs no cast.
+- `preprocessRoute` inserts the result of
+  `NmnFormat`/`CoPilotFormat.getDuplicateFirstPosition(…)` — declared to return a
+  bare `BaseNavigationPosition` — into a route whose position type is unknown.
+  That is genuinely unsound today, on a path that runs on every write. **Fix it
+  by making the helper generic in the position type**
+  (`<P extends BaseNavigationPosition> P getDuplicateFirstPosition(BaseRoute<P, ?> route)`),
+  not by casting. This is the one place approach B's safety win actually
+  matters, and it can be had at A's cost.
 
-If A is chosen, note it cannot fully gate: `-Xlint:rawtypes` is reactor-wide and
-test sources compile under the same flag, so either the tests get fixed too or
-the gate stays off. **That tension is unresolved and is the main thing to settle
-before writing any implementation issue.**
+### Rejected
 
-## Phased plan (conditional on A)
+**B — full F-bounded generics.** Correct, and the only option that removes the
+capture problem wholesale, but unmeasured (the spike covered A, and those numbers
+do not transfer), and a 3-parameter mutually recursive signature
+(`NavigationFormat<R extends BaseRoute<P,F>, P …, F extends BaseNavigationFormat<R,P,F>>`)
+lands on ~80 classes plus every consumer declaration. `MultipleRoutesFormat` and
+`GoPalRouteFormat` already surfaced as bound violations in the spike, so a format
+producing more than one route type may not satisfy the recursion at all — and
+discovering that at 60% done is expensive. B is the right answer for a new
+codebase; the payoff here would come from years of further format evolution.
+
+**C for main sources — leave `-Xlint:rawtypes` off entirely.** Rejected because,
+unlike `serial` in #256, this bucket is not cosmetic: it is hiding the two live
+defects above on the write path. C **is** adopted for test sources (below).
+
+### Test sources stay raw — and this does NOT forfeit the gate
+
+The draft assumed a reactor-wide `failOnWarning` meant the 124 test-source hits
+(49 in `NavigationTestCase` alone) had to be fixed or the gate abandoned.
+**Measured 2026-08-08: false.** `maven-compiler-plugin` accepts per-execution
+configuration, so `-Xlint:rawtypes` can be scoped to `default-compile` and
+overridden off for `default-testCompile`:
+
+```xml
+<configuration>
+    <failOnWarning>true</failOnWarning>
+    <compilerArgs><arg>-Xlint:rawtypes</arg></compilerArgs>
+</configuration>
+<executions>
+    <execution>
+        <id>default-testCompile</id>
+        <configuration>
+            <compilerArgs combine.self="override"/>
+        </configuration>
+    </execution>
+</executions>
+```
+
+Verified on a scratch copy of master, `-pl navigation-formats -am`: **100
+rawtypes warnings from main sources, 0 from test sources.** The
+`combine.self="override"` attribute is load-bearing — without it Maven merges the
+parent's `compilerArgs` into the execution rather than replacing them.
+
+Consequence: main-source cleanliness is enforceable while the test helpers keep
+their raw signatures. Phase 4 survives, scoped to `default-compile`.
+
+## Phased plan
 
 Each phase is one PR, each ends green on the full reactor.
 
-1. **`close-navigation-formats`** — the spike, done properly by hand: 5 bounds,
-   the raw references in `navigation-formats/src/main`, and the ~5 capture-site
-   casts. Acceptance: `-Xlint:rawtypes` for `navigation-formats/main` is 0, full
+1. **`close-navigation-formats`** — the spike, done properly by hand: the 5
+   bounds, the raw references in `navigation-formats/src/main`, the two real
+   defects from the Decision section (the `commentRoutes` loop variable, and
+   `getDuplicateFirstPosition` made generic in the position type across
+   `NmnFormat` + `CoPilotFormat` + their callers), and the two **pre-existing**
+   `@SuppressWarnings("unchecked")` in `NavigationFormatParser` left in place
+   with a comment naming what they cover. Acceptance: `-Xlint:rawtypes` for `navigation-formats/main` is 0, full
    reactor still compiles, all existing tests pass. No behaviour change — this
    is the phase where a green `ReadWriteBase`/`ConvertBase` suite is the whole
    safety net.
@@ -181,10 +224,13 @@ Each phase is one PR, each ends green on the full reactor.
    tileserver-maps 3, datasource 2. Includes the 12 Swing raw types
    (`JComboBox`, `JList`, `ComboBoxModel`), which are unrelated to the route
    hierarchy and independently fixable at any time.
-4. **`gate`** — only if the test-source question above is answered: add
-   `-Xlint:rawtypes` to the root pom's `<compilerArgs>` alongside the
-   `deprecation,try,lossy-conversions` set from #269, with `failOnWarning`
-   already true from #268.
+4. **`gate`** — add `-Xlint:rawtypes` to the root pom's `<compilerArgs>`
+   alongside the `deprecation,try,lossy-conversions` set from #269, with the
+   `default-testCompile` override from the Decision section so test sources stay
+   exempt. `failOnWarning` is already true from #268. Acceptance: main-source
+   rawtypes warnings are 0 reactor-wide and a deliberately reintroduced raw
+   declaration in a main source fails the build, while the same declaration in a
+   test source does not.
 
 ## Out of scope
 
@@ -200,14 +246,22 @@ Each phase is one PR, each ends green on the full reactor.
 
 ## Open questions
 
-1. Approach A, B, or C (above). Blocks everything.
-2. Test sources: fix, or leave and forgo the gate? Determines whether phase 4
-   exists at all.
-3. If A: are five `@SuppressWarnings("unchecked")` casts in the parser an
-   acceptable price for removing 184 main-source warnings? A cast that is wrong
-   fails at runtime where the raw type failed at runtime too — no worse, but no
-   better either.
-4. `RouteComments.commentRouteName` and friends take
-   `BaseRoute<BaseNavigationPosition, BaseNavigationFormat>` today. Parameterising
-   that is visible to other modules. Is any of this API consumed outside the
-   repo (RouteConverter is used as a library by third parties)?
+Questions 1 and 2 of the draft are resolved in [Decision](#decision-2026-08-08):
+approach A for main sources, C for tests, and the gate is achievable main-only
+via the per-execution override. What remains:
+
+1. **Is any of this API consumed outside the repo?** `RouteComments.commentRouteName`
+   and `getDuplicateFirstPosition` take
+   `BaseRoute<BaseNavigationPosition, BaseNavigationFormat>` today; phase 1
+   widens both. RouteConverter is used as a library by third parties, so this is
+   a source-compatibility question, not just an internal one. If the answer is
+   yes, phase 1 should keep a deprecated raw-signature overload for one release.
+2. **Phase 2's true size is unknown.** The spike compiled
+   `-pl navigation-formats -am` only, so route-converter-gui's 56 main hits were
+   never compiled against the changed bounds. Re-measure after phase 1 lands
+   rather than scoping phase 2 now.
+3. **Does the 82-format parse suite actually cover the write path?** Phase 1's
+   only safety net is `ReadWriteBase`/`ConvertBase` staying green, and
+   `preprocessRoute` — where the unsound insert lives — runs on write. Worth
+   confirming that path is exercised before changing it, per the "one green run
+   is not verification" rule.
