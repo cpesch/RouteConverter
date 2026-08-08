@@ -138,6 +138,29 @@ public class TrackUpdaterTest {
     }
 
     @Test
+    public void testAppendNotMisclassifiedWhenModelRowCountRacesAhead() {
+        PositionsModel positionsModel = mock(PositionsModel.class);
+        when(positionsModel.getPosition(0)).thenReturn(p1);
+        when(positionsModel.getPosition(1)).thenReturn(p2);
+        when(positionsModel.getPosition(2)).thenReturn(p3);
+        when(positionsModel.getRowCount()).thenReturn(2);
+        TrackOperation trackOperation = mock(TrackOperation.class);
+
+        TrackUpdater trackUpdater = new TrackUpdater(positionsModel, trackOperation);
+        trackUpdater.handleAdd(0, 1);
+
+        // simulate a later file already appended to the live model before this updater's
+        // own append event for row 2 executes -- the desync race from the bug report
+        when(positionsModel.getRowCount()).thenReturn(10);
+
+        trackUpdater.handleAdd(2, 2);
+
+        assertEquals(asList(p1p2, p2p3), trackUpdater.getPairWithLayers());
+        verify(trackOperation, times(1)).add(singletonList(p2p3));
+        verify(trackOperation, never()).remove(new ArrayList<>());
+    }
+
+    @Test
     public void testInsert() {
         PositionsModel positionsModel = mock(PositionsModel.class);
         when(positionsModel.getPosition(0)).thenReturn(p1);

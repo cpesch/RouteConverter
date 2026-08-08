@@ -38,6 +38,10 @@ public class TrackUpdater implements EventMapUpdater {
     private final PositionsModel positionsModel;
     private final TrackOperation trackOperation;
     private final List<PairWithLayer> pairWithLayers = new ArrayList<>();
+    // own-state row count, tracked independently of positionsModel.getRowCount(): a queued
+    // event can execute after a later file has already advanced the live model, so reading
+    // the live row count at execution time can misclassify a pure append as a middle-insert
+    private int rowCount = 0;
 
     public TrackUpdater(PositionsModel positionsModel, TrackOperation trackOperation) {
         this.positionsModel = positionsModel;
@@ -45,17 +49,21 @@ public class TrackUpdater implements EventMapUpdater {
     }
 
     public synchronized void handleAdd(int firstRow, int lastRow) {
-        int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
-        int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
-        int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : validLastRow;
+        int oldRowCount = rowCount;
+        int newRowCount = oldRowCount + (lastRow - firstRow + 1);
+        rowCount = newRowCount;
+
+        // do not remove anything if a new position is prepended or appended to the track
+        boolean middleInsert = firstRow > 0 && lastRow < newRowCount - 1;
 
         List<PairWithLayer> removed = new ArrayList<>();
-        // do not remove anything if a new position is prepended or appended to the track
-        if (firstRow > 0 && lastRow < positionsModel.getRowCount() - 1)
-            removed.add(pairWithLayers.remove(beforeFirstRow));
+        if (middleInsert)
+            removed.add(pairWithLayers.remove(firstRow - 1));
 
         List<PairWithLayer> added = new ArrayList<>();
-        for (int i = beforeFirstRow; i < afterLastRow; i++) {
+        int from = firstRow > 0 ? firstRow - 1 : firstRow;
+        int to = min(lastRow, newRowCount - 2);
+        for (int i = from; i <= to; i++) {
             PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(i), positionsModel.getPosition(i + 1), i);
             pairWithLayers.add(i, pairWithLayer);
             added.add(pairWithLayer);
@@ -68,16 +76,20 @@ public class TrackUpdater implements EventMapUpdater {
     }
 
     public synchronized void handleUpdate(int firstRow, int lastRow) {
-        int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
-        int validLastRow = min(lastRow, positionsModel.getRowCount() - 1);
-        int afterLastRow = lastRow < positionsModel.getRowCount() - 1 ? lastRow + 1 : validLastRow;
+        if (pairWithLayers.isEmpty())
+            return;
+
+        int beforeFirstRow = firstRow > 0 ? firstRow - 1 : 0;
+        int afterLastRow = min(lastRow, pairWithLayers.size() - 1);
+        if (afterLastRow < beforeFirstRow)
+            return;
 
         List<PairWithLayer> updated = new ArrayList<>();
-        for (int i = beforeFirstRow; i < afterLastRow; i++) {
+        for (int i = beforeFirstRow; i <= afterLastRow; i++) {
             PairWithLayer pairWithLayer = new PairWithLayer(positionsModel.getPosition(i), positionsModel.getPosition(i + 1), i);
             pairWithLayer.setLayer(pairWithLayers.get(i).getLayer());
             pairWithLayers.set(i, pairWithLayer);
-            updated.add(pairWithLayers.get(i));
+            updated.add(pairWithLayer);
         }
 
         if (!updated.isEmpty())
@@ -85,8 +97,17 @@ public class TrackUpdater implements EventMapUpdater {
     }
 
     public synchronized void handleRemove(int firstRow, int lastRow) {
+        if (pairWithLayers.isEmpty()) {
+            rowCount = 0;
+            return;
+        }
+
         int beforeFirstRow = firstRow > 0 ? firstRow - 1 : firstRow;
         int validLastRow = min(lastRow, pairWithLayers.size() - 1);
+        if (validLastRow < beforeFirstRow) {
+            rowCount = pairWithLayers.size() + 1;
+            return;
+        }
 
         List<PairWithLayer> added = new ArrayList<>();
         if (beforeFirstRow < firstRow && validLastRow == lastRow) {
@@ -103,6 +124,8 @@ public class TrackUpdater implements EventMapUpdater {
 
         for (PairWithLayer pairWithLayer : added)
             pairWithLayers.add(beforeFirstRow, pairWithLayer);
+
+        rowCount = pairWithLayers.isEmpty() ? 0 : pairWithLayers.size() + 1;
 
         if (!removed.isEmpty())
             trackOperation.remove(removed);

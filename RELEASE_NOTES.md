@@ -11,6 +11,10 @@
 - Elevation, heading, HDOP and acceleration are shown with two decimal places
 - NMEA: GGA fix quality and HDOP are now read and written; GPX fix element and Columbus Type 1 VALID column map to the quality attribute
 
+### Fixes
+
+- Map view (and profile view) could permanently stop updating after appending several files in quick succession; a race between the background map-update queue and newly loaded files could misclassify a pure append as a mid-list edit, desyncing the map from the position list and crashing the update worker (TimeAlbum Pro)
+
 ## 3.5 — 2026-07-03
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.5
