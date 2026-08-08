@@ -14,7 +14,7 @@ that line, `git mv` it to match and rerun this script.
 | [00010-migrate-java-17-to-25](./00010-migrate-java-17-to-25.md) | `in-flight` | java21-floor-in-repo, publish-hosted-jre-21, smoke-launch-bundles-21 | java25-bump | 2026-07-14 |
 | [00013-waypoint-icons-from-style](./00013-waypoint-icons-from-style.md) | `in-flight` | — | — | 2026-07-08 |
 | [00014-poi-category-overlay](./00014-poi-category-overlay.md) | `proposed` | — | — | 2026-07-03 |
-| [00018-rawtypes-generics-campaign](./00018-rawtypes-generics-campaign.md) | `proposed` | measure, spike-navigation-formats | decide-approach, close-navigation-formats, route-converter-gui, tail-modules, gate | 2026-08-08 |
+| [00018-rawtypes-generics-campaign](./00018-rawtypes-generics-campaign.md) | `planned` | measure, spike-navigation-formats, decide-approach | close-navigation-formats, route-converter-gui, tail-modules, gate | 2026-08-08 |
 
 ## Done (12) — shipped / live / retired (`specs/done/`)
 
