@@ -77,15 +77,17 @@
         <jre.version>21.0.11</jre.version>
 
         <java.version>21</java.version>
-        <maven.version>[3.5.4,)</maven.version>
+        <maven.version>[3.6.3,)</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <alephformatter.version>0.1.1</alephformatter.version>
         <httpclient.version>5.6.3</httpclient.version>
-        <istack.version>3.0.11</istack.version>
         <jackson.version>2.22.1</jackson.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
+        <!-- jaxb-api.version / jaxb-impl.version must stay on the same JAXB
+             major as the jaxb2-maven-plugin's bundled xjc (see the plugin
+             entry in pluginManagement below). -->
         <jaxb-api.version>4.0.5</jaxb-api.version>
         <jaxb-impl.version>4.0.9</jaxb-impl.version>
         <mapsforge.version>0.29.0</mapsforge.version>
@@ -297,6 +299,9 @@
                     <artifactId>findbugs-maven-plugin</artifactId>
                     <version>3.0.5</version>
                 </plugin>
+                <!-- The bundled JAXB tooling version here is the xjc version used
+                     for codegen (4.1.0 -> xjc 4.0.6); keep jaxb-api.version /
+                     jaxb-impl.version on the same JAXB major as this plugin. -->
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>jaxb2-maven-plugin</artifactId>
