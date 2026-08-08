@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
@@ -164,7 +165,7 @@ public class NavigationFormatParserTest {
         });
         server.start();
         try {
-            URL url = new URL("http://127.0.0.1:" + server.getAddress().getPort() + "/missing");
+            URL url = new URI("http://127.0.0.1:" + server.getAddress().getPort() + "/missing").toURL();
             parser.read(url);
             fail("expected IOException for HTTP 404");
         } catch (IOException expected) {
@@ -249,7 +250,7 @@ public class NavigationFormatParserTest {
         });
         server.start();
         try {
-            consumer.accept(new URL("http://127.0.0.1:" + server.getAddress().getPort() + "/file"));
+            consumer.accept(new URI("http://127.0.0.1:" + server.getAddress().getPort() + "/file").toURL());
         } finally {
             server.stop(0);
         }

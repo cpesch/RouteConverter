@@ -22,6 +22,7 @@ package slash.common.io;
 import org.junit.Test;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -43,12 +44,12 @@ public class FilesUrlTest {
 
     @Test
     public void getExtensionOfUrlIsLowercased() throws Exception {
-        assertEquals(".gpx", getExtension(new URL("http://host/path/TRACK.GPX")));
+        assertEquals(".gpx", getExtension(new URI("http://host/path/TRACK.GPX").toURL()));
     }
 
     @Test
     public void getExtensionOfUrlListReturnsTheLongestFound() throws Exception {
-        List<URL> urls = asList(new URL("http://host/a.gp"), new URL("http://host/b.gpx"));
+        List<URL> urls = asList(new URI("http://host/a.gp").toURL(), new URI("http://host/b.gpx").toURL());
 
         assertEquals(".gpx", getExtension(urls));
     }
@@ -81,9 +82,9 @@ public class FilesUrlTest {
 
     @Test
     public void reverseReturnsTheUrlsInReverseOrder() throws Exception {
-        URL a = new URL("http://host/a");
-        URL b = new URL("http://host/b");
-        URL c = new URL("http://host/c");
+        URL a = new URI("http://host/a").toURL();
+        URL b = new URI("http://host/b").toURL();
+        URL c = new URI("http://host/c").toURL();
 
         assertEquals(asList(c, b, a), reverse(asList(a, b, c)));
     }

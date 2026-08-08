@@ -215,7 +215,7 @@ public abstract class BaseNmeaFormat extends SimpleFormat<NmeaRoute> {
     private byte computeChecksum(String line) {
         byte result = 0;
         for (int i = 0; i < line.length(); i++) {
-            result ^= line.charAt(i);
+            result = (byte) (result ^ line.charAt(i));
         }
         return result;
     }

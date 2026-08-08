@@ -41,7 +41,7 @@ import static org.junit.Assert.*;
 import static slash.common.io.Transfer.formatTime;
 
 public class PositionsModelCallbackImplTest {
-    private static final Locale SWEDISH = new Locale("sv", "SE");
+    private static final Locale SWEDISH = Locale.of("sv", "SE");
     private static final TimeZone ZONE_UTC = TimeZone.getTimeZone("UTC");
     private static final TimeZone ZONE_BERLIN = TimeZone.getTimeZone("Europe/Berlin");
 
