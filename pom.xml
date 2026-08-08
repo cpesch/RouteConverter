@@ -185,6 +185,12 @@
                              references to APIs absent from the Java 21 floor. See specs/00010. -->
                         <release>${java.version}</release>
                         <encoding>UTF-8</encoding>
+                        <!-- spec 00017 Scope B: javac warnings fail the build, so a
+                             warning-free compile cannot silently regress. The -Xlint
+                             bulk (rawtypes/serial/this-escape) stays OFF deliberately —
+                             see the tracking issue; enabling it here would fail every
+                             module on day one. -->
+                        <failOnWarning>true</failOnWarning>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -402,6 +408,14 @@
                         <configuration>
                             <name>current.year</name>
                             <pattern>yyyy</pattern>
+                            <!-- Without these, timestamp-property warns "Using platform
+                                 locale (de_DE actually) to format date/time, i.e. build
+                                 is platform dependent!" once per module (46 lines). A
+                                 yyyy pattern is digits-only, so the value is unchanged —
+                                 this only pins the formatting to make the build
+                                 reproducible off the developer's locale. -->
+                            <locale>en</locale>
+                            <timeZone>UTC</timeZone>
                         </configuration>
                     </execution>
                 </executions>
