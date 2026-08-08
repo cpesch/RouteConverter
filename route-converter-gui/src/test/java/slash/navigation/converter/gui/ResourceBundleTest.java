@@ -35,7 +35,7 @@ public class ResourceBundleTest {
     private final List<Locale> LOCALES = RouteConverterLocales.SUPPORTED_LOCALES;
     private static final ResourceBundle.Control NO_FALLBACK_CONTROL = new ResourceBundle.Control() {
         public List<Locale> getCandidateLocales(String baseName, Locale locale) {
-            return singletonList(new Locale(locale.getLanguage()));
+            return singletonList(Locale.of(locale.getLanguage()));
         }
 
         public Locale getFallbackLocale(String baseName, Locale locale) {

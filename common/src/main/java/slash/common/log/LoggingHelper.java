@@ -133,6 +133,7 @@ public class LoggingHelper {
      * not re-send log lines that were already submitted (a single appended log
      * otherwise accumulates several sessions across program updates).
      */
+    @SuppressWarnings("try") // the resource is opened only for its file-truncating side effect
     public void clearLogFile() {
         logAsDefault();
 

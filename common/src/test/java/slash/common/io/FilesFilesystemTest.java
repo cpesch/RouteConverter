@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
 
@@ -94,7 +95,7 @@ public class FilesFilesystemTest {
         File file = writeFile(new File(directory, "b.txt"), new byte[]{1});
         assertEquals(file.getCanonicalPath(), createReadablePath(file.toURI().toURL()));
 
-        URL http = new URL("http://www.routeconverter.com/index.html");
+        URL http = new URI("http://www.routeconverter.com/index.html").toURL();
         assertEquals(http.toExternalForm(), createReadablePath(http));
     }
 
@@ -102,7 +103,7 @@ public class FilesFilesystemTest {
     public void toFileReturnsFileForFileUrlAndNullOtherwise() throws Exception {
         File file = new File(directory, "c.txt");
         assertEquals(file.getAbsoluteFile(), toFile(file.toURI().toURL()).getAbsoluteFile());
-        assertNull(toFile(new URL("http://www.routeconverter.com/")));
+        assertNull(toFile(new URI("http://www.routeconverter.com/").toURL()));
     }
 
     @Test
