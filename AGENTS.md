@@ -77,7 +77,7 @@ Reactor modules are in the root `pom.xml`. Roughly:
 - **Libraries** — `navigation-formats` (the format engine), `gpx`, `kml`,
   `common`, `common-gui`, `download`, `routing-service`, `elevation-service`,
   `mapsforge-*`/`mapview` (map rendering), `geocoding-service`, … 
-- **App bases** — `route-converter-gui` (shared GUI base, the Weblate target
+- **App bases** — `route-converter-gui` (shared GUI base, the Crowdin target
   holding `RouteConverter_*.properties`) and `route-converter` (the app).
 - **Platform builds** — `RouteConverter{Windows,Mac,Linux,Portable,CmdLine}`
   (produce the installers/jars).
@@ -112,9 +112,9 @@ coordination with that codebase.
   Failsafe convention; change Maven includes deliberately, don't add a second
   naming scheme.
 - **Small, focused diffs**; match the surrounding style.
-- **Translations go through Weblate** ([hosted.weblate.org/projects/routeconverter](https://hosted.weblate.org/projects/routeconverter/))
-  — don't hand-edit `RouteConverter_*.properties`; `weblate*` / `translations*`
-  branches are bot-managed.
+- **Translations go through Crowdin** ([crowdin.com/project/routeconverter](https://crowdin.com/project/routeconverter))
+  — don't hand-edit `RouteConverter_*.properties`; the `l10n`
+  branch is bot-managed (deleted on merge, recreated on next sync).
 - **Release tags are plain `MAJOR.MINOR[.PATCH]`**, no `v` prefix.
 
 ## Contributing
