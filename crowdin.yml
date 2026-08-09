@@ -1,0 +1,14 @@
+"$schema": https://raw.githubusercontent.com/crowdin/support/main/config-schema.json
+
+project_id_env: CROWDIN_PROJECT_ID
+api_token_env: CROWDIN_PERSONAL_TOKEN
+
+preserve_hierarchy: true
+
+files:
+  - source: /route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_en.properties
+    translation: /route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_%locale_with_underscore%.properties
+    languages_mapping:
+      locale_with_underscore:
+        pt-BR: pt_BR
+        "no": nb_NO
