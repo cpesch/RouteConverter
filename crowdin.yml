@@ -7,8 +7,8 @@ preserve_hierarchy: true
 
 files:
   - source: /route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_en.properties
-    translation: /route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_%locale_with_underscore%.properties
+    translation: /route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_%two_letters_code%.properties
     languages_mapping:
-      locale_with_underscore:
+      two_letters_code:
         pt-BR: pt_BR
         "no": nb_NO
