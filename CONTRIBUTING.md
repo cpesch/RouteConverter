@@ -33,7 +33,7 @@ Don't duplicate the commands here — see the README's
 
 ## Translations
 
-Translations go through [Weblate](https://hosted.weblate.org/projects/routeconverter/).
+Translations go through [Crowdin](https://crowdin.com/project/routeconverter).
 Never hand-edit `RouteConverter_*.properties` directly — code PRs may only
 touch the `_en`/`_de` bundles (see `AGENTS.md`).
 

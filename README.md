@@ -1,7 +1,7 @@
 # RouteConverter
 
 [![Test Coverage](https://codecov.io/gh/cpesch/RouteConverter/branch/master/graph/badge.svg)](https://codecov.io/gh/cpesch/RouteConverter)
-[![Translation status](https://hosted.weblate.org/widgets/routeconverter/-/svg-badge.svg)](https://hosted.weblate.org/engage/routeconverter/)
+[![Translation status](https://badges.crowdin.net/routeconverter/localized.svg)](https://crowdin.com/project/routeconverter)
 [![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0-blue.svg)](LICENSE-GPL.txt)
 [![Java 21](https://img.shields.io/badge/Java-21-orange.svg)](https://adoptium.net/)
 
