@@ -126,7 +126,7 @@ public class CsvRoute extends BaseRoute<CsvPosition, CsvFormat> {
         return route;
     }
 
-    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
+    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat<GoPalRoute> format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>();
         for (CsvPosition position : getPositions()) {
             gopalPositions.add(position.asGoPalRoutePosition());
@@ -166,11 +166,11 @@ public class CsvRoute extends BaseRoute<CsvPosition, CsvFormat> {
         return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
     }
 
-    protected SimpleRoute asPhotoFormat(PhotoFormat format) {
+    protected SimpleRoute<?, ?> asPhotoFormat(PhotoFormat format) {
         return asSimpleFormat(format);
     }
 
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+    protected SimpleRoute<?, ?> asSimpleFormat(SimpleFormat<?> format) {
         List<Wgs84Position> positions = new ArrayList<>();
         for (CsvPosition position : getPositions()) {
             positions.add(position.asWgs84Position());

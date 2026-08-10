@@ -230,7 +230,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         return new ExcelRoute(format, getName(), excelPositions);
     }
 
-    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
+    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat<GoPalRoute> format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>();
         for (ExcelPosition position : getPositions()) {
             gopalPositions.add(position.asGoPalRoutePosition());
@@ -270,7 +270,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
     }
 
-    protected SimpleRoute asPhotoFormat(PhotoFormat format) {
+    protected SimpleRoute<?, ?> asPhotoFormat(PhotoFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (ExcelPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
@@ -278,7 +278,7 @@ public class ExcelRoute extends BaseRoute<ExcelPosition, ExcelFormat> {
         return new Wgs84Route(format, getCharacteristics(), getName(), wgs84Positions);
     }
 
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+    protected SimpleRoute<?, ?> asSimpleFormat(SimpleFormat<?> format) {
         List<Wgs84Position> positions = new ArrayList<>();
         for (ExcelPosition position : getPositions()) {
             positions.add(position.asWgs84Position());

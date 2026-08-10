@@ -171,7 +171,7 @@ public class LocalRouteDistanceAndTimeFiller {
             if (!result.isSuccessful())
                 return null;
 
-            BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+            BaseRoute<?, ?> route = result.getTheRoute();
             if (route == null)
                 return null;
 

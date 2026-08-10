@@ -41,27 +41,27 @@ public class NavigationFormatRegistryTest {
 
     @Test
     public void testGetReadFormatsSortedByExtension() {
-        List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".ov2");
+        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".ov2");
         assertEquals(TomTomPoiFormat.class, formats.get(0).getClass());
         assertEquals(NmnUrlFormat.class, formats.get(1).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByExtensionIsCaseSensitive() {
-        List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".OV2");
+        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".OV2");
         assertEquals(NmnUrlFormat.class, formats.get(0).getClass());
         assertEquals(GoogleMapsUrlFormat.class, formats.get(1).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByNotExistingExtension() {
-        List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".zzz");
+        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".zzz");
         assertEquals(NmnUrlFormat.class, formats.get(0).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByExtensionMultipleResults() {
-        List<NavigationFormat> formats = registry.getReadFormatsPreferredByExtension(".csv");
+        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".csv");
         int index = 0;
         assertEquals(HaicomLoggerFormat.class, formats.get(index++).getClass());
         assertEquals(Route66Format.class, formats.get(index++).getClass());

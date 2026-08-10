@@ -39,7 +39,7 @@ import static slash.navigation.base.RouteCalculations.asWgs84Position;
  * @author Christian Pesch
  */
 
-public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute> {
+public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<Wgs84Route> {
     private static final char SEPARATOR = ',';
 
     private static final Pattern LINE_PATTERN = Pattern.
@@ -58,7 +58,7 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -71,7 +71,7 @@ public class NavigatingPoiWarnerFormat extends SimpleLineBasedFormat<SimpleRoute
         return matcher.matches();
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

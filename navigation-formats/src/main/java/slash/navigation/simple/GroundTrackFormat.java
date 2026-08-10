@@ -49,7 +49,7 @@ import static slash.navigation.common.NavigationConversion.formatElevationAsStri
  * @author Christian Pesch
  */
 
-public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
+public class GroundTrackFormat extends SimpleLineBasedFormat<Wgs84Route> {
     protected static final Logger log = Logger.getLogger(GroundTrackFormat.class.getName());
 
     private static final String SPACE = "\\s+";
@@ -75,7 +75,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -107,7 +107,7 @@ public class GroundTrackFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return null;
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

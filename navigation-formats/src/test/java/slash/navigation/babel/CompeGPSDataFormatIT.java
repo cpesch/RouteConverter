@@ -41,9 +41,9 @@ public class CompeGPSDataFormatIT {
         ParserResult result = parser.read(source, parser.getNavigationFormatRegistry().
                 getReadFormatsPreferredByExtension(getExtension(testFileName)));
         assertNotNull(result);
-        List<BaseRoute> routes = result.getAllRoutes();
+        List<BaseRoute<?, ?>> routes = result.getAllRoutes();
         assertEquals(1, routes.size());
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        BaseRoute<?, ?> route = result.getTheRoute();
         assertEquals(characteristics, route.getCharacteristics());
         assertEquals(positionCount, route.getPositionCount());
     }

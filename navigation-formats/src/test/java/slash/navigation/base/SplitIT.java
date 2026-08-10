@@ -49,7 +49,7 @@ public class SplitIT {
         ParserResult result = parser.read(source);
         assertNotNull(result);
         assertNotNull(result.getFormat());
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute = result.getTheRoute();
+        BaseRoute<?, ?> sourceRoute = result.getTheRoute();
         assertNotNull(sourceRoute);
         assertNotNull(result.getAllRoutes());
         assertFalse(result.getAllRoutes().isEmpty());

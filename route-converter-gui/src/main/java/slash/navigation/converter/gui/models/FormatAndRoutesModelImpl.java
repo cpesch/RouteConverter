@@ -92,11 +92,11 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
     }
 
     @SuppressWarnings("unchecked")
-    public List<BaseRoute> getRoutes() {
+    public List<BaseRoute<?, ?>> getRoutes() {
         return formatAndRoutes != null ? formatAndRoutes.getRoutes() : null;
     }
 
-    public void setRoutes(FormatAndRoutes<BaseNavigationFormat, BaseRoute, BaseNavigationPosition> formatAndRoutes) {
+    public void setRoutes(FormatAndRoutes<?, ?, ?> formatAndRoutes) {
         int index1 = getRoutes() != null ? getRoutes().size() - 1 : 0;
         if (index1 != -1)
             fireIntervalRemoved(this, 0, index1);
@@ -112,12 +112,12 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
     }
 
     @SuppressWarnings("unchecked")
-    public NavigationFormat<BaseRoute> getFormat() {
+    public NavigationFormat<BaseRoute<?, ?>> getFormat() {
         return formatAndRoutes != null ? formatAndRoutes.getFormat() : null;
     }
 
     @SuppressWarnings("unchecked")
-    public void setFormat(NavigationFormat<BaseRoute> format) {
+    public void setFormat(NavigationFormat<BaseRoute<?, ?>> format) {
         formatAndRoutes.setFormat(format);
         fireContentsChanged(this, IGNORE, IGNORE);
     }
@@ -193,7 +193,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         return getSelectedRoute();
     }
 
-    public BaseRoute getSelectedRoute() {
+    public BaseRoute<?, ?> getSelectedRoute() {
         return positionsModel.getRoute();
     }
 

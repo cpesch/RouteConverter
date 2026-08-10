@@ -74,7 +74,7 @@ public class SplitPositionListAction extends FrameAction {
                 positionsModel.remove(fromIndex, toIndex);
                 NavigationFormat format = formatAndRoutesModel.getFormat();
                 @SuppressWarnings({"unchecked"})
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> target =
+                BaseRoute<?, ?> target =
                         format.createRoute(selectedRoute.getCharacteristics(), getRouteName(selectedRoute, routeInsertIndex), positions);
                 formatAndRoutesModel.addPositionList(routeInsertIndex, target);
             }

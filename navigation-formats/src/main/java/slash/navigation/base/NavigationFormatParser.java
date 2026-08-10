@@ -84,28 +84,46 @@ public class NavigationFormatParser {
         listeners.remove(listener);
     }
 
-    private void notifyReading(NavigationFormat<BaseRoute> format) {
+    // The probing loop below shares one ParserContext across every candidate format, so all
+    // candidates need a single common route ceiling for the duration of the probe - each
+    // format's own narrower R is exactly a BaseRoute<?, ?>, so the widening is sound even
+    // though javac cannot verify it across independently-typed NavigationFormat<?> instances.
+    @SuppressWarnings("unchecked")
+    private static List<NavigationFormat<BaseRoute<?, ?>>> widen(List<NavigationFormat<?>> formats) {
+        return (List<NavigationFormat<BaseRoute<?, ?>>>) (List<?>) formats;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static NavigationFormat<BaseRoute<?, ?>> widen(NavigationFormat<?> format) {
+        return (NavigationFormat<BaseRoute<?, ?>>) format;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static MultipleRoutesFormat<BaseRoute<?, ?>> widen(MultipleRoutesFormat<?> format) {
+        return (MultipleRoutesFormat<BaseRoute<?, ?>>) format;
+    }
+
+    private void notifyReading(NavigationFormat<BaseRoute<?, ?>> format) {
         for (NavigationFormatParserListener listener : listeners) {
             listener.reading(format);
         }
     }
 
-    private List<Integer> getPositionCounts(List<BaseRoute> routes) {
+    private List<Integer> getPositionCounts(List<BaseRoute<?, ?>> routes) {
         List<Integer> positionCounts = new ArrayList<>();
-        for (BaseRoute route : routes)
+        for (BaseRoute<?, ?> route : routes)
             // guard against strange effects in tests only
             if (route != null)
                 positionCounts.add(route.getPositionCount());
         return positionCounts;
     }
 
-    @SuppressWarnings("unchecked")
-    private void internalRead(InputStream buffer, List<NavigationFormat> formats, ParserContext context) throws IOException {
+    private void internalRead(InputStream buffer, List<NavigationFormat<BaseRoute<?, ?>>> formats, ParserContext<BaseRoute<?, ?>> context) throws IOException {
         int routeCountBefore = context.getRoutes().size();
-        NavigationFormat firstSuccessfulFormat = null;
+        NavigationFormat<BaseRoute<?, ?>> firstSuccessfulFormat = null;
 
         try {
-            for (NavigationFormat<BaseRoute> format : formats) {
+            for (NavigationFormat<BaseRoute<?, ?>> format : formats) {
                 notifyReading(format);
 
                 log.fine(format("Trying to read with %s", format));
@@ -142,10 +160,10 @@ public class NavigationFormatParser {
             context.addFormat(firstSuccessfulFormat);
     }
 
-    public ParserResult read(File source, List<NavigationFormat> formats) throws IOException {
+    public ParserResult read(File source, List<NavigationFormat<?>> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
         try (InputStream inputStream = new FileInputStream(source)) {
-            return read(inputStream, (int) source.length(), extractStartDate(source), source, formats);
+            return read(inputStream, (int) source.length(), extractStartDate(source), source, widen(formats));
         }
     }
 
@@ -153,9 +171,9 @@ public class NavigationFormatParser {
         return read(source, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source)));
     }
 
-    private NavigationFormat determineFormat(List<BaseRoute> routes, NavigationFormat preferredFormat) {
-        NavigationFormat result = preferredFormat;
-        for (BaseRoute route : routes) {
+    private NavigationFormat<BaseRoute<?, ?>> determineFormat(List<BaseRoute<?, ?>> routes, NavigationFormat<BaseRoute<?, ?>> preferredFormat) {
+        NavigationFormat<BaseRoute<?, ?>> result = preferredFormat;
+        for (BaseRoute<?, ?> route : routes) {
             // more than one route: the same result
             if (result.equals(route.getFormat()))
                 continue;
@@ -165,54 +183,51 @@ public class NavigationFormatParser {
                 continue;
 
             // result from GPSBabel-based format which allows only one route but is represented by GPX 1.0
-            if (result instanceof BabelFormat)
+            if (((NavigationFormat<?>) result) instanceof BabelFormat)
                 continue;
 
             // default for multiple routes is GPX 1.1
-            result = new Gpx11Format();
+            result = widen(new Gpx11Format());
         }
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-    private void commentRoutes(List<BaseRoute> routes) {
+    private void commentRoutes(List<BaseRoute<?, ?>> routes) {
         commentRoutePositions(routes);
-        for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
+        for (BaseRoute<?, ?> route : routes) {
             commentRouteName(route);
         }
     }
 
-    @SuppressWarnings("unchecked")
-    private void commentRoute(BaseRoute route) {
+    private void commentRoute(BaseRoute<?, ?> route) {
         commentPositions(route.getPositions());
         commentRouteName(route);
     }
 
-    @SuppressWarnings("unchecked")
-    private ParserResult createResult(ParserContext<BaseRoute> context) throws IOException {
-        List<BaseRoute> source = context.getRoutes();
+    private ParserResult createResult(ParserContext<BaseRoute<?, ?>> context) throws IOException {
+        List<BaseRoute<?, ?>> source = context.getRoutes();
         // if (source != null && source.size() > 0) {
         if (source != null && !context.getFormats().isEmpty()) {
-            NavigationFormat format = determineFormat(source, context.getFormats().get(0));
-            List<BaseRoute> destination = convertRoute(source, format);
+            NavigationFormat<BaseRoute<?, ?>> format = determineFormat(source, context.getFormats().get(0));
+            List<BaseRoute<?, ?>> destination = convertRoute(source, format);
             log.info("Detected '" + format.getName() + "' with " + destination.size() + " route(s) and " +
                     getPositionCounts(destination) + " positions");
             if (destination.isEmpty())
                 destination.add(format.createRoute(RouteCharacteristics.Route, null, new ArrayList<>()));
             commentRoutes(destination);
-            return new ParserResult(new FormatAndRoutes(format, destination));
+            return new ParserResult(FormatAndRoutes.of(format, destination));
         } else
             return new ParserResult(null);
     }
 
-    private class InternalParserContext<R extends BaseRoute> extends ParserContextImpl<R> {
+    private class InternalParserContext extends ParserContextImpl<BaseRoute<?, ?>> {
         InternalParserContext(File file, CompactCalendar startDate) {
             super(file, startDate);
         }
 
         public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {
             internalSetStartDate(startDate);
-            internalRead(inputStream, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(preferredExtension), this);
+            internalRead(inputStream, widen(getNavigationFormatRegistry().getReadFormatsPreferredByExtension(preferredExtension)), this);
         }
 
         public void parse(String urlString) throws IOException {
@@ -225,14 +240,14 @@ public class NavigationFormatParser {
             }
             log.info("Reading '" + url + "' with " + bytes.length + " bytes");
             internalSetStartDate(extractStartDate(url));
-            bufferedInternalRead(new ByteArrayInputStream(bytes), bytes.length, getNavigationFormatRegistry().getReadFormats(), this);
+            bufferedInternalRead(new ByteArrayInputStream(bytes), bytes.length, widen(getNavigationFormatRegistry().getReadFormats()), this);
         }
     }
 
     private ParserResult read(InputStream source, int readBufferSize, CompactCalendar startDate, File file,
-                              List<NavigationFormat> formats) throws IOException {
+                              List<NavigationFormat<BaseRoute<?, ?>>> formats) throws IOException {
         log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
-        ParserContext<BaseRoute> context = new InternalParserContext<>(file, startDate);
+        ParserContext<BaseRoute<?, ?>> context = new InternalParserContext(file, startDate);
         bufferedInternalRead(source, readBufferSize, formats, context);
         return createResult(context);
     }
@@ -241,8 +256,8 @@ public class NavigationFormatParser {
      * Buffers the source and marks past its end so reset() between format
      * attempts always succeeds, then probes the formats into the context.
      */
-    private void bufferedInternalRead(InputStream source, int markSize, List<NavigationFormat> formats,
-                                      ParserContext context) throws IOException {
+    private void bufferedInternalRead(InputStream source, int markSize, List<NavigationFormat<BaseRoute<?, ?>>> formats,
+                                      ParserContext<BaseRoute<?, ?>> context) throws IOException {
         NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, CHUNK_BUFFER_SIZE));
         buffer.mark(markSize + CHUNK_BUFFER_SIZE * 2);
         try {
@@ -260,8 +275,8 @@ public class NavigationFormatParser {
         return read(source, getNavigationFormatRegistry().getReadFormats());
     }
 
-    public ParserResult read(InputStream source, List<NavigationFormat> formats) throws IOException {
-        return read(source, TOTAL_BUFFER_SIZE, null, null, formats);
+    public ParserResult read(InputStream source, List<NavigationFormat<?>> formats) throws IOException {
+        return read(source, TOTAL_BUFFER_SIZE, null, null, widen(formats));
     }
 
     private CompactCalendar extractStartDate(File file) {
@@ -297,19 +312,20 @@ public class NavigationFormatParser {
         return null;
     }
 
-    public ParserResult read(URL url, List<NavigationFormat> formats) throws IOException {
+    public ParserResult read(URL url, List<NavigationFormat<?>> formats) throws IOException {
         BaseUrlParsingFormat urlParsingFormat = getUrlParsingFormat(url.toExternalForm());
         if(urlParsingFormat != null) {
-            List<NavigationFormat> readFormats = new ArrayList<>(formats);
+            List<NavigationFormat<?>> readFormats = new ArrayList<>(formats);
             readFormats.add(0, urlParsingFormat);
             byte[] bytes = url.toExternalForm().getBytes();
-            return read(new ByteArrayInputStream(bytes), bytes.length, null, null, readFormats);
+            return read(new ByteArrayInputStream(bytes), bytes.length, null, null, widen(readFormats));
         }
 
         if (isGoogleMapsProfileUrl(url)) {
             url = toUrl(url.toExternalForm() + "&output=kml");
-            formats = new ArrayList<>(formats);
-            formats.add(0, new Kml22Format());
+            List<NavigationFormat<?>> withKml = new ArrayList<>(formats);
+            withKml.add(0, new Kml22Format());
+            formats = withKml;
         }
 
         // read the whole response into memory so the exact size drives the mark()
@@ -318,7 +334,7 @@ public class NavigationFormatParser {
         try (InputStream inputStream = url.openStream()) {
             byte[] bytes = inputStream.readAllBytes();
             log.info("Reading '" + url + "' with " + bytes.length + " bytes");
-            return read(new ByteArrayInputStream(bytes), bytes.length, extractStartDate(url), extractFile(url), formats);
+            return read(new ByteArrayInputStream(bytes), bytes.length, extractStartDate(url), extractFile(url), widen(formats));
         }
     }
 
@@ -327,19 +343,18 @@ public class NavigationFormatParser {
     }
 
 
-    public static int getNumberOfFilesToWriteFor(BaseRoute route, NavigationFormat format, boolean duplicateFirstPosition) {
+    public static int getNumberOfFilesToWriteFor(BaseRoute<?, ?> route, NavigationFormat<?> format, boolean duplicateFirstPosition) {
         return ceiling(route.getPositionCount() + (duplicateFirstPosition ? 1 : 0), format.getMaximumPositionCount(), true);
     }
 
-    @SuppressWarnings("unchecked")
-    private void write(BaseRoute route, NavigationFormat format,
+    private void write(BaseRoute<?, ?> route, NavigationFormat<BaseRoute<?, ?>> format,
                        boolean duplicateFirstPosition,
                        boolean ignoreMaximumPositionCount,
                        ParserCallback parserCallback,
                        OutputStream... targets) throws IOException {
         log.info("Writing '" + format.getName() + "' position lists with 1 route and " + route.getPositionCount() + " positions");
 
-        BaseRoute routeToWrite = asFormat(route, format);
+        BaseRoute<?, ?> routeToWrite = asFormat(route, format);
         commentRoute(routeToWrite);
         preprocessRoute(routeToWrite, format, duplicateFirstPosition, parserCallback);
 
@@ -368,11 +383,11 @@ public class NavigationFormatParser {
         postProcessRoute(routeToWrite, format, duplicateFirstPosition);
     }
 
-    public void write(BaseRoute route, NavigationFormat format, File target) throws IOException {
+    public void write(BaseRoute<?, ?> route, NavigationFormat<?> format, File target) throws IOException {
         write(route, format, false, false, null, target);
     }
 
-    public void write(BaseRoute route, NavigationFormat format,
+    public void write(BaseRoute<?, ?> route, NavigationFormat<?> format,
                       boolean duplicateFirstPosition,
                       boolean ignoreMaximumPositionCount,
                       ParserCallback parserCallback,
@@ -384,36 +399,35 @@ public class NavigationFormatParser {
             if (!(format instanceof PhotoFormat))
                 targetStreams[i] = new FileOutputStream(targets[i]);
         }
-        write(route, format, duplicateFirstPosition, ignoreMaximumPositionCount, parserCallback, targetStreams);
+        write(route, widen(format), duplicateFirstPosition, ignoreMaximumPositionCount, parserCallback, targetStreams);
         for (File target : targets)
             log.info("Wrote '" + target.getAbsolutePath() + "'");
     }
 
 
-    @SuppressWarnings("unchecked")
-    private void preprocessRoute(BaseRoute routeToWrite, NavigationFormat format,
+    private <P extends BaseNavigationPosition> void preprocessRoute(BaseRoute<P, ?> routeToWrite, NavigationFormat<BaseRoute<?, ?>> format,
                                  boolean duplicateFirstPosition,
                                  ParserCallback parserCallback) {
-        if (format instanceof NmnFormat)
+        NavigationFormat<?> anyFormat = format;
+        if (anyFormat instanceof NmnFormat)
             routeToWrite.removeDuplicates();
-        if (format instanceof NmnFormat && duplicateFirstPosition) {
-            BaseNavigationPosition position = ((NmnFormat) format).getDuplicateFirstPosition(routeToWrite);
+        if (anyFormat instanceof NmnFormat nmnFormat && duplicateFirstPosition) {
+            P position = nmnFormat.getDuplicateFirstPosition(routeToWrite);
             if (position != null)
                 routeToWrite.add(0, position);
         }
-        if (format instanceof CoPilotFormat && duplicateFirstPosition) {
-            BaseNavigationPosition position = ((CoPilotFormat) format).getDuplicateFirstPosition(routeToWrite);
+        if (anyFormat instanceof CoPilotFormat coPilotFormat && duplicateFirstPosition) {
+            P position = coPilotFormat.getDuplicateFirstPosition(routeToWrite);
             if (position != null)
                 routeToWrite.add(0, position);
         }
-        if (format instanceof TcxFormat)
+        if (anyFormat instanceof TcxFormat)
             routeToWrite.ensureIncreasingTime();
         if (parserCallback != null)
             parserCallback.process(routeToWrite, format);
     }
 
-    @SuppressWarnings("unchecked")
-    private void renameRoute(BaseRoute route, BaseRoute routeToWrite, int startIndex, int endIndex, int trackIndex, OutputStream... targets) {
+    private void renameRoute(BaseRoute<?, ?> route, BaseRoute<?, ?> routeToWrite, int startIndex, int endIndex, int trackIndex, OutputStream... targets) {
         // gives splitted TomTomRoute and SimpleRoute routes a more useful name for the fragment
         if (route.getFormat() instanceof TomTomRouteFormat || route.getFormat() instanceof SimpleFormat ||
                 route.getFormat() instanceof GpxFormat && routeToWrite.getFormat() instanceof BcrFormat) {
@@ -424,28 +438,29 @@ public class NavigationFormatParser {
         }
     }
 
-    private void postProcessRoute(BaseRoute routeToWrite, NavigationFormat format, boolean duplicateFirstPosition) {
-        if ((format instanceof NmnFormat || format instanceof CoPilotFormat) && duplicateFirstPosition)
+    private void postProcessRoute(BaseRoute<?, ?> routeToWrite, NavigationFormat<BaseRoute<?, ?>> format, boolean duplicateFirstPosition) {
+        NavigationFormat<?> anyFormat = format;
+        if ((anyFormat instanceof NmnFormat || anyFormat instanceof CoPilotFormat) && duplicateFirstPosition)
             routeToWrite.remove(0);
     }
 
 
-    @SuppressWarnings("unchecked")
-    public void write(List<BaseRoute> routes, MultipleRoutesFormat format, File target) throws IOException {
+    public void write(List<BaseRoute<?, ?>> routes, MultipleRoutesFormat<?> format, File target) throws IOException {
         log.info("Writing '" + format.getName() + "' with " + routes.size() + " routes and " +
                 getPositionCounts(routes) + " positions");
 
-        List<BaseRoute> routesToWrite = new ArrayList<>(routes.size());
-        for (BaseRoute route : routes) {
-            BaseRoute routeToWrite = asFormat(route, format);
+        MultipleRoutesFormat<BaseRoute<?, ?>> anyFormat = widen(format);
+        List<BaseRoute<?, ?>> routesToWrite = new ArrayList<>(routes.size());
+        for (BaseRoute<?, ?> route : routes) {
+            BaseRoute<?, ?> routeToWrite = asFormat(route, anyFormat);
             commentRoute(routeToWrite);
-            preprocessRoute(routeToWrite, format, false, null);
+            preprocessRoute(routeToWrite, anyFormat, false, null);
             routesToWrite.add(routeToWrite);
-            postProcessRoute(routeToWrite, format, false);
+            postProcessRoute(routeToWrite, anyFormat, false);
         }
 
         try (OutputStream outputStream = new FileOutputStream(target)) {
-            format.write(routesToWrite, outputStream);
+            anyFormat.write(routesToWrite, outputStream);
             log.info("Wrote '" + target.getAbsolutePath() + "'");
         }
     }

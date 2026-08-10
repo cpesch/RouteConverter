@@ -31,7 +31,7 @@ import java.util.prefs.Preferences;
  * @author Christian Pesch
  */
 
-public abstract class GoPalRouteFormat<R extends BaseRoute> extends XmlNavigationFormat<R> {
+public abstract class GoPalRouteFormat<R extends BaseRoute<?, ?>> extends XmlNavigationFormat<R> {
     protected static final Preferences preferences = Preferences.userNodeForPackage(GoPalRouteFormat.class);
 
     public String getExtension() {

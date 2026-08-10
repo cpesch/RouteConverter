@@ -240,8 +240,8 @@ public class MapsforgeMapViewTest {
 
     private static class CountingPositionListsModel implements PositionListsModel {
         final AtomicInteger rebuilds = new AtomicInteger();
-        public List<BaseRoute> getRoutes() { rebuilds.incrementAndGet(); return new ArrayList<>(); }
-        public BaseRoute getSelectedRoute() { return null; }
+        public List<BaseRoute<?, ?>> getRoutes() { rebuilds.incrementAndGet(); return new ArrayList<>(); }
+        public BaseRoute<?, ?> getSelectedRoute() { return null; }
         public void addListDataListener(ListDataListener l) { }
         public void removeListDataListener(ListDataListener l) { }
     }

@@ -73,7 +73,7 @@ public class TomTomRouteFormatIT {
     private static final String UMLAUTS_ae_oe_ue_sz = "\u00e4\u00f6\u00fc\u00df";
     private static final char EURO = '\u20ac';
 
-    static void checkUmlauts(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+    static void checkUmlauts(BaseRoute<?, ?> route) {
         NavigationPosition first = route.getPositions().get(0);
         assertEquals("abc" + UMLAUTS_ae_oe_ue_sz + EURO, first.getDescription());
     }
@@ -83,7 +83,7 @@ public class TomTomRouteFormatIT {
         File source = new File(TEST_PATH + "from5.itn");
         ParserResult result = parser.read(source);
         assertNotNull(result);
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        BaseRoute<?, ?> route = result.getTheRoute();
         checkUmlauts(route);
     }
 
@@ -92,7 +92,7 @@ public class TomTomRouteFormatIT {
         File source = new File(TEST_PATH + "from8.itn");
         ParserResult result = parser.read(source);
         assertNotNull(result);
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        BaseRoute<?, ?> route = result.getTheRoute();
         checkUmlauts(route);
     }
 
@@ -100,7 +100,7 @@ public class TomTomRouteFormatIT {
     private static final String MOELLN = "M\u00f6lln";
     private static final String LUEBECK = "L\u00fcbeck";
 
-    static void checkPlaceNamesWithUmlauts(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+    static void checkPlaceNamesWithUmlauts(BaseRoute<?, ?> route) {
         NavigationPosition first = route.getPositions().get(0);
         assertEquals(SCHEESSEL, first.getDescription());
         NavigationPosition second = route.getPositions().get(1);
@@ -114,7 +114,7 @@ public class TomTomRouteFormatIT {
         File source = new File(TEST_PATH + "from-rider-2.itn");
         ParserResult result = parser.read(source);
         assertNotNull(result);
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        BaseRoute<?, ?> route = result.getTheRoute();
         checkPlaceNamesWithUmlauts(route);
     }
 
@@ -123,7 +123,7 @@ public class TomTomRouteFormatIT {
         File source = new File(TEST_PATH + "from-urban-rider.itn");
         ParserResult result = parser.read(source);
         assertNotNull(result);
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        BaseRoute<?, ?> route = result.getTheRoute();
         checkPlaceNamesWithUmlauts(route);
     }
 }

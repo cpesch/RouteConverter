@@ -63,7 +63,7 @@ public class AppendIT {
         assertFalse(appendResult.getAllRoutes().isEmpty());
 
         int appendPositionCount = appendResult.getTheRoute().getPositionCount();
-        List<BaseNavigationPosition> appendPositions = appendResult.getTheRoute().getPositions();
+        List<? extends BaseNavigationPosition> appendPositions = appendResult.getTheRoute().getPositions();
         assertTrue(appendPositionCount > 0);
 
         File testFile = new File(testFileName);
@@ -82,10 +82,16 @@ public class AppendIT {
         NavigationFormatParser appendParser = new NavigationFormatParser(new AllNavigationFormatRegistry());
         appendParser.read(appendFile);
 
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> appendRoute = asFormat(appendResult.getTheRoute(), testResult.getFormat());
-        testResult.getTheRoute().getPositions().addAll(appendRoute.getPositions());
+        BaseRoute<?, ?> appendRoute = asFormat(appendResult.getTheRoute(), testResult.getFormat());
+        // appendRoute was coerced into testRoute's format via asFormat(), so their position
+        // types match at runtime even though neither is captured statically here.
+        @SuppressWarnings("unchecked")
+        List<BaseNavigationPosition> testRoutePositions = (List<BaseNavigationPosition>) testResult.getTheRoute().getPositions();
+        @SuppressWarnings("unchecked")
+        List<BaseNavigationPosition> appendRoutePositions = (List<BaseNavigationPosition>) appendRoute.getPositions();
+        testRoutePositions.addAll(appendRoutePositions);
 
-        BaseRoute<BaseNavigationPosition, ?> route = testResult.getTheRoute();
+        BaseRoute<?, ?> route = testResult.getTheRoute();
         assertEquals(testRoute, route);
         // since a lot of formats determine route names from the first
         // and the (here changing) last way point name
@@ -94,7 +100,7 @@ public class AppendIT {
         assertEquals(testDescription, route.getDescription());
         assertEquals(testPositionCount + appendPositionCount, route.getPositionCount());
 
-        List<BaseNavigationPosition> positions = route.getPositions();
+        List<? extends BaseNavigationPosition> positions = route.getPositions();
         Class<? extends NavigationPosition> positionClass = testPositions.get(0).getClass();
         for (int i = 0; i < testPositionCount; i++) {
             NavigationPosition position = positions.get(i);

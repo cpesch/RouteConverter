@@ -64,7 +64,7 @@ public class Nmn7Format extends NmnFormat {
         throw new UnsupportedOperationException();
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         throw new UnsupportedOperationException();
     }
 

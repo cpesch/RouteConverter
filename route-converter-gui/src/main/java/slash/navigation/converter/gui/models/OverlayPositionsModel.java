@@ -264,7 +264,7 @@ public class OverlayPositionsModel implements PositionsModel {
         delegate.add(rowIndex, longitude, latitude, elevation, speed, time, description);
     }
 
-    public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
+    public void add(int rowIndex, BaseRoute<?, ?> route) throws IOException {
         delegate.add(rowIndex, route);
     }
 

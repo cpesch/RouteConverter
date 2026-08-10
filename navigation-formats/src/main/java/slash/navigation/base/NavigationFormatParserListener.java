@@ -27,5 +27,5 @@ package slash.navigation.base;
  */
 
 public interface NavigationFormatParserListener {
-    void reading(NavigationFormat<BaseRoute> format);
+    void reading(NavigationFormat<BaseRoute<?, ?>> format);
 }

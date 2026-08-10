@@ -99,7 +99,7 @@ import static slash.navigation.base.RouteCalculations.getSignificantPositions;
  * @author Christian Pesch
  */
 
-public abstract class BaseRoute<P extends BaseNavigationPosition, F extends BaseNavigationFormat> {
+public abstract class BaseRoute<P extends BaseNavigationPosition, F extends BaseNavigationFormat<?>> {
     private static final String REVERSE_ROUTE_NAME_POSTFIX = " (rev)";
     private final F format;
     private RouteCharacteristics characteristics;
@@ -556,11 +556,11 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     protected abstract ExcelRoute asExcelFormat(ExcelFormat format);
 
-    protected abstract GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format);
+    protected abstract GoPalRoute asGoPalRouteFormat(GoPalRouteFormat<GoPalRoute> format);
 
     protected abstract GpxRoute asGpxFormat(GpxFormat format);
 
-    protected abstract SimpleRoute asPhotoFormat(PhotoFormat format);
+    protected abstract SimpleRoute<?, ?> asPhotoFormat(PhotoFormat format);
 
     protected abstract KmlRoute asKmlFormat(BaseKmlFormat format);
 
@@ -568,7 +568,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
     protected abstract NmnRoute asNmnFormat(NmnFormat format);
 
-    protected abstract SimpleRoute asSimpleFormat(SimpleFormat format);
+    protected abstract SimpleRoute<?, ?> asSimpleFormat(SimpleFormat<?> format);
 
     protected abstract TcxRoute asTcxFormat(TcxFormat format);
 

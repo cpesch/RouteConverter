@@ -70,7 +70,7 @@ public class FileAnalyzer {
         if (!result.isSuccessful())
             throw new IOException("Could not read '" + source.getAbsolutePath() + "'");
 
-        List<BaseRoute> routes = result.getAllRoutes();
+        List<BaseRoute<?, ?>> routes = result.getAllRoutes();
 
         // A file the parser accepts but with no positions carries no usable
         // geometry (empty/binary/garbage sniffed as a permissive text format).
@@ -92,7 +92,7 @@ public class FileAnalyzer {
      * decoupled from parsing so the emission (bbox union, length-kind roll-up,
      * null handling) can be unit-tested with crafted routes (specs/00055).
      */
-    static String toJson(List<BaseRoute> routes, long size, String format, String extension,
+    static String toJson(List<BaseRoute<?, ?>> routes, long size, String format, String extension,
                          RouteLengthComputer lengthComputer) throws JsonProcessingException {
         int positions = 0;
         double lengthMeters = 0;

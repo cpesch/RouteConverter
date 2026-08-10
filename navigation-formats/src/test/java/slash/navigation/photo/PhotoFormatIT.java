@@ -154,7 +154,7 @@ public class PhotoFormatIT {
         ParserResult result = parser.read(target);
         assertNotNull(result);
         BaseRoute theRoute = result.getTheRoute();
-        PhotoFormat format = (PhotoFormat) result.getFormat();
+        PhotoFormat format = (PhotoFormat) (NavigationFormat<?>) result.getFormat();
         Wgs84Route route = (Wgs84Route) theRoute;
         PhotoPosition position = (PhotoPosition) route.getPosition(0);
         position.setDescription("description");

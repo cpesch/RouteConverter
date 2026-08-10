@@ -43,7 +43,7 @@ import static slash.navigation.base.RouteCharacteristics.Route;
  * @author Christian Pesch
  */
 
-public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
+public class KienzleGpsFormat extends SimpleLineBasedFormat<Wgs84Route> {
     private static final char SEPARATOR = ';';
     private static final String HEADER_LINE = "Position;X;Y";
     private static final String TIME_FORMAT = "HH:mm";
@@ -75,7 +75,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -98,7 +98,7 @@ public class KienzleGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return parseDate(time, TIME_FORMAT);
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

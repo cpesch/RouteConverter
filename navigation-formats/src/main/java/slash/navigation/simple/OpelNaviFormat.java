@@ -44,7 +44,7 @@ import static slash.navigation.base.RouteCalculations.asWgs84Position;
  * @author Christian Pesch
  */
 
-public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
+public class OpelNaviFormat extends SimpleLineBasedFormat<Wgs84Route> {
     protected static final Logger log = Logger.getLogger(OpelNaviFormat.class.getName());
 
     private static final char SEPARATOR = ',';
@@ -67,16 +67,16 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return "Opel Navi 600/900 (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, ParserContext<SimpleRoute> context) throws IOException {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         read(source, UTF8_ENCODING, context);
     }
 
-    public void write(SimpleRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
+    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         write(route, target, UTF8_ENCODING, startIndex, endIndex);
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -85,7 +85,7 @@ public class OpelNaviFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

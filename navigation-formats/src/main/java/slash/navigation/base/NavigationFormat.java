@@ -33,7 +33,7 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public interface NavigationFormat<R extends BaseRoute> {
+public interface NavigationFormat<R extends BaseRoute<?, ?>> {
     String getName();
     String getExtension();
     int getMaximumFileNameLength();

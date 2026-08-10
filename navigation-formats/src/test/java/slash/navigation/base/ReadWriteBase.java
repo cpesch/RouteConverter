@@ -49,8 +49,8 @@ public abstract class ReadWriteBase {
 
         File target = createTempFile("target", getExtension(source));
         // see AlanWaypointsAndRoutesFormat#isSupportsMultipleRoutes
-        if (result.getFormat().isSupportsMultipleRoutes() || result.getFormat() instanceof AlanWaypointsAndRoutesFormat)
-            parser.write(result.getAllRoutes(), (MultipleRoutesFormat) result.getFormat(), target);
+        if (result.getFormat().isSupportsMultipleRoutes() || ((NavigationFormat<?>) result.getFormat()) instanceof AlanWaypointsAndRoutesFormat)
+            parser.write(result.getAllRoutes(), (MultipleRoutesFormat<BaseRoute<?, ?>>) result.getFormat(), target);
         else
             parser.write(result.getTheRoute(), result.getFormat(), false, true, null, target);
 
@@ -69,8 +69,8 @@ public abstract class ReadWriteBase {
         else
             assertEquals(1, targetResult.getAllRoutes().size());
 
-        List<BaseRoute> sourceRoutes = sourceResult.getAllRoutes();
-        List<BaseRoute> targetRoutes = targetResult.getAllRoutes();
+        List<BaseRoute<?, ?>> sourceRoutes = sourceResult.getAllRoutes();
+        List<BaseRoute<?, ?>> targetRoutes = targetResult.getAllRoutes();
         // GPSBabel creates a route and a track out of a simple GarminPcx5 track if called with -r and -t
         // and out of a simple AlanTrk track if called with -t
         int count = targetFormat instanceof GarminPcx5Format || targetFormat instanceof AlanTrackLogFormat ?

@@ -38,13 +38,13 @@ import static slash.navigation.gui.events.IgnoreEvent.IGNORE;
 
 public class CharacteristicsModel extends AbstractListModel<RouteCharacteristics>
         implements ComboBoxModel<RouteCharacteristics> {
-    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route;
+    private BaseRoute<?, ?> route;
 
-    public BaseRoute<BaseNavigationPosition, BaseNavigationFormat> getRoute() {
+    public BaseRoute<?, ?> getRoute() {
         return route;
     }
 
-    public void setRoute(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+    public void setRoute(BaseRoute<?, ?> route) {
         this.route = route;
         fireContentsChanged(this, IGNORE, IGNORE);
     }

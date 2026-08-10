@@ -20,8 +20,8 @@
 package slash.navigation.simple;
 
 import slash.navigation.base.ParserContext;
-import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,15 +48,15 @@ public class SygicUnicodeFormat extends SygicFormat {
         return "Sygic POI Unicode (*" + getExtension() + ")";
     }
 
-    public void read(InputStream source, ParserContext<SimpleRoute> context) throws IOException {
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
         read(source, UTF16_ENCODING, context);
     }
 
-    public void write(SimpleRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
+    public void write(Wgs84Route route, OutputStream target, int startIndex, int endIndex) throws IOException {
         write(route, target, UTF16LE_ENCODING, startIndex, endIndex);
     }
 
-    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
+    protected void writeHeader(PrintWriter writer, Wgs84Route route) {
         // with UTF-16LE no BOM is written, UnicodeLittle would write one by is not supported
         // (see http://java.sun.com/j2se/1.4.2/docs/guide/intl/encoding.doc.html)
         // but the fix from http://mindprod.com/jgloss/encoding.html helped me

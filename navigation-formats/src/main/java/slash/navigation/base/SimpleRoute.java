@@ -63,7 +63,7 @@ import static slash.navigation.base.RouteComments.createRouteName;
  * @author Christian Pesch
  */
 
-public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends BaseNavigationFormat> extends BaseRoute<P, F> {
+public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends BaseNavigationFormat<?>> extends BaseRoute<P, F> {
     protected String name;
     protected List<P> positions;
 
@@ -127,7 +127,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
         return route;
     }
 
-    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
+    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat<GoPalRoute> format) {
         List<GoPalPosition> positions = new ArrayList<>();
         for (P position : getPositions()) {
             positions.add(position.asGoPalRoutePosition());
@@ -143,7 +143,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), positions);
     }
 
-    protected SimpleRoute asPhotoFormat(PhotoFormat format) {
+    protected SimpleRoute<?, ?> asPhotoFormat(PhotoFormat format) {
         List<Wgs84Position> positions = new ArrayList<>();
         for (P position : getPositions()) {
             positions.add(position.asWgs84Position());
@@ -175,7 +175,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
         return new NmnRoute(format, getCharacteristics(), name, positions);
     }
 
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+    protected SimpleRoute<?, ?> asSimpleFormat(SimpleFormat<?> format) {
         List<Wgs84Position> positions = new ArrayList<>();
         for (P position : getPositions()) {
             positions.add(position.asWgs84Position());
@@ -203,7 +203,7 @@ public abstract class SimpleRoute<P extends BaseNavigationPosition, F extends Ba
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        SimpleRoute route = (SimpleRoute) o;
+        SimpleRoute<?, ?> route = (SimpleRoute<?, ?>) o;
 
         return Objects.equals(name, route.name) &&
                 getCharacteristics().equals(route.getCharacteristics()) &&

@@ -34,7 +34,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  * @author Christian Pesch
  */
 
-public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends SimpleFormat<R> {
+public abstract class SimpleLineBasedFormat<R extends SimpleRoute<?, ?>> extends SimpleFormat<R> {
 
     public int getMaximumPositionCount() {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;
@@ -83,12 +83,12 @@ public abstract class SimpleLineBasedFormat<R extends SimpleRoute> extends Simpl
         return isPosition(line);
     }
     protected abstract boolean isPosition(String line);
-    protected abstract Wgs84Position parsePosition(String line, ParserContext context);
+    protected abstract Wgs84Position parsePosition(String line, ParserContext<?> context);
 
 
     @SuppressWarnings("unchecked")
     public void write(R route, PrintWriter writer, int startIndex, int endIndex) {
-        List<Wgs84Position> positions = route.getPositions();
+        List<Wgs84Position> positions = (List<Wgs84Position>) route.getPositions();
         writeHeader(writer, route);
         for (int i = startIndex; i < endIndex; i++) {
             Wgs84Position position = positions.get(i);

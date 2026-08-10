@@ -40,7 +40,7 @@ import static slash.common.io.Transfer.*;
  * @author Christian Pesch
  */
 
-public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
+public class GlopusFormat extends SimpleLineBasedFormat<Wgs84Route> {
     private static final char SEPARATOR = ',';
 
     // special position format to avoid detection of GarminPoiDbFormat where longitude and latitude are swapped
@@ -69,7 +69,7 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -81,7 +81,7 @@ public class GlopusFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return simpleMatcher.matches();
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         Matcher commentMatcher = COMMENT_LINE_PATTERN.matcher(line);
         if (commentMatcher.matches()) {
             String latitude = commentMatcher.group(1);

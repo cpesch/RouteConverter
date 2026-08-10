@@ -43,7 +43,7 @@ import static slash.navigation.common.NavigationConversion.*;
  * @author Christian Pesch
  */
 
-public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
+public class GpsTunerFormat extends SimpleLineBasedFormat<Wgs84Route> {
     private static final char SEPARATOR = ';';
     private static final String FIRST_HEADER_LINE = "GPS Tracklog - ";
     private static final String SECOND_HEADER_LINE = "Latitude(Degree);Longitude(Degree);Altitude(m);Speed(kmph);Date(Unix TimeStamp);Segment;Heading(Degree)";
@@ -68,7 +68,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings({"unchecked"})
-    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -92,7 +92,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return fromMillis(milliseconds * 1000);
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -109,7 +109,7 @@ public class GpsTunerFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
 
-    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
+    protected void writeHeader(PrintWriter writer, Wgs84Route route) {
         writer.println(FIRST_HEADER_LINE + GENERATED_BY);
         writer.println(SECOND_HEADER_LINE);
     }

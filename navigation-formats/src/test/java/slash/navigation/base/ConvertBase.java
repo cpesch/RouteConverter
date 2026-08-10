@@ -115,7 +115,7 @@ public abstract class ConvertBase {
             compareRouteMetaData(sourceRoute, targetResult.getTheRoute());
             comparePositions(sourceRoute, sourceFormat, targetResult.getTheRoute(), targetFormat, !targetResult.getAllRoutes().isEmpty());
 
-            for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute : targetResult.getAllRoutes()) {
+            for (BaseRoute<?, ?> targetRoute : targetResult.getAllRoutes()) {
                 compareRouteMetaData(sourceRoute, targetRoute);
                 comparePositions(sourceRoute, sourceFormat, targetRoute, targetFormat, !targetResult.getAllRoutes().isEmpty());
             }
@@ -130,13 +130,13 @@ public abstract class ConvertBase {
     }
 
     @SuppressWarnings("unchecked")
-    private static void convertMultipleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, List<BaseRoute> sourceRoutes) throws IOException {
+    private static void convertMultipleRouteRoundtrip(BaseNavigationFormat sourceFormat, BaseNavigationFormat targetFormat, File source, List<BaseRoute<?, ?>> sourceRoutes) throws IOException {
         NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
 
         File target = createTempFile("multitarget", targetFormat.getExtension());
         target.deleteOnExit();
         try {
-            parser.write(sourceRoutes, (MultipleRoutesFormat) targetFormat, target);
+            parser.write(sourceRoutes, (MultipleRoutesFormat<BaseRoute<?, ?>>) targetFormat, target);
             assertTrue(target.exists());
 
             ParserResult sourceResult = parser.read(source, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source)));
@@ -156,7 +156,7 @@ public abstract class ConvertBase {
             compareRouteMetaData(sourceResult.getTheRoute(), targetResult.getTheRoute());
 
             for (int i = 0; i < targetResult.getAllRoutes().size(); i++) {
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = targetResult.getAllRoutes().get(i);
+                BaseRoute<?, ?> targetRoute = targetResult.getAllRoutes().get(i);
                 BaseRoute sourceRoute = sourceResult.getAllRoutes().get(i);
                 // skip since first route is a list of all waypoints of all routes
                 if (targetFormat instanceof GarminMapSource6Format && targetRoute.getCharacteristics().equals(Waypoints))

@@ -21,13 +21,40 @@
 package slash.navigation.nmn;
 
 import org.junit.Test;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class Nmn6FormatTest {
     private final Nmn6Format format = new Nmn6Format();
+
+    // matches NmnFormat's own private DUPLICATE_OFFSET
+    private static final double DUPLICATE_OFFSET = 0.0001;
+
+    @Test
+    public void testGetDuplicateFirstPosition() {
+        NmnPosition first = new NmnPosition(10.0, 50.0, (Double) null, null, null, "first");
+        List<NmnPosition> positions = asList(first, new NmnPosition(11.0, 51.0, (Double) null, null, null, "second"));
+        NmnRoute route = new NmnRoute(format, RouteCharacteristics.Route, "test", positions);
+
+        NmnPosition duplicate = format.getDuplicateFirstPosition(route);
+
+        assertNotNull(duplicate);
+        assertDoubleEquals(10.0 + DUPLICATE_OFFSET, duplicate.getLongitude());
+        assertDoubleEquals(50.0 + DUPLICATE_OFFSET, duplicate.getLatitude());
+        assertEquals("Start:first", duplicate.getDescription());
+    }
+
+    @Test
+    public void testGetDuplicateFirstPositionForEmptyRoute() {
+        NmnRoute route = new NmnRoute(format, RouteCharacteristics.Route, "test", asList());
+        assertNull(format.getDuplicateFirstPosition(route));
+    }
 
     @Test
     public void testIsPosition() {

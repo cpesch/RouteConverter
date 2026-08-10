@@ -32,7 +32,7 @@ import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
  * @author Christian Pesch
  */
 
-public abstract class TextNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
+public abstract class TextNavigationFormat<R extends BaseRoute<?, ?>> extends BaseNavigationFormat<R> {
     protected static final char BYTE_ORDER_MARK = '\ufeff';
 
     protected boolean isValidStartDate(CompactCalendar startDate) {

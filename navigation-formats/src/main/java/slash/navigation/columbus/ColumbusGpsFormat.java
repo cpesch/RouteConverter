@@ -47,7 +47,7 @@ import static slash.navigation.columbus.ColumbusV1000Device.getUseLocalTimeZone;
  * @author Christian Pesch
  */
 
-public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
+public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<Wgs84Route> {
     protected static final Logger log = Logger.getLogger(ColumbusGpsFormat.class.getName());
 
     protected static final char SEPARATOR = ',';
@@ -62,7 +62,7 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -122,7 +122,7 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
         return string != null ? string.replace("\u0000", "") : "";
     }
 
-    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
+    protected void writeHeader(PrintWriter writer, Wgs84Route route) {
         writer.println(getHeader());
     }
 
@@ -199,7 +199,7 @@ public abstract class ColumbusGpsFormat extends SimpleLineBasedFormat<SimpleRout
      * @param descriptionGroup the matcher group holding the description/voice column
      * @param isTypeA          whether the line has the extended (Type-A) columns, enabling a voice file
      */
-    protected Wgs84Position parseCommonPosition(Matcher matcher, ParserContext context, CompactCalendar dateAndTime,
+    protected Wgs84Position parseCommonPosition(Matcher matcher, ParserContext<?> context, CompactCalendar dateAndTime,
                                                 int descriptionGroup, boolean isTypeA) {
         WaypointType waypointType = parseTag(trim(matcher.group(2)));
         Double latitude = parseDouble(matcher.group(5));

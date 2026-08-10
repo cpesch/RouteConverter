@@ -30,6 +30,6 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public interface MultipleRoutesFormat<R extends BaseRoute> extends NavigationFormat<R> {
+public interface MultipleRoutesFormat<R extends BaseRoute<?, ?>> extends NavigationFormat<R> {
     void write(List<R> routes, OutputStream target) throws IOException;
 }

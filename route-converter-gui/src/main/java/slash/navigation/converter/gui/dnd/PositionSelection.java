@@ -21,7 +21,7 @@
 package slash.navigation.converter.gui.dnd;
 
 import slash.navigation.base.BaseNavigationPosition;
-import slash.navigation.base.SimpleRoute;
+import slash.navigation.base.Wgs84Route;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.simple.GlopusFormat;
 
@@ -76,7 +76,7 @@ public class PositionSelection implements Transferable {
         } catch (IOException e) {
             log.severe("Cannot convert " + sourcePositions + " for selection: " + e);
         }
-        SimpleRoute targetRoute = targetFormat.createRoute(Waypoints, null, targetPositions);
+        Wgs84Route targetRoute = targetFormat.createRoute(Waypoints, null, targetPositions);
 
         StringWriter writer = new StringWriter();
         targetFormat.write(targetRoute, new PrintWriter(writer), 0, targetPositions.size());

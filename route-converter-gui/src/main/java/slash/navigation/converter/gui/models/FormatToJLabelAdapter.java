@@ -47,7 +47,7 @@ public class FormatToJLabelAdapter extends FormatAndRoutesListModelToDocumentAda
     }
 
     protected void updateAdapterFromDelegate() {
-        NavigationFormat<BaseRoute> format = getDelegate().getFormat();
+        NavigationFormat<BaseRoute<?, ?>> format = getDelegate().getFormat();
         if (format != null) {
             label.setText(format.getName());
         } else {

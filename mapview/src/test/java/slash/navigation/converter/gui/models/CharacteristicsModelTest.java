@@ -38,7 +38,7 @@ import static slash.navigation.base.RouteCharacteristics.values;
 public class CharacteristicsModelTest {
 
     @SuppressWarnings("unchecked")
-    private static BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route() {
+    private static BaseRoute<?, ?> route() {
         return mock(BaseRoute.class);
     }
 
@@ -60,7 +60,7 @@ public class CharacteristicsModelTest {
 
     @Test
     public void selectionReflectsTheRoute() {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = route();
+        BaseRoute<?, ?> route = route();
         when(route.getCharacteristics()).thenReturn(Track);
         CharacteristicsModel sut = new CharacteristicsModel();
 
@@ -72,7 +72,7 @@ public class CharacteristicsModelTest {
 
     @Test
     public void setSelectedItemUpdatesTheRouteWhenChanged() {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = route();
+        BaseRoute<?, ?> route = route();
         when(route.getCharacteristics()).thenReturn(Route);
         CharacteristicsModel sut = new CharacteristicsModel();
         sut.setRoute(route);
@@ -84,7 +84,7 @@ public class CharacteristicsModelTest {
 
     @Test
     public void setSelectedItemIsANoOpWhenUnchanged() {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = route();
+        BaseRoute<?, ?> route = route();
         when(route.getCharacteristics()).thenReturn(Track);
         CharacteristicsModel sut = new CharacteristicsModel();
         sut.setRoute(route);
@@ -96,7 +96,7 @@ public class CharacteristicsModelTest {
 
     @Test
     public void setSelectedItemUpdatesTheRouteFromNullSelection() {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = route();
+        BaseRoute<?, ?> route = route();
         when(route.getCharacteristics()).thenReturn(null);
         CharacteristicsModel sut = new CharacteristicsModel();
         sut.setRoute(route);

@@ -49,8 +49,8 @@ public class NavigationFormatConverter {
         return buffer.toString();
     }
 
-    private static String getFormatName(NavigationFormat format) {
-        Class<? extends NavigationFormat> formatClass = format.getClass();
+    private static String getFormatName(NavigationFormat<?> format) {
+        Class<?> formatClass = format.getClass();
         String formatName = formatClass.getSimpleName();
         if (trim(formatName) == null && formatClass.getSuperclass() != null)
             formatName = formatClass.getSuperclass().getSimpleName();
@@ -63,7 +63,7 @@ public class NavigationFormatConverter {
         return formatName;
     }
 
-    /*package local for tests*/static BaseNavigationPosition asFormat(NavigationPosition position, NavigationFormat format) throws IOException {
+    /*package local for tests*/static BaseNavigationPosition asFormat(NavigationPosition position, NavigationFormat<?> format) throws IOException {
         BaseNavigationPosition result;
         String formatName = getFormatName(format);
         formatName = formatName.replace("Format", "Position");
@@ -77,20 +77,22 @@ public class NavigationFormatConverter {
         return result;
     }
 
+    // Any concrete route only ever implements the as...Format() methods for the formats it can
+    // actually convert to, discovered here by reflection; the cast documents that assumption.
     @SuppressWarnings("unchecked")
-    public static BaseRoute<BaseNavigationPosition, BaseNavigationFormat> asFormat(BaseRoute route, NavigationFormat format) throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> result;
+    public static <R extends BaseRoute<?, ?>> R asFormat(BaseRoute<?, ?> route, NavigationFormat<R> format) throws IOException {
+        R result;
         String formatName = getFormatName(format);
         try {
             Method method = route.getClass().getMethod("as" + formatName);
-            result = (BaseRoute<BaseNavigationPosition, BaseNavigationFormat>) method.invoke(route);
+            result = (R) method.invoke(route);
         } catch (Exception e) {
             throw new IOException("Cannot call as" + formatName + "() on " + route, e);
         }
         return result;
     }
 
-    public static List<BaseNavigationPosition> convertPositions(List<NavigationPosition> positions, NavigationFormat format) throws IOException {
+    public static List<BaseNavigationPosition> convertPositions(List<NavigationPosition> positions, NavigationFormat<?> format) throws IOException {
         List<BaseNavigationPosition> result = new ArrayList<>(positions.size());
         for (NavigationPosition position : positions) {
             result.add(asFormat(position, format));
@@ -98,9 +100,9 @@ public class NavigationFormatConverter {
         return result;
     }
 
-    public static List<BaseRoute> convertRoute(List<BaseRoute> routes, NavigationFormat format) throws IOException {
-        List<BaseRoute> result = new ArrayList<>(routes.size());
-        for (BaseRoute route : routes) {
+    public static List<BaseRoute<?, ?>> convertRoute(List<BaseRoute<?, ?>> routes, NavigationFormat<BaseRoute<?, ?>> format) throws IOException {
+        List<BaseRoute<?, ?>> result = new ArrayList<>(routes.size());
+        for (BaseRoute<?, ?> route : routes) {
             result.add(asFormat(route, format));
         }
         return result;

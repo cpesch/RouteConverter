@@ -28,7 +28,7 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public abstract class XmlNavigationFormat<R extends BaseRoute> extends BaseNavigationFormat<R> {
+public abstract class XmlNavigationFormat<R extends BaseRoute<?, ?>> extends BaseNavigationFormat<R> {
 
     public int getMaximumPositionCount() {
         return UNLIMITED_MAXIMUM_POSITION_COUNT;

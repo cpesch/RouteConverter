@@ -120,7 +120,7 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
         throw new UnsupportedOperationException();
     }
 
-    public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+    public void add(int rowIndex, BaseRoute<?, ?> route) {
         throw new UnsupportedOperationException();
     }
 

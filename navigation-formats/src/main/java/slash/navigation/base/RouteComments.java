@@ -46,7 +46,7 @@ public abstract class RouteComments {
     private static final Preferences preferences = Preferences.userNodeForPackage(RouteComments.class);
     private static final String MAXIMUM_ROUTE_NAME_MENU_TEXT_LENGTH_PREFERENCE = "maximumRouteNameMenuTextLength";
 
-    public static String shortenRouteName(BaseRoute route) {
+    public static String shortenRouteName(BaseRoute<?, ?> route) {
         String result = "?";
         if (route != null) {
             if (route.getName() != null)
@@ -65,7 +65,7 @@ public abstract class RouteComments {
             return "?";
     }
 
-    public static void commentRouteName(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+    public static void commentRouteName(BaseRoute<?, ?> route) {
         if (route.getName() == null) {
             route.setName(createRouteName(route.getPositions()));
         }
@@ -77,7 +77,7 @@ public abstract class RouteComments {
         return name + " (" + index + ")";
     }
 
-    public static String getRouteName(BaseRoute route, int index) {
+    public static String getRouteName(BaseRoute<?, ?> route, int index) {
         String routeName = route.getName();
         Matcher matcher = ROUTE_PATTERN.matcher(routeName);
         if (matcher.matches()) {
@@ -88,8 +88,7 @@ public abstract class RouteComments {
         return getRouteName(routeName, index);
     }
 
-    @SuppressWarnings("unchecked")
-    public static String createRouteDescription(BaseRoute route) {
+    public static String createRouteDescription(BaseRoute<?, ?> route) {
         StringBuilder buffer = new StringBuilder();
 
         String name = trim(route.getName());
@@ -165,15 +164,14 @@ public abstract class RouteComments {
         };
     }
 
-    @SuppressWarnings("unchecked")
-    public static void commentRoutePositions(List<? extends BaseRoute> routes) {
+    public static void commentRoutePositions(List<? extends BaseRoute<?, ?>> routes) {
         if (routes.size() > 1) {
             Map<LongitudeAndLatitude, String> descriptions = new HashMap<>();
             Map<LongitudeAndLatitude, Double> elevations = new HashMap<>();
             Map<LongitudeAndLatitude, CompactCalendar> times = new HashMap<>();
             Map<LongitudeAndLatitude, Double> speeds = new HashMap<>();
 
-            for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
+            for (BaseRoute<?, ?> route : routes) {
                 for (BaseNavigationPosition position : route.getPositions()) {
                     if (!position.hasCoordinates())
                         continue;
@@ -208,7 +206,7 @@ public abstract class RouteComments {
                 }
             }
 
-            for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
+            for (BaseRoute<?, ?> route : routes) {
                 for (BaseNavigationPosition position : route.getPositions()) {
                     if (!position.hasCoordinates())
                         continue;
@@ -248,7 +246,7 @@ public abstract class RouteComments {
             }
         }
 
-        for (BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route : routes) {
+        for (BaseRoute<?, ?> route : routes) {
             commentPositions(route.getPositions());
         }
     }
