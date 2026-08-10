@@ -1,7 +1,7 @@
 ---
 name: 00018-rawtypes-generics-campaign
 status: planned
-phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats]
+phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules]
 phases_next: [route-converter-gui, tail-modules, gate]
 last_touched: 2026-08-10
 ---
@@ -212,6 +212,268 @@ parent's `compilerArgs` into the execution rather than replacing them.
 Consequence: main-source cleanliness is enforceable while the test helpers keep
 their raw signatures. Phase 4 survives, scoped to `default-compile`.
 
+## Phase 2 measurement + spike: `route-converter-gui` (2026-08-10)
+
+Open question 2 said phase 2's true size was unknown because the spike never
+compiled `route-converter-gui` against the tightened bounds. Re-measured now
+that phase 1 (PR #286) has landed, throwaway worktree off `origin/master`,
+same recipe as the baseline (`-Xlint:rawtypes` only — not `-Xlint:all` — added
+to root pom `compilerArgs`, `failOnWarning` temporarily set `false` so the
+reactor completes instead of halting on the first module, `MAVEN_OPTS=
+"-Duser.language=en -Duser.country=US"`, `mvn -pl route-converter-gui -am
+clean compile`). Reverted before removing the worktree; nothing committed.
+
+**`route-converter-gui/src/main`: 100 warnings, not 56.** The original 56 was
+measured 2026-08-08, before phase 1 shipped. Phase 1's mechanical `<?, ?>`/`<?>`
+widening of gui call sites kept the module *compiling* against the tightened
+`navigation-formats` API, but it did not reduce gui's own rawtypes count —
+count went up, because widening the signatures at the module boundary exposed
+raw usage one layer further in that hadn't been visible before (`route-converter-gui/
+src/test`: **21**, close to the original 26 estimate — test sources are out
+of scope per the Decision above, approach C).
+
+| raw type | hits | | file | hits |
+|---|---|---|---|---|
+| `NavigationFormat` | 25 | | `ConvertPanel.java` | 17 |
+| `BaseRoute` | 24 | | `OptionsDialog.java` | 13 |
+| `JList` | 20 | | `FormatAndRoutesModelImpl.java` | 8 |
+| `JComboBox` | 19 | | `FileOperations.java` | 5 |
+| `FormatAndRoutes` | 5 | | `PhotoPanel.java` / `PositionsModelImpl.java` | 4 each |
+| `FilteringPositionsModel` / `FilterPredicate` | 2 each | | 36 more files | ≤3 each |
+| `ComboBoxModel` / `AbstractListModel` / `BaseNavigationFormat` | 1 each | | | |
+
+**41 of the 100 are Swing (`JList` 20, `JComboBox` 19, `ComboBoxModel` 1,
+`AbstractListModel` 1), not route-hierarchy.** The original phased plan filed
+"the 12 Swing raw types" under phase 3 (tail-modules), on the assumption they
+lived in `cmdline`/`mapview`/`mapsforge-mapview`. They don't — these 41 live in
+`route-converter-gui` itself (20 near-identical `ListCellRenderer` subclasses
+each declaring `getListCellRendererComponent(JList list, …)` instead of
+`JList<?> list`), so phase 3 cannot fix them without a second pass over this
+same module. They are trivially mechanical: widen the renderer parameter to
+`<?>`, or use diamond `<>` on `new JComboBox<?>()`-style field
+initialisers (raw `<?>` in a `new` expression is a compile error — see below).
+Zero design risk, no correlation with the route hierarchy.
+
+### Spike: same wildcard-widening approach on the remaining 59
+
+Mechanically parameterised all 100 flagged main-source occurrences with the
+same recipe phase 1 used (`BaseRoute`→`<?, ?>`, `NavigationFormat`/
+`BaseNavigationFormat`/`FilteringPositionsModel`/`FilterPredicate`→`<?>`,
+`FormatAndRoutes`→`<?, ?, ?>`, Swing types→`<?>`), one substitution per
+flagged line, nothing else touched.
+
+**Round 1 — 130 compile errors across 15 files.** Four distinct root causes,
+none of them new to Java, all avoidable once known:
+
+1. **A bare wildcard cannot be a direct supertype.** `FormatAndRoutesModel
+   extends ComboBoxModel<?>` and `FormatAndRoutesModelImpl extends
+   AbstractListModel<?>` — `error: unexpected type, required: class or
+   interface without bounds, found: ?` — 2 sites, but the cascade is large:
+   once those two types stop resolving, every consumer of
+   `getSize()`/`setSelectedItem()` (`ConvertPanel`, `AddPositionListAction`,
+   `MergePositionListMenu`, `FileOperations`, `PasteAction`, …) loses the
+   method and reads as unrelated "cannot find symbol" noise. Fix: a *concrete*
+   type argument one level down is legal even though the bare wildcard isn't —
+   `ComboBoxModel<BaseRoute<?, ?>>` / `AbstractListModel<BaseRoute<?, ?>>`.
+2. **A bare wildcard cannot appear in a `new` expression either** — 17 sites,
+   same error shape (`new JComboBox<?>()` × 15 Swing widget fields, `new
+   FormatAndRoutes<?, ?, ?>(…)` × 4 in `FileOperations`). Fix: diamond `<>` —
+   except one of the four `FormatAndRoutes` sites, which the next point
+   explains.
+3. **Cross-module erasure clash.** `mapview`'s `PositionsModel.setRoute(BaseRoute
+   route)`/`getRoute()` are *still raw* (2 of mapview's own residual hits,
+   independently re-measured at 2, not the baseline's stale 8 — see the tail-
+   modules re-measurement below). `route-converter-gui` classes overriding them
+   with a widened `setRoute(BaseRoute<?, ?>)` no longer override anything —
+   `name clash: … have the same erasure, yet neither overrides the other` —
+   `FilteringPositionsModel`, `OverlayPositionsModel`, `PositionsModelImpl` all
+   hit this. **`route-converter-gui` cannot compile rawtypes-clean without
+   these two `mapview` methods widened first.** This is the concrete answer to
+   open question 2 — the true size includes 2 lines outside the module.
+4. **Wildcard-capture wall, same shape as phase 1's `NavigationFormatParser`.**
+   `FileOperations.setRoutes(new FormatAndRoutes<>(format, result.getAllRoutes()))`
+   — diamond inference fails because `format` (`NavigationFormat<?>`) and the
+   route list are independent captures with nothing left to correlate them
+   through. Same wall, different call site.
+
+After fixing 1–3 by hand (2 supertype signatures, 17 diamonds, 2 lines in
+`mapview`) — 8 sites, all mechanical, no design judgment required — **Round 2:
+30 raw errors, 15 unique sites in 6 files.** Same order of magnitude as phase
+1's Round 2 (78 → 14).
+
+### A real defect, same shape as phase 1's unsound insert
+
+`PositionsModelImpl` — `getIndex(NavigationPosition)` (line 96), `add(int,
+List<BaseNavigationPosition>)` (205), `sort(Comparator<NavigationPosition>)`
+(239), `order(List<NavigationPosition>)` (246) — each calls `getRoute()` (a
+`BaseRoute<?, ?>` whose real position-type parameter is an *independent*,
+unrelated capture at every call) with an argument typed only as the common
+supertype (`BaseNavigationPosition`/`NavigationPosition`), not the route's
+actual position type. Every one of these methods already carries a
+pre-existing `@SuppressWarnings("unchecked")` — under raw types that
+suppression was quietly papering over exactly this gap; wildcards turn the
+same gap into a hard capture error instead of a silent unchecked warning.
+It's sound today only because callers happen to always pass the
+route's own position type by convention (`createPositions` converts through
+`NavigationFormatConverter` first) — never verified by the compiler. This is
+the identical pattern to phase 1's `getDuplicateFirstPosition` finding: correct
+by convention, not by the type system, on a path (position add/sort/order) that
+runs on ordinary editing, not just write. Phase 1's fix was to make the helper
+generic in the position type rather than cast; the same move — or a
+`@SuppressWarnings`-documented cast at each of these 4 sites, the smaller-diff
+option phase 1 also uses in `NmnFormat`/`CoPilotFormat` — is the candidate fix.
+Not a crash today; a latent hole the type system currently can't see.
+
+One more, minor, not a runtime bug: `ConvertPanel`'s existing phase-1-authored
+workaround (`// FormatAndRoutesModel extends the raw ComboBoxModel; narrow the
+unchecked conversion…` then `@SuppressWarnings("unchecked") ComboBoxModel<
+FormatAndRoutesModel> comboBoxModel = formatAndRoutesModel;`) casts to a type
+argument — `FormatAndRoutesModel` — that isn't the combo box's real element
+type (its elements are routes; the field itself is declared `JComboBox<
+FormatAndRoutesModel>`, likewise a placeholder). Harmless under erasure, but
+exactly the kind of misleading type witness this campaign exists to remove;
+phase 2 should retype both to `<BaseRoute<?, ?>>` to match what the model and
+renderer actually deal in.
+
+### Tail-modules re-measured too (throwaway, same recipe)
+
+The baseline table's per-module counts are 2026-08-08, pre-phase-1, like gui's
+was. Re-measured 2026-08-10 for the record (`mvn -pl mapview,mapsforge-mapview,
+route-converter-cmdline,download,tileserver-maps,datasource -am clean
+compile`, full reactor, no test-compile):
+
+| module | baseline (2026-08-08) | now (2026-08-10) |
+|---|---|---|
+| `mapview` | 8 | **2** (exactly the `getRoute`/`setRoute` pair above) |
+| `mapsforge-mapview` | 11 | 10 |
+| `route-converter-cmdline` | 12 | 6 |
+| `download` | 3 | 3 |
+| `tileserver-maps` | 3 | 3 |
+| `datasource` | 2 | 2 |
+| `common-gui` | (not itemised) | 1 |
+| `navigation-formats` | 82 (pre-phase-1) | 16 (post-phase-1, JAXB, out of scope) |
+
+Phase 1's fallout moved every downstream module's count, not just gui's — up
+in one case (gui, 56→100), down in most others (cmdline 12→6, navigation-formats
+82→16). None of the tail-module deltas are surprising; `mapview`'s is the one
+that matters for phase 2, because 2 of its 2 remaining hits are the
+prerequisite this spike found.
+
+### Decision (2026-08-10) — phase 2 scope, grilled with the maintainer
+
+Four forks, each grilled one at a time with a recommended default; the
+maintainer took the recommendation on all four:
+
+1. **The 41 Swing hits ship in phase 2, not a separate issue.** Same module,
+   already touched, zero design risk — 20 `ListCellRenderer` subclasses widen
+   `JList list` → `JList<?> list`; the `new JComboBox<?>()`-shaped field
+   initialisers take diamond `<>`. Finishes `route-converter-gui` completely
+   in one PR rather than leaving a residue for a phase 3 that wouldn't
+   otherwise touch this module.
+2. **`mapsforge-mapview` (10 hits) and `route-converter-cmdline` (6 hits)
+   defer to phase 3.** Not required for `route-converter-gui` to compile
+   rawtypes-clean — only `mapview`'s 2-line `getRoute()`/`setRoute()`
+   prerequisite is, and that's already in scope (item 3 below). Keeps phase
+   2's PR to one module plus the unavoidable 2-line touch outside it, instead
+   of a 3-module change.
+3. **`mapview`'s `PositionsModel.getRoute()`/`setRoute(BaseRoute route)`
+   widen to `BaseRoute<?, ?>` as part of phase 2**, not a separate prerequisite
+   issue — 2 lines, strictly required (§ Round 1 cause 3 above), and it also
+   zeroes out `mapview`'s own remaining tail-modules count for free.
+4. **The `PositionsModelImpl` defect** (`getIndex`/`add`/`sort`/`order` passing
+   base-typed positions/comparators/lists into a route whose real position
+   type is an unrelated wildcard capture) **is fixed with a documented
+   `@SuppressWarnings("unchecked")` cast at each of the 4 call sites**, not by
+   making the class generic in the position type. Matches phase 1's
+   `NmnFormat`/`CoPilotFormat.getDuplicateFirstPosition` precedent — smaller
+   diff, no interface change in `mapview`.
+5. **Dispatch is a direct `mvn compile` loop from the start, not the factory
+   builder.** 42 files / 100 sites in `route-converter-gui` alone sits in the
+   same range that made the builder abort phase 1 (55 files/245 sites, 30-file
+   cap, module can't compile partially). File the issue for tracking + review,
+   but land the PR the same way phase 1 was actually landed.
+
+### Phase 3 measurement + scope (2026-08-10)
+
+Re-measured `tail-modules` for real, throwaway worktree off `origin/master`
+(same commit the phase-2 spike used, `da9cafc0c`), same recipe: root pom
+`compilerArgs` → `-Xlint:rawtypes`, `failOnWarning` temporarily `false`,
+`MAVEN_OPTS="-Duser.language=en -Duser.country=US"`, full reactor `clean
+test-compile` (not just `compile` — this run also caught the one test-source
+hit in `mapsforge-mapview`). Reverted before removing the worktree; nothing
+committed. Numbers agree with the phase-2 session's own tail-module spot-check
+above; this pass goes one level deeper and breaks each module's count down by
+*why* it's raw, which changes the scope in one real way (below).
+
+| module | main | test | total | route-family | Swing | JAXB residual | other single-site |
+|---|---|---|---|---|---|---|---|
+| `route-converter-cmdline` | 6 | 0 | 6 | 6 | 0 | 0 | 0 |
+| `mapsforge-mapview` | 10 | 1 | 11 | 5 | 4 | 0 | 2 (`org.mapsforge.map.layer.TileLayer`) |
+| `mapview` | 2 | 0 | 2 | 2 | 0 | 0 | 0 |
+| `download` | 3 | 0 | 3 | 0 | 0 | 1 | 2 (`java.util.concurrent.Future`) |
+| `tileserver-maps` | 3 | 0 | 3 | 0 | 0 | 2 | 1 (own `ItemPreferencesMediator`) |
+| `datasource` | 2 | 0 | 2 | 0 | 0 | 1 | 1 (own `Fragment`) |
+| **total** | | | **27** | **13** | **4** | **4** | **6** |
+
+**Correction to the phase-2 section's "this phase's Swing count is 0":** that's
+right for the *originally-claimed* 12, which do live in `route-converter-gui`
+(41, phase 2 §Decision item 1) — but 4 real, distinct Swing hits exist in
+`mapsforge-mapview` on their own account, unrelated to that miscount: 3
+`ListCellRenderer` subclasses declaring `getListCellRendererComponent(JList
+list, …)` instead of `JList<?> list` (`LocalMapListCellRenderer.java:40`,
+`LocalThemeListCellRenderer.java:40`, `ThemeStyleListCellRenderer.java:34`),
+plus one designer-generated hit inside `MapSelector.java`'s `$$$setupUI$$$()`
+(`comboBoxZoom = new JComboBox();` at line 219) — the field itself is already
+`JComboBox<Integer>`, but the IntelliJ form format has no generics concept, so
+the generated initialiser is permanently raw. Confirmed no `ComboBoxModel` hit
+anywhere in the tail modules (the earlier "JComboBox, JList, ComboBoxModel"
+framing was describing the shape of the bucket, not a literal 1:1 list).
+
+**`mapview`'s 2 hits are phase 2's, not phase 3's.** Phase 2 §Decision item 3
+already claims `PositionsModel.getRoute()`/`setRoute(BaseRoute route)` →
+`BaseRoute<?, ?>` as part of that phase (it's the 2-line prerequisite phase 2
+needs to compile against). Zero design risk either way, but doing it twice in
+two issues would just be a merge conflict waiting to happen — `mapview` drops
+out of phase 3's scope entirely, count 0.
+
+No structural knot anywhere in the tail modules: `ItemPreferencesMediator`
+(`tileserver-maps`) and `Fragment` (`datasource`) are both already correctly
+generic at their own declaration — the raw hit is a single unparameterized
+call/field site each, not a raw bound needing redesign. Same for the mapsforge
+`TileLayer` hits (third-party generic class, single-site `instanceof` pattern
+match, `<?>` fixes both).
+
+**Decision (2026-08-10) — phase 3 scope, grilled with the maintainer:**
+
+1. **One issue for the whole route-family + residual bucket** (`route-converter-cmdline`
+   6, `mapsforge-mapview` 5 route-family + 2 `TileLayer`, `download` 1 JAXB + 2
+   `Future`, `tileserver-maps` 2 JAXB + 1 `ItemPreferencesMediator`, `datasource`
+   1 JAXB + 1 `Fragment` — **21 hits, ~14 files**), not one per module. Total
+   scope is small and every fix is the same mechanical `<?, ?>`/`<?>`/concrete-
+   type-argument shape phase 1 already established; splitting by module would
+   just add tracking overhead for no review-risk reduction.
+2. **The JAXB residual (4: `download`, `tileserver-maps`, `datasource`) and the
+   misc single-site hits (6: `TileLayer`×2, `Future`×2, `ItemPreferencesMediator`,
+   `Fragment`) fold into that same issue**, rather than being carved out like
+   navigation-formats' 16 JAXBElement residue. Each is a one-line fix with no
+   generated-code entanglement (unlike navigation-formats' JAXB residue, these
+   aren't inside checked-in xjc output), and `download`/`tileserver-maps`/
+   `datasource` would otherwise get no `-Xlint:rawtypes` cleanup this phase at
+   all — they have zero route-family hits of their own.
+3. **The 4 `mapsforge-mapview` Swing hits ship as their own issue**, not folded
+   into #1 above and not deferred to some future pass — same rationale spec
+   used for the original "12 Swing raw types" framing: unrelated to the route
+   hierarchy, independently fixable, and mixing Swing-widget generics into the
+   route-family issue would blur what the PR is actually about.
+4. **`MapSelector.java:219`'s designer-generated raw `new JComboBox()` gets a
+   documented `@SuppressWarnings("rawtypes")` on `$$$setupUI$$$()`, not a
+   hand-edit.** The `.form` format has no generics concept, so writing
+   `new JComboBox<Integer>()` by hand would just get silently reverted (or
+   drift out of round-trip sync) the next time anyone opens the form in
+   IntelliJ. Same shape as leaving the JAXB/kml `ObjectFactory` generated code
+   alone — suppress at the generated site, fix the other 3 (hand-written
+   `ListCellRenderer` overrides) for real.
+
 ## Phased plan
 
 Each phase is one PR, each ends green on the full reactor.
@@ -234,15 +496,28 @@ Each phase is one PR, each ends green on the full reactor.
    `route-converter-gui`, `route-converter-cmdline` to keep those modules
    compiling against the tightened API (not a rawtypes-elimination pass on
    those modules themselves — that's still phases 2–3 below).
-2. **`route-converter-gui`** — the 56 main hits, most of which are consumers of
-   the signatures phase 1 changed. Some call sites already got mechanically
-   widened as phase-1 compile-compat fallout (see above); re-measure the
-   module's own remaining `-Xlint:rawtypes` count before scoping — don't assume
-   the original 56 still holds.
-3. **`tail-modules`** — cmdline 12, mapsforge-mapview 11, mapview 8, download 3,
-   tileserver-maps 3, datasource 2. Includes the 12 Swing raw types
-   (`JComboBox`, `JList`, `ComboBoxModel`), which are unrelated to the route
-   hierarchy and independently fixable at any time.
+2. **`route-converter-gui`** — re-measured 2026-08-10: **100 main hits** (not
+   56 — see [Phase 2 measurement + spike](#phase-2-measurement--spike-route-converter-gui-2026-08-10)),
+   41 Swing (unrelated to the route hierarchy, mechanical) + 59 route-hierarchy
+   (approach A, same as phase 1, plus a 2-line prerequisite widening of
+   `mapview`'s `PositionsModel.getRoute()`/`setRoute()` and a documented-cast
+   fix for the real defect the spike found in `PositionsModelImpl`). Grilled
+   and scoped 2026-08-10 — see the maintainer decisions below before opening
+   the factory issue.
+3. **`tail-modules`** — re-measured and re-scoped 2026-08-10, see
+   [Phase 3 measurement + scope](#phase-3-measurement--scope-2026-08-10). Two
+   issues, not one: (a) route-family + JAXB/misc residual — `route-converter-cmdline`
+   6, `mapsforge-mapview` 5 route-family + 2 `TileLayer`, `download` 3,
+   `tileserver-maps` 3, `datasource` 2 (**21 hits total**); (b) the 4 Swing hits
+   in `mapsforge-mapview` alone (3 hand-written `ListCellRenderer` overrides +
+   1 designer-generated `$$$setupUI$$$()` site, suppressed not hand-edited).
+   `mapview` drops to 0 and out of this phase's scope — its 2 hits
+   (`PositionsModel.getRoute()`/`setRoute()`) are phase 2's prerequisite, not
+   phase 3's (fixing them here too would double up on the same 2 lines).
+   Correction to the phase-2 section's claim that "this phase's Swing count is
+   0": the *original* 12-hit miscount does resolve to `route-converter-gui`
+   (41, phase 2), but 4 distinct, freshly-measured Swing hits are genuinely in
+   `mapsforge-mapview`, unrelated to that miscount — see above.
 4. **`gate`** — add `-Xlint:rawtypes` to the root pom's `<compilerArgs>`
    alongside the `deprecation,try,lossy-conversions` set from #269, with the
    `default-testCompile` override from the Decision section so test sources stay
@@ -275,10 +550,9 @@ via the per-execution override. What remains:
    widens both. RouteConverter is used as a library by third parties, so this is
    a source-compatibility question, not just an internal one. If the answer is
    yes, phase 1 should keep a deprecated raw-signature overload for one release.
-2. **Phase 2's true size is unknown.** The spike compiled
-   `-pl navigation-formats -am` only, so route-converter-gui's 56 main hits were
-   never compiled against the changed bounds. Re-measure after phase 1 lands
-   rather than scoping phase 2 now.
+2. ~~**Phase 2's true size is unknown.**~~ **Resolved 2026-08-10:** 100 main
+   hits (not 56), 41 Swing + 59 route-hierarchy, plus a 2-line prerequisite in
+   `mapview`. Full findings in [Phase 2 measurement + spike](#phase-2-measurement--spike-route-converter-gui-2026-08-10).
 3. **Does the 82-format parse suite actually cover the write path?** Phase 1's
    only safety net is `ReadWriteBase`/`ConvertBase` staying green, and
    `preprocessRoute` — where the unsound insert lives — runs on write. Worth
