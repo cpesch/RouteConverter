@@ -37,7 +37,7 @@ public class LocalMapListCellRenderer extends DefaultListCellRenderer {
     public static final LocalMap DOWNLOAD_MAP = new MapsforgeFileMap(null, null, null, null, null);
     private static final JSeparator SEPARATOR = new JSeparator();
 
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         if (SEPARATOR_TO_DOWNLOAD_MAP.equals(value))
             return SEPARATOR;
 
