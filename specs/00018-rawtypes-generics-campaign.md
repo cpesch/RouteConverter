@@ -223,30 +223,56 @@ reactor completes instead of halting on the first module, `MAVEN_OPTS=
 "-Duser.language=en -Duser.country=US"`, `mvn -pl route-converter-gui -am
 clean compile`). Reverted before removing the worktree; nothing committed.
 
-**`route-converter-gui/src/main`: 100 warnings, not 56.** The original 56 was
-measured 2026-08-08, before phase 1 shipped. Phase 1's mechanical `<?, ?>`/`<?>`
-widening of gui call sites kept the module *compiling* against the tightened
-`navigation-formats` API, but it did not reduce gui's own rawtypes count —
-count went up, because widening the signatures at the module boundary exposed
-raw usage one layer further in that hadn't been visible before (`route-converter-gui/
-src/test`: **21**, close to the original 26 estimate — test sources are out
-of scope per the Decision above, approach C).
+**`route-converter-gui/src/main`: 120 warnings, not 56, and not 100 either.**
+The original 56 was measured 2026-08-08, before phase 1 shipped. Phase 1's
+mechanical `<?, ?>`/`<?>` widening of gui call sites kept the module
+*compiling* against the tightened `navigation-formats` API, but it did not
+reduce gui's own rawtypes count — count went up, because widening the
+signatures at the module boundary exposed raw usage one layer further in that
+hadn't been visible before.
+
+**And the first re-measurement (100) was itself wrong — silently capped by
+javac's default `-Xmaxwarns 100`.** Discovered only once the fix was
+implemented: after fixing the reported 100, a clean rebuild with the same
+`-Xlint:rawtypes` flag still showed 0 errors but the module wasn't actually
+warning-free — a *second* clean measurement pass (this time adding
+`-Xmaxwarns 100000` to the same `compilerArgs`) surfaced **20 more** hits in 6
+files that had reported zero in every prior pass, simply because they were
+warnings 101–120 and javac drops anything past its default cap without any
+indication that it did so. **Any `-Xlint:rawtypes` measurement in this
+campaign that reported a count ≥100 must be re-verified with `-Xmaxwarns`
+added** — this includes re-checking whether phase 1's original 318-warning
+`-Xlint:all` baseline (2026-08-08) undercounted for the same reason (unlike
+per-category counts, which mostly stayed under 100 individually and are
+probably fine, but the reactor-wide `-Xlint:all` total warning volume per
+module compile could easily have crossed 100 and silently dropped some). Not
+re-verified here — flagging it rather than re-litigating a already-shipped
+phase 1's numbers.
+
+True per-file breakdown, `mvn -pl route-converter-gui -am clean compile` with
+`<compilerArgs><arg>-Xlint:rawtypes</arg><arg>-Xmaxwarns</arg><arg>100000</arg></compilerArgs>`,
+`failOnWarning` temporarily `false`:
 
 | raw type | hits | | file | hits |
 |---|---|---|---|---|
-| `NavigationFormat` | 25 | | `ConvertPanel.java` | 17 |
-| `BaseRoute` | 24 | | `OptionsDialog.java` | 13 |
-| `JList` | 20 | | `FormatAndRoutesModelImpl.java` | 8 |
-| `JComboBox` | 19 | | `FileOperations.java` | 5 |
-| `FormatAndRoutes` | 5 | | `PhotoPanel.java` / `PositionsModelImpl.java` | 4 each |
-| `FilteringPositionsModel` / `FilterPredicate` | 2 each | | 36 more files | ≤3 each |
-| `ComboBoxModel` / `AbstractListModel` / `BaseNavigationFormat` | 1 each | | | |
+| `BaseRoute` | 43 | | `ConvertPanel.java` | 17 |
+| `NavigationFormat` | 25 | | `OptionsDialog.java` | 13 |
+| `JList` | 21 | | `UndoFormatAndRoutesModel.java` | 9 (0 in the first, capped pass) |
+| `JComboBox` | 19 | | `FormatAndRoutesModelImpl.java` | 8 |
+| `FormatAndRoutes` | 5 | | `FileOperations.java` | 5 |
+| `FilteringPositionsModel` / `FilterPredicate` | 2 each | | `ChangeRoute.java` | 4 (0 in the first pass) |
+| `ComboBoxModel` / `AbstractListModel` / `BaseNavigationFormat` | 1 each | | `PhotoPanel.java` / `PositionsModelImpl.java` | 4 each |
 
-**41 of the 100 are Swing (`JList` 20, `JComboBox` 19, `ComboBoxModel` 1,
+`route-converter-gui/src/test`: **21**, close to the original 26 estimate —
+test sources are out of scope per the Decision above, approach C (not
+re-verified against `-Xmaxwarns` since it's under the cap and out of scope
+either way).
+
+**42 of the 120 are Swing (`JList` 21, `JComboBox` 19, `ComboBoxModel` 1,
 `AbstractListModel` 1), not route-hierarchy.** The original phased plan filed
 "the 12 Swing raw types" under phase 3 (tail-modules), on the assumption they
-lived in `cmdline`/`mapview`/`mapsforge-mapview`. They don't — these 41 live in
-`route-converter-gui` itself (20 near-identical `ListCellRenderer` subclasses
+lived in `cmdline`/`mapview`/`mapsforge-mapview`. They don't — these 42 live in
+`route-converter-gui` itself (21 near-identical `ListCellRenderer` subclasses
 each declaring `getListCellRendererComponent(JList list, …)` instead of
 `JList<?> list`), so phase 3 cannot fix them without a second pass over this
 same module. They are trivially mechanical: widen the renderer parameter to
