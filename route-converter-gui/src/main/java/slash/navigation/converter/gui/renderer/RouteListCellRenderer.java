@@ -34,9 +34,9 @@ import java.util.MissingResourceException;
  */
 
 public class RouteListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        BaseRoute route = (BaseRoute) value;
+        BaseRoute<?, ?> route = (BaseRoute) value;
         String text = "?";
         if (route != null) {
             String characteristics;

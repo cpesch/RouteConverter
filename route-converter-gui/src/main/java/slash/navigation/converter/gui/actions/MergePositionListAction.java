@@ -20,8 +20,11 @@
 
 package slash.navigation.converter.gui.actions;
 
+import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
 import slash.navigation.gui.helpers.AbstractListDataListener;
+
+import java.util.List;
 import slash.navigation.converter.gui.models.FormatAndRoutesModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.converter.gui.panels.ConvertPanel;
@@ -40,10 +43,10 @@ import java.awt.event.ActionListener;
 
 public class MergePositionListAction extends FrameAction {
     private final ConvertPanel convertPanel;
-    private BaseRoute sourceRoute;
+    private BaseRoute<?, ?> sourceRoute;
     private ActionEnabler actionEnabler = new ActionEnabler();
 
-    public MergePositionListAction(ConvertPanel convertPanel, BaseRoute sourceRoute) {
+    public MergePositionListAction(ConvertPanel convertPanel, BaseRoute<?, ?> sourceRoute) {
         this.convertPanel = convertPanel;
         this.sourceRoute = sourceRoute;
         initialize();
@@ -64,11 +67,16 @@ public class MergePositionListAction extends FrameAction {
         this.sourceRoute = null;
     }
 
+    // sourceRoute's position type is an independent wildcard capture here;
+    // getPositions() always returns elements of that same route's actual
+    // position type, which is a BaseNavigationPosition -- cast bypasses the
+    // capture, doesn't change what's on the heap.
     @SuppressWarnings("unchecked")
     public void run() {
         JTable table = convertPanel.getPositionsView();
         int selectedRow = Math.min(table.getSelectedRow() + 1, table.getRowCount());
-        convertPanel.getPositionsModel().add(selectedRow, sourceRoute.getPositions());
+        List<BaseNavigationPosition> positions = (List<BaseNavigationPosition>) (List) sourceRoute.getPositions();
+        convertPanel.getPositionsModel().add(selectedRow, positions);
         convertPanel.getFormatAndRoutesModel().removePositionList(sourceRoute);
     }
 

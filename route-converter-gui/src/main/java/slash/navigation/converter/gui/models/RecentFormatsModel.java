@@ -81,7 +81,7 @@ public class RecentFormatsModel {
         return null;
     }
 
-    public void addFormat(NavigationFormat format) {
+    public void addFormat(NavigationFormat<?> format) {
         String recentFormats = preferences.get(RECENT_FORMATS_PREFERENCE, "");
         Character character = findCharForFormat(recentFormats, format.getClass().getName());
         if (character != null) {

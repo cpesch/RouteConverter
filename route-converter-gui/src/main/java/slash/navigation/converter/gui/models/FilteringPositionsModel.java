@@ -48,11 +48,11 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
         return (PositionsModel) super.getDelegate();
     }
 
-    public BaseRoute getRoute() {
+    public BaseRoute<?, ?> getRoute() {
         return getDelegate().getRoute();
     }
 
-    public void setRoute(BaseRoute route) {
+    public void setRoute(BaseRoute<?, ?> route) {
         getDelegate().setRoute(route);
     }
 

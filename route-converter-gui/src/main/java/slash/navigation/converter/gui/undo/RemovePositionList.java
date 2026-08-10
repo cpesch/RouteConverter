@@ -36,9 +36,9 @@ import javax.swing.undo.UndoableEdit;
 class RemovePositionList extends AbstractUndoableEdit {
     private final UndoFormatAndRoutesModel formatAndRoutesModel;
     private final int index;
-    private final BaseRoute route;
+    private final BaseRoute<?, ?> route;
 
-    public RemovePositionList(UndoFormatAndRoutesModel formatAndRoutesModel, int index, BaseRoute route) {
+    public RemovePositionList(UndoFormatAndRoutesModel formatAndRoutesModel, int index, BaseRoute<?, ?> route) {
         this.formatAndRoutesModel = formatAndRoutesModel;
         this.index = index;
         this.route = route;

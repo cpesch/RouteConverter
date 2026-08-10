@@ -50,8 +50,8 @@ public class AddPositionListAction extends FrameAction {
 
     @SuppressWarnings("unchecked")
     public void run() {
-        NavigationFormat format = formatAndRoutesModel.getFormat();
-        BaseRoute route = format.createRoute(characteristicsModel.getSelectedCharacteristics(),
+        NavigationFormat<?> format = formatAndRoutesModel.getFormat();
+        BaseRoute<?, ?> route = format.createRoute(characteristicsModel.getSelectedCharacteristics(),
                 format(getBundle().getString("new-positionlist-name"), formatAndRoutesModel.getSize() + 1),
                 new ArrayList<NavigationPosition>());
         formatAndRoutesModel.addPositionList(formatAndRoutesModel.getSize(), route);

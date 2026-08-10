@@ -35,10 +35,10 @@ import javax.swing.undo.UndoableEdit;
 
 class ChangeRoute extends AbstractUndoableEdit {
     private final UndoFormatAndRoutesModel formatAndRoutesModel;
-    private final BaseRoute previousRoute;
-    private final BaseRoute nextRoute;
+    private final BaseRoute<?, ?> previousRoute;
+    private final BaseRoute<?, ?> nextRoute;
 
-    public ChangeRoute(UndoFormatAndRoutesModel formatAndRoutesModel, BaseRoute previousRoute, BaseRoute nextRoute) {
+    public ChangeRoute(UndoFormatAndRoutesModel formatAndRoutesModel, BaseRoute<?, ?> previousRoute, BaseRoute<?, ?> nextRoute) {
         this.formatAndRoutesModel = formatAndRoutesModel;
         this.previousRoute = previousRoute;
         this.nextRoute = nextRoute;

@@ -150,7 +150,7 @@ public class ConvertPanel implements PanelInTab {
     private JLabel labelPoiCountCaption;
     private JLabel labelPoiCount;
     private JTable tablePositions;
-    private JComboBox<FormatAndRoutesModel> comboBoxPositionLists;
+    private JComboBox<BaseRoute<?, ?>> comboBoxPositionLists;
     private JComboBox<RouteCharacteristics> comboBoxRouteCharacteristics;
     private JButton buttonNewPositionList;
     private JButton buttonRenamePositionList;
@@ -393,10 +393,7 @@ public class ConvertPanel implements PanelInTab {
         for (PositionTableColumn column : tableColumnModel.getPreparedColumns())
             handleColumnVisibilityUpdate(column);
 
-        // FormatAndRoutesModel extends the raw ComboBoxModel; narrow the unchecked
-        // conversion to this assignment rather than the whole initialize() method
-        @SuppressWarnings("unchecked")
-        ComboBoxModel<FormatAndRoutesModel> comboBoxModel = formatAndRoutesModel;
+        ComboBoxModel<BaseRoute<?, ?>> comboBoxModel = formatAndRoutesModel;
         comboBoxPositionLists.setModel(comboBoxModel);
         comboBoxPositionLists.setRenderer(new RouteListCellRenderer());
         comboBoxPositionLists.addItemListener(e -> {
@@ -484,7 +481,7 @@ public class ConvertPanel implements PanelInTab {
         if (selected == null || selected.length == 0)
             return;
 
-        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
+        NavigationFormat<?> selectedFormat = getSelectedFormat(chooser.getFileFilter());
         setReadFormatFileFilterPreference(selectedFormat);
         prepareForNewPositionList();
 
@@ -524,7 +521,7 @@ public class ConvertPanel implements PanelInTab {
         if (selected == null || selected.length == 0)
             return;
 
-        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
+        NavigationFormat<?> selectedFormat = getSelectedFormat(chooser.getFileFilter());
         setReadFormatFileFilterPreference(selectedFormat);
 
         fileOperations.appendPositionList(selectedRow, reverse(toUrls(selected)));
@@ -545,7 +542,7 @@ public class ConvertPanel implements PanelInTab {
         if (selected == null || selected.getName().isEmpty())
             return;
 
-        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
+        NavigationFormat<?> selectedFormat = getSelectedFormat(chooser.getFileFilter());
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
@@ -553,11 +550,11 @@ public class ConvertPanel implements PanelInTab {
     }
 
 
-    static boolean checkReadFormat(NavigationFormat format) {
+    static boolean checkReadFormat(NavigationFormat<?> format) {
         return !((format instanceof HaicomLoggerFormat && preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("csv-haicom", "Read Haicom Logger")));
     }
 
-    static boolean checkWriteFormat(NavigationFormat format) {
+    static boolean checkWriteFormat(NavigationFormat<?> format) {
         return !((format instanceof GarminFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("fpl-g1000", "Write Garmin Flight Plan")) ||
                 (format instanceof MSFSFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("msfs-pln", "Write MSFS2020 Flight Plan")) ||
                 (format instanceof GoRiderGpsFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("rt-gorider", "Write GoRider GPS")));
@@ -600,15 +597,15 @@ public class ConvertPanel implements PanelInTab {
         if (selected == null || selected.getName().isEmpty())
             return;
 
-        NavigationFormat selectedFormat = getSelectedFormat(chooser.getFileFilter());
+        NavigationFormat<?> selectedFormat = getSelectedFormat(chooser.getFileFilter());
         if (selectedFormat == null)
             selectedFormat = formatAndRoutesModel.getFormat();
         setWriteFormatFileFilterPreference(selectedFormat);
         fileOperations.saveFile(selected, selectedFormat, false, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
     }
 
-    private NavigationFormat getSelectedFormat(FileFilter fileFilter) {
-        NavigationFormat result = null;
+    private NavigationFormat<?> getSelectedFormat(FileFilter fileFilter) {
+        NavigationFormat<?> result = null;
         if (fileFilter instanceof NavigationFormatFileFilter)
             result = ((NavigationFormatFileFilter) fileFilter).getFormat();
         return result;
@@ -655,7 +652,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private void handleRoutesUpdate() {
-        NavigationFormat format = formatAndRoutesModel.getFormat();
+        NavigationFormat<?> format = formatAndRoutesModel.getFormat();
         boolean supportsMultipleRoutes = format instanceof MultipleRoutesFormat;
         boolean existsARoute = formatAndRoutesModel.getSize() > 0;
         boolean existsMoreThanOneRoute = formatAndRoutesModel.getSize() > 1;
@@ -762,7 +759,7 @@ public class ConvertPanel implements PanelInTab {
     private File createSelectedTarget() {
         File target = new File(urlModel.getString());
         target = findExistingPath(target);
-        NavigationFormat format = formatAndRoutesModel.getFormat();
+        NavigationFormat<?> format = formatAndRoutesModel.getFormat();
         File path = target != null ? target : new File(preferences.get(WRITE_PATH_PREFERENCE + format.getClass().getSimpleName(), ""));
         path = findExistingPath(path);
         if (path == null)
@@ -777,7 +774,7 @@ public class ConvertPanel implements PanelInTab {
     private void setFormatFileFilters(JFileChooser chooser, List<NavigationFormat<?>> formats, String selectedFormat) {
         chooser.resetChoosableFileFilters();
         FileFilter fileFilter = chooser.getFileFilter();
-        for (NavigationFormat format : formats) {
+        for (NavigationFormat<?> format : formats) {
             NavigationFormatFileFilter navigationFormatFileFilter = new NavigationFormatFileFilter(format);
             if (format.getClass().getName().equals(selectedFormat))
                 fileFilter = navigationFormatFileFilter;
@@ -795,7 +792,7 @@ public class ConvertPanel implements PanelInTab {
                 preferences.get(READ_FORMAT_PREFERENCE, ""));
     }
 
-    private void setReadFormatFileFilterPreference(NavigationFormat selectedFormat) {
+    private void setReadFormatFileFilterPreference(NavigationFormat<?> selectedFormat) {
         String preference = selectedFormat != null ? selectedFormat.getClass().getName() : "";
         preferences.put(READ_FORMAT_PREFERENCE, preference);
     }
@@ -805,14 +802,14 @@ public class ConvertPanel implements PanelInTab {
                 preferences.get(WRITE_FORMAT_PREFERENCE, Gpx11Format.class.getName()));
     }
 
-    private void setWriteFormatFileFilterPreference(NavigationFormat selectedFormat) {
+    private void setWriteFormatFileFilterPreference(NavigationFormat<?> selectedFormat) {
         String preference = selectedFormat.getClass().getName();
         preferences.put(WRITE_FORMAT_PREFERENCE, preference);
     }
 
     private void logFormatUsage() {
         StringBuilder builder = new StringBuilder();
-        for (NavigationFormat format : getNavigationFormatRegistry().getFormatsSortedByName()) {
+        for (NavigationFormat<?> format : getNavigationFormatRegistry().getFormatsSortedByName()) {
             int reads = preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0);
             int writes = preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0);
             if (reads > 0 || writes > 0)
@@ -821,11 +818,11 @@ public class ConvertPanel implements PanelInTab {
         log.info("Format usage:" + builder);
     }
 
-    void countRead(NavigationFormat format) {
+    void countRead(NavigationFormat<?> format) {
         count(preferences, READ_COUNT_PREFERENCE + format.getClass().getName());
     }
 
-    void countWrite(NavigationFormat format) {
+    void countWrite(NavigationFormat<?> format) {
         count(preferences, WRITE_COUNT_PREFERENCE + format.getClass().getName());
     }
 
@@ -899,7 +896,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private void createUIComponents() {
-        comboBoxPositionLists = new JComboBox<FormatAndRoutesModel>() {
+        comboBoxPositionLists = new JComboBox<BaseRoute<?, ?>>() {
             public Dimension getPreferredSize() {
                 Dimension preferredSize = super.getPreferredSize();
                 preferredSize.width = convertPanel.getPreferredSize().width - 300;
@@ -1045,7 +1042,7 @@ public class ConvertPanel implements PanelInTab {
         label8.setHorizontalTextPosition(4);
         this.$$$loadLabelText$$$(label8, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "characteristics"));
         panel3.add(label8, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxRouteCharacteristics = new JComboBox();
+        comboBoxRouteCharacteristics = new JComboBox<>();
         panel3.add(comboBoxRouteCharacteristics, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         convertPanel.add(comboBoxPositionLists, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();

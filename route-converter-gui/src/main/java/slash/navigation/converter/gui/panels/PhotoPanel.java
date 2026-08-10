@@ -318,7 +318,7 @@ public class PhotoPanel implements PanelInTab {
         return result;
     }
 
-    private void setFilterPredicatePreference(FilterPredicate filterPredicate) {
+    private void setFilterPredicatePreference(FilterPredicate<?> filterPredicate) {
         preferences.put(FILTER_PHOTO_PREDICATE_PREFERENCE, filterPredicate.name());
     }
 
@@ -361,7 +361,7 @@ public class PhotoPanel implements PanelInTab {
         this.$$$loadButtonText$$$(buttonAddPhotos, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-photos-action"));
         buttonAddPhotos.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-photos-action-tooltip"));
         panel1.add(buttonAddPhotos, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxFilterPhotoPredicate = new JComboBox();
+        comboBoxFilterPhotoPredicate = new JComboBox<>();
         panel1.add(comboBoxFilterPhotoPredicate, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel1.add(spacer1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
@@ -371,12 +371,12 @@ public class PhotoPanel implements PanelInTab {
         final JLabel label3 = new JLabel();
         this.$$$loadLabelText$$$(label3, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "camera-timezone"));
         panel2.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxPhotoTimeZone = new JComboBox();
+        comboBoxPhotoTimeZone = new JComboBox<>();
         panel2.add(comboBoxPhotoTimeZone, new GridConstraints(0, 1, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, new Dimension(300, -1), 0, false));
         final JLabel label4 = new JLabel();
         this.$$$loadLabelText$$$(label4, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "tag-strategy"));
         panel2.add(label4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxTagStrategy = new JComboBox();
+        comboBoxTagStrategy = new JComboBox<>();
         panel2.add(comboBoxTagStrategy, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonTagPhotos = new JButton();
         this.$$$loadButtonText$$$(buttonTagPhotos, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "tag-photos-action"));

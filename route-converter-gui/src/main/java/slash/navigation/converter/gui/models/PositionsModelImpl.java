@@ -60,13 +60,13 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         this.positionsModelCallback = positionsModelCallback;
     }
 
-    private BaseRoute route;
+    private BaseRoute<?, ?> route;
 
-    public BaseRoute getRoute() {
+    public BaseRoute<?, ?> getRoute() {
         return route;
     }
 
-    public void setRoute(BaseRoute route) {
+    public void setRoute(BaseRoute<?, ?> route) {
         this.route = route;
         fireTableDataChanged();
     }
@@ -91,9 +91,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return getRoute().getPosition(rowIndex);
     }
 
+    // getRoute()'s actual position type is an unrelated wildcard capture here;
+    // cast through the raw route to bypass it. Sound only because every
+    // NavigationPosition this model is ever handed already matches the
+    // route's real position type -- convention, not something the compiler
+    // can check.
     @SuppressWarnings({"unchecked"})
     public int getIndex(NavigationPosition position) {
-        return getRoute().getIndex((BaseNavigationPosition) position);
+        return ((BaseRoute) getRoute()).getIndex((BaseNavigationPosition) position);
     }
 
     public List<NavigationPosition> getPositions(int[] rowIndices) {
@@ -189,7 +194,7 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     @SuppressWarnings("unchecked")
     public List<BaseNavigationPosition> createPositions(BaseRoute<?, ?> route) throws IOException {
-        BaseNavigationFormat targetFormat = getRoute().getFormat();
+        BaseNavigationFormat<?> targetFormat = getRoute().getFormat();
         return convertPositions((List) route.getPositions(), targetFormat);
     }
 
@@ -198,11 +203,14 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         add(rowIndex, positions);
     }
 
+    // As above: positions is only ever the result of createPositions(),
+    // which converts through the route's own format first, so every element
+    // already is the route's real position type -- convention, not checked.
     @SuppressWarnings({"unchecked"})
     public void add(int rowIndex, List<BaseNavigationPosition> positions) {
         for (int i = positions.size() - 1; i >= 0; i--) {
             BaseNavigationPosition position = positions.get(i);
-            getRoute().add(rowIndex, position);
+            ((BaseRoute) getRoute()).add(rowIndex, position);
         }
         fireTableRowsInserted(rowIndex, rowIndex - 1 + positions.size());
     }
@@ -234,16 +242,21 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         }).performMonotonicallyDecreasing();
     }
 
+    // comparator only ever compares NavigationPosition state (coordinates,
+    // time, ...), never constructs one, so it's safe against any route's
+    // actual position type -- cast bypasses the unrelated wildcard capture.
     @SuppressWarnings("unchecked")
     public void sort(Comparator<NavigationPosition> comparator) {
-        getRoute().sort(comparator);
+        ((BaseRoute) getRoute()).sort(comparator);
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
         fireTableModified();
     }
 
+    // positions is always a reordering of getRoute()'s own elements (see
+    // callers), so every element already is the route's real position type.
     @SuppressWarnings("unchecked")
     public void order(List<NavigationPosition> positions) {
-        getRoute().order(positions);
+        ((BaseRoute) getRoute()).order(positions);
         // since fireTableDataChanged(); is ignored in FormatAndRoutesModel#setModified(true) logic
         fireTableModified();
     }

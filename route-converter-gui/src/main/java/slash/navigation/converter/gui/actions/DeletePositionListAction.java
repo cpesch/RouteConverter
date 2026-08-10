@@ -40,7 +40,7 @@ public class DeletePositionListAction extends FrameAction {
     }
 
     public void run() {
-        BaseRoute selectedRoute = formatAndRoutesModel.getSelectedRoute();
+        BaseRoute<?, ?> selectedRoute = formatAndRoutesModel.getSelectedRoute();
         if (selectedRoute != null)
             formatAndRoutesModel.removePositionList(selectedRoute);
     }

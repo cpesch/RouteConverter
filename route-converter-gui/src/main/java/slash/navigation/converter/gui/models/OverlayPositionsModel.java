@@ -145,11 +145,11 @@ public class OverlayPositionsModel implements PositionsModel {
 
     // PositionsModel
 
-    public BaseRoute getRoute() {
+    public BaseRoute<?, ?> getRoute() {
         return delegate.getRoute();
     }
 
-    public void setRoute(BaseRoute route) {
+    public void setRoute(BaseRoute<?, ?> route) {
         delegate.setRoute(route);
     }
 

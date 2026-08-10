@@ -72,7 +72,7 @@ public class PointOfInterestPanel implements PanelInTab {
     private JButton buttonAddAudio;
     private JButton buttonDeletePointsOfInterest;
 
-    private FilteringPositionsModel positionsModel;
+    private FilteringPositionsModel<?> positionsModel;
 
     public PointOfInterestPanel() {
         $$$setupUI$$$();
@@ -171,7 +171,7 @@ public class PointOfInterestPanel implements PanelInTab {
         handlePositionsUpdate();
     }
 
-    private FilteringPositionsModel getPositionsModel() {
+    private FilteringPositionsModel<?> getPositionsModel() {
         return positionsModel;
     }
 

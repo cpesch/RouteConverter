@@ -35,9 +35,9 @@ import static slash.common.io.Files.getExtension;
  */
 
 public class NavigationFormatFileFilter extends FileFilter {
-    private final NavigationFormat format;
+    private final NavigationFormat<?> format;
 
-    public NavigationFormatFileFilter(NavigationFormat format) {
+    public NavigationFormatFileFilter(NavigationFormat<?> format) {
         this.format = format;
     }
 
@@ -49,7 +49,7 @@ public class NavigationFormatFileFilter extends FileFilter {
         return format.getName();
     }
 
-    public NavigationFormat getFormat() {
+    public NavigationFormat<?> getFormat() {
         return format;
     }
 }

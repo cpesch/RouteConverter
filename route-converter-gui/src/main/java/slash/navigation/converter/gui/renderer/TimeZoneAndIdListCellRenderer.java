@@ -35,7 +35,7 @@ import java.awt.*;
 
 public class TimeZoneAndIdListCellRenderer extends DefaultListCellRenderer {
 
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         TimeZoneAndId timeZoneAndId = (TimeZoneAndId) value;
         String text = timeZoneAndId.id() + " (" + timeZoneAndId.timeZone().getDisplayName() + ")";

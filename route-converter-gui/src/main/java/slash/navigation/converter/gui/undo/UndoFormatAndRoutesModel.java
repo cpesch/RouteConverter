@@ -49,7 +49,7 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
         return delegate.getSize();
     }
 
-    public Object getElementAt(int index) {
+    public BaseRoute<?, ?> getElementAt(int index) {
         return delegate.getElementAt(index);
     }
 
@@ -107,25 +107,25 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
         return delegate.getSelectedRoute();
     }
 
-    public void setSelectedRoute(BaseRoute route) {
+    public void setSelectedRoute(BaseRoute<?, ?> route) {
         setSelectedRoute(route, true);
     }
 
-    public void setSelectedRoute(BaseRoute route, boolean trackUndo) {
+    public void setSelectedRoute(BaseRoute<?, ?> route, boolean trackUndo) {
         if ((getSelectedRoute() != null && !getSelectedRoute().equals(route)) ||
                 getSelectedRoute() == null && route != null) {
-            BaseRoute previousRoute = trackUndo ? getSelectedRoute() : null;
+            BaseRoute<?, ?> previousRoute = trackUndo ? getSelectedRoute() : null;
             delegate.setSelectedRoute(route);
             if (trackUndo)
                 undoManager.addEdit(new ChangeRoute(this, previousRoute, route));
         }
     }
 
-    public BaseRoute getRoute(int index) {
+    public BaseRoute<?, ?> getRoute(int index) {
         return delegate.getRoute(index);
     }
 
-    public int getIndex(BaseRoute route) {
+    public int getIndex(BaseRoute<?, ?> route) {
         return delegate.getIndex(route);
     }
 
@@ -140,21 +140,21 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
             undoManager.addEdit(new RenamePositionList(this, previousName, name));
     }
 
-    public void addPositionList(int index, BaseRoute route) {
+    public void addPositionList(int index, BaseRoute<?, ?> route) {
         addPositionList(index, route, true);
     }
 
-    public void addPositionList(int index, BaseRoute route, boolean trackUndo) {
+    public void addPositionList(int index, BaseRoute<?, ?> route, boolean trackUndo) {
         delegate.addPositionList(index, route);
         if (trackUndo)
             undoManager.addEdit(new AddPositionList(this, index, route));
     }
 
-    public void removePositionList(BaseRoute route) {
+    public void removePositionList(BaseRoute<?, ?> route) {
         removePositionList(route, true);
     }
 
-    public void removePositionList(BaseRoute route, boolean trackUndo) {
+    public void removePositionList(BaseRoute<?, ?> route, boolean trackUndo) {
         int index = getIndex(route);
         delegate.removePositionList(route);
         if (trackUndo)

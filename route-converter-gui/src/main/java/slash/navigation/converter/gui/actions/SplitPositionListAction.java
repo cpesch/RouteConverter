@@ -59,7 +59,7 @@ public class SplitPositionListAction extends FrameAction {
     public void run() {
         int[] selectedRows = table.getSelectedRows();
         if (selectedRows.length > 0) {
-            BaseRoute selectedRoute = formatAndRoutesModel.getSelectedRoute();
+            BaseRoute<?, ?> selectedRoute = formatAndRoutesModel.getSelectedRoute();
             int routeInsertIndex = formatAndRoutesModel.getIndex(selectedRoute) + 1;
 
             for (int i = selectedRows.length - 1; i >= 0; i--) {
@@ -72,7 +72,7 @@ public class SplitPositionListAction extends FrameAction {
 
                 List<NavigationPosition> positions = positionsModel.getPositions(fromIndex, toIndex);
                 positionsModel.remove(fromIndex, toIndex);
-                NavigationFormat format = formatAndRoutesModel.getFormat();
+                NavigationFormat<?> format = formatAndRoutesModel.getFormat();
                 @SuppressWarnings({"unchecked"})
                 BaseRoute<?, ?> target =
                         format.createRoute(selectedRoute.getCharacteristics(), getRouteName(selectedRoute, routeInsertIndex), positions);

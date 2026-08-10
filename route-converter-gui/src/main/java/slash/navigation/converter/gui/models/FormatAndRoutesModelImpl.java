@@ -38,11 +38,11 @@ import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
  * @author Christian Pesch
  */
 
-public class FormatAndRoutesModelImpl extends AbstractListModel implements FormatAndRoutesModel {
+public class FormatAndRoutesModelImpl extends AbstractListModel<BaseRoute<?, ?>> implements FormatAndRoutesModel {
     private final PositionsModel positionsModel;
     private final CharacteristicsModel characteristicsModel;
     private boolean modified;
-    private FormatAndRoutes formatAndRoutes;
+    private FormatAndRoutes<?, ?, ?> formatAndRoutes;
 
     public FormatAndRoutesModelImpl(PositionsModel positionsModel, CharacteristicsModel characteristicsModel) {
         this.positionsModel = positionsModel;
@@ -91,9 +91,12 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         });
     }
 
+    // formatAndRoutes is FormatAndRoutes<?, ?, ?> -- its route type is an
+    // independent capture, not literally BaseRoute<?, ?>; the cast through
+    // the raw type bypasses that capture, same as the pre-generics behaviour.
     @SuppressWarnings("unchecked")
     public List<BaseRoute<?, ?>> getRoutes() {
-        return formatAndRoutes != null ? formatAndRoutes.getRoutes() : null;
+        return formatAndRoutes != null ? (List<BaseRoute<?, ?>>) (List) formatAndRoutes.getRoutes() : null;
     }
 
     public void setRoutes(FormatAndRoutes<?, ?, ?> formatAndRoutes) {
@@ -113,28 +116,28 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
 
     @SuppressWarnings("unchecked")
     public NavigationFormat<BaseRoute<?, ?>> getFormat() {
-        return formatAndRoutes != null ? formatAndRoutes.getFormat() : null;
+        return formatAndRoutes != null ? (NavigationFormat<BaseRoute<?, ?>>) (NavigationFormat) formatAndRoutes.getFormat() : null;
     }
 
     @SuppressWarnings("unchecked")
     public void setFormat(NavigationFormat<BaseRoute<?, ?>> format) {
-        formatAndRoutes.setFormat(format);
+        ((FormatAndRoutes) formatAndRoutes).setFormat(format);
         fireContentsChanged(this, IGNORE, IGNORE);
     }
 
-    public void addPositionList(int index, BaseRoute route) {
+    public void addPositionList(int index, BaseRoute<?, ?> route) {
         getRoutes().add(index, route);
         fireIntervalAdded(this, index, index);
     }
 
     public void renamePositionList(String name) {
-        BaseRoute route = getSelectedRoute();
+        BaseRoute<?, ?> route = getSelectedRoute();
         route.setName(name);
         int index = getRoutes().indexOf(route);
         fireContentsChanged(this, index, index);
     }
 
-    public void removePositionList(BaseRoute route) {
+    public void removePositionList(BaseRoute<?, ?> route) {
         int index = getIndex(route);
         if (index != -1) {
             if (getElementAt(index) == getSelectedRoute()) {
@@ -153,15 +156,15 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
         return getRoutes() != null ? getRoutes().size() : 0;
     }
 
-    public Object getElementAt(int index) {
+    public BaseRoute<?, ?> getElementAt(int index) {
         return getRoute(index);
     }
 
-    public BaseRoute getRoute(int index) {
+    public BaseRoute<?, ?> getRoute(int index) {
         return getRoutes().get(index);
     }
 
-    public int getIndex(BaseRoute route) {
+    public int getIndex(BaseRoute<?, ?> route) {
         return getRoutes().indexOf(route);
     }
 
@@ -203,7 +206,7 @@ public class FormatAndRoutesModelImpl extends AbstractListModel implements Forma
     }
 
     @SuppressWarnings("unchecked")
-    public void setSelectedRoute(BaseRoute route) {
+    public void setSelectedRoute(BaseRoute<?, ?> route) {
         if ((getSelectedRoute() != null && !getSelectedRoute().equals(route)) ||
                 getSelectedRoute() == null && route != null) {
             positionsModel.setRoute(route);

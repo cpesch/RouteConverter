@@ -107,8 +107,11 @@ public class PasteAction extends FrameAction {
         try {
             ParserResult result = parser.read(string);
             if (result.isSuccessful()) {
-                BaseRoute route = result.getTheRoute();
-                paste(route.getPositions());
+                BaseRoute<?, ?> route = result.getTheRoute();
+                // route's position type is an independent wildcard capture;
+                // every element is a BaseNavigationPosition (hence a
+                // NavigationPosition) regardless -- cast bypasses the capture.
+                paste((List<NavigationPosition>) (List) route.getPositions());
             }
         } catch (Exception e) {
             log.severe("Cannot paste " + string + ": " + getLocalizedMessage(e));

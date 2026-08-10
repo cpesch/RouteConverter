@@ -139,11 +139,11 @@ public class UndoPositionsModel implements PositionsModel {
 
     // PositionsModel
 
-    public BaseRoute getRoute() {
+    public BaseRoute<?, ?> getRoute() {
         return delegate.getRoute();
     }
 
-    public void setRoute(BaseRoute route) {
+    public void setRoute(BaseRoute<?, ?> route) {
         delegate.setRoute(route);
     }
 
@@ -220,11 +220,14 @@ public class UndoPositionsModel implements PositionsModel {
         add(rowIndex, new ArrayList<>(positions), true, true);
     }
 
+    // getRoute()'s position type is an independent wildcard capture; every
+    // position here is already that route's real position type by
+    // construction (see createPositions()) -- cast bypasses the capture.
     @SuppressWarnings("unchecked")
     void add(int row, List<NavigationPosition> positions, boolean fireEvent, boolean trackUndo) {
         for (int i = positions.size() - 1; i >= 0; i--) {
             NavigationPosition position = positions.get(i);
-            getRoute().add(row, (BaseNavigationPosition) position);
+            ((BaseRoute) getRoute()).add(row, (BaseNavigationPosition) position);
         }
         if (fireEvent)
             delegate.fireTableRowsInserted(row, row - 1 + positions.size());
@@ -287,8 +290,10 @@ public class UndoPositionsModel implements PositionsModel {
     }
 
     void sort(Comparator<NavigationPosition> comparator, boolean trackUndo) {
+        // As above -- getRoute()'s elements are that route's real position
+        // type, a BaseNavigationPosition, hence a NavigationPosition.
         @SuppressWarnings("unchecked")
-        List<NavigationPosition> original = getRoute().getPositions();
+        List<NavigationPosition> original = (List<NavigationPosition>) (List) getRoute().getPositions();
         List<NavigationPosition> positions = new ArrayList<>(original);
         delegate.sort(comparator);
         if (trackUndo)

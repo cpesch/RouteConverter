@@ -790,9 +790,12 @@ public class MapsforgeMapView extends BaseMapView {
         // intentionally left empty
     }
 
+    // getRoute()'s position type is an independent wildcard capture; every
+    // element is a BaseNavigationPosition (hence a NavigationPosition)
+    // regardless -- cast bypasses the capture.
     @SuppressWarnings("unchecked")
     public void showAllPositions() {
-        List<NavigationPosition> positions = positionsModel.getRoute().getPositions();
+        List<NavigationPosition> positions = (List<NavigationPosition>) (List) positionsModel.getRoute().getPositions();
         if (!positions.isEmpty()) {
             BoundingBox both = asBoundingBox(positions);
             zoomToBounds(both);

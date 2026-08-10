@@ -92,7 +92,7 @@ class FileOperations {
             Gpx11Format gpxFormat = new Gpx11Format();
             GpxRoute gpxRoute = new GpxRoute(gpxFormat);
             gpxRoute.setName(MessageFormat.format(BaseRouteConverter.getBundle().getString("new-positionlist-name"), 1));
-            panel.formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, gpxRoute));
+            panel.formatAndRoutesModel.setRoutes(new FormatAndRoutes<>(gpxFormat, gpxRoute));
             panel.urlModel.clear();
             panel.prepareForNewPositionList();
         } finally {
@@ -116,19 +116,19 @@ class FileOperations {
             try {
                 invokeAndWait(() -> {
                     Gpx11Format gpxFormat = new Gpx11Format();
-                    panel.formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
+                    panel.formatAndRoutesModel.setRoutes(new FormatAndRoutes<>(gpxFormat, new GpxRoute(gpxFormat)));
                     panel.urlModel.clear();
                 });
 
                 final ParserResult result = parser.read(url, formats);
                 if (result.isSuccessful()) {
                     log.info("Opened: " + path);
-                    final NavigationFormat format = result.getFormat();
+                    final NavigationFormat<?> format = result.getFormat();
                     panel.countRead(format);
                     if (!ConvertPanel.checkReadFormat(format))
                         return;
                     invokeLater(() -> {
-                        panel.formatAndRoutesModel.setRoutes(new FormatAndRoutes(format, result.getAllRoutes()));
+                        panel.formatAndRoutesModel.setRoutes(FormatAndRoutes.of(result.getFormat(), result.getAllRoutes()));
                         panel.urlModel.setString(path);
                         panel.recentUrlsModel.addUrl(url);
 
@@ -143,7 +143,7 @@ class FileOperations {
                 } else {
                     invokeLater(() -> {
                         Gpx11Format gpxFormat = new Gpx11Format();
-                        panel.formatAndRoutesModel.setRoutes(new FormatAndRoutes(gpxFormat, new GpxRoute(gpxFormat)));
+                        panel.formatAndRoutesModel.setRoutes(new FormatAndRoutes<>(gpxFormat, new GpxRoute(gpxFormat)));
                     });
                     r.handleUnsupportedFormat(path);
                 }

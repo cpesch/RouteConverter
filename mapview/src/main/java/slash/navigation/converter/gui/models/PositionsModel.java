@@ -40,8 +40,8 @@ import java.util.List;
  */
 
 public interface PositionsModel extends TableModel {
-    BaseRoute getRoute();
-    void setRoute(BaseRoute route);
+    BaseRoute<?, ?> getRoute();
+    void setRoute(BaseRoute<?, ?> route);
 
     NavigationPosition getPosition(int rowIndex);
     int getIndex(NavigationPosition position);

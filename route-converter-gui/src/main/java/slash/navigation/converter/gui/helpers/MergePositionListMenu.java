@@ -53,7 +53,7 @@ public class MergePositionListMenu {
         formatAndRoutesModel.addListDataListener(new ListDataListener() {
             public void intervalAdded(ListDataEvent e) {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
-                    BaseRoute route = formatAndRoutesModel.getRoute(i);
+                    BaseRoute<?, ?> route = formatAndRoutesModel.getRoute(i);
                     JMenuItem menuItem = new JMenuItem(new MergePositionListAction(convertPanel, route));
                     menuItem.setText(shortenRouteName(route));
                     menu.add(menuItem, i);
@@ -78,7 +78,7 @@ public class MergePositionListMenu {
             public void contentsChanged(ListDataEvent e) {
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
                     if (i >= 0 && i < menu.getMenuComponentCount()) {
-                        BaseRoute route = formatAndRoutesModel.getRoute(i);
+                        BaseRoute<?, ?> route = formatAndRoutesModel.getRoute(i);
                         JMenuItem menuItem = (JMenuItem) menu.getMenuComponent(i);
                         menuItem.setText(shortenRouteName(route));
                     }

@@ -50,7 +50,7 @@ public class PositionListsToJLabelAdapter extends FormatAndRoutesListModelToDocu
 
     private Integer count(RouteCharacteristics characteristics) {
         int count = 0;
-        for (BaseRoute route : getDelegate().getRoutes()) {
+        for (BaseRoute<?, ?> route : getDelegate().getRoutes()) {
             if (characteristics.equals(route.getCharacteristics()))
                 count++;
         }
@@ -58,7 +58,7 @@ public class PositionListsToJLabelAdapter extends FormatAndRoutesListModelToDocu
     }
 
     protected void updateAdapterFromDelegate() {
-        BaseRoute route = getDelegate().getSelectedRoute();
+        BaseRoute<?, ?> route = getDelegate().getSelectedRoute();
         if (route != null) {
             label.setText(MessageFormat.format(BaseRouteConverter.getBundle().getString("position-lists"),
                     count(Route),

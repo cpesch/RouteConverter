@@ -34,9 +34,9 @@ import java.util.MissingResourceException;
  */
 
 public class FilterPredicateListCellRenderer extends DefaultListCellRenderer {
-    public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        FilterPredicate filterPredicate = (FilterPredicate) value;
+        FilterPredicate<?> filterPredicate = (FilterPredicate) value;
         String text;
         try {
             text = BaseRouteConverter.getBundle().getString("filter-photos-" + filterPredicate.name().toLowerCase());

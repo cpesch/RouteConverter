@@ -59,7 +59,7 @@ public class RenameDialog extends SimpleDialog {
     private JButton buttonCancel;
     private JLabel labelResult;
 
-    public RenameDialog(String routeName, final NavigationFormat format) {
+    public RenameDialog(String routeName, final NavigationFormat<?> format) {
         super(BaseRouteConverter.getInstance().getFrame(), "rename");
         setTitle(BaseRouteConverter.getBundle().getString("rename-position-list-title"));
         setContentPane(contentPane);
