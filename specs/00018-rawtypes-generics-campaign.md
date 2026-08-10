@@ -393,7 +393,7 @@ maintainer took the recommendation on all four:
    cap, module can't compile partially). File the issue for tracking + review,
    but land the PR the same way phase 1 was actually landed.
 
-### Phase 3 measurement + scope (2026-08-10)
+## Phase 3 measurement + scope (2026-08-10)
 
 Re-measured `tail-modules` for real, throwaway worktree off `origin/master`
 (same commit the phase-2 spike used, `da9cafc0c`), same recipe: root pom
@@ -502,8 +502,10 @@ Each phase is one PR, each ends green on the full reactor.
    (approach A, same as phase 1, plus a 2-line prerequisite widening of
    `mapview`'s `PositionsModel.getRoute()`/`setRoute()` and a documented-cast
    fix for the real defect the spike found in `PositionsModelImpl`). Grilled
-   and scoped 2026-08-10 — see the maintainer decisions below before opening
-   the factory issue.
+   and scoped 2026-08-10 — filed as [issue #287](https://github.com/cpesch/RouteConverter/issues/287),
+   unlabelled, awaiting the maintainer's `agent:approved`. Decision 5 (below)
+   plans for a direct `mvn compile` loop rather than the factory builder — 42
+   files/100 sites sits in the same range that made the builder abort phase 1.
 3. **`tail-modules`** — re-measured and re-scoped 2026-08-10, see
    [Phase 3 measurement + scope](#phase-3-measurement--scope-2026-08-10). Two
    issues, not one: (a) route-family + JAXB/misc residual — `route-converter-cmdline`
