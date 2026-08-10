@@ -113,8 +113,12 @@ coordination with that codebase.
   naming scheme.
 - **Small, focused diffs**; match the surrounding style.
 - **Translations go through Crowdin** ([crowdin.com/project/routeconverter](https://crowdin.com/project/routeconverter))
-  — don't hand-edit `RouteConverter_*.properties`; the `l10n`
-  branch is bot-managed (deleted on merge, recreated on next sync).
+  — don't hand-edit `RouteConverter_*.properties`. Sync runs via Crowdin's
+  native GitHub integration (PRs from `l10n_master`, opened as maintainer);
+  the old `.github/workflows/crowdin.yml` Action (`l10n` branch) is disabled
+  to avoid duplicate/competing PRs — don't re-enable both at once. Root
+  `crowdin.yml` still governs file mapping/language codes (e.g. `nb→nb_NO`)
+  for whichever path runs.
 - **Release tags are plain `MAJOR.MINOR[.PATCH]`**, no `v` prefix.
 
 ## Contributing
