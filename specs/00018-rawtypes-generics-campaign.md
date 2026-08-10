@@ -1,9 +1,9 @@
 ---
 name: 00018-rawtypes-generics-campaign
 status: planned
-phases_done: [measure, spike-navigation-formats, decide-approach]
-phases_next: [close-navigation-formats, route-converter-gui, tail-modules, gate]
-last_touched: 2026-08-08
+phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats]
+phases_next: [route-converter-gui, tail-modules, gate]
+last_touched: 2026-08-10
 ---
 
 # 00018 - Retire the raw types in the route/format hierarchy
@@ -11,7 +11,16 @@ last_touched: 2026-08-08
 ## Status
 
 `planned`. Approach decided by the maintainer 2026-08-08 — see
-[Decision](#decision-2026-08-08). Phases 1–4 below are now buildable; each still
+[Decision](#decision-2026-08-08). Phase 1 (`close-navigation-formats`) shipped
+2026-08-10 in [PR #286](https://github.com/cpesch/RouteConverter/pull/286) —
+`navigation-formats/src/main` is `-Xlint:rawtypes` clean (100 → 0; 16 residual
+hits are pre-existing JAXB-generated `jakarta.xml.bind.JAXBElement` usage,
+out of scope). The factory builder aborted the issue for this phase (#282,
+55 files / 245 sites, over its 30-file PR cap, module can't compile
+partially) — landed instead via a direct `mvn compile` loop. That also forced
+the same mechanical widening in downstream modules (`mapview`,
+`mapsforge-mapview`, `route-converter-gui`, `route-converter-cmdline`) to keep
+the full reactor compiling. Phases 2–4 below are still buildable; each still
 wants its own issue with the usual locked decisions before approval.
 
 Successor to spec 00017. Scope A (deprecated APIs, hand-written unchecked)
@@ -207,19 +216,29 @@ their raw signatures. Phase 4 survives, scoped to `default-compile`.
 
 Each phase is one PR, each ends green on the full reactor.
 
-1. **`close-navigation-formats`** — the spike, done properly by hand: the 5
-   bounds, the raw references in `navigation-formats/src/main`, the two real
-   defects from the Decision section (the `commentRoutes` loop variable, and
-   `getDuplicateFirstPosition` made generic in the position type across
-   `NmnFormat` + `CoPilotFormat` + their callers), and the two **pre-existing**
-   `@SuppressWarnings("unchecked")` in `NavigationFormatParser` left in place
-   with a comment naming what they cover. Acceptance: `-Xlint:rawtypes` for `navigation-formats/main` is 0, full
-   reactor still compiles, all existing tests pass. No behaviour change — this
-   is the phase where a green `ReadWriteBase`/`ConvertBase` suite is the whole
-   safety net.
+1. ✅ **`close-navigation-formats`** — shipped 2026-08-10, [PR #286](https://github.com/cpesch/RouteConverter/pull/286).
+   The 5 bounds, the raw references in `navigation-formats/src/main`, and the
+   two real defects from the Decision section (the `commentRoutes` loop
+   variable, and `getDuplicateFirstPosition` made generic in the position type
+   across `NmnFormat` + `CoPilotFormat` + their callers). Correction to this
+   plan: the two **pre-existing** `@SuppressWarnings("unchecked")` in
+   `NavigationFormatParser` were **removed**, not left in place — once
+   `commentRoutes`/`preprocessRoute` were properly genericized end to end, both
+   suppressions were vacuous (nothing left to suppress); the one *new*,
+   documented cast per format lives in `NmnFormat`/`CoPilotFormat.getDuplicateFirstPosition`
+   instead, exactly where the Decision section says the approach-A cost shows
+   up. `-Xlint:rawtypes` for `navigation-formats/main`: 100 → 0 (16 residual
+   hits are pre-existing `jakarta.xml.bind.JAXBElement` in generated gpx/kml/tcx
+   code, out of scope). Full reactor compiles and tests green — required the
+   same mechanical `<?, ?>`/`<?>` widening in `mapview`, `mapsforge-mapview`,
+   `route-converter-gui`, `route-converter-cmdline` to keep those modules
+   compiling against the tightened API (not a rawtypes-elimination pass on
+   those modules themselves — that's still phases 2–3 below).
 2. **`route-converter-gui`** — the 56 main hits, most of which are consumers of
-   the signatures phase 1 changed. Size unknown until phase 1 lands; re-measure
-   before scoping.
+   the signatures phase 1 changed. Some call sites already got mechanically
+   widened as phase-1 compile-compat fallout (see above); re-measure the
+   module's own remaining `-Xlint:rawtypes` count before scoping — don't assume
+   the original 56 still holds.
 3. **`tail-modules`** — cmdline 12, mapsforge-mapview 11, mapview 8, download 3,
    tileserver-maps 3, datasource 2. Includes the 12 Swing raw types
    (`JComboBox`, `JList`, `ComboBoxModel`), which are unrelated to the route
