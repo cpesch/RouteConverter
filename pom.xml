@@ -82,7 +82,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <alephformatter.version>0.1.1</alephformatter.version>
-        <httpclient.version>5.6.3</httpclient.version>
+        <httpclient.version>5.6.4</httpclient.version>
         <jackson.version>2.22.1</jackson.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <jackson3.version>3.2.1</jackson3.version>
