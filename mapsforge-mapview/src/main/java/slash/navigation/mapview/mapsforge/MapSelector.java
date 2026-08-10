@@ -198,6 +198,9 @@ public class MapSelector {
      *
      * @noinspection ALL
      */
+    // Generated code: MapSelector.form has no concept of generics, so the JComboBox
+    // initializer below is unavoidably raw; suppress rather than hand-edit generated code.
+    @SuppressWarnings("rawtypes")
     private void $$$setupUI$$$() {
         createUIComponents();
         contentPane = new JPanel();
