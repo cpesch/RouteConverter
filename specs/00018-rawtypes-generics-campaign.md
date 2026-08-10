@@ -45,15 +45,14 @@ issue #256: `rawtypes`.
 ## Problem
 
 ~~`-Xlint:rawtypes` reports **318** warnings (184 main, 134 test) — 59% of the
-whole `-Xlint:all` backlog.~~ **Corrected 2026-08-10: this total is wrong and
-provably so** — `navigation-formats` alone, re-measured with javac's silent
-`-Xmaxwarns 100` default raised, is 293 main + 201 test = 494, more than the
-claimed reactor-wide total by itself. See
-[Phase 1 baseline correction](#phase-1-baseline-correction-2026-08-10). The
-true reactor-wide total is unmeasured; the qualitative diagnosis below (one
-structural defect radiating outward) is unaffected — it doesn't depend on the
-exact count — but no number in the tables that follow should be trusted
-without the same `-Xmaxwarns` check. They are not scattered: they are one
+whole `-Xlint:all` backlog.~~ **Corrected 2026-08-10, fully re-measured with
+javac's silent `-Xmaxwarns 100` raised (details:
+[Phase 1 baseline correction](#phase-1-baseline-correction-2026-08-10)):
+`-Xlint:rawtypes` reports **746** warnings (509 main, 237 test) — 57% of the
+whole `-Xlint:all` backlog, which is itself **1307**, not the ~539 the
+original 59% figure implied.** The proportion barely moved; every absolute
+number under it was wrong by 2–4×. The qualitative diagnosis is unaffected —
+it never depended on the exact count. They are not scattered: they are one
 structural defect in `navigation-formats/base`, radiating outward.
 
 The core hierarchy declares its type parameters with **raw bounds**:
@@ -142,15 +141,61 @@ worked by recompiling until clean rather than by counting down from a number.
 The wrong number never gated the work; it only misinformed the written record
 of how big the work was.
 
-**Not re-verified, flagged rather than re-measured:** the reactor-wide
-`-Xlint:all` total (318) and the other three category totals quoted in
-[Out of scope](#out-of-scope) — `serial` (117), `this-escape` (57), `unchecked`
-(31) — were measured the same way, in the same session, with the same
-uncapped assumption. All three are plausible candidates for the same silent
-undercount, and none of them gate anything currently in flight (`serial` is
-permanently WONTFIX, `this-escape` deferred, `unchecked` re-measured at phase
-4). Re-verify with `-Xmaxwarns` before using any of the three to scope future
-work; **do not carry them forward as fact** until then.
+**Reactor-wide total re-verified too (2026-08-10, same pre-phase-1 commit,
+`mvn clean test-compile`, `-Xlint:all` + `-Xmaxwarns 1000000` in root pom):**
+
+> **Grand total: 1307**, not 318. Broken down: `rawtypes` **746** (509 main +
+> 237 test — 1 off the dedicated rawtypes-only pass above by a duplicate log
+> line, not a real discrepancy), `serial` **410**, `this-escape` **94**,
+> `unchecked` **54**, `deprecation`/misc **3**.
+
+Every one of the four category totals quoted in [Out of scope](#out-of-scope)
+was wrong, not just the two already corrected above: `serial` **410** (not
+117 — 3.5×), `this-escape` **94** (not 57), `unchecked` **54** (not 31).
+`rawtypes` matches the two already-corrected module figures (293 + 201 for
+`navigation-formats`, the rest small and already accurate — see the per-module
+table below).
+
+**Root cause is broader than "the reported category's own count exceeded
+100" — it's a *shared* budget across every enabled category in one compile
+execution.** `route-converter-gui/main` alone carries **308** of the 410
+`serial` hits (undeclared `serialVersionUID` on every `AbstractAction`/dialog
+subclass — a Swing idiom, not a design defect) plus its own 171 `rawtypes`
+hits (pre-phase-1) — combined, one module's compile blew past the 100-warning
+cap before printing even half its `rawtypes` warnings, which is exactly why
+the original baseline reported only **56** for that row: not `rawtypes`
+hitting its own cap, `serial` (an unrelated, out-of-scope category) crowding
+it out. Any module with heavy `serial`/`this-escape` noise has this failure
+mode regardless of how small its *own* category count looks.
+
+Per-module `rawtypes` breakdown, uncapped, pre-phase-1 (main + test, `–`
+where a module wasn't in the original table):
+
+| module | main | test |
+|---|---|---|
+| `navigation-formats` | 293 | 201 |
+| `route-converter-gui` | 171 (was reported 56) | 26 |
+| `route-converter-cmdline` | 12 | – |
+| `mapsforge-mapview` | 11 | 5 |
+| `mapview` | 8 | 5 |
+| `download` | 3 | – |
+| `tileserver-maps` | 3 | – |
+| `datasource` | 2 | – |
+| `profileview` | 2 | – |
+| `route-catalog` | 2 | – |
+| `common-gui` | 1 | – |
+| `route-converter` (root aggregator) | 1 | – |
+
+None of this changes anything already shipped or in flight: phase 1 and
+phase 2's fixes are both independently re-verified clean (above), `serial` is
+permanently WONTFIX regardless of its true count, `this-escape` stays
+deferred, and `unchecked` is scheduled for re-measurement at phase 4 anyway
+(now with the right recipe). The only actionable fallout is `route-converter-gui`'s
+own **171** pre-phase-1 figure — since phase 2 already re-measured and fixed
+the module's *current* state directly (120 real, not derived from this
+number), this doesn't change phase 2's outcome either. Recorded here so the
+next person measuring anything in this repo with `-Xlint` doesn't have to
+rediscover it.
 
 ## Spike: how far do wildcard bounds get? (throwaway, not committed)
 
@@ -636,9 +681,12 @@ Each phase is one PR, each ends green on the full reactor.
 
 ## Out of scope
 
-- `serial` (117) — WONTFIX per #256; never enable `-Xlint:serial`.
-- `this-escape` (57) — deferred per #256.
-- `unchecked` (31) — the 15 hand-written hits are fallout of these same raw
+- `serial` (~~117~~ **410 real** — see
+  [Reactor-wide total re-verified](#phase-1-baseline-correction-2026-08-10),
+  308 of it in `route-converter-gui/main` alone) — WONTFIX per #256; never
+  enable `-Xlint:serial`. The corrected count doesn't change the WONTFIX.
+- `this-escape` (~~57~~ **94 real**) — deferred per #256. Doesn't change the deferral.
+- `unchecked` (~~31~~ **54 real**) — the 15 hand-written hits are fallout of these same raw
   types and should disappear during phases 1–3; re-measure at phase 4 rather
   than fixing them separately. The 16 in kml `ObjectFactory` are checked-in JAXB
   RI 2.1 codegen with no regenerating plugin, and need their own decision
