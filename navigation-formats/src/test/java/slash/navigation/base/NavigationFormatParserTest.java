@@ -215,7 +215,7 @@ public class NavigationFormatParserTest {
 
     @Test
     public void testWriteMultipleRoutesToSingleFile() throws IOException {
-        List<BaseRoute> routes = parser.read(GPX_11_TWO_ROUTES).getAllRoutes();
+        List<BaseRoute<?, ?>> routes = parser.read(GPX_11_TWO_ROUTES).getAllRoutes();
         assertEquals(2, routes.size());
         File target = File.createTempFile("parser-test", ".gpx");
         temporaryFiles.add(target);

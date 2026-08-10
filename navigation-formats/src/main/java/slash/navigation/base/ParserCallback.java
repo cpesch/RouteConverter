@@ -27,5 +27,5 @@ package slash.navigation.base;
  */
 
 public interface ParserCallback {
-    void process(BaseRoute route, NavigationFormat format);
+    void process(BaseRoute<?, ?> route, NavigationFormat<?> format);
 }

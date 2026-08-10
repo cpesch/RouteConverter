@@ -32,8 +32,8 @@ import java.util.List;
  */
 
 public interface PositionListsModel {
-    List<BaseRoute> getRoutes();
-    BaseRoute getSelectedRoute();
+    List<BaseRoute<?, ?>> getRoutes();
+    BaseRoute<?, ?> getSelectedRoute();
 
     void addListDataListener(ListDataListener l);
     void removeListDataListener(ListDataListener l);

@@ -25,7 +25,7 @@ package slash.navigation.base;
  *
  * @author Christian Pesch
  */
-public abstract class SimpleFormat<R extends SimpleRoute> extends TextNavigationFormat<R> {
+public abstract class SimpleFormat<R extends SimpleRoute<?, ?>> extends TextNavigationFormat<R> {
     protected static final String POSITION = "[-\\d\\.]+";
     protected static final String WHITE_SPACE = "\\s*";
     protected static final String BEGIN_OF_LINE = "^";

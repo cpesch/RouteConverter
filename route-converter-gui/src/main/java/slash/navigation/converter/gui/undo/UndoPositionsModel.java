@@ -211,7 +211,7 @@ public class UndoPositionsModel implements PositionsModel {
 
     }
 
-    public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
+    public void add(int rowIndex, BaseRoute<?, ?> route) throws IOException {
         List<BaseNavigationPosition> positions = delegate.createPositions(route);
         add(rowIndex, positions);
     }

@@ -83,12 +83,15 @@ public abstract class CoPilotFormat extends SimpleFormat<Wgs84Route> {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
-    public BaseNavigationPosition getDuplicateFirstPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
-        List<BaseNavigationPosition> positions = route.getPositions();
+    // CoPilotFormat only ever writes Wgs84Route (P = Wgs84Position); the cast documents that
+    // assumption for the one caller (NavigationFormatParser.preprocessRoute) that threads P through generically.
+    @SuppressWarnings("unchecked")
+    public <P extends BaseNavigationPosition> P getDuplicateFirstPosition(BaseRoute<P, ?> route) {
+        List<P> positions = route.getPositions();
         if (positions.isEmpty())
             return null;
         NavigationPosition first = positions.get(0);
-        return asWgs84Position(first.getLongitude(), first.getLatitude(), "Start:" + first.getDescription());
+        return (P) asWgs84Position(first.getLongitude(), first.getLatitude(), "Start:" + first.getDescription());
     }
 
     public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {

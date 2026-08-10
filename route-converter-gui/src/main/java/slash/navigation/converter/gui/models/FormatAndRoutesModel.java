@@ -33,21 +33,21 @@ import java.util.List;
  */
 
 public interface FormatAndRoutesModel extends ComboBoxModel, PositionListsModel {
-    List<BaseRoute> getRoutes();
-    void setRoutes(FormatAndRoutes<BaseNavigationFormat, BaseRoute, BaseNavigationPosition> formatAndRoutes);
-    NavigationFormat<BaseRoute> getFormat();
-    void setFormat(NavigationFormat<BaseRoute> format);
+    List<BaseRoute<?, ?>> getRoutes();
+    void setRoutes(FormatAndRoutes<?, ?, ?> formatAndRoutes);
+    NavigationFormat<BaseRoute<?, ?>> getFormat();
+    void setFormat(NavigationFormat<BaseRoute<?, ?>> format);
 
     boolean isModified();
     void setModified(boolean modified);
     void addModifiedListener(ChangeListener l);
 
-    BaseRoute getSelectedRoute();
-    void setSelectedRoute(BaseRoute route);
-    BaseRoute getRoute(int index);
-    int getIndex(BaseRoute route);
+    BaseRoute<?, ?> getSelectedRoute();
+    void setSelectedRoute(BaseRoute<?, ?> route);
+    BaseRoute<?, ?> getRoute(int index);
+    int getIndex(BaseRoute<?, ?> route);
 
-    void addPositionList(int index, BaseRoute route);
+    void addPositionList(int index, BaseRoute<?, ?> route);
     void renamePositionList(String name);
-    void removePositionList(BaseRoute route);
+    void removePositionList(BaseRoute<?, ?> route);
 }

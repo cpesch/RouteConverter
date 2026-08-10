@@ -63,16 +63,16 @@ import static slash.navigation.base.RouteComments.createRouteName;
  * @author Christian Pesch
  */
 
-public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
+public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat<GoPalRoute>> {
     private String name;
     private final Object options;
     private final List<GoPalPosition> positions;
 
-    public GoPalRoute(GoPalRouteFormat format, String name, List<GoPalPosition> positions) {
+    public GoPalRoute(GoPalRouteFormat<GoPalRoute> format, String name, List<GoPalPosition> positions) {
         this(format, name, null, positions);
     }
 
-    public GoPalRoute(GoPalRouteFormat format, String name, Object options, List<GoPalPosition> positions) {
+    public GoPalRoute(GoPalRouteFormat<GoPalRoute> format, String name, Object options, List<GoPalPosition> positions) {
         super(format, Route);
         this.options = options;
         this.positions = positions;
@@ -138,7 +138,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         return route;
     }
 
-    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
+    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat<GoPalRoute> format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>(getPositions());
         return new GoPalRoute(format, getName(), gopalPositions);
     }
@@ -151,7 +151,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
-    protected SimpleRoute asPhotoFormat(PhotoFormat format) {
+    protected SimpleRoute<?, ?> asPhotoFormat(PhotoFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (GoPalPosition position : positions) {
             wgs84Positions.add(position.asWgs84Position());
@@ -183,7 +183,7 @@ public class GoPalRoute extends BaseRoute<GoPalPosition, GoPalRouteFormat> {
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+    protected SimpleRoute<?, ?> asSimpleFormat(SimpleFormat<?> format) {
         List<Wgs84Position> gopalPositions = new ArrayList<>();
         for (GoPalPosition position : positions) {
             gopalPositions.add(position.asWgs84Position());

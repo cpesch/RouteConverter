@@ -80,7 +80,7 @@ public class Nmn4Format extends NmnFormat {
         return result;
     }
 
-    protected NmnPosition parsePosition(String line, ParserContext context) {
+    protected NmnPosition parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

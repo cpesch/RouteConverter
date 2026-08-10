@@ -43,7 +43,7 @@ import java.util.zip.ZipInputStream;
  * @author Christian Pesch
  */
 
-public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
+public class ZipFormat extends BaseNavigationFormat<BaseRoute<?, ?>> {
     private static final Logger log = Logger.getLogger(ZipFormat.class.getName());
     static {
         System.setProperty("sun.zip.encoding", "default");
@@ -73,11 +73,11 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
         throw new UnsupportedOperationException();
     }
 
-    public <P extends NavigationPosition> BaseRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> BaseRoute<?, ?> createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         throw new UnsupportedOperationException();
     }
 
-    public void read(InputStream source, ParserContext<BaseRoute> context) throws IOException {
+    public void read(InputStream source, ParserContext<BaseRoute<?, ?>> context) throws IOException {
         try (ZipInputStream zip = new ZipInputStream(source)) {
             ZipEntry entry;
             while ((entry = zip.getNextEntry()) != null) {
@@ -95,7 +95,7 @@ public class ZipFormat extends BaseNavigationFormat<BaseRoute> {
         }
     }
 
-    public void write(BaseRoute route, OutputStream target, int startIndex, int endIndex) throws IOException {
+    public void write(BaseRoute<?, ?> route, OutputStream target, int startIndex, int endIndex) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

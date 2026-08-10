@@ -41,9 +41,9 @@ public class OziExplorerFormatIT {
         File source = new File(TEST_PATH + testFileName);
         ParserResult result = parser.read(source, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(testFileName)));
         assertNotNull(result);
-        List<BaseRoute> routes = result.getAllRoutes();
+        List<BaseRoute<?, ?>> routes = result.getAllRoutes();
         assertEquals(routeCount, routes.size());
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        BaseRoute<?, ?> route = result.getTheRoute();
         assertEquals(characteristics, route.getCharacteristics());
         assertEquals(positionCount, route.getPositionCount());
     }
@@ -68,9 +68,9 @@ public class OziExplorerFormatIT {
         File source = new File(SAMPLE_PATH + "Feissneck.rte");
         ParserResult result = parser.read(source);
         assertNotNull(result);
-        List<BaseRoute> routes = result.getAllRoutes();
+        List<BaseRoute<?, ?>> routes = result.getAllRoutes();
         assertEquals(1, routes.size());
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+        BaseRoute<?, ?> route = result.getTheRoute();
         assertEquals(49, route.getPositionCount());
     }
 }

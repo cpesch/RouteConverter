@@ -53,12 +53,15 @@ public abstract class NmnFormat extends SimpleLineBasedFormat<NmnRoute> {
         return new NmnRoute(this, characteristics, null, (List<NmnPosition>) positions);
     }
 
-    public BaseNavigationPosition getDuplicateFirstPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
-        List<BaseNavigationPosition> positions = route.getPositions();
+    // NmnFormat only ever writes NmnRoute (P = NmnPosition); the cast documents that assumption
+    // for the one caller (NavigationFormatParser.preprocessRoute) that threads P through generically.
+    @SuppressWarnings("unchecked")
+    public <P extends BaseNavigationPosition> P getDuplicateFirstPosition(BaseRoute<P, ?> route) {
+        List<P> positions = route.getPositions();
         if (positions.isEmpty())
             return null;
         NavigationPosition first = positions.get(0);
-        return new NmnPosition(first.getLongitude() + DUPLICATE_OFFSET,
+        return (P) new NmnPosition(first.getLongitude() + DUPLICATE_OFFSET,
                 first.getLatitude() + DUPLICATE_OFFSET, (Double)null, null, null, "Start:" + first.getDescription());
     }
 

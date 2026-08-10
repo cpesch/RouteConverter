@@ -165,7 +165,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return route;
     }
 
-    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
+    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat<GoPalRoute> format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>();
         for (GpxPosition position : getPositions()) {
             gopalPositions.add(position.asGoPalRoutePosition());
@@ -178,7 +178,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
-    protected SimpleRoute asPhotoFormat(PhotoFormat format) {
+    protected SimpleRoute<?, ?> asPhotoFormat(PhotoFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (GpxPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
@@ -210,7 +210,7 @@ public class GpxRoute extends BaseRoute<GpxPosition, GpxFormat> {
         return new NmnRoute(format, getCharacteristics(), getName(), nmnPositions);
     }
 
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+    protected SimpleRoute<?, ?> asSimpleFormat(SimpleFormat<?> format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (GpxPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());

@@ -27,7 +27,7 @@ public class WintecWbt202TesFormatIT {
 		assertEquals(WintecWbt202TesFormat.class, result.getFormat().getClass());
 		assertEquals(1, result.getAllRoutes().size());
 		@SuppressWarnings("rawtypes")
-		BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+		BaseRoute<?, ?> route = result.getTheRoute();
 		assertEquals(129, route.getPositionCount());
 		NavigationPosition position = route.getPositions().get(route.getPositionCount() - 1);
 		assertEquals("Trackpoint 129", position.getDescription());

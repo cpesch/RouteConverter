@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  * @author Christian Pesch
  */
 
-public abstract class IniFileFormat<R extends BaseRoute> extends TextNavigationFormat<R> {
+public abstract class IniFileFormat<R extends BaseRoute<?, ?>> extends TextNavigationFormat<R> {
     protected static final char SECTION_PREFIX = '[';
     protected static final char SECTION_POSTFIX = ']';
 

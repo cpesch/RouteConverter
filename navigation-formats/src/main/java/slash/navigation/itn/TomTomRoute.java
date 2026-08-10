@@ -134,7 +134,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return route;
     }
 
-    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
+    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat<GoPalRoute> format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>();
         for (TomTomPosition position : getPositions()) {
             gopalPositions.add(position.asGoPalRoutePosition());
@@ -150,7 +150,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
-    protected SimpleRoute asPhotoFormat(PhotoFormat format) {
+    protected SimpleRoute<?, ?> asPhotoFormat(PhotoFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (TomTomPosition position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
@@ -182,7 +182,7 @@ public class TomTomRoute extends BaseRoute<TomTomPosition, TomTomRouteFormat> {
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+    protected SimpleRoute<?, ?> asSimpleFormat(SimpleFormat<?> format) {
         List<Wgs84Position> simplePositions = new ArrayList<>();
         for (TomTomPosition position : getPositions()) {
             simplePositions.add(position.asWgs84Position());

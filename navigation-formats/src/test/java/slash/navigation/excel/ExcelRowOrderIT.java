@@ -37,31 +37,37 @@ public class ExcelRowOrderIT {
     private final NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
     private static final File SOURCE = new File(TEST_PATH + "from-order.xls");
 
-    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> readRoute() throws IOException {
+    private BaseRoute<?, ?> readRoute() throws IOException {
         ParserResult result = parser.read(SOURCE);
         return result.getTheRoute();
     }
 
-    private BaseRoute<BaseNavigationPosition, BaseNavigationFormat> writeAndReadFile(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
+    private BaseRoute<?, ?> writeAndReadFile(BaseRoute<?, ?> route) throws IOException {
         File target = createTempFile("target", getExtension(SOURCE));
         parser.write(route, route.getFormat(), target);
 
-        List<NavigationFormat> formats = Arrays.asList(new MicrosoftExcel97Format(), new MicrosoftExcel2008Format());
+        List<NavigationFormat<?>> formats = Arrays.asList(new MicrosoftExcel97Format(), new MicrosoftExcel2008Format());
         ParserResult result = parser.read(target, formats);
         route = result.getTheRoute();
         return route;
     }
 
-    private BaseNavigationPosition createPosition(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) {
+    private <P extends BaseNavigationPosition> P createPosition(BaseRoute<P, ?> route) {
         return route.createPosition(-1.0, -1.0, -1.0, -1.0,
                 calendar(2001, 1, 1, 1, 1,1), "X");
     }
 
+    // route.add(i, createPosition(route)) would capture route's P twice independently and
+    // fail to unify; capturing once via this method's own type parameter keeps it consistent.
+    private <P extends BaseNavigationPosition> void addPosition(BaseRoute<P, ?> route, int index) {
+        route.add(index, createPosition(route));
+    }
+
     @Test
     public void testAddFirstPosition() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+        BaseRoute<?, ?> route = readRoute();
 
-        route.add(0, createPosition(route));
+        addPosition(route, 0);
 
         route = writeAndReadFile(route);
 
@@ -76,9 +82,9 @@ public class ExcelRowOrderIT {
 
     @Test
     public void testAddMiddlePosition() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+        BaseRoute<?, ?> route = readRoute();
 
-        route.add(3, createPosition(route));
+        addPosition(route, 3);
 
         route = writeAndReadFile(route);
 
@@ -93,9 +99,9 @@ public class ExcelRowOrderIT {
 
     @Test
     public void testAddLastPosition() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+        BaseRoute<?, ?> route = readRoute();
 
-        route.add(route.getPositionCount(), createPosition(route));
+        addPosition(route, route.getPositionCount());
 
         route = writeAndReadFile(route);
 
@@ -110,7 +116,7 @@ public class ExcelRowOrderIT {
 
     @Test
     public void testDeleteMiddlePosition() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+        BaseRoute<?, ?> route = readRoute();
 
         route.remove(2);
 
@@ -125,7 +131,7 @@ public class ExcelRowOrderIT {
 
     @Test
     public void testMoveMiddlePosition() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+        BaseRoute<?, ?> route = readRoute();
 
         route.move(2, 3);
 
@@ -141,7 +147,7 @@ public class ExcelRowOrderIT {
 
     @Test
     public void testMoveMiddlePositionTwoDown() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+        BaseRoute<?, ?> route = readRoute();
 
         route.move(2, 4);
 
@@ -157,7 +163,7 @@ public class ExcelRowOrderIT {
 
     @Test
     public void testMoveMiddlePositionToBottom() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+        BaseRoute<?, ?> route = readRoute();
 
         route.bottom(2, 0);
 
@@ -173,7 +179,7 @@ public class ExcelRowOrderIT {
 
     @Test
     public void testMoveMiddlePositionToBottomWithOffset() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+        BaseRoute<?, ?> route = readRoute();
 
         route.bottom(2, 1);
 
@@ -189,7 +195,7 @@ public class ExcelRowOrderIT {
 
     @Test
     public void testMoveMiddlePositionToTop() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+        BaseRoute<?, ?> route = readRoute();
 
         route.top(3, 0);
 
@@ -205,7 +211,7 @@ public class ExcelRowOrderIT {
 
     @Test
     public void testMoveMiddlePositionToTopWithOffset() throws IOException {
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = readRoute();
+        BaseRoute<?, ?> route = readRoute();
 
         route.top(3, 1);
 

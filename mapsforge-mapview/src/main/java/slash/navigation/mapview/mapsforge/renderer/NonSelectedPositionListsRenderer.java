@@ -112,7 +112,7 @@ public class NonSelectedPositionListsRenderer {
         synchronized (layer) {
             layer.layers.clear();
 
-            List<BaseRoute> routes = positionListsModel.getRoutes();
+            List<BaseRoute<?, ?>> routes = positionListsModel.getRoutes();
             BaseRoute selectedRoute = positionListsModel.getSelectedRoute();
             if (routes != null) {
                 for (BaseRoute route : routes) {

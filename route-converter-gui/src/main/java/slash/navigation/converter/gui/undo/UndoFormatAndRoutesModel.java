@@ -69,25 +69,25 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
 
     @SuppressWarnings("unchecked")
     public void setSelectedItem(Object anItem) {
-        setSelectedRoute((BaseRoute<BaseNavigationPosition, BaseNavigationFormat>) anItem);
+        setSelectedRoute((BaseRoute<?, ?>) anItem);
     }
 
     // FormatAndRoutesModel
 
 
-    public List<BaseRoute> getRoutes() {
+    public List<BaseRoute<?, ?>> getRoutes() {
         return delegate.getRoutes();
     }
 
-    public void setRoutes(FormatAndRoutes<BaseNavigationFormat, BaseRoute, BaseNavigationPosition> formatAndRoutes) {
+    public void setRoutes(FormatAndRoutes<?, ?, ?> formatAndRoutes) {
         delegate.setRoutes(formatAndRoutes);
     }
 
-    public NavigationFormat<BaseRoute> getFormat() {
+    public NavigationFormat<BaseRoute<?, ?>> getFormat() {
         return delegate.getFormat();
     }
 
-    public void setFormat(NavigationFormat<BaseRoute> format) {
+    public void setFormat(NavigationFormat<BaseRoute<?, ?>> format) {
         delegate.setFormat(format);
     }
 
@@ -103,7 +103,7 @@ public class UndoFormatAndRoutesModel implements FormatAndRoutesModel {
         delegate.addModifiedListener(l);
     }
 
-    public BaseRoute getSelectedRoute() {
+    public BaseRoute<?, ?> getSelectedRoute() {
         return delegate.getSelectedRoute();
     }
 

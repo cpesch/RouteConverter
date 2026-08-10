@@ -96,14 +96,14 @@ public class RecentFormatsModel {
         preferences.put(RECENT_FORMATS_PREFERENCE, recentFormats);
     }
 
-    public List<NavigationFormat> getFormats() {
-        List<NavigationFormat> result = new ArrayList<>();
+    public List<NavigationFormat<?>> getFormats() {
+        List<NavigationFormat<?>> result = new ArrayList<>();
         String recentFormats = preferences.get(RECENT_FORMATS_PREFERENCE, "");
         for (char c : recentFormats.toCharArray()) {
             String formatString = preferences.get(RECENT_FORMAT_PREFERENCE + c, null);
             if (formatString != null) {
-                List<NavigationFormat> writeFormats = navigationFormatRegistry.getWriteFormats();
-                for (NavigationFormat format : writeFormats) {
+                List<NavigationFormat<?>> writeFormats = navigationFormatRegistry.getWriteFormats();
+                for (NavigationFormat<?> format : writeFormats) {
                     if (format.getClass().getName().equals(formatString)) {
                         result.add(0, format);
                         break;

@@ -100,7 +100,7 @@ class FileOperations {
         }
     }
 
-    void openPositionList(final List<URL> urls, final List<NavigationFormat> formats) {
+    void openPositionList(final List<URL> urls, final List<NavigationFormat<?>> formats) {
         final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         final URL url = urls.get(0);
@@ -162,14 +162,14 @@ class FileOperations {
         });
     }
 
-    void saveFile(File file, NavigationFormat format,
+    void saveFile(File file, NavigationFormat<?> format,
                   boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
         if (file.getParent() != null)
             preferences.put(WRITE_PATH_PREFERENCE + format.getClass().getSimpleName(), file.getParent());
 
         boolean duplicateFirstPosition = format instanceof NmnFormat && !(format instanceof Nmn7Format) || format instanceof CoPilotFormat;
-        BaseRoute route = panel.formatAndRoutesModel.getSelectedRoute();
+        BaseRoute<?, ?> route = panel.formatAndRoutesModel.getSelectedRoute();
         int fileCount = getNumberOfFilesToWriteFor(route, format, duplicateFirstPosition);
 
         if (fileCount > 1) {
@@ -210,7 +210,7 @@ class FileOperations {
         saveFiles(targets, format, route, exportSelectedRoute, confirmOverwrite, openAfterSave);
     }
 
-    private void saveFiles(File[] files, NavigationFormat format, BaseRoute route,
+    private void saveFiles(File[] files, NavigationFormat<?> format, BaseRoute<?, ?> route,
                            boolean exportSelectedRoute, boolean confirmOverwrite, boolean openAfterSave) {
         final BaseRouteConverter r = BaseRouteConverter.getInstance();
         String targetsAsString = asDialogString(asList(files), true);
@@ -219,8 +219,8 @@ class FileOperations {
             if (!ConvertPanel.checkWriteFormat(format))
                 return;
             if (format.isSupportsMultipleRoutes()) {
-                List<BaseRoute> routes = exportSelectedRoute ? singletonList(route) : panel.formatAndRoutesModel.getRoutes();
-                new NavigationFormatParser(panel.getNavigationFormatRegistry()).write(routes, (MultipleRoutesFormat) format, files[0]);
+                List<BaseRoute<?, ?>> routes = exportSelectedRoute ? singletonList(route) : panel.formatAndRoutesModel.getRoutes();
+                new NavigationFormatParser(panel.getNavigationFormatRegistry()).write(routes, (MultipleRoutesFormat<?>) format, files[0]);
             } else {
                 boolean duplicateFirstPosition = preferences.getBoolean(DUPLICATE_FIRST_POSITION_PREFERENCE, true);
                 ParserCallback parserCallback = (aRoute, aFormat) -> {
@@ -282,11 +282,11 @@ class FileOperations {
                         invokeAndWait(() -> {
                             // when called from openPositionList() and the format supports more than one position list:
                             // append the position lists at the end
-                            NavigationFormat<BaseRoute> format = panel.getFormatAndRoutesModel().getFormat();
+                            NavigationFormat<BaseRoute<?, ?>> format = panel.getFormatAndRoutesModel().getFormat();
                             if (row == -1 && format.isSupportsMultipleRoutes()) {
                                 try {
-                                    List<BaseRoute> routes = convertRoute(result.getAllRoutes(), format);
-                                    for (BaseRoute route : routes) {
+                                    List<BaseRoute<?, ?>> routes = convertRoute(result.getAllRoutes(), format);
+                                    for (BaseRoute<?, ?> route : routes) {
                                         int appendIndex = panel.getFormatAndRoutesModel().getSize();
                                         panel.getFormatAndRoutesModel().addPositionList(appendIndex, route);
                                     }
@@ -297,8 +297,7 @@ class FileOperations {
                                 // insert all position lists, which are in reverse order, at the given row or at the end
                                 try {
                                     int insertRow = row > 0 ? row : panel.positionsModel.getRowCount();
-                                    for (BaseRoute route : result.getAllRoutes()) {
-                                        //noinspection unchecked
+                                    for (BaseRoute<?, ?> route : result.getAllRoutes()) {
                                         panel.positionsModel.add(insertRow, route);
                                     }
                                 } catch (FileNotFoundException e) {

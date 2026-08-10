@@ -39,7 +39,7 @@ import static slash.common.io.Transfer.parseDouble;
  * @author Christian Pesch
  */
 
-public class KompassFormat extends SimpleLineBasedFormat<SimpleRoute> {
+public class KompassFormat extends SimpleLineBasedFormat<Wgs84Route> {
     private static final char SEPARATOR = ',';
 
     // special position format to avoid detection of GarminPoiDbFormat where longitude and latitude are swapped
@@ -61,7 +61,7 @@ public class KompassFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -70,7 +70,7 @@ public class KompassFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

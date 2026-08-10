@@ -94,7 +94,7 @@ public class ColumbusGpsType2Format extends ColumbusGpsFormat {
         return HEADER_PATTERN;
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

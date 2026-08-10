@@ -85,7 +85,7 @@ public class RecentFormatsModelTest {
 
     @Test
     public void testLatestFirst() {
-        List<NavigationFormat> expected = new ArrayList<>();
+        List<NavigationFormat<?>> expected = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
             NavigationFormat format = registry.getWriteFormats().get(i);
             recentFormatsModel.addFormat(format);
@@ -96,13 +96,13 @@ public class RecentFormatsModelTest {
 
     @Test
     public void testLimit() {
-        List<NavigationFormat> collected = new ArrayList<>();
+        List<NavigationFormat<?>> collected = new ArrayList<>();
         for (int i = 0; i < 2 * LIMIT; i++) {
             NavigationFormat format = registry.getWriteFormats().get(i);
             recentFormatsModel.addFormat(format);
             collected.add(0, format);
-            List<NavigationFormat> expected = collected.subList(0, min(i + 1, LIMIT));
-            List<NavigationFormat> actual = recentFormatsModel.getFormats();
+            List<NavigationFormat<?>> expected = collected.subList(0, min(i + 1, LIMIT));
+            List<NavigationFormat<?>> actual = recentFormatsModel.getFormats();
             assertEquals(expected.size(), actual.size());
             assertEquals(expected, actual);
         }

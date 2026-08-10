@@ -30,8 +30,8 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class Wgs84Route extends SimpleRoute<Wgs84Position, SimpleFormat> {
-    public Wgs84Route(SimpleFormat format, RouteCharacteristics characteristics, String name, List<Wgs84Position> positions) {
+public class Wgs84Route extends SimpleRoute<Wgs84Position, SimpleFormat<?>> {
+    public Wgs84Route(SimpleFormat<?> format, RouteCharacteristics characteristics, String name, List<Wgs84Position> positions) {
         super(format, characteristics, name, positions);
     }
 

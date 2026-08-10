@@ -145,7 +145,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
         return route;
     }
 
-    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat format) {
+    protected GoPalRoute asGoPalRouteFormat(GoPalRouteFormat<GoPalRoute> format) {
         List<GoPalPosition> gopalPositions = new ArrayList<>();
         for (Wgs84Position position : getPositions()) {
             gopalPositions.add(position.asGoPalRoutePosition());
@@ -161,7 +161,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
         return new GpxRoute(format, getCharacteristics(), getName(), getDescription(), gpxPositions);
     }
 
-    protected SimpleRoute asPhotoFormat(PhotoFormat format) {
+    protected SimpleRoute<?, ?> asPhotoFormat(PhotoFormat format) {
         List<Wgs84Position> wgs84Positions = new ArrayList<>();
         for (Wgs84Position position : getPositions()) {
             wgs84Positions.add(position.asWgs84Position());
@@ -193,7 +193,7 @@ public class NokiaLandmarkExchangeRoute extends BaseRoute<Wgs84Position, NokiaLa
         return new NmnRoute(format, getCharacteristics(), name, nmnPositions);
     }
 
-    protected SimpleRoute asSimpleFormat(SimpleFormat format) {
+    protected SimpleRoute<?, ?> asSimpleFormat(SimpleFormat<?> format) {
         List<Wgs84Position> Wgs84Positions = new ArrayList<>();
         for (Wgs84Position position : getPositions()) {
             Wgs84Positions.add(position.asWgs84Position());

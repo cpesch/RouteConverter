@@ -458,7 +458,7 @@ public class BrowsePanel implements PanelInTab {
             NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
             ParserResult result = parser.read(file);
             if (result.isSuccessful()) {
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = result.getTheRoute();
+                BaseRoute<?, ?> route = result.getTheRoute();
                 if (route != null) {
                     description = createRouteDescription(route);
                     length = route.getDistance();

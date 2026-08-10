@@ -89,7 +89,7 @@ import static java.util.Arrays.sort;
  */
 
 public class NavigationFormatRegistry {
-    private final List<Class<? extends NavigationFormat>> formats = new ArrayList<>();
+    private final List<Class<? extends NavigationFormat<?>>> formats = new ArrayList<>();
 
     public NavigationFormatRegistry() {
         // native formats
@@ -223,19 +223,19 @@ public class NavigationFormatRegistry {
         addFormat(GarminPoiDbFormat.class);
     }
 
-    private void addFormat(Class<? extends NavigationFormat> format) {
+    private void addFormat(Class<? extends NavigationFormat<?>> format) {
         formats.add(format);
     }
 
-    protected boolean includeReadFormat(NavigationFormat format) {
+    protected boolean includeReadFormat(NavigationFormat<?> format) {
         return true;
     }
 
-    private List<NavigationFormat> getFormatInstances(boolean includeReadableFormats, boolean includeWritableFormats) {
-        List<NavigationFormat> result = new ArrayList<>();
-        for (Class<? extends NavigationFormat> formatClass : formats) {
+    private List<NavigationFormat<?>> getFormatInstances(boolean includeReadableFormats, boolean includeWritableFormats) {
+        List<NavigationFormat<?>> result = new ArrayList<>();
+        for (Class<? extends NavigationFormat<?>> formatClass : formats) {
             try {
-                NavigationFormat format = formatClass.getDeclaredConstructor().newInstance();
+                NavigationFormat<?> format = formatClass.getDeclaredConstructor().newInstance();
                 if (includeReadableFormats && format.isSupportsReading() && includeReadFormat(format) ||
                         includeWritableFormats && format.isSupportsWriting())
                     result.add(format);
@@ -246,72 +246,72 @@ public class NavigationFormatRegistry {
         return result;
     }
 
-    public List<NavigationFormat> getReadFormats() {
+    public List<NavigationFormat<?>> getReadFormats() {
         return getFormatInstances(true, false);
     }
 
-    public List<NavigationFormat> getWriteFormats() {
+    public List<NavigationFormat<?>> getWriteFormats() {
         return getFormatInstances(false, true);
     }
 
-    private List<NavigationFormat> sortByName(List<NavigationFormat> formats) {
-        NavigationFormat[] formatsArray = formats.toArray(new NavigationFormat[0]);
+    private List<NavigationFormat<?>> sortByName(List<NavigationFormat<?>> formats) {
+        NavigationFormat<?>[] formatsArray = formats.toArray(new NavigationFormat<?>[0]);
         sort(formatsArray, Comparator.comparing(f -> f.getName().toLowerCase()));
         return asList(formatsArray);
     }
 
-    public List<NavigationFormat> getFormatsSortedByName() {
+    public List<NavigationFormat<?>> getFormatsSortedByName() {
         return sortByName(getFormatInstances(true, true));
     }
 
-    private List<NavigationFormat> filterByGarble(List<NavigationFormat> formats) {
-        List<NavigationFormat> result = new ArrayList<>();
-        for(NavigationFormat format : formats) {
+    private List<NavigationFormat<?>> filterByGarble(List<NavigationFormat<?>> formats) {
+        List<NavigationFormat<?>> result = new ArrayList<>();
+        for(NavigationFormat<?> format : formats) {
             if(!(format instanceof GarbleNavigationFormat))
                 result.add(format);
         }
         return result;
     }
 
-    public List<NavigationFormat> getReadFormatsSortedByName() {
+    public List<NavigationFormat<?>> getReadFormatsSortedByName() {
         return sortByName(filterByGarble(getReadFormats()));
     }
 
-    public List<NavigationFormat> getWriteFormatsSortedByName() {
+    public List<NavigationFormat<?>> getWriteFormatsSortedByName() {
         return sortByName(filterByGarble(getWriteFormats()));
     }
 
     public List<BaseUrlParsingFormat> getUrlParsingFormats() {
         List<BaseUrlParsingFormat> result = new ArrayList<>();
-        for(NavigationFormat format : getReadFormats()) {
+        for(NavigationFormat<?> format : getReadFormats()) {
             if(format instanceof BaseUrlParsingFormat)
                 result.add((BaseUrlParsingFormat)format);
         }
         return result;
     }
 
-    public List<NavigationFormat> getWriteFormatsWithPreferredFormats(List<NavigationFormat> preferredFormats) {
-        List<NavigationFormat> formats = new ArrayList<>(getWriteFormatsSortedByName());
+    public List<NavigationFormat<?>> getWriteFormatsWithPreferredFormats(List<NavigationFormat<?>> preferredFormats) {
+        List<NavigationFormat<?>> formats = new ArrayList<>(getWriteFormatsSortedByName());
         formats.removeAll(preferredFormats);
         formats.addAll(0, preferredFormats);
         return formats;
     }
 
-    public List<NavigationFormat> getReadFormatsPreferredByExtension(String preferredExtension) {
-        List<NavigationFormat> preferredFormats = new ArrayList<>();
-        for(NavigationFormat format : getReadFormats()) {
+    public List<NavigationFormat<?>> getReadFormatsPreferredByExtension(String preferredExtension) {
+        List<NavigationFormat<?>> preferredFormats = new ArrayList<>();
+        for(NavigationFormat<?> format : getReadFormats()) {
             if(format.getExtension().equals(preferredExtension))
                 preferredFormats.add(format);
         }
 
-        List<NavigationFormat> result = new ArrayList<>(getReadFormats());
+        List<NavigationFormat<?>> result = new ArrayList<>(getReadFormats());
         result.removeAll(preferredFormats);
         result.addAll(0, preferredFormats);
         return result;
     }
 
-    public List<NavigationFormat> getReadFormatsWithPreferredFormat(NavigationFormat preferredFormat) {
-        List<NavigationFormat> formats = new ArrayList<>(getReadFormats());
+    public List<NavigationFormat<?>> getReadFormatsWithPreferredFormat(NavigationFormat<?> preferredFormat) {
+        List<NavigationFormat<?>> formats = new ArrayList<>(getReadFormats());
         if (preferredFormat != null) {
             formats.remove(preferredFormat);
             formats.add(0, preferredFormat);

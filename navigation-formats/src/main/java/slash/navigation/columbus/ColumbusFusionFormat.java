@@ -21,9 +21,9 @@ package slash.navigation.columbus;
 
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.ParserContext;
-import slash.navigation.base.SimpleRoute;
 import slash.navigation.base.WaypointType;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -167,7 +167,7 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
      * as GNSS+IMU, whose lat/lon and time columns are optional. Anything with
      * coordinates throughout keeps the widest GNSS layout, unchanged.
      */
-    private int detectWriteLayout(SimpleRoute route) {
+    private int detectWriteLayout(Wgs84Route route) {
         boolean anyWithoutCoordinates = false, allWithoutCoordinates = true;
         for (Object position : route.getPositions()) {
             Wgs84Position wgs84Position = (Wgs84Position) position;
@@ -182,7 +182,7 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
         return LAYOUT_GNSS_SAT_FIX;
     }
 
-    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
+    protected void writeHeader(PrintWriter writer, Wgs84Route route) {
         writeLayout = detectWriteLayout(route);
         writer.println(headerFor(writeLayout));
     }
@@ -237,7 +237,7 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
         return layout == LAYOUT_GNSS_IMU || layout == LAYOUT_IMU;
     }
 
-    public void read(BufferedReader reader, String encoding, ParserContext context) throws IOException {
+    public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
         String directiveLine = reader.readLine();
         if (directiveLine == null || !FORMAT_DIRECTIVE_PATTERN.matcher(directiveLine).matches())
             return;
@@ -297,7 +297,7 @@ public class ColumbusFusionFormat extends ColumbusGpsFormat {
         return positions;
     }
 
-    public Wgs84Position parsePosition(String line, ParserContext context) {
+    public Wgs84Position parsePosition(String line, ParserContext<?> context) {
         for (int candidate : new int[]{LAYOUT_GNSS_SAT_FIX, LAYOUT_GNSS_SAT, LAYOUT_GNSS_IMU, LAYOUT_GNSS, LAYOUT_IMU}) {
             Matcher lineMatcher = linePatternFor(candidate).matcher(line);
             if (lineMatcher.matches()) {

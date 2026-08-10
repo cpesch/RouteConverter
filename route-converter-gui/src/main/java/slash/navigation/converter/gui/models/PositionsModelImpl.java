@@ -188,12 +188,12 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     }
 
     @SuppressWarnings("unchecked")
-    public List<BaseNavigationPosition> createPositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
+    public List<BaseNavigationPosition> createPositions(BaseRoute<?, ?> route) throws IOException {
         BaseNavigationFormat targetFormat = getRoute().getFormat();
         return convertPositions((List) route.getPositions(), targetFormat);
     }
 
-    public void add(int rowIndex, BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route) throws IOException {
+    public void add(int rowIndex, BaseRoute<?, ?> route) throws IOException {
         List<BaseNavigationPosition> positions = createPositions(route);
         add(rowIndex, positions);
     }

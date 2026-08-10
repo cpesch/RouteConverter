@@ -979,8 +979,8 @@ public abstract class NavigationTestCase extends TestCase {
         return str != null ? str.replaceAll(" ", "") : null;
     }
 
-    public static void comparePositions(BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute, NavigationFormat sourceFormat,
-                                        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute, NavigationFormat targetFormat,
+    public static void comparePositions(BaseRoute<?, ?> sourceRoute, NavigationFormat sourceFormat,
+                                        BaseRoute<?, ?> targetRoute, NavigationFormat targetFormat,
                                         boolean descriptionPositionNames) {
         if (sourceFormat instanceof Route66Format && targetFormat instanceof TomTomPoiFormat) {
             // both formats support no ordering
@@ -997,9 +997,9 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
-    public static void comparePositions(List<BaseNavigationPosition> sourcePositions,
+    public static void comparePositions(List<? extends BaseNavigationPosition> sourcePositions,
                                         NavigationFormat sourceFormat,
-                                        List<BaseNavigationPosition> targetPositions,
+                                        List<? extends BaseNavigationPosition> targetPositions,
                                         NavigationFormat targetFormat,
                                         boolean descriptionPositionNames,
                                         boolean compareByEquals,
@@ -1023,9 +1023,9 @@ public abstract class NavigationTestCase extends TestCase {
         }
     }
 
-    public static void compareSplitPositions(List<BaseNavigationPosition> sourcePositions,
+    public static void compareSplitPositions(List<? extends BaseNavigationPosition> sourcePositions,
                                              NavigationFormat sourceFormat,
-                                             List<BaseNavigationPosition> targetPositions,
+                                             List<? extends BaseNavigationPosition> targetPositions,
                                              NavigationFormat targetFormat,
                                              int fileNumber,
                                              int positionsPerFile,
@@ -1135,7 +1135,7 @@ public abstract class NavigationTestCase extends TestCase {
         return context.getRoutes();
     }
 
-    public static List<SimpleRoute> readSampleGopalTrackFile(String fileName, boolean setStartDateFromFile) throws Exception {
+    public static List<Wgs84Route> readSampleGopalTrackFile(String fileName, boolean setStartDateFromFile) throws Exception {
         File source = new File(SAMPLE_PATH + fileName);
         CompactCalendar startDate = null;
         if (setStartDateFromFile) {
@@ -1143,7 +1143,7 @@ public abstract class NavigationTestCase extends TestCase {
             calendar.setTimeInMillis(source.lastModified());
             startDate = fromCalendar(calendar);
         }
-        ParserContext<SimpleRoute> context = new ParserContextImpl<>(source, startDate);
+        ParserContext<Wgs84Route> context = new ParserContextImpl<>(source, startDate);
         new GoPalTrackFormat().read(new FileInputStream(source), context);
         return context.getRoutes();
     }

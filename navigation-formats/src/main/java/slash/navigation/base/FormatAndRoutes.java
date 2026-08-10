@@ -31,7 +31,7 @@ import static java.util.Collections.singletonList;
  * @author Christian Pesch
  */
 
-public class FormatAndRoutes<F extends BaseNavigationFormat,R extends BaseRoute,P extends BaseNavigationPosition> {
+public class FormatAndRoutes<F extends BaseNavigationFormat<?>,R extends BaseRoute<?, ?>,P extends BaseNavigationPosition> {
     private NavigationFormat<R> format;
     private final List<BaseRoute<P,F>> routes;
 
@@ -43,6 +43,15 @@ public class FormatAndRoutes<F extends BaseNavigationFormat,R extends BaseRoute,
     @SuppressWarnings("unchecked")
     public FormatAndRoutes(NavigationFormat<R> format, BaseRoute<P,F> route) {
         this(format, singletonList(route));
+    }
+
+    // format and its routes are always a matched pair at the call site (the parser just picked
+    // `format` via determineFormat() for exactly this `routes` list), but P/F/R are independent
+    // type parameters here, so the pairing isn't expressible without capturing a fresh, unnamed
+    // R/P/F triple - the cast documents that the two arguments are already known to correlate.
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public static FormatAndRoutes<?, ?, ?> of(NavigationFormat<BaseRoute<?, ?>> format, List<BaseRoute<?, ?>> routes) {
+        return new FormatAndRoutes(format, routes);
     }
 
     public NavigationFormat<R> getFormat() {

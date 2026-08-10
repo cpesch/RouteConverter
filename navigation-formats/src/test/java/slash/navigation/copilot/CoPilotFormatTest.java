@@ -21,16 +21,40 @@
 package slash.navigation.copilot;
 
 import org.junit.Test;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class CoPilotFormatTest {
     private final CoPilot6Format format = new CoPilot6Format();
+
+    @Test
+    public void testGetDuplicateFirstPosition() {
+        Wgs84Position first = new Wgs84Position(10.0, 50.0, null, null, null, "first");
+        List<Wgs84Position> positions = asList(first, new Wgs84Position(11.0, 51.0, null, null, null, "second"));
+        Wgs84Route route = new Wgs84Route(format, RouteCharacteristics.Route, "test", positions);
+
+        Wgs84Position duplicate = format.getDuplicateFirstPosition(route);
+
+        assertNotNull(duplicate);
+        assertDoubleEquals(10.0, duplicate.getLongitude());
+        assertDoubleEquals(50.0, duplicate.getLatitude());
+        assertEquals("Start:first", duplicate.getDescription());
+    }
+
+    @Test
+    public void testGetDuplicateFirstPositionForEmptyRoute() {
+        Wgs84Route route = new Wgs84Route(format, RouteCharacteristics.Route, "test", asList());
+        assertNull(format.getDuplicateFirstPosition(route));
+    }
 
     @Test
     public void testIsValidLine() {

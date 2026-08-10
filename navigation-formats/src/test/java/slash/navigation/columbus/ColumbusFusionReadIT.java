@@ -59,7 +59,7 @@ public class ColumbusFusionReadIT {
         assumeTrue("Sample file not found: " + file.getAbsolutePath(), file.exists());
 
         NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
-        ParserResult result = parser.read(file, Collections.<NavigationFormat>singletonList(new ColumbusFusionFormat()));
+        ParserResult result = parser.read(file, Collections.<NavigationFormat<?>>singletonList(new ColumbusFusionFormat()));
         assertTrue("Could not read " + fileName, result.isSuccessful());
         return (SimpleRoute) result.getAllRoutes().get(0);
     }

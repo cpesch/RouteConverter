@@ -35,10 +35,10 @@ public class TomTomRouteReadWriteRoundtripIT {
     public void testTomTom5Roundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from5.itn", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute = source.getTheRoute();
+                BaseRoute<?, ?> sourceRoute = source.getTheRoute();
                 checkUmlauts(sourceRoute);
 
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = target.getTheRoute();
+                BaseRoute<?, ?> targetRoute = target.getTheRoute();
                 checkUmlauts(targetRoute);
             }
         });
@@ -48,10 +48,10 @@ public class TomTomRouteReadWriteRoundtripIT {
     public void testTomTom8Roundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from8.itn", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute = source.getTheRoute();
+                BaseRoute<?, ?> sourceRoute = source.getTheRoute();
                 checkUmlauts(sourceRoute);
 
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = target.getTheRoute();
+                BaseRoute<?, ?> targetRoute = target.getTheRoute();
                 checkUmlauts(targetRoute);
             }
         });
@@ -61,10 +61,10 @@ public class TomTomRouteReadWriteRoundtripIT {
     public void testRider2Roundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-rider-2.itn", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute = source.getTheRoute();
+                BaseRoute<?, ?> sourceRoute = source.getTheRoute();
                 checkPlaceNamesWithUmlauts(sourceRoute);
 
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = target.getTheRoute();
+                BaseRoute<?, ?> targetRoute = target.getTheRoute();
                 checkPlaceNamesWithUmlauts(targetRoute);
             }
         });
@@ -74,10 +74,10 @@ public class TomTomRouteReadWriteRoundtripIT {
     public void testUrbanRiderRoundtrip() throws IOException {
         readWriteRoundtrip(TEST_PATH + "from-urban-rider.itn", new ReadWriteTestCallback() {
             public void test(ParserResult source, ParserResult target) {
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> sourceRoute = source.getTheRoute();
+                BaseRoute<?, ?> sourceRoute = source.getTheRoute();
                 checkPlaceNamesWithUmlauts(sourceRoute);
 
-                BaseRoute<BaseNavigationPosition, BaseNavigationFormat> targetRoute = target.getTheRoute();
+                BaseRoute<?, ?> targetRoute = target.getTheRoute();
                 checkPlaceNamesWithUmlauts(targetRoute);
             }
         });

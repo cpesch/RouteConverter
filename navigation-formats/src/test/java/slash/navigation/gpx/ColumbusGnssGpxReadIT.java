@@ -94,7 +94,7 @@ public class ColumbusGnssGpxReadIT {
         assumeTrue("Sample file not found: " + file.getAbsolutePath(), file.exists());
 
         NavigationFormatParser parser = new NavigationFormatParser(new AllNavigationFormatRegistry());
-        ParserResult result = parser.read(file, Collections.<NavigationFormat>singletonList(new NmeaFormat()));
+        ParserResult result = parser.read(file, Collections.<NavigationFormat<?>>singletonList(new NmeaFormat()));
         assertTrue("Could not read from-columbusgnss-nmea.log", result.isSuccessful());
         NmeaRoute route = (NmeaRoute) result.getAllRoutes().get(0);
         assertEquals(550, route.getPositionCount());

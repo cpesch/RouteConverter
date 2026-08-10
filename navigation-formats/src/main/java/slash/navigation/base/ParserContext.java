@@ -33,7 +33,7 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public interface ParserContext<R extends BaseRoute> {
+public interface ParserContext<R extends BaseRoute<?, ?>> {
     void prependRoute(R route);
     void appendRoute(R route);
     void appendRoutes(List<R> routes);

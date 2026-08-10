@@ -70,7 +70,7 @@ public class StartDateIT {
 
         assertNotNull(routes);
         assertEquals(1, routes.size());
-        BaseRoute<BaseNavigationPosition, BaseNavigationFormat> route = routes.get(0);
+        BaseRoute<?, ?> route = routes.get(0);
         assertEquals(3, route.getPositionCount());
         NavigationPosition position1 = route.getPositions().get(0);
         checkPosition(position1, calendar(year, month, day, 18, 51, 36));
@@ -186,9 +186,9 @@ public class StartDateIT {
         File source = new File(SAMPLE_PATH + "startdate-without-date.trk");
         Calendar startDate = Calendar.getInstance();
         startDate.setTimeInMillis(source.lastModified());
-        ParserContext<SimpleRoute> context = new ParserContextImpl<>(source, fromCalendar(startDate));
+        ParserContext<Wgs84Route> context = new ParserContextImpl<>(source, fromCalendar(startDate));
         new GoPalTrackFormat().read(new FileInputStream(source), context);
-        List<SimpleRoute> routes = context.getRoutes();
+        List<Wgs84Route> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }
 
@@ -196,15 +196,15 @@ public class StartDateIT {
     public void testCurrentStartDateForGopalTrackWithoutDate() throws Exception {
         File source = new File(SAMPLE_PATH + "startdate-without-date.trk");
         Calendar startDate = Calendar.getInstance();
-        ParserContext<SimpleRoute> context = new ParserContextImpl<>(source, fromCalendar(startDate));
+        ParserContext<Wgs84Route> context = new ParserContextImpl<>(source, fromCalendar(startDate));
         new GoPalTrackFormat().read(new FileInputStream(source), context);
-        List<SimpleRoute> routes = context.getRoutes();
+        List<Wgs84Route> routes = context.getRoutes();
         checkPositionsWithDate(routes, startDate);
     }
 
     @Test
     public void testNullStartDateForGopalTrackWithoutDate() throws Exception {
-        List<SimpleRoute> routes = readSampleGopalTrackFile("startdate-without-date.trk", false);
+        List<Wgs84Route> routes = readSampleGopalTrackFile("startdate-without-date.trk", false);
         Calendar startDate = Calendar.getInstance();
         startDate.set(1970, JANUARY, 1);
         checkPositionsWithDate(routes, startDate);

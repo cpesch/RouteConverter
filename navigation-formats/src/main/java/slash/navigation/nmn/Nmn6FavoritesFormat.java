@@ -69,7 +69,7 @@ public class Nmn6FavoritesFormat extends NmnFormat {
         return matcher.matches();
     }
 
-    protected NmnPosition parsePosition(String line, ParserContext context) {
+    protected NmnPosition parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = POSITION_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");

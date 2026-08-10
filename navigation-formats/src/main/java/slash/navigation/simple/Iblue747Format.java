@@ -45,7 +45,7 @@ import static slash.navigation.common.NavigationConversion.*;
  * @author Christian Pesch
  */
 
-public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
+public class Iblue747Format extends SimpleLineBasedFormat<Wgs84Route> {
     protected static final Logger log = Logger.getLogger(Iblue747Format.class.getName());
 
     private static final String HEADER_LINE = "INDEX,RCR,DATE,TIME,VALID,LATITUDE,N/S,LONGITUDE,E/W,HEIGHT,SPEED,HEADING,DISTANCE,";
@@ -84,7 +84,7 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -114,7 +114,7 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
         return parseDate(dateAndTime, DATE_AND_TIME_FORMAT);
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -138,7 +138,7 @@ public class Iblue747Format extends SimpleLineBasedFormat<SimpleRoute> {
         return position;
     }
 
-    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
+    protected void writeHeader(PrintWriter writer, Wgs84Route route) {
         writer.println(HEADER_LINE);
     }
 

@@ -31,7 +31,7 @@ import slash.navigation.nmea.NmeaFormat;
  * @author Christian Pesch
  */
 public class ColumbusNavigationFormatRegistry extends NavigationFormatRegistry {
-    protected boolean includeReadFormat(NavigationFormat format) {
+    protected boolean includeReadFormat(NavigationFormat<?> format) {
         return format instanceof ColumbusGpsBinaryFormat ||
                 format instanceof ColumbusGpsFormat ||
                 format instanceof GpxFormat ||

@@ -28,7 +28,7 @@ import slash.navigation.base.NavigationFormatRegistry;
  * @author Christian Pesch
  */
 public class PhotoNavigationFormatRegistry extends NavigationFormatRegistry {
-    protected boolean includeReadFormat(NavigationFormat format) {
+    protected boolean includeReadFormat(NavigationFormat<?> format) {
         return format instanceof PhotoFormat;
     }
 }

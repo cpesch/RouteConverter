@@ -41,7 +41,7 @@ import static slash.navigation.base.RouteCharacteristics.Route;
  * @author Christian Pesch
  */
 
-public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
+public class GoRiderGpsFormat extends SimpleLineBasedFormat<Wgs84Route> {
     private static final String HEADER = "#CREATED";
     private static final String STREET = "STREET";
     private static final String PT = "PT";
@@ -64,7 +64,7 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends NavigationPosition> SimpleRoute createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
+    public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
     }
 
@@ -81,7 +81,7 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return matcher.matches();
     }
 
-    protected Wgs84Position parsePosition(String line, ParserContext context) {
+    protected Wgs84Position parsePosition(String line, ParserContext<?> context) {
         Matcher lineMatcher = LINE_PATTERN.matcher(line);
         if (!lineMatcher.matches())
             throw new IllegalArgumentException("'" + line + "' does not match");
@@ -91,7 +91,7 @@ public class GoRiderGpsFormat extends SimpleLineBasedFormat<SimpleRoute> {
         return asWgs84Position(longitude, latitude, description);
     }
 
-    protected void writeHeader(PrintWriter writer, SimpleRoute route) {
+    protected void writeHeader(PrintWriter writer, Wgs84Route route) {
         writer.println(HEADER + NAME_VALUE_SEPARATOR + QUOTE + "100" + QUOTE +
                 " MODIFIED" + NAME_VALUE_SEPARATOR + QUOTE + "100" + QUOTE +
                 " NAME" + NAME_VALUE_SEPARATOR + QUOTE + route.getName() + QUOTE);

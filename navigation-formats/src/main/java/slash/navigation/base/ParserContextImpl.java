@@ -34,7 +34,7 @@ import java.util.List;
  * @author Christian Pesch
  */
 
-public class ParserContextImpl<R extends BaseRoute> implements ParserContext<R> {
+public class ParserContextImpl<R extends BaseRoute<?, ?>> implements ParserContext<R> {
     private final List<R> routes = new ArrayList<>();
     private final List<NavigationFormat<R>> formats = new ArrayList<>();
     private final File file;

@@ -69,7 +69,7 @@ public class NonSelectedListsFlowIT {
         ParserResult result = parser.read(new File("../navigation-formats-samples/src/test/from.gpx"));
         assertTrue("parse failed", result.isSuccessful());
 
-        List<BaseRoute> all = result.getAllRoutes();
+        List<BaseRoute<?, ?>> all = result.getAllRoutes();
         assertTrue("expected a multi-list file with at least 3 lists, got " + all.size(), all.size() >= 3);
 
         model.setRoutes(new FormatAndRoutes(result.getFormat(), all));
