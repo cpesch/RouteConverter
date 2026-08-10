@@ -103,7 +103,7 @@ public class UpdateDecouplerTest {
     @Test
     @SuppressWarnings("unchecked")
     public void replaceRouteClearsPreviousUpdaterAndFillsSelectedOne() throws Exception {
-        BaseRoute route = mock(BaseRoute.class);
+        BaseRoute<?, ?> route = mock(BaseRoute.class);
         when(route.getCharacteristics()).thenReturn(Route);
         when(positionsModel.getRoute()).thenReturn(route);
         when(positionsModel.getRowCount()).thenReturn(10);

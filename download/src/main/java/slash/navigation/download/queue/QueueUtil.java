@@ -46,7 +46,7 @@ class QueueUtil {
     public static QueueType unmarshal(InputStream in) throws JAXBException {
         QueueType result;
         try {
-            JAXBElement element = (JAXBElement) newUnmarshaller().unmarshal(in);
+            JAXBElement<?> element = (JAXBElement<?>) newUnmarshaller().unmarshal(in);
             result = (QueueType) element.getValue();
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);

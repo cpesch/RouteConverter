@@ -60,7 +60,7 @@ public class DataSourcesUtil {
     public static CatalogType unmarshal(InputStream in) throws JAXBException {
         CatalogType result;
         try {
-            JAXBElement element = (JAXBElement) newUnmarshaller().unmarshal(in);
+            JAXBElement<?> element = (JAXBElement<?>) newUnmarshaller().unmarshal(in);
             result = (CatalogType) element.getValue();
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);
@@ -197,7 +197,7 @@ public class DataSourcesUtil {
         return fragmentType;
     }
 
-    public static FragmentType createFragmentType(Fragment fragment, Set<FileAndChecksum> fileAndChecksums) {
+    public static FragmentType createFragmentType(Fragment<?> fragment, Set<FileAndChecksum> fileAndChecksums) {
         FragmentType fragmentType = new ObjectFactory().createFragmentType();
         fragmentType.setKey(fragment.getKey());
         List<ChecksumType> checksumTypes = asChecksumTypes(asChecksums(fileAndChecksums));
