@@ -1,5 +1,7 @@
 # RouteConverter
 
+[![CI](https://github.com/cpesch/RouteConverter/actions/workflows/build.yml/badge.svg)](https://github.com/cpesch/RouteConverter/actions/workflows/build.yml)
+[![Latest release](https://img.shields.io/github/v/release/cpesch/RouteConverter)](https://github.com/cpesch/RouteConverter/releases/latest)
 [![Test Coverage](https://codecov.io/gh/cpesch/RouteConverter/branch/master/graph/badge.svg)](https://codecov.io/gh/cpesch/RouteConverter)
 [![Translation status](https://badges.crowdin.net/routeconverter/localized.svg)](https://crowdin.com/project/routeconverter)
 [![License: GPL v2](https://img.shields.io/badge/license-GPL--2.0-blue.svg)](LICENSE-GPL.txt)
