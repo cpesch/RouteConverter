@@ -47,6 +47,10 @@ import static slash.navigation.pois.mapsforge.MapsforgeTagMatcher.*;
 
 /**
  * Finds Mapsforge POI database files and searches them.
+ * <p>
+ * Supports both the v3 POI schema (plain {@code poi_index} table, {@code LIKE} text search) and the
+ * v4 schema introduced in mapsforge 0.29 ({@code poi_index} as an R-Tree, {@code poi_data_fts} FTS5
+ * full-text index). The schema version is read per file from its {@code metadata} table.
  *
  * @author Christian Pesch
  */
@@ -57,6 +61,61 @@ class MapsforgePoiLookup {
     static final int MAX_DATABASE_ROWS = 2000;
     static final int REVERSE_LOOKUP_RADIUS_METERS = 1000;
     static final String DOT_POI = ".poi";
+
+    private static final String SELECT_COLUMNS_V4 =
+            "SELECT poi_index.id, (poi_index.minLat + poi_index.maxLat) / 2 lat, " +
+                    "(poi_index.minLon + poi_index.maxLon) / 2 lon, poi_data.data, " +
+                    "group_concat(poi_categories.name, '\r') categories ";
+
+    // Q1: text match, driven from the FTS5 index. poi_data_fts must stay the first table in the
+    // FROM clause so SQLite scans the FTS index and probes the R-Tree by rowid, instead of walking
+    // every row in the bounding box and evaluating MATCH per row.
+    static final String Q1_FTS_SQL = SELECT_COLUMNS_V4 +
+            "FROM poi_data_fts " +
+            "JOIN poi_index ON poi_index.id = poi_data_fts.rowid " +
+            "JOIN poi_data ON poi_index.id = poi_data.id " +
+            "LEFT JOIN poi_category_map ON poi_index.id = poi_category_map.id " +
+            "LEFT JOIN poi_categories ON poi_category_map.category = poi_categories.id " +
+            "WHERE poi_data_fts MATCH ? " +
+            "AND poi_index.minLat <= ? AND poi_index.minLon <= ? AND poi_index.maxLat >= ? AND poi_index.maxLon >= ? " +
+            "GROUP BY poi_index.id, poi_data.data " +
+            "LIMIT ?";
+
+    // Q1 fallback: FTS5 only matches token prefixes, so an infix query (e.g. "stelle" in "Tankstelle")
+    // needs a plain LIKE scan of poi_data.
+    private static final String Q1_LIKE_SQL = SELECT_COLUMNS_V4 +
+            "FROM poi_index " +
+            "JOIN poi_data ON poi_index.id = poi_data.id " +
+            "LEFT JOIN poi_category_map ON poi_index.id = poi_category_map.id " +
+            "LEFT JOIN poi_categories ON poi_category_map.category = poi_categories.id " +
+            "WHERE lower(poi_data.data) LIKE ? " +
+            "AND poi_index.minLat <= ? AND poi_index.minLon <= ? AND poi_index.maxLat >= ? AND poi_index.maxLon >= ? " +
+            "GROUP BY poi_index.id, poi_data.data " +
+            "LIMIT ?";
+
+    // Q2: category-name match. A separate query from Q1 because FTS5 MATCH cannot appear inside an
+    // OR expression. The membership subquery (rather than filtering the join) keeps group_concat
+    // returning each POI's complete category list, matching what Q1 returns for the same POI.
+    private static final String Q2_CATEGORY_SQL = SELECT_COLUMNS_V4 +
+            "FROM poi_index " +
+            "JOIN poi_data ON poi_index.id = poi_data.id " +
+            "LEFT JOIN poi_category_map ON poi_index.id = poi_category_map.id " +
+            "LEFT JOIN poi_categories ON poi_category_map.category = poi_categories.id " +
+            "WHERE poi_index.id IN (SELECT id FROM poi_category_map " +
+            "WHERE category IN (SELECT id FROM poi_categories WHERE lower(name) LIKE ?)) " +
+            "AND poi_index.minLat <= ? AND poi_index.minLon <= ? AND poi_index.maxLat >= ? AND poi_index.maxLon >= ? " +
+            "GROUP BY poi_index.id, poi_data.data " +
+            "LIMIT ?";
+
+    // Q3: bounding-box only, used for reverse geocoding where no text/category query is required.
+    private static final String Q3_BBOX_SQL = SELECT_COLUMNS_V4 +
+            "FROM poi_index " +
+            "JOIN poi_data ON poi_index.id = poi_data.id " +
+            "LEFT JOIN poi_category_map ON poi_index.id = poi_category_map.id " +
+            "LEFT JOIN poi_categories ON poi_category_map.category = poi_categories.id " +
+            "WHERE poi_index.minLat <= ? AND poi_index.minLon <= ? AND poi_index.maxLat >= ? AND poi_index.maxLon >= ? " +
+            "GROUP BY poi_index.id, poi_data.data " +
+            "LIMIT ?";
 
     private final DataSourceManager dataSourceManager;
 
@@ -138,22 +197,95 @@ class MapsforgePoiLookup {
         return fileBounds.intersect(queryBounds) != null || fileBounds.contains(queryBounds.getCenter()) || queryBounds.contains(fileBounds.getCenter());
     }
 
-    private BoundingBox readBounds(File file) {
-        try (Connection connection = open(file);
-             Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery("SELECT max(lon) east, max(lat) north, min(lon) west, min(lat) south FROM poi_index")) {
-            if (resultSet.next())
-                return new BoundingBox(resultSet.getDouble("east"), resultSet.getDouble("north"), resultSet.getDouble("west"), resultSet.getDouble("south"));
+    BoundingBox readBounds(File file) {
+        try (Connection connection = open(file)) {
+            BoundingBox fromMetadata = readBoundsFromMetadata(connection);
+            if (fromMetadata != null)
+                return fromMetadata;
+            return readBoundsFromIndex(connection);
         } catch (SQLException e) {
             log.log(Level.FINE, "Cannot read POI bounds from " + file, e);
         }
         return null;
     }
 
+    private BoundingBox readBoundsFromMetadata(Connection connection) {
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT value FROM metadata WHERE name = 'bounds'")) {
+            if (!resultSet.next())
+                return null;
+            String[] parts = resultSet.getString("value").split(",");
+            if (parts.length != 4)
+                return null;
+            double minLat = Double.parseDouble(parts[0]);
+            double minLon = Double.parseDouble(parts[1]);
+            double maxLat = Double.parseDouble(parts[2]);
+            double maxLon = Double.parseDouble(parts[3]);
+            return new BoundingBox(maxLon, maxLat, minLon, minLat);
+        } catch (SQLException | NumberFormatException e) {
+            return null;
+        }
+    }
+
+    private BoundingBox readBoundsFromIndex(Connection connection) throws SQLException {
+        String sql = readVersion(connection) >= 4 ?
+                "SELECT max(maxLon) east, max(maxLat) north, min(minLon) west, min(minLat) south FROM poi_index" :
+                "SELECT max(lon) east, max(lat) north, min(lon) west, min(lat) south FROM poi_index";
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            if (resultSet.next())
+                return new BoundingBox(resultSet.getDouble("east"), resultSet.getDouble("north"), resultSet.getDouble("west"), resultSet.getDouble("south"));
+        }
+        return null;
+    }
+
+    private int readVersion(Connection connection) {
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT value FROM metadata WHERE name = 'version'")) {
+            if (resultSet.next())
+                return Integer.parseInt(resultSet.getString("value").trim());
+        } catch (SQLException | NumberFormatException e) {
+            log.log(Level.FINE, "Cannot read POI database version", e);
+        }
+        return 3;
+    }
+
+    private boolean hasFullTextSearchTable(Connection connection) {
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(
+                     "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'poi_data_fts'")) {
+            return resultSet.next();
+        } catch (SQLException e) {
+            return false;
+        }
+    }
+
+    /**
+     * Splits an already-{@link MapsforgeGeocodingHelper#normalize normalized} query into FTS5 prefix
+     * terms, e.g. {@code "st. peter-ording"} becomes {@code "st"* "peter"* "ording"*}. Quoting each
+     * token neutralizes FTS5 operators (AND/OR/NOT/NEAR), so nothing in the query can be interpreted
+     * as query syntax. Returns {@code null} if no token survives.
+     */
+    static String toFtsMatchExpression(String normalizedQuery) {
+        if (normalizedQuery == null)
+            return null;
+        StringBuilder builder = new StringBuilder();
+        for (String token : normalizedQuery.split("(?U)[^\\p{Alnum}]+")) {
+            if (token.isEmpty())
+                continue;
+            if (builder.length() > 0)
+                builder.append(' ');
+            builder.append('"').append(token).append("\"*");
+        }
+        return builder.length() > 0 ? builder.toString() : null;
+    }
+
     List<CategorizedNavigationPosition> search(File poiFile, String query, BoundingBox bounds, NavigationPosition center) throws IOException {
-        List<PoiMatch> matches = searchMatches(poiFile, bounds, query, center, true, true);
+        List<PoiMatch> matches = searchMatches(poiFile, bounds, query, center, true, true, false);
         if (matches.isEmpty())
-            matches = searchMatches(poiFile, bounds, query, center, true, false);
+            matches = searchMatches(poiFile, bounds, query, center, true, false, false);
+        if (matches.isEmpty())
+            matches = searchMatches(poiFile, bounds, query, center, true, false, true);
 
         List<CategorizedNavigationPosition> result = new ArrayList<>(min(matches.size(), MAX_RESULTS));
         for (PoiMatch match : matches) {
@@ -166,7 +298,7 @@ class MapsforgePoiLookup {
 
     String lookup(File poiFile, NavigationPosition position) throws IOException {
         BoundingBox searchBounds = createBoundsAround(position, REVERSE_LOOKUP_RADIUS_METERS);
-        List<PoiMatch> matches = searchMatches(poiFile, searchBounds, null, position, false, false);
+        List<PoiMatch> matches = searchMatches(poiFile, searchBounds, null, position, false, false, false);
         if (matches.isEmpty())
             return null;
 
@@ -174,12 +306,42 @@ class MapsforgePoiLookup {
         return nearest.distanceMeters() <= REVERSE_LOOKUP_RADIUS_METERS ? nearest.description() : null;
     }
 
-    private List<PoiMatch> searchMatches(File poiFile, BoundingBox bounds, String query,
-                                         NavigationPosition reference, boolean requireQueryMatch, boolean exactOnly) throws IOException {
+    /**
+     * @param useLikeFallback forces the text branch (v4 only) to use a plain {@code LIKE} scan instead
+     *                         of the FTS5 index, catching infix matches that FTS5's prefix matching misses.
+     */
+    private List<PoiMatch> searchMatches(File poiFile, BoundingBox bounds, String query, NavigationPosition reference,
+                                         boolean requireQueryMatch, boolean exactOnly, boolean useLikeFallback) throws IOException {
         if (bounds == null)
             return emptyList();
 
         List<PoiMatch> matches = new ArrayList<>();
+        try (Connection connection = open(poiFile)) {
+            Map<Long, SqlRow> rows = readVersion(connection) >= 4 ?
+                    searchV4(connection, bounds, query, requireQueryMatch, useLikeFallback) :
+                    searchV3(connection, bounds, query, requireQueryMatch);
+
+            for (SqlRow row : rows.values()) {
+                LatLong latLong = new LatLong(row.lat(), row.lon());
+                List<Tag> tags = parseTags(row.data());
+                List<String> categories = parseCategories(row.categories());
+                Match tagMatch = findMatch(tags, categories, query, exactOnly);
+                if (requireQueryMatch && tagMatch == null)
+                    continue;
+                if (!requireQueryMatch && !MapsforgeTagMatcher.hasUsefulDescription(tags, categories))
+                    continue;
+
+                CategorizedNavigationPosition position = buildDescriptionAndCategory(latLong, tags, categories, tagMatch, "Unnamed POI");
+                matches.add(toPoiMatch(position, latLong, reference));
+            }
+        } catch (SQLException e) {
+            throw new IOException("Cannot search Mapsforge POI database " + poiFile, e);
+        }
+        matches.sort(Comparator.comparingDouble(PoiMatch::distanceMeters).thenComparing(PoiMatch::description));
+        return matches;
+    }
+
+    private LinkedHashMap<Long, SqlRow> searchV3(Connection connection, BoundingBox bounds, String query, boolean requireQueryMatch) throws SQLException {
         String sql = "SELECT poi_index.id, poi_index.lat, poi_index.lon, poi_data.data, " +
                 "group_concat(poi_categories.name, '\r') categories " +
                 "FROM poi_index JOIN poi_data ON poi_index.id = poi_data.id " +
@@ -190,40 +352,69 @@ class MapsforgePoiLookup {
                 "GROUP BY poi_index.id, poi_index.lat, poi_index.lon, poi_data.data " +
                 "LIMIT ?";
 
-        try (Connection connection = open(poiFile);
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setDouble(1, bounds.northEast().getLatitude());
-            statement.setDouble(2, bounds.northEast().getLongitude());
-            statement.setDouble(3, bounds.southWest().getLatitude());
-            statement.setDouble(4, bounds.southWest().getLongitude());
-            int index = 5;
-            if (requireQueryMatch) {
-                String pattern = "%" + query + "%";
-                statement.setString(index++, pattern);
-                statement.setString(index++, pattern);
-            }
-            statement.setInt(index, MAX_DATABASE_ROWS);
+        List<Object> params = new ArrayList<>();
+        params.add(bounds.northEast().getLatitude());
+        params.add(bounds.northEast().getLongitude());
+        params.add(bounds.southWest().getLatitude());
+        params.add(bounds.southWest().getLongitude());
+        if (requireQueryMatch) {
+            String pattern = "%" + query + "%";
+            params.add(pattern);
+            params.add(pattern);
+        }
+        params.add(MAX_DATABASE_ROWS);
+        return runQuery(connection, sql, params.toArray());
+    }
 
+    private LinkedHashMap<Long, SqlRow> searchV4(Connection connection, BoundingBox bounds, String query,
+                                                 boolean requireQueryMatch, boolean useLikeFallback) throws SQLException {
+        double north = bounds.northEast().getLatitude();
+        double east = bounds.northEast().getLongitude();
+        double south = bounds.southWest().getLatitude();
+        double west = bounds.southWest().getLongitude();
+
+        if (!requireQueryMatch)
+            return runQuery(connection, Q3_BBOX_SQL, north, east, south, west, MAX_DATABASE_ROWS);
+
+        LinkedHashMap<Long, SqlRow> rows = new LinkedHashMap<>();
+        String ftsExpression = useLikeFallback ? null : toFtsMatchExpression(query);
+        if (ftsExpression != null && hasFullTextSearchTable(connection))
+            mergeInto(rows, runQuery(connection, Q1_FTS_SQL, ftsExpression, north, east, south, west, MAX_DATABASE_ROWS));
+        else
+            mergeInto(rows, runQuery(connection, Q1_LIKE_SQL, "%" + query + "%", north, east, south, west, MAX_DATABASE_ROWS));
+
+        mergeInto(rows, runQuery(connection, Q2_CATEGORY_SQL, "%" + query + "%", north, east, south, west, MAX_DATABASE_ROWS));
+        return rows;
+    }
+
+    private void mergeInto(LinkedHashMap<Long, SqlRow> target, Map<Long, SqlRow> source) {
+        for (Map.Entry<Long, SqlRow> entry : source.entrySet())
+            target.putIfAbsent(entry.getKey(), entry.getValue());
+    }
+
+    private LinkedHashMap<Long, SqlRow> runQuery(Connection connection, String sql, Object... params) throws SQLException {
+        LinkedHashMap<Long, SqlRow> rows = new LinkedHashMap<>();
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            for (int i = 0; i < params.length; i++) {
+                Object param = params[i];
+                if (param instanceof String string)
+                    statement.setString(i + 1, string);
+                else if (param instanceof Double number)
+                    statement.setDouble(i + 1, number);
+                else if (param instanceof Integer number)
+                    statement.setInt(i + 1, number);
+                else
+                    throw new IllegalArgumentException("Unsupported parameter type " + param);
+            }
             try (ResultSet resultSet = statement.executeQuery()) {
                 while (resultSet.next()) {
-                    LatLong latLong = new LatLong(resultSet.getDouble("lat"), resultSet.getDouble("lon"));
-                    List<Tag> tags = parseTags(resultSet.getString("data"));
-                    List<String> categories = parseCategories(resultSet.getString("categories"));
-                    Match tagMatch = findMatch(tags, categories, query, exactOnly);
-                    if (requireQueryMatch && tagMatch == null)
-                        continue;
-                    if (!requireQueryMatch && !MapsforgeTagMatcher.hasUsefulDescription(tags, categories))
-                        continue;
-
-                    CategorizedNavigationPosition position = buildDescriptionAndCategory(latLong, tags, categories, tagMatch, "Unnamed POI");
-                    matches.add(toPoiMatch(position, latLong, reference));
+                    long id = resultSet.getLong("id");
+                    rows.putIfAbsent(id, new SqlRow(resultSet.getDouble("lat"), resultSet.getDouble("lon"),
+                            resultSet.getString("data"), resultSet.getString("categories")));
                 }
             }
-        } catch (SQLException e) {
-            throw new IOException("Cannot search Mapsforge POI database " + poiFile, e);
         }
-        matches.sort(Comparator.comparingDouble(PoiMatch::distanceMeters).thenComparing(PoiMatch::description));
-        return matches;
+        return rows;
     }
 
     private Connection open(File file) throws SQLException {
@@ -261,6 +452,7 @@ class MapsforgePoiLookup {
 
     private record PoiMatch(CategorizedNavigationPosition position, String description, double distanceMeters) {
     }
+
+    private record SqlRow(double lat, double lon, String data, String categories) {
+    }
 }
-
-
