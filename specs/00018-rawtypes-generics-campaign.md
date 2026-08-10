@@ -1,8 +1,8 @@
 ---
 name: 00018-rawtypes-generics-campaign
 status: planned
-phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules]
-phases_next: [route-converter-gui, tail-modules, gate]
+phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules, route-converter-gui]
+phases_next: [tail-modules, gate]
 last_touched: 2026-08-10
 ---
 
@@ -20,8 +20,21 @@ out of scope). The factory builder aborted the issue for this phase (#282,
 partially) — landed instead via a direct `mvn compile` loop. That also forced
 the same mechanical widening in downstream modules (`mapview`,
 `mapsforge-mapview`, `route-converter-gui`, `route-converter-cmdline`) to keep
-the full reactor compiling. Phases 2–4 below are still buildable; each still
-wants its own issue with the usual locked decisions before approval.
+the full reactor compiling.
+
+Phase 2 (`route-converter-gui`) shipped 2026-08-10, commit
+[`f41d209ea`](https://github.com/cpesch/RouteConverter/commit/f41d209ea) —
+`route-converter-gui/src/main` is `-Xlint:rawtypes` clean (**120** → 0, the
+true count once javac's silent `-Xmaxwarns 100` default was accounted for —
+see [Phase 2 measurement + spike](#phase-2-measurement--spike-route-converter-gui-2026-08-10)).
+Issue [#287](https://github.com/cpesch/RouteConverter/issues/287) was filed,
+grilled, and `agent:approved`; the builder aborted exactly as decision 5
+predicted (42 files/100 flagged sites, same 30-file cap as #282) — landed
+directly instead, same as phase 1. Also widened `mapview`'s
+`PositionsModel.getRoute()`/`setRoute()` (the 2-line prerequisite) and its one
+downstream caller in `mapsforge-mapview`. Phases 3–4 below are still
+buildable; each still wants its own issue with the usual locked decisions
+before approval.
 
 Successor to spec 00017. Scope A (deprecated APIs, hand-written unchecked)
 shipped in PR #139; Scope B (`failOnWarning` + the build-helper locale noise)
@@ -528,16 +541,22 @@ Each phase is one PR, each ends green on the full reactor.
    `route-converter-gui`, `route-converter-cmdline` to keep those modules
    compiling against the tightened API (not a rawtypes-elimination pass on
    those modules themselves — that's still phases 2–3 below).
-2. **`route-converter-gui`** — re-measured 2026-08-10: **100 main hits** (not
-   56 — see [Phase 2 measurement + spike](#phase-2-measurement--spike-route-converter-gui-2026-08-10)),
-   41 Swing (unrelated to the route hierarchy, mechanical) + 59 route-hierarchy
-   (approach A, same as phase 1, plus a 2-line prerequisite widening of
-   `mapview`'s `PositionsModel.getRoute()`/`setRoute()` and a documented-cast
-   fix for the real defect the spike found in `PositionsModelImpl`). Grilled
-   and scoped 2026-08-10 — filed as [issue #287](https://github.com/cpesch/RouteConverter/issues/287),
-   unlabelled, awaiting the maintainer's `agent:approved`. Decision 5 (below)
-   plans for a direct `mvn compile` loop rather than the factory builder — 42
-   files/100 sites sits in the same range that made the builder abort phase 1.
+2. ✅ **`route-converter-gui`** — shipped 2026-08-10, commit [`f41d209ea`](https://github.com/cpesch/RouteConverter/commit/f41d209ea).
+   Re-measured true count **120 main hits** (not 56, and not the first
+   re-measurement's capped 100 either — see
+   [Phase 2 measurement + spike](#phase-2-measurement--spike-route-converter-gui-2026-08-10)),
+   42 Swing (unrelated to the route hierarchy, mechanical) + 78 route-hierarchy
+   (approach A, same as phase 1, plus the 2-line prerequisite widening of
+   `mapview`'s `PositionsModel.getRoute()`/`setRoute()` — and its one
+   downstream caller in `mapsforge-mapview` — and a documented-cast fix for
+   the real defect the spike found in `PositionsModelImpl`, mirrored in
+   `UndoPositionsModel`). Grilled and scoped 2026-08-10, filed as
+   [issue #287](https://github.com/cpesch/RouteConverter/issues/287); the
+   builder aborted exactly as decision 5 predicted (42 files/100 flagged
+   sites, same 30-file cap as phase 1's #282) — landed directly instead.
+   `-Xlint:rawtypes` for `route-converter-gui/main`: 120 → 0 (verified with
+   `-Xmaxwarns` raised past javac's silent default cap — see the correction
+   note above). Full reactor `mvn clean test` green.
 3. **`tail-modules`** — re-measured and re-scoped 2026-08-10, see
    [Phase 3 measurement + scope](#phase-3-measurement--scope-2026-08-10). Two
    issues, not one: (a) [issue #288](https://github.com/cpesch/RouteConverter/issues/288),
