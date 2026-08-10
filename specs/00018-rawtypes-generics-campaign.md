@@ -13,9 +13,10 @@ last_touched: 2026-08-10
 `planned`. Approach decided by the maintainer 2026-08-08 — see
 [Decision](#decision-2026-08-08). Phase 1 (`close-navigation-formats`) shipped
 2026-08-10 in [PR #286](https://github.com/cpesch/RouteConverter/pull/286) —
-`navigation-formats/src/main` is `-Xlint:rawtypes` clean (100 → 0; 16 residual
-hits are pre-existing JAXB-generated `jakarta.xml.bind.JAXBElement` usage,
-out of scope). The factory builder aborted the issue for this phase (#282,
+`navigation-formats/src/main` is `-Xlint:rawtypes` clean (~~100~~ **293 real,
+see [Phase 1 baseline correction](#phase-1-baseline-correction-2026-08-10)**
+→ 0, verified with `-Xmaxwarns` raised; 16 residual hits are pre-existing
+JAXB-generated `jakarta.xml.bind.JAXBElement` usage, out of scope). The factory builder aborted the issue for this phase (#282,
 55 files / 245 sites, over its 30-file PR cap, module can't compile
 partially) — landed instead via a direct `mvn compile` loop. That also forced
 the same mechanical widening in downstream modules (`mapview`,
@@ -43,9 +44,17 @@ issue #256: `rawtypes`.
 
 ## Problem
 
-`-Xlint:rawtypes` reports **318** warnings (184 main, 134 test) — 59% of the
-whole `-Xlint:all` backlog. They are not scattered: they are one structural
-defect in `navigation-formats/base`, radiating outward.
+~~`-Xlint:rawtypes` reports **318** warnings (184 main, 134 test) — 59% of the
+whole `-Xlint:all` backlog.~~ **Corrected 2026-08-10: this total is wrong and
+provably so** — `navigation-formats` alone, re-measured with javac's silent
+`-Xmaxwarns 100` default raised, is 293 main + 201 test = 494, more than the
+claimed reactor-wide total by itself. See
+[Phase 1 baseline correction](#phase-1-baseline-correction-2026-08-10). The
+true reactor-wide total is unmeasured; the qualitative diagnosis below (one
+structural defect radiating outward) is unaffected — it doesn't depend on the
+exact count — but no number in the tables that follow should be trusted
+without the same `-Xmaxwarns` check. They are not scattered: they are one
+structural defect in `navigation-formats/base`, radiating outward.
 
 The core hierarchy declares its type parameters with **raw bounds**:
 
@@ -76,12 +85,14 @@ anyone from budgeting a rewrite of all 82 formats.
 ## Measured baseline
 
 2026-08-08, JDK 21.0.11, Maven 3.9.9, full reactor `clean test-compile` with
-`<compilerArgs><arg>-Xlint:all</arg></compilerArgs>` in the root pom:
+`<compilerArgs><arg>-Xlint:all</arg></compilerArgs>` in the root pom — **not
+re-verified with `-Xmaxwarns`, known wrong for the two navigation-formats
+rows (see correction below), unverified for every other row**:
 
 | raw type name | hits | | module / source root | hits |
 |---|---|---|---|---|
-| `NavigationFormat` | 94 | | navigation-formats / test | 98 |
-| `BaseRoute` | 86 | | navigation-formats / main | 82 |
+| `NavigationFormat` | 94 | | navigation-formats / test | ~~98~~ **201** |
+| `BaseRoute` | 86 | | navigation-formats / main | ~~82~~ **293** |
 | `BaseNavigationFormat` | 40 | | route-converter-gui / main | 56 |
 | `SimpleRoute` | 31 | | route-converter-gui / test | 26 |
 | `GoPalRouteFormat` | 16 | | route-converter-cmdline / main | 12 |
@@ -100,6 +111,46 @@ Reproducing the measurement: maven-compiler-plugin 3.15 **ignores**
 pom as `<compilerArgs>`. Run with `MAVEN_OPTS="-Duser.language=en
 -Duser.country=US"` or javac localises the messages and they cannot be bucketed
 by category.
+
+## Phase 1 baseline correction (2026-08-10)
+
+Triggered by the same discovery that corrected phase 2's count (see
+[Phase 2 measurement + spike](#phase-2-measurement--spike-route-converter-gui-2026-08-10)):
+javac's default `-Xmaxwarns` is 100 and it drops anything past that cutoff
+with **zero indication** it did so. Both of phase 1's own numbers for
+`navigation-formats/main` — the baseline table's **82** (measured via
+`-Xlint:all`, 2026-08-08) and the Status/close-out text's **100** (measured
+via a dedicated `-Xlint:rawtypes`-only pass) — were capped. Re-measured
+2026-08-10, throwaway worktree, checked out to the pre-phase-1 commit
+(`699833a41`), same recipe as phase 2's correction (`-Xlint:rawtypes` +
+`-Xmaxwarns 100000` in `compilerArgs`, `failOnWarning` temporarily `false`,
+`mvn -pl navigation-formats -am clean test-compile`):
+
+> **Main: 293. Test: 201.** Not 82/100 and not 98. `navigation-formats` alone
+> (494 combined) exceeds the entire reactor-wide `-Xlint:all` total this spec
+> opened with (318) — which means that headline number was always impossible,
+> not just imprecise, and nobody caught it because a `BUILD SUCCESS` with a
+> capped count looks identical to one with a real count.
+
+**The shipped fix is unaffected — this is a historical-record correction, not
+a code defect.** Re-measured the *current* (post-phase-1) state the same way,
+`-Xmaxwarns` raised: **0** real `rawtypes` warnings, 16 pre-existing JAXB
+residual, exactly as documented. Whatever the true pre-fix count actually
+was, PR #286's mechanical propagation (compiler-driven, not a fixed list — see
+Behaviour in issue #282's body) reached every site regardless, because it
+worked by recompiling until clean rather than by counting down from a number.
+The wrong number never gated the work; it only misinformed the written record
+of how big the work was.
+
+**Not re-verified, flagged rather than re-measured:** the reactor-wide
+`-Xlint:all` total (318) and the other three category totals quoted in
+[Out of scope](#out-of-scope) — `serial` (117), `this-escape` (57), `unchecked`
+(31) — were measured the same way, in the same session, with the same
+uncapped assumption. All three are plausible candidates for the same silent
+undercount, and none of them gate anything currently in flight (`serial` is
+permanently WONTFIX, `this-escape` deferred, `unchecked` re-measured at phase
+4). Re-verify with `-Xmaxwarns` before using any of the three to scope future
+work; **do not carry them forward as fact** until then.
 
 ## Spike: how far do wildcard bounds get? (throwaway, not committed)
 
@@ -534,9 +585,11 @@ Each phase is one PR, each ends green on the full reactor.
    suppressions were vacuous (nothing left to suppress); the one *new*,
    documented cast per format lives in `NmnFormat`/`CoPilotFormat.getDuplicateFirstPosition`
    instead, exactly where the Decision section says the approach-A cost shows
-   up. `-Xlint:rawtypes` for `navigation-formats/main`: 100 → 0 (16 residual
-   hits are pre-existing `jakarta.xml.bind.JAXBElement` in generated gpx/kml/tcx
-   code, out of scope). Full reactor compiles and tests green — required the
+   up. `-Xlint:rawtypes` for `navigation-formats/main`: ~~100~~ **293 real**
+   (see [Phase 1 baseline correction](#phase-1-baseline-correction-2026-08-10))
+   → 0, re-verified 2026-08-10 with `-Xmaxwarns` raised (16 residual hits are
+   pre-existing `jakarta.xml.bind.JAXBElement` in generated gpx/kml/tcx code,
+   out of scope). Full reactor compiles and tests green — required the
    same mechanical `<?, ?>`/`<?>` widening in `mapview`, `mapsforge-mapview`,
    `route-converter-gui`, `route-converter-cmdline` to keep those modules
    compiling against the tightened API (not a rawtypes-elimination pass on
