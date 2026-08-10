@@ -474,6 +474,12 @@ match, `<?>` fixes both).
    alone — suppress at the generated site, fix the other 3 (hand-written
    `ListCellRenderer` overrides) for real.
 
+Filed as [issue #288](https://github.com/cpesch/RouteConverter/issues/288)
+(route-family + JAXB/misc residual, 21 hits) and
+[issue #289](https://github.com/cpesch/RouteConverter/issues/289) (the 4
+`mapsforge-mapview` Swing hits) — both unlabelled, awaiting the maintainer's
+`agent:approved`.
+
 ## Phased plan
 
 Each phase is one PR, each ends green on the full reactor.
@@ -508,11 +514,13 @@ Each phase is one PR, each ends green on the full reactor.
    files/100 sites sits in the same range that made the builder abort phase 1.
 3. **`tail-modules`** — re-measured and re-scoped 2026-08-10, see
    [Phase 3 measurement + scope](#phase-3-measurement--scope-2026-08-10). Two
-   issues, not one: (a) route-family + JAXB/misc residual — `route-converter-cmdline`
+   issues, not one: (a) [issue #288](https://github.com/cpesch/RouteConverter/issues/288),
+   route-family + JAXB/misc residual — `route-converter-cmdline`
    6, `mapsforge-mapview` 5 route-family + 2 `TileLayer`, `download` 3,
-   `tileserver-maps` 3, `datasource` 2 (**21 hits total**); (b) the 4 Swing hits
-   in `mapsforge-mapview` alone (3 hand-written `ListCellRenderer` overrides +
-   1 designer-generated `$$$setupUI$$$()` site, suppressed not hand-edited).
+   `tileserver-maps` 3, `datasource` 2 (**21 hits total**); (b) [issue #289](https://github.com/cpesch/RouteConverter/issues/289),
+   the 4 Swing hits in `mapsforge-mapview` alone (3 hand-written
+   `ListCellRenderer` overrides + 1 designer-generated `$$$setupUI$$$()` site,
+   suppressed not hand-edited). Both unlabelled, awaiting `agent:approved`.
    `mapview` drops to 0 and out of this phase's scope — its 2 hits
    (`PositionsModel.getRoute()`/`setRoute()`) are phase 2's prerequisite, not
    phase 3's (fixing them here too would double up on the same 2 lines).
