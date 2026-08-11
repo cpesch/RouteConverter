@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.garmin</groupId>
             <artifactId>fit</artifactId>
-            <version>21.205.0</version>
+            <version>21.212.0</version>
         </dependency>
         <dependency>
             <groupId>de.grundid.opendatalab</groupId>
