@@ -1,7 +1,7 @@
 ---
 name: 00018-rawtypes-generics-campaign
 status: planned
-phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules, route-converter-gui, tail-modules]
+phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules, route-converter-gui, tail-modules, measure-gate-readiness]
 phases_next: [gate]
 last_touched: 2026-08-11
 ---
@@ -666,6 +666,39 @@ suppression extended or left as-is pending a decision), 1 is the new
 from the corrected 54 pre-campaign — consistent with "should disappear during
 phases 1–3" for the hand-written fallout, not literally to zero.
 
+### Decision (2026-08-11) — resolving the gate-readiness gap
+
+Grilled with the maintainer the same day this gap was flagged. All 22 hits
+were fixed and the gate config validated end-to-end in a throwaway worktree
+(applied the exact `pom.xml` change from item 4 below on top of the 22 fixes;
+full reactor `BUILD SUCCESS`, test sources — 149 `rawtypes` hits, untouched —
+did not fail the build) *before* filing, so neither issue asks the builder to
+implement something unverified.
+
+1. **Split into two issues, not one.** [Issue #295](https://github.com/cpesch/RouteConverter/issues/295)
+   fixes the 22 hits (16 `navigation-formats` + 2 `route-catalog` JAXB
+   residue, fixed for real — `<?>` widening, not exemption, since they're
+   hand-written code that *uses* `JAXBElement` raw, not generated code
+   itself; 2 `profileview` + 1 `common-gui` + 1 `route-converter`, same
+   mechanical shapes as every prior phase, the `route-converter` one a
+   documented suppression like `MapSelector`'s). [Issue #296](https://github.com/cpesch/RouteConverter/issues/296)
+   is the pom-only gate flip, explicitly blocked on #295 merging first.
+   Rejected folding both into one PR: the gate flip is a one-block, easily-
+   reviewed config change, and keeping it separate from a 9-file source PR
+   means the gate can be reverted (or re-landed) without touching the source
+   fixes, and vice versa.
+2. **`-Xmaxwarns` gets raised permanently, in #296.** javac's silent 100-cap
+   caused two wrong headline numbers in this campaign already (phase 1: 100 vs
+   293 real; phase 2: 100 vs 120 real). Doesn't change gate behaviour
+   (`failOnWarning` fires on the first warning regardless of the print cap) —
+   only ensures a future CI log shows the true count.
+3. **`unchecked` stays fully out of scope for both issues.** It needs its own
+   suppress-vs-regenerate decision on the kml `ObjectFactory` codegen (16 of
+   its 18 main hits) that has nothing to do with flipping the rawtypes gate —
+   same reasoning phase 3 used to split Swing out of tail-modules rather than
+   fold it in. The `MapSelector.java:222` / `ThemeStyleDialog` sibling
+   `unchecked` warnings noted above are not addressed by either issue.
+
 ## Phased plan
 
 Each phase is one PR, each ends green on the full reactor.
@@ -721,20 +754,20 @@ Each phase is one PR, each ends green on the full reactor.
    phase 3's. See [Phase 3 measurement + scope](#phase-3-measurement--scope-2026-08-10)
    for the full breakdown — its numbers were single-category and small enough
    (27 total) to never risk the `-Xmaxwarns` cap that hit phases 1–2.
-4. ⚠️ **`gate`** — **not ready to file, see [Phase 4 gate-readiness check](#phase-4-gate-readiness-check-2026-08-11).**
-   Re-verified 2026-08-11: reactor-wide main-source `rawtypes` is **22, not 0**
-   — 18 pre-existing JAXB residue (`navigation-formats` + `route-catalog`,
-   never itemised together before) plus **4 hits in 3 modules
-   (`profileview`, `common-gui`, `route-converter`) that no phase ever
-   scoped.** Add `-Xlint:rawtypes` to the root pom's `<compilerArgs>` alongside
-   the `deprecation,try,lossy-conversions` set from #269, with the
-   `default-testCompile` override from the Decision section so test sources stay
-   exempt. `failOnWarning` is already true from #268. Acceptance: main-source
-   rawtypes warnings are 0 reactor-wide and a deliberately reintroduced raw
-   declaration in a main source fails the build, while the same declaration in a
-   test source does not — **but that acceptance criterion needs a decision
-   first: fix the 4 new hits (small, mechanical) and either fix or explicitly
-   exempt the 18 JAXB ones, or the gate can never literally reach zero.**
+4. **`gate`** — re-scoped 2026-08-11 into two issues once the readiness gap
+   above was resolved (see [Decision](#decision-2026-08-11--resolving-the-gate-readiness-gap)):
+   [issue #295](https://github.com/cpesch/RouteConverter/issues/295) (the 22
+   pre-gate hits: 16 `navigation-formats` + 2 `route-catalog` JAXB residue, 2
+   `profileview`, 1 `common-gui`, 1 `route-converter`) must merge first;
+   [issue #296](https://github.com/cpesch/RouteConverter/issues/296) is the
+   pom-only gate flip, explicitly blocked on #295. Add `-Xlint:rawtypes` (and
+   a permanently-raised `-Xmaxwarns`) to the root pom's `<compilerArgs>`,
+   with the `default-testCompile` override from the Decision section so test
+   sources stay exempt. `failOnWarning` is already true from #268.
+   Acceptance: main-source rawtypes warnings are 0 reactor-wide and a
+   deliberately reintroduced raw declaration in a main source fails the
+   build, while the same declaration in a test source does not — both
+   validated end-to-end in a throwaway worktree before either issue was filed.
 
 ## Out of scope
 
