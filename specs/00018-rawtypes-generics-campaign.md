@@ -1,7 +1,7 @@
 ---
 name: 00018-rawtypes-generics-campaign
 status: planned
-phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules, route-converter-gui, tail-modules, measure-gate-readiness]
+phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules, route-converter-gui, tail-modules, measure-gate-readiness, pre-gate-cleanup]
 phases_next: [gate]
 last_touched: 2026-08-11
 ---
@@ -681,12 +681,27 @@ implement something unverified.
    hand-written code that *uses* `JAXBElement` raw, not generated code
    itself; 2 `profileview` + 1 `common-gui` + 1 `route-converter`, same
    mechanical shapes as every prior phase, the `route-converter` one a
-   documented suppression like `MapSelector`'s). [Issue #296](https://github.com/cpesch/RouteConverter/issues/296)
-   is the pom-only gate flip, explicitly blocked on #295 merging first.
-   Rejected folding both into one PR: the gate flip is a one-block, easily-
-   reviewed config change, and keeping it separate from a 9-file source PR
-   means the gate can be reverted (or re-landed) without touching the source
-   fixes, and vice versa.
+   documented suppression like `MapSelector`'s). **Shipped 2026-08-11, merged
+   via [PR #298](https://github.com/cpesch/RouteConverter/pull/298), issue
+   closed.** [Issue #296](https://github.com/cpesch/RouteConverter/issues/296)
+   is the pom-only gate flip, explicitly blocked on #295 merging first — now
+   unblocked and `agent:approved`. Rejected folding both into one PR: the
+   gate flip is a one-block, easily-reviewed config change, and keeping it
+   separate from a 9-file source PR means the gate can be reverted (or
+   re-landed) without touching the source fixes, and vice versa.
+
+   **Live-fire test of the sequencing decision:** the builder correctly
+   *aborted* a premature dispatch on #296 (dry-run branch
+   `agent/builder/dryrun-19566` on `rc/rc-meta`) because the spec it fetched
+   still described #295 as "just filed" — it has no live GitHub access to
+   check #295's real merge state itself, so it treated the spec's own text as
+   the source of truth and refused to gate a build it couldn't verify was
+   safe. That is exactly the intended failure mode: the two-issue split meant
+   the worst outcome of a stale doc was a no-op abort, not a broken gate
+   landing on `master`. Lesson for next time: update the spec **before**
+   re-applying `agent:approved` to a downstream-blocked issue, not after —
+   the gap between "I confirmed the merge in chat" and "the spec file says
+   so" is exactly what the builder has no way to bridge.
 2. **`-Xmaxwarns` gets raised permanently, in #296.** javac's silent 100-cap
    caused two wrong headline numbers in this campaign already (phase 1: 100 vs
    293 real; phase 2: 100 vs 120 real). Doesn't change gate behaviour
@@ -754,13 +769,16 @@ Each phase is one PR, each ends green on the full reactor.
    phase 3's. See [Phase 3 measurement + scope](#phase-3-measurement--scope-2026-08-10)
    for the full breakdown — its numbers were single-category and small enough
    (27 total) to never risk the `-Xmaxwarns` cap that hit phases 1–2.
-4. **`gate`** — re-scoped 2026-08-11 into two issues once the readiness gap
+4. ⏳ **`gate`** — re-scoped 2026-08-11 into two issues once the readiness gap
    above was resolved (see [Decision](#decision-2026-08-11--resolving-the-gate-readiness-gap)):
    [issue #295](https://github.com/cpesch/RouteConverter/issues/295) (the 22
    pre-gate hits: 16 `navigation-formats` + 2 `route-catalog` JAXB residue, 2
-   `profileview`, 1 `common-gui`, 1 `route-converter`) must merge first;
-   [issue #296](https://github.com/cpesch/RouteConverter/issues/296) is the
-   pom-only gate flip, explicitly blocked on #295. Add `-Xlint:rawtypes` (and
+   `profileview`, 1 `common-gui`, 1 `route-converter`) — ✅ **shipped
+   2026-08-11, [PR #298](https://github.com/cpesch/RouteConverter/pull/298).**
+   [Issue #296](https://github.com/cpesch/RouteConverter/issues/296) is the
+   pom-only gate flip, was blocked on #295, now unblocked and
+   `agent:approved` — **not yet built.** This is the one remaining open item
+   in the whole campaign. Add `-Xlint:rawtypes` (and
    a permanently-raised `-Xmaxwarns`) to the root pom's `<compilerArgs>`,
    with the `default-testCompile` override from the Decision section so test
    sources stay exempt. `failOnWarning` is already true from #268.
