@@ -54,7 +54,7 @@ public class TcxUtil {
     public static slash.navigation.tcx.binding1.TrainingCenterDatabaseT unmarshal1(InputStream in) throws IOException {
         slash.navigation.tcx.binding1.TrainingCenterDatabaseT result;
         try {
-            JAXBElement element = (JAXBElement) newUnmarshaller1().unmarshal(in);
+            JAXBElement<?> element = (JAXBElement<?>) newUnmarshaller1().unmarshal(in);
             result = (slash.navigation.tcx.binding1.TrainingCenterDatabaseT) element.getValue();
         } catch (ClassCastException | JAXBException e) {
             throw new IOException("Parse error: " + e, e);
@@ -80,7 +80,7 @@ public class TcxUtil {
     public static slash.navigation.tcx.binding2.TrainingCenterDatabaseT unmarshal2(InputStream in) throws IOException {
         slash.navigation.tcx.binding2.TrainingCenterDatabaseT result;
         try {
-            JAXBElement element = (JAXBElement) newUnmarshaller2().unmarshal(in);
+            JAXBElement<?> element = (JAXBElement<?>) newUnmarshaller2().unmarshal(in);
             result = (slash.navigation.tcx.binding2.TrainingCenterDatabaseT) element.getValue();
         } catch (ClassCastException | JAXBException e) {
             throw new IOException("Parse error: " + e, e);

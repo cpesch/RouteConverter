@@ -81,9 +81,9 @@ public class Kml20Format extends KmlFormat {
             extractTracks(extractName(elements), extractDescriptionList(elements), elements, context);
     }
 
-    private JAXBElement findElement(List elements, String name) {
+    private JAXBElement<?> findElement(List<?> elements, String name) {
         for (Object element : elements) {
-            if (element instanceof JAXBElement jaxbElement) {
+            if (element instanceof JAXBElement<?> jaxbElement) {
                 if (name.equals(jaxbElement.getName().getLocalPart()))
                     return jaxbElement;
             }
@@ -92,12 +92,12 @@ public class Kml20Format extends KmlFormat {
     }
 
     private String extractName(List<Object> elements) {
-        JAXBElement name = findElement(elements, "name");
+        JAXBElement<?> name = findElement(elements, "name");
         return name != null ? trim((String) name.getValue()) : null;
     }
 
     private String extractDescription(List<Object> elements) {
-        JAXBElement name = findElement(elements, "description");
+        JAXBElement<?> name = findElement(elements, "description");
         if (name == null)
             return null;
         String string = (String) name.getValue();
@@ -113,7 +113,7 @@ public class Kml20Format extends KmlFormat {
     }
 
     private CompactCalendar extractTime(List<Object> elements) {
-        JAXBElement element = findElement(elements, "TimePeriod");
+        JAXBElement<?> element = findElement(elements, "TimePeriod");
         if (element == null)
             return null;
         TimePeriod timePeriod = (TimePeriod) element.getValue();
@@ -126,7 +126,7 @@ public class Kml20Format extends KmlFormat {
     }
 
     private List<String> extractDescriptionList(List<Object> elements) {
-        JAXBElement name = findElement(elements, "description");
+        JAXBElement<?> name = findElement(elements, "description");
         return name != null ? asDescription((String) name.getValue()) : null;
     }
 
@@ -161,7 +161,7 @@ public class Kml20Format extends KmlFormat {
     }
 
     private String findStyleUrl(List<Object> elements) {
-        JAXBElement name = findElement(elements, "styleUrl");
+        JAXBElement<?> name = findElement(elements, "styleUrl");
         return name != null ? (String) name.getValue() : null;
     }
 

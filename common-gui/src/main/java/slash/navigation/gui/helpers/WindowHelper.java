@@ -185,7 +185,7 @@ public class WindowHelper {
                 getString("out-of-memory-error"), limitBefore, limitAfter)));
     }
 
-    public static void handleThrowable(Class clazz, ActionEvent e, Throwable throwable) {
+    public static void handleThrowable(Class<?> clazz, ActionEvent e, Throwable throwable) {
         boolean offline = isComputerOffline(throwable);
         String stacktrace = offline ? "" : printStackTrace(throwable);
         // for a wrapped/opaque failure show the whole cause chain (the real

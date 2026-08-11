@@ -70,7 +70,7 @@ public class GpxPositionExtension {
         ExtensionsType extensions = wptType.getExtensions();
         if (extensions != null) {
             for (Object any : extensions.getAny())
-                if (any instanceof JAXBElement jaxbElement) {
+                if (any instanceof JAXBElement<?> jaxbElement) {
                     Object anyValue = jaxbElement.getValue();
                     if (anyValue instanceof slash.navigation.gpx.garmin3.TrackPointExtensionT) {
                         extensionTypes.add(Garmin3);
@@ -357,7 +357,7 @@ public class GpxPositionExtension {
     private <T> T getExtension(Class<T> extensionClass) {
         List<Object> anys = wptType.getExtensions().getAny();
         for (Object any : anys) {
-            if (any instanceof JAXBElement jaxbElement) {
+            if (any instanceof JAXBElement<?> jaxbElement) {
                 Object anyValue = jaxbElement.getValue();
                 if (extensionClass.isInstance(anyValue)) {
                     return extensionClass.cast(anyValue);
@@ -442,7 +442,7 @@ public class GpxPositionExtension {
         List<Object> anys = wptType.getExtensions().getAny();
         for (Iterator<Object> iterator = anys.iterator(); iterator.hasNext(); ) {
             Object any = iterator.next();
-            if (any instanceof JAXBElement jaxbElement) {
+            if (any instanceof JAXBElement<?> jaxbElement) {
                 Object anyValue = jaxbElement.getValue();
                 if (anyValue.equals(extension))
                     iterator.remove();
