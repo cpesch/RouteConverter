@@ -113,9 +113,9 @@ public class NonSelectedPositionListsRenderer {
             layer.layers.clear();
 
             List<BaseRoute<?, ?>> routes = positionListsModel.getRoutes();
-            BaseRoute selectedRoute = positionListsModel.getSelectedRoute();
+            BaseRoute<?, ?> selectedRoute = positionListsModel.getSelectedRoute();
             if (routes != null) {
-                for (BaseRoute route : routes) {
+                for (BaseRoute<?, ?> route : routes) {
                     if (route == null || route == selectedRoute)
                         continue;
                     addPositionList(route);
@@ -126,9 +126,8 @@ public class NonSelectedPositionListsRenderer {
         layer.requestRedraw();
     }
 
-    @SuppressWarnings("unchecked")
-    private void addPositionList(BaseRoute route) {
-        List<NavigationPosition> positions = route.getPositions();
+    private void addPositionList(BaseRoute<?, ?> route) {
+        List<? extends NavigationPosition> positions = route.getPositions();
         DisplayModel displayModel = mapView.getMapView().getModel().displayModel;
 
         if (route.getCharacteristics().equals(Waypoints)) {

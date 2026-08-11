@@ -25,7 +25,7 @@ package slash.navigation.base;
  * @author Christian Pesch
  */
 public class CmdLineNavigationFormatRegistry extends NavigationFormatRegistry {
-    protected boolean includeReadFormat(NavigationFormat format) {
+    protected boolean includeReadFormat(NavigationFormat<?> format) {
         return true;
     }
 }

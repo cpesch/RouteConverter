@@ -61,7 +61,7 @@ public class DownloadManager {
 
     private final EventListenerList listenerList = new EventListenerList();
     private final DownloadTableModel model = new DownloadTableModel();
-    private final Map<Download,Future> downloadToFutures = new HashMap<>();
+    private final Map<Download,Future<?>> downloadToFutures = new HashMap<>();
     private final Map<Download,DownloadExecutor> downloadToExecutors = new HashMap<>();
     private final ThreadPoolExecutor pool;
 
@@ -129,7 +129,7 @@ public class DownloadManager {
                 continue;
 
             log.info("Stopping download " + download);
-            Future future = downloadToFutures.get(download);
+            Future<?> future = downloadToFutures.get(download);
             if(future != null)
                 future.cancel(true);
 

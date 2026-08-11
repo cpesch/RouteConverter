@@ -77,7 +77,7 @@ public class FileAnalyzer {
         // Treat it as broken so the caller marks it broken rather than creating
         // an empty metadata row / rescuing a non-route (specs/00055, 00056).
         int total = 0;
-        for (BaseRoute route : routes)
+        for (BaseRoute<?, ?> route : routes)
             total += route.getPositionCount();
         if (total == 0)
             throw new IOException("No positions found in '" + source.getAbsolutePath() + "'");
@@ -111,7 +111,7 @@ public class FileAnalyzer {
 
         String firstName = null;
 
-        for (BaseRoute route : routes) {
+        for (BaseRoute<?, ?> route : routes) {
             positions += route.getPositionCount();
 
             if (firstName == null) {

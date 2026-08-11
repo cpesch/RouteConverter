@@ -47,7 +47,7 @@ public class TileServerMapManager {
     private final ItemTableModel<TileServer> availableMapsModel = new ItemTableModel<>(1);
     private final ItemTableModel<TileServer> availableOverlaysModel = new ItemTableModel<>(1);
     private final ItemTableModel<TileServer> appliedOverlaysModel = new ItemTableModel<>(1);
-    private ItemPreferencesMediator itemPreferencesMediator;
+    private ItemPreferencesMediator<TileServer> itemPreferencesMediator;
 
     public TileServerMapManager(File tileServerDirectory) {
         this.tileServerService = new TileServerService(tileServerDirectory);

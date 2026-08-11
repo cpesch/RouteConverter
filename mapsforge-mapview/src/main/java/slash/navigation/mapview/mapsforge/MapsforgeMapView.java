@@ -637,7 +637,7 @@ public class MapsforgeMapView extends BaseMapView {
             layers.remove(remove);
             remove.onDestroy();
 
-            if (remove instanceof TileLayer tileLayer)
+            if (remove instanceof TileLayer<?> tileLayer)
                 tileLayer.getTileCache().destroy();
         }
         mapsToLayers.clear();
@@ -893,10 +893,13 @@ public class MapsforgeMapView extends BaseMapView {
         return mapView.getModel().displayModel.getTileSize();
     }
 
+    // getRoute()'s position type is an independent wildcard capture; every
+    // element is a BaseNavigationPosition (hence a NavigationPosition)
+    // regardless -- cast bypasses the capture, same as showAllPositions() above.
     @SuppressWarnings("unchecked")
     private BoundingBox getRouteBoundingBox() {
-        BaseRoute route = positionsModel.getRoute();
-        return route != null && !route.getPositions().isEmpty() ? asBoundingBox(route.getPositions()) : null;
+        BaseRoute<?, ?> route = positionsModel.getRoute();
+        return route != null && !route.getPositions().isEmpty() ? asBoundingBox((List<NavigationPosition>) (List) route.getPositions()) : null;
     }
 
     private boolean isGoogleMap(LocalMap map) {

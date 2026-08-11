@@ -38,7 +38,7 @@ public class MapServerUtil {
     public static CatalogType unmarshal(InputStream in) throws JAXBException {
         CatalogType result;
         try {
-            JAXBElement element = (JAXBElement) newUnmarshaller().unmarshal(in);
+            JAXBElement<?> element = (JAXBElement<?>) newUnmarshaller().unmarshal(in);
             result = (CatalogType) element.getValue();
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);

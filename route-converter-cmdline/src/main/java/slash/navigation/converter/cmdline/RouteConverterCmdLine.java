@@ -63,11 +63,11 @@ public class RouteConverterCmdLine {
             log.info(format.getClass().getSimpleName() + " for " + format.getName());
     }
 
-    private BaseNavigationFormat findFormat(String formatName) {
+    private BaseNavigationFormat<?> findFormat(String formatName) {
         List<NavigationFormat<?>> formats = registry.getWriteFormats();
         for (NavigationFormat<?> format : formats)
             if (formatName.equals(format.getClass().getSimpleName()))
-                return (BaseNavigationFormat) format;
+                return (BaseNavigationFormat<?>) format;
         return null;
     }
 
@@ -92,7 +92,7 @@ public class RouteConverterCmdLine {
             return 10;
         }
 
-        BaseNavigationFormat format = findFormat(args[1]);
+        BaseNavigationFormat<?> format = findFormat(args[1]);
         if (format == null) {
             log.severe("Format '" + args[1] + "' does not exist; stopping.");
             logFormatNames(false);
@@ -176,7 +176,7 @@ public class RouteConverterCmdLine {
         return new PointToPointLengthComputer();
     }
 
-    private void convert(File source, NavigationFormat format, File target) throws IOException {
+    private void convert(File source, NavigationFormat<?> format, File target) throws IOException {
         NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
         ParserResult result = parser.read(source);
         if (!result.isSuccessful()) {
