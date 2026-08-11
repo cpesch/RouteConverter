@@ -616,10 +616,55 @@ match, `<?>` fixes both).
    `ListCellRenderer` overrides) for real.
 
 Filed as [issue #288](https://github.com/cpesch/RouteConverter/issues/288)
-(route-family + JAXB/misc residual, 21 hits) and
-[issue #289](https://github.com/cpesch/RouteConverter/issues/289) (the 4
-`mapsforge-mapview` Swing hits) — both unlabelled, awaiting the maintainer's
-`agent:approved`.
+(route-family + JAXB/misc residual, 21 hits) → [PR #291](https://github.com/cpesch/RouteConverter/pull/291),
+merged 2026-08-11, and [issue #289](https://github.com/cpesch/RouteConverter/issues/289)
+(the 4 `mapsforge-mapview` Swing hits) → PR #290, merged 2026-08-10.
+
+## Phase 4 gate-readiness check (2026-08-11)
+
+Re-verified reactor-wide with the same `-Xmaxwarns`-raised recipe, this time
+against current `master` (`c93e51af8`, phases 1–3 all merged) —
+`-Xlint:rawtypes,unchecked` in root `compilerArgs`, `-Xmaxwarns 1000000`,
+`mvn clean test-compile`, full reactor:
+
+> **`rawtypes`: 22 main, 149 test. `unchecked`: 18 main, 11 test.** The gate's
+> stated acceptance criterion — "main-source rawtypes warnings are 0
+> reactor-wide" — **is not met yet.** Phase 4 cannot be filed as-is.
+
+The 22 main hits, by module:
+
+| module | hits | nature |
+|---|---|---|
+| `navigation-formats` | 16 | pre-existing JAXB `JAXBElement`, already documented out of scope |
+| `route-catalog` | 2 | pre-existing JAXB `JAXBElement`, same class, never itemised in any phase table |
+| `profileview` | 2 | **new** — `ProfileModel.getRoute()`'s local `BaseRoute` (route-hierarchy, not JAXB) + `PatchedXYSeries`'s constructor param `Comparable` (JFreeChart's own ctor takes raw `Comparable`, single-site) |
+| `common-gui` | 1 | **new** — `WindowHelper.handleThrowable`'s `Class` parameter |
+| `route-converter` | 1 | **new** — `ThemeStyleDialog`'s designer-generated `$$$setupUI$$$()` raw `new JComboBox()`, structurally identical to `mapsforge-mapview`'s `MapSelector.java` case phase 3 already fixed by suppression |
+
+**Three whole modules — `profileview`, `common-gui`, `route-converter` — were
+never in any phase's scope table.** They surfaced in the
+[reactor-wide re-verification](#phase-1-baseline-correction-2026-08-10) done
+for phase 1's correction (that table already listed `profileview`/`route-catalog`/
+`common-gui`/`route-converter` with counts, but nobody had connected those
+rows back to "does the gate's zero-hit criterion actually hold" until now).
+None of the four new hits are structurally hard — same mechanical shapes
+already established (`BaseRoute<?, ?>`, `Comparable<?>`, `Class<?>`, and the
+same documented-suppression precedent for the designer-generated `JComboBox`)
+— but they need their own decision (fold into a small phase-3.5 issue, or
+have the gate's `-Xlint:rawtypes` scoping explicitly exempt the 18 JAXB sites
+by file/package rather than requiring literal zero). Not resolved here —
+flagging so phase 4 isn't drafted against a false "already at zero" premise.
+
+`unchecked`'s 18 main hits: 16 are `kml`'s three generated `ObjectFactory`
+classes (`binding21`/`binding22`/`binding22beta` — the same JAXB RI 2.1
+codegen the Out of scope section already names), 1 is `mapsforge-mapview`'s
+`MapSelector.java:222` (the `@SuppressWarnings("rawtypes")` phase 3 added
+there suppresses only that category — the sibling `unchecked` warning on the
+same raw-`JComboBox` construction was never addressed, and needs the same
+suppression extended or left as-is pending a decision), 1 is the new
+`route-converter/ThemeStyleDialog` hit above (same shape, same fix). Down
+from the corrected 54 pre-campaign — consistent with "should disappear during
+phases 1–3" for the hand-written fallout, not literally to zero.
 
 ## Phased plan
 
@@ -676,13 +721,20 @@ Each phase is one PR, each ends green on the full reactor.
    phase 3's. See [Phase 3 measurement + scope](#phase-3-measurement--scope-2026-08-10)
    for the full breakdown — its numbers were single-category and small enough
    (27 total) to never risk the `-Xmaxwarns` cap that hit phases 1–2.
-4. **`gate`** — add `-Xlint:rawtypes` to the root pom's `<compilerArgs>`
-   alongside the `deprecation,try,lossy-conversions` set from #269, with the
+4. ⚠️ **`gate`** — **not ready to file, see [Phase 4 gate-readiness check](#phase-4-gate-readiness-check-2026-08-11).**
+   Re-verified 2026-08-11: reactor-wide main-source `rawtypes` is **22, not 0**
+   — 18 pre-existing JAXB residue (`navigation-formats` + `route-catalog`,
+   never itemised together before) plus **4 hits in 3 modules
+   (`profileview`, `common-gui`, `route-converter`) that no phase ever
+   scoped.** Add `-Xlint:rawtypes` to the root pom's `<compilerArgs>` alongside
+   the `deprecation,try,lossy-conversions` set from #269, with the
    `default-testCompile` override from the Decision section so test sources stay
    exempt. `failOnWarning` is already true from #268. Acceptance: main-source
    rawtypes warnings are 0 reactor-wide and a deliberately reintroduced raw
    declaration in a main source fails the build, while the same declaration in a
-   test source does not.
+   test source does not — **but that acceptance criterion needs a decision
+   first: fix the 4 new hits (small, mechanical) and either fix or explicitly
+   exempt the 18 JAXB ones, or the gate can never literally reach zero.**
 
 ## Out of scope
 
