@@ -105,7 +105,10 @@ public class UpdateDecouplerTest {
     public void replaceRouteClearsPreviousUpdaterAndFillsSelectedOne() throws Exception {
         BaseRoute<?, ?> route = mock(BaseRoute.class);
         when(route.getCharacteristics()).thenReturn(Route);
-        when(positionsModel.getRoute()).thenReturn(route);
+        // route's and getRoute()'s wildcards are independent captures -- bridge through
+        // the raw type, same as MapsforgeMapView.getRouteBoundingBox's cast, rather than
+        // widening this local back to a raw BaseRoute.
+        when(positionsModel.getRoute()).thenReturn((BaseRoute) route);
         when(positionsModel.getRowCount()).thenReturn(10);
 
         decoupler.replaceRoute();
