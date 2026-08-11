@@ -187,12 +187,36 @@
                         <release>${java.version}</release>
                         <encoding>UTF-8</encoding>
                         <!-- spec 00017 Scope B: javac warnings fail the build, so a
-                             warning-free compile cannot silently regress. The -Xlint
-                             bulk (rawtypes/serial/this-escape) stays OFF deliberately —
-                             see the tracking issue; enabling it here would fail every
-                             module on day one. -->
+                             warning-free compile cannot silently regress. rawtypes has
+                             graduated out of the -Xlint bulk and is enforced below for
+                             main sources; serial/this-escape stay OFF deliberately —
+                             see the tracking issue and specs/00018. -->
                         <failOnWarning>true</failOnWarning>
+                        <compilerArgs>
+                            <arg>-Xlint:rawtypes</arg>
+                            <!-- javac silently caps warning output at 100 by default;
+                                 raise it so a future CI failure log shows the true count
+                                 instead of truncating (specs/00018 phase 1/2 both hit
+                                 wrong headline numbers because of this cap). Does not
+                                 change gate behaviour: failOnWarning already fires on
+                                 the first warning regardless of the print cap. -->
+                            <arg>-Xmaxwarns</arg>
+                            <arg>100000</arg>
+                        </compilerArgs>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <!-- Test sources deliberately stay exempt from -Xlint:rawtypes
+                                 (specs/00018 Decision) — combine.self="override" replaces
+                                 the parent's compilerArgs for this execution instead of
+                                 merging into it; without it Maven merges the -Xlint:rawtypes
+                                 arg into the test-compile execution too. -->
+                            <id>default-testCompile</id>
+                            <configuration>
+                                <compilerArgs combine.self="override"/>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
