@@ -1,9 +1,9 @@
 ---
 name: 00018-rawtypes-generics-campaign
 status: planned
-phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules, route-converter-gui]
-phases_next: [tail-modules, gate]
-last_touched: 2026-08-10
+phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules, route-converter-gui, tail-modules]
+phases_next: [gate]
+last_touched: 2026-08-11
 ---
 
 # 00018 - Retire the raw types in the route/format hierarchy
@@ -33,9 +33,15 @@ grilled, and `agent:approved`; the builder aborted exactly as decision 5
 predicted (42 files/100 flagged sites, same 30-file cap as #282) — landed
 directly instead, same as phase 1. Also widened `mapview`'s
 `PositionsModel.getRoute()`/`setRoute()` (the 2-line prerequisite) and its one
-downstream caller in `mapsforge-mapview`. Phases 3–4 below are still
-buildable; each still wants its own issue with the usual locked decisions
-before approval.
+downstream caller in `mapsforge-mapview`.
+
+Phase 3 (`tail-modules`) shipped as two PRs, both merged 2026-08-11:
+[PR #291](https://github.com/cpesch/RouteConverter/pull/291) (issue #288,
+route-family + JAXB/misc residual, `route-converter-cmdline`/
+`mapsforge-mapview`/`download`/`tileserver-maps`/`datasource`) and
+[PR #290](https://github.com/cpesch/RouteConverter/pull/290) (issue #289, the
+4 Swing hits in `mapsforge-mapview`). Only phase 4 (`gate`) remains — see the
+[Phased plan](#phased-plan) for the per-phase acceptance detail.
 
 Successor to spec 00017. Scope A (deprecated APIs, hand-written unchecked)
 shipped in PR #139; Scope B (`failOnWarning` + the build-helper locale noise)
@@ -655,22 +661,21 @@ Each phase is one PR, each ends green on the full reactor.
    `-Xlint:rawtypes` for `route-converter-gui/main`: 120 → 0 (verified with
    `-Xmaxwarns` raised past javac's silent default cap — see the correction
    note above). Full reactor `mvn clean test` green.
-3. **`tail-modules`** — re-measured and re-scoped 2026-08-10, see
-   [Phase 3 measurement + scope](#phase-3-measurement--scope-2026-08-10). Two
-   issues, not one: (a) [issue #288](https://github.com/cpesch/RouteConverter/issues/288),
-   route-family + JAXB/misc residual — `route-converter-cmdline`
-   6, `mapsforge-mapview` 5 route-family + 2 `TileLayer`, `download` 3,
-   `tileserver-maps` 3, `datasource` 2 (**21 hits total**); (b) [issue #289](https://github.com/cpesch/RouteConverter/issues/289),
-   the 4 Swing hits in `mapsforge-mapview` alone (3 hand-written
-   `ListCellRenderer` overrides + 1 designer-generated `$$$setupUI$$$()` site,
-   suppressed not hand-edited). Both unlabelled, awaiting `agent:approved`.
-   `mapview` drops to 0 and out of this phase's scope — its 2 hits
-   (`PositionsModel.getRoute()`/`setRoute()`) are phase 2's prerequisite, not
-   phase 3's (fixing them here too would double up on the same 2 lines).
-   Correction to the phase-2 section's claim that "this phase's Swing count is
-   0": the *original* 12-hit miscount does resolve to `route-converter-gui`
-   (41, phase 2), but 4 distinct, freshly-measured Swing hits are genuinely in
-   `mapsforge-mapview`, unrelated to that miscount — see above.
+3. ✅ **`tail-modules`** — shipped as two PRs, both merged 2026-08-11: (a)
+   [issue #288](https://github.com/cpesch/RouteConverter/issues/288) →
+   [PR #291](https://github.com/cpesch/RouteConverter/pull/291), route-family +
+   JAXB/misc residual across `route-converter-cmdline`, `mapsforge-mapview`,
+   `download`, `tileserver-maps`, `datasource` (21 hits); (b)
+   [issue #289](https://github.com/cpesch/RouteConverter/issues/289) → PR #290,
+   the 4 Swing hits in `mapsforge-mapview` alone. #291's builder couldn't run
+   Maven in its environment and asked for local confirmation before merge —
+   re-verified 2026-08-11 with `-Xmaxwarns` raised: **0** rawtypes remaining in
+   all 5 target modules, full reactor `mvn clean test` green. `mapview`
+   dropped to 0 and out of this phase's scope — its 2 hits
+   (`PositionsModel.getRoute()`/`setRoute()`) were phase 2's prerequisite, not
+   phase 3's. See [Phase 3 measurement + scope](#phase-3-measurement--scope-2026-08-10)
+   for the full breakdown — its numbers were single-category and small enough
+   (27 total) to never risk the `-Xmaxwarns` cap that hit phases 1–2.
 4. **`gate`** — add `-Xlint:rawtypes` to the root pom's `<compilerArgs>`
    alongside the `deprecation,try,lossy-conversions` set from #269, with the
    `default-testCompile` override from the Decision section so test sources stay
