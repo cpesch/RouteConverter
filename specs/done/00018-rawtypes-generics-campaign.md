@@ -1,8 +1,8 @@
 ---
 name: 00018-rawtypes-generics-campaign
-status: planned
-phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules, route-converter-gui, tail-modules, measure-gate-readiness, pre-gate-cleanup]
-phases_next: [gate]
+status: shipped
+phases_done: [measure, spike-navigation-formats, decide-approach, close-navigation-formats, measure-route-converter-gui, spike-route-converter-gui, measure-tail-modules, route-converter-gui, tail-modules, measure-gate-readiness, pre-gate-cleanup, gate]
+phases_next: []
 last_touched: 2026-08-11
 ---
 
@@ -10,7 +10,7 @@ last_touched: 2026-08-11
 
 ## Status
 
-`planned`. Approach decided by the maintainer 2026-08-08 — see
+`shipped`. All 4 phases landed 2026-08-10/11. Approach decided by the maintainer 2026-08-08 — see
 [Decision](#decision-2026-08-08). Phase 1 (`close-navigation-formats`) shipped
 2026-08-10 in [PR #286](https://github.com/cpesch/RouteConverter/pull/286) —
 `navigation-formats/src/main` is `-Xlint:rawtypes` clean (~~100~~ **293 real,
@@ -40,8 +40,18 @@ Phase 3 (`tail-modules`) shipped as two PRs, both merged 2026-08-11:
 route-family + JAXB/misc residual, `route-converter-cmdline`/
 `mapsforge-mapview`/`download`/`tileserver-maps`/`datasource`) and
 [PR #290](https://github.com/cpesch/RouteConverter/pull/290) (issue #289, the
-4 Swing hits in `mapsforge-mapview`). Only phase 4 (`gate`) remains — see the
-[Phased plan](#phased-plan) for the per-phase acceptance detail.
+4 Swing hits in `mapsforge-mapview`).
+
+Phase 4 (`gate`) shipped 2026-08-11 in two steps: [PR #298](https://github.com/cpesch/RouteConverter/pull/298)
+(issue #295, the 22 pre-gate hits nobody had scoped — `navigation-formats` +
+`route-catalog` JAXB residue, `profileview`, `common-gui`, `route-converter`),
+then commit [`186ff0c7b`](https://github.com/cpesch/RouteConverter/commit/186ff0c7b)
+(issue #296, the actual `-Xlint:rawtypes` gate flip — the builder's dry-run
+produced a malformed diff hunk header and aborted, landed directly, same as
+phases 1 and 2). `-Xlint:rawtypes` is now a permanent, enforced build gate
+for main sources reactor-wide, with test sources exempt per the Decision
+section. **Campaign complete** — see the [Phased plan](#phased-plan) for the
+per-phase acceptance detail.
 
 Successor to spec 00017. Scope A (deprecated APIs, hand-written unchecked)
 shipped in PR #139; Scope B (`failOnWarning` + the build-helper locale noise)
@@ -769,23 +779,28 @@ Each phase is one PR, each ends green on the full reactor.
    phase 3's. See [Phase 3 measurement + scope](#phase-3-measurement--scope-2026-08-10)
    for the full breakdown — its numbers were single-category and small enough
    (27 total) to never risk the `-Xmaxwarns` cap that hit phases 1–2.
-4. ⏳ **`gate`** — re-scoped 2026-08-11 into two issues once the readiness gap
-   above was resolved (see [Decision](#decision-2026-08-11--resolving-the-gate-readiness-gap)):
-   [issue #295](https://github.com/cpesch/RouteConverter/issues/295) (the 22
-   pre-gate hits: 16 `navigation-formats` + 2 `route-catalog` JAXB residue, 2
-   `profileview`, 1 `common-gui`, 1 `route-converter`) — ✅ **shipped
-   2026-08-11, [PR #298](https://github.com/cpesch/RouteConverter/pull/298).**
-   [Issue #296](https://github.com/cpesch/RouteConverter/issues/296) is the
-   pom-only gate flip, was blocked on #295, now unblocked and
-   `agent:approved` — **not yet built.** This is the one remaining open item
-   in the whole campaign. Add `-Xlint:rawtypes` (and
-   a permanently-raised `-Xmaxwarns`) to the root pom's `<compilerArgs>`,
-   with the `default-testCompile` override from the Decision section so test
-   sources stay exempt. `failOnWarning` is already true from #268.
-   Acceptance: main-source rawtypes warnings are 0 reactor-wide and a
-   deliberately reintroduced raw declaration in a main source fails the
-   build, while the same declaration in a test source does not — both
-   validated end-to-end in a throwaway worktree before either issue was filed.
+4. ✅ **`gate`** — re-scoped 2026-08-11 into two issues once the readiness gap
+   above was resolved (see [Decision](#decision-2026-08-11--resolving-the-gate-readiness-gap)),
+   both shipped 2026-08-11: [issue #295](https://github.com/cpesch/RouteConverter/issues/295)
+   (the 22 pre-gate hits: 16 `navigation-formats` + 2 `route-catalog` JAXB
+   residue, 2 `profileview`, 1 `common-gui`, 1 `route-converter`) →
+   [PR #298](https://github.com/cpesch/RouteConverter/pull/298); [issue #296](https://github.com/cpesch/RouteConverter/issues/296)
+   (the pom-only gate flip) → commit [`186ff0c7b`](https://github.com/cpesch/RouteConverter/commit/186ff0c7b) —
+   the builder's dry-run (`agent/builder/noop-19574`) produced the correct
+   content but a malformed diff hunk header (`@@ -1,3 +1,3 @@` against an
+   ~80-line body) that failed to apply, so it landed directly, same as
+   phases 1 and 2. Added `-Xlint:rawtypes` and a permanently-raised
+   `-Xmaxwarns` to the root pom's `<compilerArgs>`, with the
+   `default-testCompile` override from the Decision section so test sources
+   stay exempt. `failOnWarning` was already true from #268. Acceptance
+   verified on the actual commit, not just the pre-flight worktree: full
+   reactor `mvn clean test-compile` and `mvn test` both green, and a
+   deliberately reintroduced raw declaration in `common-gui/main` failed the
+   build (reverted before the real commit) while test sources (149 rawtypes
+   hits, untouched) did not.
+
+**Campaign closed.** `-Xlint:rawtypes` is now a permanent, enforced gate for
+main sources reactor-wide across the whole `RouteConverter` reactor.
 
 ## Out of scope
 
