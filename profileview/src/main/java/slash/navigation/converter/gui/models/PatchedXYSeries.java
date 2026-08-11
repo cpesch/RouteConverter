@@ -31,7 +31,7 @@ import org.jfree.data.xy.XYSeries;
 public class PatchedXYSeries extends XYSeries {
     private boolean fireSeriesChanged = true;
 
-    public PatchedXYSeries(Comparable key) {
+    public PatchedXYSeries(Comparable<?> key) {
         super(key);
     }
 

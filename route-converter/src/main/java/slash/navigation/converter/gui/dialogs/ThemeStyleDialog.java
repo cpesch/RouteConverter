@@ -123,6 +123,9 @@ public class ThemeStyleDialog extends SimpleDialog {
      *
      * @noinspection ALL
      */
+    // Generated code: ThemeStyleDialog.form has no concept of generics, so the JComboBox
+    // initializer below is unavoidably raw; suppress rather than hand-edit generated code.
+    @SuppressWarnings("rawtypes")
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(3, 2, new Insets(10, 10, 10, 10), -1, -1));

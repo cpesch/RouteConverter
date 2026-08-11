@@ -90,7 +90,7 @@ public class Gpx11Format extends GpxFormat {
             ExtensionsType extensions = wptType.getExtensions();
             if (extensions != null) {
                 for (Object any : extensions.getAny()) {
-                    if (any instanceof JAXBElement jaxbElement) {
+                    if (any instanceof JAXBElement<?> jaxbElement) {
                         Object anyValue = jaxbElement.getValue();
                         if(anyValue instanceof RoutePointExtensionT)
                             return true;
@@ -179,7 +179,7 @@ public class Gpx11Format extends GpxFormat {
                 ExtensionsType extensions = wptType.getExtensions();
                 if (extensions != null) {
                     for (Object any : extensions.getAny()) {
-                        if (any instanceof JAXBElement jaxbElement) {
+                        if (any instanceof JAXBElement<?> jaxbElement) {
                             Object anyValue = jaxbElement.getValue();
                             if (anyValue instanceof RoutePointExtensionT routePoint) {
                                 for (AutoroutePointT autoroutePoint : routePoint.getRpt()) {
@@ -230,7 +230,7 @@ public class Gpx11Format extends GpxFormat {
         while (iterator.hasNext()) {
             Object any = iterator.next();
 
-            if (any instanceof JAXBElement jaxbElement) {
+            if (any instanceof JAXBElement<?> jaxbElement) {
                 if (extensionNameToRemove.equals(jaxbElement.getName().getLocalPart())) {
                     iterator.remove();
                 } else if (extensionNameToAdd.equals(jaxbElement.getName().getLocalPart())) {

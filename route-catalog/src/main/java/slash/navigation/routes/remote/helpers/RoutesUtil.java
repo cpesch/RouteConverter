@@ -51,7 +51,7 @@ public class RoutesUtil {
     public static CatalogType unmarshal(Reader reader) throws JAXBException {
         CatalogType result;
         try {
-            JAXBElement element = (JAXBElement) newUnmarshaller().unmarshal(reader);
+            JAXBElement<?> element = (JAXBElement<?>) newUnmarshaller().unmarshal(reader);
             result = (CatalogType) element.getValue();
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e);
@@ -62,7 +62,7 @@ public class RoutesUtil {
     public static CatalogType unmarshal(InputStream in) throws JAXBException {
         CatalogType result;
         try {
-            JAXBElement element = (JAXBElement) newUnmarshaller().unmarshal(in);
+            JAXBElement<?> element = (JAXBElement<?>) newUnmarshaller().unmarshal(in);
             result = (CatalogType) element.getValue();
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);
