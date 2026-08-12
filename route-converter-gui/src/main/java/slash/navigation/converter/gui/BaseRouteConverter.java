@@ -322,10 +322,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         openMapAndProfileView();
 
         initializeMenus();
-        // the tab ChangeListener never fires for the initially selected tab, so the
-        // per-tab "Show Column" submenu visibility has to be applied once at startup —
-        // otherwise both equally-labelled submenus are visible and the lazily-populated
-        // route one is empty
+        // the tab ChangeListener never fires for the initially selected tab, so apply visibility once here
         FrameMenu.updateColumnMenuVisibility(isBrowsePanelSelected());
         initializeHelp();
         getContext().getActionManager().logUsage();
