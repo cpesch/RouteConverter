@@ -119,11 +119,14 @@ public class PositionHelper {
         if (speed == null)
             return "";
         UnitSystem unitSystem = BaseRouteConverter.getInstance().getUnitSystemModel().getUnitSystem();
+        return formatSpeed(speed, unitSystem);
+    }
+
+    // package-private seam: lets PositionHelperTest lock the unit system explicitly,
+    // without needing a running BaseRouteConverter instance (GUI is untestable headless)
+    static String formatSpeed(double speed, UnitSystem unitSystem) {
         double speedInUnit = unitSystem.distanceToUnit(speed) * METERS_OF_A_KILOMETER;
-        if (abs(speedInUnit) < 10.0)
-             return format("%s %s", roundFraction(speedInUnit, 1), unitSystem.getSpeedName());
-        else
-            return format("%d %s", round(speedInUnit), unitSystem.getSpeedName());
+        return format("%s %s", Transfer.formatDoubleAsString(roundFraction(speedInUnit, 1), 1), unitSystem.getSpeedName());
     }
 
     public static String extractSpeed(NavigationPosition position) {
@@ -200,6 +203,21 @@ public class PositionHelper {
         else if (position instanceof NmeaPosition nmeaPosition)
             fixQuality = nmeaPosition.getFixQuality();
         return formatFixQuality(fixQuality);
+    }
+
+    public static String formatSatellites(Integer satellites) {
+        if (satellites == null)
+            return "";
+        return Transfer.formatIntAsString(satellites);
+    }
+
+    public static String extractSatellites(NavigationPosition position) {
+        Integer satellites = null;
+        if (position instanceof Wgs84Position wgs84Position)
+            satellites = wgs84Position.getSatellites();
+        else if (position instanceof NmeaPosition nmeaPosition)
+            satellites = nmeaPosition.getSatellites();
+        return formatSatellites(satellites);
     }
 
     public static String formatAcceleration(Double acceleration) {

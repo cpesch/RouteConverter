@@ -189,6 +189,26 @@ public class PositionHelperTest {
         assertEquals("", extractFixQuality(position));
     }
 
+    @Test
+    public void testExtractSatellites() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setSatellites(12);
+        assertEquals("12", extractSatellites(position));
+    }
+
+    @Test
+    public void testExtractSatellitesWithZero() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setSatellites(0);
+        assertEquals("0", extractSatellites(position));
+    }
+
+    @Test
+    public void testExtractSatellitesReturnsEmptyForNullSatellites() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractSatellites(position));
+    }
+
     // ---- extractHeading / extractHdop / extractFixQuality for NmeaPosition ----
 
     @Test
@@ -228,6 +248,19 @@ public class PositionHelperTest {
     public void testExtractFixQualityReturnsEmptyForNmeaPositionWithNullFixQuality() {
         NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
         assertEquals("", extractFixQuality(position));
+    }
+
+    @Test
+    public void testExtractSatellitesForNmeaPosition() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        position.setSatellites(7);
+        assertEquals("7", extractSatellites(position));
+    }
+
+    @Test
+    public void testExtractSatellitesReturnsEmptyForNmeaPositionWithNullSatellites() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractSatellites(position));
     }
 
     @Test
@@ -314,6 +347,23 @@ public class PositionHelperTest {
     @Test
     public void testFormatElevationReturnsEmptyForNullElevation() {
         assertEquals("", formatElevation(null));
+    }
+
+    // ---- formatSpeed (unit system locked explicitly, not preference-driven) ----
+
+    @Test
+    public void testFormatSpeed() {
+        assertEquals("23.4 km/h", formatSpeed(23.4, Metric));
+    }
+
+    @Test
+    public void testFormatSpeedWithWholeNumber() {
+        assertEquals("23.0 km/h", formatSpeed(23.0, Metric));
+    }
+
+    @Test
+    public void testFormatSpeedRoundsHalfUp() {
+        assertEquals("5.3 km/h", formatSpeed(5.25, Metric));
     }
 
     // ---- extractFile ----
