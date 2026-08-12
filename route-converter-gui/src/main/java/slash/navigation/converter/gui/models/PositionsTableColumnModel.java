@@ -51,6 +51,7 @@ public class PositionsTableColumnModel extends AbstractTableColumnModel {
         predefineColumn(HEADING_COLUMN_INDEX, "heading", getMaxWidth("999.99\u00B0", 15), false, new HeadingColumnTableCellEditor(), headerRenderer);
         predefineColumn(HDOP_COLUMN_INDEX, "hdop", getMaxWidth("99.99", 15), false, new HdopColumnTableCellEditor(), headerRenderer);
         predefineColumn(QUALITY_COLUMN_INDEX, "quality", getMaxWidth("9", 15), false, new QualityColumnTableCellEditor(), headerRenderer);
+        predefineColumn(SATELLITES_COLUMN_INDEX, "satellites", getMaxWidth("99", 15), false, new SatellitesColumnTableCellEditor(), headerRenderer);
         predefineColumn(ACCELERATION_X_COLUMN_INDEX, "acceleration-x", getMaxWidth("-99.99", 15), false, new AccelerationXColumnTableCellEditor(), headerRenderer);
         predefineColumn(ACCELERATION_Y_COLUMN_INDEX, "acceleration-y", getMaxWidth("-99.99", 15), false, new AccelerationYColumnTableCellEditor(), headerRenderer);
         predefineColumn(ACCELERATION_Z_COLUMN_INDEX, "acceleration-z", getMaxWidth("-99.99", 15), false, new AccelerationZColumnTableCellEditor(), headerRenderer);

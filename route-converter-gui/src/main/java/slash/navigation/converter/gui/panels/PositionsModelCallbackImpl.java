@@ -95,6 +95,9 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             case QUALITY_COLUMN_INDEX -> {
                 return PositionHelper.extractFixQuality(position);
             }
+            case SATELLITES_COLUMN_INDEX -> {
+                return PositionHelper.extractSatellites(position);
+            }
             case ACCELERATION_X_COLUMN_INDEX -> {
                 return PositionHelper.extractAccelerationX(position);
             }
