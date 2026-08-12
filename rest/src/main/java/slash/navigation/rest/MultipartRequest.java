@@ -54,7 +54,14 @@ abstract class MultipartRequest extends HttpRequest {
     private MultipartEntityBuilder getBuilder() {
         if (builder == null) {
             builder = MultipartEntityBuilder.create();
-            builder.setCharset(StandardCharsets.UTF_8);
+            // setCharset() alone is silently ignored by MultipartEntityBuilder.buildEntity()
+            // once any FormBodyPart exists (i.e. as soon as addTextBody/addBinaryBody is called):
+            // it falls back to the ContentType.MULTIPART_FORM_DATA constant, which hardcodes
+            // charset=ISO-8859-1. That outer, wrong charset is what Django's HttpRequest.encoding
+            // picks up and applies to every field when decoding — turning the correctly-UTF-8
+            // per-field bytes into mojibake regardless of the per-part charset declared below.
+            // Setting the content type explicitly is what actually reaches the outer header.
+            builder.setContentType(ContentType.MULTIPART_FORM_DATA.withCharset(StandardCharsets.UTF_8));
         }
         return builder;
     }

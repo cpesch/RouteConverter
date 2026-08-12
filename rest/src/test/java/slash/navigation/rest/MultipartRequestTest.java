@@ -90,6 +90,26 @@ public class MultipartRequestTest {
                 indexOf(payload, "ü".getBytes(java.nio.charset.StandardCharsets.ISO_8859_1)) >= 0);
     }
 
+    @Test
+    public void testAddStringMakesOuterMultipartContentTypeUtf8() throws IOException {
+        // Regression: MultipartEntityBuilder.setCharset() is silently ignored by
+        // buildEntity() once any FormBodyPart exists (i.e. as soon as addString/addFile is
+        // called) — it falls back to the ContentType.MULTIPART_FORM_DATA constant, which
+        // hardcodes charset=ISO-8859-1. Django's HttpRequest.encoding picks up that OUTER
+        // charset and applies it when decoding every field, ignoring each part's own
+        // correctly-declared UTF-8 charset — turning umlauts into mojibake server-side even
+        // though the per-part Content-Type (checked by the test above) was always correct.
+        Post request = new Post("http://localhost/");
+        request.addString("description", "Straße");
+        request.prepareEntity();
+
+        String outerContentType = request.getMethod().getEntity().getContentType();
+        assertTrue("outer multipart Content-Type must declare UTF-8, was: " + outerContentType,
+                outerContentType.toUpperCase().contains("UTF-8"));
+        assertFalse("outer multipart Content-Type must not fall back to ISO-8859-1, was: " + outerContentType,
+                outerContentType.toUpperCase().contains("ISO-8859-1"));
+    }
+
     private static int indexOf(byte[] haystack, byte[] needle) {
         outer:
         for (int i = 0; i <= haystack.length - needle.length; i++) {
