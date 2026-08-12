@@ -25,6 +25,7 @@ import slash.common.helpers.DateTimeParserException;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.nmea.NmeaPosition;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -189,6 +190,80 @@ public class PositionHelperTest {
     }
 
     @Test
+    public void testExtractSatellites() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setSatellites(12);
+        assertEquals("12", extractSatellites(position));
+    }
+
+    @Test
+    public void testExtractSatellitesWithZero() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        position.setSatellites(0);
+        assertEquals("0", extractSatellites(position));
+    }
+
+    @Test
+    public void testExtractSatellitesReturnsEmptyForNullSatellites() {
+        Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractSatellites(position));
+    }
+
+    // ---- extractHeading / extractHdop / extractFixQuality for NmeaPosition ----
+
+    @Test
+    public void testExtractHeadingForNmeaPosition() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        position.setHeading(54.11);
+        assertEquals("54.11\u00B0", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHeadingReturnsEmptyForNmeaPositionWithNullHeading() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHdopForNmeaPosition() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        position.setHdop(0.78);
+        assertEquals("0.78", extractHdop(position));
+    }
+
+    @Test
+    public void testExtractHdopReturnsEmptyForNmeaPositionWithNullHdop() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractHdop(position));
+    }
+
+    @Test
+    public void testExtractFixQualityForNmeaPosition() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        position.setFixQuality(2);
+        assertEquals("2", extractFixQuality(position));
+    }
+
+    @Test
+    public void testExtractFixQualityReturnsEmptyForNmeaPositionWithNullFixQuality() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractFixQuality(position));
+    }
+
+    @Test
+    public void testExtractSatellitesForNmeaPosition() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        position.setSatellites(7);
+        assertEquals("7", extractSatellites(position));
+    }
+
+    @Test
+    public void testExtractSatellitesReturnsEmptyForNmeaPositionWithNullSatellites() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractSatellites(position));
+    }
+
+    @Test
     public void testExtractAccelerationXIsSignedWithTwoDecimals() {
         Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
         position.setAccelerationX(-0.3);
@@ -272,6 +347,23 @@ public class PositionHelperTest {
     @Test
     public void testFormatElevationReturnsEmptyForNullElevation() {
         assertEquals("", formatElevation(null));
+    }
+
+    // ---- formatSpeed (unit system locked explicitly, not preference-driven) ----
+
+    @Test
+    public void testFormatSpeed() {
+        assertEquals("23.4 km/h", formatSpeed(23.4, Metric));
+    }
+
+    @Test
+    public void testFormatSpeedWithWholeNumber() {
+        assertEquals("23.0 km/h", formatSpeed(23.0, Metric));
+    }
+
+    @Test
+    public void testFormatSpeedRoundsHalfUp() {
+        assertEquals("5.3 km/h", formatSpeed(5.25, Metric));
     }
 
     // ---- extractFile ----
