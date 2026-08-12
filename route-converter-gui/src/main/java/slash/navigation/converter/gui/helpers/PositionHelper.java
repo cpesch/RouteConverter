@@ -30,6 +30,7 @@ import slash.navigation.common.DegreeFormat;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.BaseRouteConverter;
+import slash.navigation.nmea.NmeaPosition;
 
 import java.io.File;
 import java.util.prefs.Preferences;
@@ -166,6 +167,8 @@ public class PositionHelper {
         Double heading = null;
         if (position instanceof Wgs84Position wgs84Position)
             heading = wgs84Position.getHeading();
+        else if (position instanceof NmeaPosition nmeaPosition)
+            heading = nmeaPosition.getHeading();
         return formatHeading(heading);
     }
 
@@ -179,6 +182,8 @@ public class PositionHelper {
         Double hdop = null;
         if (position instanceof Wgs84Position wgs84Position)
             hdop = wgs84Position.getHdop();
+        else if (position instanceof NmeaPosition nmeaPosition)
+            hdop = nmeaPosition.getHdop();
         return formatHdop(hdop);
     }
 
@@ -192,6 +197,8 @@ public class PositionHelper {
         Integer fixQuality = null;
         if (position instanceof Wgs84Position wgs84Position)
             fixQuality = wgs84Position.getFixQuality();
+        else if (position instanceof NmeaPosition nmeaPosition)
+            fixQuality = nmeaPosition.getFixQuality();
         return formatFixQuality(fixQuality);
     }
 

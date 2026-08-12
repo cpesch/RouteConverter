@@ -25,6 +25,7 @@ import slash.common.helpers.DateTimeParserException;
 import slash.common.io.Transfer;
 import slash.common.type.CompactCalendar;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.nmea.NmeaPosition;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -185,6 +186,47 @@ public class PositionHelperTest {
     @Test
     public void testExtractFixQualityReturnsEmptyForNullFixQuality() {
         Wgs84Position position = new Wgs84Position(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractFixQuality(position));
+    }
+
+    // ---- extractHeading / extractHdop / extractFixQuality for NmeaPosition ----
+
+    @Test
+    public void testExtractHeadingForNmeaPosition() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        position.setHeading(54.11);
+        assertEquals("54.11\u00B0", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHeadingReturnsEmptyForNmeaPositionWithNullHeading() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractHeading(position));
+    }
+
+    @Test
+    public void testExtractHdopForNmeaPosition() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        position.setHdop(0.78);
+        assertEquals("0.78", extractHdop(position));
+    }
+
+    @Test
+    public void testExtractHdopReturnsEmptyForNmeaPositionWithNullHdop() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        assertEquals("", extractHdop(position));
+    }
+
+    @Test
+    public void testExtractFixQualityForNmeaPosition() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
+        position.setFixQuality(2);
+        assertEquals("2", extractFixQuality(position));
+    }
+
+    @Test
+    public void testExtractFixQualityReturnsEmptyForNmeaPositionWithNullFixQuality() {
+        NmeaPosition position = new NmeaPosition(10.0, 50.0, null, null, null, null);
         assertEquals("", extractFixQuality(position));
     }
 
