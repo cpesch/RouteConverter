@@ -322,6 +322,8 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         openMapAndProfileView();
 
         initializeMenus();
+        // the tab ChangeListener never fires for the initially selected tab, so apply visibility once here
+        FrameMenu.updateColumnMenuVisibility(isBrowsePanelSelected());
         initializeHelp();
         getContext().getActionManager().logUsage();
         APIKeyRegistry.getInstance().logUsage();
