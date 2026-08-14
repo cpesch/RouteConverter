@@ -87,7 +87,12 @@ public abstract class AbstractTableHeaderMenu {
         }
     }
 
-    protected void initializeShowColumn(JMenu showColumnMenu) {
+    /**
+     * Registers a {@link ToggleColumnVisibilityAction} once per prepared column and builds the
+     * header right-click popup. The menu-bar "Show Column" submenu is no longer built here -
+     * see {@link #populateShowColumnMenu(JMenu)}, which reuses these registered actions.
+     */
+    protected void initializeShowColumn() {
         VisibleListener visibleListener = new VisibleListener();
         for (PositionTableColumn column : columnModel.getPreparedColumns()) {
             column.addPropertyChangeListener(visibleListener);
@@ -99,14 +104,36 @@ public abstract class AbstractTableHeaderMenu {
             JCheckBoxMenuItem popupItem = new JCheckBoxMenuItem(menuItemText);
             popupItem.setModel(new PositionTableColumnButtonModel(column, action));
             popupMenu.add(popupItem);
+        }
+    }
 
-            if (showColumnMenu != null) {
+    /**
+     * Rebuilds the given menu-bar "Show Column" submenu from this table's prepared columns,
+     * reusing the actions registered once by {@link #initializeShowColumn()} - repeated
+     * calls (one per tab switch) must not re-register actions with the {@link ActionManager}.
+     * All mutation happens on the EDT.
+     */
+    public void populateShowColumnMenu(JMenu menu) {
+        if (menu == null)
+            return;
+
+        Runnable populate = () -> {
+            menu.removeAll();
+            for (PositionTableColumn column : columnModel.getPreparedColumns()) {
+                String menuItemText = BaseRouteConverter.getBundle().getString(column.getName());
+                ToggleColumnVisibilityAction action = (ToggleColumnVisibilityAction) actionManager.get(createShowKey(column.getName()));
+
                 JCheckBoxMenuItem menuBarItem = new JCheckBoxMenuItem(menuItemText);
                 menuBarItem.setModel(new PositionTableColumnButtonModel(column, action));
                 setMnemonic(menuBarItem, column.getName() + MNEMONIC_SUFFIX);
-                showColumnMenu.add(menuBarItem);
+                menu.add(menuBarItem);
             }
-        }
+        };
+
+        if (SwingUtilities.isEventDispatchThread())
+            populate.run();
+        else
+            SwingUtilities.invokeLater(populate);
     }
 
     protected void initializePopup(JTableHeader tableHeader) {
@@ -183,4 +210,3 @@ public abstract class AbstractTableHeaderMenu {
         }
     }
 }
-

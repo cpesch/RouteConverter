@@ -39,7 +39,7 @@ public class PositionsTableHeaderMenu extends AbstractTableHeaderMenu {
     public PositionsTableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, PositionsModel positionsModel,
                                     PositionsTableColumnModel columnModel, ActionManager actionManager) {
         super(columnModel, actionManager, POSITIONS);
-        initializeShowColumn(findMenu(menuBar, "view", "show-position-column"));
+        initializeShowColumn();
         initializeSortPositions(findMenu(menuBar, "positionlist", "sort-positions"), positionsModel);
         initializePopup(tableHeader);
     }

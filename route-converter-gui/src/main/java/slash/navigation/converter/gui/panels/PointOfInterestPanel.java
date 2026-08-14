@@ -28,13 +28,13 @@ import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.actions.AddAudioAction;
 import slash.navigation.converter.gui.actions.DeletePositionAction;
 import slash.navigation.converter.gui.actions.PlayVoiceAction;
-import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.PointsOfInterestTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.PointsOfInterestTablePopupMenu;
 import slash.navigation.converter.gui.models.*;
 import slash.navigation.converter.gui.predicates.PointOfInterestPositionPredicate;
 import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.gui.actions.ActionManager;
+import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.FrameAction;
 
 import javax.swing.*;
@@ -53,6 +53,7 @@ import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
 import static slash.navigation.converter.gui.models.LocalActionConstants.POINTS_OF_INTEREST;
 import static slash.navigation.converter.gui.models.PositionColumns.DESCRIPTION_COLUMN_INDEX;
 import static slash.navigation.converter.gui.models.PositionColumns.PHOTO_COLUMN_INDEX;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.getDefaultRowHeight;
 import static slash.navigation.gui.helpers.JTableHelper.isFirstToLastRow;
@@ -73,6 +74,7 @@ public class PointOfInterestPanel implements PanelInTab {
     private JButton buttonDeletePointsOfInterest;
 
     private FilteringPositionsModel<?> positionsModel;
+    private PointsOfInterestTableHeaderMenu tableHeaderMenu;
 
     public PointOfInterestPanel() {
         $$$setupUI$$$();
@@ -131,7 +133,7 @@ public class PointOfInterestPanel implements PanelInTab {
         tablePointsOfInterest.setDropMode(ON);
 
         ActionManager actionManager = r.getContext().getActionManager();
-        new PointsOfInterestTableHeaderMenu(tablePointsOfInterest.getTableHeader(), tableColumnModel, actionManager);
+        tableHeaderMenu = new PointsOfInterestTableHeaderMenu(tablePointsOfInterest.getTableHeader(), tableColumnModel, actionManager);
         new PointsOfInterestTablePopupMenu(tablePointsOfInterest).createPopupMenu();
 
         actionManager.register("play-voice", new PlayVoiceAction(tablePointsOfInterest, getPositionsModel(), r.getUrlModel()));
@@ -167,7 +169,8 @@ public class PointOfInterestPanel implements PanelInTab {
     }
 
     public void initializeSelection() {
-        FrameMenu.updateColumnMenuVisibility(false);
+        tableHeaderMenu.populateShowColumnMenu(
+                findMenu(Application.getInstance().getContext().getMenuBar(), "view", "show-position-column"));
         handlePositionsUpdate();
     }
 

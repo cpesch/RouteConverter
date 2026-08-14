@@ -433,7 +433,8 @@ public class ConvertPanel implements PanelInTab {
     }
 
     public void initializeSelection() {
-        FrameMenu.updateColumnMenuVisibility(false);
+        tableHeaderMenu.populateShowColumnMenu(
+                findMenu(Application.getInstance().getContext().getMenuBar(), "view", "show-position-column"));
         handlePositionsUpdate();
     }
 

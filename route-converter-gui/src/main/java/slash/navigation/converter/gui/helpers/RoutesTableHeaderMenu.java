@@ -26,7 +26,6 @@ import javax.swing.*;
 import javax.swing.table.JTableHeader;
 
 import static slash.navigation.converter.gui.models.LocalActionConstants.ROUTES;
-import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 
 /**
  * Creates a {@link JMenu} and a {@link JPopupMenu} for a {@link RoutesTableColumnModel}.
@@ -35,10 +34,10 @@ import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
  */
 
 public class RoutesTableHeaderMenu extends AbstractTableHeaderMenu {
-    public RoutesTableHeaderMenu(JTableHeader tableHeader, JMenuBar menuBar, RoutesTableColumnModel columnModel,
+    public RoutesTableHeaderMenu(JTableHeader tableHeader, RoutesTableColumnModel columnModel,
                                  ActionManager actionManager) {
         super(columnModel, actionManager, ROUTES);
-        initializeShowColumn(findMenu(menuBar, "view", "show-route-column"));
+        initializeShowColumn();
         initializePopup(tableHeader);
     }
 }

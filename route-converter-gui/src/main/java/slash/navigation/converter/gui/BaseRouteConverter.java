@@ -322,8 +322,9 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         openMapAndProfileView();
 
         initializeMenus();
-        // the tab ChangeListener never fires for the initially selected tab, so apply visibility once here
-        FrameMenu.updateColumnMenuVisibility(isBrowsePanelSelected());
+        // the tab ChangeListener never fires for the initially selected tab, so populate its Show
+        // Column menu here; invokeLater so the macOS screen menu is realized first (issue #99)
+        invokeLater(this::initializeSelectionForCurrentTab);
         initializeHelp();
         getContext().getActionManager().logUsage();
         APIKeyRegistry.getInstance().logUsage();
@@ -964,6 +965,17 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     public boolean isBrowsePanelSelected() {
         return tabbedPane.getSelectedComponent().equals(browsePanel);
+    }
+
+    private void initializeSelectionForCurrentTab() {
+        if (isConvertPanelSelected())
+            getConvertPanel().initializeSelection();
+        else if (isPointsOfInterestPanelSelected())
+            getPointOfInterestPanel().initializeSelection();
+        else if (isPhotosPanelSelected())
+            getPhotoPanel().initializeSelection();
+        else if (isBrowsePanelSelected())
+            getBrowsePanel().initializeSelection();
     }
 
     public ConvertPanel getConvertPanel() {

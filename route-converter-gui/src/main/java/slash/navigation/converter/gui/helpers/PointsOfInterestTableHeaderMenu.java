@@ -36,7 +36,7 @@ import static slash.navigation.converter.gui.models.LocalActionConstants.POINTS_
 public class PointsOfInterestTableHeaderMenu extends AbstractTableHeaderMenu {
     public PointsOfInterestTableHeaderMenu(JTableHeader tableHeader, PointsOfInterestTableColumnModel columnModel, ActionManager actionManager) {
         super(columnModel, actionManager, POINTS_OF_INTEREST);
-        initializeShowColumn(null);
+        initializeShowColumn();
         initializePopup(tableHeader);
     }
 }
