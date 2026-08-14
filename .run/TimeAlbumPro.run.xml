@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="TimeAlbumPro" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="slash.navigation.converter.gui.TimeAlbumPro" />
-    <module name="time-album-pro" />
+    <module name="time-album-pro.main" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>

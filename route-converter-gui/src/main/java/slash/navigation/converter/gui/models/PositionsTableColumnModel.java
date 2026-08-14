@@ -48,16 +48,6 @@ public class PositionsTableColumnModel extends AbstractTableColumnModel {
         predefineColumn(DATE_COLUMN_INDEX, "date", getMaxWidth(getExampleDateFromCurrentLocale(), 10), false, new GenericColumnTableCellEditor(), headerRenderer);
         predefineColumn(TIME_COLUMN_INDEX, "time", getMaxWidth(getExampleTimeFromCurrentLocale(), 10), false, new TimeColumnTableCellEditor(), headerRenderer);
         predefineColumn(SPEED_COLUMN_INDEX, "speed", getMaxWidth("999 Km/h", 15), false, new SpeedColumnTableCellEditor(), headerRenderer);
-        predefineColumn(HEADING_COLUMN_INDEX, "heading", getMaxWidth("999.99\u00B0", 15), false, new HeadingColumnTableCellEditor(), headerRenderer);
-        predefineColumn(HDOP_COLUMN_INDEX, "hdop", getMaxWidth("99.99", 15), false, new HdopColumnTableCellEditor(), headerRenderer);
-        predefineColumn(QUALITY_COLUMN_INDEX, "quality", getMaxWidth("9", 15), false, new QualityColumnTableCellEditor(), headerRenderer);
-        predefineColumn(SATELLITES_COLUMN_INDEX, "satellites", getMaxWidth("99", 15), false, new SatellitesColumnTableCellEditor(), headerRenderer);
-        predefineColumn(ACCELERATION_X_COLUMN_INDEX, "acceleration-x", getMaxWidth("-99.99", 15), false, new AccelerationXColumnTableCellEditor(), headerRenderer);
-        predefineColumn(ACCELERATION_Y_COLUMN_INDEX, "acceleration-y", getMaxWidth("-99.99", 15), false, new AccelerationYColumnTableCellEditor(), headerRenderer);
-        predefineColumn(ACCELERATION_Z_COLUMN_INDEX, "acceleration-z", getMaxWidth("-99.99", 15), false, new AccelerationZColumnTableCellEditor(), headerRenderer);
-        predefineColumn(TEMPERATURE_COLUMN_INDEX, "temperature", getMaxWidth("100\u00B0C", 5), false, new TemperatureColumnTableCellEditor(), headerRenderer);
-        predefineColumn(PRESSURE_COLUMN_INDEX, "pressure", getMaxWidth("1150 hPa", 5), false, new PressureColumnTableCellEditor(), headerRenderer);
-        predefineColumn(HEART_BEAT_COLUMN_INDEX, "heartbeat", getMaxWidth("180 bpm", 5), false, new HeartBeatColumnTableCellEditor(), headerRenderer);
         predefineColumn(DISTANCE_COLUMN_INDEX, "distance", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
         predefineColumn(DISTANCE_DIFFERENCE_COLUMN_INDEX, "distance-difference", getMaxWidth("12345 Km", 7), false, new DistanceColumnTableCellRenderer(), headerRenderer);
         predefineColumn(LONGITUDE_COLUMN_INDEX, "longitude", 84, true, new LongitudeColumnTableCellEditor(), headerRenderer);
@@ -66,6 +56,16 @@ public class PositionsTableColumnModel extends AbstractTableColumnModel {
         predefineColumn(ELEVATION_ASCEND_COLUMN_INDEX, "elevation-ascend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
         predefineColumn(ELEVATION_DESCEND_COLUMN_INDEX, "elevation-descend", getMaxWidth("9999 m", 5), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
         predefineColumn(ELEVATION_DIFFERENCE_COLUMN_INDEX, "elevation-difference", getMaxWidth("999 m", 4), false, new ElevationDeltaColumnTableCellRenderer(), headerRenderer);
+        predefineColumn(HEADING_COLUMN_INDEX, "heading", getMaxWidth("999.99\u00B0", 15), false, new HeadingColumnTableCellEditor(), headerRenderer);
+        predefineColumn(TEMPERATURE_COLUMN_INDEX, "temperature", getMaxWidth("100\u00B0C", 5), false, new TemperatureColumnTableCellEditor(), headerRenderer);
+        predefineColumn(PRESSURE_COLUMN_INDEX, "pressure", getMaxWidth("1150 hPa", 5), false, new PressureColumnTableCellEditor(), headerRenderer);
+        predefineColumn(HEART_BEAT_COLUMN_INDEX, "heartbeat", getMaxWidth("180 bpm", 5), false, new HeartBeatColumnTableCellEditor(), headerRenderer);
+        predefineColumn(HDOP_COLUMN_INDEX, "hdop", getMaxWidth("99.99", 15), false, new HdopColumnTableCellEditor(), headerRenderer);
+        predefineColumn(QUALITY_COLUMN_INDEX, "quality", getMaxWidth("9", 15), false, new QualityColumnTableCellEditor(), headerRenderer);
+        predefineColumn(SATELLITES_COLUMN_INDEX, "satellites", getMaxWidth("99", 15), false, new SatellitesColumnTableCellEditor(), headerRenderer);
+        predefineColumn(ACCELERATION_X_COLUMN_INDEX, "acceleration-x", getMaxWidth("-99.99", 15), false, new AccelerationXColumnTableCellEditor(), headerRenderer);
+        predefineColumn(ACCELERATION_Y_COLUMN_INDEX, "acceleration-y", getMaxWidth("-99.99", 15), false, new AccelerationYColumnTableCellEditor(), headerRenderer);
+        predefineColumn(ACCELERATION_Z_COLUMN_INDEX, "acceleration-z", getMaxWidth("-99.99", 15), false, new AccelerationZColumnTableCellEditor(), headerRenderer);
         initializeColumns();
     }
 }
