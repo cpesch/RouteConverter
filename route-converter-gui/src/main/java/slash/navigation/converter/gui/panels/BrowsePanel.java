@@ -32,7 +32,6 @@ import slash.navigation.converter.gui.dialogs.AddUrlDialog;
 import slash.navigation.converter.gui.dnd.CategorySelection;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.RouteSelection;
-import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.LocalRouteDistanceAndTimeFiller;
 import slash.navigation.converter.gui.helpers.OpenedRouteDistanceAndTimeUpdater;
 import slash.navigation.converter.gui.helpers.RemoteRouteDistanceAndTimeFiller;
@@ -106,6 +105,7 @@ import static slash.navigation.converter.gui.comparators.RouteModelComparators.b
 import static slash.navigation.converter.gui.helpers.RouteModelHelper.*;
 import static slash.navigation.converter.gui.models.LocalActionConstants.CATEGORIES;
 import static slash.navigation.converter.gui.models.LocalActionConstants.ROUTES;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.getDefaultRowHeight;
 import static slash.navigation.routes.impl.RoutesTableModel.CREATOR_COLUMN;
@@ -143,6 +143,7 @@ public class BrowsePanel implements PanelInTab {
     private OpenedRouteDistanceAndTimeUpdater distanceAndTimeUpdater;
     private LocalRouteDistanceAndTimeFiller localRouteDistanceAndTimeFiller;
     private RemoteRouteDistanceAndTimeFiller remoteRouteDistanceAndTimeFiller;
+    private RoutesTableHeaderMenu tableHeaderMenu;
 
     public BrowsePanel() {
         initialize();
@@ -253,7 +254,7 @@ public class BrowsePanel implements PanelInTab {
         tableRoutes.setModel(catalogModel.getRoutesTableModel());
         RoutesTableColumnModel tableColumnModel = new RoutesTableColumnModel(routeMetadataSource);
         tableRoutes.setColumnModel(tableColumnModel);
-        new RoutesTableHeaderMenu(tableRoutes.getTableHeader(), Application.getInstance().getContext().getMenuBar(), tableColumnModel, actionManager);
+        tableHeaderMenu = new RoutesTableHeaderMenu(tableRoutes.getTableHeader(), tableColumnModel, actionManager);
         // spec 00012 polish: sort by clicking headers; length/duration sort numerically on the
         // metadata values (missing sorts last), name/creator case-insensitively. setSortsOnUpdates
         // keeps the order correct as fireTableRowsUpdated fills in metadata
@@ -335,7 +336,8 @@ public class BrowsePanel implements PanelInTab {
     }
 
     public void initializeSelection() {
-        FrameMenu.updateColumnMenuVisibility(true);
+        tableHeaderMenu.populateShowColumnMenu(
+                findMenu(Application.getInstance().getContext().getMenuBar(), "view", "show-position-column"));
         handleCategoryTreeUpdate();
         handleRouteListUpdate();
     }

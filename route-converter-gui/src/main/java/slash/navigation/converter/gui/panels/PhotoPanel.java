@@ -34,7 +34,6 @@ import slash.navigation.converter.gui.actions.AddPhotosAction;
 import slash.navigation.converter.gui.actions.DeletePositionAction;
 import slash.navigation.converter.gui.actions.TagPhotosAction;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
-import slash.navigation.converter.gui.helpers.FrameMenu;
 import slash.navigation.converter.gui.helpers.PhotosTableHeaderMenu;
 import slash.navigation.converter.gui.helpers.PhotosTablePopupMenu;
 import slash.navigation.converter.gui.helpers.TagStrategy;
@@ -45,6 +44,7 @@ import slash.navigation.converter.gui.renderer.DescriptionColumnTableCellEditor;
 import slash.navigation.converter.gui.renderer.FilterPredicateListCellRenderer;
 import slash.navigation.converter.gui.renderer.TagStrategyListCellRenderer;
 import slash.navigation.converter.gui.renderer.TimeZoneAndIdListCellRenderer;
+import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
 import slash.navigation.photo.PhotoFormat;
@@ -77,6 +77,7 @@ import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Backup_I
 import static slash.navigation.converter.gui.helpers.TagStrategy.Create_Tagged_Photo_In_Subdirectory;
 import static slash.navigation.converter.gui.models.LocalActionConstants.PHOTOS;
 import static slash.navigation.converter.gui.models.PositionColumns.*;
+import static slash.navigation.gui.helpers.JMenuHelper.findMenu;
 import static slash.navigation.gui.helpers.JMenuHelper.registerAction;
 import static slash.navigation.gui.helpers.JTableHelper.getDefaultRowHeight;
 import static slash.navigation.photo.TagState.*;
@@ -102,6 +103,7 @@ public class PhotoPanel implements PanelInTab {
     private JComboBox<TimeZoneAndId> comboBoxPhotoTimeZone;
     private JComboBox<TagStrategy> comboBoxTagStrategy;
     private JButton buttonTagPhotos;
+    private PhotosTableHeaderMenu tableHeaderMenu;
 
     private static final ComboBoxModel<FilterPredicate<NavigationPosition>> FILTER_PREDICATE_MODEL = createFilterPredicateModel();
 
@@ -172,7 +174,7 @@ public class PhotoPanel implements PanelInTab {
         new PhotoTagStateToJLabelAdapter(photosModel, labelPhotos);
 
         ActionManager actionManager = r.getContext().getActionManager();
-        new PhotosTableHeaderMenu(tablePhotos.getTableHeader(), tableColumnModel, actionManager);
+        tableHeaderMenu = new PhotosTableHeaderMenu(tablePhotos.getTableHeader(), tableColumnModel, actionManager);
         new PhotosTablePopupMenu(tablePhotos).createPopupMenu();
 
         actionManager.register("add-photos", new AddPhotosAction());
@@ -272,7 +274,8 @@ public class PhotoPanel implements PanelInTab {
     }
 
     public void initializeSelection() {
-        FrameMenu.updateColumnMenuVisibility(false);
+        tableHeaderMenu.populateShowColumnMenu(
+                findMenu(Application.getInstance().getContext().getMenuBar(), "view", "show-position-column"));
         handlePositionsUpdate();
     }
 

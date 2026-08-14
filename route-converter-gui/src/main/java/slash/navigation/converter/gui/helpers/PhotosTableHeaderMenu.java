@@ -36,7 +36,7 @@ import static slash.navigation.converter.gui.models.LocalActionConstants.PHOTOS;
 public class PhotosTableHeaderMenu extends AbstractTableHeaderMenu {
     public PhotosTableHeaderMenu(JTableHeader tableHeader, PhotosTableColumnModel columnModel, ActionManager actionManager) {
         super(columnModel, actionManager, PHOTOS);
-        initializeShowColumn(null);
+        initializeShowColumn();
         initializePopup(tableHeader);
     }
 }
