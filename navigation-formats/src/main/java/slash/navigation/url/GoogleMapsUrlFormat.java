@@ -24,7 +24,9 @@ import slash.navigation.base.BaseUrlParsingFormat;
 import slash.navigation.base.ParserContext;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
+import slash.navigation.rest.Head;
 
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.Math.max;
+import static java.util.Collections.singletonList;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 import static slash.navigation.base.RouteCharacteristics.Route;
@@ -58,6 +61,21 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
                     "(@?(" + WHITE_SPACE + "[-|\\d|\\.]+" + WHITE_SPACE + ")," +
                     "(" + WHITE_SPACE + "[-|\\d|\\.]+" + WHITE_SPACE + "))?");
     private static final String DESTINATION_SEPARATOR = "to:";
+    private static final Pattern SHORT_URL_PATTERN = Pattern.compile(".*(http[s]?://(?:maps\\.app\\.goo\\.gl|goo\\.gl/maps)/[^\\s]+).*");
+    private static final int MAX_REDIRECT_HOPS = 5;
+    private static final Pattern PLACE_COORDINATE_PATTERN = Pattern.compile(".*?!3d(-?\\d+\\.\\d+)!4d(-?\\d+\\.\\d+).*");
+
+    interface RedirectResolver {
+        String resolveLocation(String url) throws IOException;
+    }
+
+    private static final RedirectResolver HTTP_HEAD_REDIRECT_RESOLVER = url -> {
+        Head head = new Head(url);
+        head.disableRedirectHandling();
+        head.executeAsString();
+        int status = head.getStatusCode();
+        return status >= 300 && status < 400 ? head.getLocationHeader() : null;
+    };
 
     public String getExtension() {
         return ".url";
@@ -73,7 +91,8 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
 
     public boolean isParseableUrl(String url) {
         String found = internalFindUrl(url);
-        return found != null && (found.startsWith("?") || found.startsWith("/dir/"));
+        return found != null && (found.startsWith("?") || found.startsWith("/dir/") ||
+                found.startsWith("/place/") || found.startsWith("SHORTLINK:"));
     }
 
     public static boolean isGoogleMapsProfileUrl(URL url) {
@@ -83,6 +102,9 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
 
     private static String internalFindUrl(String text) {
         text = replaceLineFeeds(text, "&");
+        Matcher shortUrlMatcher = SHORT_URL_PATTERN.matcher(text);
+        if (shortUrlMatcher.matches())
+            return "SHORTLINK:" + shortUrlMatcher.group(1);
         Matcher bookmarkMatcher = BOOKMARK_PATTERN.matcher(text);
         if (bookmarkMatcher.matches())
             text = bookmarkMatcher.group(1);
@@ -93,12 +115,55 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
     }
 
     protected void processURL(String url, String encoding, ParserContext<Wgs84Route> context) {
-        if (url.startsWith("/dir/")) {
+        if (url.startsWith("SHORTLINK:")) {
+            String shortUrl = url.substring(10);
+            String resolved = resolveShortUrl(shortUrl, HTTP_HEAD_REDIRECT_RESOLVER);
+            if (resolved == null || resolved.equals(shortUrl))
+                return;
+            String innerFound = internalFindUrl(resolved);
+            if (innerFound != null)
+                processURL(innerFound, encoding, context);
+        } else if (url.startsWith("/dir/")) {
             List<Wgs84Position> positions = parsePositions(url.substring(5));
             if (!positions.isEmpty())
                 context.appendRoute(createRoute(Route, null, positions));
+        } else if (url.startsWith("/place/")) {
+            Wgs84Position position = parsePlacePosition(url.substring(7));
+            if (position != null)
+                context.appendRoute(createRoute(Route, null, singletonList(position)));
         } else
             super.processURL(url, encoding, context);
+    }
+
+    String resolveShortUrl(String url, RedirectResolver resolver) {
+        String current = url;
+        for (int hop = 0; hop < MAX_REDIRECT_HOPS; hop++) {
+            String location;
+            try {
+                location = resolver.resolveLocation(current);
+            } catch (IOException e) {
+                log.warning("Cannot resolve redirect for " + current + ": " + e);
+                return null;
+            }
+            if (location == null)
+                return current;
+            current = location;
+        }
+        log.warning("Too many redirects resolving " + url);
+        return null;
+    }
+
+    Wgs84Position parsePlacePosition(String url) {
+        int slash = url.indexOf('/');
+        String namePart = slash == -1 ? url : url.substring(0, slash);
+        String name = trim(decodeUri(namePart));
+        Matcher matcher = PLACE_COORDINATE_PATTERN.matcher(url);
+        Double latitude = null, longitude = null;
+        if (matcher.matches()) {
+            latitude = parseDouble(matcher.group(1));
+            longitude = parseDouble(matcher.group(2));
+        }
+        return asWgs84Position(longitude, latitude, name);
     }
 
     List<Wgs84Position> parsePositions(String url) {
@@ -203,7 +268,23 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
                 }
             }
         }
+
+        if (result.isEmpty()) {
+            List<String> queryPositions = parameters.get("q");
+            if (queryPositions != null) {
+                for (String q : queryPositions) {
+                    result.add(parseQueryPosition(q));
+                }
+            }
+        }
         return result;
+    }
+
+    Wgs84Position parseQueryPosition(String q) {
+        String trimmed = trim(q);
+        if (PLAIN_POSITION_PATTERN.matcher(trimmed).matches())
+            return parsePlainPosition(trimmed);
+        return asWgs84Position(null, null, trimmed);
     }
 
     String createURL(List<Wgs84Position> positions, int startIndex, int endIndex) {

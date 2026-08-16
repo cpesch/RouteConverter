@@ -63,6 +63,8 @@ public class GoogleMapsUrlFormatTest {
 
     private static final String INPUT10_NEW_GOOGLE_MAPS_2015 = "https://www.google.at/maps/dir/Sterzing,+Bozen,+Italien/Jaufenpass,+Sankt+Leonhard+in+Passeier,+Bozen,+Italien/Ofenpass,+7532+Cierfs,+Schweiz/Albulapassstrasse,+7482+Berg%C3%BCn%2FBravuogn,+Schweiz/Spl%C3%BCgenpass,+Spl%C3%BCgen,+Schweiz/Via+Roma,+53,+22023+Castiglione+CO,+Italien/@46.4115893,9.1625277,8z/data=!3m1!4b1!4m42!4m41!1m5!1m1!1s0x479d5340912b4fed:0xeccf91de29d6fcf9!2m2!1d11.4336186!2d46.8926725!1m5!1m1!1s0x4782b27a89809711:0xbfb1348a6269dc1!2m2!1d11.3214111!2d46.8395577!1m5!1m1!1s0x47831519f57d6e8b:0xa4a9db7fa9393319!2m2!1d10.2870515!2d46.6418315!1m5!1m1!1s0x47849d1f1792adb3:0x1b8f8898b9521cba!2m2!1d9.8000555!2d46.5815557!1m5!1m1!1s0x4784f6a1054aa397:0x1ffb7aed566559ff!2m2!1d9.33028!2d46.5056!1m5!1m1!1s0x478425a384f4a881:0xcec114200a27651!2m2!1d9.089271!2d45.95557!2m3!1b1!2b1!3b1!3e0";
 
+    private static final String INPUT11_PLACE_2026 = "https://www.google.com/maps/place/Berlin/@52.5068767,13.4247534,10z/data=!3m1!4b1!4m6!3m5!1s0x47a84e373f035901:0x42120465b5e3b70!8m2!3d52.5200066!4d13.404954!16zL20vMDE1NnE?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D";
+
     private final GoogleMapsUrlFormat format = new GoogleMapsUrlFormat();
 
     @Test
@@ -340,6 +342,85 @@ public class GoogleMapsUrlFormatTest {
     public void testIsGoogleMapsLinkUrl() throws MalformedURLException {
         assertTrue(format.isParseableUrl("https://maps.google.com/maps?saddr=Hamburg&daddr=Hannover+to:M%C3%BCnchen&hl=en&ie=UTF8&sll=50.844236,10.557014&sspn=6.272277,10.777588&geocode=Fe0fMQMd0n2YACm5Exh-g2GxRzGgOtZ78j0mBA%3BFVQxHwMdqn-UACmFT0lNUQuwRzEgR6yUbawlBA%3BFRCC3gIdsqWwACnZX4yj-XWeRzF9mLF9SrgMAQ&mra=ls&t=m&z=7"));
         assertTrue(format.isParseableUrl("https://www.google.de/maps/dir/Hamburg/Hannover/M%C3%BCnchen/@50.8213415,8.3587982,7z/data=!3m1!4b1!4m20!4m19!1m5!1m1!1s0x47b161837e1813b9:0x4263df27bd63aa0!2m2!1d9.9936818!2d53.5510846!1m5!1m1!1s0x47b00b514d494f85:0x425ac6d94ac4720!2m2!1d9.7320104!2d52.3758916!1m5!1m1!1s0x479e75f9a38c5fd9:0x10cb84a7db1987d!2m2!1d11.5819806!2d48.1351253!3e0"));
+    }
+
+    @Test
+    public void testParsePlaceFromLiveCapture() {
+        String url = format.findURL(INPUT11_PLACE_2026);
+        assertNotNull(url);
+        assertTrue(url.startsWith("/place/"));
+        Wgs84Position position = format.parsePlacePosition(url.substring(7));
+        assertNotNull(position);
+        assertEquals("Berlin", position.getDescription());
+        assertDoubleEquals(52.5200066, position.getLatitude());
+        assertDoubleEquals(13.404954, position.getLongitude());
+    }
+
+    @Test
+    public void testParseQueryCoordinates() {
+        List<Wgs84Position> positions = parsePositions("https://maps.google.com/maps?q=52.520008,13.404954");
+        assertNotNull(positions);
+        assertEquals(1, positions.size());
+        Wgs84Position position = positions.get(0);
+        assertNull(position.getDescription());
+        assertDoubleEquals(52.520008, position.getLatitude());
+        assertDoubleEquals(13.404954, position.getLongitude());
+    }
+
+    @Test
+    public void testParseQueryPlaceName() {
+        List<Wgs84Position> positions = parsePositions("https://maps.google.com/maps?q=Berlin,+Germany");
+        assertNotNull(positions);
+        assertEquals(1, positions.size());
+        Wgs84Position position = positions.get(0);
+        assertEquals("Berlin, Germany", position.getDescription());
+        assertNull(position.getLatitude());
+        assertNull(position.getLongitude());
+    }
+
+    @Test
+    public void testIsParseableShortLink() {
+        assertTrue(format.isParseableUrl("https://maps.app.goo.gl/AbCdEfGhiJ"));
+        assertTrue(format.isParseableUrl("https://goo.gl/maps/AbCdEfGhiJ"));
+    }
+
+    @Test
+    public void testResolveShortUrlSingleHop() {
+        String target = "https://www.google.com/maps/place/Berlin/@52.52,13.40,10z";
+        GoogleMapsUrlFormat.RedirectResolver resolver = url -> url.equals("https://maps.app.goo.gl/x") ? target : null;
+        String resolved = format.resolveShortUrl("https://maps.app.goo.gl/x", resolver);
+        assertEquals(target, resolved);
+    }
+
+    @Test
+    public void testResolveShortUrlMultipleHops() {
+        String hop1 = "https://maps.app.goo.gl/hop1";
+        String hop2 = "https://maps.app.goo.gl/hop2";
+        String hop3 = "https://maps.app.goo.gl/hop3";
+        String target = "https://www.google.com/maps/place/Berlin/@52.52,13.40,10z";
+        GoogleMapsUrlFormat.RedirectResolver resolver = url -> {
+            if (url.equals("https://maps.app.goo.gl/start")) return hop1;
+            if (url.equals(hop1)) return hop2;
+            if (url.equals(hop2)) return hop3;
+            if (url.equals(hop3)) return target;
+            return null;
+        };
+        String resolved = format.resolveShortUrl("https://maps.app.goo.gl/start", resolver);
+        assertEquals(target, resolved);
+    }
+
+    @Test
+    public void testResolveShortUrlTooManyHops() {
+        GoogleMapsUrlFormat.RedirectResolver resolver = url -> url + "/next";
+        String resolved = format.resolveShortUrl("https://maps.app.goo.gl/start", resolver);
+        assertNull(resolved);
+    }
+
+    @Test
+    public void testResolveShortUrlIOException() {
+        GoogleMapsUrlFormat.RedirectResolver resolver = url -> { throw new java.io.IOException("boom"); };
+        String resolved = format.resolveShortUrl("https://maps.app.goo.gl/x", resolver);
+        assertNull(resolved);
     }
 
     @Test

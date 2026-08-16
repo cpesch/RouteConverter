@@ -108,6 +108,10 @@ public abstract class HttpRequest {
         clientBuilder.disableContentCompression();
     }
 
+    protected void disableRedirectHandling() {
+        clientBuilder.disableRedirectHandling();
+    }
+
     protected boolean throwsSocketExceptionIfUnAuthorized() {
         return false;
     }
