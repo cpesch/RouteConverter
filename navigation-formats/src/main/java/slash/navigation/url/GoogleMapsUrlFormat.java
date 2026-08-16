@@ -116,8 +116,9 @@ public class GoogleMapsUrlFormat extends BaseUrlParsingFormat {
 
     protected void processURL(String url, String encoding, ParserContext<Wgs84Route> context) {
         if (url.startsWith("SHORTLINK:")) {
-            String resolved = resolveShortUrl(url.substring(10), HTTP_HEAD_REDIRECT_RESOLVER);
-            if (resolved == null)
+            String shortUrl = url.substring(10);
+            String resolved = resolveShortUrl(shortUrl, HTTP_HEAD_REDIRECT_RESOLVER);
+            if (resolved == null || resolved.equals(shortUrl))
                 return;
             String innerFound = internalFindUrl(resolved);
             if (innerFound != null)
