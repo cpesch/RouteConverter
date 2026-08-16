@@ -6,8 +6,6 @@ on:
     paths:
       - "route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_en.properties"
   workflow_dispatch:
-  schedule:
-    - cron: "0 6 * * 1"
 
 permissions:
   contents: write

@@ -5,6 +5,9 @@ preserve_hierarchy: true
 files:
   - source: /route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_en.properties
     translation: /route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_%two_letters_code%.properties
+    # keep : and = unescaped in exported .properties so downloads are
+    # byte-identical to the repo files and don't churn every line
+    escape_special_characters: 0
     languages_mapping:
       two_letters_code:
         pt-BR: pt_BR

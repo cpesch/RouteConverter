@@ -1,0 +1,28 @@
+name: Crowdin upload translations
+
+# Manual reconcile: push the repo's translation files to Crowdin after a
+# repo-side translation fix (vendor corrections, corruption cleanup), so the
+# next download does not revert them. Run this once after merging such a fix.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: crowdin action
+        uses: crowdin/github-action@v2
+        with:
+          upload_sources: true
+          upload_translations: true
+          download_translations: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
