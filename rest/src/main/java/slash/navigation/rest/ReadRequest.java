@@ -67,6 +67,14 @@ public abstract class ReadRequest extends HttpRequest {
         return getHeader(ETAG);
     }
 
+    public void disableRedirectHandling() {
+        super.disableRedirectHandling();
+    }
+
+    public String getLocationHeader() throws IOException {
+        return getHeader(LOCATION);
+    }
+
     public void setCacheControlNoCache() {
         setHeader(CACHE_CONTROL, "no-cache");
         setHeader(PRAGMA, "no-cache");
