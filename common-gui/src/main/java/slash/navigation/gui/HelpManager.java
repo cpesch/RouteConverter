@@ -85,6 +85,7 @@ public class HelpManager {
 
     private void openTopicForComponent(Component component) {
         for (Component c = component; c != null; c = c.getParent()) {
+            if (c instanceof JLayeredPane) continue;
             String name = c.getName();
             if (name != null && !name.isEmpty()) { openTopic(name); return; }
         }
