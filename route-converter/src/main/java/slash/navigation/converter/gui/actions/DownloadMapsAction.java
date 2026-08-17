@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.actions;
 
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.converter.gui.BaseRouteConverter;
+import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.converter.gui.helpers.RemoteMapDescriptor;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.DialogAction;
@@ -56,14 +57,17 @@ public class DownloadMapsAction extends DialogAction {
     private final MapsforgeMapManager mapManager;
     private final JCheckBox checkBoxDownloadRoutingData;
     private final JCheckBox checkBoxDownloadElevationData;
+    private final JCheckBox checkBoxDownloadPoiData;
 
     public DownloadMapsAction(JDialog dialog, JTable table, MapsforgeMapManager mapManager,
-                              JCheckBox checkBoxDownloadRoutingData, JCheckBox checkBoxDownloadElevationData) {
+                              JCheckBox checkBoxDownloadRoutingData, JCheckBox checkBoxDownloadElevationData,
+                              JCheckBox checkBoxDownloadPoiData) {
         super(dialog);
         this.table = table;
         this.mapManager = mapManager;
         this.checkBoxDownloadRoutingData = checkBoxDownloadRoutingData;
         this.checkBoxDownloadElevationData = checkBoxDownloadElevationData;
+        this.checkBoxDownloadPoiData = checkBoxDownloadPoiData;
     }
 
     private Action getAction() {
@@ -101,6 +105,8 @@ public class DownloadMapsAction extends DialogAction {
                         r.getRoutingServiceFacade().getRoutingService().downloadRoutingData(mapDescriptors);
                     if (checkBoxDownloadElevationData.isSelected())
                         r.getElevationServiceFacade().getElevationService().downloadElevationData(mapDescriptors);
+                    if (checkBoxDownloadPoiData.isSelected())
+                        ((RouteConverter) r).getMapsforgePoiLookup().downloadPoiData(mapDescriptors);
 
                     mapManager.scanMaps();
                 } catch (Exception e) {

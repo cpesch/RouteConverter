@@ -5,11 +5,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
+import slash.navigation.datasources.binding.DatasourceType;
+import slash.navigation.datasources.binding.FileType;
+import slash.navigation.datasources.binding.ObjectFactory;
 import slash.navigation.datasources.helpers.DataSourceService;
+import slash.navigation.datasources.helpers.DataSourcesUtil;
+import slash.navigation.datasources.impl.DataSourceImpl;
+import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
@@ -379,6 +386,98 @@ public class MapsforgePoiLookupTest {
         assertNull(MapsforgePoiLookup.toFtsMatchExpression("---"));
         assertNull(MapsforgePoiLookup.toFtsMatchExpression(""));
         assertNull(MapsforgePoiLookup.toFtsMatchExpression(null));
+    }
+
+    @Test
+    public void calculatesRemainingDownloadSizeForMissingRemoteFile() throws Exception {
+        String directory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
+        DataSource dataSource = poiDataSource(directory, poiFileType("missing.poi", MAP_BOUNDS, 12345L));
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManagerWith(dataSource));
+
+        long size = lookup.calculateRemainingDownloadSize(List.of(mapDescriptor(MAP_BOUNDS)));
+
+        assertEquals(12345L, size);
+    }
+
+    @Test
+    public void calculatesZeroWhenRemoteFileAlreadyExistsLocally() throws Exception {
+        String directory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
+        DataSource dataSource = poiDataSource(directory, poiFileType("present.poi", MAP_BOUNDS, 12345L));
+        markAsExistingLocally(directory, "present.poi");
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManagerWith(dataSource));
+
+        long size = lookup.calculateRemainingDownloadSize(List.of(mapDescriptor(MAP_BOUNDS)));
+
+        assertEquals(0L, size);
+    }
+
+    @Test
+    public void calculatesZeroWhenBoundingBoxIntersectsNoRemoteFile() throws Exception {
+        String directory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
+        BoundingBox farAway = new BoundingBox(-60.0, -10.0, -61.0, -11.0);
+        DataSource dataSource = poiDataSource(directory, poiFileType("far.poi", farAway, 999L));
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManagerWith(dataSource));
+
+        long size = lookup.calculateRemainingDownloadSize(List.of(mapDescriptor(MAP_BOUNDS)));
+
+        assertEquals(0L, size);
+    }
+
+    @Test
+    public void sumsOnlyMissingFilesAcrossMultipleRemotePoiFiles() throws Exception {
+        String directory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
+        DataSource dataSource = poiDataSource(directory,
+                poiFileType("missing.poi", MAP_BOUNDS, 500L),
+                poiFileType("present.poi", MAP_BOUNDS, 700L));
+        markAsExistingLocally(directory, "present.poi");
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManagerWith(dataSource));
+
+        long size = lookup.calculateRemainingDownloadSize(List.of(mapDescriptor(MAP_BOUNDS)));
+
+        assertEquals(500L, size);
+    }
+
+    private DataSource poiDataSource(String directory, FileType... fileTypes) {
+        ObjectFactory factory = new ObjectFactory();
+        DatasourceType datasourceType = factory.createDatasourceType();
+        datasourceType.setId("mapsforge-pois");
+        datasourceType.setDirectory(directory);
+        for (FileType fileType : fileTypes)
+            datasourceType.getFile().add(fileType);
+        return new DataSourceImpl(datasourceType);
+    }
+
+    private FileType poiFileType(String uri, BoundingBox boundingBox, long contentLength) {
+        return DataSourcesUtil.createFileType(uri, List.of(new Checksum(null, contentLength, null)), boundingBox);
+    }
+
+    private void markAsExistingLocally(String directory, String uri) throws Exception {
+        File file = new File(getApplicationDirectory(directory), uri);
+        assertTrue(file.createNewFile());
+    }
+
+    private MapDescriptor mapDescriptor(BoundingBox boundingBox) {
+        return new MapDescriptor() {
+            public String getIdentifier() {
+                return "test-map";
+            }
+
+            public BoundingBox getBoundingBox() {
+                return boundingBox;
+            }
+        };
+    }
+
+    private DataSourceManager dataSourceManagerWith(DataSource dataSource) {
+        DataSourceService dataSourceService = new DataSourceService();
+        dataSourceService.getDataSources().add(dataSource);
+        DataSourceManager dataSourceManager = mock(DataSourceManager.class);
+        when(dataSourceManager.getDataSourceService()).thenReturn(dataSourceService);
+        return dataSourceManager;
     }
 
     private DataSourceManager mockDataSourceManager() {
