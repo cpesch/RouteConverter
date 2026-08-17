@@ -76,6 +76,13 @@ public class RouteRenderer {
     }
 
     public void dispose() {
+        cancelRendering();
+    }
+
+    // Aborts an in-flight renderRoute at its next cancellation checkpoint. Called when the
+    // rendered route is replaced: without it, a long route keeps routing leg by leg on the
+    // single map-update thread and every later map update waits behind the discarded route.
+    public void cancelRendering() {
         synchronized (notificationMutex) {
             this.drawingRoute = false;
         }
@@ -126,13 +133,16 @@ public class RouteRenderer {
     }
 
     private void waitForInitialization(RoutingService service) {
-        if (!service.isInitialized()) {
-            while (!service.isInitialized()) {
-                try {
-                    sleep(100);
-                } catch (InterruptedException e) {
-                    // intentionally left empty
-                }
+        while (!service.isInitialized()) {
+            synchronized (notificationMutex) {
+                if (!drawingRoute)
+                    return;
+            }
+
+            try {
+                sleep(100);
+            } catch (InterruptedException e) {
+                // intentionally left empty
             }
         }
     }
@@ -211,6 +221,11 @@ public class RouteRenderer {
 
         DownloadFuture future = routingService.isDownload() ? routingService.downloadRoutingDataFor(mapIdentifier, asLongitudeAndLatitude(pairWithLayers)) : null;
         for (PairWithLayer pairWithLayer : pairWithLayers) {
+            synchronized (notificationMutex) {
+                if (!drawingRoute)
+                    return;
+            }
+
             if (!pairWithLayer.hasCoordinates())
                 continue;
 
@@ -284,6 +299,10 @@ public class RouteRenderer {
     private RoutingResult calculateResult(RoutingService routingService, DownloadFuture future, PairWithLayer pairWithLayer) {
         RoutingResult result = null;
         while (result == null) {
+            synchronized (notificationMutex) {
+                if (!drawingRoute)
+                    return new RoutingResult(null, null, Invalid);
+            }
             waitForDownload(future);
             synchronized (notificationMutex) {
                 if (!drawingRoute)

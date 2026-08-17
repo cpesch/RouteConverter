@@ -158,7 +158,7 @@ public class MapsforgeMapView extends BaseMapView {
     private final ListDataListener characteristicsModelListener = new CharacteristicsModelListener();
     private final ChangeListener routingPreferencesListener = e -> {
         if (positionsModel.getRoute().getCharacteristics().equals(Route))
-            this.updateDecoupler.replaceRoute();
+            replaceRoute();
     };
     private final ChangeListener unitSystemListener = e -> handleUnitSystem();
     private final ChangeListener showCoordinatesListener = e ->
@@ -167,7 +167,7 @@ public class MapsforgeMapView extends BaseMapView {
         synchronized (MapsforgeMapView.this) {
             this.waypointIcon = null;
         }
-        this.updateDecoupler.replaceRoute();
+        replaceRoute();
         // line widths apply to the gray set, too
         updateNonSelectedPositionLists();
     };
@@ -382,6 +382,15 @@ public class MapsforgeMapView extends BaseMapView {
 
     private LayerManager getLayerManager() {
         return mapView.getLayerManager();
+    }
+
+    // Replaces the displayed route: cancel a still-running route rendering first, otherwise the
+    // new route's map update waits on the single update thread until every routing leg of the
+    // discarded route has been calculated (minutes for long routes).
+    private void replaceRoute() {
+        if (routeRenderer != null)
+            routeRenderer.cancelRendering();
+        updateDecoupler.replaceRoute();
     }
 
     private void initializeMapView() {
@@ -1383,7 +1392,7 @@ public class MapsforgeMapView extends BaseMapView {
                         return;
                     boolean allRowsChanged = isFirstToLastRow(e);
                     if (allRowsChanged)
-                        updateDecoupler.replaceRoute();
+                        replaceRoute();
                     else
                         updateDecoupler.handleUpdate(e.getType(), e.getFirstRow(), e.getLastRow());
 
@@ -1409,7 +1418,7 @@ public class MapsforgeMapView extends BaseMapView {
                 return;
             // move behind OverlayPositionsModel calling DistanceAndTimeAggregator#clearDistancesAndTimes
             // which would clear the already calculated track data
-            invokeLater(() -> updateDecoupler.replaceRoute());
+            invokeLater(() -> replaceRoute());
         }
     }
 
