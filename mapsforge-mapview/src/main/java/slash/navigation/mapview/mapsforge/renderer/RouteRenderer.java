@@ -40,7 +40,9 @@ import slash.navigation.routing.RoutingResult;
 import slash.navigation.routing.RoutingService;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -178,18 +180,31 @@ public class RouteRenderer {
             drawingStraightLine = true;
         }
         try {
+            // collect all lines and add them to the map in one batch: adding them one by one
+            // queues one AWT event plus a layer-manager pause/redraw cycle per line, which
+            // freezes the UI for minutes on routes with thousands of positions
+            Map<PairWithLayer, Line> pairsToLines = new LinkedHashMap<>();
             for (PairWithLayer pairWithLayer : pairWithLayers) {
+                synchronized (notificationMutex) {
+                    // cancelled: add nothing so no layer is set that never reached the map
+                    if (!drawingRoute)
+                        return;
+                }
+
                 if (!pairWithLayer.hasCoordinates())
                     continue;
 
                 Line line = new Line(mapView.asLatLong(pairWithLayer.getFirst()), mapView.asLatLong(pairWithLayer.getSecond()), getRouteDownloadingPaint(), mapView.getTileSize());
-                pairWithLayer.setLayer(line);
-                mapView.addLayer(line);
+                pairsToLines.put(pairWithLayer, line);
 
                 Double distance = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());
                 Long time = pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond());
                 pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, time));
             }
+
+            for (Map.Entry<PairWithLayer, Line> entry : pairsToLines.entrySet())
+                entry.getKey().setLayer(entry.getValue());
+            mapView.addLayers(new ArrayList<>(pairsToLines.values()));
         } finally {
             synchronized (notificationMutex) {
                 drawingStraightLine = false;
