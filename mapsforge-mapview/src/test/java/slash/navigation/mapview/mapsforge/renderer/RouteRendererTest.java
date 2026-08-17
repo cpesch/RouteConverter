@@ -23,17 +23,32 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.core.model.LatLong;
+import slash.navigation.common.DistanceAndTime;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.gui.models.IntegerModel;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import slash.navigation.mapview.mapsforge.MapsforgeMapViewCallback;
 import slash.navigation.mapview.mapsforge.models.RouteQuality;
+import slash.navigation.mapview.mapsforge.updater.PairWithLayer;
+import slash.navigation.routing.RoutingResult;
+import slash.navigation.routing.RoutingService;
 
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertSame;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
+import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
 /**
  * Tests for the quality-to-paint mapping in {@link RouteRenderer}.
@@ -42,15 +57,27 @@ import static org.mockito.Mockito.when;
  */
 public class RouteRendererTest {
     private GraphicFactory graphicFactory;
+    private MapsforgeMapView mapView;
+    private MapsforgeMapViewCallback mapViewCallback;
     private RouteRenderer renderer;
 
     @Before
     public void setUp() {
         graphicFactory = mock(GraphicFactory.class);
+        when(graphicFactory.createPaint()).thenReturn(mock(Paint.class));
+        mapView = mock(MapsforgeMapView.class);
+        when(mapView.asLatLong(any(NavigationPosition.class))).thenReturn(new LatLong(0.0, 0.0));
+        when(mapView.asLatLong(anyList())).thenReturn(emptyList());
+        mapViewCallback = mock(MapsforgeMapViewCallback.class);
+        doAnswer(invocation -> {
+            throw new AssertionError("rendering failed", invocation.getArgument(0));
+        }).when(mapViewCallback).handleRoutingException(any());
         IntegerModel routeLineWidthModel = mock(IntegerModel.class);
         when(routeLineWidthModel.getInteger()).thenReturn(4);
-        renderer = new RouteRenderer(mock(MapsforgeMapView.class), mock(MapsforgeMapViewCallback.class),
-                mock(ColorModel.class), routeLineWidthModel, graphicFactory);
+        ColorModel routeColorModel = mock(ColorModel.class);
+        when(routeColorModel.getColor()).thenReturn(java.awt.Color.BLUE);
+        renderer = new RouteRenderer(mapView, mapViewCallback,
+                routeColorModel, routeLineWidthModel, graphicFactory);
     }
 
     @Test
@@ -87,5 +114,59 @@ public class RouteRendererTest {
         assertSame(invalidPaint, result);
         verify(invalidPaint).setColor(0xFFFF0000);
         verify(invalidPaint).setStrokeWidth(4);
+    }
+
+    private NavigationPosition createPosition() {
+        NavigationPosition position = mock(NavigationPosition.class);
+        when(position.hasCoordinates()).thenReturn(true);
+        when(position.calculateDistance(any())).thenReturn(1.0);
+        when(position.calculateTime(any())).thenReturn(1L);
+        return position;
+    }
+
+    private PairWithLayer createPair(int row) {
+        return new PairWithLayer(createPosition(), createPosition(), row);
+    }
+
+    @Test(timeout = 5000)
+    public void cancelRenderingStopsRoutingTheRemainingLegs() {
+        RoutingService routingService = mock(RoutingService.class);
+        when(routingService.isInitialized()).thenReturn(true);
+        when(routingService.isDownload()).thenReturn(false);
+        when(mapViewCallback.getRoutingService()).thenReturn(routingService);
+        // the first routed leg cancels the rendering - as replacing the route does
+        when(routingService.getRouteBetween(any(), any(), any(), any())).thenAnswer(invocation -> {
+            renderer.cancelRendering();
+            return new RoutingResult(emptyList(), new DistanceAndTime(1.0, 1L), Valid);
+        });
+        List<PairWithLayer> pairWithLayers = asList(createPair(0), createPair(1), createPair(2));
+
+        renderer.renderRoute("map", pairWithLayers, () -> {});
+
+        // legs 2 and 3 are not routed anymore after the cancellation
+        verify(routingService, times(1)).getRouteBetween(any(), any(), any(), any());
+    }
+
+    @Test(timeout = 5000)
+    public void cancelRenderingAbortsWaitingForRoutingServiceInitialization() throws InterruptedException {
+        RoutingService routingService = mock(RoutingService.class);
+        when(routingService.isInitialized()).thenReturn(false);
+        when(mapViewCallback.getRoutingService()).thenReturn(routingService);
+        List<PairWithLayer> pairWithLayers = asList(createPair(0));
+
+        Thread canceller = new Thread(() -> {
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException ignored) {
+            }
+            renderer.cancelRendering();
+        });
+        canceller.start();
+
+        // returns instead of spinning forever on the never-initialized service
+        renderer.renderRoute("map", pairWithLayers, () -> {});
+
+        canceller.join();
+        verify(routingService, times(0)).getRouteBetween(any(), any(), any(), any());
     }
 }
