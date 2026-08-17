@@ -12,6 +12,7 @@ import slash.navigation.geocoding.CategorizedNavigationPosition;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -237,6 +238,77 @@ public class MapsforgePoiLookupTest {
                         resultSet.getString("detail").contains("poi_data_fts"));
             }
         }
+    }
+
+    @Test
+    public void remoteV4BeatsLocalV3WithIdenticalBoundingBox() {
+        MapsforgePoiLookup.PoiDescriptor localV3 = new MapsforgePoiLookup.PoiDescriptor(
+                new File("germany.poi"), null, MAP_BOUNDS, 3, "mapsforge-pois");
+        MapsforgePoiLookup.PoiDescriptor remoteV4 = new MapsforgePoiLookup.PoiDescriptor(
+                null, null, MAP_BOUNDS, 4, "mapsforge-pois-4");
+
+        List<MapsforgePoiLookup.PoiDescriptor> descriptors = sorted(localV3, remoteV4);
+
+        assertEquals(remoteV4, descriptors.get(0));
+        assertEquals(localV3, descriptors.get(1));
+    }
+
+    @Test
+    public void tighterBoundingBoxBeatsHigherSpecVersion() {
+        MapsforgePoiLookup.PoiDescriptor smallV3 = new MapsforgePoiLookup.PoiDescriptor(
+                new File("region.poi"), null, VISIBLE_BOUNDS, 3, "mapsforge-pois");
+        MapsforgePoiLookup.PoiDescriptor largeV4 = new MapsforgePoiLookup.PoiDescriptor(
+                null, null, MAP_BOUNDS, 4, "mapsforge-pois-4");
+
+        List<MapsforgePoiLookup.PoiDescriptor> descriptors = sorted(largeV4, smallV3);
+
+        assertEquals(smallV3, descriptors.get(0));
+        assertEquals(largeV4, descriptors.get(1));
+    }
+
+    @Test
+    public void localBeatsRemoteWhenBoundingBoxAndSpecVersionAreEqual() {
+        MapsforgePoiLookup.PoiDescriptor local = new MapsforgePoiLookup.PoiDescriptor(
+                new File("germany.poi"), null, MAP_BOUNDS, 4, "mapsforge-pois-4");
+        MapsforgePoiLookup.PoiDescriptor remote = new MapsforgePoiLookup.PoiDescriptor(
+                null, null, MAP_BOUNDS, 4, "mapsforge-pois-4");
+
+        List<MapsforgePoiLookup.PoiDescriptor> descriptors = sorted(remote, local);
+
+        assertEquals(local, descriptors.get(0));
+        assertEquals(remote, descriptors.get(1));
+    }
+
+    @Test
+    public void nullBoundingBoxSortsLastRegardlessOfSpecVersion() {
+        MapsforgePoiLookup.PoiDescriptor withoutBounds = new MapsforgePoiLookup.PoiDescriptor(
+                new File("world.poi"), null, null, 4, "mapsforge-pois-4");
+        MapsforgePoiLookup.PoiDescriptor withBounds = new MapsforgePoiLookup.PoiDescriptor(
+                new File("region.poi"), null, MAP_BOUNDS, 3, "mapsforge-pois");
+
+        List<MapsforgePoiLookup.PoiDescriptor> descriptors = sorted(withoutBounds, withBounds);
+
+        assertEquals(withBounds, descriptors.get(0));
+        assertEquals(withoutBounds, descriptors.get(1));
+    }
+
+    @Test
+    public void unmappedDataSourceIdDefaultsToVersion3ForRemoteInferenceAndLocalReadFailure() {
+        MapsforgePoiLookup.PoiDescriptor localReadFailure = new MapsforgePoiLookup.PoiDescriptor(
+                new File("unreadable.poi"), null, MAP_BOUNDS, 3, "some-local-datasource");
+        MapsforgePoiLookup.PoiDescriptor remoteInference = new MapsforgePoiLookup.PoiDescriptor(
+                null, null, MAP_BOUNDS, 3, "some-unmapped-datasource");
+
+        List<MapsforgePoiLookup.PoiDescriptor> descriptors = sorted(remoteInference, localReadFailure);
+
+        assertEquals(localReadFailure, descriptors.get(0));
+        assertEquals(remoteInference, descriptors.get(1));
+    }
+
+    private List<MapsforgePoiLookup.PoiDescriptor> sorted(MapsforgePoiLookup.PoiDescriptor... descriptors) {
+        List<MapsforgePoiLookup.PoiDescriptor> result = new ArrayList<>(List.of(descriptors));
+        result.sort(MapsforgePoiLookup.descriptorPreference());
+        return result;
     }
 
     @Test

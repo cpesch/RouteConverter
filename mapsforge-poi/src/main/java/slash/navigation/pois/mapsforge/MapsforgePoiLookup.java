@@ -117,6 +117,10 @@ class MapsforgePoiLookup {
             "GROUP BY poi_index.id, poi_data.data " +
             "LIMIT ?";
 
+    // Datasource ids known to serve the v4 schema; every id not listed here defaults to version 3.
+    private static final Map<String, Integer> DATASOURCE_SPEC_VERSIONS = Map.of("mapsforge-pois-4", 4);
+    private static final int DEFAULT_SPEC_VERSION = 3;
+
     private final DataSourceManager dataSourceManager;
 
     MapsforgePoiLookup(DataSourceManager dataSourceManager) {
@@ -146,23 +150,34 @@ class MapsforgePoiLookup {
         for (DataSource dataSource : dataSourceManager.getDataSourceService().getDataSources()) {
             for (slash.navigation.datasources.File file : dataSource.getFiles()) {
                 if (DOT_POI.equals(getExtension(file.getUri())) && matches(file.getBoundingBox(), bounds))
-                    descriptors.add(new PoiDescriptor(null, file, file.getBoundingBox(), dataSource.getName()));
+                    descriptors.add(new PoiDescriptor(null, file, file.getBoundingBox(),
+                            DATASOURCE_SPEC_VERSIONS.getOrDefault(dataSource.getId(), DEFAULT_SPEC_VERSION), dataSource.getName()));
             }
         }
-        descriptors.sort((d1, d2) -> {
-            if (d1.localFile() != null && d2.localFile() == null)
-                return -1;
-            if (d1.localFile() == null && d2.localFile() != null)
-                return 1;
+        descriptors.sort(descriptorPreference());
+        return descriptors;
+    }
+
+    static Comparator<PoiDescriptor> descriptorPreference() {
+        return (d1, d2) -> {
             if (d1.boundingBox() == null && d2.boundingBox() != null)
                 return 1;
             if (d1.boundingBox() != null && d2.boundingBox() == null)
                 return -1;
-            if (d1.boundingBox() == null)
-                return 0;
-            return Double.compare(d1.boundingBox().getSquareSize(), d2.boundingBox().getSquareSize());
-        });
-        return descriptors;
+            if (d1.boundingBox() != null) {
+                int bySize = Double.compare(d1.boundingBox().getSquareSize(), d2.boundingBox().getSquareSize());
+                if (bySize != 0)
+                    return bySize;
+            }
+            int byVersion = Integer.compare(d2.specVersion(), d1.specVersion());
+            if (byVersion != 0)
+                return byVersion;
+            if (d1.localFile() != null && d2.localFile() == null)
+                return -1;
+            if (d1.localFile() == null && d2.localFile() != null)
+                return 1;
+            return 0;
+        };
     }
 
     private List<PoiDescriptor> collectLocalPoiDescriptors(BoundingBox bounds) {
@@ -170,18 +185,18 @@ class MapsforgePoiLookup {
         Set<File> files = new LinkedHashSet<>();
         for (DataSource dataSource : dataSourceManager.getDataSourceService().getDataSources()) {
             for (File file : collectFiles(getApplicationDirectory(dataSource.getDirectory()), DOT_POI)) {
-                BoundingBox fileBounds = readBounds(file);
-                if (matches(fileBounds, bounds))
-                    result.add(new PoiDescriptor(file, null, fileBounds, dataSource.getName()));
+                BoundsAndVersion boundsAndVersion = readBoundsAndVersion(file);
+                if (matches(boundsAndVersion.bounds(), bounds))
+                    result.add(new PoiDescriptor(file, null, boundsAndVersion.bounds(), boundsAndVersion.specVersion(), dataSource.getName()));
                 files.add(file);
             }
         }
         for (File file : collectFiles(getApplicationDirectory("maps"), DOT_POI)) {
             if (files.contains(file))
                 continue;
-            BoundingBox fileBounds = readBounds(file);
-            if (matches(fileBounds, bounds))
-                result.add(new PoiDescriptor(file, null, fileBounds, file.getName()));
+            BoundsAndVersion boundsAndVersion = readBoundsAndVersion(file);
+            if (matches(boundsAndVersion.bounds(), bounds))
+                result.add(new PoiDescriptor(file, null, boundsAndVersion.bounds(), boundsAndVersion.specVersion(), file.getName()));
         }
         return new ArrayList<>(result);
     }
@@ -198,15 +213,19 @@ class MapsforgePoiLookup {
     }
 
     BoundingBox readBounds(File file) {
+        return readBoundsAndVersion(file).bounds();
+    }
+
+    private BoundsAndVersion readBoundsAndVersion(File file) {
         try (Connection connection = open(file)) {
+            int specVersion = readVersion(connection);
             BoundingBox fromMetadata = readBoundsFromMetadata(connection);
-            if (fromMetadata != null)
-                return fromMetadata;
-            return readBoundsFromIndex(connection);
+            BoundingBox bounds = fromMetadata != null ? fromMetadata : readBoundsFromIndex(connection, specVersion);
+            return new BoundsAndVersion(bounds, specVersion);
         } catch (SQLException e) {
             log.log(Level.FINE, "Cannot read POI bounds from " + file, e);
         }
-        return null;
+        return new BoundsAndVersion(null, DEFAULT_SPEC_VERSION);
     }
 
     private BoundingBox readBoundsFromMetadata(Connection connection) {
@@ -227,8 +246,8 @@ class MapsforgePoiLookup {
         }
     }
 
-    private BoundingBox readBoundsFromIndex(Connection connection) throws SQLException {
-        String sql = readVersion(connection) >= 4 ?
+    private BoundingBox readBoundsFromIndex(Connection connection, int specVersion) throws SQLException {
+        String sql = specVersion >= 4 ?
                 "SELECT max(maxLon) east, max(maxLat) north, min(minLon) west, min(minLat) south FROM poi_index" :
                 "SELECT max(lon) east, max(lat) north, min(lon) west, min(lat) south FROM poi_index";
         try (Statement statement = connection.createStatement();
@@ -447,7 +466,10 @@ class MapsforgePoiLookup {
     record PoiFile(File file, String dataSourceName) {
     }
 
-    private record PoiDescriptor(File localFile, slash.navigation.datasources.File remoteFile, BoundingBox boundingBox, String dataSourceName) {
+    record PoiDescriptor(File localFile, slash.navigation.datasources.File remoteFile, BoundingBox boundingBox, int specVersion, String dataSourceName) {
+    }
+
+    private record BoundsAndVersion(BoundingBox bounds, int specVersion) {
     }
 
     private record PoiMatch(CategorizedNavigationPosition position, String description, double distanceMeters) {
