@@ -218,8 +218,8 @@ class MapsforgePoiLookup {
 
     private BoundsAndVersion readBoundsAndVersion(File file) {
         try (Connection connection = open(file)) {
-            int specVersion = readVersion(connection);
             BoundingBox fromMetadata = readBoundsFromMetadata(connection);
+            int specVersion = readVersion(connection);
             BoundingBox bounds = fromMetadata != null ? fromMetadata : readBoundsFromIndex(connection, specVersion);
             return new BoundsAndVersion(bounds, specVersion);
         } catch (SQLException e) {
@@ -261,8 +261,9 @@ class MapsforgePoiLookup {
     private int readVersion(Connection connection) {
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery("SELECT value FROM metadata WHERE name = 'version'")) {
-            if (resultSet.next())
-                return Integer.parseInt(resultSet.getString("value").trim());
+            String value = resultSet.next() ? resultSet.getString("value") : null;
+            if (value != null)
+                return Integer.parseInt(value.trim());
         } catch (SQLException | NumberFormatException e) {
             log.log(Level.FINE, "Cannot read POI database version", e);
         }
