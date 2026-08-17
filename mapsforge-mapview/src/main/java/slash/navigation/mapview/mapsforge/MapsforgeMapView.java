@@ -307,7 +307,7 @@ public class MapsforgeMapView extends BaseMapView {
                 List<PositionWithLayer> withLayers = new ArrayList<>();
                 for (PositionWithLayer positionWithLayer : positionWithLayers) {
                     if (!positionWithLayer.hasCoordinates())
-                        return;
+                        continue;
 
                     Marker marker = createMarker(positionWithLayer);
                     positionWithLayer.setLayer(marker);
