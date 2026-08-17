@@ -63,6 +63,7 @@ public class InsertPositionsDialog extends SimpleDialog {
     private JButton buttonInsertAllWaypoints;
     private JTextField textFieldStraightLineInterval;
     private JButton buttonInsertStraightLine;
+    private JButton buttonHelp;
     private IntegerDocument straightLineInterval;
 
     public InsertPositionsDialog() {
@@ -217,7 +218,7 @@ public class InsertPositionsDialog extends SimpleDialog {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panelSelection = new JPanel();
         panelSelection.setLayout(new GridLayoutManager(1, 2, new Insets(0, 5, 0, 0), -1, -1));
@@ -276,6 +277,11 @@ public class InsertPositionsDialog extends SimpleDialog {
         buttonInsertStraightLine = new JButton();
         this.$$$loadButtonText$$$(buttonInsertStraightLine, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "insert-straight-line-action"));
         panel2.add(buttonInsertStraightLine, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panelHelp = new JPanel();
+        panelHelp.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        panel1.add(panelHelp, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonHelp = BaseRouteConverter.getInstance().getContext().getHelpManager().helpButton(contentPane);
+        panelHelp.add(buttonHelp);
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;
