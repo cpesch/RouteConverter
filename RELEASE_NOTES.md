@@ -15,6 +15,7 @@
 
 - Map view (and profile view) could permanently stop updating after appending several files in quick succession; a race between the background map-update queue and newly loaded files could misclassify a pure append as a mid-list edit, desyncing the map from the position list and crashing the update worker (TimeAlbum Pro)
 - Opening a file while a long route was still being routed left the map empty for minutes: the discarded route kept calculating leg after leg on the single map-update thread and the new file's rendering had to wait behind it; replacing the route now cancels the in-flight rendering at the next leg
+- Opening a route with thousands of positions froze the map for minutes: every straight-line segment was added to the map as a separate AWT event with its own redraw cycle; the straight-line preview is now added in a single batch
 - A waypoint list containing a single position without coordinates showed no waypoint markers at all on the map; positions without coordinates are now skipped instead of suppressing every marker
 
 ## 3.5 — 2026-07-03

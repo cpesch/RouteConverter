@@ -42,6 +42,7 @@ import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -145,6 +146,8 @@ public class RouteRendererTest {
 
         // legs 2 and 3 are not routed anymore after the cancellation
         verify(routingService, times(1)).getRouteBetween(any(), any(), any(), any());
+        // the straight lines went to the map as a single batch, not one AWT event per line
+        verify(mapView, times(1)).addLayers(argThat(layers -> layers.size() == 3));
     }
 
     @Test(timeout = 5000)
