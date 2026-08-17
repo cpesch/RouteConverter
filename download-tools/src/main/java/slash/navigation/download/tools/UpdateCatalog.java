@@ -372,15 +372,11 @@ public class UpdateCatalog extends BaseDownloadTool {
         request.addFile("file", xml.getBytes(StandardCharsets.UTF_8));
         request.setAccept(APPLICATION_JSON);
 
-        String result = null;
-        try {
-            result = request.executeAsString();
-            log.info(format("Updated URIs with result:%n%s", result));
-            updateCount += getDownloadableCount(dataSourceType);
-        }
-        catch(Exception e) {
-            log.severe(format("Cannot update URIs: %s", e));
-        }
+        String result = request.executeAsString();
+        if (!request.isSuccessful())
+            throw new IOException(format("Cannot update URIs, status %d: %s", request.getStatusCode(), result));
+        log.info(format("Updated URIs with result:%n%s", result));
+        updateCount += getDownloadableCount(dataSourceType);
         return result;
     }
 

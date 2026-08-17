@@ -214,15 +214,11 @@ public class ScanWebsite extends BaseDownloadTool {
         request.addFile("file", xml.getBytes(StandardCharsets.UTF_8));
         request.setAccept(APPLICATION_JSON);
 
-        String result = null;
-        try {
-            result = request.executeAsString();
-            log.info(format("Added URIs with result:%n%s", result));
-            addCount += uris.size();
-        }
-        catch(Exception e) {
-            log.severe(format("Cannot add URIs: %s", e));
-        }
+        String result = request.executeAsString();
+        if (!request.isSuccessful())
+            throw new IOException(format("Cannot add URIs, status %d: %s", request.getStatusCode(), result));
+        log.info(format("Added URIs with result:%n%s", result));
+        addCount += uris.size();
         return result;
     }
 
@@ -234,15 +230,11 @@ public class ScanWebsite extends BaseDownloadTool {
         request.addFile("file", xml.getBytes(StandardCharsets.UTF_8));
         request.setAccept(APPLICATION_JSON);
 
-        String result = null;
-        try {
-            result = request.executeAsString();
-            log.info(format("Removed URIs with result:%n%s", result));
-            removeCount += uris.size();
-        }
-        catch(Exception e) {
-            log.severe(format("Cannot remove URIs: %s", e));
-        }
+        String result = request.executeAsString();
+        if (!request.isSuccessful())
+            throw new IOException(format("Cannot remove URIs, status %d: %s", request.getStatusCode(), result));
+        log.info(format("Removed URIs with result:%n%s", result));
+        removeCount += uris.size();
         return result;
     }
 
