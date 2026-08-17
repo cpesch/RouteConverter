@@ -1,22 +1,33 @@
 package slash.navigation.pois.mapsforge;
 
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.datasources.helpers.DataSourceService;
+import slash.navigation.download.Download;
+import slash.navigation.download.DownloadManager;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 
 import java.io.File;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import static java.util.Collections.emptyList;
 import static org.junit.Assert.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Files.recursiveDelete;
 import static slash.navigation.pois.mapsforge.MapsforgeGeocodingHelper.normalize;
 
 public class MapsforgePoiLookupTest {
@@ -26,6 +37,13 @@ public class MapsforgePoiLookupTest {
 
     @Rule
     public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    private final List<File> applicationDirectoriesToDelete = new ArrayList<>();
+
+    @After
+    public void deleteApplicationDirectories() throws Exception {
+        for (File directory : applicationDirectoriesToDelete)
+            recursiveDelete(directory);
+    }
 
     @Test
     public void normalizesQueryText() {
@@ -237,6 +255,119 @@ public class MapsforgePoiLookupTest {
                         resultSet.getString("detail").contains("poi_data_fts"));
             }
         }
+    }
+
+    @Test
+    public void remoteV4BeatsLocalV3WithIdenticalBoundingBox() {
+        MapsforgePoiLookup.PoiDescriptor localV3 = new MapsforgePoiLookup.PoiDescriptor(
+                new File("germany.poi"), null, MAP_BOUNDS, 3, "mapsforge-pois");
+        MapsforgePoiLookup.PoiDescriptor remoteV4 = new MapsforgePoiLookup.PoiDescriptor(
+                null, null, MAP_BOUNDS, 4, "mapsforge-pois-4");
+
+        List<MapsforgePoiLookup.PoiDescriptor> descriptors = sorted(localV3, remoteV4);
+
+        assertEquals(remoteV4, descriptors.get(0));
+        assertEquals(localV3, descriptors.get(1));
+    }
+
+    @Test
+    public void tighterBoundingBoxBeatsHigherSpecVersion() {
+        MapsforgePoiLookup.PoiDescriptor smallV3 = new MapsforgePoiLookup.PoiDescriptor(
+                new File("region.poi"), null, VISIBLE_BOUNDS, 3, "mapsforge-pois");
+        MapsforgePoiLookup.PoiDescriptor largeV4 = new MapsforgePoiLookup.PoiDescriptor(
+                null, null, MAP_BOUNDS, 4, "mapsforge-pois-4");
+
+        List<MapsforgePoiLookup.PoiDescriptor> descriptors = sorted(largeV4, smallV3);
+
+        assertEquals(smallV3, descriptors.get(0));
+        assertEquals(largeV4, descriptors.get(1));
+    }
+
+    @Test
+    public void localBeatsRemoteWhenBoundingBoxAndSpecVersionAreEqual() {
+        MapsforgePoiLookup.PoiDescriptor local = new MapsforgePoiLookup.PoiDescriptor(
+                new File("germany.poi"), null, MAP_BOUNDS, 4, "mapsforge-pois-4");
+        MapsforgePoiLookup.PoiDescriptor remote = new MapsforgePoiLookup.PoiDescriptor(
+                null, null, MAP_BOUNDS, 4, "mapsforge-pois-4");
+
+        List<MapsforgePoiLookup.PoiDescriptor> descriptors = sorted(remote, local);
+
+        assertEquals(local, descriptors.get(0));
+        assertEquals(remote, descriptors.get(1));
+    }
+
+    @Test
+    public void nullBoundingBoxSortsLastRegardlessOfSpecVersion() {
+        MapsforgePoiLookup.PoiDescriptor withoutBounds = new MapsforgePoiLookup.PoiDescriptor(
+                new File("world.poi"), null, null, 4, "mapsforge-pois-4");
+        MapsforgePoiLookup.PoiDescriptor withBounds = new MapsforgePoiLookup.PoiDescriptor(
+                new File("region.poi"), null, MAP_BOUNDS, 3, "mapsforge-pois");
+
+        List<MapsforgePoiLookup.PoiDescriptor> descriptors = sorted(withoutBounds, withBounds);
+
+        assertEquals(withBounds, descriptors.get(0));
+        assertEquals(withoutBounds, descriptors.get(1));
+    }
+
+    @Test
+    public void unmappedDataSourceIdDefaultsToVersion3ForRemoteInferenceAndLocalReadFailure() {
+        MapsforgePoiLookup.PoiDescriptor localReadFailure = new MapsforgePoiLookup.PoiDescriptor(
+                new File("unreadable.poi"), null, MAP_BOUNDS, 3, "some-local-datasource");
+        MapsforgePoiLookup.PoiDescriptor remoteInference = new MapsforgePoiLookup.PoiDescriptor(
+                null, null, MAP_BOUNDS, 3, "some-unmapped-datasource");
+
+        List<MapsforgePoiLookup.PoiDescriptor> descriptors = sorted(remoteInference, localReadFailure);
+
+        assertEquals(localReadFailure, descriptors.get(0));
+        assertEquals(remoteInference, descriptors.get(1));
+    }
+
+    @Test
+    public void remoteDataSourceKnownToServeV4IsPreferredOverLocalV3ViaRealDataSourceId() throws Exception {
+        String remoteDirectory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(remoteDirectory));
+        DataSource remoteDataSource = mock(DataSource.class);
+        when(remoteDataSource.getId()).thenReturn("mapsforge-pois-4");
+        when(remoteDataSource.getName()).thenReturn("mapsforge-pois-4");
+        when(remoteDataSource.getDirectory()).thenReturn(remoteDirectory);
+        slash.navigation.datasources.File remoteFile = mock(slash.navigation.datasources.File.class);
+        when(remoteFile.getUri()).thenReturn("region.poi");
+        when(remoteFile.getBoundingBox()).thenReturn(MAP_BOUNDS);
+        when(remoteFile.getDataSource()).thenReturn(remoteDataSource);
+        when(remoteDataSource.getFiles()).thenReturn(List.of(remoteFile));
+
+        String localDirectory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(localDirectory));
+        DataSource localDataSource = mock(DataSource.class);
+        when(localDataSource.getId()).thenReturn("some-local-datasource");
+        when(localDataSource.getName()).thenReturn("some-local-datasource");
+        when(localDataSource.getDirectory()).thenReturn(localDirectory);
+        when(localDataSource.getFiles()).thenReturn(emptyList());
+        File localPoiFile = new File(getApplicationDirectory(localDirectory), "germany.poi");
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + localPoiFile.getAbsolutePath());
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate("CREATE TABLE metadata (name TEXT, value TEXT)");
+        }
+        insertMetadata(localPoiFile, "bounds", "52,13,53,14");
+
+        DataSourceService dataSourceService = new DataSourceService();
+        dataSourceService.getDataSources().add(remoteDataSource);
+        dataSourceService.getDataSources().add(localDataSource);
+        DataSourceManager dataSourceManager = mock(DataSourceManager.class);
+        when(dataSourceManager.getDataSourceService()).thenReturn(dataSourceService);
+        when(dataSourceManager.queueForDownload(any(), any())).thenReturn(mock(Download.class));
+        when(dataSourceManager.getDownloadManager()).thenReturn(mock(DownloadManager.class));
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManager);
+
+        lookup.findPoiFile(MAP_BOUNDS);
+
+        verify(dataSourceManager).queueForDownload(remoteDataSource, remoteFile);
+    }
+
+    private List<MapsforgePoiLookup.PoiDescriptor> sorted(MapsforgePoiLookup.PoiDescriptor... descriptors) {
+        List<MapsforgePoiLookup.PoiDescriptor> result = new ArrayList<>(List.of(descriptors));
+        result.sort(MapsforgePoiLookup.descriptorPreference());
+        return result;
     }
 
     @Test
