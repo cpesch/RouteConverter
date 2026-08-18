@@ -44,6 +44,7 @@ import slash.navigation.nominatim.NominatimService;
 import slash.navigation.photon.PhotonService;
 import slash.navigation.pois.mapsforge.MapsforgeMapGeocodingService;
 import slash.navigation.pois.mapsforge.MapsforgePoiGeocodingService;
+import slash.navigation.pois.mapsforge.MapsforgePoiLookup;
 import slash.navigation.routing.StraightLine;
 
 import javax.swing.*;
@@ -70,6 +71,7 @@ import static slash.navigation.gui.helpers.JMenuHelper.*;
 public class RouteConverter extends BaseRouteConverter {
     private HgtFilesService hgtFilesService;
     private MapsforgeMapManager mapsforgeMapManager;
+    private MapsforgePoiLookup mapsforgePoiLookup;
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
@@ -98,6 +100,7 @@ public class RouteConverter extends BaseRouteConverter {
         super.initializeServices();
         hgtFilesService = new HgtFilesService(getDataSourceManager());
         mapsforgeMapManager = new MapsforgeMapManager(getDataSourceManager(), getTileServerMapManager());
+        mapsforgePoiLookup = new MapsforgePoiLookup(getDataSourceManager());
         mapAfterStart = getMapsforgeMapManager().getDisplayedMapModel().getItem();
     }
 
@@ -125,6 +128,10 @@ public class RouteConverter extends BaseRouteConverter {
 
     public MapsforgeMapManager getMapsforgeMapManager() {
         return mapsforgeMapManager;
+    }
+
+    public MapsforgePoiLookup getMapsforgePoiLookup() {
+        return mapsforgePoiLookup;
     }
 
     protected MapsforgeMapViewCallback getMapViewCallback() {

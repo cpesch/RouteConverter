@@ -22,6 +22,7 @@ package slash.navigation.pois.mapsforge;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tag;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.DataSourceManager;
@@ -54,7 +55,7 @@ import static slash.navigation.pois.mapsforge.MapsforgeTagMatcher.*;
  *
  * @author Christian Pesch
  */
-class MapsforgePoiLookup {
+public class MapsforgePoiLookup {
     private static final Logger log = Logger.getLogger(MapsforgePoiLookup.class.getName());
 
     static final int MAX_RESULTS = 50;
@@ -123,8 +124,37 @@ class MapsforgePoiLookup {
 
     private final DataSourceManager dataSourceManager;
 
-    MapsforgePoiLookup(DataSourceManager dataSourceManager) {
+    public MapsforgePoiLookup(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
+    }
+
+    public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
+        long size = 0L;
+        for (slash.navigation.datasources.File file : findRemotePoiFiles(mapDescriptors)) {
+            Long contentLength = file.getLatestChecksum() != null ? file.getLatestChecksum().getContentLength() : null;
+            if (contentLength != null)
+                size += contentLength;
+        }
+        return size;
+    }
+
+    public void downloadPoiData(List<MapDescriptor> mapDescriptors) {
+        for (slash.navigation.datasources.File file : findRemotePoiFiles(mapDescriptors))
+            dataSourceManager.queueForDownload(file.getDataSource(), file);
+    }
+
+    private Set<slash.navigation.datasources.File> findRemotePoiFiles(List<MapDescriptor> mapDescriptors) {
+        Set<slash.navigation.datasources.File> result = new LinkedHashSet<>();
+        for (MapDescriptor mapDescriptor : mapDescriptors) {
+            BoundingBox bounds = mapDescriptor.getBoundingBox();
+            for (DataSource dataSource : dataSourceManager.getDataSourceService().getDataSources()) {
+                for (slash.navigation.datasources.File file : dataSource.getFiles()) {
+                    if (DOT_POI.equals(getExtension(file.getUri())) && matches(file.getBoundingBox(), bounds) && !createFile(file).exists())
+                        result.add(file);
+                }
+            }
+        }
+        return result;
     }
 
     PoiFile findPoiFile(BoundingBox mapBoundingBox) {

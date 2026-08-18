@@ -42,6 +42,7 @@ import slash.navigation.maps.mapsforge.LocalMap;
 import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.RemoteMap;
 import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
+import slash.navigation.pois.mapsforge.MapsforgePoiLookup;
 import slash.navigation.routing.RoutingService;
 
 import javax.swing.*;
@@ -86,6 +87,7 @@ public class MapsDialog extends SimpleDialog {
     private JButton buttonClose;
     private JCheckBox checkBoxDownloadElevationData;
     private JCheckBox checkBoxDownloadRoutingData;
+    private JCheckBox checkBoxDownloadPoiData;
 
     public MapsDialog() {
         super(BaseRouteConverter.getInstance().getFrame(), "maps");
@@ -211,7 +213,7 @@ public class MapsDialog extends SimpleDialog {
         actionManager.register("display-offline-map", new DisplayMapAction(this, tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("delete-offline-maps", new DeleteMapsAction(this, tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("download-maps", new DownloadMapsAction(this, tableDownloadableMaps, getMapsforgeMapManager(),
-                checkBoxDownloadRoutingData, checkBoxDownloadElevationData));
+                checkBoxDownloadRoutingData, checkBoxDownloadElevationData, checkBoxDownloadPoiData));
         new AvailableOfflineMapsTablePopupMenu(tableAvailableOfflineMaps).createPopupMenu();
         new DownloadableMapsTablePopupMenu(tableDownloadableMaps).createPopupMenu();
         registerAction(buttonDisplayOfflineMap, "display-offline-map");
@@ -271,10 +273,21 @@ public class MapsDialog extends SimpleDialog {
                 elevationService.getName();
         checkBoxDownloadElevationData.setText(format(BaseRouteConverter.getBundle().getString("download-elevation-data"),
                 formatSize(elevationServiceDownloadSize), elevationServiceName));
+
+        MapsforgePoiLookup poiLookup = getMapsforgePoiLookup();
+        long poiDownloadSize = poiLookup.calculateRemainingDownloadSize(selectedMaps);
+        checkBoxDownloadPoiData.setEnabled(poiDownloadSize > 0);
+        checkBoxDownloadPoiData.setSelected(checkBoxDownloadPoiData.isEnabled());
+        checkBoxDownloadPoiData.setText(format(BaseRouteConverter.getBundle().getString("download-poi-data"),
+                formatSize(poiDownloadSize)));
     }
 
     private MapsforgeMapManager getMapsforgeMapManager() {
         return ((RouteConverter) BaseRouteConverter.getInstance()).getMapsforgeMapManager();
+    }
+
+    private MapsforgePoiLookup getMapsforgePoiLookup() {
+        return ((RouteConverter) BaseRouteConverter.getInstance()).getMapsforgePoiLookup();
     }
 
     private void close() {
@@ -325,7 +338,7 @@ public class MapsDialog extends SimpleDialog {
         panel3.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "offline-tab"), panel3);
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(6, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel4.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
@@ -342,6 +355,9 @@ public class MapsDialog extends SimpleDialog {
         checkBoxDownloadRoutingData = new JCheckBox();
         checkBoxDownloadRoutingData.setSelected(true);
         panel4.add(checkBoxDownloadRoutingData, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        checkBoxDownloadPoiData = new JCheckBox();
+        checkBoxDownloadPoiData.setSelected(true);
+        panel4.add(checkBoxDownloadPoiData, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "download-complete-coverage"));
         panel4.add(label1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
