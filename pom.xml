@@ -91,6 +91,11 @@
              entry in pluginManagement below). -->
         <jaxb-api.version>4.0.5</jaxb-api.version>
         <jaxb-impl.version>4.0.9</jaxb-impl.version>
+        <!-- Single source of truth for log4j. Keeps the transitive log4j-api
+             (via poi-ooxml, which still ships a vulnerable 2.24.3) in lockstep
+             with the log4j-to-slf4j bridge in the launcher poms
+             (CVE-2026-49844, Dependabot alerts 233-241). -->
+        <log4j.version>2.26.1</log4j.version>
         <mapsforge.version>0.29.0</mapsforge.version>
         <slf4j.version>2.0.18</slf4j.version>
     </properties>
@@ -732,6 +737,16 @@
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>
                 <version>4.35.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-to-slf4j</artifactId>
+                <version>${log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
