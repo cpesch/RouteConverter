@@ -215,7 +215,7 @@ public class GraphHopper extends BaseRoutingService {
         return null;
     }
 
-    private synchronized java.io.File getOsmPbfFile() {
+    synchronized java.io.File getOsmPbfFile() {
         return osmPbfFile;
     }
 
@@ -223,19 +223,29 @@ public class GraphHopper extends BaseRoutingService {
         this.osmPbfFile = osmPbfFile;
     }
 
-    private boolean existsOsmPbfFile() {
-        File file = getOsmPbfFile();
+    private boolean existsFile(File file) {
         return file != null && file.exists();
     }
 
-    private File getGraphDirectory() {
-        File file = getOsmPbfFile();
+    private boolean existsOsmPbfFile() {
+        return existsFile(getOsmPbfFile());
+    }
+
+    private File getGraphDirectory(File file) {
         return file != null ? lookupGraphDirectory(file) : null;
     }
 
-    private boolean existsGraphDirectory() {
-        File graphDirectory = getGraphDirectory();
+    private File getGraphDirectory() {
+        return getGraphDirectory(getOsmPbfFile());
+    }
+
+    private boolean existsGraphDirectory(File file) {
+        File graphDirectory = getGraphDirectory(file);
         return graphDirectory != null && PbfUtil.createPropertiesFile(graphDirectory).exists();
+    }
+
+    private boolean existsGraphDirectory() {
+        return existsGraphDirectory(getOsmPbfFile());
     }
 
     synchronized void initializeHopper() {
@@ -362,11 +372,24 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         public boolean isRequiresDownload() {
-            boolean requiresDownload = !existsOsmPbfFile() && !existsGraphDirectory();
+            if (next == null)
+                return false;
+
+            // check against the graph descriptor computed for THIS route (next), not against
+            // whatever osmPbfFile/hopper happens to be loaded from an earlier, possibly distant
+            // route: that stale singleton state otherwise stays "satisfied" forever and next is
+            // silently discarded, so the wrong graph keeps being used (rc#105)
+            File file = createFile(next);
+            boolean requiresDownload = !existsFile(file) && !existsGraphDirectory(file);
             if (requiresDownload)
-                log.fine("existsGraphDirectory()=" + existsGraphDirectory() + " getGraphDirectory()=" + getGraphDirectory() +
-                        " existsOsmPbfFile()=" + existsOsmPbfFile() + " getOsmPbfFile()=" + getOsmPbfFile() +
+                log.fine("existsGraphDirectory(next)=" + existsGraphDirectory(file) + " getGraphDirectory(next)=" + getGraphDirectory(file) +
+                        " existsFile(next)=" + existsFile(file) + " next=" + file +
                         " graphDescriptors=" + graphDescriptors);
+            else
+                // next is already fully available locally: point osmPbfFile at it right away so
+                // initializeHopper() (called unconditionally from getRouteBetween()) switches the
+                // loaded graph even though no download/processing is triggered below
+                setOsmPbfFile(file);
             return requiresDownload && confirmDownload();
         }
 
