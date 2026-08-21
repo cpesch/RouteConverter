@@ -24,6 +24,7 @@ import org.junit.Test;
 import jakarta.xml.bind.JAXBException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.StringReader;
 
 import static org.junit.Assert.*;
@@ -82,6 +83,39 @@ public class KmlUtilTest {
         unmarshal20(new StringReader("<notvalid/>"));
     }
 
+    private static final String KML_20_FOLDER_DOC = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <kml xmlns="%s">
+              <Folder>
+                <Placemark/>
+                <Placemark/>
+                <Placemark/>
+              </Folder>
+            </kml>
+            """.formatted(KML_20_NAMESPACE_URI);
+
+    @Test
+    public void testNewUnmarshaller20() throws JAXBException {
+        Reader reader = new StringReader(KML_20_FOLDER_DOC);
+        slash.navigation.kml.binding20.Kml kml = (slash.navigation.kml.binding20.Kml) newUnmarshaller20().unmarshal(reader);
+        assertNotNull(kml);
+        assertNotNull(kml.getFolder());
+        assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
+    }
+
+    @Test
+    public void testUnmarshal20FolderContent() throws IOException {
+        slash.navigation.kml.binding20.Kml kml = unmarshal20(new StringReader(KML_20_FOLDER_DOC));
+        assertNotNull(kml);
+        assertNotNull(kml.getFolder());
+        assertEquals(3, kml.getFolder().getDocumentOrFolderOrGroundOverlay().size());
+    }
+
+    @Test(expected = IOException.class)
+    public void testUnmarshal21RejectsKml20Document() throws IOException {
+        unmarshal21(new StringReader(KML_20_FOLDER_DOC));
+    }
+
     // ---- KML 2.1 ----
 
     private static final String KML_21_DOC =
@@ -114,6 +148,11 @@ public class KmlUtilTest {
     @Test(expected = IOException.class)
     public void testUnmarshal21BadXml() throws IOException {
         unmarshal21(new StringReader("<notvalid/>"));
+    }
+
+    @Test(expected = IOException.class)
+    public void testUnmarshal20RejectsKml21Document() throws IOException {
+        unmarshal20(new StringReader(KML_21_DOC));
     }
 
     // ---- KML 2.2 Beta ----
