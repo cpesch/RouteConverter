@@ -33,9 +33,13 @@ import java.io.IOException;
 import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static slash.common.io.Directories.ensureDirectory;
+import static slash.common.io.Directories.getApplicationDirectory;
 
 public class GraphHopperTest {
     private static final String MALA_FATRA_URI = "europe/slovakia/mala-fatra-latest.osm.pbf";
@@ -76,5 +80,52 @@ public class GraphHopperTest {
         assertTrue("GraphHopper must recognize it needs to download the graph for the route's " +
                         "actual region instead of trusting the previously loaded, unrelated graph",
                 future.isRequiresDownload());
+    }
+
+    // rc#105: when the graph descriptor computed for the current route is already fully present
+    // locally, isRequiresDownload() must not just report "no download needed" -- it must also
+    // switch osmPbfFile to that graph so getRouteBetween()'s initializeHopper() call loads it,
+    // instead of leaving the stale, previously loaded graph in place.
+    @Test
+    public void isRequiresDownloadSwitchesToAnAlreadyPresentGraphForTheCurrentRoute() throws IOException {
+        GraphHopper.TEST_MODE = true;
+
+        slash.navigation.datasources.File malaFatraFile = mock(slash.navigation.datasources.File.class);
+        when(malaFatraFile.getUri()).thenReturn(MALA_FATRA_URI);
+        when(malaFatraFile.getBoundingBox()).thenReturn(new BoundingBox(19.5, 49.6, 18.5, 48.9));
+
+        DataSource graphHopperDataSource = mock(DataSource.class);
+        when(graphHopperDataSource.getDirectory()).thenReturn("graphhopper-test-" + hashCode());
+        when(graphHopperDataSource.getAction()).thenReturn(Action.Copy.name());
+        when(graphHopperDataSource.getBaseUrl()).thenReturn("http://download.geofabrik.de/");
+        when(graphHopperDataSource.getFiles()).thenReturn(singletonList(malaFatraFile));
+        when(malaFatraFile.getDataSource()).thenReturn(graphHopperDataSource);
+
+        // the file GraphHopper resolves for the Mala Fatra graph descriptor is already fully
+        // downloaded at the location the production code would compute for it
+        File directory = getApplicationDirectory(graphHopperDataSource.getDirectory());
+        File malaFatraLocalFile = new File(directory, MALA_FATRA_URI);
+        ensureDirectory(malaFatraLocalFile.getParentFile());
+        assertTrue(malaFatraLocalFile.createNewFile());
+
+        GraphHopper hopper = new GraphHopper(new DownloadManager(createTempFile("queueFile", ".xml")));
+        hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
+
+        // simulate a graph for a distant, unrelated region that is already loaded from an
+        // earlier route drawn in this session -- the file still exists on disk
+        File previouslyLoadedFile = createTempFile("denmark-latest", ".osm.pbf");
+        hopper.setOsmPbfFile(previouslyLoadedFile);
+
+        // now route through Mala Fatra, Slovakia, whose graph is already present locally
+        DownloadFuture future = hopper.downloadRoutingDataFor("test-map", asList(
+                new LongitudeAndLatitude(19.0663111, 49.2578493),
+                new LongitudeAndLatitude(19.0763111, 49.2678493)));
+
+        assertFalse("GraphHopper must not require a download when the graph for the route's " +
+                        "actual region is already present locally",
+                future.isRequiresDownload());
+        assertEquals("GraphHopper must switch osmPbfFile to the already present graph for the " +
+                        "current route instead of leaving the previously loaded graph in place",
+                malaFatraLocalFile, hopper.getOsmPbfFile());
     }
 }

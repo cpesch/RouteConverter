@@ -215,7 +215,7 @@ public class GraphHopper extends BaseRoutingService {
         return null;
     }
 
-    private synchronized java.io.File getOsmPbfFile() {
+    synchronized java.io.File getOsmPbfFile() {
         return osmPbfFile;
     }
 
@@ -379,7 +379,7 @@ public class GraphHopper extends BaseRoutingService {
             // whatever osmPbfFile/hopper happens to be loaded from an earlier, possibly distant
             // route: that stale singleton state otherwise stays "satisfied" forever and next is
             // silently discarded, so the wrong graph keeps being used (rc#105)
-            java.io.File file = createFile(next);
+            File file = createFile(next);
             boolean requiresDownload = !existsFile(file) && !existsGraphDirectory(file);
             if (requiresDownload)
                 log.fine("existsGraphDirectory(next)=" + existsGraphDirectory(file) + " getGraphDirectory(next)=" + getGraphDirectory(file) +
