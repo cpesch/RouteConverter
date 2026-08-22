@@ -45,6 +45,10 @@ public class DraggableMarker extends Marker {
     }
 
     public boolean onTap(LatLong tapLatLong, Point viewPosition, Point tapPoint) {
+        // Marker#contains dereferences the bitmap - unlike Marker#draw, which checks for null -
+        // so a marker whose icon failed to load would throw a NullPointerException on every click
+        if (getBitmap() == null)
+            return false;
         return contains(viewPosition, tapPoint, mapsforgeMapView.getMapView());
     }
 

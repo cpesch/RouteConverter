@@ -150,6 +150,7 @@ public class LoggingHelper {
     private static final Filter FILTER = record ->
             record.getLoggerName().startsWith("slash") ||
                     record.getLoggerName().startsWith("com.graphhopper") ||
+                    record.getLoggerName().startsWith("com.kitfox") ||
                     record.getLoggerName().startsWith("org.mapsforge");
 
     private File getLogFile() {
