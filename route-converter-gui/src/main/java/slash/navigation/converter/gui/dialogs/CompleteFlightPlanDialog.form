@@ -87,13 +87,13 @@
               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="country-code-colon"/>
             </properties>
           </component>
-          <component id="6c73c" class="javax.swing.JComboBox" binding="comboBoxCountryCode">
+          <component id="6c73c" class="javax.swing.JComboBox" binding="comboBoxCountryCode" custom-create="true">
             <constraints>
               <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties/>
           </component>
-          <component id="cb5a5" class="javax.swing.JComboBox" binding="comboBoxWaypointType">
+          <component id="cb5a5" class="javax.swing.JComboBox" binding="comboBoxWaypointType" custom-create="true">
             <constraints>
               <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
             </constraints>

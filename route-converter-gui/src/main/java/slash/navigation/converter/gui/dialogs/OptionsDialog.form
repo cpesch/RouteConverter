@@ -72,7 +72,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="preferred-locale"/>
                     </properties>
                   </component>
-                  <component id="13fe" class="javax.swing.JComboBox" binding="comboBoxLocale">
+                  <component id="13fe" class="javax.swing.JComboBox" binding="comboBoxLocale" custom-create="true">
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -217,7 +217,7 @@
                           <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-times-with-timezone"/>
                         </properties>
                       </component>
-                      <component id="47b14" class="javax.swing.JComboBox" binding="comboBoxTimeZone" default-binding="true">
+                      <component id="47b14" class="javax.swing.JComboBox" binding="comboBoxTimeZone" custom-create="true" default-binding="true">
                         <constraints>
                           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -231,7 +231,7 @@
                           <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-measures-with-system-of-unit"/>
                         </properties>
                       </component>
-                      <component id="ea92b" class="javax.swing.JComboBox" binding="comboBoxUnitSystem">
+                      <component id="ea92b" class="javax.swing.JComboBox" binding="comboBoxUnitSystem" custom-create="true">
                         <constraints>
                           <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -245,7 +245,7 @@
                           <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="display-degrees-with-format"/>
                         </properties>
                       </component>
-                      <component id="1cd19" class="javax.swing.JComboBox" binding="comboBoxDegreeFormat">
+                      <component id="1cd19" class="javax.swing.JComboBox" binding="comboBoxDegreeFormat" custom-create="true">
                         <constraints>
                           <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                         </constraints>
@@ -298,7 +298,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="number-pattern"/>
                     </properties>
                   </component>
-                  <component id="4e34b" class="javax.swing.JComboBox" binding="comboboxNumberPattern">
+                  <component id="4e34b" class="javax.swing.JComboBox" binding="comboboxNumberPattern" custom-create="true">
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -312,7 +312,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="numbering-strategy"/>
                     </properties>
                   </component>
-                  <component id="fff8c" class="javax.swing.JComboBox" binding="comboBoxNumberingStrategy">
+                  <component id="fff8c" class="javax.swing.JComboBox" binding="comboBoxNumberingStrategy" custom-create="true">
                     <constraints>
                       <grid row="3" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -469,7 +469,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="map-service"/>
                     </properties>
                   </component>
-                  <component id="72ca5" class="javax.swing.JComboBox" binding="comboBoxMapService">
+                  <component id="72ca5" class="javax.swing.JComboBox" binding="comboBoxMapService" custom-create="true">
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -509,13 +509,13 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="google-maps-server"/>
                     </properties>
                   </component>
-                  <component id="b7ad5" class="javax.swing.JComboBox" binding="comboBoxGoogleMapsServer">
+                  <component id="b7ad5" class="javax.swing.JComboBox" binding="comboBoxGoogleMapsServer" custom-create="true">
                     <constraints>
                       <grid row="5" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
                     <properties/>
                   </component>
-                  <component id="37dfc" class="javax.swing.JComboBox" binding="comboBoxFixMapMode">
+                  <component id="37dfc" class="javax.swing.JComboBox" binding="comboBoxFixMapMode" custom-create="true">
                     <constraints>
                       <grid row="6" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -728,7 +728,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="routing-service"/>
                     </properties>
                   </component>
-                  <component id="6ecea" class="javax.swing.JComboBox" binding="comboBoxRoutingService">
+                  <component id="6ecea" class="javax.swing.JComboBox" binding="comboBoxRoutingService" custom-create="true">
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -820,7 +820,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="travel-mode"/>
                     </properties>
                   </component>
-                  <component id="2c269" class="javax.swing.JComboBox" binding="comboboxTravelMode">
+                  <component id="2c269" class="javax.swing.JComboBox" binding="comboboxTravelMode" custom-create="true">
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -947,7 +947,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="elevation-service"/>
                     </properties>
                   </component>
-                  <component id="53b51" class="javax.swing.JComboBox" binding="comboBoxElevationService">
+                  <component id="53b51" class="javax.swing.JComboBox" binding="comboBoxElevationService" custom-create="true">
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>
@@ -1088,7 +1088,7 @@
                       <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="geocoding-service"/>
                     </properties>
                   </component>
-                  <component id="5b4f5" class="javax.swing.JComboBox" binding="comboBoxGeocodingService">
+                  <component id="5b4f5" class="javax.swing.JComboBox" binding="comboBoxGeocodingService" custom-create="true">
                     <constraints>
                       <grid row="2" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="2" anchor="8" fill="1" indent="0" use-parent-layout="false"/>
                     </constraints>

@@ -171,6 +171,7 @@ public class MapSelector {
     }
 
     private void createUIComponents() {
+        comboBoxZoom = new JComboBox<>();
         comboBoxMap = new ItemComboBox<>() {
             public void setSelectedItem(Object anObject) {
                 if (DOWNLOAD_MAP.equals(anObject)) {
@@ -198,9 +199,6 @@ public class MapSelector {
      *
      * @noinspection ALL
      */
-    // Generated code: MapSelector.form has no concept of generics, so the JComboBox
-    // initializer below is unavoidably raw; suppress rather than hand-edit generated code.
-    @SuppressWarnings("rawtypes")
     private void $$$setupUI$$$() {
         createUIComponents();
         contentPane = new JPanel();
@@ -219,7 +217,6 @@ public class MapSelector {
         final JLabel label3 = new JLabel();
         this.$$$loadLabelText$$$(label3, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "zoom-colon"));
         panel1.add(label3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxZoom = new JComboBox();
         comboBoxZoom.setFocusable(false);
         panel1.add(comboBoxZoom, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelCopyrightText = new JLabel();

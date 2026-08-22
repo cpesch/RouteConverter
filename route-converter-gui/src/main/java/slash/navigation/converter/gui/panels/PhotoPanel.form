@@ -69,7 +69,7 @@
               <toolTipText resource-bundle="slash/navigation/converter/gui/RouteConverter" key="add-photos-action-tooltip"/>
             </properties>
           </component>
-          <component id="96ef7" class="javax.swing.JComboBox" binding="comboBoxFilterPhotoPredicate">
+          <component id="96ef7" class="javax.swing.JComboBox" binding="comboBoxFilterPhotoPredicate" custom-create="true">
             <constraints>
               <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="2" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
@@ -98,7 +98,7 @@
               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="camera-timezone"/>
             </properties>
           </component>
-          <component id="4de82" class="javax.swing.JComboBox" binding="comboBoxPhotoTimeZone">
+          <component id="4de82" class="javax.swing.JComboBox" binding="comboBoxPhotoTimeZone" custom-create="true">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
                 <maximum-size width="300" height="-1"/>
@@ -114,7 +114,7 @@
               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="tag-strategy"/>
             </properties>
           </component>
-          <component id="d14ec" class="javax.swing.JComboBox" binding="comboBoxTagStrategy">
+          <component id="d14ec" class="javax.swing.JComboBox" binding="comboBoxTagStrategy" custom-create="true">
             <constraints>
               <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
