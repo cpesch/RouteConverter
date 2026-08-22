@@ -65,11 +65,7 @@ public class HelpManager {
 
     public JButton helpButton(final JComponent owner) {
         JButton button = new JButton("?");
-        button.setName("help-button");
-        button.addActionListener(e -> {
-            String topic = owner.getName();
-            if (topic != null && !topic.isEmpty()) openTopic(topic); else openContents();
-        });
+        button.addActionListener(e -> openTopicForComponent(owner));
         return button;
     }
 
@@ -83,13 +79,23 @@ public class HelpManager {
         }, KEY_EVENT_MASK);
     }
 
-    private void openTopicForComponent(Component component) {
-        for (Component c = component; c != null; c = c.getParent()) {
+    /**
+     * Walks {@code start} and its {@link Component#getParent()} chain, skipping any
+     * {@link JLayeredPane}, and returns the first non-null, non-empty {@link Component#getName()}.
+     * Returns {@code null} when the chain is exhausted without finding one.
+     */
+    static String resolveTopicId(Component start) {
+        for (Component c = start; c != null; c = c.getParent()) {
             if (c instanceof JLayeredPane) continue;
             String name = c.getName();
-            if (name != null && !name.isEmpty()) { openTopic(name); return; }
+            if (name != null && !name.isEmpty()) return name;
         }
-        openContents();
+        return null;
+    }
+
+    private void openTopicForComponent(Component component) {
+        String topic = resolveTopicId(component);
+        if (topic != null) openTopic(topic); else openContents();
     }
 
     private void browse(String url) {
