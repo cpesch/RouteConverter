@@ -897,6 +897,7 @@ public class ConvertPanel implements PanelInTab {
     }
 
     private void createUIComponents() {
+        comboBoxRouteCharacteristics = new JComboBox<>();
         comboBoxPositionLists = new JComboBox<BaseRoute<?, ?>>() {
             public Dimension getPreferredSize() {
                 Dimension preferredSize = super.getPreferredSize();
@@ -1043,7 +1044,6 @@ public class ConvertPanel implements PanelInTab {
         label8.setHorizontalTextPosition(4);
         this.$$$loadLabelText$$$(label8, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "characteristics"));
         panel3.add(label8, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        comboBoxRouteCharacteristics = new JComboBox<>();
         panel3.add(comboBoxRouteCharacteristics, new GridConstraints(0, 5, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         convertPanel.add(comboBoxPositionLists, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel4 = new JPanel();

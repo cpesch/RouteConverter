@@ -54,7 +54,7 @@
               <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="zoom-colon"/>
             </properties>
           </component>
-          <component id="84932" class="javax.swing.JComboBox" binding="comboBoxZoom">
+          <component id="84932" class="javax.swing.JComboBox" binding="comboBoxZoom" custom-create="true">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
