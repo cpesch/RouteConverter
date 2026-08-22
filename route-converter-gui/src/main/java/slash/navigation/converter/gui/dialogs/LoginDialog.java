@@ -290,7 +290,8 @@ public class LoginDialog extends SimpleDialog {
         final JPanel panelHelp = new JPanel();
         panelHelp.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         contentPane.add(panelHelp, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonHelp = BaseRouteConverter.getInstance().getContext().getHelpManager().helpButton(contentPane);
+        buttonHelp = new JButton();
+        buttonHelp.setText("?");
         panelHelp.add(buttonHelp);
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(6, 2, new Insets(10, 10, 10, 10), -1, -1));

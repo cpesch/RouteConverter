@@ -280,7 +280,8 @@ public class InsertPositionsDialog extends SimpleDialog {
         final JPanel panelHelp = new JPanel();
         panelHelp.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
         panel1.add(panelHelp, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonHelp = BaseRouteConverter.getInstance().getContext().getHelpManager().helpButton(contentPane);
+        buttonHelp = new JButton();
+        buttonHelp.setText("?");
         panelHelp.add(buttonHelp);
     }
 
