@@ -81,6 +81,15 @@ public class HelpManagerTest {
     }
 
     @Test
+    public void syntheticRootPaneNamesAreSkipped() {
+        JRootPane rootPane = new JRootPane();
+        assertEquals("null.contentPane", rootPane.getContentPane().getName());
+        assertEquals("null.glassPane", rootPane.getGlassPane().getName());
+
+        assertNull(HelpManager.resolveTopicId(rootPane.getContentPane()));
+    }
+
+    @Test
     public void reportedBugShapeResolvesToDialogName() {
         Container dialog = new Container();
         dialog.setName("options");
