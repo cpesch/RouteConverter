@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.String.format;
+import static java.util.logging.Level.SEVERE;
 import static javax.swing.event.TableModelEvent.*;
 import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
@@ -70,7 +71,7 @@ public class UpdateDecoupler {
                 eventMapUpdater = updaterFactory.apply(positionsModel.getRoute().getCharacteristics());
                 eventMapUpdater.handleAdd(0, positionsModel.getRowCount() - 1);
             } catch (RuntimeException e) {
-                log.severe("Cannot replace route: " + e);
+                log.log(SEVERE, "Cannot replace route: " + e, e);
                 rebuild(e);
             }
         });
@@ -85,7 +86,7 @@ public class UpdateDecoupler {
                     case DELETE -> eventMapUpdater.handleRemove(firstRow, lastRow);
                 }
             } catch (RuntimeException e) {
-                log.severe(format("Cannot handle event type %d for rows %d..%d: %s", eventType, firstRow, lastRow, e));
+                log.log(SEVERE, format("Cannot handle event type %d for rows %d..%d: %s", eventType, firstRow, lastRow, e), e);
                 rebuild(e);
             }
         });
@@ -102,7 +103,7 @@ public class UpdateDecoupler {
             if (rowCount > 0)
                 eventMapUpdater.handleAdd(0, rowCount - 1);
         } catch (RuntimeException e) {
-            log.severe("Cannot rebuild after " + cause + ": " + e);
+            log.log(SEVERE, "Cannot rebuild after " + cause + ": " + e, e);
         }
     }
 

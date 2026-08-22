@@ -123,6 +123,7 @@ import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.col
 import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.computeAddRow;
 import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.thresholdForPixel;
 import static slash.navigation.mapview.mapsforge.helpers.SVGHelper.getResourceBitmap;
+import static slash.navigation.mapview.mapsforge.helpers.SVGHelper.removeDocument;
 import static slash.navigation.mapview.mapsforge.helpers.WithLayerHelper.*;
 import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
 
@@ -229,16 +230,22 @@ public class MapsforgeMapView extends BaseMapView {
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             private Bitmap markerIcon;
-            {
-                try {
-                    markerIcon = GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream("marker.svg"), 1.0f, 32, 54, 100, 1234567892);
-                } catch (IOException e) {
-                    log.severe("Cannot create marker icon: " + e);
+
+            // created on demand and retried after a failure: an icon that failed to load once
+            // used to leave the session with markers that cannot be drawn or tapped at all
+            private synchronized Bitmap getMarkerIcon() {
+                if (markerIcon == null) {
+                    try {
+                        markerIcon = createIcon("marker.svg", MARKER_ICON_HASH, 32, 54);
+                    } catch (IOException e) {
+                        log.severe("Cannot create marker icon: " + e);
+                    }
                 }
+                return markerIcon;
             }
 
             private Marker createMarker(PositionWithLayer positionWithLayer, LatLong latLong) {
-                return new DraggableMarker(MapsforgeMapView.this, positionWithLayer, latLong, markerIcon, 0, -25);
+                return new DraggableMarker(MapsforgeMapView.this, positionWithLayer, latLong, getMarkerIcon(), 0, -25);
             }
 
             public void add(List<PositionWithLayer> positionWithLayers) {
@@ -540,6 +547,19 @@ public class MapsforgeMapView extends BaseMapView {
         return mapView;
     }
 
+    private static final int MAGNIFIER_ICON_HASH = 1234567891;
+    private static final int MARKER_ICON_HASH = 1234567892;
+
+    private static Bitmap createIcon(String resource, int hash, int width, int height) throws IOException {
+        try {
+            return GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream(resource), 1.0f, width, height, 100, hash);
+        } catch (IOException e) {
+            // a failed load may leave a half loaded document behind that fails every later load, too
+            removeDocument(Integer.toString(hash));
+            throw e;
+        }
+    }
+
     private Bitmap waypointIcon;
 
     private synchronized Bitmap createWaypointIcon() {
@@ -566,8 +586,15 @@ public class MapsforgeMapView extends BaseMapView {
                 return tokenName;
             }
         });
-        BufferedImage bufferedImage = getResourceBitmap(reader, "waypoint-" + color + "-" + opacity, getDeviceScaleFactor(), 100f, 16, 16, 100);
-        return new AwtBitmap(bufferedImage);
+        try {
+            BufferedImage bufferedImage = getResourceBitmap(reader, "waypoint-" + color + "-" + opacity, getDeviceScaleFactor(), 100f, 16, 16, 100);
+            return new AwtBitmap(bufferedImage);
+        } catch (IOException e) {
+            // returning null keeps the position lists renderable and lets the next repaint retry:
+            // throwing here used to desync the WaypointUpdater for the rest of the session
+            log.severe("Cannot create waypoint icon: " + e);
+            return null;
+        }
     }
 
     private void handleUnitSystem() {
@@ -1335,14 +1362,19 @@ public class MapsforgeMapView extends BaseMapView {
 
     private class MagnifierPainter {
         private Bitmap magnifierIcon;
-        {
-            try {
-                magnifierIcon = GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream("magnifier.svg"), 1.0f, 57, 56, 100, 1234567891);
-            } catch (IOException e) {
-                log.severe("Cannot create magnifier icon: " + e);
-            }
-        }
         private final List<Layer> markers = new ArrayList<>();
+
+        // created on demand and retried after a failure, see SelectionOperation#getMarkerIcon()
+        private synchronized Bitmap getMagnifierIcon() {
+            if (magnifierIcon == null) {
+                try {
+                    magnifierIcon = createIcon("magnifier.svg", MAGNIFIER_ICON_HASH, 57, 56);
+                } catch (IOException e) {
+                    log.severe("Cannot create magnifier icon: " + e);
+                }
+            }
+            return magnifierIcon;
+        }
 
         public void showPositionMagnifier(List<NavigationPosition> positions) {
             if(!markers.isEmpty()) {
@@ -1352,7 +1384,7 @@ public class MapsforgeMapView extends BaseMapView {
 
             if(positions != null && !positions.isEmpty()) {
                 List<Layer> icons = positions.stream()
-                        .map(position -> new Marker(asLatLong(position), magnifierIcon, -10, 13))
+                        .map(position -> new Marker(asLatLong(position), getMagnifierIcon(), -10, 13))
                         .collect(Collectors.toList());
                 addLayers(icons);
                 markers.addAll(icons);
