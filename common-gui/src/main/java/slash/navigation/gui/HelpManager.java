@@ -65,11 +65,7 @@ public class HelpManager {
 
     public JButton helpButton(final JComponent owner) {
         JButton button = new JButton("?");
-        button.setName("help-button");
-        button.addActionListener(e -> {
-            String topic = owner.getName();
-            if (topic != null && !topic.isEmpty()) openTopic(topic); else openContents();
-        });
+        button.addActionListener(e -> openTopicForComponent(owner));
         return button;
     }
 
@@ -83,13 +79,36 @@ public class HelpManager {
         }, KEY_EVENT_MASK);
     }
 
-    private void openTopicForComponent(Component component) {
-        for (Component c = component; c != null; c = c.getParent()) {
+    /**
+     * Walks {@code start} and its {@link Component#getParent()} chain, skipping any
+     * {@link JLayeredPane} and any synthetic name, and returns the first usable
+     * {@link Component#getName()}. Returns {@code null} when the chain is exhausted
+     * without finding one.
+     */
+    static String resolveTopicId(Component start) {
+        for (Component c = start; c != null; c = c.getParent()) {
             if (c instanceof JLayeredPane) continue;
             String name = c.getName();
-            if (name != null && !name.isEmpty()) { openTopic(name); return; }
+            if (name != null && !name.isEmpty() && !isSyntheticName(name)) return name;
         }
-        openContents();
+        return null;
+    }
+
+    /**
+     * {@link javax.swing.JRootPane} names the panes it creates after its own name:
+     * "null.contentPane", "null.layeredPane", "null.glassPane". Those names sit between a
+     * dialog's content and the {@link java.awt.Window} that carries the topic id, so without
+     * this guard a dialog resolves to "null.contentPane" (the layeredPane variant of the same
+     * bug was #303). Topic ids come from resource-bundle keys and are kebab-case, so a dot
+     * never appears in a real one.
+     */
+    private static boolean isSyntheticName(String name) {
+        return name.indexOf('.') >= 0;
+    }
+
+    private void openTopicForComponent(Component component) {
+        String topic = resolveTopicId(component);
+        if (topic != null) openTopic(topic); else openContents();
     }
 
     private void browse(String url) {
