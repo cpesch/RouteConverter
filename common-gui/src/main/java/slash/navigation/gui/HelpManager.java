@@ -63,16 +63,17 @@ public class HelpManager {
     public void openTopic(String topicId) { browse(resolveBaseUrl() + "/help/" + topicId + "/"); }
     public void openContents() { browse(resolveBaseUrl() + "/help/"); }
 
-    public JButton helpButton(final JComponent owner) {
-        JButton button = new JButton("?");
+    /**
+     * Wires an existing {@code ?} button to the help topic of {@code owner}. A button declared in a
+     * GUI Designer form is instantiated by the generated {@code $$$setupUI$$$} method.
+     */
+    public void registerHelpButton(final AbstractButton button, final JComponent owner) {
         button.addActionListener(e -> openTopicForComponent(owner));
-        return button;
     }
 
     public void installF1KeyListener() {
         Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
-            if (!(event instanceof java.awt.event.KeyEvent)) return;
-            java.awt.event.KeyEvent ke = (java.awt.event.KeyEvent) event;
+            if (!(event instanceof java.awt.event.KeyEvent ke)) return;
             if (ke.getID() != KEY_PRESSED || ke.getKeyCode() != VK_F1) return;
             openTopicForComponent(ke.getComponent());
             ke.consume();

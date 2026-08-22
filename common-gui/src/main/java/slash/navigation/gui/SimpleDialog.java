@@ -41,6 +41,27 @@ public abstract class SimpleDialog extends JDialog {
         setName(name);
     }
 
+    /**
+     * Wires the {@code ?} button that a dialog's GUI Designer form declares to the dialog's help
+     * topic (specs/00030 §11). Hooked here rather than in each dialog's constructor because the
+     * form-declared button is instantiated by the generated {@code $$$setupUI$$$} method, which
+     * the IDE rewrites from the {@code .form} - that is how the only hand-added wiring, in
+     * DownloadsDialog, silently turned into a dead button.
+     */
+    public void setContentPane(Container contentPane) {
+        super.setContentPane(contentPane);
+        registerHelpButtons(contentPane);
+    }
+
+    private void registerHelpButtons(Container container) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof JButton button && "?".equals(button.getText()) && button.getActionListeners().length == 0)
+                Application.getInstance().getContext().getHelpManager().registerHelpButton(button, button);
+            if (component instanceof Container child)
+                registerHelpButtons(child);
+        }
+    }
+
     public void showWithPreferences() {
         pack();
         windowBounds = new WindowBounds(this, preferences, getName() + "-");
