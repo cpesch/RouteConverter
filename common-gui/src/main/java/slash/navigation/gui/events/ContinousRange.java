@@ -60,9 +60,9 @@ public class ContinousRange {
     private void perform(List<List<Integer>> ranges) {
         for (List<Integer> range : ranges) {
             for (Integer index : range) {
-                operation.performOnIndex(index);
                 if (operation.isInterrupted())
                     return;
+                operation.performOnIndex(index);
             }
             if (range.isEmpty())
                 continue;

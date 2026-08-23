@@ -155,6 +155,74 @@ public class ContinousRangeTest {
         assertEquals(2, op.ranges.size());
     }
 
+    // --- interruption ---
+
+    private static class InterruptedOperation implements RangeOperation {
+        boolean interrupted;
+        final List<Integer> indices = new ArrayList<>();
+        final List<int[]> ranges = new ArrayList<>();
+
+        @Override
+        public void performOnIndex(int index) {
+            indices.add(index);
+        }
+
+        @Override
+        public void performOnRange(int firstIndex, int lastIndex) {
+            ranges.add(new int[]{firstIndex, lastIndex});
+        }
+
+        @Override
+        public boolean isInterrupted() {
+            return interrupted;
+        }
+    }
+
+    private static class FlippingOperation implements RangeOperation {
+        final int flipOnIndex;
+        boolean interrupted;
+        final List<Integer> indices = new ArrayList<>();
+        final List<int[]> ranges = new ArrayList<>();
+
+        FlippingOperation(int flipOnIndex) {
+            this.flipOnIndex = flipOnIndex;
+        }
+
+        @Override
+        public void performOnIndex(int index) {
+            indices.add(index);
+            if (index == flipOnIndex)
+                interrupted = true;
+        }
+
+        @Override
+        public void performOnRange(int firstIndex, int lastIndex) {
+            ranges.add(new int[]{firstIndex, lastIndex});
+        }
+
+        @Override
+        public boolean isInterrupted() {
+            return interrupted;
+        }
+    }
+
+    @Test
+    public void testInterruptedFromStartExecutesNothing() {
+        InterruptedOperation op = new InterruptedOperation();
+        op.interrupted = true;
+        new ContinousRange(new int[]{1, 2, 3}, op).performMonotonicallyIncreasing();
+        assertTrue(op.indices.isEmpty());
+        assertTrue(op.ranges.isEmpty());
+    }
+
+    @Test
+    public void testInterruptedDuringIndexExecutesUpToThatIndexOnly() {
+        FlippingOperation op = new FlippingOperation(2);
+        new ContinousRange(new int[]{0, 1, 2, 3, 4}, op).performMonotonicallyIncreasing();
+        assertEquals(List.of(0, 1, 2), op.indices);
+        assertTrue(op.ranges.isEmpty());
+    }
+
     // --- Range.allButEveryNthAndFirstAndLast ---
 
     @Test
