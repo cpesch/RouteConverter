@@ -101,4 +101,85 @@ public class HelpManagerTest {
 
         assertEquals("options", HelpManager.resolveTopicId(button));
     }
+
+    @Test
+    public void realMenuPathResolvesToHighlightedItem() {
+        JMenuBar bar = new JMenuBar();
+        JMenu file = new JMenu();
+        file.setName("file");
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem open = new JMenuItem();
+        open.setName("open");
+
+        assertEquals("open", HelpManager.resolveMenuTopicId(path(bar, file, popup, open)));
+    }
+
+    @Test
+    public void menuPathEndingAtMenuReturnsNull() {
+        JMenuBar bar = new JMenuBar();
+        JMenu file = new JMenu();
+        file.setName("file");
+
+        assertNull(HelpManager.resolveMenuTopicId(path(bar, file)));
+    }
+
+    @Test
+    public void menuPathEndingAtPopupMenuReturnsNull() {
+        JMenuBar bar = new JMenuBar();
+        JMenu file = new JMenu();
+        file.setName("file");
+        JPopupMenu popup = new JPopupMenu();
+
+        assertNull(HelpManager.resolveMenuTopicId(path(bar, file, popup)));
+    }
+
+    @Test
+    public void unnamedLeafWithNamedMenuEarlierReturnsNull() {
+        JMenuBar bar = new JMenuBar();
+        JMenu file = new JMenu();
+        file.setName("file");
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem unnamed = new JMenuItem();
+
+        assertNull(HelpManager.resolveMenuTopicId(path(bar, file, popup, unnamed)));
+    }
+
+    @Test
+    public void twoLeafItemsResolveToLast() {
+        JMenuBar bar = new JMenuBar();
+        JMenu file = new JMenu();
+        file.setName("file");
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem first = new JMenuItem();
+        first.setName("first");
+        JMenuItem last = new JMenuItem();
+        last.setName("last");
+
+        assertEquals("last", HelpManager.resolveMenuTopicId(path(bar, file, popup, first, last)));
+    }
+
+    @Test
+    public void nullAndEmptyPathsReturnNull() {
+        assertNull(HelpManager.resolveMenuTopicId(null));
+        assertNull(HelpManager.resolveMenuTopicId(new MenuElement[0]));
+    }
+
+    @Test
+    public void syntheticLeafNameReturnsNull() {
+        JMenuBar bar = new JMenuBar();
+        JMenu file = new JMenu();
+        file.setName("file");
+        JPopupMenu popup = new JPopupMenu();
+        JMenuItem synthetic = new JMenuItem();
+        synthetic.setName("some.dotted");
+
+        assertNull(HelpManager.resolveMenuTopicId(path(bar, file, popup, synthetic)));
+    }
+
+    private static MenuElement[] path(Component... components) {
+        MenuElement[] elements = new MenuElement[components.length];
+        for (int i = 0; i < components.length; i++)
+            elements[i] = (MenuElement) components[i];
+        return elements;
+    }
 }

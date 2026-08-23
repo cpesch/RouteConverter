@@ -75,9 +75,32 @@ public class HelpManager {
         Toolkit.getDefaultToolkit().addAWTEventListener(event -> {
             if (!(event instanceof java.awt.event.KeyEvent ke)) return;
             if (ke.getID() != KEY_PRESSED || ke.getKeyCode() != VK_F1) return;
-            openTopicForComponent(ke.getComponent());
+            String topic = resolveMenuTopicId(MenuSelectionManager.defaultManager().getSelectedPath());
+            if (topic != null) openTopic(topic);
+            else openTopicForComponent(ke.getComponent());
             ke.consume();
         }, KEY_EVENT_MASK);
+    }
+
+    /**
+     * Resolves the help topic id of the currently highlighted menu item. Swing popup menus are
+     * non-focusable, so while a menu is open focus stays on the invoker and the {@code F1} path
+     * would otherwise resolve the focused panel instead of the highlighted item. The
+     * {@link MenuSelectionManager} holds the selected menu path independently of focus.
+     * <p>
+     * Returns {@code null} when the path is empty or holds no usable leaf item, so a non-leaf
+     * selection falls through to the focus-owner path rather than resolving a container (e.g.
+     * {@code file}) that has no page.
+     */
+    static String resolveMenuTopicId(MenuElement[] path) {
+        if (path == null) return null;
+        for (int i = path.length - 1; i >= 0; i--) {
+            Component component = path[i].getComponent();
+            if (!(component instanceof JMenuItem) || component instanceof JMenu) continue;
+            String name = component.getName();
+            if (name != null && !name.isEmpty() && !isSyntheticName(name)) return name;
+        }
+        return null;
     }
 
     /**
