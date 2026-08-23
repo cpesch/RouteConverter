@@ -882,8 +882,18 @@ public class ConvertPanel implements PanelInTab {
         return new int[]{indices.length, rowCount - indices.length};
     }
 
-    public int selectInsignificantPositions(double threshold) {
-        int[] indices = positionsModel.getInsignificantPositions(threshold);
+    public int[] computeInsignificantPositions(double threshold) throws InterruptedException {
+        return positionsModel.getInsignificantPositions(threshold);
+    }
+
+    // for callers that already snapshotted the positions on the EDT (e.g. DeletePositionsDialog's
+    // worker thread) so this doesn't have to read the live, EDT-mutable position list itself
+    public int[] computeInsignificantPositions(double threshold, List<? extends NavigationPosition> positions) throws InterruptedException {
+        return RouteCalculations.getInsignificantPositions(positions, threshold);
+    }
+
+    public int selectInsignificantPositions(double threshold) throws InterruptedException {
+        int[] indices = computeInsignificantPositions(threshold);
         selectPositions(indices);
         return indices.length;
     }

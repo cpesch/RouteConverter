@@ -844,7 +844,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         return getConvertPanel().selectAllButEveryNthPosition(order);
     }
 
-    public int selectInsignificantPositions(double threshold) {
+    public int selectInsignificantPositions(double threshold) throws InterruptedException {
         return getConvertPanel().selectInsignificantPositions(threshold);
     }
 

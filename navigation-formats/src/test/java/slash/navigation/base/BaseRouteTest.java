@@ -149,7 +149,7 @@ public class BaseRouteTest {
     }
 
     @Test
-    public void getInsignificantPositionsReturnsTheCollinearInteriorPoints() {
+    public void getInsignificantPositionsReturnsTheCollinearInteriorPoints() throws InterruptedException {
         // p0..p3 lie on the same meridian, so the interior points carry no shape information
         assertArrayEquals(new int[]{1, 2}, route(p0, p1, p2, p3).getInsignificantPositions(1000.0));
     }

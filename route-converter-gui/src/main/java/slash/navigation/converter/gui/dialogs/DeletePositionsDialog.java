@@ -25,6 +25,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import slash.navigation.base.BaseNavigationPosition;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.models.DoubleDocument;
 import slash.navigation.converter.gui.models.IntegerDocument;
@@ -45,11 +46,13 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
 import java.text.MessageFormat;
+import java.util.List;
 import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
 import static javax.swing.KeyStroke.getKeyStroke;
+import static javax.swing.SwingUtilities.invokeLater;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForDouglasPeucker;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 
@@ -76,6 +79,9 @@ public class DeletePositionsDialog extends SimpleDialog {
     private final DoubleDocument distance;
     private final IntegerDocument order;
     private final DoubleDocument threshold;
+    // EDT-confined: every read/write of this field happens on the EDT (button click,
+    // close(), and the worker's invokeLater), so no volatile/synchronization is needed
+    private Thread selectBySignificanceWorker;
 
     public DeletePositionsDialog() {
         super(BaseRouteConverter.getInstance().getFrame(), "delete-positions");
@@ -194,12 +200,45 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void selectBySignificance() {
-        double threshold = this.threshold.getDouble();
-        if (threshold >= 0) {
-            int selectedRowCount = BaseRouteConverter.getInstance().selectInsignificantPositions(threshold);
-            labelSelection.setText(MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-significance-result"), selectedRowCount, threshold));
-            savePreferences();
+        if (selectBySignificanceWorker != null) {
+            selectBySignificanceWorker.interrupt();
+            return;
         }
+
+        double threshold = this.threshold.getDouble();
+        if (threshold < 0)
+            return;
+        savePreferences();
+
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
+        labelSelection.setText(BaseRouteConverter.getBundle().getString("delete-select-by-significance-running"));
+        buttonSelectBySignificance.setText(BaseRouteConverter.getBundle().getString("cancel"));
+        setMnemonic(buttonSelectBySignificance, "cancel-mnemonic");
+
+        // snapshot the positions here, synchronously on the EDT, so the worker thread below
+        // never reads the live, EDT-mutable position list itself: nothing else can run on the
+        // EDT while this copy is taken, so it can't race with a structural mutation of the route
+        final PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
+        final List<NavigationPosition> positions = positionsModel.getPositions(0, positionsModel.getRowCount());
+
+        selectBySignificanceWorker = new Thread(() -> {
+            try {
+                int[] indices = r.getConvertPanel().computeInsignificantPositions(threshold, positions);
+                invokeLater(() -> {
+                    r.getConvertPanel().selectPositions(indices);
+                    labelSelection.setText(MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-significance-result"), indices.length, threshold));
+                });
+            } catch (InterruptedException e) {
+                invokeLater(() -> labelSelection.setText(""));
+            } finally {
+                invokeLater(() -> {
+                    selectBySignificanceWorker = null;
+                    buttonSelectBySignificance.setText(BaseRouteConverter.getBundle().getString("select"));
+                    setMnemonic(buttonSelectBySignificance, "select-mnemonic");
+                });
+            }
+        }, "SelectInsignificantPositions");
+        selectBySignificanceWorker.start();
     }
 
     private void clearSelection() {
@@ -220,6 +259,8 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void close() {
+        if (selectBySignificanceWorker != null)
+            selectBySignificanceWorker.interrupt();
         savePreferences();
         dispose();
     }

@@ -91,7 +91,6 @@ import static java.util.Arrays.asList;
 import static java.util.Arrays.binarySearch;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.*;
-import static slash.navigation.base.RouteCalculations.getSignificantPositions;
 
 /**
  * The base of all routes formats.
@@ -241,18 +240,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return toArray(result);
     }
 
-    public int[] getInsignificantPositions(double threshold) {
-        int[] significantPositions = getSignificantPositions(getPositions(), threshold);
-        BitSet bitset = new BitSet(getPositionCount());
-        for (int significantPosition : significantPositions)
-            bitset.set(significantPosition);
-
-        int[] result = new int[getPositionCount() - significantPositions.length];
-        int index = 0;
-        for (int i = 0; i < getPositionCount(); i++)
-            if (!bitset.get(i))
-                result[index++] = i;
-        return result;
+    public int[] getInsignificantPositions(double threshold) throws InterruptedException {
+        // snapshot: this may run on a worker thread (see DeletePositionsDialog) while the
+        // EDT keeps the live position list mutable, so a stable copy avoids computing
+        // against a list whose size changes mid-flight. Callers that already took their own
+        // snapshot on the EDT (e.g. DeletePositionsDialog, via ConvertPanel's overload) call
+        // RouteCalculations.getInsignificantPositions directly and never reach this copy.
+        return RouteCalculations.getInsignificantPositions(new ArrayList<>(getPositions()), threshold);
     }
 
     public int getClosestPosition(double longitude, double latitude, double threshold) {

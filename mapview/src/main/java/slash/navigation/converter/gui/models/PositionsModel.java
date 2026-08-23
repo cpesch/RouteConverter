@@ -56,7 +56,7 @@ public interface PositionsModel extends TableModel {
 
     int[] getContainedPositions(BoundingBox boundingBox);
     int[] getPositionsWithinDistanceToPredecessor(double distance);
-    int[] getInsignificantPositions(double threshold);
+    int[] getInsignificantPositions(double threshold) throws InterruptedException;
     int getClosestPosition(double longitude, double latitude, double threshold);
     int getClosestPosition(CompactCalendar time, long threshold);
 

@@ -23,10 +23,15 @@ package slash.navigation.base;
 import slash.common.type.CompactCalendar;
 import slash.navigation.common.NavigationPosition;
 
+import java.util.ArrayDeque;
+import java.util.BitSet;
+import java.util.Deque;
 import java.util.List;
 
 import static java.lang.Math.abs;
-import static java.lang.System.arraycopy;
+import static java.lang.Math.cos;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.toRadians;
 import static slash.common.io.Transfer.isEmpty;
 import static slash.common.type.CompactCalendar.fromMillis;
 
@@ -37,38 +42,106 @@ import static slash.common.type.CompactCalendar.fromMillis;
  */
 
 public class RouteCalculations {
-    private static int[] douglasPeuckerSimplify(List<? extends NavigationPosition> positions, int from, int to, double threshold) {
-        // find the point with the maximum distance
-        NavigationPosition pointA = positions.get(from);
-        NavigationPosition pointB = positions.get(to);
-        int maximumDistanceIndex = -1;
-        double maximumDistance = 0.0;
-        for (int i = from + 1; i < to; i++) {
-            NavigationPosition position = positions.get(i);
-            if (position.hasCoordinates()) {
-                Double distance = position.calculateOrthogonalDistance(pointA, pointB);
-                if (distance == null)
-                    continue;
+    // mean earth radius in meters, used to project positions into a local planar
+    // frame for the cheap orthogonal distance below; deliberately not Bearing.EARTH_RADIUS
+    // (the WGS84 equatorial radius), which serves the exact spherical calculations elsewhere
+    private static final double EARTH_RADIUS = 6371000.0;
 
-                double absDistance = abs(distance);
-                if (absDistance > maximumDistance) {
-                    maximumDistance = absDistance;
-                    maximumDistanceIndex = i;
+    private static int[] douglasPeuckerSimplify(List<? extends NavigationPosition> positions, double threshold) throws InterruptedException {
+        int positionCount = positions.size();
+
+        // project every position once into a local metric (x, y) frame so that the
+        // per-candidate distance below is cheap arithmetic instead of a spherical bearing;
+        // longitude is scaled by cos(latitude0) once for the whole track, so a track spanning
+        // many degrees of latitude projects slightly distorted (accepted in spec #109)
+        double[] x = new double[positionCount];
+        double[] y = new double[positionCount];
+        boolean[] hasCoordinates = new boolean[positionCount];
+
+        Double latitude0 = null, longitude0 = null;
+        for (NavigationPosition position : positions) {
+            if (position.hasCoordinates()) {
+                latitude0 = position.getLatitude();
+                longitude0 = position.getLongitude();
+                break;
+            }
+        }
+
+        if (latitude0 != null) {
+            double cosLatitude0 = cos(toRadians(latitude0));
+            for (int i = 0; i < positionCount; i++) {
+                NavigationPosition position = positions.get(i);
+                if (position.hasCoordinates()) {
+                    hasCoordinates[i] = true;
+                    // longitude delta relative to a fixed reference point, normalized to
+                    // [-180, 180), so tracks crossing the +/-180 degree antimeridian project
+                    // to nearby x values instead of jumping by ~2*R*cos(lat0)*pi
+                    double deltaLongitude = position.getLongitude() - longitude0;
+                    deltaLongitude = ((deltaLongitude + 180.0) % 360.0 + 360.0) % 360.0 - 180.0;
+                    x[i] = toRadians(deltaLongitude) * cosLatitude0 * EARTH_RADIUS;
+                    y[i] = toRadians(position.getLatitude()) * EARTH_RADIUS;
                 }
             }
         }
 
-        // if maximum distance is greater than threshold, recursively simplify
-        if ((maximumDistanceIndex != -1) && (maximumDistance > threshold)) {
-            int[] res1 = douglasPeuckerSimplify(positions, from, maximumDistanceIndex, threshold);
-            int[] res2 = douglasPeuckerSimplify(positions, maximumDistanceIndex, to, threshold);
+        boolean[] keep = new boolean[positionCount];
+        keep[0] = true;
+        keep[positionCount - 1] = true;
 
-            int[] result = new int[res1.length - 1 + res2.length];
-            arraycopy(res1, 0, result, 0, res1.length - 1);
-            arraycopy(res2, 0, result, res1.length - 1, res2.length);
-            return result;
-        } else
-            return new int[]{from, to};
+        Deque<int[]> segments = new ArrayDeque<>();
+        segments.push(new int[]{0, positionCount - 1});
+
+        while (!segments.isEmpty()) {
+            if (Thread.currentThread().isInterrupted())
+                throw new InterruptedException();
+
+            int[] segment = segments.pop();
+            int from = segment[0];
+            int to = segment[1];
+
+            // a segment whose endpoints lack coordinates can't evaluate any candidate
+            // (matches calculateOrthogonalDistance's null result when pointA/pointB have none)
+            if (!hasCoordinates[from] || !hasCoordinates[to])
+                continue;
+
+            double ax = x[from], ay = y[from];
+            double dx = x[to] - ax, dy = y[to] - ay;
+            double len = sqrt(dx * dx + dy * dy);
+
+            // find the point with the maximum distance
+            int maximumDistanceIndex = -1;
+            double maximumDistance = 0.0;
+            for (int i = from + 1; i < to; i++) {
+                if (!hasCoordinates[i])
+                    continue;
+
+                double px = x[i] - ax, py = y[i] - ay;
+                double distance = len == 0.0 ? sqrt(px * px + py * py) : abs(px * dy - py * dx) / len;
+                if (distance > maximumDistance) {
+                    maximumDistance = distance;
+                    maximumDistanceIndex = i;
+                }
+            }
+
+            // if maximum distance is greater than threshold, split and simplify both halves
+            if (maximumDistanceIndex != -1 && maximumDistance > threshold) {
+                keep[maximumDistanceIndex] = true;
+                segments.push(new int[]{from, maximumDistanceIndex});
+                segments.push(new int[]{maximumDistanceIndex, to});
+            }
+        }
+
+        int keptCount = 0;
+        for (boolean k : keep)
+            if (k)
+                keptCount++;
+
+        int[] result = new int[keptCount];
+        int index = 0;
+        for (int i = 0; i < positionCount; i++)
+            if (keep[i])
+                result[index++] = i;
+        return result;
     }
 
     /**
@@ -79,14 +152,41 @@ public class RouteCalculations {
      * @param positions the original list of positions
      * @param threshold determines the threshold for significance in meter
      * @return an array of indices to the original list of positions with the significant positions
+     * @throws InterruptedException if the calling thread is interrupted while simplifying
      */
-    public static int[] getSignificantPositions(List<? extends NavigationPosition> positions, double threshold) {
+    public static int[] getSignificantPositions(List<? extends NavigationPosition> positions, double threshold) throws InterruptedException {
         if (positions.isEmpty())
             return new int[0];
         else if (positions.size() == 1)
             return new int[]{0};
         else
-            return douglasPeuckerSimplify(positions, 0, positions.size() - 1, threshold);
+            return douglasPeuckerSimplify(positions, threshold);
+    }
+
+    /**
+     * Complement of {@link #getSignificantPositions}: the indices of positions that
+     * Douglas-Peucker did not keep.
+     *
+     * @param positions the original list of positions; the caller is responsible for
+     *                   supplying a list that won't be structurally mutated by another
+     *                   thread while this runs (e.g. a defensive copy taken on the EDT)
+     * @param threshold determines the threshold for significance in meter
+     * @return an array of indices to the original list of positions with the insignificant positions
+     * @throws InterruptedException if the calling thread is interrupted while simplifying
+     */
+    public static int[] getInsignificantPositions(List<? extends NavigationPosition> positions, double threshold) throws InterruptedException {
+        int positionCount = positions.size();
+        int[] significantPositions = getSignificantPositions(positions, threshold);
+        BitSet bitset = new BitSet(positionCount);
+        for (int significantPosition : significantPositions)
+            bitset.set(significantPosition);
+
+        int[] result = new int[positionCount - significantPositions.length];
+        int index = 0;
+        for (int i = 0; i < positionCount; i++)
+            if (!bitset.get(i))
+                result[index++] = i;
+        return result;
     }
 
     @SuppressWarnings("unused")
