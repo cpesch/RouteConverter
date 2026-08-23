@@ -1,6 +1,12 @@
 # Release notes
 
-## Unreleased
+## 3.6 — 2026-08-23
+
+**GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.6
+
+### Highlights (EN)
+
+RouteConverter 3.6 adds read and write support for the Columbus Fusion track format and the Columbus GNSS GPX extensions — device-local timestamps, waypoint/POI/parking tags, 3-axis acceleration, and real fix-quality/HDOP values that feed new position-list columns (Heading, HDOP, Quality, acceleration). The Browse panel gains distance and duration columns, and every position list stays visible on the map while you edit one. The bundled JavaHelp is replaced by web-based help, and selecting redundant positions on very large tracks is now near-instant and can be cancelled.
 
 ### New features
 
@@ -10,6 +16,16 @@
 - Added Parking count and POI count to the track description (TimeAlbum Pro)
 - Elevation, heading, HDOP and acceleration are shown with two decimal places
 - NMEA: GGA fix quality and HDOP are now read and written; GPX fix element and Columbus Type 1 VALID column map to the quality attribute
+- Added distance and duration columns to the Browse panel for comparing routes at a glance
+- All position lists stay visible on the map while you edit one: the other routes, tracks and waypoints are drawn in a subdued, read-only shade
+- Added a Mapbox access token field (Options → API Keys) so the Mapbox Satellite layer works with your own token
+- Replaced the bundled JavaHelp with web-based help: F1 and the "?" buttons open the matching page in your browser
+- Added "Departure time" (Times menu) to fill each position's arrival time from a departure time
+- Added "Insert positions" at a fixed interval along a straight line
+- Added a "Download POI data" checkbox with remaining-size display and support for the newest POI catalog (v4)
+- Added support for current Google Maps URL formats (place links, ?q=, short links) when importing
+- Added opt-in anonymous telemetry and crash diagnostics (off by default)
+- macOS: files can be opened directly with RouteConverter ("Open with")
 
 ### Fixes
 
@@ -17,6 +33,18 @@
 - Opening a file while a long route was still being routed left the map empty for minutes: the discarded route kept calculating leg after leg on the single map-update thread and the new file's rendering had to wait behind it; replacing the route now cancels the in-flight rendering at the next leg
 - Opening a route with thousands of positions froze the map for minutes: every straight-line segment was added to the map as a separate AWT event with its own redraw cycle; the straight-line preview is now added in a single batch
 - A waypoint list containing a single position without coordinates showed no waypoint markers at all on the map; positions without coordinates are now skipped instead of suppressing every marker
+- Selecting redundant positions on a track with tens of thousands of points is now near-instant and can be cancelled (Douglas-Peucker runs off the UI thread)
+- F1 over an open menu now opens the help topic of the highlighted menu item instead of the focused panel
+- A background position augmentation could crash when the position list shrank mid-run (IndexOutOfBoundsException)
+- The world-map background is now shown under any displayed map, not only Mapsforge
+- The online map is restored correctly on startup
+- Mapsforge map popups (New/Delete) now trigger on press+release and use the correct focus context
+- BRouter: fixed a crash when connecting a freshly added position, an unexpected fallback travel mode, and stale segment/lookup data that did not refresh
+- Legacy ANSI-encoded KML/GPX files are now decoded correctly instead of showing mojibake
+- OpenStreetMap tiles now send a policy-compliant User-Agent
+- The color picker no longer janks and colors can be reset to their defaults
+- The Java-update dialog no longer points to an outdated version
+- Updated translations (including Chinese, French and Spanish)
 
 ## 3.5 — 2026-07-03
 
