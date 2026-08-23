@@ -32,7 +32,7 @@ import static slash.navigation.base.RouteCharacteristics.Route;
  */
 
 public class ConvertTrackToRouteAction extends FrameAction {
-    public void run() {
+    public void run() throws InterruptedException {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
         r.selectInsignificantPositions(100);
         r.getContext().getActionManager().run("delete-position");

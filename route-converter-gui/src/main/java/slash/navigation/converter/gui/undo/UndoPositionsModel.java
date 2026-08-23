@@ -191,7 +191,7 @@ public class UndoPositionsModel implements PositionsModel {
         return delegate.getPositionsWithinDistanceToPredecessor(distance);
     }
 
-    public int[] getInsignificantPositions(double threshold) {
+    public int[] getInsignificantPositions(double threshold) throws InterruptedException {
         return delegate.getInsignificantPositions(threshold);
     }
 
