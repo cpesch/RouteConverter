@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>slash.navigation</groupId>
     <artifactId>RouteConverter</artifactId>
-    <version>3.5-SNAPSHOT</version>
+    <version>3.6</version>
     <packaging>pom</packaging>
     <name>RouteConverter</name>
     <url>https://www.routeconverter.com</url>
@@ -52,7 +52,7 @@
     <scm>
         <connection>scm:git:https://github.com/cpesch/RouteConverter</connection>
         <developerConnection>scm:git:git@github.com:cpesch/RouteConverter.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>3.6</tag>
     </scm>
 
     <properties>
@@ -218,7 +218,7 @@
                                  arg into the test-compile execution too. -->
                             <id>default-testCompile</id>
                             <configuration>
-                                <compilerArgs combine.self="override"/>
+                                <compilerArgs combine.self="override" />
                             </configuration>
                         </execution>
                     </executions>
@@ -405,10 +405,10 @@
                         <licenseHeader>
                             <file>${maven.multiModuleProjectDirectory}/scripts/license-header.txt</file>
                         </licenseHeader>
-                        <removeUnusedImports/>
-                        <importOrder/>
-                        <trimTrailingWhitespace/>
-                        <endWithNewline/>
+                        <removeUnusedImports />
+                        <importOrder />
+                        <trimTrailingWhitespace />
+                        <endWithNewline />
                     </java>
                 </configuration>
             </plugin>
