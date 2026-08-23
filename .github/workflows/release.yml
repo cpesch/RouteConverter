@@ -166,5 +166,5 @@ jobs:
           DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
         run: |
           rsync -av --delete --omit-dir-times --no-perms \
-            target/site/apidocs/ \
+            target/reports/apidocs/ \
             "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/javadoc/"
