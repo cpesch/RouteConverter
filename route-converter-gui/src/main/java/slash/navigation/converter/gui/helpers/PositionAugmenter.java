@@ -170,6 +170,7 @@ public class PositionAugmenter {
                     final int maximumRangeLength = rows.length > 99 ? rows.length / (slowOperation ? 100 : 10) : rows.length;
                     new ContinousRange(rows, new RangeOperation() {
                         public void performOnIndex(final int index) {
+                            if (index >= positionsModel.getRowCount()) return; // stale index after concurrent model change
                             NavigationPosition position = positionsModel.getPosition(index);
                             if (predicate.shouldOverwrite(position)) {
                                 try {
