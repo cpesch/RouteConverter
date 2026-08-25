@@ -74,29 +74,43 @@ public class DownloadTableModel extends AbstractTableModel {
         return null;
     }
 
-    private synchronized void addDownload(Download download) {
+    private synchronized void addDownload(final Download download) {
         boolean success = downloads.add(download);
         if (!success)
             throw new IllegalArgumentException("Download " + download + " not added to " + downloads);
 
-        final int index = downloads.indexOf(download);
-        if (index == -1)
+        if (downloads.indexOf(download) == -1)
             throw new IllegalArgumentException("Download " + download + " not found in " + downloads);
 
+        // the index is re-resolved when the event actually fires since other threads may have
+        // added or removed downloads in the meantime, invalidating an index captured here
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
+                int index;
+                synchronized (DownloadTableModel.this) {
+                    index = downloads.indexOf(download);
+                }
+                if (index == -1)
+                    return;
                 fireTableRowsInserted(index, index);
             }
         });
     }
 
-    synchronized void updateDownload(Download download) {
-        final int index = downloads.indexOf(download);
-        if (index == -1)
+    synchronized void updateDownload(final Download download) {
+        if (downloads.indexOf(download) == -1)
             throw new IllegalArgumentException("Download " + download + " not found in " + downloads);
 
+        // the index is re-resolved when the event actually fires since other threads may have
+        // added or removed downloads in the meantime, invalidating an index captured here
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
+                int index;
+                synchronized (DownloadTableModel.this) {
+                    index = downloads.indexOf(download);
+                }
+                if (index == -1)
+                    return;
                 fireTableRowsUpdated(index, index);
             }
         });
@@ -110,7 +124,7 @@ public class DownloadTableModel extends AbstractTableModel {
             updateDownload(download);
     }
 
-    synchronized void removeDownload(Download download) {
+    synchronized void removeDownload(final Download download) {
         final int index = downloads.indexOf(download);
         if (index == -1)
             throw new IllegalArgumentException("Download " + download + " not found in " + downloads);
@@ -118,8 +132,16 @@ public class DownloadTableModel extends AbstractTableModel {
         if (!downloads.remove(download))
             throw new IllegalArgumentException("Download " + download + " not removed from " + downloads);
 
+        // the removed download is gone from the list by now, so its former index is validated
+        // against the current size when the event actually fires rather than re-resolved
         invokeInAwtEventQueue(new Runnable() {
             public void run() {
+                int rowCount;
+                synchronized (DownloadTableModel.this) {
+                    rowCount = downloads.size();
+                }
+                if (index > rowCount)
+                    return;
                 fireTableRowsDeleted(index, index);
             }
         });
