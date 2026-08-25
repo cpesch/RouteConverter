@@ -237,7 +237,9 @@ public class MapsforgePoiLookup {
     }
 
     private boolean matches(BoundingBox fileBounds, BoundingBox queryBounds) {
-        if (fileBounds == null || queryBounds == null)
+        if (fileBounds == null)
+            return false;
+        if (queryBounds == null)
             return true;
         return fileBounds.intersect(queryBounds) != null || fileBounds.contains(queryBounds.getCenter()) || queryBounds.contains(fileBounds.getCenter());
     }
