@@ -427,6 +427,20 @@ public class MapsforgePoiLookupTest {
     }
 
     @Test
+    public void fileWithoutBoundingBoxNeverMatchesAnyQueryBounds() throws Exception {
+        String directory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
+        DataSource dataSource = poiDataSource(directory, poiFileType("unbounded.poi", null, 999L));
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManagerWith(dataSource));
+
+        long sizeForGermany = lookup.calculateRemainingDownloadSize(List.of(mapDescriptor(MAP_BOUNDS)));
+        long sizeForAntarctica = lookup.calculateRemainingDownloadSize(List.of(mapDescriptor(new BoundingBox(-60.0, -10.0, -61.0, -11.0))));
+
+        assertEquals(0L, sizeForGermany);
+        assertEquals(0L, sizeForAntarctica);
+    }
+
+    @Test
     public void sumsOnlyMissingFilesAcrossMultipleRemotePoiFiles() throws Exception {
         String directory = "test-pois/" + UUID.randomUUID();
         applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
