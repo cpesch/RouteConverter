@@ -292,22 +292,24 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                 // Compute the duration of this pause block
                 long durationMillis = last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
 
-                // Subtract only this block's duration from positions after this block.
-                // Skip positions that are themselves part of the pause indices.
-                for (int i = lastIndex + 1; i < positions.size(); i++) {
+                // Find the end of the non-pause region after this block
+                // (the next pause index, or end of positions)
+                int endOfRegion = lastIndex + 1;
+                while (endOfRegion < positions.size() && !pauseIndexSet.contains(endOfRegion)) {
+                    endOfRegion++;
+                }
+
+                // Shift only the non-pause positions between this block and the next pause block
+                for (int i = lastIndex + 1; i < endOfRegion; i++) {
                     P position = positions.get(i);
-                    // Skip pause positions themselves
-                    if (pauseIndexSet.contains(i)) {
-                        continue;
-                    }
                     if (position.hasTime()) {
                         CompactCalendar existingTime = position.getTime();
-                        long newMillis = existingTime.getTimeInMillis() - durationMillis;
+                        long newMillis = existingTime.getTimeInMillis() - shiftSoFar - durationMillis;
                         position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
                     }
                 }
 
-                // Accumulate the total shift so subsequent blocks know how much has been removed
+                // Accumulate the total shift for subsequent regions
                 shiftSoFar += durationMillis;
             }
 
