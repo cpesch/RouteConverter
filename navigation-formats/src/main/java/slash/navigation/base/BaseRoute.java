@@ -270,7 +270,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
         // Process each contiguous block of indices
         ContinousRange range = new ContinousRange(pauseIndicesSortedAscending, new RangeOperation() {
-            private long shiftSoFar = 0;
+            private long cumulativeShift = 0;
 
             @Override
             public void performOnIndex(int index) {
@@ -304,13 +304,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                     P position = positions.get(i);
                     if (position.hasTime()) {
                         CompactCalendar existingTime = position.getTime();
-                        long newMillis = existingTime.getTimeInMillis() - shiftSoFar - durationMillis;
+                        long newMillis = existingTime.getTimeInMillis() - cumulativeShift - durationMillis;
                         position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
                     }
                 }
 
                 // Accumulate the total shift for subsequent regions
-                shiftSoFar += durationMillis;
+                cumulativeShift += durationMillis;
             }
 
             @Override
