@@ -86,7 +86,8 @@ public class PointOfInterestPanel implements PanelInTab {
 
         positionsModel = new FilteringPositionsModel<>(r.getConvertPanel().getPositionsModel(), new PointOfInterestPositionPredicate());
         tablePointsOfInterest.setModel(getPositionsModel());
-        PointsOfInterestTableColumnModel tableColumnModel = new PointsOfInterestTableColumnModel(new PositionsModelCallbackImpl(r.getTimeZone()));
+        PointsOfInterestTableColumnModel tableColumnModel =
+                new PointsOfInterestTableColumnModel(new PositionsModelCallbackImpl(r.getTimeZone()));
         tablePointsOfInterest.setColumnModel(tableColumnModel);
 
         r.getUnitSystemModel().addChangeListener(new ChangeListener() {
@@ -102,19 +103,23 @@ public class PointOfInterestPanel implements PanelInTab {
 
         tablePointsOfInterest.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e) {
-                if (e.getValueIsAdjusting())
+                if (e.getValueIsAdjusting()) {
                     return;
-                if (getPositionsModel().isContinousRangeOperation())
+                }
+                if (getPositionsModel().isContinousRangeOperation()) {
                     return;
+                }
                 handlePositionsUpdate();
             }
         });
         getPositionsModel().addTableModelListener(new TableModelListener() {
             public void tableChanged(TableModelEvent e) {
-                if (!isFirstToLastRow(e))
+                if (!isFirstToLastRow(e)) {
                     return;
-                if (getPositionsModel().isContinousRangeOperation())
+                }
+                if (getPositionsModel().isContinousRangeOperation()) {
                     return;
+                }
                 handlePositionsUpdate();
             }
         });
@@ -148,8 +153,9 @@ public class PointOfInterestPanel implements PanelInTab {
         tablePointsOfInterest.setName("point-of-interest-list");
 
         handlePositionsUpdate();
-        for (PositionTableColumn column : tableColumnModel.getPreparedColumns())
+        for (PositionTableColumn column : tableColumnModel.getPreparedColumns()) {
             handleColumnVisibilityUpdate(column);
+        }
     }
 
     public Component getRootComponent() {
@@ -188,14 +194,16 @@ public class PointOfInterestPanel implements PanelInTab {
         actionManager.enable("play-voice", existsASelectedPosition);
         actionManager.enable("add-audio", existsASelectedPosition);
 
-        if (r.isPointsOfInterestPanelSelected())
+        if (r.isPointsOfInterestPanelSelected()) {
             r.selectPositionsInMap(getPositionsModel().mapRows(selectedRows));
+        }
     }
 
     private void handleColumnVisibilityUpdate(PositionTableColumn column) {
-        if (column.getModelIndex() == PHOTO_COLUMN_INDEX)
+        if (column.getModelIndex() == PHOTO_COLUMN_INDEX) {
             tablePointsOfInterest.setRowHeight(column.isVisible() ? ROW_HEIGHT_FOR_PHOTO_COLUMN :
                     getDefaultRowHeight(this, new DescriptionColumnTableCellEditor(), new SimpleNavigationPosition(null, null)));
+        }
     }
 
     public void addAudio(Wgs84Position position, File file) {
@@ -219,7 +227,9 @@ public class PointOfInterestPanel implements PanelInTab {
         pointsOfInterestPanel.setMinimumSize(new Dimension(-1, -1));
         pointsOfInterestPanel.setPreferredSize(new Dimension(560, 560));
         final JScrollPane scrollPane1 = new JScrollPane();
-        pointsOfInterestPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        pointsOfInterestPanel.add(scrollPane1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tablePointsOfInterest = new JTable();
         tablePointsOfInterest.setAutoCreateColumnsFromModel(false);
         tablePointsOfInterest.setShowHorizontalLines(false);
@@ -227,21 +237,36 @@ public class PointOfInterestPanel implements PanelInTab {
         scrollPane1.setViewportView(tablePointsOfInterest);
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
-        pointsOfInterestPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        pointsOfInterestPanel.add(panel1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonPlayVoice = new JButton();
-        this.$$$loadButtonText$$$(buttonPlayVoice, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "play-voice-action"));
-        buttonPlayVoice.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "play-voice-action-tooltip"));
-        panel1.add(buttonPlayVoice, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(buttonPlayVoice,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "play-voice-action"));
+        buttonPlayVoice.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "play-voice-action-tooltip"));
+        panel1.add(buttonPlayVoice,
+                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeletePointsOfInterest = new JButton();
-        this.$$$loadButtonText$$$(buttonDeletePointsOfInterest, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-points-of-interest-action"));
-        buttonDeletePointsOfInterest.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-points-of-interest-action-tooltip"));
-        panel1.add(buttonDeletePointsOfInterest, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(buttonDeletePointsOfInterest,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-points-of-interest-action"));
+        buttonDeletePointsOfInterest.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter",
+                "delete-points-of-interest-action-tooltip"));
+        panel1.add(buttonDeletePointsOfInterest,
+                new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
-        panel1.add(spacer1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        panel1.add(spacer1, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         buttonAddAudio = new JButton();
-        this.$$$loadButtonText$$$(buttonAddAudio, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-audio-action"));
-        buttonAddAudio.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-audio-action-tooltip"));
-        panel1.add(buttonAddAudio, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(buttonAddAudio,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-audio-action"));
+        buttonAddAudio.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-audio-action-tooltip"));
+        panel1.add(buttonAddAudio, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;
@@ -275,7 +300,9 @@ public class PointOfInterestPanel implements PanelInTab {
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '&') {
                 i++;
-                if (i == text.length()) break;
+                if (i == text.length()) {
+                    break;
+                }
                 if (!haveMnemonic && text.charAt(i) != '&') {
                     haveMnemonic = true;
                     mnemonic = text.charAt(i);

@@ -268,8 +268,9 @@ public class BrowsePanel implements PanelInTab {
         RoutesTableSortPreferences sortPreferences = new RoutesTableSortPreferences();
         rowSorter.setSortKeys(sortPreferences.loadSortKeys());
         rowSorter.addRowSorterListener(e -> {
-            if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED)
+            if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED) {
                 sortPreferences.saveSortKeys(rowSorter.getSortKeys());
+            }
         });
         tableRoutes.setRowSorter(rowSorter);
         catalogModel.getRoutesTableModel().addTableModelListener(e -> fillRouteDistancesAndTimes());
@@ -302,8 +303,9 @@ public class BrowsePanel implements PanelInTab {
         tableRoutes.setDragEnabled(true);
         tableRoutes.setTransferHandler(new TableDragHandler());
         tableRoutes.getSelectionModel().addListSelectionListener(e -> {
-            if (e.getValueIsAdjusting())
+            if (e.getValueIsAdjusting()) {
                 return;
+            }
             handleRouteListUpdate();
             openRoute();
         });
@@ -347,10 +349,12 @@ public class BrowsePanel implements PanelInTab {
         startWaitCursor(r.getFrame().getRootPane());
         try {
             Object selectedObject = treePath.getLastPathComponent();
-            if (!(selectedObject instanceof CategoryTreeNode selectedCategoryTreeNode))
+            if (!(selectedObject instanceof CategoryTreeNode selectedCategoryTreeNode)) {
                 return;
-            if (selectCategoryTreePath)
+            }
+            if (selectCategoryTreePath) {
                 selectCategoryTreePath(treeCategories, treePath);
+            }
             catalogModel.setCurrentCategory(selectedCategoryTreeNode);
             BaseRouteConverter.getInstance().setCategoryPreference(TreePathStringConversion.toString(treePath));
         } finally {
@@ -360,15 +364,17 @@ public class BrowsePanel implements PanelInTab {
 
     private void openRoute() {
         RouteModel route = getSelectedRouteModel(tableRoutes);
-        if (route == null)
+        if (route == null) {
             return;
+        }
 
         String urlString;
         URL url;
         try {
             urlString = route.route().getUrl();
-            if (urlString == null)
+            if (urlString == null) {
                 return;
+            }
             url = URI.create(urlString).toURL();
         } catch (Throwable t) {
             getOperator().handleServiceError(t);
@@ -398,8 +404,9 @@ public class BrowsePanel implements PanelInTab {
             List<RouteModel> updated = new ArrayList<>();
             for (int i = 0, count = model.getRowCount(); i < count; i++) {
                 RouteModel route = model.getRoute(i);
-                if (urlSet.contains(route.getUrl()))
+                if (urlSet.contains(route.getUrl())) {
                     updated.add(route);
+                }
             }
             // one table event for the whole batch -> the row sorter re-sorts once
             model.updateRoutes(updated);
@@ -410,10 +417,11 @@ public class BrowsePanel implements PanelInTab {
         RoutesTableModel model = getRoutesListModel();
         for (int i = 0, count = model.getRowCount(); i < count; i++) {
             RouteModel route = model.getRoute(i);
-            if (route.route() instanceof LocalRoute)
+            if (route.route() instanceof LocalRoute) {
                 localRouteDistanceAndTimeFiller.fill(route.getUrl());
-            else if (route.route() instanceof RemoteRoute remoteRoute)
+            } else if (route.route() instanceof RemoteRoute remoteRoute) {
                 remoteRouteDistanceAndTimeFiller.fill(remoteRoute);
+            }
         }
     }
 
@@ -466,8 +474,9 @@ public class BrowsePanel implements PanelInTab {
                     length = route.getDistance();
                 }
                 showAddFileToCatalog(categoryTreeNode, description, length, file);
-            } else
+            } else {
                 r.handleUnsupportedFormat(path);
+            }
         } catch (BabelException e) {
             r.handleBabelError(e);
         } catch (OutOfMemoryError e) {
@@ -540,55 +549,96 @@ public class BrowsePanel implements PanelInTab {
         browsePanel.setPreferredSize(new Dimension(560, 560));
         final JPanel panel1 = new JPanel();
         panel1.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
-        browsePanel.add(panel1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        browsePanel.add(panel1, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonAddCategory = new JButton();
-        this.$$$loadButtonText$$$(buttonAddCategory, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-category-action"));
-        buttonAddCategory.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-category-action-tooltip"));
-        panel1.add(buttonAddCategory, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(buttonAddCategory,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-category-action"));
+        buttonAddCategory.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-category-action-tooltip"));
+        panel1.add(buttonAddCategory, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
         buttonDeleteCategory = new JButton();
-        this.$$$loadButtonText$$$(buttonDeleteCategory, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-category-action"));
-        buttonDeleteCategory.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-category-action-tooltip"));
-        panel1.add(buttonDeleteCategory, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(buttonDeleteCategory,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-category-action"));
+        buttonDeleteCategory.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-category-action-tooltip"));
+        panel1.add(buttonDeleteCategory, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
         buttonRenameCategory = new JButton();
-        this.$$$loadButtonText$$$(buttonRenameCategory, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "rename-category-action"));
-        buttonRenameCategory.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "rename-category-action-tooltip"));
-        panel1.add(buttonRenameCategory, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(buttonRenameCategory,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "rename-category-action"));
+        buttonRenameCategory.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "rename-category-action-tooltip"));
+        panel1.add(buttonRenameCategory, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "categories"));
-        browsePanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        browsePanel.add(label1,
+                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
         this.$$$loadLabelText$$$(label2, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "routes"));
-        browsePanel.add(label2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        browsePanel.add(label2,
+                new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(5, 1, new Insets(0, 0, 0, 0), -1, -1));
-        browsePanel.add(panel2, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        browsePanel.add(panel2, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonAddRouteFromFile = new JButton();
-        this.$$$loadButtonText$$$(buttonAddRouteFromFile, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-file-action"));
-        buttonAddRouteFromFile.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-file-action-tooltip"));
-        panel2.add(buttonAddRouteFromFile, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(buttonAddRouteFromFile,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-file-action"));
+        buttonAddRouteFromFile.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-file-action-tooltip"));
+        panel2.add(buttonAddRouteFromFile, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
         final Spacer spacer1 = new Spacer();
-        panel2.add(spacer1, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel2.add(spacer1, new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+                GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonDeleteRoute = new JButton();
-        this.$$$loadButtonText$$$(buttonDeleteRoute, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-route-action"));
-        buttonDeleteRoute.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-route-action-tooltip"));
-        panel2.add(buttonDeleteRoute, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(buttonDeleteRoute,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-route-action"));
+        buttonDeleteRoute.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-route-action-tooltip"));
+        panel2.add(buttonDeleteRoute, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
         buttonRenameRoute = new JButton();
         buttonRenameRoute.setHideActionText(false);
-        this.$$$loadButtonText$$$(buttonRenameRoute, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "rename-route-action"));
-        buttonRenameRoute.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "rename-route-action-tooltip"));
-        panel2.add(buttonRenameRoute, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(buttonRenameRoute,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "rename-route-action"));
+        buttonRenameRoute.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "rename-route-action-tooltip"));
+        panel2.add(buttonRenameRoute, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
         buttonAddRouteFromUrl = new JButton();
-        this.$$$loadButtonText$$$(buttonAddRouteFromUrl, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-url-action"));
-        buttonAddRouteFromUrl.setToolTipText(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-url-action-tooltip"));
-        panel2.add(buttonAddRouteFromUrl, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        this.$$$loadButtonText$$$(buttonAddRouteFromUrl,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-url-action"));
+        buttonAddRouteFromUrl.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "add-route-by-url-action-tooltip"));
+        panel2.add(buttonAddRouteFromUrl, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
         final JScrollPane scrollPane1 = new JScrollPane();
-        browsePanel.add(scrollPane1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        browsePanel.add(scrollPane1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tableRoutes = new JTable();
         tableRoutes.setShowHorizontalLines(false);
         tableRoutes.setShowVerticalLines(false);
         scrollPane1.setViewportView(tableRoutes);
         final JScrollPane scrollPane2 = new JScrollPane();
-        browsePanel.add(scrollPane2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        browsePanel.add(scrollPane2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         treeCategories = new JTree();
         treeCategories.setLargeModel(true);
         treeCategories.setRootVisible(false);
@@ -626,7 +676,9 @@ public class BrowsePanel implements PanelInTab {
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '&') {
                 i++;
-                if (i == text.length()) break;
+                if (i == text.length()) {
+                    break;
+                }
                 if (!haveMnemonic && text.charAt(i) != '&') {
                     haveMnemonic = true;
                     mnemonic = text.charAt(i);
@@ -653,7 +705,9 @@ public class BrowsePanel implements PanelInTab {
         for (int i = 0; i < text.length(); i++) {
             if (text.charAt(i) == '&') {
                 i++;
-                if (i == text.length()) break;
+                if (i == text.length()) {
+                    break;
+                }
                 if (!haveMnemonic && text.charAt(i) != '&') {
                     haveMnemonic = true;
                     mnemonic = text.charAt(i);
@@ -706,8 +760,9 @@ public class BrowsePanel implements PanelInTab {
 
         private void moveCategories(final List<CategoryTreeNode> categories, final CategoryTreeNode target) {
             catalogModel.moveCategories(categories, target, () -> {
-                for (CategoryTreeNode category : categories)
+                for (CategoryTreeNode category : categories) {
                     selectCategory(treeCategories, category);
+                }
             });
         }
 
@@ -716,8 +771,9 @@ public class BrowsePanel implements PanelInTab {
             catalogModel.moveRoutes(routes, target, () -> {
                 selectCategory(treeCategories, target);
                 invokeLater(() -> {
-                    for (RouteModel route : routes)
+                    for (RouteModel route : routes) {
                         selectRoute(tableRoutes, route);
+                    }
                 });
             });
         }

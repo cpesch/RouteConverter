@@ -142,11 +142,13 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         Version version = parseVersionFromManifest();
         String edition = BaseRouteConverter.getInstance().getEdition();
         String number = version.getVersion();
-        if ("?".equals(number))
+        if ("?".equals(number)) {
             number = "(local build)";
+        }
         String date = version.getDate();
-        if ("?".equals(date))
+        if ("?".equals(date)) {
             return MessageFormat.format(getBundle().getString("title-without-date"), edition, number);
+        }
         return MessageFormat.format(getBundle().getString("title"), edition, number, date);
     }
 
@@ -201,7 +203,9 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     private final UnitSystemModel unitSystemModel = new UnitSystemModel();
     private final CharacteristicsModel characteristicsModel = new CharacteristicsModel();
     private final RoutingServiceFacade routingServiceFacade = new RoutingServiceFacade();
-    private final MapPreferencesModel mapPreferencesModel = new MapPreferencesModel(getRoutingServiceFacade().getRoutingPreferencesModel(), getCharacteristicsModel(), getUnitSystemModel());
+    private final MapPreferencesModel mapPreferencesModel =
+            new MapPreferencesModel(getRoutingServiceFacade().getRoutingPreferencesModel(), getCharacteristicsModel(),
+                    getUnitSystemModel());
     private final GoogleMapsServerModel googleMapsServerModel = new GoogleMapsServerModel();
     private final ProfileModeModel profileModeModel = new ProfileModeModel();
     private TileServerMapManager tileServerMapManager;
@@ -278,7 +282,8 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         LoggingHelper loggingHelper = LoggingHelper.getInstance();
         loggingHelper.logToFileAndConsole();
         log.info(format("Started %s for %s with locale %s on %s and %s with %d MByte maximum heap",
-                getTitle(), parseVersionFromManifest().getOperationSystem(), Locale.getDefault(), getJava(), getPlatform(), getMaximumMemory()));
+                getTitle(), parseVersionFromManifest().getOperationSystem(), Locale.getDefault(), getJava(), getPlatform(),
+                getMaximumMemory()));
         log.info(format("java.io.tmpdir: %s, user.home: %s, Application directory: %s, Temporary directory: %s",
                 System.getProperty("java.io.tmpdir"), System.getProperty("user.home"), getApplicationDirectory(), getTemporaryDirectory()));
     }
@@ -290,8 +295,9 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
      * preference.
      */
     protected void askForCrashReportConsent() {
-        if (preferences.getBoolean(ASKED_SEND_CRASH_REPORTS_PREFERENCE, false))
+        if (preferences.getBoolean(ASKED_SEND_CRASH_REPORTS_PREFERENCE, false)) {
             return;
+        }
         JLabel label = new JLabel(getBundle().getString("send-crash-reports-question"));
         int result = showConfirm(getFrame(), label, getTitle(), YES_NO_OPTION);
         preferences.putBoolean(SEND_CRASH_REPORTS_PREFERENCE, result == YES_OPTION);
@@ -341,7 +347,8 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     private void openFrame() {
-        createFrame(getTitle(), "/slash/navigation/converter/gui/" + getProduct() + ".png", contentPane, null, new FrameMenu().createMenuBar());
+        createFrame(getTitle(), "/slash/navigation/converter/gui/" + getProduct() + ".png", contentPane, null,
+                new FrameMenu().createMenuBar());
         new ApplicationMenu().addApplicationMenuItems();
         new Thread(() -> invokeLater(() -> {
             openFrame(contentPane);
@@ -353,11 +360,14 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         new Thread(() -> {
             try {
                 File mapServers = new File(getApplicationDirectory("tileservers"), "mapservers.xml");
-                getDownloadManager().executeDownload("RouteConverter Map Servers", getApiUrl() + V1 + "mapservers/" + FORMAT_XML, Copy, mapServers, () -> {
+                getDownloadManager().executeDownload("RouteConverter Map Servers", getApiUrl() + V1 + "mapservers/" + FORMAT_XML, Copy,
+                        mapServers, () -> {
 
-                    File overlayServers = new File(getApplicationDirectory("tileservers"), "overlayservers.xml");
-                    getDownloadManager().executeDownload("RouteConverter Overlay Servers", getApiUrl() + V1 + "overlayservers/" + FORMAT_XML, Copy, overlayServers, () -> getTileServerMapManager().scanTileServers());
-                });
+                            File overlayServers = new File(getApplicationDirectory("tileservers"), "overlayservers.xml");
+                            getDownloadManager().executeDownload("RouteConverter Overlay Servers",
+                                    getApiUrl() + V1 + "overlayservers/" + FORMAT_XML, Copy, overlayServers,
+                                    () -> getTileServerMapManager().scanTileServers());
+                        });
             } catch (Exception e) {
                 log.warning("Could not download tile servers: " + e);
             }
@@ -465,21 +475,27 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     protected void shutdown() {
-        if (isMapViewAvailable())
+        if (isMapViewAvailable()) {
             getMapView().dispose();
-        if (positionAugmenter != null)
+        }
+        if (positionAugmenter != null) {
             positionAugmenter.dispose();
-        if (audioPlayer != null)
+        }
+        if (audioPlayer != null) {
             audioPlayer.dispose();
-        if (geoTagger != null)
+        }
+        if (geoTagger != null) {
             geoTagger.dispose();
+        }
         getDataSourceManager().dispose();
         getDownloadManager().saveQueue();
         getTileServerMapManager().dispose();
         super.shutdown();
 
-        log.info("Shutdown " + getTitle() + " for " + parseVersionFromManifest().getOperationSystem() + " with locale " + Locale.getDefault() +
-                " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
+        log.info(
+                "Shutdown " + getTitle() + " for " + parseVersionFromManifest().getOperationSystem() + " with locale " + Locale.getDefault()
+                        +
+                        " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
     }
 
     public double getSelectByDistancePreference() {
@@ -620,7 +636,8 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     public NumberingStrategy getNumberingStrategyPreference() {
         try {
-            return NumberingStrategy.valueOf(preferences.get(NUMBERING_STRATEGY_PREFERENCE, Absolute_Position_Within_Position_List.toString()));
+            return NumberingStrategy.valueOf(
+                    preferences.get(NUMBERING_STRATEGY_PREFERENCE, Absolute_Position_Within_Position_List.toString()));
         } catch (IllegalArgumentException e) {
             return Absolute_Position_Within_Position_List;
         }
@@ -670,7 +687,8 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     public void handleOpenError(final Throwable throwable, final String path) {
         invokeLater(() -> {
             log.severe("Open error from " + path + ": " + throwable + "\n" + printStackTrace(throwable));
-            showError(frame, new JLabel(MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable))),
+            showError(frame, new JLabel(
+                            MessageFormat.format(getBundle().getString("open-error"), shortenPath(path, 60), getLocalizedMessage(throwable))),
                     frame.getTitle());
         });
     }
@@ -679,7 +697,8 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         invokeLater(() -> {
             String dialogUrls = asDialogString(urls);
             log.severe("Open error from " + dialogUrls + ": " + throwable + "\n" + printStackTrace(throwable));
-            showError(frame, new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable))),
+            showError(frame,
+                    new JLabel(MessageFormat.format(getBundle().getString("open-error"), dialogUrls, getLocalizedMessage(throwable))),
                     frame.getTitle());
         });
     }
@@ -739,8 +758,9 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     public void openPositionList(List<URL> urls, boolean selectConvertPanel) {
-        if (selectConvertPanel)
+        if (selectConvertPanel) {
             tabbedPane.setSelectedComponent(convertPanel);
+        }
         getConvertPanel().openPositionList(urls);
     }
 
@@ -859,14 +879,16 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     public NavigationPosition getMapCenter() {
-        if (isMapViewAvailable())
+        if (isMapViewAvailable()) {
             return getMapView().getCenter();
+        }
         // no map view: fall back to the center of the current route instead of a fixed point in the
         // Atlantic, so a position inserted through this fallback stays near the user's data
         if (getConvertPanel() != null) {
             var route = getConvertPanel().getPositionsModel().getRoute();
-            if (route != null && !route.getPositions().isEmpty())
+            if (route != null && !route.getPositions().isEmpty()) {
                 return BoundingBox.asBoundingBox(route.getPositions()).getCenter();
+            }
         }
         return new SimpleNavigationPosition(0.0, 0.0);
     }
@@ -968,14 +990,15 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     private void initializeSelectionForCurrentTab() {
-        if (isConvertPanelSelected())
+        if (isConvertPanelSelected()) {
             getConvertPanel().initializeSelection();
-        else if (isPointsOfInterestPanelSelected())
+        } else if (isPointsOfInterestPanelSelected()) {
             getPointOfInterestPanel().initializeSelection();
-        else if (isPhotosPanelSelected())
+        } else if (isPhotosPanelSelected()) {
             getPhotoPanel().initializeSelection();
-        else if (isBrowsePanelSelected())
+        } else if (isBrowsePanelSelected()) {
             getBrowsePanel().initializeSelection();
+        }
     }
 
     public ConvertPanel getConvertPanel() {
@@ -1018,7 +1041,9 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         profileSplitPane.setOneTouchExpandable(true);
         profileSplitPane.setOrientation(0);
         profileSplitPane.setResizeWeight(0.0);
-        contentPane.add(profileSplitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        contentPane.add(profileSplitPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         mapSplitPane = new JSplitPane();
         mapSplitPane.setContinuousLayout(true);
         mapSplitPane.setDividerLocation(0);
@@ -1042,7 +1067,8 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "convert-tab"), convertPanel);
         pointOfInterestPanel = new JPanel();
         pointOfInterestPanel.setLayout(new BorderLayout(0, 0));
-        tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "points-of-interest-tab"), pointOfInterestPanel);
+        tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "points-of-interest-tab"),
+                pointOfInterestPanel);
         photoPanel = new JPanel();
         photoPanel.setLayout(new BorderLayout(0, 0));
         tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "photos-tab"), photoPanel);
@@ -1104,7 +1130,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         }
 
         private void addTab(final JPanel panel, final Class<? extends PanelInTab> panelInTabClass, boolean includePanel) {
-            if (includePanel)
+            if (includePanel) {
                 lazyInitializers.put(panel, () -> {
                     PanelInTab panelInTab;
                     try {
@@ -1116,7 +1142,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
                     panel.add(panelInTab.getRootComponent());
                     initialized.put(panel, panelInTab);
                 });
-            else {
+            } else {
                 for (int i = 0; i < tabbedPane.getTabCount(); i++) {
                     if (tabbedPane.getComponentAt(i) == panel) {
                         tabbedPane.removeTabAt(i);
@@ -1207,7 +1233,8 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
             ActionManager actionManager = getContext().getActionManager();
             actionManager.enable("maximize-map", location < mapSplitPane.getMaximumDividerLocation() - 10);
             actionManager.enable("maximize-positionlist", location > mapSplitPane.getMinimumDividerLocation() + 10);
-            actionManager.enable("show-map-and-positionlist", location == 1 || location > mapSplitPane.getMaximumDividerLocation() + tabbedPane.getMinimumSize().width - 1);
+            actionManager.enable("show-map-and-positionlist",
+                    location == 1 || location > mapSplitPane.getMaximumDividerLocation() + tabbedPane.getMinimumSize().width - 1);
         }
     }
 
@@ -1455,7 +1482,9 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     private class PrintMapAction extends FrameAction {
         public void run() {
-            String title = getConvertPanel().getUrlModel().getShortUrl() + " / " + getConvertPanel().getFormatAndRoutesModel().getSelectedRoute().getName();
+            String title =
+                    getConvertPanel().getUrlModel().getShortUrl() + " / " + getConvertPanel().getFormatAndRoutesModel().getSelectedRoute()
+                            .getName();
             getMapView().print(title);
         }
     }
