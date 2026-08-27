@@ -221,7 +221,7 @@ public class InsertPositionsDialog extends SimpleDialog {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -245,36 +245,18 @@ public class InsertPositionsDialog extends SimpleDialog {
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED,
                 new Dimension(-1, 2), null, null, 0, false));
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(5, 3, new Insets(0, 0, 10, 0), -1, -1));
+        panel4.setLayout(new GridLayoutManager(6, 4, new Insets(0, 0, 10, 0), -1, -1));
         panel1.add(panel4, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonSelectAll = new JButton();
-        this.$$$loadButtonText$$$(buttonSelectAll,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select-all-action"));
-        panel4.add(buttonSelectAll, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
-                null, 0, false));
-        final Spacer spacer1 = new Spacer();
-        panel4.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-                GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        buttonClearSelection = new JButton();
-        this.$$$loadButtonText$$$(buttonClearSelection,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "clear-selection-action"));
-        panel4.add(buttonClearSelection, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
-                null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), 5, -1));
-        panel4.add(panel5, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel4.add(panel5, new GridConstraints(0, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
-        final JSeparator separator1 = new JSeparator();
-        panel5.add(separator1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-                GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel4.add(panel6, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel4.add(panel6, new GridConstraints(1, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label2 = new JLabel();
@@ -284,20 +266,20 @@ public class InsertPositionsDialog extends SimpleDialog {
         buttonInsertAllWaypoints = new JButton();
         this.$$$loadButtonText$$$(buttonInsertAllWaypoints,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "insert-all-waypoints"));
-        panel4.add(buttonInsertAllWaypoints, new GridConstraints(2, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel4.add(buttonInsertAllWaypoints, new GridConstraints(1, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), 5, -1));
-        panel4.add(panel7, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel4.add(panel7, new GridConstraints(2, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
-        final JSeparator separator2 = new JSeparator();
-        panel7.add(separator2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        final JSeparator separator1 = new JSeparator();
+        panel7.add(separator1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel8 = new JPanel();
         panel8.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel4.add(panel8, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel4.add(panel8, new GridConstraints(3, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
@@ -314,17 +296,32 @@ public class InsertPositionsDialog extends SimpleDialog {
         buttonInsertStraightLine = new JButton();
         this.$$$loadButtonText$$$(buttonInsertStraightLine,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "insert-straight-line-action"));
-        panel4.add(buttonInsertStraightLine, new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel4.add(buttonInsertStraightLine, new GridConstraints(3, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
-        final JPanel panel9 = new JPanel();
-        panel9.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel1.add(panel9, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonClearSelection = new JButton();
+        this.$$$loadButtonText$$$(buttonClearSelection,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "clear-selection-action"));
+        panel4.add(buttonClearSelection, new GridConstraints(5, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
+        final JSeparator separator2 = new JSeparator();
+        panel4.add(separator2, new GridConstraints(4, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonHelp = new JButton();
         buttonHelp.setText("?");
-        panel9.add(buttonHelp);
+        panel4.add(buttonHelp, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        buttonSelectAll = new JButton();
+        this.$$$loadButtonText$$$(buttonSelectAll,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select-all-action"));
+        panel4.add(buttonSelectAll, new GridConstraints(5, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        panel4.add(spacer1, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;

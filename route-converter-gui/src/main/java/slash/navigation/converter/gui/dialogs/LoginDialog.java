@@ -285,13 +285,13 @@ public class LoginDialog extends SimpleDialog {
      */
     private void $$$setupUI$$$() {
         contentPane = new JPanel();
-        contentPane.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        contentPane.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane = new JTabbedPane();
         contentPane.add(tabbedPane,
                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(300, 290), null, 0, false));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(6, 2, new Insets(10, 10, 10, 10), -1, -1));
+        panel1.setLayout(new GridLayoutManager(5, 2, new Insets(10, 10, 10, 10), -1, -1));
         tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "login"), panel1);
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1,
@@ -313,22 +313,27 @@ public class LoginDialog extends SimpleDialog {
                 new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2,
                 new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonCancel = new JButton();
+        this.$$$loadButtonText$$$(buttonCancel, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "cancel"));
+        panel2.add(buttonCancel, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
+        buttonHelp = new JButton();
+        buttonHelp.setText("?");
+        panel2.add(buttonHelp, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonLogin = new JButton();
         this.$$$loadButtonText$$$(buttonLogin, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "login"));
-        panel2.add(buttonLogin, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel2.add(buttonLogin, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer1 = new Spacer();
         panel2.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        buttonCancel = new JButton();
-        this.$$$loadButtonText$$$(buttonCancel, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "cancel"));
-        panel2.add(buttonCancel, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
-                null, 0, false));
         final JLabel label3 = new JLabel();
         this.$$$loadLabelText$$$(label3, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "please-login"));
         panel1.add(label3,
@@ -338,119 +343,106 @@ public class LoginDialog extends SimpleDialog {
         panel1.add(spacer2, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
                 GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel3, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
-        final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(11, 2, new Insets(10, 10, 10, 10), -1, -1));
-        tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "register"), panel4);
+        panel3.setLayout(new GridLayoutManager(11, 2, new Insets(10, 10, 10, 10), -1, -1));
+        tabbedPane.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "register"), panel3);
         final JLabel label4 = new JLabel();
         this.$$$loadLabelText$$$(label4,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "username-colon"));
-        panel4.add(label4,
+        panel3.add(label4,
                 new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         this.$$$loadLabelText$$$(label5,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "password-colon"));
-        panel4.add(label5,
+        panel3.add(label5,
                 new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label6 = new JLabel();
         this.$$$loadLabelText$$$(label6,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "repeat-password-colon"));
-        panel4.add(label6,
+        panel3.add(label6,
                 new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldName = new JTextField();
-        panel4.add(textFieldName, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+        panel3.add(textFieldName, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         final JLabel label7 = new JLabel();
         this.$$$loadLabelText$$$(label7, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "email-colon"));
-        panel4.add(label7,
+        panel3.add(label7,
                 new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldEMail = new JTextField();
-        panel4.add(textFieldEMail, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+        panel3.add(textFieldEMail, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         passwordRegister = new JPasswordField();
-        panel4.add(passwordRegister, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+        panel3.add(passwordRegister, new GridConstraints(5, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         passwordRepeat = new JPasswordField();
-        panel4.add(passwordRepeat, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+        panel3.add(passwordRepeat, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
-        final JPanel panel5 = new JPanel();
-        panel5.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
-        panel4.add(panel5,
+        final JPanel panel4 = new JPanel();
+        panel4.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.add(panel4,
                 new GridConstraints(9, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonRegister = new JButton();
         this.$$$loadButtonText$$$(buttonRegister,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "register"));
-        panel5.add(buttonRegister, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel4.add(buttonRegister, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         final Spacer spacer3 = new Spacer();
-        panel5.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel4.add(spacer3, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         buttonCancel2 = new JButton();
         this.$$$loadButtonText$$$(buttonCancel2,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "cancel"));
-        panel5.add(buttonCancel2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel4.add(buttonCancel2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         final JLabel label8 = new JLabel();
         this.$$$loadLabelText$$$(label8,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "please-register"));
-        panel4.add(label8,
+        panel3.add(label8,
                 new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label9 = new JLabel();
         this.$$$loadLabelText$$$(label9,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "first-name-colon"));
-        panel4.add(label9,
+        panel3.add(label9,
                 new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label10 = new JLabel();
         this.$$$loadLabelText$$$(label10,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "last-name-colon"));
-        panel4.add(label10,
+        panel3.add(label10,
                 new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         textFieldFirstName = new JTextField();
-        panel4.add(textFieldFirstName, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+        panel3.add(textFieldFirstName, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         textFieldLastName = new JTextField();
-        panel4.add(textFieldLastName, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+        panel3.add(textFieldLastName, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(150, -1), null, 0, false));
         labelAcceptTerms = new JLabel();
         this.$$$loadLabelText$$$(labelAcceptTerms,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "accept-terms"));
-        panel4.add(labelAcceptTerms, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+        panel3.add(labelAcceptTerms, new GridConstraints(7, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         checkBoxAcceptTerms = new JCheckBox();
         checkBoxAcceptTerms.setHideActionText(true);
-        panel4.add(checkBoxAcceptTerms, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
+        panel3.add(checkBoxAcceptTerms, new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         final Spacer spacer4 = new Spacer();
-        panel4.add(spacer4, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
+        panel3.add(spacer4, new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
                 GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JPanel panel6 = new JPanel();
-        panel6.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel4.add(panel6, new GridConstraints(10, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        final JPanel panel5 = new JPanel();
+        panel5.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel3.add(panel5, new GridConstraints(10, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
-        final JPanel panel7 = new JPanel();
-        panel7.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        contentPane.add(panel7, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonHelp = new JButton();
-        buttonHelp.setText("?");
-        panel7.add(buttonHelp);
     }
 
     private static Method $$$cachedGetBundleMethod$$$ = null;
