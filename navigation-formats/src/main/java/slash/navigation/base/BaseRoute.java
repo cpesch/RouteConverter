@@ -293,26 +293,22 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                 // Compute the duration of this pause block
                 long currentBlockDuration = last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
 
-                // Find the end of the non-pause region after this block
-                // (the next pause index, or end of positions)
-                int endOfRegion = lastIndex + 1;
-                while (endOfRegion < positions.size() && !pauseIndexSet.contains(endOfRegion)) {
-                    endOfRegion++;
-                }
-
-                // Shift only the non-pause positions between this block and the next pause block
-                // Each position is shifted by: total shift from all previous blocks + this block's duration
-                long shiftForThisBlock = totalShiftSoFar + currentBlockDuration;
-                for (int i = lastIndex + 1; i < endOfRegion; i++) {
+                // Shift all non-pause positions after this block by the cumulative total shift
+                // (this ensures positions after multiple pause blocks get shifted by the total duration of ALL preceding blocks)
+                for (int i = lastIndex + 1; i < positions.size(); i++) {
                     P position = positions.get(i);
+                    // Skip positions that are part of the pause indices
+                    if (pauseIndexSet.contains(i)) {
+                        continue;
+                    }
                     if (position.hasTime()) {
                         CompactCalendar existingTime = position.getTime();
-                        long newMillis = existingTime.getTimeInMillis() - shiftForThisBlock;
+                        long newMillis = existingTime.getTimeInMillis() - currentBlockDuration;
                         position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
                     }
                 }
 
-                // Accumulate the total shift for subsequent regions
+                // Accumulate the total shift for subsequent blocks
                 totalShiftSoFar += currentBlockDuration;
             }
 
