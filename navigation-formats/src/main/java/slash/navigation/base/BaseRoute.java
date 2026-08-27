@@ -262,6 +262,12 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (positions.isEmpty())
             return;
 
+        // Convert pause indices to a Set for efficient lookup
+        java.util.Set<Integer> pauseIndexSet = new java.util.HashSet<>();
+        for (int index : pauseIndicesSortedAscending) {
+            pauseIndexSet.add(index);
+        }
+
         // Process each contiguous block of indices
         ContinousRange range = new ContinousRange(pauseIndicesSortedAscending, new RangeOperation() {
             private long shiftSoFar = 0;
@@ -286,17 +292,22 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                 // Compute the duration of this pause block
                 long durationMillis = last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
 
-                // Subtract this duration (plus any accumulated shift) from all positions after this block
+                // Subtract only this block's duration from positions after this block.
+                // Skip positions that are themselves part of the pause indices.
                 for (int i = lastIndex + 1; i < positions.size(); i++) {
                     P position = positions.get(i);
+                    // Skip pause positions themselves
+                    if (pauseIndexSet.contains(i)) {
+                        continue;
+                    }
                     if (position.hasTime()) {
                         CompactCalendar existingTime = position.getTime();
-                        long newMillis = existingTime.getTimeInMillis() - durationMillis - shiftSoFar;
+                        long newMillis = existingTime.getTimeInMillis() - durationMillis;
                         position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
                     }
                 }
 
-                // Accumulate the shift for subsequent blocks
+                // Accumulate the total shift so subsequent blocks know how much has been removed
                 shiftSoFar += durationMillis;
             }
 
