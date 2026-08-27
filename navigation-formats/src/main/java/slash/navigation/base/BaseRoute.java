@@ -279,7 +279,8 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
             @Override
             public void performOnRange(int firstIndex, int lastIndex) {
-                if (firstIndex >= positions.size() || lastIndex >= positions.size())
+                // Check bounds
+                if (firstIndex >= positions.size() || lastIndex >= positions.size() || firstIndex < 0 || lastIndex < 0)
                     return;
 
                 P first = positions.get(firstIndex);

@@ -215,11 +215,11 @@ public class BaseRouteTest {
         // Positions 1,2 unchanged (about to be deleted)
         assertEquals(10000, route.getPosition(1).getTime().getTimeInMillis());
         assertEquals(20000, route.getPosition(2).getTime().getTimeInMillis());
-        // Position 3 shifted by block 1's duration (30s - 10s = 20s)
+        // Position 3 shifted by block 1's duration (30s - 10s duration = 20s)
         assertEquals(20000, route.getPosition(3).getTime().getTimeInMillis());
         // Position 4 unchanged (about to be deleted)
         assertEquals(50000, route.getPosition(4).getTime().getTimeInMillis());
-        // Position 5 shifted by block 1's duration (60s - 10s = 50s)
+        // Position 5 shifted by block 1's duration (60s - 10s duration = 50s)
         assertEquals(50000, route.getPosition(5).getTime().getTimeInMillis());
     }
 
