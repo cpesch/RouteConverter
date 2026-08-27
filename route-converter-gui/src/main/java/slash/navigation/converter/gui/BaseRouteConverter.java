@@ -169,6 +169,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     private static final String SELECT_BY_DISTANCE_PREFERENCE = "selectByDistance";
     private static final String SELECT_BY_ORDER_PREFERENCE = "selectByOrder";
     private static final String SELECT_BY_SIGNIFICANCE_PREFERENCE = "selectBySignificance";
+    private static final String DELETE_POSITIONS_SHIFT_TIMES_PREFERENCE = "deletePositionsShiftTimes";
     private static final String INSERT_STRAIGHT_LINE_INTERVAL_PREFERENCE = "insertStraightLineInterval";
     private static final String FIND_PLACE_PREFERENCE = "findPlace";
     private static final String PHOTO_TIMEZONE_PREFERENCE = "photoTimeZone";
@@ -530,6 +531,14 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         preferences.putDouble(SELECT_BY_SIGNIFICANCE_PREFERENCE, selectBySignificancePreference);
     }
 
+    public boolean getDeletePositionsShiftTimesPreference() {
+        return preferences.getBoolean(DELETE_POSITIONS_SHIFT_TIMES_PREFERENCE, false);
+    }
+
+    public void setDeletePositionsShiftTimesPreference(boolean deletePositionsShiftTimesPreference) {
+        preferences.putBoolean(DELETE_POSITIONS_SHIFT_TIMES_PREFERENCE, deletePositionsShiftTimesPreference);
+    }
+
     public String getFindPlacePreference() {
         return preferences.get(FIND_PLACE_PREFERENCE, "");
     }
@@ -860,6 +869,10 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         return getConvertPanel().selectPositionsWithinDistanceToPredecessor(distance);
     }
 
+    public int selectPositionsWithSpeedZero() {
+        return getConvertPanel().selectPositionsWithSpeedZero();
+    }
+
     public int[] selectAllButEveryNthPosition(int order) {
         return getConvertPanel().selectAllButEveryNthPosition(order);
     }
@@ -870,6 +883,10 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     public void clearSelection() {
         getConvertPanel().clearSelection();
+    }
+
+    public void shiftTimesAfterPauses(int[] indices) {
+        getConvertPanel().shiftTimesAfterPauses(indices);
     }
 
     // map view related helpers

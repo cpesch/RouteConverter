@@ -248,6 +248,10 @@ public class OverlayPositionsModel implements PositionsModel {
         return delegate.getPositionsWithinDistanceToPredecessor(distance);
     }
 
+    public int[] getPositionsWithSpeedZero() {
+        return delegate.getPositionsWithSpeedZero();
+    }
+
     public int[] getInsignificantPositions(double threshold) throws InterruptedException {
         return delegate.getInsignificantPositions(threshold);
     }
@@ -393,5 +397,9 @@ public class OverlayPositionsModel implements PositionsModel {
 
     public void fireTableRowsUpdatedInContinousRange(int firstIndex, int lastIndex, int columnIndex) {
         delegate.fireTableRowsUpdatedInContinousRange(firstIndex, lastIndex, columnIndex);
+    }
+
+    public void shiftTimesAfterPauses(int[] indices) {
+        delegate.shiftTimesAfterPauses(indices);
     }
 }

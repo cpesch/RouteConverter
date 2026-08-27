@@ -29,6 +29,7 @@ import java.util.Comparator;
 
 import static org.junit.Assert.*;
 import static slash.common.type.CompactCalendar.fromMillis;
+import static slash.common.type.CompactCalendar.fromMillisAndTimeZone;
 import static slash.navigation.base.RouteCharacteristics.Waypoints;
 
 /**
@@ -152,6 +153,105 @@ public class BaseRouteTest {
     public void getInsignificantPositionsReturnsTheCollinearInteriorPoints() throws InterruptedException {
         // p0..p3 lie on the same meridian, so the interior points carry no shape information
         assertArrayEquals(new int[]{1, 2}, route(p0, p1, p2, p3).getInsignificantPositions(1000.0));
+    }
+
+    @Test
+    public void getPositionsWithSpeedZeroFindsExactMatches() {
+        Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, null, "p0"); // speed null
+        Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, 1.0, null, "p1"); // speed 1.0
+        Wgs84Position p2 = new Wgs84Position(0.0, 2.0, null, 0.0, null, "p2"); // speed 0.0 (pause)
+        Wgs84Position p3 = new Wgs84Position(0.0, 3.0, null, 0.0, null, "p3"); // speed 0.0 (pause)
+        Wgs84Position p4 = new Wgs84Position(0.0, 4.0, null, 5.0, null, "p4"); // speed 5.0
+        Wgs84Route route = route(p0, p1, p2, p3, p4);
+
+        assertArrayEquals(new int[]{2, 3}, route.getPositionsWithSpeedZero());
+    }
+
+    @Test
+    public void getPositionsWithSpeedZeroReturnsEmptyArrayWhenNoneMatch() {
+        Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, null, "p0"); // speed null
+        Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, 1.0, null, "p1"); // speed 1.0
+        Wgs84Position p2 = new Wgs84Position(0.0, 2.0, null, 5.0, null, "p2"); // speed 5.0
+        Wgs84Route route = route(p0, p1, p2);
+
+        assertArrayEquals(new int[0], route.getPositionsWithSpeedZero());
+    }
+
+    @Test
+    public void shiftTimesAfterPausesShiftsOnlyPositionsAfterTheBlock() {
+        Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, fromMillis(0), "p0");
+        Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, 0.0, fromMillis(10000), "p1"); // pause
+        Wgs84Position p2 = new Wgs84Position(0.0, 2.0, null, 0.0, fromMillis(40000), "p2"); // pause
+        Wgs84Position p3 = new Wgs84Position(0.0, 3.0, null, null, fromMillis(50000), "p3");
+        Wgs84Route route = route(p0, p1, p2, p3);
+
+        // Pause block = indices {1,2} (times 10s..40s, duration 30s)
+        route.shiftTimesAfterPauses(new int[]{1, 2});
+
+        // Position 0 unchanged, position 3 shifted back by 30s (50s - 30s = 20s)
+        assertEquals(0, route.getPosition(0).getTime().getTimeInMillis());
+        assertEquals(10000, route.getPosition(1).getTime().getTimeInMillis()); // unchanged
+        assertEquals(40000, route.getPosition(2).getTime().getTimeInMillis()); // unchanged
+        assertEquals(20000, route.getPosition(3).getTime().getTimeInMillis()); // 50s - 30s = 20s
+    }
+
+    @Test
+    public void shiftTimesAfterPausesHandlesMultipleBlocksCumulatively() {
+        Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, fromMillis(0), "p0");
+        Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, 0.0, fromMillis(10000), "p1"); // pause block 1
+        Wgs84Position p2 = new Wgs84Position(0.0, 2.0, null, 0.0, fromMillis(20000), "p2"); // pause block 1
+        Wgs84Position p3 = new Wgs84Position(0.0, 3.0, null, null, fromMillis(30000), "p3");
+        Wgs84Position p4 = new Wgs84Position(0.0, 4.0, null, 0.0, fromMillis(50000), "p4"); // pause block 2
+        Wgs84Position p5 = new Wgs84Position(0.0, 5.0, null, null, fromMillis(60000), "p5");
+        Wgs84Route route = route(p0, p1, p2, p3, p4, p5);
+
+        // Pause block 1 = indices {1,2} (times 10s..20s, duration 10s)
+        // Pause block 2 = indices {4} (times 50s, duration 0s for single point)
+        // Note: single-point blocks have first=last, so duration = 0
+        route.shiftTimesAfterPauses(new int[]{1, 2, 4});
+
+        // Position 0 unchanged
+        assertEquals(0, route.getPosition(0).getTime().getTimeInMillis());
+        // Positions 1,2 unchanged (about to be deleted)
+        assertEquals(10000, route.getPosition(1).getTime().getTimeInMillis());
+        assertEquals(20000, route.getPosition(2).getTime().getTimeInMillis());
+        // Position 3 shifted by block 1's duration (30s - 10s = 20s)
+        assertEquals(20000, route.getPosition(3).getTime().getTimeInMillis());
+        // Position 4 unchanged (about to be deleted)
+        assertEquals(50000, route.getPosition(4).getTime().getTimeInMillis());
+        // Position 5 shifted by block 1's duration (60s - 10s = 50s)
+        assertEquals(50000, route.getPosition(5).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void shiftTimesAfterPausesSkipsBlockWithMissingTime() {
+        Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, fromMillis(0), "p0");
+        Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, 0.0, null, "p1"); // pause, no time
+        Wgs84Position p2 = new Wgs84Position(0.0, 2.0, null, 0.0, fromMillis(20000), "p2"); // pause
+        Wgs84Position p3 = new Wgs84Position(0.0, 3.0, null, null, fromMillis(30000), "p3");
+        Wgs84Route route = route(p0, p1, p2, p3);
+
+        // Pause block = indices {1,2}, but position 1 has no time
+        route.shiftTimesAfterPauses(new int[]{1, 2});
+
+        // No times should have changed
+        assertEquals(0, route.getPosition(0).getTime().getTimeInMillis());
+        assertNull(route.getPosition(1).getTime());
+        assertEquals(20000, route.getPosition(2).getTime().getTimeInMillis());
+        assertEquals(30000, route.getPosition(3).getTime().getTimeInMillis());
+    }
+
+    @Test
+    public void shiftTimesAfterPausesIsNoOpForEmptyIndices() {
+        Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, fromMillis(0), "p0");
+        Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, null, fromMillis(10000), "p1");
+        Wgs84Route route = route(p0, p1);
+
+        route.shiftTimesAfterPauses(new int[0]);
+
+        // No times should have changed
+        assertEquals(0, route.getPosition(0).getTime().getTimeInMillis());
+        assertEquals(10000, route.getPosition(1).getTime().getTimeInMillis());
     }
 
     @Test
