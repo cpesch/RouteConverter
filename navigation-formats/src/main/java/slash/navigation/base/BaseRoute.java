@@ -291,7 +291,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                     P position = positions.get(i);
                     if (position.hasTime()) {
                         CompactCalendar existingTime = position.getTime();
-                        long newMillis = existingTime.getTimeInMillis() - durationMillis;
+                        long newMillis = existingTime.getTimeInMillis() - durationMillis - shiftSoFar;
                         position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
                     }
                 }
