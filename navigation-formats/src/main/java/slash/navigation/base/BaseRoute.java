@@ -270,7 +270,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
 
         // Process each contiguous block of indices
         ContinousRange range = new ContinousRange(pauseIndicesSortedAscending, new RangeOperation() {
-            private long cumulativeShift = 0;
+            private long totalShiftSoFar = 0;
 
             @Override
             public void performOnIndex(int index) {
@@ -291,7 +291,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                     return;
 
                 // Compute the duration of this pause block
-                long durationMillis = last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
+                long currentBlockDuration = last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
 
                 // Find the end of the non-pause region after this block
                 // (the next pause index, or end of positions)
@@ -301,17 +301,19 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                 }
 
                 // Shift only the non-pause positions between this block and the next pause block
+                // Each position is shifted by: total shift from all previous blocks + this block's duration
+                long shiftForThisBlock = totalShiftSoFar + currentBlockDuration;
                 for (int i = lastIndex + 1; i < endOfRegion; i++) {
                     P position = positions.get(i);
                     if (position.hasTime()) {
                         CompactCalendar existingTime = position.getTime();
-                        long newMillis = existingTime.getTimeInMillis() - cumulativeShift - durationMillis;
+                        long newMillis = existingTime.getTimeInMillis() - shiftForThisBlock;
                         position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
                     }
                 }
 
                 // Accumulate the total shift for subsequent regions
-                cumulativeShift += durationMillis;
+                totalShiftSoFar += currentBlockDuration;
             }
 
             @Override
