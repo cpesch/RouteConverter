@@ -309,8 +309,12 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
             // Compute the duration of this pause block
             long currentBlockDuration = last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
 
+            // Accumulate the total shift BEFORE applying it (this ensures the current block's duration
+            // is included when shifting positions after this block)
+            totalShiftSoFar += currentBlockDuration;
+
             // Shift all non-pause positions after this block by the cumulative total shift
-            // (this ensures positions after multiple pause blocks get shifted by the total duration of ALL preceding blocks)
+            // (this ensures positions after multiple pause blocks get shifted by the total duration of ALL preceding blocks including this one)
             for (int i = to + 1; i < positions.size(); i++) {
                 P position = positions.get(i);
                 // Skip positions that are part of the pause indices
@@ -323,9 +327,6 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                     position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
                 }
             }
-
-            // Accumulate the total shift for subsequent blocks
-            totalShiftSoFar += currentBlockDuration;
         }
     }
 
