@@ -889,6 +889,10 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         getConvertPanel().shiftTimesAfterPauses(indices);
     }
 
+    public void shiftTimes() {
+        getConvertPanel().shiftTimes();
+    }
+
     // map view related helpers
 
     public boolean isMapViewAvailable() {

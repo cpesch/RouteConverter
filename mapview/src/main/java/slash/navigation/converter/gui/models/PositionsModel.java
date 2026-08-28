@@ -75,6 +75,7 @@ public interface PositionsModel extends TableModel {
     void revert(int[] rowIndices);
 
     void shiftTimesAfterPauses(int[] indices);
+    void shiftTimes();
 
     void top(int[] rowIndices);
     void up(int[] rowIndices, int delta);

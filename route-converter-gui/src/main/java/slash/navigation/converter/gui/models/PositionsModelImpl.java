@@ -152,6 +152,11 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         fireTableModified();
     }
 
+    public void shiftTimes() {
+        getRoute().shiftTimes();
+        fireTableModified();
+    }
+
     public int[] getInsignificantPositions(double threshold) throws InterruptedException {
         return getRoute().getInsignificantPositions(threshold);
     }

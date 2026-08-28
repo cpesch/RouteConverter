@@ -255,6 +255,24 @@ public class BaseRouteTest {
     }
 
     @Test
+    public void shiftTimesAutomaticallyDetectsAndShiftsAfterPauses() {
+        Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, fromMillis(0), "p0");
+        Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, 0.0, fromMillis(10000), "p1"); // pause
+        Wgs84Position p2 = new Wgs84Position(0.0, 2.0, null, 0.0, fromMillis(40000), "p2"); // pause
+        Wgs84Position p3 = new Wgs84Position(0.0, 3.0, null, null, fromMillis(50000), "p3");
+        Wgs84Route route = route(p0, p1, p2, p3);
+
+        // shiftTimes() should automatically detect pause positions (speed = 0)
+        route.shiftTimes();
+
+        // Position 0 unchanged, position 3 shifted back by 30s (50s - 30s = 20s)
+        assertEquals(0, route.getPosition(0).getTime().getTimeInMillis());
+        assertEquals(10000, route.getPosition(1).getTime().getTimeInMillis()); // unchanged
+        assertEquals(40000, route.getPosition(2).getTime().getTimeInMillis()); // unchanged
+        assertEquals(20000, route.getPosition(3).getTime().getTimeInMillis()); // 50s - 30s = 20s
+    }
+
+    @Test
     public void getDistanceDifferenceIsTheStepFromThePredecessor() {
         Wgs84Route route = route(p0, p1, p2, p3);
 

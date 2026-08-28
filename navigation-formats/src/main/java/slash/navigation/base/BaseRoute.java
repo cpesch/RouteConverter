@@ -320,6 +320,16 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         range.performMonotonicallyIncreasing();
     }
 
+    /**
+     * Automatically detects pause positions (speed = 0) and shifts timestamps
+     * of positions after each contiguous pause block to compensate for deleted pause durations.
+     * This method is designed to be called after any delete operation to maintain time continuity.
+     */
+    public void shiftTimes() {
+        int[] pauseIndices = getPositionsWithSpeedZero();
+        shiftTimesAfterPauses(pauseIndices);
+    }
+
     public int[] getInsignificantPositions(double threshold) throws InterruptedException {
         // snapshot: this may run on a worker thread (see DeletePositionsDialog) while the
         // EDT keeps the live position list mutable, so a stable copy avoids computing

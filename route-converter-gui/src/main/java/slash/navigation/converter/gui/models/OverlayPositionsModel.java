@@ -402,4 +402,8 @@ public class OverlayPositionsModel implements PositionsModel {
     public void shiftTimesAfterPauses(int[] indices) {
         delegate.shiftTimesAfterPauses(indices);
     }
+
+    public void shiftTimes() {
+        delegate.shiftTimes();
+    }
 }

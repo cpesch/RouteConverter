@@ -371,4 +371,12 @@ public class UndoPositionsModel implements PositionsModel {
     void bottomUp(int[] rows) {
         delegate.bottomUp(rows);
     }
+
+    public void shiftTimesAfterPauses(int[] indices) {
+        delegate.shiftTimesAfterPauses(indices);
+    }
+
+    public void shiftTimes() {
+        delegate.shiftTimes();
+    }
 }

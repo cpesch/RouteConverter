@@ -951,6 +951,10 @@ public class ConvertPanel implements PanelInTab {
         positionsModel.shiftTimesAfterPauses(indices);
     }
 
+    public void shiftTimes() {
+        positionsModel.shiftTimes();
+    }
+
     public void renamePositionList(String name) {
         formatAndRoutesModel.renamePositionList(name);
     }

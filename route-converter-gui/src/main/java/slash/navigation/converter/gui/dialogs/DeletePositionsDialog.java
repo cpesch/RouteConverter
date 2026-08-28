@@ -274,11 +274,10 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void deletePositions() {
-        if (checkBoxShiftTimes.isSelected()) {
-            int[] selectedRows = BaseRouteConverter.getInstance().getConvertPanel().getPositionsView().getSelectedRows();
-            BaseRouteConverter.getInstance().shiftTimesAfterPauses(selectedRows);
-        }
         Application.getInstance().getContext().getActionManager().run("delete-position");
+        if (checkBoxShiftTimes.isSelected()) {
+            BaseRouteConverter.getInstance().shiftTimes();
+        }
         handlePositionsUpdate();
     }
 
