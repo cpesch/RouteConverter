@@ -100,7 +100,7 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
         throw new UnsupportedOperationException();
     }
 
-    public int[] getPositionsWithSpeedZero() {
+    public int[] getPositionsWithSpeedBelowOrEqualTo(double kmh) {
         throw new UnsupportedOperationException();
     }
 
@@ -186,9 +186,5 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
 
     public void shiftTimesAfterPauses(int[] indices) {
         getDelegate().shiftTimesAfterPauses(indices);
-    }
-
-    public void shiftTimes() {
-        getDelegate().shiftTimes();
     }
 }

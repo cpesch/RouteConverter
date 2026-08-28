@@ -240,13 +240,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return toArray(result);
     }
 
-    public int[] getPositionsWithSpeedZero() {
+    public int[] getPositionsWithSpeedBelowOrEqualTo(double kmh) {
         List<P> positions = getPositions();
         List<Integer> result = new ArrayList<>();
         for (int i = 0; i < positions.size(); i++) {
             P next = positions.get(i);
             Double speed = next.getSpeed();
-            if (speed != null && speed == 0.0)
+            if (speed != null && speed <= kmh)
                 result.add(i);
         }
         return toArray(result);
@@ -260,84 +260,51 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (positions.isEmpty())
             return;
 
-        // Convert pause indices to a Set for efficient lookup
-        java.util.Set<Integer> pauseIndexSet = new java.util.HashSet<>();
-        for (int index : pauseIndicesSortedAscending) {
-            pauseIndexSet.add(index);
-        }
+        int[] sorted = pauseIndicesSortedAscending.clone();
+        java.util.Arrays.sort(sorted);
 
-        // Process each contiguous block of indices
-        // Inline logic from ContinousRange to avoid dependency on common-gui
-        java.util.Arrays.sort(pauseIndicesSortedAscending);
-        long totalShiftSoFar = 0;
-
-        // Find contiguous blocks
-        java.util.List<java.util.List<Integer>> ranges = new java.util.ArrayList<>();
-        java.util.List<Integer> currentRange = new java.util.ArrayList<>();
-        for (int index : pauseIndicesSortedAscending) {
-            if (currentRange.isEmpty() || index == currentRange.get(currentRange.size() - 1) + 1) {
-                currentRange.add(index);
-            } else {
-                ranges.add(currentRange);
-                currentRange = new java.util.ArrayList<>();
-                currentRange.add(index);
+        // group into contiguous blocks, each as {from, to}
+        java.util.List<int[]> blocks = new java.util.ArrayList<>();
+        int i = 0;
+        while (i < sorted.length) {
+            int from = sorted[i];
+            int to = from;
+            while (i + 1 < sorted.length && sorted[i + 1] == to + 1) {
+                to = sorted[++i];
             }
+            blocks.add(new int[]{from, to});
+            i++;
         }
-        ranges.add(currentRange);
 
-        // Process each contiguous block
-        for (java.util.List<Integer> range : ranges) {
-            if (range.isEmpty())
-                continue;
-
-            int firstIndex = range.get(0);
-            int lastIndex = range.get(range.size() - 1);
-            int from = Math.min(firstIndex, lastIndex);
-            int to = Math.max(firstIndex, lastIndex);
-
-            // Check bounds
-            if (from >= positions.size() || to >= positions.size() || from < 0 || to < 0)
+        // Each position is shifted exactly once, by the cumulative duration of every
+        // pause block that lies fully before it — so a position between block 1 and
+        // block 2 is shifted by block 1's duration only, positions after block 2 by
+        // both. Shifting only up to the NEXT block's start (not to the end of the
+        // route) on every iteration is what keeps a later block from re-shifting
+        // positions an earlier iteration already moved.
+        long cumulativeShift = 0;
+        for (int b = 0; b < blocks.size(); b++) {
+            int[] block = blocks.get(b);
+            int from = block[0];
+            int to = block[1];
+            if (from < 0 || to >= positions.size())
                 continue;
 
             P first = positions.get(from);
             P last = positions.get(to);
+            if (first.hasTime() && last.hasTime())
+                cumulativeShift += last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
 
-            // Skip this block if either endpoint has no time
-            if (!first.hasTime() || !last.hasTime())
-                continue;
-
-            // Compute the duration of this pause block
-            long currentBlockDuration = last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
-
-            // Accumulate the total shift BEFORE applying it (this ensures the current block's duration
-            // is included when shifting positions after this block)
-            totalShiftSoFar += currentBlockDuration;
-
-            // Shift all non-pause positions after this block by the cumulative total shift
-            // (this ensures positions after multiple pause blocks get shifted by the total duration of ALL preceding blocks including this one)
-            for (int i = to + 1; i < positions.size(); i++) {
-                P position = positions.get(i);
-                // Skip positions that are part of the pause indices
-                if (pauseIndexSet.contains(i)) {
-                    continue;
-                }
+            int shiftUntil = (b + 1 < blocks.size()) ? blocks.get(b + 1)[0] : positions.size();
+            for (int idx = to + 1; idx < shiftUntil; idx++) {
+                P position = positions.get(idx);
                 if (position.hasTime()) {
                     CompactCalendar existingTime = position.getTime();
-                    long newMillis = existingTime.getTimeInMillis() - totalShiftSoFar;
+                    long newMillis = existingTime.getTimeInMillis() - cumulativeShift;
                     position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
                 }
             }
         }
-    }
-
-    /**
-     * Automatically detects pause positions (speed = 0) and shifts timestamps
-     * of positions after each contiguous pause block to compensate for deleted pause durations.
-     * This method is designed to be called after any delete operation to maintain time continuity.
-     */
-    public void shiftTimes() {
-        int[] pauseIndices = getPositionsWithSpeedZero();
-        shiftTimesAfterPauses(pauseIndices);
     }
 
     public int[] getInsignificantPositions(double threshold) throws InterruptedException {

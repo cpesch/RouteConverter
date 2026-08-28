@@ -372,15 +372,11 @@ public class UndoPositionsModel implements PositionsModel {
         delegate.bottomUp(rows);
     }
 
-    public int[] getPositionsWithSpeedZero() {
-        return delegate.getPositionsWithSpeedZero();
+    public int[] getPositionsWithSpeedBelowOrEqualTo(double kmh) {
+        return delegate.getPositionsWithSpeedBelowOrEqualTo(kmh);
     }
 
     public void shiftTimesAfterPauses(int[] indices) {
         delegate.shiftTimesAfterPauses(indices);
-    }
-
-    public void shiftTimes() {
-        delegate.shiftTimes();
     }
 }

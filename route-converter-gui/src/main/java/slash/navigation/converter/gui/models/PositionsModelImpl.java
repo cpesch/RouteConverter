@@ -143,17 +143,12 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
         return getRoute().getPositionsWithinDistanceToPredecessor(distance);
     }
 
-    public int[] getPositionsWithSpeedZero() {
-        return getRoute().getPositionsWithSpeedZero();
+    public int[] getPositionsWithSpeedBelowOrEqualTo(double kmh) {
+        return getRoute().getPositionsWithSpeedBelowOrEqualTo(kmh);
     }
 
     public void shiftTimesAfterPauses(int[] indices) {
         getRoute().shiftTimesAfterPauses(indices);
-        fireTableModified();
-    }
-
-    public void shiftTimes() {
-        getRoute().shiftTimes();
         fireTableModified();
     }
 

@@ -156,7 +156,20 @@ public class BaseRouteTest {
     }
 
     @Test
-    public void getPositionsWithSpeedZeroFindsExactMatches() {
+    public void getPositionsWithSpeedBelowOrEqualToFindsMatchesAtAndBelowThreshold() {
+        Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, null, "p0"); // speed null
+        Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, 1.0, null, "p1"); // speed 1.0, at threshold
+        Wgs84Position p2 = new Wgs84Position(0.0, 2.0, null, 0.0, null, "p2"); // speed 0.0, below threshold
+        Wgs84Position p3 = new Wgs84Position(0.0, 3.0, null, 0.0, null, "p3"); // speed 0.0, below threshold
+        Wgs84Position p4 = new Wgs84Position(0.0, 4.0, null, 5.0, null, "p4"); // speed 5.0, above threshold
+        Wgs84Route route = route(p0, p1, p2, p3, p4);
+
+        assertArrayEquals(new int[]{1, 2, 3}, route.getPositionsWithSpeedBelowOrEqualTo(1.0));
+    }
+
+    @Test
+    public void getPositionsWithSpeedBelowOrEqualToZeroFindsOnlyExactZero() {
+        // threshold 0.0 preserves the original exact-pause behaviour
         Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, null, "p0"); // speed null
         Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, 1.0, null, "p1"); // speed 1.0
         Wgs84Position p2 = new Wgs84Position(0.0, 2.0, null, 0.0, null, "p2"); // speed 0.0 (pause)
@@ -164,17 +177,17 @@ public class BaseRouteTest {
         Wgs84Position p4 = new Wgs84Position(0.0, 4.0, null, 5.0, null, "p4"); // speed 5.0
         Wgs84Route route = route(p0, p1, p2, p3, p4);
 
-        assertArrayEquals(new int[]{2, 3}, route.getPositionsWithSpeedZero());
+        assertArrayEquals(new int[]{2, 3}, route.getPositionsWithSpeedBelowOrEqualTo(0.0));
     }
 
     @Test
-    public void getPositionsWithSpeedZeroReturnsEmptyArrayWhenNoneMatch() {
+    public void getPositionsWithSpeedBelowOrEqualToReturnsEmptyArrayWhenNoneMatch() {
         Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, null, "p0"); // speed null
         Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, 1.0, null, "p1"); // speed 1.0
         Wgs84Position p2 = new Wgs84Position(0.0, 2.0, null, 5.0, null, "p2"); // speed 5.0
         Wgs84Route route = route(p0, p1, p2);
 
-        assertArrayEquals(new int[0], route.getPositionsWithSpeedZero());
+        assertArrayEquals(new int[0], route.getPositionsWithSpeedBelowOrEqualTo(0.0));
     }
 
     @Test
@@ -252,24 +265,6 @@ public class BaseRouteTest {
         // No times should have changed
         assertEquals(0, route.getPosition(0).getTime().getTimeInMillis());
         assertEquals(10000, route.getPosition(1).getTime().getTimeInMillis());
-    }
-
-    @Test
-    public void shiftTimesAutomaticallyDetectsAndShiftsAfterPauses() {
-        Wgs84Position p0 = new Wgs84Position(0.0, 0.0, null, null, fromMillis(0), "p0");
-        Wgs84Position p1 = new Wgs84Position(0.0, 1.0, null, 0.0, fromMillis(10000), "p1"); // pause
-        Wgs84Position p2 = new Wgs84Position(0.0, 2.0, null, 0.0, fromMillis(40000), "p2"); // pause
-        Wgs84Position p3 = new Wgs84Position(0.0, 3.0, null, null, fromMillis(50000), "p3");
-        Wgs84Route route = route(p0, p1, p2, p3);
-
-        // shiftTimes() should automatically detect pause positions (speed = 0)
-        route.shiftTimes();
-
-        // Position 0 unchanged, position 3 shifted back by 30s (50s - 30s = 20s)
-        assertEquals(0, route.getPosition(0).getTime().getTimeInMillis());
-        assertEquals(10000, route.getPosition(1).getTime().getTimeInMillis()); // unchanged
-        assertEquals(40000, route.getPosition(2).getTime().getTimeInMillis()); // unchanged
-        assertEquals(20000, route.getPosition(3).getTime().getTimeInMillis()); // 50s - 30s = 20s
     }
 
     @Test

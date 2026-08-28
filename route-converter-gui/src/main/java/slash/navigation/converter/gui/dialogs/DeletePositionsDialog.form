@@ -141,12 +141,24 @@
                   <component id="pause-label" class="javax.swing.JLabel">
                     <constraints/>
                     <properties>
-                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-pause"/>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-speed"/>
+                    </properties>
+                  </component>
+                  <component id="speed-field" class="javax.swing.JTextField" binding="textFieldSpeed">
+                    <constraints/>
+                    <properties>
+                      <columns value="5"/>
+                    </properties>
+                  </component>
+                  <component id="speed-unit-label" class="javax.swing.JLabel">
+                    <constraints/>
+                    <properties>
+                      <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="delete-select-by-speed-kmh"/>
                     </properties>
                   </component>
                 </children>
               </grid>
-              <component id="pause-button" class="javax.swing.JButton" binding="buttonSelectByPause">
+              <component id="pause-button" class="javax.swing.JButton" binding="buttonSelectBySpeed">
                 <constraints>
                   <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>

@@ -248,8 +248,8 @@ public class OverlayPositionsModel implements PositionsModel {
         return delegate.getPositionsWithinDistanceToPredecessor(distance);
     }
 
-    public int[] getPositionsWithSpeedZero() {
-        return delegate.getPositionsWithSpeedZero();
+    public int[] getPositionsWithSpeedBelowOrEqualTo(double kmh) {
+        return delegate.getPositionsWithSpeedBelowOrEqualTo(kmh);
     }
 
     public int[] getInsignificantPositions(double threshold) throws InterruptedException {
@@ -401,9 +401,5 @@ public class OverlayPositionsModel implements PositionsModel {
 
     public void shiftTimesAfterPauses(int[] indices) {
         delegate.shiftTimesAfterPauses(indices);
-    }
-
-    public void shiftTimes() {
-        delegate.shiftTimes();
     }
 }

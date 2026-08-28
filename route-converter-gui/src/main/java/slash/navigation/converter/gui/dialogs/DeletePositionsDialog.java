@@ -69,10 +69,11 @@ public class DeletePositionsDialog extends SimpleDialog {
     private JTextField textFieldDistance;
     private JTextField textFieldOrder;
     private JTextField textFieldSignificance;
+    private JTextField textFieldSpeed;
     private JButton buttonSelectByDistance;
     private JButton buttonSelectByOrder;
     private JButton buttonSelectBySignificance;
-    private JButton buttonSelectByPause;
+    private JButton buttonSelectBySpeed;
     private JButton buttonDeletePositions;
     private JButton buttonClearSelection;
     private JButton buttonHelp;
@@ -81,6 +82,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     private final DoubleDocument distance;
     private final IntegerDocument order;
     private final DoubleDocument threshold;
+    private final DoubleDocument speed;
     // EDT-confined: every read/write of this field happens on the EDT (button click,
     // close(), and the worker's invokeLater), so no volatile/synchronization is needed
     private Thread selectBySignificanceWorker;
@@ -119,10 +121,10 @@ public class DeletePositionsDialog extends SimpleDialog {
             }
         });
 
-        setMnemonic(buttonSelectByPause, "select-mnemonic");
-        buttonSelectByPause.addActionListener(new DialogAction(this) {
+        setMnemonic(buttonSelectBySpeed, "select-mnemonic");
+        buttonSelectBySpeed.addActionListener(new DialogAction(this) {
             public void run() {
-                selectByPause();
+                selectBySpeed();
             }
         });
 
@@ -159,6 +161,8 @@ public class DeletePositionsDialog extends SimpleDialog {
         textFieldOrder.setDocument(order);
         threshold = new DoubleDocument(r.getSelectBySignificancePreference());
         textFieldSignificance.setDocument(threshold);
+        speed = new DoubleDocument(r.getSelectBySpeedPreference());
+        textFieldSpeed.setDocument(speed);
 
         checkBoxShiftTimes.setSelected(r.getDeletePositionsShiftTimesPreference());
 
@@ -217,10 +221,15 @@ public class DeletePositionsDialog extends SimpleDialog {
         }
     }
 
-    private void selectByPause() {
-        int selectedRowCount = BaseRouteConverter.getInstance().selectPositionsWithSpeedZero();
-        labelSelection.setText(
-                MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-pause-result"), selectedRowCount));
+    private void selectBySpeed() {
+        double speed = this.speed.getDouble();
+        if (speed >= 0) {
+            int selectedRowCount = BaseRouteConverter.getInstance().selectPositionsWithSpeedBelowOrEqualTo(speed);
+            labelSelection.setText(
+                    MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-speed-result"), selectedRowCount,
+                            speed));
+            savePreferences();
+        }
     }
 
     private void selectBySignificance() {
@@ -274,10 +283,11 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void deletePositions() {
-        Application.getInstance().getContext().getActionManager().run("delete-position");
         if (checkBoxShiftTimes.isSelected()) {
-            BaseRouteConverter.getInstance().shiftTimes();
+            int[] selectedRows = BaseRouteConverter.getInstance().getConvertPanel().getPositionsView().getSelectedRows();
+            BaseRouteConverter.getInstance().shiftTimesAfterPauses(selectedRows);
         }
+        Application.getInstance().getContext().getActionManager().run("delete-position");
         handlePositionsUpdate();
     }
 
@@ -286,6 +296,7 @@ public class DeletePositionsDialog extends SimpleDialog {
         r.setSelectByDistancePreference(distance.getDouble());
         r.setSelectByOrderPreference(order.getInt());
         r.setSelectBySignificancePreference(threshold.getDouble());
+        r.setSelectBySpeedPreference(speed.getDouble());
         r.setDeletePositionsShiftTimesPreference(checkBoxShiftTimes.isSelected());
     }
 
@@ -392,12 +403,19 @@ public class DeletePositionsDialog extends SimpleDialog {
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         this.$$$loadLabelText$$$(label5,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-pause"));
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-speed"));
         panel7.add(label5);
-        buttonSelectByPause = new JButton();
-        this.$$$loadButtonText$$$(buttonSelectByPause,
+        textFieldSpeed = new JTextField();
+        textFieldSpeed.setColumns(5);
+        panel7.add(textFieldSpeed);
+        final JLabel label13 = new JLabel();
+        this.$$$loadLabelText$$$(label13,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-speed-kmh"));
+        panel7.add(label13);
+        buttonSelectBySpeed = new JButton();
+        this.$$$loadButtonText$$$(buttonSelectBySpeed,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select"));
-        panel2.add(buttonSelectByPause, new GridConstraints(4, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel2.add(buttonSelectBySpeed, new GridConstraints(4, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         final JPanel panel8 = new JPanel();

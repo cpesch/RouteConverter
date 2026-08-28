@@ -914,8 +914,8 @@ public class ConvertPanel implements PanelInTab {
         return indices.length;
     }
 
-    public int selectPositionsWithSpeedZero() {
-        int[] indices = positionsModel.getPositionsWithSpeedZero();
+    public int selectPositionsWithSpeedBelowOrEqualTo(double kmh) {
+        int[] indices = positionsModel.getPositionsWithSpeedBelowOrEqualTo(kmh);
         selectPositions(indices);
         return indices.length;
     }
@@ -949,10 +949,6 @@ public class ConvertPanel implements PanelInTab {
 
     public void shiftTimesAfterPauses(int[] indices) {
         positionsModel.shiftTimesAfterPauses(indices);
-    }
-
-    public void shiftTimes() {
-        positionsModel.shiftTimes();
     }
 
     public void renamePositionList(String name) {
