@@ -81,7 +81,7 @@
               </grid>
               <component id="8b2ef" class="javax.swing.JButton" binding="buttonSelectByDistance">
                 <constraints>
-                  <grid row="0" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="0" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="select"/>
@@ -89,7 +89,7 @@
               </component>
               <component id="7a0e" class="javax.swing.JButton" binding="buttonSelectByOrder">
                 <constraints>
-                  <grid row="2" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="2" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="select"/>
@@ -148,7 +148,7 @@
               </grid>
               <component id="pause-button" class="javax.swing.JButton" binding="buttonSelectByPause">
                 <constraints>
-                  <grid row="4" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="4" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="select"/>
@@ -203,7 +203,7 @@
               </grid>
               <component id="e66e5" class="javax.swing.JButton" binding="buttonSelectBySignificance">
                 <constraints>
-                  <grid row="6" column="3" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
+                  <grid row="6" column="4" row-span="1" col-span="1" vsize-policy="0" hsize-policy="3" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
                 </constraints>
                 <properties>
                   <text resource-bundle="slash/navigation/converter/gui/RouteConverter" key="select"/>
