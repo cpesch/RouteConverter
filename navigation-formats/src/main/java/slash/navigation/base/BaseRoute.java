@@ -303,7 +303,7 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
                     }
                     if (position.hasTime()) {
                         CompactCalendar existingTime = position.getTime();
-                        long newMillis = existingTime.getTimeInMillis() - currentBlockDuration;
+                        long newMillis = existingTime.getTimeInMillis() - totalShiftSoFar;
                         position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
                     }
                 }
