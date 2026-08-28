@@ -21,8 +21,6 @@
 package slash.navigation.base;
 
 import slash.common.type.CompactCalendar;
-import slash.navigation.gui.events.ContinousRange;
-import slash.navigation.gui.events.RangeOperation;
 import slash.navigation.bcr.BcrFormat;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
@@ -269,55 +267,66 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         }
 
         // Process each contiguous block of indices
-        ContinousRange range = new ContinousRange(pauseIndicesSortedAscending, new RangeOperation() {
-            private long totalShiftSoFar = 0;
+        // Inline logic from ContinousRange to avoid dependency on common-gui
+        java.util.Arrays.sort(pauseIndicesSortedAscending);
+        long totalShiftSoFar = 0;
 
-            @Override
-            public void performOnIndex(int index) {
-                // No-op: indices are processed as blocks via performOnRange
+        // Find contiguous blocks
+        java.util.List<java.util.List<Integer>> ranges = new java.util.ArrayList<>();
+        java.util.List<Integer> currentRange = new java.util.ArrayList<>();
+        for (int index : pauseIndicesSortedAscending) {
+            if (currentRange.isEmpty() || index == currentRange.get(currentRange.size() - 1) + 1) {
+                currentRange.add(index);
+            } else {
+                ranges.add(currentRange);
+                currentRange = new java.util.ArrayList<>();
+                currentRange.add(index);
             }
+        }
+        ranges.add(currentRange);
 
-            @Override
-            public void performOnRange(int firstIndex, int lastIndex) {
-                // Check bounds
-                if (firstIndex >= positions.size() || lastIndex >= positions.size() || firstIndex < 0 || lastIndex < 0)
-                    return;
+        // Process each contiguous block
+        for (java.util.List<Integer> range : ranges) {
+            if (range.isEmpty())
+                continue;
 
-                P first = positions.get(firstIndex);
-                P last = positions.get(lastIndex);
+            int firstIndex = range.get(0);
+            int lastIndex = range.get(range.size() - 1);
+            int from = Math.min(firstIndex, lastIndex);
+            int to = Math.max(firstIndex, lastIndex);
 
-                // Skip this block if either endpoint has no time
-                if (!first.hasTime() || !last.hasTime())
-                    return;
+            // Check bounds
+            if (from >= positions.size() || to >= positions.size() || from < 0 || to < 0)
+                continue;
 
-                // Compute the duration of this pause block
-                long currentBlockDuration = last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
+            P first = positions.get(from);
+            P last = positions.get(to);
 
-                // Shift all non-pause positions after this block by the cumulative total shift
-                // (this ensures positions after multiple pause blocks get shifted by the total duration of ALL preceding blocks)
-                for (int i = lastIndex + 1; i < positions.size(); i++) {
-                    P position = positions.get(i);
-                    // Skip positions that are part of the pause indices
-                    if (pauseIndexSet.contains(i)) {
-                        continue;
-                    }
-                    if (position.hasTime()) {
-                        CompactCalendar existingTime = position.getTime();
-                        long newMillis = existingTime.getTimeInMillis() - totalShiftSoFar;
-                        position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
-                    }
+            // Skip this block if either endpoint has no time
+            if (!first.hasTime() || !last.hasTime())
+                continue;
+
+            // Compute the duration of this pause block
+            long currentBlockDuration = last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
+
+            // Shift all non-pause positions after this block by the cumulative total shift
+            // (this ensures positions after multiple pause blocks get shifted by the total duration of ALL preceding blocks)
+            for (int i = to + 1; i < positions.size(); i++) {
+                P position = positions.get(i);
+                // Skip positions that are part of the pause indices
+                if (pauseIndexSet.contains(i)) {
+                    continue;
                 }
-
-                // Accumulate the total shift for subsequent blocks
-                totalShiftSoFar += currentBlockDuration;
+                if (position.hasTime()) {
+                    CompactCalendar existingTime = position.getTime();
+                    long newMillis = existingTime.getTimeInMillis() - totalShiftSoFar;
+                    position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
+                }
             }
 
-            @Override
-            public boolean isInterrupted() {
-                return false;
-            }
-        });
-        range.performMonotonicallyIncreasing();
+            // Accumulate the total shift for subsequent blocks
+            totalShiftSoFar += currentBlockDuration;
+        }
     }
 
     /**
