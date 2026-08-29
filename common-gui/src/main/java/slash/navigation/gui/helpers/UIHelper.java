@@ -20,6 +20,7 @@
 package slash.navigation.gui.helpers;
 
 import javax.swing.*;
+import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.io.File;
 import java.util.MissingResourceException;
@@ -41,6 +42,25 @@ import static slash.common.system.Platform.*;
 public class UIHelper {
     private static final Preferences preferences = userNodeForPackage(UIHelper.class);
     private static final String LOOK_AND_FEEL_CLASS_PREFERENCE = "lookAndFeelClass";
+    private static final String UI_FONT_SCALE_PERCENTAGE_PREFERENCE = "uiFontScalePercentage";
+    private static final int DEFAULT_UI_FONT_SCALE_PERCENTAGE = 100;
+
+    public static int getUiFontScalePercentage() {
+        return preferences.getInt(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, DEFAULT_UI_FONT_SCALE_PERCENTAGE);
+    }
+
+    public static void setUiFontScalePercentage(int percentage) {
+        preferences.putInt(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, percentage);
+    }
+
+    public static Font scaleFont(Font font, int percentage) {
+        float newSize = Math.round(font.getSize2D() * percentage / 100f);
+        // Clamp to minimum of 1 to prevent invalid font size
+        if (newSize < 1) {
+            newSize = 1;
+        }
+        return font.deriveFont(newSize);
+    }
 
     public static void setLookAndFeel() {
         try {
@@ -48,6 +68,18 @@ public class UIHelper {
             if ("default".equals(lookAndFeelClass))
                 lookAndFeelClass = UIManager.getSystemLookAndFeelClassName();
             UIManager.setLookAndFeel(lookAndFeelClass);
+
+            int percentage = getUiFontScalePercentage();
+            if (percentage != DEFAULT_UI_FONT_SCALE_PERCENTAGE) {
+                UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+                // Iterate over a copy of keySet to avoid ConcurrentModificationException
+                for (Object key : new java.util.Vector<>(defaults.keySet())) {
+                    Object value = defaults.get(key);
+                    if (value instanceof FontUIResource) {
+                        defaults.put(key, new FontUIResource(scaleFont((Font) value, percentage)));
+                    }
+                }
+            }
         } catch (Exception e) {
             // intentionally do nothing
         }
