@@ -176,8 +176,8 @@ public class OptionsDialog extends SimpleDialog {
             Application.getInstance().setLocale(locale);
         });
 
-        spinnerUiFontScale.setModel(new SpinnerNumberModel(UIHelper.getUiFontScalePercentage(), 50, 200, 10));
-        spinnerUiFontScale.addChangeListener(e -> UIHelper.setUiFontScalePercentage((Integer) spinnerUiFontScale.getValue()));
+        spinnerUiFontScale.setModel(new SpinnerNumberModel(getUiFontScalePercentage(), 50, 200, 10));
+        spinnerUiFontScale.addChangeListener(e -> setUiFontScalePercentage((Integer) spinnerUiFontScale.getValue()));
 
         List<MapViewImplementation> mapViews = r.getAvailableMapViews();
         ComboBoxModel<MapViewImplementation> mapViewModel =
@@ -858,24 +858,24 @@ public class OptionsDialog extends SimpleDialog {
         panel3.add(separator1,
                 new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel labelUiFontScale = new JLabel();
+        this.$$$loadLabelText$$$(labelUiFontScale,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "ui-font-scale-option"));
+        panel3.add(labelUiFontScale,
+                new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        spinnerUiFontScale = new JSpinner();
+        panel3.add(spinnerUiFontScale, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
         final JLabel label3 = new JLabel();
         this.$$$loadLabelText$$$(label3,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "send-crash-reports-option"));
         panel3.add(label3,
-                new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        checkBoxSendCrashReports = new JCheckBox();
-        panel3.add(checkBoxSendCrashReports, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
-                null, 0, false));
-        final JLabel labelUiFontScale = new JLabel();
-        this.$$$loadLabelText$(labelUiFontScale,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "ui-font-scale-option"));
-        panel3.add(labelUiFontScale,
                 new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        spinnerUiFontScale = new JSpinner();
-        panel3.add(spinnerUiFontScale, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+        checkBoxSendCrashReports = new JCheckBox();
+        panel3.add(checkBoxSendCrashReports, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         final JPanel panel4 = new JPanel();
