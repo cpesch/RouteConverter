@@ -149,7 +149,13 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
 
     public void shiftTimesAfterPauses(int[] indices) {
         getRoute().shiftTimesAfterPauses(indices);
-        fireTableModified();
+        // NOT fireTableModified(): its lastRow == Integer.MAX_VALUE is JTable's signal for
+        // "the whole table changed", which clears the current selection -- and the caller
+        // (DeletePositionsDialog) still needs that selection intact for the delete that follows
+        // this call. A ranged, single-column update leaves the selection untouched.
+        int rowCount = getRowCount();
+        if (rowCount > 0)
+            fireTableRowsUpdatedInContinousRange(0, rowCount - 1, TIME_COLUMN_INDEX);
     }
 
     public int[] getInsignificantPositions(double threshold) throws InterruptedException {
