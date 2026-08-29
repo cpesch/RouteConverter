@@ -100,6 +100,10 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
         throw new UnsupportedOperationException();
     }
 
+    public int[] getPositionsWithSpeedBelowOrEqualTo(double kmh) {
+        throw new UnsupportedOperationException();
+    }
+
     public int[] getInsignificantPositions(double threshold) {
         throw new UnsupportedOperationException();
     }
@@ -178,5 +182,9 @@ public class FilteringPositionsModel<P extends NavigationPosition> extends Filte
 
     public void fireTableRowsUpdatedInContinousRange(int firstIndex, int lastIndex, int columnIndex) {
         getDelegate().fireTableRowsUpdatedInContinousRange(firstIndex, lastIndex, columnIndex);
+    }
+
+    public void shiftTimesAfterPauses(int[] indices) {
+        getDelegate().shiftTimesAfterPauses(indices);
     }
 }

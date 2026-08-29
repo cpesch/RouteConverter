@@ -240,6 +240,73 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return toArray(result);
     }
 
+    public int[] getPositionsWithSpeedBelowOrEqualTo(double kmh) {
+        List<P> positions = getPositions();
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < positions.size(); i++) {
+            P next = positions.get(i);
+            Double speed = next.getSpeed();
+            if (speed != null && speed <= kmh)
+                result.add(i);
+        }
+        return toArray(result);
+    }
+
+    public void shiftTimesAfterPauses(int[] pauseIndicesSortedAscending) {
+        if (pauseIndicesSortedAscending.length == 0)
+            return;
+
+        List<P> positions = getPositions();
+        if (positions.isEmpty())
+            return;
+
+        int[] sorted = pauseIndicesSortedAscending.clone();
+        java.util.Arrays.sort(sorted);
+
+        // group into contiguous blocks, each as {from, to}
+        java.util.List<int[]> blocks = new java.util.ArrayList<>();
+        int i = 0;
+        while (i < sorted.length) {
+            int from = sorted[i];
+            int to = from;
+            while (i + 1 < sorted.length && sorted[i + 1] == to + 1) {
+                to = sorted[++i];
+            }
+            blocks.add(new int[]{from, to});
+            i++;
+        }
+
+        // Each position is shifted exactly once, by the cumulative duration of every
+        // pause block that lies fully before it — so a position between block 1 and
+        // block 2 is shifted by block 1's duration only, positions after block 2 by
+        // both. Shifting only up to the NEXT block's start (not to the end of the
+        // route) on every iteration is what keeps a later block from re-shifting
+        // positions an earlier iteration already moved.
+        long cumulativeShift = 0;
+        for (int b = 0; b < blocks.size(); b++) {
+            int[] block = blocks.get(b);
+            int from = block[0];
+            int to = block[1];
+            if (from < 0 || to >= positions.size())
+                continue;
+
+            P first = positions.get(from);
+            P last = positions.get(to);
+            if (first.hasTime() && last.hasTime())
+                cumulativeShift += last.getTime().getTimeInMillis() - first.getTime().getTimeInMillis();
+
+            int shiftUntil = (b + 1 < blocks.size()) ? blocks.get(b + 1)[0] : positions.size();
+            for (int idx = to + 1; idx < shiftUntil; idx++) {
+                P position = positions.get(idx);
+                if (position.hasTime()) {
+                    CompactCalendar existingTime = position.getTime();
+                    long newMillis = existingTime.getTimeInMillis() - cumulativeShift;
+                    position.setTime(fromMillisAndTimeZone(newMillis, existingTime.getTimeZoneId()));
+                }
+            }
+        }
+    }
+
     public int[] getInsignificantPositions(double threshold) throws InterruptedException {
         // snapshot: this may run on a worker thread (see DeletePositionsDialog) while the
         // EDT keeps the live position list mutable, so a stable copy avoids computing

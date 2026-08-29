@@ -69,16 +69,20 @@ public class DeletePositionsDialog extends SimpleDialog {
     private JTextField textFieldDistance;
     private JTextField textFieldOrder;
     private JTextField textFieldSignificance;
+    private JTextField textFieldSpeed;
     private JButton buttonSelectByDistance;
     private JButton buttonSelectByOrder;
     private JButton buttonSelectBySignificance;
+    private JButton buttonSelectBySpeed;
     private JButton buttonDeletePositions;
     private JButton buttonClearSelection;
     private JButton buttonHelp;
+    private JCheckBox checkBoxShiftTimes;
     private JLabel labelDouglasPeucker;
     private final DoubleDocument distance;
     private final IntegerDocument order;
     private final DoubleDocument threshold;
+    private final DoubleDocument speed;
     // EDT-confined: every read/write of this field happens on the EDT (button click,
     // close(), and the worker's invokeLater), so no volatile/synchronization is needed
     private Thread selectBySignificanceWorker;
@@ -117,6 +121,13 @@ public class DeletePositionsDialog extends SimpleDialog {
             }
         });
 
+        setMnemonic(buttonSelectBySpeed, "select-mnemonic");
+        buttonSelectBySpeed.addActionListener(new DialogAction(this) {
+            public void run() {
+                selectBySpeed();
+            }
+        });
+
         setMnemonic(buttonClearSelection, "clear-selection-action-mnemonic");
         buttonClearSelection.addActionListener(new DialogAction(this) {
             public void run() {
@@ -150,6 +161,10 @@ public class DeletePositionsDialog extends SimpleDialog {
         textFieldOrder.setDocument(order);
         threshold = new DoubleDocument(r.getSelectBySignificancePreference());
         textFieldSignificance.setDocument(threshold);
+        speed = new DoubleDocument(r.getSelectBySpeedPreference());
+        textFieldSpeed.setDocument(speed);
+
+        checkBoxShiftTimes.setSelected(r.getDeletePositionsShiftTimesPreference());
 
         final PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
         r.getConvertPanel().getPositionsView().getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -206,6 +221,17 @@ public class DeletePositionsDialog extends SimpleDialog {
         }
     }
 
+    private void selectBySpeed() {
+        double speed = this.speed.getDouble();
+        if (speed >= 0) {
+            int selectedRowCount = BaseRouteConverter.getInstance().selectPositionsWithSpeedBelowOrEqualTo(speed);
+            labelSelection.setText(
+                    MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-speed-result"), selectedRowCount,
+                            speed));
+            savePreferences();
+        }
+    }
+
     private void selectBySignificance() {
         if (selectBySignificanceWorker != null) {
             selectBySignificanceWorker.interrupt();
@@ -257,6 +283,10 @@ public class DeletePositionsDialog extends SimpleDialog {
     }
 
     private void deletePositions() {
+        if (checkBoxShiftTimes.isSelected()) {
+            int[] selectedRows = BaseRouteConverter.getInstance().getConvertPanel().getPositionsView().getSelectedRows();
+            BaseRouteConverter.getInstance().shiftTimesAfterPauses(selectedRows);
+        }
         Application.getInstance().getContext().getActionManager().run("delete-position");
         handlePositionsUpdate();
     }
@@ -266,6 +296,8 @@ public class DeletePositionsDialog extends SimpleDialog {
         r.setSelectByDistancePreference(distance.getDouble());
         r.setSelectByOrderPreference(order.getInt());
         r.setSelectBySignificancePreference(threshold.getDouble());
+        r.setSelectBySpeedPreference(speed.getDouble());
+        r.setDeletePositionsShiftTimesPreference(checkBoxShiftTimes.isSelected());
     }
 
     private void close() {
@@ -299,13 +331,13 @@ public class DeletePositionsDialog extends SimpleDialog {
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(7, 4, new Insets(0, 0, 10, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(9, 5, new Insets(0, 0, 10, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel2.add(panel3, new GridConstraints(2, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel2.add(panel3, new GridConstraints(2, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
@@ -321,7 +353,7 @@ public class DeletePositionsDialog extends SimpleDialog {
         panel3.add(label2);
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel2.add(panel4, new GridConstraints(0, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel2.add(panel4, new GridConstraints(0, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
@@ -339,18 +371,18 @@ public class DeletePositionsDialog extends SimpleDialog {
         buttonSelectByDistance = new JButton();
         this.$$$loadButtonText$$$(buttonSelectByDistance,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select"));
-        panel2.add(buttonSelectByDistance, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel2.add(buttonSelectByDistance, new GridConstraints(0, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         buttonSelectByOrder = new JButton();
         this.$$$loadButtonText$$$(buttonSelectByOrder,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select"));
-        panel2.add(buttonSelectByOrder, new GridConstraints(2, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel2.add(buttonSelectByOrder, new GridConstraints(2, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         final JPanel panel5 = new JPanel();
         panel5.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), 5, -1));
-        panel2.add(panel5, new GridConstraints(1, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel2.add(panel5, new GridConstraints(1, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
         final JSeparator separator1 = new JSeparator();
@@ -358,7 +390,7 @@ public class DeletePositionsDialog extends SimpleDialog {
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel6 = new JPanel();
         panel6.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), 5, -1));
-        panel2.add(panel6, new GridConstraints(3, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel2.add(panel6, new GridConstraints(3, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
         final JSeparator separator2 = new JSeparator();
@@ -366,72 +398,108 @@ public class DeletePositionsDialog extends SimpleDialog {
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel7 = new JPanel();
         panel7.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        panel2.add(panel7, new GridConstraints(4, 0, 1, 3, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel2.add(panel7, new GridConstraints(4, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 60), null, null, 0, false));
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label5 = new JLabel();
         this.$$$loadLabelText$$$(label5,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-significance"));
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-speed"));
         panel7.add(label5);
-        textFieldSignificance = new JTextField();
-        textFieldSignificance.setColumns(3);
-        panel7.add(textFieldSignificance);
-        labelDouglasPeucker = new JLabel();
-        this.$$$loadLabelText$$$(labelDouglasPeucker,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-significance-meter"));
-        panel7.add(labelDouglasPeucker);
-        buttonSelectBySignificance = new JButton();
-        this.$$$loadButtonText$$$(buttonSelectBySignificance,
+        textFieldSpeed = new JTextField();
+        textFieldSpeed.setColumns(5);
+        panel7.add(textFieldSpeed);
+        final JLabel label13 = new JLabel();
+        this.$$$loadLabelText$$$(label13,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-speed-kmh"));
+        panel7.add(label13);
+        buttonSelectBySpeed = new JButton();
+        this.$$$loadButtonText$$$(buttonSelectBySpeed,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select"));
-        panel2.add(buttonSelectBySignificance,
-                new GridConstraints(4, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
-                        null, null, 0, false));
+        panel2.add(buttonSelectBySpeed, new GridConstraints(4, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
         final JPanel panel8 = new JPanel();
         panel8.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), 5, -1));
-        panel2.add(panel8, new GridConstraints(5, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel2.add(panel8, new GridConstraints(5, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
         final JSeparator separator3 = new JSeparator();
         panel8.add(separator3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        final JPanel panel9 = new JPanel();
+        panel9.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        panel2.add(panel9, new GridConstraints(6, 0, 1, 4, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 60), null, null, 0, false));
+        final JLabel label6 = new JLabel();
+        this.$$$loadLabelText$$$(label6,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-significance"));
+        panel9.add(label6);
+        textFieldSignificance = new JTextField();
+        textFieldSignificance.setColumns(3);
+        panel9.add(textFieldSignificance);
+        labelDouglasPeucker = new JLabel();
+        this.$$$loadLabelText$$$(labelDouglasPeucker,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-select-by-significance-meter"));
+        panel9.add(labelDouglasPeucker);
+        buttonSelectBySignificance = new JButton();
+        this.$$$loadButtonText$$$(buttonSelectBySignificance,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "select"));
+        panel2.add(buttonSelectBySignificance,
+                new GridConstraints(6, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                        GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null,
+                        null, null, 0, false));
+        final JPanel panel10 = new JPanel();
+        panel10.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), 5, -1));
+        panel2.add(panel10, new GridConstraints(7, 0, 1, 5, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
+        final JSeparator separator4 = new JSeparator();
+        panel10.add(separator4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         buttonHelp = new JButton();
         buttonHelp.setText("?");
         panel2.add(buttonHelp,
-                new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         buttonDeletePositions = new JButton();
         this.$$$loadButtonText$$$(buttonDeletePositions,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-selected-positions"));
-        panel2.add(buttonDeletePositions, new GridConstraints(6, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+        panel2.add(buttonDeletePositions, new GridConstraints(8, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
+        checkBoxShiftTimes = new JCheckBox();
+        this.$$$loadButtonText$$$(checkBoxShiftTimes,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "delete-shift-times-checkbox"));
+        panel2.add(checkBoxShiftTimes, new GridConstraints(8, 2, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         final Spacer spacer1 = new Spacer();
-        panel2.add(spacer1, new GridConstraints(6, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel2.add(spacer1, new GridConstraints(8, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         buttonClearSelection = new JButton();
         this.$$$loadButtonText$$$(buttonClearSelection,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "clear-selection-action"));
-        panel2.add(buttonClearSelection, new GridConstraints(6, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel2.add(buttonClearSelection, new GridConstraints(8, 4, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
-        final JPanel panel9 = new JPanel();
-        panel9.setLayout(new GridLayoutManager(1, 2, new Insets(0, 5, 0, 0), -1, -1));
-        panel1.add(panel9, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        final JPanel panel11 = new JPanel();
+        panel11.setLayout(new GridLayoutManager(1, 2, new Insets(0, 5, 0, 0), -1, -1));
+        panel1.add(panel11, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 20), null, null, 0, false));
         labelSelection = new JLabel();
         labelSelection.setText("-");
-        panel9.add(labelSelection, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+        panel11.add(labelSelection, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label6 = new JLabel();
-        this.$$$loadLabelText$$$(label6, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "selection"));
-        panel9.add(label6,
+        final JLabel label12 = new JLabel();
+        this.$$$loadLabelText$$$(label12, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "selection"));
+        panel11.add(label12,
                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel10 = new JPanel();
-        panel10.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel10, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        final JPanel panel12 = new JPanel();
+        panel12.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.add(panel12, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(-1, 10), null, null, 0, false));
     }

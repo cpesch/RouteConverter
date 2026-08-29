@@ -914,6 +914,12 @@ public class ConvertPanel implements PanelInTab {
         return indices.length;
     }
 
+    public int selectPositionsWithSpeedBelowOrEqualTo(double kmh) {
+        int[] indices = positionsModel.getPositionsWithSpeedBelowOrEqualTo(kmh);
+        selectPositions(indices);
+        return indices.length;
+    }
+
     public int[] selectAllButEveryNthPosition(int order) {
         int rowCount = positionsModel.getRowCount();
         int[] indices = allButEveryNthAndFirstAndLast(rowCount, order);
@@ -939,6 +945,10 @@ public class ConvertPanel implements PanelInTab {
 
     public void clearSelection() {
         tablePositions.clearSelection();
+    }
+
+    public void shiftTimesAfterPauses(int[] indices) {
+        positionsModel.shiftTimesAfterPauses(indices);
     }
 
     public void renamePositionList(String name) {
