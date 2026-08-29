@@ -89,6 +89,8 @@ import static slash.navigation.googlemaps.GoogleMapsServer.*;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 import static slash.navigation.gui.helpers.UIHelper.chooseDirectory;
 import static slash.navigation.gui.helpers.UIHelper.chooseFile;
+import static slash.navigation.gui.helpers.UIHelper.getUiFontScalePercentage;
+import static slash.navigation.gui.helpers.UIHelper.setUiFontScalePercentage;
 
 /**
  * Dialog to show options for the program.
