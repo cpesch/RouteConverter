@@ -124,8 +124,8 @@ public class CoverageOverlay extends Layer {
         }
 
         // Fill the rectangle by drawing horizontal lines
-        int minY = yCoords.get(1); // south edge
-        int maxY = yCoords.get(0); // north edge
+        int minY = yCoords.get(0); // north edge (smaller y in screen coordinates)
+        int maxY = yCoords.get(1); // south edge (larger y in screen coordinates)
         int minX = xCoords.get(2); // west edge
         int maxX = xCoords.get(0); // east edge
 
