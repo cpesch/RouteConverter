@@ -489,4 +489,8 @@ public class GraphHopper extends BaseRoutingService {
             break;
         }
     }
+
+    public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
+        return Collections.emptyMap();
+    }
 }
