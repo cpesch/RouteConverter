@@ -152,8 +152,10 @@ public class GetPerformer implements ActionPerformer {
             } else
                 downloadExecutor.postProcessFailed();
 
-        } else
+        } else {
             downloadExecutor.downloadFailed();
+            deleteTempFileQuietly();
+        }
     }
 
     private boolean postProcess(Long lastModified) throws IOException {
@@ -161,8 +163,10 @@ public class GetPerformer implements ActionPerformer {
 
         bringToTarget(lastModified);
 
-        if (!validate())
+        if (!validate()) {
+            deleteTempFileQuietly();
             return false;
+        }
 
         if (getDownload().getTempFile().exists())
             if (!getDownload().getTempFile().delete())
@@ -170,6 +174,12 @@ public class GetPerformer implements ActionPerformer {
 
         log.fine(format("Postprocess from %s successful", getDownload().getUrl()));
         return true;
+    }
+
+    private void deleteTempFileQuietly() {
+        File tempFile = getDownload().getTempFile();
+        if (tempFile.exists() && !tempFile.delete())
+            log.warning(format("Cannot delete temp file %s", tempFile));
     }
 
     private void bringToTarget(Long lastModified) throws IOException {
