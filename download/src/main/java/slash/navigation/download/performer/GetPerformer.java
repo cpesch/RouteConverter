@@ -25,6 +25,7 @@ import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import slash.navigation.download.Action;
 import slash.navigation.download.Checksum;
 import slash.navigation.download.Download;
+import slash.navigation.download.State;
 import slash.navigation.download.actions.Copier;
 import slash.navigation.download.actions.Extractor;
 import slash.navigation.download.actions.Validator;
@@ -152,8 +153,10 @@ public class GetPerformer implements ActionPerformer {
             } else
                 downloadExecutor.postProcessFailed();
 
-        } else
+        } else {
             downloadExecutor.downloadFailed();
+            deleteTempFileQuietly();
+        }
     }
 
     private boolean postProcess(Long lastModified) throws IOException {
@@ -161,8 +164,14 @@ public class GetPerformer implements ActionPerformer {
 
         bringToTarget(lastModified);
 
-        if (!validate())
+        State validationFailure = validate();
+        if (validationFailure != null) {
+            // delete before publishing the terminal state: downloadExecutor.updateState() wakes
+            // waitForCompletion() callers immediately, who must not observe the temp file still present
+            deleteTempFileQuietly();
+            downloadExecutor.updateState(validationFailure);
             return false;
+        }
 
         if (getDownload().getTempFile().exists())
             if (!getDownload().getTempFile().delete())
@@ -170,6 +179,12 @@ public class GetPerformer implements ActionPerformer {
 
         log.fine(format("Postprocess from %s successful", getDownload().getUrl()));
         return true;
+    }
+
+    private void deleteTempFileQuietly() {
+        File tempFile = getDownload().getTempFile();
+        if (tempFile.exists() && !tempFile.delete())
+            log.warning(format("Cannot delete temp file %s", tempFile));
     }
 
     private void bringToTarget(Long lastModified) throws IOException {
@@ -202,21 +217,20 @@ public class GetPerformer implements ActionPerformer {
         setLastModified(getDownload().getTempFile(), lastModified);
     }
 
-    private boolean validate() throws IOException {
+    // returns the terminal State to publish on failure, or null on success
+    private State validate() throws IOException {
         downloadExecutor.updateState(Validating);
 
         Validator validator = new Validator(getDownload());
         if (!validator.isExistsTargets()) {
-            downloadExecutor.updateState(NoFileError);
-            return false;
+            return NoFileError;
         } else if (!validator.isChecksumsValid()) {
-            downloadExecutor.updateState(ChecksumError);
-            return false;
+            return ChecksumError;
         }
 
         // set expected to actual checksum for sending the expected checksum to the server later
         validator.expectedChecksumIsCurrentChecksum();
-        return true;
+        return null;
     }
 
     private static Checksum extractChecksum(ReadRequest request) throws IOException {

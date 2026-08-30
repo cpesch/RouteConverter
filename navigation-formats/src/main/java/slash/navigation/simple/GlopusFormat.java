@@ -23,6 +23,8 @@ package slash.navigation.simple;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -71,6 +73,13 @@ public class GlopusFormat extends SimpleLineBasedFormat<Wgs84Route> {
     @SuppressWarnings("unchecked")
     public <P extends NavigationPosition> Wgs84Route createRoute(RouteCharacteristics characteristics, String name, List<P> positions) {
         return new Wgs84Route(this, characteristics, name, (List<Wgs84Position>) positions);
+    }
+
+    // Glopus (.tk) is RouteConverter's own clipboard/file format: both write (PositionSelection)
+    // and read happen inside RouteConverter, so UTF-8 keeps the round-trip lossless instead of
+    // inheriting TextNavigationFormat's ISO-8859-1 default meant for legacy external file formats.
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
+        read(source, UTF8_ENCODING, context);
     }
 
     protected boolean isPosition(String line) {

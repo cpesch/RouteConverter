@@ -74,6 +74,11 @@ public class BRouterTest {
     }
 
     @Test
+    public void testGetPreferredTravelModeIsCarEco() {
+        assertEquals("car-eco", router.getPreferredTravelMode().name());
+    }
+
+    @Test
     public void testCreateWaypointsWithNullDescriptionDoesNotProduceNullName() {
         // a freshly added position (before reverse geocoding resolves a description) has description == null
         SimpleNavigationPosition from = new SimpleNavigationPosition(-3.629092777185068, 37.13627094135279);

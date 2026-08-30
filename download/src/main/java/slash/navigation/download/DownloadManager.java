@@ -148,6 +148,9 @@ public class DownloadManager {
 
         for (Download download : downloads) {
             log.info("Removing download " + download);
+            File tempFile = download.getTempFile();
+            if (tempFile.exists() && !tempFile.delete())
+                log.warning("Cannot delete temp file " + tempFile);
             model.removeDownload(download);
         }
 
