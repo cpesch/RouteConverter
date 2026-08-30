@@ -20,13 +20,39 @@
 package slash.navigation.simple;
 
 import org.junit.Test;
+import slash.navigation.base.NavigationFormatParser;
+import slash.navigation.base.NavigationFormatRegistry;
+import slash.navigation.base.ParserResult;
+import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
+import slash.navigation.base.Wgs84Route;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Collections;
 
 import static org.junit.Assert.*;
 import static slash.common.TestCase.assertDoubleEquals;
 
 public class GlopusFormatTest {
     GlopusFormat format = new GlopusFormat();
+
+    @Test
+    public void testWriteThenReadBackPreservesNonAsciiDescription() throws IOException {
+        Wgs84Position position = new Wgs84Position(7.0508300, 51.0450383, null, null, null, "San Nicolò");
+        Wgs84Route route = format.createRoute(RouteCharacteristics.Waypoints, null, Collections.singletonList(position));
+
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        format.write(route, printWriter, 0, 1);
+        printWriter.flush();
+
+        NavigationFormatParser parser = new NavigationFormatParser(new NavigationFormatRegistry());
+        ParserResult result = parser.read(stringWriter.toString());
+        assertTrue(result.isSuccessful());
+        assertEquals("San Nicolò", result.getTheRoute().getPositions().get(0).getDescription());
+    }
 
     @Test
     public void testIsPosition() {
