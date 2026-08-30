@@ -945,6 +945,12 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         }
     }
 
+    public void showCoverageOverlay(BoundingBox mapBoundingBox, String category, Map<BoundingBox, Boolean> coverageTiles) {
+        if (isMapViewAvailable()) {
+            getMapView().showCoverageOverlay(mapBoundingBox, category, coverageTiles);
+        }
+    }
+
     public void showPositionMagnifier(List<NavigationPosition> positions) {
         if (isMapViewAvailable()) {
             getMapView().showPositionMagnifier(positions);

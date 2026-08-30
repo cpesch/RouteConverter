@@ -20,11 +20,13 @@
 
 package slash.navigation.routing;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface for a service that determines the routing between two given positions.
@@ -48,6 +50,7 @@ public interface RoutingService {
     DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes);
     long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors);
     void downloadRoutingData(List<MapDescriptor> mapDescriptors);
+    Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area);
 
     void addRoutingServiceListener(RoutingServiceListener routingServiceListener);
 }
