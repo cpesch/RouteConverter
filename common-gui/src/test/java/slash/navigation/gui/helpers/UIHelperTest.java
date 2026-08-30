@@ -85,4 +85,34 @@ public class UIHelperTest {
         assertEquals("Serif", result.getFamily());
         assertEquals(Font.BOLD | Font.ITALIC, result.getStyle());
     }
+
+    @Test
+    public void testDpiToPercentage96DpiIs100Percent() {
+        assertEquals(100, UIHelper.dpiToPercentage(96));
+    }
+
+    @Test
+    public void testDpiToPercentage120DpiIs125Percent() {
+        assertEquals(125, UIHelper.dpiToPercentage(120));
+    }
+
+    @Test
+    public void testDpiToPercentage144DpiIs150Percent() {
+        assertEquals(150, UIHelper.dpiToPercentage(144));
+    }
+
+    @Test
+    public void testDpiToPercentage192DpiIs200Percent() {
+        assertEquals(200, UIHelper.dpiToPercentage(192));
+    }
+
+    @Test
+    public void testDpiToPercentageClampsLowExtremeTo50() {
+        assertEquals(50, UIHelper.dpiToPercentage(40));
+    }
+
+    @Test
+    public void testDpiToPercentageClampsHighExtremeTo200() {
+        assertEquals(200, UIHelper.dpiToPercentage(500));
+    }
 }
