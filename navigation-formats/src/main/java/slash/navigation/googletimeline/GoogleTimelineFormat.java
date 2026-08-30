@@ -83,8 +83,17 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
-        // this format parses the InputStream directly but wants to derive from SimpleFormat to use Wgs84Route
-        throw new UnsupportedOperationException("GoogleTimelineFormat reads from InputStream, not BufferedReader");
+        // Convert BufferedReader to InputStream to reuse the read(InputStream, String, ParserContext) implementation
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(byteArrayOutputStream, encoding);
+        char[] buffer = new char[8192];
+        int read;
+        while ((read = reader.read(buffer)) != -1) {
+            outputStreamWriter.write(buffer, 0, read);
+        }
+        outputStreamWriter.flush();
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        read(byteArrayInputStream, encoding, context);
     }
 
     public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
