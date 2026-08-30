@@ -83,25 +83,6 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     }
 
     public void read(BufferedReader reader, String encoding, ParserContext<Wgs84Route> context) throws IOException {
-        // Convert BufferedReader to InputStream to reuse the read(InputStream, String, ParserContext) implementation
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        OutputStreamWriter outputStreamWriter = new OutputStreamWriter(byteArrayOutputStream, encoding);
-        char[] buffer = new char[8192];
-        int read;
-        while ((read = reader.read(buffer)) != -1) {
-            outputStreamWriter.write(buffer, 0, read);
-        }
-        outputStreamWriter.flush();
-        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
-        read(byteArrayInputStream, encoding, context);
-    }
-
-    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
-        read(source, UTF8_ENCODING, context);
-    }
-
-    public void read(InputStream source, String encoding, ParserContext<Wgs84Route> context) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(source, encoding));
         JsonNode root = new ObjectMapper().readTree(reader);
 
         if (root == null) {
@@ -197,6 +178,14 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         if (!visitPositions.isEmpty()) {
             context.appendRoute(new Wgs84Route(this, Waypoints, "Visits", visitPositions));
         }
+    }
+
+    public void read(InputStream source, ParserContext<Wgs84Route> context) throws IOException {
+        read(source, UTF8_ENCODING, context);
+    }
+
+    protected void read(InputStream source, String encoding, ParserContext<Wgs84Route> context) throws IOException {
+        super.read(source, encoding, context);
     }
 
     /**
