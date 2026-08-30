@@ -46,11 +46,27 @@ public class UIHelper {
     private static final int DEFAULT_UI_FONT_SCALE_PERCENTAGE = 100;
 
     public static int getUiFontScalePercentage() {
-        return preferences.getInt(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, DEFAULT_UI_FONT_SCALE_PERCENTAGE);
+        return preferences.getInt(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, getDefaultUiFontScalePercentage());
     }
 
     public static void setUiFontScalePercentage(int percentage) {
         preferences.putInt(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, percentage);
+    }
+
+    private static int getDefaultUiFontScalePercentage() {
+        if (!isWindows())
+            return DEFAULT_UI_FONT_SCALE_PERCENTAGE;
+        try {
+            int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+            return dpiToPercentage(dpi);
+        } catch (HeadlessException e) {
+            return DEFAULT_UI_FONT_SCALE_PERCENTAGE;
+        }
+    }
+
+    static int dpiToPercentage(int dpi) {
+        int percentage = Math.round(dpi / 96f * 100f);
+        return Math.max(50, Math.min(200, percentage));
     }
 
     public static Font scaleFont(Font font, int percentage) {
