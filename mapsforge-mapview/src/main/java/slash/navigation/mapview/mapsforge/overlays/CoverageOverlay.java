@@ -106,10 +106,15 @@ public class CoverageOverlay extends Layer {
         List<Integer> yCoords = new ArrayList<>();
 
         for (LatLong corner : corners) {
-            int x = (int) (longitudeToPixelX(corner.longitude, mapSize) - topLeftPoint.x);
-            int y = (int) (latitudeToPixelY(corner.latitude, mapSize) - topLeftPoint.y);
-            xCoords.add(x);
-            yCoords.add(y);
+            long x = longitudeToPixelX(corner.longitude, mapSize) - topLeftPoint.x;
+            long y = latitudeToPixelY(corner.latitude, mapSize) - topLeftPoint.y;
+            // Check if coordinates fit in int range
+            if (x < Integer.MIN_VALUE || x > Integer.MAX_VALUE ||
+                y < Integer.MIN_VALUE || y > Integer.MAX_VALUE) {
+                return; // Skip drawing this box if coordinates overflow
+            }
+            xCoords.add((int) x);
+            yCoords.add((int) y);
         }
 
         // Draw lines to form the rectangle
