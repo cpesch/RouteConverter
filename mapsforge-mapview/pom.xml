@@ -46,6 +46,11 @@
             <artifactId>routing-service</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>common-navigation</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.github.mapsforge.mapsforge</groupId>
