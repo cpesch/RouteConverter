@@ -98,6 +98,7 @@ public class AutomaticElevationService implements ElevationService {
 
             } catch (IOException e) {
                 lastException = e;
+                log.fine("Elevation service " + service.getName() + " failed to retrieve elevation for " + longitude + "/" + latitude + ": " + e);
             }
         }
 
