@@ -323,7 +323,8 @@ public class MapsDialog extends SimpleDialog {
     private void updateCoverageOverlay(String category) {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
         List<MapDescriptor> selectedMaps = getSelectedMaps();
-        if (selectedMaps.isEmpty() || "None".equals(category)) {
+        ResourceBundle bundle = BaseRouteConverter.getBundle();
+        if (selectedMaps.isEmpty() || bundle.getString("coverage-none").equals(category)) {
             r.showCoverageOverlay(null, null, null);
             return;
         }
@@ -331,20 +332,25 @@ public class MapsDialog extends SimpleDialog {
         BoundingBox boundingBox = selectedMaps.get(0).getBoundingBox();
         Map<BoundingBox, Boolean> coverageTiles = null;
 
+        String coverageRouting = bundle.getString("coverage-routing");
+        String coverageElevation = bundle.getString("coverage-elevation");
+        String coverageMaps = bundle.getString("coverage-maps");
+        String coveragePoi = bundle.getString("coverage-poi");
+
         switch (category) {
-            case "Routing":
+            case coverageRouting:
                 RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
                 if (routingService.isDownload()) {
                     coverageTiles = routingService.getCoverageTiles(boundingBox);
                 }
                 break;
-            case "Elevation":
+            case coverageElevation:
                 ElevationService elevationService = r.getElevationServiceFacade().getElevationService();
                 if (elevationService.isDownload()) {
                     coverageTiles = elevationService.getCoverageTiles(boundingBox);
                 }
                 break;
-            case "Maps":
+            case coverageMaps:
                 // Maps are covered if already downloaded
                 Map<BoundingBox, Boolean> mapCoverage = new HashMap<>();
                 for (MapDescriptor map : selectedMaps) {
@@ -353,12 +359,12 @@ public class MapsDialog extends SimpleDialog {
                 }
                 coverageTiles = mapCoverage;
                 break;
-            case "POI":
+            case coveragePoi:
                 // POI is covered if calculateRemainingDownloadSize returns 0
                 MapsforgePoiLookup poiLookup = getMapsforgePoiLookup();
-                long poiDownloadSize = poiLookup.calculateRemainingDownloadSize(selectedMaps);
                 Map<BoundingBox, Boolean> poiCoverage = new HashMap<>();
                 for (MapDescriptor map : selectedMaps) {
+                    long poiDownloadSize = poiLookup.calculateRemainingDownloadSize(java.util.Collections.singletonList(map));
                     poiCoverage.put(map.getBoundingBox(), poiDownloadSize == 0);
                 }
                 coverageTiles = poiCoverage;

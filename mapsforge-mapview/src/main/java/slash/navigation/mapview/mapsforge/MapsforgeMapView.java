@@ -853,8 +853,8 @@ public class MapsforgeMapView extends BaseMapView {
             currentCoverageOverlay = null;
         }
 
-        // If category is None or no bounding box, we're done
-        if (category == null || "None".equals(category) || mapBoundingBox == null || coverageTiles == null) {
+        // If category is null or no bounding box, we're done
+        if (category == null || mapBoundingBox == null || coverageTiles == null) {
             return;
         }
 
