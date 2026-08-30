@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.models.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface for a component that displays the positions of a position list on a map.
@@ -54,6 +55,7 @@ public interface MapView extends PositionsSelectionModel {
     void resize(); // only BrowserMapView
     void showAllPositions();
     void showMapBorder(BoundingBox mapBoundingBox); // only MapsforgeMapView
+    void showCoverageOverlay(BoundingBox mapBoundingBox, String category, Map<BoundingBox, Boolean> coverageTiles); // only MapsforgeMapView
     void showPositionMagnifier(List<NavigationPosition> positions);
 
     NavigationPosition getCenter();

@@ -20,12 +20,14 @@
 
 package slash.navigation.elevation;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Interface for a service that looks up the elevation for a given position.
@@ -46,4 +48,5 @@ public interface ElevationService {
     void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload);
     long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors);
     void downloadElevationData(List<MapDescriptor> mapDescriptors);
+    Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area);
 }

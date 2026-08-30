@@ -53,7 +53,9 @@ import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
@@ -88,6 +90,8 @@ public class MapsDialog extends SimpleDialog {
     private JCheckBox checkBoxDownloadElevationData;
     private JCheckBox checkBoxDownloadRoutingData;
     private JCheckBox checkBoxDownloadPoiData;
+    private JComboBox<String> comboBoxCoverage;
+    private JLabel labelCoverage;
 
     public MapsDialog() {
         super(BaseRouteConverter.getInstance().getFrame(), "maps");
@@ -215,6 +219,22 @@ public class MapsDialog extends SimpleDialog {
         r.getRoutingServiceFacade().getRoutingPreferencesModel().addChangeListener(e -> updateLabel());
         updateLabel();
 
+        // Setup coverage selector
+        ResourceBundle bundle = BaseRouteConverter.getBundle();
+        String[] coverageOptions = {
+            bundle.getString("coverage-none"),
+            bundle.getString("coverage-maps"),
+            bundle.getString("coverage-routing"),
+            bundle.getString("coverage-elevation"),
+            bundle.getString("coverage-poi")
+        };
+        comboBoxCoverage.setModel(new DefaultComboBoxModel<>(coverageOptions));
+        comboBoxCoverage.setSelectedIndex(0); // Default to None
+        comboBoxCoverage.addActionListener(e -> {
+            String selected = (String) comboBoxCoverage.getSelectedItem();
+            updateCoverageOverlay(selected);
+        });
+
         final ActionManager actionManager = r.getContext().getActionManager();
         actionManager.register("display-online-map", new DisplayMapAction(this, tableAvailableOnlineMaps, getMapsforgeMapManager()));
         new AvailableOnlineMapsTablePopupMenu(tableAvailableOnlineMaps).createPopupMenu();
@@ -300,9 +320,62 @@ public class MapsDialog extends SimpleDialog {
         return ((RouteConverter) BaseRouteConverter.getInstance()).getMapsforgePoiLookup();
     }
 
+    private void updateCoverageOverlay(String category) {
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
+        List<MapDescriptor> selectedMaps = getSelectedMaps();
+        if (selectedMaps.isEmpty() || "None".equals(category)) {
+            r.showCoverageOverlay(null, null, null);
+            return;
+        }
+
+        BoundingBox boundingBox = selectedMaps.get(0).getBoundingBox();
+        Map<BoundingBox, Boolean> coverageTiles = null;
+
+        switch (category) {
+            case "Routing":
+                RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
+                if (routingService.isDownload()) {
+                    coverageTiles = routingService.getCoverageTiles(boundingBox);
+                }
+                break;
+            case "Elevation":
+                ElevationService elevationService = r.getElevationServiceFacade().getElevationService();
+                if (elevationService.isDownload()) {
+                    coverageTiles = elevationService.getCoverageTiles(boundingBox);
+                }
+                break;
+            case "Maps":
+                // Maps are covered if already downloaded
+                Map<BoundingBox, Boolean> mapCoverage = new HashMap<>();
+                for (MapDescriptor map : selectedMaps) {
+                    boolean covered = map instanceof LocalMap;
+                    mapCoverage.put(map.getBoundingBox(), covered);
+                }
+                coverageTiles = mapCoverage;
+                break;
+            case "POI":
+                // POI is covered if calculateRemainingDownloadSize returns 0
+                MapsforgePoiLookup poiLookup = getMapsforgePoiLookup();
+                long poiDownloadSize = poiLookup.calculateRemainingDownloadSize(selectedMaps);
+                Map<BoundingBox, Boolean> poiCoverage = new HashMap<>();
+                for (MapDescriptor map : selectedMaps) {
+                    poiCoverage.put(map.getBoundingBox(), poiDownloadSize == 0);
+                }
+                coverageTiles = poiCoverage;
+                break;
+            default:
+                // None or unrecognized
+                r.showCoverageOverlay(null, null, null);
+                return;
+        }
+
+        r.showCoverageOverlay(boundingBox, category, coverageTiles);
+    }
+
     private void close() {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
         r.showMapBorder(null);
+        r.showCoverageOverlay(null, null, null);
 
         ActionManager actionManager = r.getContext().getActionManager();
         actionManager.unregister("display-online-map");
