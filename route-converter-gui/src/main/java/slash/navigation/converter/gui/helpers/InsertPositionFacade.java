@@ -43,6 +43,7 @@ import static slash.common.helpers.ThreadHelper.createSingleThreadExecutor;
 import static slash.common.io.Transfer.toArray;
 import static slash.navigation.common.Interpolation.interpolate;
 import static slash.navigation.gui.helpers.WindowHelper.getFrame;
+import static slash.navigation.gui.helpers.WindowHelper.handleOutOfMemoryError;
 import static slash.navigation.routing.RoutingResult.Validity.Valid;
 
 /**
@@ -73,9 +74,11 @@ public class InsertPositionFacade {
         executor.execute(() -> {
             try {
                 doInsertStraightLinePositions(intervalMetres, selectedRows);
-            } catch (Exception e) {
-                log.severe(format("Cannot insert positions: %s, %s", e, printStackTrace(e)));
-                showError(getFrame(), format(Application.getInstance().getContext().getBundle().getString("cannot-insert-positions"), getLocalizedMessage(e)),
+            } catch (OutOfMemoryError ooem) {
+                handleOutOfMemoryError(ooem);
+            } catch (Throwable t) {
+                log.severe(format("Cannot insert positions: %s, %s", t, printStackTrace(t)));
+                showError(getFrame(), format(Application.getInstance().getContext().getBundle().getString("cannot-insert-positions"), getLocalizedMessage(t)),
                         getFrame().getTitle());
             }
         });
@@ -126,9 +129,11 @@ public class InsertPositionFacade {
         executor.execute(() -> {
             try {
                 doInsertWithRoutingService(routingService, selectedRows);
-            } catch (Exception e) {
-                log.severe(format("Cannot insert positions: %s, %s", e, printStackTrace(e)));
-                showError(getFrame(), format(Application.getInstance().getContext().getBundle().getString("cannot-insert-positions"), getLocalizedMessage(e)),
+            } catch (OutOfMemoryError ooem) {
+                handleOutOfMemoryError(ooem);
+            } catch (Throwable t) {
+                log.severe(format("Cannot insert positions: %s, %s", t, printStackTrace(t)));
+                showError(getFrame(), format(Application.getInstance().getContext().getBundle().getString("cannot-insert-positions"), getLocalizedMessage(t)),
                         getFrame().getTitle());
             }
         });
