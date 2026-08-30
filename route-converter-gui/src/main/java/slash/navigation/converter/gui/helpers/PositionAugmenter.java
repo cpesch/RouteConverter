@@ -102,7 +102,7 @@ public class PositionAugmenter {
         executor.shutdownNow();
     }
 
-    private interface OverwritePredicate {
+    interface OverwritePredicate {
         boolean shouldOverwrite(NavigationPosition position);
     }
 
@@ -115,6 +115,12 @@ public class PositionAugmenter {
     private static final OverwritePredicate COORDINATE_PREDICATE = new OverwritePredicate() {
         public boolean shouldOverwrite(NavigationPosition position) {
             return position.hasCoordinates();
+        }
+    };
+
+    static final OverwritePredicate NO_COORDINATE_PREDICATE = new OverwritePredicate() {
+        public boolean shouldOverwrite(NavigationPosition position) {
+            return !position.hasCoordinates();
         }
     };
 
@@ -252,7 +258,7 @@ public class PositionAugmenter {
     public void addCoordinates() {
         int[] rows = positionsView.getSelectedRows();
         if (rows.length > 0)
-            processCoordinates(positionsView, positionsModel, rows, TAUTOLOGY_PREDICATE);
+            processCoordinates(positionsView, positionsModel, rows, NO_COORDINATE_PREDICATE);
     }
 
 
