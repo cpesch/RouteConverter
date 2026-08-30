@@ -22,19 +22,20 @@ package slash.navigation.mapview.mapsforge.overlays;
 import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
-import org.mapsforge.core.model.BoundingBox;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.core.model.Rotation;
 import org.mapsforge.map.layer.Layer;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.mapsforge.core.util.MercatorProjection.*;
-import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asAlpha;
+import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
+import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
+import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 
 /**
  * Paints a coverage overlay on the map canvas showing which parts of a map area
@@ -77,7 +78,7 @@ public class CoverageOverlay extends Layer {
     }
 
     @Override
-    public void draw(BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint, Rotation rotation) {
+    public void draw(org.mapsforge.core.model.BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint, Rotation rotation) {
         // Draw missing tiles first (red), then covered tiles (green) on top
         for (BoundingBox box : missingBoxes) {
             drawBoundingBox(box, boundingBox, zoomLevel, canvas, topLeftPoint, missingPaint);
@@ -87,17 +88,17 @@ public class CoverageOverlay extends Layer {
         }
     }
 
-    private void drawBoundingBox(BoundingBox boxToDraw, BoundingBox viewBoundingBox,
+    private void drawBoundingBox(BoundingBox boxToDraw, org.mapsforge.core.model.BoundingBox viewBoundingBox,
                                 byte zoomLevel, Canvas canvas, Point topLeftPoint, Paint paint) {
         long mapSize = getMapSize(zoomLevel, tileSize);
 
-        // Create the four corners of the rectangle
+        // Convert the custom BoundingBox to corners
         List<LatLong> corners = List.of(
-            boxToDraw.northEast(),
-            new LatLong(boxToDraw.southWest().getLatitude(), boxToDraw.northEast().getLongitude()),
-            boxToDraw.southWest(),
-            new LatLong(boxToDraw.northEast().getLatitude(), boxToDraw.southWest().getLongitude()),
-            boxToDraw.northEast() // Close the loop
+            toLatLong(boxToDraw.northEast()),
+            toLatLong(boxToDraw.getSouthEast()),
+            toLatLong(boxToDraw.southWest()),
+            toLatLong(boxToDraw.getNorthWest()),
+            toLatLong(boxToDraw.northEast()) // Close the loop
         );
 
         // Convert each corner to screen coordinates
@@ -126,5 +127,9 @@ public class CoverageOverlay extends Layer {
         for (int y = minY; y <= maxY; y += 2) { // Step by 2 for performance
             canvas.drawLine(minX, y, maxX, y, paint);
         }
+    }
+
+    private LatLong toLatLong(slash.navigation.common.NavigationPosition position) {
+        return new LatLong(position.getLatitude(), position.getLongitude());
     }
 }
