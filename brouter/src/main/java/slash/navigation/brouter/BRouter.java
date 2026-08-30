@@ -68,7 +68,7 @@ public class BRouter extends BaseRoutingService {
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String PROFILES_BASE_URL_PREFERENCE = "profilesBaseUrl";
     private static final String SEGMENTS_BASE_URL_PREFERENCE = "segmentsBaseUrl";
-    private static final TravelMode MOPED = new TravelMode("moped");
+    private static final TravelMode CAR_ECO = new TravelMode("car-eco");
     public static final String DOT_BRF = ".brf";
     public static final String DOT_RD5 = ".rd5";
     private static final String LOOKUPS_DAT = "lookups.dat";
@@ -230,7 +230,7 @@ public class BRouter extends BaseRoutingService {
     }
 
     public TravelMode getPreferredTravelMode() {
-        return MOPED;
+        return CAR_ECO;
     }
 
     public TravelRestrictions getAvailableTravelRestrictions() {
@@ -331,7 +331,7 @@ public class BRouter extends BaseRoutingService {
             File profile = new File(profilesDirectory, travelMode.name() + ".brf");
             if (!profile.exists()) {
                 profile = new File(profilesDirectory, getPreferredTravelMode().name() + ".brf");
-                log.warning(format("Failed to find profile for travel mode %s; using preferred travel mode %s", travelMode, getPreferredTravelMode()));
+                log.warning(format("Chosen travel mode %s has no profile file; routing with fallback travel mode %s instead", travelMode, getPreferredTravelMode()));
             }
             if (!profile.exists()) {
                 List<TravelMode> availableTravelModes = getAvailableTravelModes();
