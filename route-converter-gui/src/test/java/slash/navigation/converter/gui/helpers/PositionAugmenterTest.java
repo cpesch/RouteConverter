@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.helpers;
 import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.base.BaseRoute;
+import slash.navigation.base.Wgs84Position;
 import slash.navigation.converter.gui.models.PositionsModelImpl;
 import slash.navigation.converter.gui.models.TimeZoneModel;
 import slash.navigation.converter.gui.panels.PositionsModelCallbackImpl;
@@ -34,6 +35,8 @@ import java.util.TimeZone;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static slash.common.TestCase.calendar;
 
 public class PositionAugmenterTest {
@@ -97,5 +100,19 @@ public class PositionAugmenterTest {
         assertEquals(3, augmenter.findSuccessorWithTime(model, 2));
         assertEquals(3, augmenter.findSuccessorWithTime(model, 3));
         assertEquals(-1, augmenter.findSuccessorWithTime(model, 4));
+    }
+
+    @Test
+    public void testNoCoordinatePredicateSkipsPositionWithCoordinates() {
+        Wgs84Position position = new Wgs84Position(1.0, 2.0, null, null, null, "description");
+
+        assertFalse(PositionAugmenter.NO_COORDINATE_PREDICATE.shouldOverwrite(position));
+    }
+
+    @Test
+    public void testNoCoordinatePredicateAcceptsPositionWithoutCoordinates() {
+        Wgs84Position position = new Wgs84Position(null, null, null, null, null, "description");
+
+        assertTrue(PositionAugmenter.NO_COORDINATE_PREDICATE.shouldOverwrite(position));
     }
 }
