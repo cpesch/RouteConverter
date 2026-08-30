@@ -459,6 +459,10 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         return calendar != null ? CompactCalendar.fromCalendar(calendar) : null;
     }
 
+    public void write(Wgs84Route route, PrintWriter writer, int startIndex, int endIndex) throws IOException {
+        throw new UnsupportedOperationException("GoogleTimelineFormat is read-only");
+    }
+
     private static class Activity {
         final String type;
         final double probability;
