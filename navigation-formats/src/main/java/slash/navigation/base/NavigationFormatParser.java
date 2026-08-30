@@ -47,7 +47,7 @@ import static java.lang.Math.min;
 import static java.lang.String.format;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.toUrl;
-import static slash.common.io.Transfer.UTF8_ENCODING;
+import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 import static slash.common.io.Transfer.ceiling;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -269,7 +269,11 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(String source) throws IOException {
-        return read(new ByteArrayInputStream(source.getBytes(UTF8_ENCODING)));
+        // matches the ISO-8859-1 default that TextNavigationFormat subclasses (e.g. GlopusFormat,
+        // used for the position clipboard, see PositionSelection) decode InputStreams with -
+        // source.getBytes() used the JVM platform-default charset instead, mangling non-ASCII
+        // descriptions whenever that default wasn't ISO-8859-1 (e.g. UTF-8 on Linux/macOS)
+        return read(new ByteArrayInputStream(source.getBytes(ISO_LATIN1_ENCODING)));
     }
 
     public ParserResult read(InputStream source) throws IOException {
