@@ -47,6 +47,7 @@ import static java.lang.Math.min;
 import static java.lang.String.format;
 import static slash.common.io.Files.getExtension;
 import static slash.common.io.Files.toUrl;
+import static slash.common.io.Transfer.UTF8_ENCODING;
 import static slash.common.io.Transfer.ceiling;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromCalendar;
@@ -268,7 +269,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(String source) throws IOException {
-        return read(new ByteArrayInputStream(source.getBytes()));
+        return read(new ByteArrayInputStream(source.getBytes(UTF8_ENCODING)));
     }
 
     public ParserResult read(InputStream source) throws IOException {

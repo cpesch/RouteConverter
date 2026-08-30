@@ -228,6 +228,13 @@ public class NavigationFormatParserTest {
     }
 
     @Test
+    public void testReadFromStringPreservesNonAsciiCharacters() throws IOException {
+        ParserResult result = parser.read("51.0450383,7.0508300,San Nicolò");
+        assertTrue(result.isSuccessful());
+        assertEquals("San Nicolò", result.getTheRoute().getPositions().get(0).getDescription());
+    }
+
+    @Test
     public void testReadEmptyInputIsLenientlySuccessful() throws IOException {
         // documents the firstSuccessfulFormat fallback: with no positions parsed,
         // the parser still reports the first format that did not throw
