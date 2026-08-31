@@ -216,6 +216,7 @@ public class MapsforgeMapView extends BaseMapView {
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private UpdateDecoupler updateDecoupler;
+    private final GroupLayer waypointLayer = new GroupLayer();
 
     // initialization
 
@@ -320,17 +321,54 @@ public class MapsforgeMapView extends BaseMapView {
                     positionWithLayer.setLayer(marker);
                     withLayers.add(positionWithLayer);
                 }
-                addObjectsWithLayer(withLayers);
+                synchronized (waypointLayer) {
+                    for (PositionWithLayer positionWithLayer : withLayers)
+                        waypointLayer.layers.add(positionWithLayer.getLayer());
+                }
+                waypointLayer.requestRedraw();
             }
 
             public void update(List<PositionWithLayer> positionWithLayers) {
                 List<Layer> remove = toLayers(positionWithLayers);
-                removeLayers(remove);
+                synchronized (waypointLayer) {
+                    if (remove.size() == waypointLayer.layers.size()) {
+                        waypointLayer.layers.clear();
+                    } else {
+                        Set<Layer> toRemove = new HashSet<>(remove.size());
+                        for (Layer layer : remove) {
+                            if (layer != null)
+                                toRemove.add(layer);
+                            else
+                                log.warning("Could not find layer to remove for " + layer);
+                        }
+                        waypointLayer.layers.removeAll(toRemove);
+                    }
+                }
+                waypointLayer.requestRedraw();
                 add(positionWithLayers);
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                removeObjectWithLayers(positionWithLayers);
+                synchronized (waypointLayer) {
+                    if (positionWithLayers.size() == waypointLayer.layers.size()) {
+                        waypointLayer.layers.clear();
+                    } else {
+                        Set<Layer> toRemove = new HashSet<>(positionWithLayers.size());
+                        for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                            Layer layer = positionWithLayer.getLayer();
+                            if (layer != null)
+                                toRemove.add(layer);
+                            else
+                                log.warning("Could not find layer to remove for " + positionWithLayer);
+                        }
+                        waypointLayer.layers.removeAll(toRemove);
+                    }
+                }
+                waypointLayer.requestRedraw();
+                // keep the existing bookkeeping
+                for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                    positionWithLayer.setLayer(null);
+                }
             }
         });
 
@@ -733,6 +771,11 @@ public class MapsforgeMapView extends BaseMapView {
 
         // catch position lists that were loaded before the map was initialized
         nonSelectedPositionListsRenderer.update();
+
+        // add the waypoint layer if not already present
+        if (!layers.contains(waypointLayer)) {
+            layers.add(waypointLayer);
+        }
     }
 
     private void updateNonSelectedPositionLists() {
