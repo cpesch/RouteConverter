@@ -136,12 +136,12 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
                     return found;
                 continue;
             }
-            // Check for DraggableMarker first since onTap() is only defined on DraggableMarker
-            if (layer instanceof DraggableMarker draggableMarker) {
-                org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
-                if (draggableMarker.onTap(tapLatLong, layerXY, tapXY))
-                    return draggableMarker;
-            }
+            if (!(layer instanceof Marker))
+                continue;
+
+            org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
+            if (layer.onTap(tapLatLong, layerXY, tapXY) && layer instanceof DraggableMarker draggableMarker)
+                return draggableMarker;
         }
         return null;
     }
