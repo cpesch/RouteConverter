@@ -22,6 +22,7 @@ package slash.navigation.mapview.mapsforge.overlays;
 import org.mapsforge.core.graphics.Canvas;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.core.graphics.Style;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Point;
 import org.mapsforge.core.model.Rotation;
@@ -57,13 +58,13 @@ public class CoverageOverlay extends Layer {
         // Create covered paint (translucent green)
         this.coveredPaint = graphicFactory.createPaint();
         coveredPaint.setColor(graphicFactory.createColor(80, 0, 180, 0)); // alpha 80, RGB(0,180,0)
-        coveredPaint.setStyle(Paint.Style.FILL);
+        coveredPaint.setStyle(Style.FILL);
         coveredPaint.setStrokeWidth(1);
 
         // Create missing paint (translucent red)
         this.missingPaint = graphicFactory.createPaint();
         missingPaint.setColor(graphicFactory.createColor(80, 200, 0, 0)); // alpha 80, RGB(200,0,0)
-        missingPaint.setStyle(Paint.Style.FILL);
+        missingPaint.setStyle(Style.FILL);
         missingPaint.setStrokeWidth(1);
 
         // Split tiles into covered and missing
@@ -105,8 +106,8 @@ public class CoverageOverlay extends Layer {
         List<Integer> yCoords = new ArrayList<>();
 
         for (LatLong corner : corners) {
-            long x = longitudeToPixelX(corner.longitude, mapSize) - topLeftPoint.x;
-            long y = latitudeToPixelY(corner.latitude, mapSize) - topLeftPoint.y;
+            double x = longitudeToPixelX(corner.longitude, mapSize) - topLeftPoint.x;
+            double y = latitudeToPixelY(corner.latitude, mapSize) - topLeftPoint.y;
             // Check if coordinates fit in int range
             if (x < Integer.MIN_VALUE || x > Integer.MAX_VALUE ||
                 y < Integer.MIN_VALUE || y > Integer.MAX_VALUE) {
