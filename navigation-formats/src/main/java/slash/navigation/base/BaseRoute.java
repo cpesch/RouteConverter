@@ -164,10 +164,14 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     // removes a contiguous [fromIndex, toIndex) range in one shift instead of
     // toIndex-fromIndex individual ArrayList#remove(int) shifts; callers deleting
     // large scattered selections must group indices into contiguous ranges first
-    // (see PositionsModelImpl#remove) or this degrades back to one-by-one removal
-    public void remove(int fromIndex, int toIndex) {
+    // (see PositionsModelImpl#remove, UndoPositionsModel#remove) or this degrades
+    // back to one-by-one removal. Returns the removed positions, still in their
+    // original order, for callers that need them (e.g. undo/redo)
+    public List<P> remove(int fromIndex, int toIndex) {
         List<P> positions = getPositions();
+        List<P> removed = new ArrayList<>(positions.subList(fromIndex, toIndex));
         positions.subList(fromIndex, toIndex).clear();
+        return removed;
     }
 
     /**
