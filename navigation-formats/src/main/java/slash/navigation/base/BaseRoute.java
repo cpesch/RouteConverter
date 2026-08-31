@@ -161,6 +161,15 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         return positions.remove(index);
     }
 
+    // removes a contiguous [fromIndex, toIndex) range in one shift instead of
+    // toIndex-fromIndex individual ArrayList#remove(int) shifts; callers deleting
+    // large scattered selections must group indices into contiguous ranges first
+    // (see PositionsModelImpl#remove) or this degrades back to one-by-one removal
+    public void remove(int fromIndex, int toIndex) {
+        List<P> positions = getPositions();
+        positions.subList(fromIndex, toIndex).clear();
+    }
+
     /**
      * Removes duplicate adjacent {@link #getPositions() positions} from this route, leaving
      * only distinct neighbours

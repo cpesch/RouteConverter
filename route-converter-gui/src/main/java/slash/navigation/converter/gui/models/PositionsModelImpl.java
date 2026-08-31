@@ -243,10 +243,13 @@ public class PositionsModelImpl extends AbstractTableModel implements PositionsM
     public void remove(int[] rows, final boolean fireEvent) {
         new ContinousRange(rows, new RangeOperation() {
             public void performOnIndex(int index) {
-                getRoute().remove(index);
+                // removal happens once per contiguous range in performOnRange below,
+                // not per index -- ArrayList#remove(int) per scattered index is O(n)
+                // each, so deleting most of a 100k+ position track was O(n^2)
             }
 
             public void performOnRange(int firstIndex, int lastIndex) {
+                getRoute().remove(firstIndex, lastIndex + 1);
                 if (fireEvent)
                     fireTableRowsDeleted(firstIndex, lastIndex);
             }
