@@ -261,8 +261,8 @@ public class MapsforgeMapView extends BaseMapView {
                         selectionLayer.layers.add(marker);
                         center = latLong;
                     }
-                    selectionLayer.requestRedraw();
                 }
+                selectionLayer.requestRedraw();
                 if (center != null)
                     setCenter(center, false);
             }
@@ -287,8 +287,8 @@ public class MapsforgeMapView extends BaseMapView {
                     }
                     for (PositionWithLayer positionWithLayer : positionWithLayers)
                         positionWithLayer.setLayer(null);
-                    selectionLayer.requestRedraw();
                 }
+                selectionLayer.requestRedraw();
             }
         });
 
