@@ -229,6 +229,12 @@ public class MapsforgeMapView extends BaseMapView {
         this.preferencesModel = preferencesModel;
         this.mapViewCallback = (MapsforgeMapViewCallback) mapViewCallback;
 
+        // Create renderers first before the updaters that use them
+        routeRenderer = new RouteRenderer(this, this.mapViewCallback, preferencesModel.getRouteColorModel(),
+                preferencesModel.getRouteLineWidthModel(), GRAPHIC_FACTORY);
+        trackRenderer = new TrackRenderer(this, preferencesModel.getTrackColorModel(),
+                preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
+
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             private Bitmap markerIcon;
 
@@ -370,10 +376,6 @@ public class MapsforgeMapView extends BaseMapView {
 
         initializeActions();
         initializeMapView();
-        routeRenderer = new RouteRenderer(this, this.mapViewCallback, preferencesModel.getRouteColorModel(),
-                preferencesModel.getRouteLineWidthModel(), GRAPHIC_FACTORY);
-        trackRenderer = new TrackRenderer(this, preferencesModel.getTrackColorModel(),
-                preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
         nonSelectedPositionListsRenderer = new NonSelectedPositionListsRenderer(this, positionListsModel,
                 preferencesModel.getRouteColorModel(), preferencesModel.getTrackColorModel(),
                 preferencesModel.getRouteLineWidthModel(), preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
