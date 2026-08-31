@@ -20,10 +20,12 @@
 package slash.navigation.brouter;
 
 import btools.router.OsmNodeNamed;
+import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.datasources.DataSource;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -35,9 +37,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class BRouterTest {
     private final BRouter router = new BRouter(null);
+
+    @Before
+    public void setUp() {
+        DataSource profiles = mock(DataSource.class);
+        when(profiles.getDirectory()).thenReturn("brouter-profiles-test");
+        DataSource segments = mock(DataSource.class);
+        when(segments.getDirectory()).thenReturn("brouter-segments-test");
+        router.setProfilesAndSegments(profiles, segments);
+    }
 
     @Test
     public void testLongitude() {
@@ -130,14 +143,14 @@ public class BRouterTest {
 
     @Test
     public void testGetCoverageTilesHandlesPartialOverlap() {
-        // Create a bounding box that partially overlaps tile boundaries
+        // Tiles are chunked 1x1 starting at the bounding box's own corner, not aligned to a fixed
+        // degree grid, so a 1x1 degree area yields exactly one tile regardless of its offset.
         NavigationPosition southWest = new SimpleNavigationPosition(0.5, 0.5);
         NavigationPosition northEast = new SimpleNavigationPosition(1.5, 1.5);
         BoundingBox bbox = new BoundingBox(northEast, southWest);
 
         Map<BoundingBox, Boolean> coverageTiles = router.getCoverageTiles(bbox);
 
-        // Should return 4 tiles even though bbox is in the middle
-        assertEquals(4, coverageTiles.size());
+        assertEquals(1, coverageTiles.size());
     }
 }
