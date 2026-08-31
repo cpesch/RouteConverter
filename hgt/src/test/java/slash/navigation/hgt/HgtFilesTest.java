@@ -13,6 +13,7 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -23,6 +24,8 @@ public class HgtFilesTest {
     public void setUp() {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getDirectory()).thenReturn("hgt-test");
+        // Explicitly stub getFragment to return null (no files available in test)
+        when(dataSource.getFragment(anyString())).thenReturn(null);
         files = new HgtFiles(dataSource, new DownloadManager(null));
     }
 
