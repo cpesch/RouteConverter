@@ -62,6 +62,12 @@ public class TrackRenderer {
             Long time = pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond());
             pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, time));
         }
-        mapView.addObjectsWithLayer(withLayers);
+
+        GroupLayer trackLayer = mapView.getTrackLayer();
+        synchronized (trackLayer) {
+            for (PairWithLayer pairWithLayer : withLayers)
+                trackLayer.layers.add(pairWithLayer.getLayer());
+        }
+        trackLayer.requestRedraw();
     }
 }

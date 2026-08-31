@@ -216,6 +216,7 @@ public class MapsforgeMapView extends BaseMapView {
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private UpdateDecoupler updateDecoupler;
+    private final GroupLayer trackLayer = new GroupLayer();
 
     // initialization
 
@@ -295,12 +296,28 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             public void update(List<PairWithLayer> pairWithLayers) {
-                removeLayers(toLayers(pairWithLayers));
+                List<Layer> toRemove = toLayers(pairWithLayers);
+                synchronized (trackLayer) {
+                    if (toRemove.size() == trackLayer.layers.size()) {
+                        trackLayer.layers.clear();
+                    } else {
+                        trackLayer.layers.removeAll(new HashSet<>(toRemove));
+                    }
+                }
+                trackLayer.requestRedraw();
                 trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
-                removeLayers(toLayers(pairWithLayers));
+                List<Layer> toRemove = toLayers(pairWithLayers);
+                synchronized (trackLayer) {
+                    if (toRemove.size() == trackLayer.layers.size()) {
+                        trackLayer.layers.clear();
+                    } else {
+                        trackLayer.layers.removeAll(new HashSet<>(toRemove));
+                    }
+                }
+                trackLayer.requestRedraw();
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
             }
         });
@@ -389,6 +406,10 @@ public class MapsforgeMapView extends BaseMapView {
 
     private LayerManager getLayerManager() {
         return mapView.getLayerManager();
+    }
+
+    public GroupLayer getTrackLayer() {
+        return trackLayer;
     }
 
     // Replaces the displayed route: cancel a still-running route rendering first, otherwise the
@@ -496,6 +517,9 @@ public class MapsforgeMapView extends BaseMapView {
         getMapManager().getAppliedThemeModel().addChangeListener(appliedThemeListener);
         getMapManager().getAppliedThemeStyleModel().addChangeListener(appliedThemeStyleListener);
         mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().addTableModelListener(appliedOverlayListener);
+
+        // Add track layer once to the shared layers collection
+        addLayer(trackLayer);
     }
 
     public void setBackgroundMap(File backgroundMap) {
