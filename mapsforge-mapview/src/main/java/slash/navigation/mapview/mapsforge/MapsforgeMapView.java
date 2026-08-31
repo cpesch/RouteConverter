@@ -213,6 +213,7 @@ public class MapsforgeMapView extends BaseMapView {
     private Layer backgroundLayer;
     private final DelegatingShadeTileSource shadeTileSource = new DelegatingShadeTileSource();
     private final HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(shadeTileSource);
+    private final GroupLayer selectionLayer = new GroupLayer();
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private UpdateDecoupler updateDecoupler;
@@ -250,24 +251,44 @@ public class MapsforgeMapView extends BaseMapView {
 
             public void add(List<PositionWithLayer> positionWithLayers) {
                 LatLong center = null;
-                List<PositionWithLayer> withLayers = new ArrayList<>();
-                for (final PositionWithLayer positionWithLayer : positionWithLayers) {
-                    if (!positionWithLayer.hasCoordinates())
-                        continue;
-
-                    LatLong latLong = asLatLong(positionWithLayer.getPosition());
-                    Marker marker = createMarker(positionWithLayer, latLong);
-                    positionWithLayer.setLayer(marker);
-                    withLayers.add(positionWithLayer);
-                    center = latLong;
+                synchronized (selectionLayer) {
+                    for (final PositionWithLayer positionWithLayer : positionWithLayers) {
+                        if (!positionWithLayer.hasCoordinates())
+                            continue;
+                        LatLong latLong = asLatLong(positionWithLayer.getPosition());
+                        Marker marker = createMarker(positionWithLayer, latLong);
+                        positionWithLayer.setLayer(marker);
+                        selectionLayer.layers.add(marker);
+                        center = latLong;
+                    }
                 }
-                addObjectsWithLayer(withLayers);
+                selectionLayer.requestRedraw();
                 if (center != null)
                     setCenter(center, false);
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                removeObjectWithLayers(positionWithLayers);
+                synchronized (selectionLayer) {
+                    if (positionWithLayers.size() == selectionLayer.layers.size()) {
+                        selectionLayer.layers.clear();
+                    } else {
+                        // ArrayList#removeAll(Collection) is O(n) only if the argument's
+                        // contains() is O(1) -- a plain List here would degrade back to
+                        // O(n*m), so collect into a Set first
+                        Set<Layer> toRemove = new HashSet<>(positionWithLayers.size());
+                        for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                            Layer layer = positionWithLayer.getLayer();
+                            if (layer != null)
+                                toRemove.add(layer);
+                            else
+                                log.warning("Could not find layer to remove for " + positionWithLayer);
+                        }
+                        selectionLayer.layers.removeAll(toRemove);
+                    }
+                    for (PositionWithLayer positionWithLayer : positionWithLayers)
+                        positionWithLayer.setLayer(null);
+                }
+                selectionLayer.requestRedraw();
             }
         });
 
@@ -472,6 +493,9 @@ public class MapsforgeMapView extends BaseMapView {
         final MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         mapViewPosition.setZoomLevelMin(MINIMUM_ZOOM_LEVEL);
         mapViewPosition.setZoomLevelMax(MAXIMUM_ZOOM_LEVEL);
+
+        // Add the selection layer once on top; markers are added/removed from its child list
+        getLayerManager().getLayers().add(selectionLayer);
 
         double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
