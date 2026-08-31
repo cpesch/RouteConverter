@@ -27,7 +27,6 @@ import org.mapsforge.core.model.Point;
 import org.mapsforge.core.model.Rotation;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.BoundingBox;
-import slash.navigation.mapview.mapsforge.lines.Polyline;
 
 import java.util.ArrayList;
 import java.util.List;
