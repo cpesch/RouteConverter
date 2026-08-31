@@ -297,6 +297,7 @@ public class MapsforgeMapView extends BaseMapView {
 
             public void update(List<PairWithLayer> pairWithLayers) {
                 List<Layer> toRemove = toLayers(pairWithLayers);
+                toRemove.removeIf(l -> l == null);
                 synchronized (trackLayer) {
                     if (toRemove.size() == trackLayer.layers.size()) {
                         trackLayer.layers.clear();
@@ -309,6 +310,7 @@ public class MapsforgeMapView extends BaseMapView {
 
             public void remove(List<PairWithLayer> pairWithLayers) {
                 List<Layer> toRemove = toLayers(pairWithLayers);
+                toRemove.removeIf(l -> l == null);
                 synchronized (trackLayer) {
                     if (toRemove.size() == trackLayer.layers.size()) {
                         trackLayer.layers.clear();
