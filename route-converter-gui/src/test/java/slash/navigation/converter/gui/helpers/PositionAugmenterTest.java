@@ -103,6 +103,37 @@ public class PositionAugmenterTest {
     }
 
     @Test
+    public void testDescribePositionWithDescription() {
+        a.setDescription("Summit");
+
+        assertEquals("1: Summit", augmenter.describePosition(0, a));
+    }
+
+    @Test
+    public void testDescribePositionWithoutDescription() {
+        assertEquals("3", augmenter.describePosition(2, b));
+    }
+
+    @Test
+    public void testIsElevationLookupSkippedForFailedLookup() {
+        GpxPosition withCoordinates = new GpxPosition(1.0, 2.0, null, null, null, null);
+
+        assertTrue(augmenter.isElevationLookupSkipped(withCoordinates, null));
+    }
+
+    @Test
+    public void testIsElevationLookupSkippedForSuccessfulLookup() {
+        GpxPosition withCoordinates = new GpxPosition(1.0, 2.0, null, null, null, null);
+
+        assertFalse(augmenter.isElevationLookupSkipped(withCoordinates, "123 m"));
+    }
+
+    @Test
+    public void testIsElevationLookupSkippedForMissingCoordinates() {
+        assertFalse(augmenter.isElevationLookupSkipped(a, null));
+    }
+
+    @Test
     public void testNoCoordinatePredicateSkipsPositionWithCoordinates() {
         Wgs84Position position = new Wgs84Position(1.0, 2.0, null, null, null, "description");
 
