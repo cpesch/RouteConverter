@@ -1,9 +1,11 @@
 package slash.navigation.hgt;
 
+import org.junit.Before;
 import org.junit.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.datasources.DataSource;
 import slash.navigation.download.DownloadManager;
 
 import java.util.Map;
@@ -11,9 +13,18 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class HgtFilesTest {
-    private final HgtFiles files = new HgtFiles(null, new DownloadManager(null));
+    private HgtFiles files;
+
+    @Before
+    public void setUp() {
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSource.getDirectory()).thenReturn("hgt-test");
+        files = new HgtFiles(dataSource, new DownloadManager(null));
+    }
 
     @Test
     public void createFileKey() {
