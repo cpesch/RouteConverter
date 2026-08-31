@@ -285,12 +285,12 @@ public class MapsforgeMapView extends BaseMapView {
                         }
                         selectionLayer.layers.removeAll(toRemove);
                     }
+                    // Clear the layer references inside the synchronized block to ensure
+                    // atomicity with the layer removal - prevents race conditions where
+                    // mouse events could access PositionWithLayer objects with stale layer refs
+                    for (PositionWithLayer positionWithLayer : positionWithLayers)
+                        positionWithLayer.setLayer(null);
                 }
-                // Clear the layer references outside the synchronized block to minimize
-                // the critical section - these calls don't need the lock and reduce
-                // contention with mouse events accessing the same PositionWithLayer objects
-                for (PositionWithLayer positionWithLayer : positionWithLayers)
-                    positionWithLayer.setLayer(null);
                 selectionLayer.requestRedraw();
             }
         });
