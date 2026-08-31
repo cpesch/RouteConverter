@@ -21,6 +21,7 @@
 package slash.navigation.geonames;
 
 import slash.common.helpers.APIKeyRegistry;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
@@ -35,7 +36,9 @@ import jakarta.xml.bind.JAXBException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
@@ -213,5 +216,9 @@ public class GeoNamesService extends BaseGeocodingService implements ElevationSe
 
     public void downloadElevationData(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
+    }
+
+    public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
+        return Collections.emptyMap();
     }
 }

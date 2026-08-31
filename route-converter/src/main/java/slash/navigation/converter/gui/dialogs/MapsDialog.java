@@ -338,42 +338,37 @@ public class MapsDialog extends SimpleDialog {
         String coverageMaps = bundle.getString("coverage-maps");
         String coveragePoi = bundle.getString("coverage-poi");
 
-        switch (category) {
-            case coverageRouting:
-                RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
-                if (routingService.isDownload()) {
-                    coverageTiles = routingService.getCoverageTiles(boundingBox);
-                }
-                break;
-            case coverageElevation:
-                ElevationService elevationService = r.getElevationServiceFacade().getElevationService();
-                if (elevationService.isDownload()) {
-                    coverageTiles = elevationService.getCoverageTiles(boundingBox);
-                }
-                break;
-            case coverageMaps:
-                // Maps are covered if already downloaded
-                Map<BoundingBox, Boolean> mapCoverage = new HashMap<>();
-                for (MapDescriptor map : selectedMaps) {
-                    boolean covered = map instanceof LocalMap;
-                    mapCoverage.put(map.getBoundingBox(), covered);
-                }
-                coverageTiles = mapCoverage;
-                break;
-            case coveragePoi:
-                // POI is covered if calculateRemainingDownloadSize returns 0
-                MapsforgePoiLookup poiLookup = getMapsforgePoiLookup();
-                Map<BoundingBox, Boolean> poiCoverage = new HashMap<>();
-                for (MapDescriptor map : selectedMaps) {
-                    long poiDownloadSize = poiLookup.calculateRemainingDownloadSize(java.util.Collections.singletonList(map));
-                    poiCoverage.put(map.getBoundingBox(), poiDownloadSize == 0);
-                }
-                coverageTiles = poiCoverage;
-                break;
-            default:
-                // None or unrecognized
-                r.showCoverageOverlay(null, null, null);
-                return;
+        if (coverageRouting.equals(category)) {
+            RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
+            if (routingService.isDownload()) {
+                coverageTiles = routingService.getCoverageTiles(boundingBox);
+            }
+        } else if (coverageElevation.equals(category)) {
+            ElevationService elevationService = r.getElevationServiceFacade().getElevationService();
+            if (elevationService.isDownload()) {
+                coverageTiles = elevationService.getCoverageTiles(boundingBox);
+            }
+        } else if (coverageMaps.equals(category)) {
+            // Maps are covered if already downloaded
+            Map<BoundingBox, Boolean> mapCoverage = new HashMap<>();
+            for (MapDescriptor map : selectedMaps) {
+                boolean covered = map instanceof LocalMap;
+                mapCoverage.put(map.getBoundingBox(), covered);
+            }
+            coverageTiles = mapCoverage;
+        } else if (coveragePoi.equals(category)) {
+            // POI is covered if calculateRemainingDownloadSize returns 0
+            MapsforgePoiLookup poiLookup = getMapsforgePoiLookup();
+            Map<BoundingBox, Boolean> poiCoverage = new HashMap<>();
+            for (MapDescriptor map : selectedMaps) {
+                long poiDownloadSize = poiLookup.calculateRemainingDownloadSize(java.util.Collections.singletonList(map));
+                poiCoverage.put(map.getBoundingBox(), poiDownloadSize == 0);
+            }
+            coverageTiles = poiCoverage;
+        } else {
+            // None or unrecognized
+            r.showCoverageOverlay(null, null, null);
+            return;
         }
 
         r.showCoverageOverlay(boundingBox, category, coverageTiles);
