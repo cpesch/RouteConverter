@@ -2,6 +2,7 @@ package slash.navigation.mapview.mapsforge.renderer;
 
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.map.layer.GroupLayer;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.gui.models.IntegerModel;
@@ -67,7 +68,7 @@ public class TrackRenderer {
         synchronized (trackLayer) {
             for (PairWithLayer pairWithLayer : withLayers)
                 trackLayer.layers.add(pairWithLayer.getLayer());
-            trackLayer.requestRedraw();
         }
+        trackLayer.requestRedraw();
     }
 }

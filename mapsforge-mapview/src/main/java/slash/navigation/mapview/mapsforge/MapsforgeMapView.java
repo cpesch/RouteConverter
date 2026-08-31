@@ -303,8 +303,8 @@ public class MapsforgeMapView extends BaseMapView {
                     } else {
                         trackLayer.layers.removeAll(new HashSet<>(toRemove));
                     }
-                    trackLayer.requestRedraw();
                 }
+                trackLayer.requestRedraw();
                 trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
@@ -316,8 +316,8 @@ public class MapsforgeMapView extends BaseMapView {
                     } else {
                         trackLayer.layers.removeAll(new HashSet<>(toRemove));
                     }
-                    trackLayer.requestRedraw();
                 }
+                trackLayer.requestRedraw();
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
             }
         });
