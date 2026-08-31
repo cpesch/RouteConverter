@@ -62,14 +62,14 @@ public class HgtFilesTest {
 
     @Test
     public void testGetCoverageTilesHandlesPartialOverlap() {
-        // Create a bounding box that partially overlaps tile boundaries
+        // Tiles are chunked 1x1 starting at the bounding box's own corner, not aligned to a fixed
+        // degree grid, so a 1x1 degree area yields exactly one tile regardless of its offset.
         NavigationPosition southWest = new SimpleNavigationPosition(0.5, 42.5);
         NavigationPosition northEast = new SimpleNavigationPosition(1.5, 43.5);
         BoundingBox bbox = new BoundingBox(northEast, southWest);
 
         Map<BoundingBox, Boolean> coverageTiles = files.getCoverageTiles(bbox);
 
-        // Should return 4 tiles even though bbox is in the middle
-        assertEquals(4, coverageTiles.size());
+        assertEquals(1, coverageTiles.size());
     }
 }
