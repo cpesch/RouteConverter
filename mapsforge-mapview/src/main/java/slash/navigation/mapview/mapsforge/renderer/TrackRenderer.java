@@ -67,7 +67,7 @@ public class TrackRenderer {
         synchronized (trackLayer) {
             for (PairWithLayer pairWithLayer : withLayers)
                 trackLayer.layers.add(pairWithLayer.getLayer());
+            trackLayer.requestRedraw();
         }
-        trackLayer.requestRedraw();
     }
 }
