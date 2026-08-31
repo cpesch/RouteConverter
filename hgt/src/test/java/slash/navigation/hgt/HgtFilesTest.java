@@ -4,6 +4,7 @@ import org.junit.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.datasources.DataSource;
 import slash.navigation.download.DownloadManager;
 
 import java.util.Map;
@@ -11,9 +12,17 @@ import java.util.Map;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class HgtFilesTest {
-    private final HgtFiles files = new HgtFiles(null, new DownloadManager(null));
+    private static DataSource newDataSource() {
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSource.getDirectory()).thenReturn("hgt-coverage-test");
+        return dataSource;
+    }
+
+    private final HgtFiles files = new HgtFiles(newDataSource(), new DownloadManager(null));
 
     @Test
     public void createFileKey() {
@@ -62,14 +71,14 @@ public class HgtFilesTest {
 
     @Test
     public void testGetCoverageTilesHandlesPartialOverlap() {
-        // Create a bounding box that partially overlaps tile boundaries
+        // Tiles are chunked 1x1 starting at the bounding box's own corner, not aligned to a fixed
+        // degree grid, so a 1x1 degree area yields exactly one tile regardless of its offset.
         NavigationPosition southWest = new SimpleNavigationPosition(0.5, 42.5);
         NavigationPosition northEast = new SimpleNavigationPosition(1.5, 43.5);
         BoundingBox bbox = new BoundingBox(northEast, southWest);
 
         Map<BoundingBox, Boolean> coverageTiles = files.getCoverageTiles(bbox);
 
-        // Should return 4 tiles even though bbox is in the middle
-        assertEquals(4, coverageTiles.size());
+        assertEquals(1, coverageTiles.size());
     }
 }
