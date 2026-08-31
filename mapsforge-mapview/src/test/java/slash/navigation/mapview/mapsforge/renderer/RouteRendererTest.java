@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.map.layer.GroupLayer;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
@@ -39,6 +40,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -61,6 +63,7 @@ public class RouteRendererTest {
     private MapsforgeMapView mapView;
     private MapsforgeMapViewCallback mapViewCallback;
     private RouteRenderer renderer;
+    private GroupLayer trackLayer;
 
     @Before
     public void setUp() {
@@ -69,6 +72,9 @@ public class RouteRendererTest {
         mapView = mock(MapsforgeMapView.class);
         when(mapView.asLatLong(any(NavigationPosition.class))).thenReturn(new LatLong(0.0, 0.0));
         when(mapView.asLatLong(anyList())).thenReturn(emptyList());
+        trackLayer = new GroupLayer();
+        when(mapView.getTrackLayer()).thenReturn(trackLayer);
+        when(mapView.getTileSize()).thenReturn(256);
         mapViewCallback = mock(MapsforgeMapViewCallback.class);
         doAnswer(invocation -> {
             throw new AssertionError("rendering failed", invocation.getArgument(0));
@@ -146,8 +152,8 @@ public class RouteRendererTest {
 
         // legs 2 and 3 are not routed anymore after the cancellation
         verify(routingService, times(1)).getRouteBetween(any(), any(), any(), any());
-        // the straight lines went to the map as a single batch, not one AWT event per line
-        verify(mapView, times(1)).addLayers(argThat(layers -> layers.size() == 3));
+        // the straight lines went to the trackLayer as a single batch, not one AWT event per line
+        assertEquals(3, trackLayer.layers.size());
     }
 
     @Test(timeout = 5000)
@@ -171,5 +177,22 @@ public class RouteRendererTest {
 
         canceller.join();
         verify(routingService, times(0)).getRouteBetween(any(), any(), any(), any());
+    }
+
+    @Test(timeout = 5000)
+    public void routedLegSwapsStraightLineWithPolyline() {
+        RoutingService routingService = mock(RoutingService.class);
+        when(routingService.isInitialized()).thenReturn(true);
+        when(routingService.isDownload()).thenReturn(false);
+        when(mapViewCallback.getRoutingService()).thenReturn(routingService);
+        when(routingService.getRouteBetween(any(), any(), any(), any())).thenReturn(
+            new RoutingResult(emptyList(), new DistanceAndTime(1.0, 1L), Valid));
+        List<PairWithLayer> pairWithLayers = asList(createPair(0));
+
+        renderer.renderRoute("map", pairWithLayers, () -> {});
+
+        // after routing, the straight Line should be replaced with a Polyline
+        verify(routingService, times(1)).getRouteBetween(any(), any(), any(), any());
+        assertEquals(1, trackLayer.layers.size());
     }
 }

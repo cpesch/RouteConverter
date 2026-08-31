@@ -21,6 +21,7 @@ package slash.navigation.mapview.mapsforge.renderer;
 
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.map.layer.GroupLayer;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
@@ -204,7 +205,12 @@ public class RouteRenderer {
 
             for (Map.Entry<PairWithLayer, Line> entry : pairsToLines.entrySet())
                 entry.getKey().setLayer(entry.getValue());
-            mapView.addLayers(new ArrayList<>(pairsToLines.values()));
+
+            GroupLayer trackLayer = mapView.getTrackLayer();
+            synchronized (trackLayer) {
+                trackLayer.layers.addAll(pairsToLines.values());
+            }
+            trackLayer.requestRedraw();
         } finally {
             synchronized (notificationMutex) {
                 drawingStraightLine = false;
@@ -235,6 +241,7 @@ public class RouteRenderer {
         RoutingService routingService = mapViewCallback.getRoutingService();
 
         DownloadFuture future = routingService.isDownload() ? routingService.downloadRoutingDataFor(mapIdentifier, asLongitudeAndLatitude(pairWithLayers)) : null;
+        GroupLayer trackLayer = mapView.getTrackLayer();
         for (PairWithLayer pairWithLayer : pairWithLayers) {
             synchronized (notificationMutex) {
                 if (!drawingRoute)
@@ -248,13 +255,18 @@ public class RouteRenderer {
             Layer layer = pairWithLayer.getLayer();
             IntermediateRoute intermediateRoute = calculateRoute(routingService, future, pairWithLayer);
 
-            mapView.removeLayer(layer);
-            pairWithLayer.setLayer(null);
+            synchronized (trackLayer) {
+                trackLayer.layers.remove(layer);
+            }
 
             Paint routePaint = choosePaint(intermediateRoute.quality(), paint);
             Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.positions()), routePaint, mapView.getTileSize());
             pairWithLayer.setLayer(polyline);
-            mapView.addLayer(polyline);
+
+            synchronized (trackLayer) {
+                trackLayer.layers.add(polyline);
+            }
+            trackLayer.requestRedraw();
         }
     }
 

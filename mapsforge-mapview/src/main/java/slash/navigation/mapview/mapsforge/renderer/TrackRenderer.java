@@ -2,6 +2,7 @@ package slash.navigation.mapview.mapsforge.renderer;
 
 import org.mapsforge.core.graphics.GraphicFactory;
 import org.mapsforge.core.graphics.Paint;
+import org.mapsforge.map.layer.GroupLayer;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.gui.models.IntegerModel;
@@ -49,19 +50,24 @@ public class TrackRenderer {
         paint.setStrokeWidth(trackLineWidthModel.getInteger());
         int tileSize = mapView.getTileSize();
 
-        List<PairWithLayer> withLayers = new ArrayList<>();
+        GroupLayer trackLayer = mapView.getTrackLayer();
+        List<Line> lines = new ArrayList<>();
         for (PairWithLayer pairWithLayer : pairWithLayers) {
             if (!pairWithLayer.hasCoordinates())
                 continue;
 
             Line line = new Line(mapView.asLatLong(pairWithLayer.getFirst()), mapView.asLatLong(pairWithLayer.getSecond()), paint, tileSize);
             pairWithLayer.setLayer(line);
-            withLayers.add(pairWithLayer);
+            lines.add(line);
 
             Double distance = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());
             Long time = pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond());
             pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, time));
         }
-        mapView.addObjectsWithLayer(withLayers);
+
+        synchronized (trackLayer) {
+            trackLayer.layers.addAll(lines);
+        }
+        trackLayer.requestRedraw();
     }
 }
