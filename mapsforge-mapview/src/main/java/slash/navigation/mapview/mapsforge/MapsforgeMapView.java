@@ -304,7 +304,6 @@ public class MapsforgeMapView extends BaseMapView {
                         trackLayer.layers.removeAll(new HashSet<>(toRemove));
                     }
                 }
-                trackLayer.requestRedraw();
                 trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
