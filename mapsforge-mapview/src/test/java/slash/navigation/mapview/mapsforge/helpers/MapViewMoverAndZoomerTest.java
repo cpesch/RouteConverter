@@ -23,13 +23,10 @@ import org.junit.Test;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.GroupLayer;
 import org.mapsforge.map.layer.Layer;
-import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -37,14 +34,15 @@ import static org.mockito.Mockito.*;
 public class MapViewMoverAndZoomerTest {
 
     /**
-     * Fake Marker implementation for testing - avoids needing a real Bitmap
-     * and MapsforgeMapView which require a live rendering context.
+     * Fake DraggableMarker for testing - extends DraggableMarker directly.
+     * The real DraggableMarker requires MapsforgeMapView and PositionWithLayer which
+     * we don't have in a unit test, so we subclass to override onTap for hit testing.
      */
-    private static class FakeMarker extends Marker {
+    private static class FakeDraggableMarker extends DraggableMarker {
         private final boolean tapResult;
 
-        public FakeMarker(LatLong position, boolean tapResult) {
-            super(position, null, 0, 0);
+        public FakeDraggableMarker(LatLong position, boolean tapResult) {
+            super(null, null, position, null, 0, 0);
             this.tapResult = tapResult;
         }
 
@@ -52,15 +50,6 @@ public class MapViewMoverAndZoomerTest {
         public boolean onTap(LatLong tapLatLong, org.mapsforge.core.model.Point layerXY,
                             org.mapsforge.core.model.Point tapXY) {
             return tapResult;
-        }
-    }
-
-    /**
-     * Fake DraggableMarker for testing - extends FakeMarker to implement the interface.
-     */
-    private static class FakeDraggableMarker extends FakeMarker implements DraggableMarker {
-        public FakeDraggableMarker(LatLong position, boolean tapResult) {
-            super(position, tapResult);
         }
 
         @Override
