@@ -211,12 +211,12 @@ public class MapsforgeMapView extends BaseMapView {
     private TileLayerFactory tileLayerFactory;
     private OverlayManager overlayManager;
     private Layer backgroundLayer;
+    private final GroupLayer trackLayer = new GroupLayer();
     private final DelegatingShadeTileSource shadeTileSource = new DelegatingShadeTileSource();
     private final HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(shadeTileSource);
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private UpdateDecoupler updateDecoupler;
-    private final GroupLayer trackLayer = new GroupLayer();
 
     // initialization
 
@@ -228,12 +228,6 @@ public class MapsforgeMapView extends BaseMapView {
         this.positionListsModel = positionListsModel;
         this.preferencesModel = preferencesModel;
         this.mapViewCallback = (MapsforgeMapViewCallback) mapViewCallback;
-
-        // Create renderers first before the updaters that use them
-        routeRenderer = new RouteRenderer(this, this.mapViewCallback, preferencesModel.getRouteColorModel(),
-                preferencesModel.getRouteLineWidthModel(), GRAPHIC_FACTORY);
-        trackRenderer = new TrackRenderer(this, preferencesModel.getTrackColorModel(),
-                preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
 
         this.selectionUpdater = new SelectionUpdater(positionsModel, new SelectionOperation() {
             private Bitmap markerIcon;
@@ -285,13 +279,17 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             public void update(List<PairWithLayer> pairWithLayers) {
-                removeLayers(toLayers(pairWithLayers));
+                synchronized (trackLayer) {
+                    trackLayer.layers.clear();
+                }
                 routeRenderer.renderRoute(getMapIdentifier(), pairWithLayers,
                         () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
-                removeLayers(toLayers(pairWithLayers));
+                synchronized (trackLayer) {
+                    trackLayer.layers.clear();
+                }
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
             }
         });
@@ -363,6 +361,10 @@ public class MapsforgeMapView extends BaseMapView {
 
         initializeActions();
         initializeMapView();
+        routeRenderer = new RouteRenderer(this, this.mapViewCallback, preferencesModel.getRouteColorModel(),
+                preferencesModel.getRouteLineWidthModel(), GRAPHIC_FACTORY);
+        trackRenderer = new TrackRenderer(this, preferencesModel.getTrackColorModel(),
+                preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
         nonSelectedPositionListsRenderer = new NonSelectedPositionListsRenderer(this, positionListsModel,
                 preferencesModel.getRouteColorModel(), preferencesModel.getTrackColorModel(),
                 preferencesModel.getRouteLineWidthModel(), preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
@@ -396,10 +398,6 @@ public class MapsforgeMapView extends BaseMapView {
 
     private LayerManager getLayerManager() {
         return mapView.getLayerManager();
-    }
-
-    public GroupLayer getTrackLayer() {
-        return trackLayer;
     }
 
     // Replaces the displayed route: cancel a still-running route rendering first, otherwise the
@@ -507,9 +505,6 @@ public class MapsforgeMapView extends BaseMapView {
         getMapManager().getAppliedThemeModel().addChangeListener(appliedThemeListener);
         getMapManager().getAppliedThemeStyleModel().addChangeListener(appliedThemeStyleListener);
         mapViewCallback.getTileServerMapManager().getAppliedOverlaysModel().addTableModelListener(appliedOverlayListener);
-
-        // Add track layer once to the shared layers collection
-        addLayer(trackLayer);
     }
 
     public void setBackgroundMap(File backgroundMap) {
@@ -698,6 +693,7 @@ public class MapsforgeMapView extends BaseMapView {
 
         handleBackground();
         handleOverlays();
+        handleTrackLayer();
         handleNonSelectedPositionLists();
 
         // then start download layer threads
@@ -721,6 +717,19 @@ public class MapsforgeMapView extends BaseMapView {
         Layers layers = getLayerManager().getLayers();
         layers.remove(overlayManager.getLayer());
         layers.add(overlayManager.getLayer());
+    }
+
+    private void handleTrackLayer() {
+        Layers layers = getLayerManager().getLayers();
+        layers.remove(trackLayer);
+
+        // insert directly above the overlays so that the selected route/track is always
+        // drawn on top of overlays but below the gray set (non-selected position lists)
+        int index = 0;
+        for (Layer layer : mapsToLayers.values())
+            index = max(index, layers.indexOf(layer) + 1);
+        index = max(index, layers.indexOf(overlayManager.getLayer()) + 1);
+        layers.add(index, trackLayer);
     }
 
     private void handleBackground() {
@@ -1105,6 +1114,10 @@ public class MapsforgeMapView extends BaseMapView {
 
     public /*for DraggableMarker*/ MapView getMapView() {
         return mapView;
+    }
+
+    public GroupLayer getTrackLayer() {
+        return trackLayer;
     }
 
     public boolean isSupportsPrinting() {

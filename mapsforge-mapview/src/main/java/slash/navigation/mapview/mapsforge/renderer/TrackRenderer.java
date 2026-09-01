@@ -50,24 +50,23 @@ public class TrackRenderer {
         paint.setStrokeWidth(trackLineWidthModel.getInteger());
         int tileSize = mapView.getTileSize();
 
-        List<PairWithLayer> withLayers = new ArrayList<>();
+        GroupLayer trackLayer = mapView.getTrackLayer();
+        List<Line> lines = new ArrayList<>();
         for (PairWithLayer pairWithLayer : pairWithLayers) {
             if (!pairWithLayer.hasCoordinates())
                 continue;
 
             Line line = new Line(mapView.asLatLong(pairWithLayer.getFirst()), mapView.asLatLong(pairWithLayer.getSecond()), paint, tileSize);
             pairWithLayer.setLayer(line);
-            withLayers.add(pairWithLayer);
+            lines.add(line);
 
             Double distance = pairWithLayer.getFirst().calculateDistance(pairWithLayer.getSecond());
             Long time = pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond());
             pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, time));
         }
 
-        GroupLayer trackLayer = mapView.getTrackLayer();
         synchronized (trackLayer) {
-            for (PairWithLayer pairWithLayer : withLayers)
-                trackLayer.layers.add(pairWithLayer.getLayer());
+            trackLayer.layers.addAll(lines);
         }
         trackLayer.requestRedraw();
     }
