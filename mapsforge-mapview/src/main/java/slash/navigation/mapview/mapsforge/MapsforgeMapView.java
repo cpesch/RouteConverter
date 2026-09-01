@@ -302,29 +302,16 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             public void update(List<PairWithLayer> pairWithLayers) {
-                List<Layer> toRemove = toLayers(pairWithLayers);
-                toRemove.removeIf(l -> l == null);
                 synchronized (trackLayer) {
-                    if (toRemove.size() == trackLayer.layers.size()) {
-                        trackLayer.layers.clear();
-                    } else {
-                        trackLayer.layers.removeAll(new HashSet<>(toRemove));
-                    }
+                    trackLayer.layers.clear();
                 }
                 trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
-                List<Layer> toRemove = toLayers(pairWithLayers);
-                toRemove.removeIf(l -> l == null);
                 synchronized (trackLayer) {
-                    if (toRemove.size() == trackLayer.layers.size()) {
-                        trackLayer.layers.clear();
-                    } else {
-                        trackLayer.layers.removeAll(new HashSet<>(toRemove));
-                    }
+                    trackLayer.layers.clear();
                 }
-                trackLayer.requestRedraw();
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
             }
         });
