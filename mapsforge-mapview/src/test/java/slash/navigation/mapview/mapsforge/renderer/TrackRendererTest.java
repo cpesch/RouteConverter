@@ -28,7 +28,6 @@ import org.mapsforge.map.layer.GroupLayer;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.gui.models.IntegerModel;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
@@ -79,7 +78,12 @@ public class TrackRendererTest {
     }
 
     private NavigationPosition createPosition(double longitude, double latitude) {
-        NavigationPosition position = new SimpleNavigationPosition(longitude, latitude);
+        NavigationPosition position = mock(NavigationPosition.class);
+        when(position.hasCoordinates()).thenReturn(true);
+        when(position.getLongitude()).thenReturn(longitude);
+        when(position.getLatitude()).thenReturn(latitude);
+        when(position.calculateDistance(any(NavigationPosition.class))).thenReturn(1.0);
+        when(position.calculateTime(any(NavigationPosition.class))).thenReturn(1000L);
         return position;
     }
 
@@ -160,7 +164,7 @@ public class TrackRendererTest {
 
         DistanceAndTime distanceAndTime = pairWithLayer.getDistanceAndTime();
         assertNotNull("Should calculate distance and time", distanceAndTime);
-        assertNotNull("Distance should be calculated", distanceAndTime.getDistance());
-        assertNotNull("Time should be calculated", distanceAndTime.getTime());
+        assertNotNull("Distance should be calculated", distanceAndTime.distance());
+        assertNotNull("Time should be calculated", distanceAndTime.timeInMillis());
     }
 }
