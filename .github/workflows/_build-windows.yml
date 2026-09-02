@@ -60,7 +60,7 @@ jobs:
           echo "JRE_VERSION=$ver"                 >> "$GITHUB_ENV"
           echo "JRE_BASE=jre-$ver-x64-stripped"   >> "$GITHUB_ENV"
 
-      - uses: actions/setup-java@v5
+      - uses: actions/setup-java@v6
         with:
           distribution: temurin
           java-version: ${{ steps.jre.outputs.version }}

@@ -18,7 +18,7 @@
     Copyright (C) 2007 Christian Pesch. All Rights Reserved.
 */
 
-package slash.navigation.converter.gui.models;
+package slash.navigation.converter.gui.undo;
 
 import org.junit.Test;
 import slash.navigation.base.BaseRoute;
@@ -26,14 +26,16 @@ import slash.navigation.bcr.BcrPosition;
 import slash.navigation.bcr.BcrRoute;
 import slash.navigation.bcr.MTP0607Format;
 import slash.navigation.converter.gui.panels.PositionsModelCallbackImpl;
+import slash.navigation.gui.undo.UndoManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class PositionsModelTest {
-    PositionsModelImpl model = new PositionsModelImpl(new PositionsModelCallbackImpl(null));
+public class UndoPositionsModelTest {
+    UndoManager undoManager = new UndoManager();
+    UndoPositionsModel model = new UndoPositionsModel(undoManager, new PositionsModelCallbackImpl(null));
     BaseRoute route = new BcrRoute(new MTP0607Format(), "?", null, new ArrayList<BcrPosition>());
     BcrPosition a = new BcrPosition(1, 1, 0, "a");
     BcrPosition b = new BcrPosition(3, 3, 0, "b");
@@ -53,45 +55,43 @@ public class PositionsModelTest {
         model.setRoute(route);
     }
 
-    @Test
-    public void testGetPositions() {
-        initialize();
-        assertEquals(5, model.getRowCount());
-        assertEquals("b", model.getPosition(1).getDescription());
-        assertEquals(0, model.getPositions(1, 1).size());
-        assertEquals("b", model.getPositions(1, 3).get(0).getDescription());
-        assertEquals("b", model.getPositions(0, 2).get(1).getDescription());
-        assertEquals(1, model.getPositions(new int[]{1}).size());
-        assertEquals("b", model.getPositions(new int[]{1}).get(0).getDescription());
-        assertEquals("b", model.getPositions(new int[]{0, 1}).get(1).getDescription());
+    private String descriptions() {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < model.getRowCount(); i++)
+            result.append(model.getPosition(i).getDescription());
+        return result.toString();
     }
 
     @Test
-    public void testRemoveWithFromAndTo() {
-        initialize();
-        model.remove(1, 4);
-        assertEquals(2, model.getRowCount());
-        assertEquals("a", model.getPosition(0).getDescription());
-        assertEquals("e", model.getPosition(1).getDescription());
-    }
-
-    @Test
-    public void testRemoveWithArray() {
-        initialize();
-        model.remove(new int[]{1, 2, 3});
-        assertEquals(2, model.getRowCount());
-        assertEquals("a", model.getPosition(0).getDescription());
-        assertEquals("e", model.getPosition(1).getDescription());
-    }
-
-    @Test
-    public void testRemoveWithScatteredIndices() {
+    public void testRemoveWithScatteredIndicesAndUndo() {
         initialize();
         // two separate single-element ranges, not one contiguous block
         model.remove(new int[]{1, 3});
         assertEquals(3, model.getRowCount());
-        assertEquals("a", model.getPosition(0).getDescription());
-        assertEquals("c", model.getPosition(1).getDescription());
-        assertEquals("e", model.getPosition(2).getDescription());
+        assertEquals("ace", descriptions());
+
+        undoManager.undo();
+        assertEquals(5, model.getRowCount());
+        assertEquals("abcde", descriptions());
+
+        undoManager.redo();
+        assertEquals(3, model.getRowCount());
+        assertEquals("ace", descriptions());
+    }
+
+    @Test
+    public void testRemoveWithContiguousRangeAndUndo() {
+        initialize();
+        model.remove(new int[]{1, 2, 3});
+        assertEquals(2, model.getRowCount());
+        assertEquals("ae", descriptions());
+
+        undoManager.undo();
+        assertEquals(5, model.getRowCount());
+        assertEquals("abcde", descriptions());
+
+        undoManager.redo();
+        assertEquals(2, model.getRowCount());
+        assertEquals("ae", descriptions());
     }
 }
