@@ -306,17 +306,14 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             public void update(List<PairWithLayer> pairWithLayers) {
-                synchronized (trackLayer) {
-                    trackLayer.layers.clear();
-                }
+                removeFromGroupLayer(trackLayer, toLayers(pairWithLayers));
                 routeRenderer.renderRoute(getMapIdentifier(), pairWithLayers,
                         () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
-                synchronized (trackLayer) {
-                    trackLayer.layers.clear();
-                }
+                removeFromGroupLayer(trackLayer, toLayers(pairWithLayers));
+                trackLayer.requestRedraw();
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
             }
         });
@@ -327,16 +324,13 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             public void update(List<PairWithLayer> pairWithLayers) {
-                synchronized (trackLayer) {
-                    trackLayer.layers.clear();
-                }
+                removeFromGroupLayer(trackLayer, toLayers(pairWithLayers));
                 trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
-                synchronized (trackLayer) {
-                    trackLayer.layers.clear();
-                }
+                removeFromGroupLayer(trackLayer, toLayers(pairWithLayers));
+                trackLayer.requestRedraw();
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
             }
         });
@@ -957,6 +951,25 @@ public class MapsforgeMapView extends BaseMapView {
 
     public void addToGroupLayer(GroupLayer groupLayer, Layer layer) {
         addToGroupLayer(groupLayer, singletonList(layer));
+    }
+
+    /**
+     * Removes the given layers from a {@link GroupLayer}'s child list, leaving the rest of the
+     * group untouched. Clearing the whole group instead would drop the layers of every position
+     * that was not part of this update.
+     */
+    public void removeFromGroupLayer(GroupLayer groupLayer, Collection<? extends Layer> layers) {
+        // removeAll(Collection) is O(n) only if the argument's contains() is O(1)
+        Set<Layer> toRemove = new HashSet<>(layers.size());
+        for (Layer layer : layers) {
+            if (layer != null)
+                toRemove.add(layer);
+        }
+        if (toRemove.isEmpty())
+            return;
+        synchronized (groupLayer) {
+            groupLayer.layers.removeAll(toRemove);
+        }
     }
 
     public void addLayer(Layer layer) {
