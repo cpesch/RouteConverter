@@ -24,7 +24,6 @@ import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.GroupLayer;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
-import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.util.MapViewProjection;
@@ -151,7 +150,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
             LatLong tapLatLong = projection.fromPixels(e.getX(), e.getY());
             org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(e.getX(), e.getY());
 
-            DraggableMarker marker = findDraggableMarkerAt(layerManager.getLayers().getLayers(), projection, tapLatLong, tapXY);
+            DraggableMarker marker = findDraggableMarkerAt(layerManager.getLayers(), projection, tapLatLong, tapXY);
             if (marker != null) {
                 org.mapsforge.core.model.Point layerXY = projection.toPixels(marker.getPosition());
                 return new MarkerAndDelta(marker, layerXY.x - tapXY.x, layerXY.y - tapXY.y);
