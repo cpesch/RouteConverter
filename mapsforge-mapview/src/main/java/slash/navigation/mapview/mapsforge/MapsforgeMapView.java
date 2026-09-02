@@ -119,6 +119,8 @@ import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asAlpha;
+import static slash.navigation.mapview.mapsforge.helpers.GroupLayerHelper.addToGroupLayer;
+import static slash.navigation.mapview.mapsforge.helpers.GroupLayerHelper.removeFromGroupLayer;
 import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.collectBoundingPositions;
 import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.computeAddRow;
 import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.thresholdForPixel;
@@ -264,7 +266,7 @@ public class MapsforgeMapView extends BaseMapView {
                         markers.add(marker);
                         center = latLong;
                     }
-                    addToGroupLayer(selectionLayer, markers);
+                    addToGroupLayer(selectionLayer, getDisplayModel(), markers);
                 }
                 selectionLayer.requestRedraw();
                 if (center != null)
@@ -350,7 +352,7 @@ public class MapsforgeMapView extends BaseMapView {
                     positionWithLayer.setLayer(marker);
                     withLayers.add(positionWithLayer);
                 }
-                addToGroupLayer(waypointLayer, toLayers(withLayers));
+                addToGroupLayer(waypointLayer, getDisplayModel(), toLayers(withLayers));
                 waypointLayer.requestRedraw();
             }
 
@@ -933,43 +935,8 @@ public class MapsforgeMapView extends BaseMapView {
         magnifierPainter.showPositionMagnifier(positions);
     }
 
-    /**
-     * Adds layers to the child list of a {@link GroupLayer}. Always use this instead of touching
-     * {@link GroupLayer#layers} directly: {@link Layers#add} is the only place that assigns the
-     * {@link DisplayModel}, and {@link GroupLayer#setDisplayModel} only reaches the children that
-     * are present when it is called. A child added afterwards would keep a null display model and
-     * let {@link Marker#draw} kill the LayerManager thread with a NullPointerException.
-     */
-    public void addToGroupLayer(GroupLayer groupLayer, Collection<? extends Layer> layers) {
-        DisplayModel displayModel = mapView.getModel().displayModel;
-        synchronized (groupLayer) {
-            for (Layer layer : layers)
-                layer.setDisplayModel(displayModel);
-            groupLayer.layers.addAll(layers);
-        }
-    }
-
-    public void addToGroupLayer(GroupLayer groupLayer, Layer layer) {
-        addToGroupLayer(groupLayer, singletonList(layer));
-    }
-
-    /**
-     * Removes the given layers from a {@link GroupLayer}'s child list, leaving the rest of the
-     * group untouched. Clearing the whole group instead would drop the layers of every position
-     * that was not part of this update.
-     */
-    public void removeFromGroupLayer(GroupLayer groupLayer, Collection<? extends Layer> layers) {
-        // removeAll(Collection) is O(n) only if the argument's contains() is O(1)
-        Set<Layer> toRemove = new HashSet<>(layers.size());
-        for (Layer layer : layers) {
-            if (layer != null)
-                toRemove.add(layer);
-        }
-        if (toRemove.isEmpty())
-            return;
-        synchronized (groupLayer) {
-            groupLayer.layers.removeAll(toRemove);
-        }
+    public DisplayModel getDisplayModel() {
+        return mapView.getModel().displayModel;
     }
 
     public void addLayer(Layer layer) {

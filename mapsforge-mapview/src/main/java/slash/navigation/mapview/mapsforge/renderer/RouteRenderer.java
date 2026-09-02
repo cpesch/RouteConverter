@@ -46,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import static slash.navigation.mapview.mapsforge.helpers.GroupLayerHelper.addToGroupLayer;
 import static java.lang.String.format;
 import static java.lang.Thread.sleep;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
@@ -207,7 +208,7 @@ public class RouteRenderer {
                 entry.getKey().setLayer(entry.getValue());
 
             GroupLayer trackLayer = mapView.getTrackLayer();
-            mapView.addToGroupLayer(trackLayer, pairsToLines.values());
+            addToGroupLayer(trackLayer, mapView.getDisplayModel(), pairsToLines.values());
             trackLayer.requestRedraw();
         } finally {
             synchronized (notificationMutex) {
@@ -261,7 +262,7 @@ public class RouteRenderer {
             Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.positions()), routePaint, mapView.getTileSize());
             pairWithLayer.setLayer(polyline);
 
-            mapView.addToGroupLayer(trackLayer, polyline);
+            addToGroupLayer(trackLayer, mapView.getDisplayModel(), polyline);
             trackLayer.requestRedraw();
         }
     }
