@@ -13,6 +13,7 @@ import slash.navigation.mapview.mapsforge.updater.PairWithLayer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static slash.navigation.mapview.mapsforge.helpers.GroupLayerHelper.addToGroupLayer;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asRGBA;
 
 /**
@@ -65,7 +66,7 @@ public class TrackRenderer {
             pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, time));
         }
 
-        mapView.addToGroupLayer(trackLayer, lines);
+        addToGroupLayer(trackLayer, mapView.getDisplayModel(), lines);
         trackLayer.requestRedraw();
     }
 }
