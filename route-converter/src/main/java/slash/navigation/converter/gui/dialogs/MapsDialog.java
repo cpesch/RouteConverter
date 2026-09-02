@@ -435,7 +435,7 @@ public class MapsDialog extends SimpleDialog {
         panel3.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "offline-tab"), panel3);
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel4.setLayout(new GridLayoutManager(9, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
@@ -469,6 +469,16 @@ public class MapsDialog extends SimpleDialog {
         panel4.add(checkBoxDownloadPoiData, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
+        labelCoverage = new JLabel();
+        this.$$$loadLabelText$$$(labelCoverage,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "show-coverage-for"));
+        panel4.add(labelCoverage,
+                new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxCoverage = new JComboBox<>();
+        panel4.add(comboBoxCoverage,
+                new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                        GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "download-complete-coverage"));
