@@ -254,15 +254,17 @@ public class MapsforgeMapView extends BaseMapView {
             public void add(List<PositionWithLayer> positionWithLayers) {
                 LatLong center = null;
                 synchronized (selectionLayer) {
+                    List<Layer> markers = new ArrayList<>(positionWithLayers.size());
                     for (final PositionWithLayer positionWithLayer : positionWithLayers) {
                         if (!positionWithLayer.hasCoordinates())
                             continue;
                         LatLong latLong = asLatLong(positionWithLayer.getPosition());
                         Marker marker = createMarker(positionWithLayer, latLong);
                         positionWithLayer.setLayer(marker);
-                        selectionLayer.layers.add(marker);
+                        markers.add(marker);
                         center = latLong;
                     }
+                    addToGroupLayer(selectionLayer, markers);
                 }
                 selectionLayer.requestRedraw();
                 if (center != null)
@@ -354,10 +356,7 @@ public class MapsforgeMapView extends BaseMapView {
                     positionWithLayer.setLayer(marker);
                     withLayers.add(positionWithLayer);
                 }
-                synchronized (waypointLayer) {
-                    for (PositionWithLayer positionWithLayer : withLayers)
-                        waypointLayer.layers.add(positionWithLayer.getLayer());
-                }
+                addToGroupLayer(waypointLayer, toLayers(withLayers));
                 waypointLayer.requestRedraw();
             }
 
@@ -938,6 +937,26 @@ public class MapsforgeMapView extends BaseMapView {
 
     public void showPositionMagnifier(List<NavigationPosition> positions) {
         magnifierPainter.showPositionMagnifier(positions);
+    }
+
+    /**
+     * Adds layers to the child list of a {@link GroupLayer}. Always use this instead of touching
+     * {@link GroupLayer#layers} directly: {@link Layers#add} is the only place that assigns the
+     * {@link DisplayModel}, and {@link GroupLayer#setDisplayModel} only reaches the children that
+     * are present when it is called. A child added afterwards would keep a null display model and
+     * let {@link Marker#draw} kill the LayerManager thread with a NullPointerException.
+     */
+    public void addToGroupLayer(GroupLayer groupLayer, Collection<? extends Layer> layers) {
+        DisplayModel displayModel = mapView.getModel().displayModel;
+        synchronized (groupLayer) {
+            for (Layer layer : layers)
+                layer.setDisplayModel(displayModel);
+            groupLayer.layers.addAll(layers);
+        }
+    }
+
+    public void addToGroupLayer(GroupLayer groupLayer, Layer layer) {
+        addToGroupLayer(groupLayer, singletonList(layer));
     }
 
     public void addLayer(Layer layer) {

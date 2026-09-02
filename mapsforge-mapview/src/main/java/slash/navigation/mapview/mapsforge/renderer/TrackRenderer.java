@@ -65,9 +65,7 @@ public class TrackRenderer {
             pairWithLayer.setDistanceAndTime(new DistanceAndTime(distance, time));
         }
 
-        synchronized (trackLayer) {
-            trackLayer.layers.addAll(lines);
-        }
+        mapView.addToGroupLayer(trackLayer, lines);
         trackLayer.requestRedraw();
     }
 }

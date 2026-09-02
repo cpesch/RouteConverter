@@ -207,9 +207,7 @@ public class RouteRenderer {
                 entry.getKey().setLayer(entry.getValue());
 
             GroupLayer trackLayer = mapView.getTrackLayer();
-            synchronized (trackLayer) {
-                trackLayer.layers.addAll(pairsToLines.values());
-            }
+            mapView.addToGroupLayer(trackLayer, pairsToLines.values());
             trackLayer.requestRedraw();
         } finally {
             synchronized (notificationMutex) {
@@ -263,9 +261,7 @@ public class RouteRenderer {
             Polyline polyline = new Polyline(mapView.asLatLong(intermediateRoute.positions()), routePaint, mapView.getTileSize());
             pairWithLayer.setLayer(polyline);
 
-            synchronized (trackLayer) {
-                trackLayer.layers.add(polyline);
-            }
+            mapView.addToGroupLayer(trackLayer, polyline);
             trackLayer.requestRedraw();
         }
     }
