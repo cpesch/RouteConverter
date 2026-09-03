@@ -244,6 +244,22 @@ jobs:
           Write-Host "found: $exe"
           "exe=$exe" >> $env:GITHUB_OUTPUT
 
+      - name: Verify Portable launcher jar matches the copied jar
+        shell: pwsh
+        run: |
+          $tree = "RouteConverterPortable\target\classes\RouteConverterPortable"
+          $ini  = Get-Content "$tree\App\AppInfo\Launcher\RouteConverterPortable.ini" -Raw
+          if ($ini -notmatch '-jar "%PAL:AppDir%\\([^"]+)"') {
+            throw "no -jar path found in launcher ini"
+          }
+          $rel = $Matches[1] -replace '/','\'
+          $jar = Join-Path "$tree\App" $rel
+          if (-not (Test-Path $jar)) {
+            Get-ChildItem "$tree\App\RouteConverter"
+            throw "launcher ini names '$rel' but that file is not in the Portable tree"
+          }
+          Write-Host "launcher jar OK: $rel"
+
       - name: Build RouteConverterPortable .paf.exe
         # cmd shell matches the smoke run that proved this works
         # (PowerShell did not block on the installer; $LASTEXITCODE was empty).
