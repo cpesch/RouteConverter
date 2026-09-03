@@ -34,6 +34,6 @@ Section
   File "TimeAlbumProWindows.jar"
   SetOutPath $TEMP
   ${GetParameters} $R0
-  nsExec::Exec '"${JRE_DIR}\bin\java.exe" -server -jar $PluginsDir\TimeAlbumProWindows.jar $R0'
+  nsExec::Exec '"${JRE_DIR}\bin\java.exe" -server -Drouteconverter.bundledJre=true -jar $PluginsDir\TimeAlbumProWindows.jar $R0'
   RMDir /r $PluginsDir
 SectionEnd
