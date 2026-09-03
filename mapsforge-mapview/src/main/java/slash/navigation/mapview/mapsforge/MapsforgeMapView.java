@@ -751,7 +751,7 @@ public class MapsforgeMapView extends BaseMapView {
         layers.add(0, layer);
         mapsToLayers.put(map, layer);
 
-        handleBackground();
+        handleBackground(true);
         handleOverlays();
         handleTrackLayer();
         handleNonSelectedPositionLists();
@@ -793,13 +793,25 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private void handleBackground() {
+        handleBackground(false);
+    }
+
+    // stackRebuilt is true when called from handleMapAndThemeUpdate(), which tears down and
+    // rebuilds the displayed map layer stack; an in-flight tile job of an already attached
+    // background layer can be killed by that rebuild and never re-issued (issue #376), so
+    // force one redraw afterwards to let TileLayer.draw() re-queue the dropped job
+    private void handleBackground(boolean stackRebuilt) {
         Layers layers = getLayerManager().getLayers();
         if (backgroundLayer != null)
             layers.remove(backgroundLayer);
 
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
-        if (BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null, map != null))
+        boolean backgroundAttached = BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null, map != null);
+        if (backgroundAttached)
             layers.add(0, backgroundLayer);
+
+        if (BackgroundMapAttachment.shouldRedrawAfterStackRebuild(backgroundAttached, stackRebuilt))
+            getLayerManager().redrawLayers();
     }
 
     private void handleNonSelectedPositionLists() {
