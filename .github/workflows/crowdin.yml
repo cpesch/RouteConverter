@@ -1,3 +1,17 @@
+# ---------------------------------------------------------------------------
+# DISABLED MANUALLY (see rc/rc-meta#127) — do not re-enable without review.
+#
+# This workflow pushes translation commits and opens pull requests using
+# repo secrets (GITHUB_TOKEN, CROWDIN_PROJECT_ID, CROWDIN_PERSONAL_TOKEN).
+# Re-enabling requires a maintainer to review current CROWDIN_* secret
+# usage first. When re-enabling, remove the `if: false` below AND
+# re-enable the workflow in the GitHub UI together — doing only one
+# leaves it in an inconsistent state.
+#
+# Note: GH_BUILDER_PAT (the factory's automation token) deliberately
+# lacks the `workflow` scope, so this file can only ever be changed by
+# a human/maintainer-credentialed push, never by the factory.
+# ---------------------------------------------------------------------------
 name: Crowdin sync
 
 on:
@@ -13,6 +27,7 @@ permissions:
 
 jobs:
   synchronize:
+    if: false # disabled manually — see banner above (rc/rc-meta#127)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
