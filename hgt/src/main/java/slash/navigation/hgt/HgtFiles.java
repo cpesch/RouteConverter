@@ -33,7 +33,13 @@ import slash.navigation.elevation.ElevationService;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
@@ -171,23 +177,25 @@ public class HgtFiles implements ElevationService {
                 new FileAndChecksum(getDirectory(), downloadable.getLatestChecksum()), fragments);
     }
 
+    public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
+        Map<BoundingBox, Boolean> result = new HashMap<>();
+        forEachTileInBoundingBox(area, (longitude, latitude, tileBoundingBox) -> {
+            String key = createFileKey(longitude, latitude);
+            Fragment<Downloadable> fragment = dataSource.getFragment(key);
+            boolean covered = fragment != null && createFile(key).exists();
+            result.put(tileBoundingBox, covered);
+        });
+        return result;
+    }
+
     private Collection<Fragment<Downloadable>> getDownloadablesFor(BoundingBox boundingBox) {
         Collection<Fragment<Downloadable>> result = new HashSet<>();
-
-        double longitude = boundingBox.southWest().getLongitude();
-        while (longitude < boundingBox.northEast().getLongitude()) {
-
-            double latitude = boundingBox.southWest().getLatitude();
-            while (latitude < boundingBox.northEast().getLatitude()) {
-                String key = createFileKey(longitude, latitude);
-                Fragment<Downloadable> fragment = dataSource.getFragment(key);
-                if (fragment != null)
-                    result.add(fragment);
-                latitude += 1.0;
-            }
-
-            longitude += 1.0;
-        }
+        forEachTileInBoundingBox(boundingBox, (longitude, latitude, tileBoundingBox) -> {
+            String key = createFileKey(longitude, latitude);
+            Fragment<Downloadable> fragment = dataSource.getFragment(key);
+            if (fragment != null)
+                result.add(fragment);
+        });
         return result;
     }
 
@@ -196,6 +204,34 @@ public class HgtFiles implements ElevationService {
         for (BoundingBox boundingBox : boundingBoxes)
             result.addAll(getDownloadablesFor(boundingBox));
         return result;
+    }
+
+    /**
+     * Iterates over 1°×1° tiles within a bounding box and calls the consumer for each tile.
+     * Shared helper used by getDownloadablesFor and getCoverageTiles.
+     */
+    private void forEachTileInBoundingBox(BoundingBox boundingBox, TileConsumer consumer) {
+        double longitude = boundingBox.southWest().getLongitude();
+        while (longitude < boundingBox.northEast().getLongitude()) {
+
+            double latitude = boundingBox.southWest().getLatitude();
+            while (latitude < boundingBox.northEast().getLatitude()) {
+                double west = longitude;
+                double east = Math.min(longitude + 1.0, boundingBox.northEast().getLongitude());
+                double south = latitude;
+                double north = Math.min(latitude + 1.0, boundingBox.northEast().getLatitude());
+                BoundingBox tileBoundingBox = new BoundingBox(north, south, west, east);
+                consumer.accept(longitude, latitude, tileBoundingBox);
+                latitude += 1.0;
+            }
+
+            longitude += 1.0;
+        }
+    }
+
+    @FunctionalInterface
+    private interface TileConsumer {
+        void accept(double longitude, double latitude, BoundingBox tileBoundingBox);
     }
 
     private Collection<Downloadable> asDownloadableSet(Collection<Fragment<Downloadable>> fragments) {

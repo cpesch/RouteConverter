@@ -33,7 +33,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -458,25 +466,54 @@ public class BRouter extends BaseRoutingService {
         return notExists;
     }
 
+    public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
+        Map<BoundingBox, Boolean> result = new HashMap<>();
+        forEachTileInBoundingBox(area, (longitude, latitude, tileBoundingBox) -> {
+            String key = createFileKey(longitude, latitude);
+            Downloadable downloadable = getSegments().getDownloadable(key);
+            boolean covered = downloadable != null && createSegmentFile(downloadable.getUri()).exists();
+            result.put(tileBoundingBox, covered);
+        });
+        return result;
+    }
 
     private Collection<Downloadable> getDownloadablesFor(BoundingBox boundingBox) {
         Collection<Downloadable> result = new HashSet<>();
+        forEachTileInBoundingBox(boundingBox, (longitude, latitude, tileBoundingBox) -> {
+            String key = createFileKey(longitude, latitude);
+            Downloadable downloadable = getSegments().getDownloadable(key);
+            if (downloadable != null)
+                result.add(downloadable);
+        });
+        return result;
+    }
 
+    /**
+     * Iterates over 1°×1° tiles within a bounding box and calls the consumer for each tile.
+     * Shared helper used by getDownloadablesFor and getCoverageTiles.
+     */
+    private void forEachTileInBoundingBox(BoundingBox boundingBox, TileConsumer consumer) {
         double longitude = boundingBox.southWest().getLongitude();
         while (longitude < boundingBox.northEast().getLongitude()) {
 
             double latitude = boundingBox.southWest().getLatitude();
             while (latitude < boundingBox.northEast().getLatitude()) {
-                String key = createFileKey(longitude, latitude);
-                Downloadable downloadable = getSegments().getDownloadable(key);
-                if (downloadable != null)
-                    result.add(downloadable);
+                double west = longitude;
+                double east = Math.min(longitude + 1.0, boundingBox.northEast().getLongitude());
+                double south = latitude;
+                double north = Math.min(latitude + 1.0, boundingBox.northEast().getLatitude());
+                BoundingBox tileBoundingBox = new BoundingBox(north, south, west, east);
+                consumer.accept(longitude, latitude, tileBoundingBox);
                 latitude += 1.0;
             }
 
             longitude += 1.0;
         }
-        return result;
+    }
+
+    @FunctionalInterface
+    private interface TileConsumer {
+        void accept(double longitude, double latitude, BoundingBox tileBoundingBox);
     }
 
     private Collection<Downloadable> getDownloadablesFor(List<BoundingBox> boundingBoxes) {

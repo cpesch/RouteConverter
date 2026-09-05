@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.dialogs;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.RouteConverter;
@@ -53,7 +54,9 @@ import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
@@ -88,6 +91,8 @@ public class MapsDialog extends SimpleDialog {
     private JCheckBox checkBoxDownloadElevationData;
     private JCheckBox checkBoxDownloadRoutingData;
     private JCheckBox checkBoxDownloadPoiData;
+    private JComboBox<String> comboBoxCoverage;
+    private JLabel labelCoverage;
 
     public MapsDialog() {
         super(BaseRouteConverter.getInstance().getFrame(), "maps");
@@ -210,10 +215,24 @@ public class MapsDialog extends SimpleDialog {
             RemoteMap map = getMapsforgeMapManager().getDownloadableMapsModel().getItem(row);
             r.showMapBorder(map.getBoundingBox());
             updateLabel();
+            refreshCoverageOverlay();
         });
 
         r.getRoutingServiceFacade().getRoutingPreferencesModel().addChangeListener(e -> updateLabel());
         updateLabel();
+
+        // Setup coverage selector
+        ResourceBundle bundle = BaseRouteConverter.getBundle();
+        String[] coverageOptions = {
+            bundle.getString("coverage-none"),
+            bundle.getString("coverage-maps"),
+            bundle.getString("coverage-routing"),
+            bundle.getString("coverage-elevation"),
+            bundle.getString("coverage-poi")
+        };
+        comboBoxCoverage.setModel(new DefaultComboBoxModel<>(coverageOptions));
+        comboBoxCoverage.setSelectedIndex(0); // Default to None
+        comboBoxCoverage.addActionListener(e -> refreshCoverageOverlay());
 
         final ActionManager actionManager = r.getContext().getActionManager();
         actionManager.register("display-online-map", new DisplayMapAction(this, tableAvailableOnlineMaps, getMapsforgeMapManager()));
@@ -223,7 +242,8 @@ public class MapsDialog extends SimpleDialog {
         actionManager.register("display-offline-map", new DisplayMapAction(this, tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("delete-offline-maps", new DeleteMapsAction(this, tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("download-maps", new DownloadMapsAction(this, tableDownloadableMaps, getMapsforgeMapManager(),
-                checkBoxDownloadRoutingData, checkBoxDownloadElevationData, checkBoxDownloadPoiData));
+                checkBoxDownloadRoutingData, checkBoxDownloadElevationData, checkBoxDownloadPoiData,
+                this::refreshCoverageOverlay));
         new AvailableOfflineMapsTablePopupMenu(tableAvailableOfflineMaps).createPopupMenu();
         new DownloadableMapsTablePopupMenu(tableDownloadableMaps).createPopupMenu();
         registerAction(buttonDisplayOfflineMap, "display-offline-map");
@@ -300,9 +320,75 @@ public class MapsDialog extends SimpleDialog {
         return ((RouteConverter) BaseRouteConverter.getInstance()).getMapsforgePoiLookup();
     }
 
+    private void refreshCoverageOverlay() {
+        updateCoverageOverlay((String) comboBoxCoverage.getSelectedItem());
+    }
+
+    private void updateCoverageOverlay(String category) {
+        BaseRouteConverter r = BaseRouteConverter.getInstance();
+        List<MapDescriptor> selectedMaps = getSelectedMaps();
+        ResourceBundle bundle = BaseRouteConverter.getBundle();
+        if (selectedMaps.isEmpty() || category == null || bundle.getString("coverage-none").equals(category)) {
+            r.showCoverageOverlay(null, null, null);
+            return;
+        }
+
+        BoundingBox boundingBox = selectedMaps.get(0).getBoundingBox();
+        Map<BoundingBox, Boolean> coverageTiles = null;
+
+        String coverageRouting = bundle.getString("coverage-routing");
+        String coverageElevation = bundle.getString("coverage-elevation");
+        String coverageMaps = bundle.getString("coverage-maps");
+        String coveragePoi = bundle.getString("coverage-poi");
+
+        if (coverageRouting.equals(category)) {
+            RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
+            if (routingService.isDownload()) {
+                Map<BoundingBox, Boolean> routingCoverage = new HashMap<>();
+                for (MapDescriptor map : selectedMaps) {
+                    routingCoverage.putAll(routingService.getCoverageTiles(map.getBoundingBox()));
+                }
+                coverageTiles = routingCoverage;
+            }
+        } else if (coverageElevation.equals(category)) {
+            ElevationService elevationService = r.getElevationServiceFacade().getElevationService();
+            if (elevationService.isDownload()) {
+                Map<BoundingBox, Boolean> elevationCoverage = new HashMap<>();
+                for (MapDescriptor map : selectedMaps) {
+                    elevationCoverage.putAll(elevationService.getCoverageTiles(map.getBoundingBox()));
+                }
+                coverageTiles = elevationCoverage;
+            }
+        } else if (coverageMaps.equals(category)) {
+            // Maps are covered if already downloaded
+            Map<BoundingBox, Boolean> mapCoverage = new HashMap<>();
+            for (MapDescriptor map : selectedMaps) {
+                boolean covered = map instanceof LocalMap;
+                mapCoverage.put(map.getBoundingBox(), covered);
+            }
+            coverageTiles = mapCoverage;
+        } else if (coveragePoi.equals(category)) {
+            // POI is covered if calculateRemainingDownloadSize returns 0
+            MapsforgePoiLookup poiLookup = getMapsforgePoiLookup();
+            Map<BoundingBox, Boolean> poiCoverage = new HashMap<>();
+            for (MapDescriptor map : selectedMaps) {
+                long poiDownloadSize = poiLookup.calculateRemainingDownloadSize(java.util.Collections.singletonList(map));
+                poiCoverage.put(map.getBoundingBox(), poiDownloadSize == 0);
+            }
+            coverageTiles = poiCoverage;
+        } else {
+            // None or unrecognized
+            r.showCoverageOverlay(null, null, null);
+            return;
+        }
+
+        r.showCoverageOverlay(boundingBox, category, coverageTiles);
+    }
+
     private void close() {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
         r.showMapBorder(null);
+        r.showCoverageOverlay(null, null, null);
 
         ActionManager actionManager = r.getContext().getActionManager();
         actionManager.unregister("display-online-map");
@@ -360,7 +446,7 @@ public class MapsDialog extends SimpleDialog {
         panel3.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "offline-tab"), panel3);
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel4.setLayout(new GridLayoutManager(9, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();
@@ -394,6 +480,16 @@ public class MapsDialog extends SimpleDialog {
         panel4.add(checkBoxDownloadPoiData, new GridConstraints(6, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
+        labelCoverage = new JLabel();
+        this.$$$loadLabelText$$$(labelCoverage,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "show-coverage-for"));
+        panel4.add(labelCoverage,
+                new GridConstraints(7, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        comboBoxCoverage = new JComboBox<>();
+        panel4.add(comboBoxCoverage,
+                new GridConstraints(8, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                        GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         this.$$$loadLabelText$$$(label1,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "download-complete-coverage"));

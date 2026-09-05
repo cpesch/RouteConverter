@@ -22,6 +22,7 @@ package slash.navigation.googlemaps;
 
 import jakarta.xml.bind.JAXBException;
 import slash.common.helpers.APIKeyRegistry;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
@@ -38,8 +39,10 @@ import slash.navigation.rest.exception.ServiceUnavailableException;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.encodeUri;
@@ -222,5 +225,9 @@ public class GoogleService extends BaseGeocodingService implements ElevationServ
 
     public void downloadElevationData(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
+    }
+
+    public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
+        return Collections.emptyMap();
     }
 }

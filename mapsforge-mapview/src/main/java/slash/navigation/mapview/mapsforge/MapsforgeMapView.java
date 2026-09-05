@@ -66,6 +66,7 @@ import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.mapsforge.helpers.*;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.models.ThemeStyleImpl;
+import slash.navigation.mapview.mapsforge.overlays.CoverageOverlay;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
 import slash.navigation.mapview.mapsforge.overlays.OverlayManager;
 import slash.navigation.mapview.mapsforge.renderer.BorderPainter;
@@ -85,6 +86,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -208,6 +210,7 @@ public class MapsforgeMapView extends BaseMapView {
     private final MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private final BorderPainter borderPainter = new BorderPainter();
     private final MagnifierPainter magnifierPainter = new MagnifierPainter();
+    private Layer currentCoverageOverlay;
     private RouteRenderer routeRenderer;
     private TrackRenderer trackRenderer;
     private TileLayerFactory tileLayerFactory;
@@ -941,6 +944,23 @@ public class MapsforgeMapView extends BaseMapView {
 
     public void showMapBorder(BoundingBox mapBoundingBox) {
         borderPainter.showMapBorder(mapBoundingBox);
+    }
+
+    public void showCoverageOverlay(BoundingBox mapBoundingBox, String category, Map<BoundingBox, Boolean> coverageTiles) {
+        // Remove existing overlay if present
+        if (currentCoverageOverlay != null) {
+            removeLayer(currentCoverageOverlay);
+            currentCoverageOverlay = null;
+        }
+
+        // If category is null or no bounding box, we're done
+        if (category == null || mapBoundingBox == null || coverageTiles == null) {
+            return;
+        }
+
+        // Create and add new overlay
+        currentCoverageOverlay = new CoverageOverlay(coverageTiles, GRAPHIC_FACTORY, getTileSize());
+        addLayers(singletonList(currentCoverageOverlay));
     }
 
     public void showPositionMagnifier(List<NavigationPosition> positions) {
