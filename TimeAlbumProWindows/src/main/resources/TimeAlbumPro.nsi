@@ -75,5 +75,5 @@ Section
   fastpath:
   SetOutPath $TEMP
   ${GetParameters} $R0
-  nsExec::Exec '"${JRE_DIR}\bin\java.exe" -server -jar "${APP_DIR}\TimeAlbumProWindows.jar" $R0'
+  nsExec::Exec '"${JRE_DIR}\bin\java.exe" -server -Drouteconverter.bundledJre=true -jar "${APP_DIR}\TimeAlbumProWindows.jar" $R0'
 SectionEnd
