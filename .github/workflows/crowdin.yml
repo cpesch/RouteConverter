@@ -4,9 +4,12 @@
 # This workflow pushes translation commits and opens pull requests using
 # repo secrets (GITHUB_TOKEN, CROWDIN_PROJECT_ID, CROWDIN_PERSONAL_TOKEN).
 # Re-enabling requires a maintainer to review current CROWDIN_* secret
-# usage first. When re-enabling, remove the `if: false` below AND
-# re-enable the workflow in the GitHub UI together — doing only one
-# leaves it in an inconsistent state.
+# usage first. The job is gated on the repository variable
+# CROWDIN_SYNC_ENABLED (unset today = the job never runs; a literal
+# `if: false` would trip actionlint's if-cond rule on every push). When
+# re-enabling, set CROWDIN_SYNC_ENABLED=true in the repo's Actions
+# variables AND re-enable the workflow in the GitHub UI together — doing
+# only one leaves it in an inconsistent state.
 #
 # Note: GH_BUILDER_PAT (the factory's automation token) deliberately
 # lacks the `workflow` scope, so this file can only ever be changed by
@@ -27,7 +30,7 @@ permissions:
 
 jobs:
   synchronize:
-    if: false # disabled manually — see banner above (rc/rc-meta#127)
+    if: vars.CROWDIN_SYNC_ENABLED == 'true' # unset = disabled — see banner above (rc/rc-meta#127)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
