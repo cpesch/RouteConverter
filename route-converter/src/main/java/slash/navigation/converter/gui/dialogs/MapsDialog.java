@@ -215,6 +215,7 @@ public class MapsDialog extends SimpleDialog {
             RemoteMap map = getMapsforgeMapManager().getDownloadableMapsModel().getItem(row);
             r.showMapBorder(map.getBoundingBox());
             updateLabel();
+            refreshCoverageOverlay();
         });
 
         r.getRoutingServiceFacade().getRoutingPreferencesModel().addChangeListener(e -> updateLabel());
@@ -231,10 +232,7 @@ public class MapsDialog extends SimpleDialog {
         };
         comboBoxCoverage.setModel(new DefaultComboBoxModel<>(coverageOptions));
         comboBoxCoverage.setSelectedIndex(0); // Default to None
-        comboBoxCoverage.addActionListener(e -> {
-            String selected = (String) comboBoxCoverage.getSelectedItem();
-            updateCoverageOverlay(selected);
-        });
+        comboBoxCoverage.addActionListener(e -> refreshCoverageOverlay());
 
         final ActionManager actionManager = r.getContext().getActionManager();
         actionManager.register("display-online-map", new DisplayMapAction(this, tableAvailableOnlineMaps, getMapsforgeMapManager()));
@@ -244,7 +242,8 @@ public class MapsDialog extends SimpleDialog {
         actionManager.register("display-offline-map", new DisplayMapAction(this, tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("delete-offline-maps", new DeleteMapsAction(this, tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("download-maps", new DownloadMapsAction(this, tableDownloadableMaps, getMapsforgeMapManager(),
-                checkBoxDownloadRoutingData, checkBoxDownloadElevationData, checkBoxDownloadPoiData));
+                checkBoxDownloadRoutingData, checkBoxDownloadElevationData, checkBoxDownloadPoiData,
+                this::refreshCoverageOverlay));
         new AvailableOfflineMapsTablePopupMenu(tableAvailableOfflineMaps).createPopupMenu();
         new DownloadableMapsTablePopupMenu(tableDownloadableMaps).createPopupMenu();
         registerAction(buttonDisplayOfflineMap, "display-offline-map");
@@ -321,11 +320,15 @@ public class MapsDialog extends SimpleDialog {
         return ((RouteConverter) BaseRouteConverter.getInstance()).getMapsforgePoiLookup();
     }
 
+    private void refreshCoverageOverlay() {
+        updateCoverageOverlay((String) comboBoxCoverage.getSelectedItem());
+    }
+
     private void updateCoverageOverlay(String category) {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
         List<MapDescriptor> selectedMaps = getSelectedMaps();
         ResourceBundle bundle = BaseRouteConverter.getBundle();
-        if (selectedMaps.isEmpty() || bundle.getString("coverage-none").equals(category)) {
+        if (selectedMaps.isEmpty() || category == null || bundle.getString("coverage-none").equals(category)) {
             r.showCoverageOverlay(null, null, null);
             return;
         }
@@ -341,12 +344,20 @@ public class MapsDialog extends SimpleDialog {
         if (coverageRouting.equals(category)) {
             RoutingService routingService = r.getRoutingServiceFacade().getRoutingService();
             if (routingService.isDownload()) {
-                coverageTiles = routingService.getCoverageTiles(boundingBox);
+                Map<BoundingBox, Boolean> routingCoverage = new HashMap<>();
+                for (MapDescriptor map : selectedMaps) {
+                    routingCoverage.putAll(routingService.getCoverageTiles(map.getBoundingBox()));
+                }
+                coverageTiles = routingCoverage;
             }
         } else if (coverageElevation.equals(category)) {
             ElevationService elevationService = r.getElevationServiceFacade().getElevationService();
             if (elevationService.isDownload()) {
-                coverageTiles = elevationService.getCoverageTiles(boundingBox);
+                Map<BoundingBox, Boolean> elevationCoverage = new HashMap<>();
+                for (MapDescriptor map : selectedMaps) {
+                    elevationCoverage.putAll(elevationService.getCoverageTiles(map.getBoundingBox()));
+                }
+                coverageTiles = elevationCoverage;
             }
         } else if (coverageMaps.equals(category)) {
             // Maps are covered if already downloaded
