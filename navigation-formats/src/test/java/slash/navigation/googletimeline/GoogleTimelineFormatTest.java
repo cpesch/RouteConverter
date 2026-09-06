@@ -325,7 +325,7 @@ public class GoogleTimelineFormatTest {
             "   \"activity\": {\"topCandidate\": {\"type\": \"walking\", \"probability\": 0.8}}}," +
             "  {\"startTime\": \"2024-12-23T10:30:00Z\", \"endTime\": \"2024-12-23T11:00:00Z\"," +
             "   \"timelinePath\": {\"points\": [{" +
-            "     \"location\": \"geo:52.5200,13.4050\", \"durationMinutesOffsetFromStartTime\": \"0\"}]}}}" +
+            "     \"location\": \"geo:52.5200,13.4050\", \"durationMinutesOffsetFromStartTime\": \"0\"}]}}" +
             "]";
 
         InputStream input = new ByteArrayInputStream(json.getBytes(UTF8_ENCODING));
