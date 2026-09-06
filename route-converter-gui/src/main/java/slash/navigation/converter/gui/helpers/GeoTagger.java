@@ -349,9 +349,13 @@ public class GeoTagger {
                 wgs84Position.setWaypointType(Photo);
                 wgs84Position.setOrigin(source);
 
-                PositionsModel originalPositionsModel = BaseRouteConverter.getInstance().getConvertPanel().getPositionsModel();
-                int index = originalPositionsModel.getIndex(wgs84Position);
-                originalPositionsModel.fireTableRowsUpdated(index, index, ALL_COLUMNS);
+                invokeLater(new Runnable() {
+                    public void run() {
+                        PositionsModel originalPositionsModel = BaseRouteConverter.getInstance().getConvertPanel().getPositionsModel();
+                        int index = originalPositionsModel.getIndex(wgs84Position);
+                        originalPositionsModel.fireTableRowsUpdated(index, index, ALL_COLUMNS);
+                    }
+                });
             }
 
         } finally {
