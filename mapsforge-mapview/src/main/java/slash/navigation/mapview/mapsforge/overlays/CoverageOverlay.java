@@ -32,6 +32,7 @@ import slash.navigation.common.BoundingBox;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static org.mapsforge.core.util.MercatorProjection.longitudeToPixelX;
 import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
@@ -44,6 +45,8 @@ import static org.mapsforge.core.util.MercatorProjection.getMapSize;
  * @author Christian Pesch
  */
 public class CoverageOverlay extends Layer {
+    private static final Logger log = Logger.getLogger(CoverageOverlay.class.getName());
+
     private final List<BoundingBox> coveredBoxes;
     private final Paint coveredPaint;
     private final int tileSize;
@@ -76,7 +79,7 @@ public class CoverageOverlay extends Layer {
                                 byte zoomLevel, Canvas canvas, Point topLeftPoint, Paint paint) {
         long mapSize = getMapSize(zoomLevel, tileSize);
 
-        // Convert the custom BoundingBox to corners
+        // Corners in order: NE, SE, SW, NW, then close back to NE
         List<LatLong> corners = List.of(
             toLatLong(boxToDraw.northEast()),
             toLatLong(boxToDraw.getSouthEast()),
@@ -95,6 +98,7 @@ public class CoverageOverlay extends Layer {
             // Check if coordinates fit in int range
             if (x < Integer.MIN_VALUE || x > Integer.MAX_VALUE ||
                 y < Integer.MIN_VALUE || y > Integer.MAX_VALUE) {
+                log.fine("Skipping coverage tile " + boxToDraw + " at zoom " + zoomLevel + ": screen coordinates overflow int range");
                 return; // Skip drawing this box if coordinates overflow
             }
             xCoords.add((int) x);
@@ -107,9 +111,10 @@ public class CoverageOverlay extends Layer {
                           xCoords.get(i + 1), yCoords.get(i + 1), paint);
         }
 
-        // Fill the rectangle by drawing horizontal lines
-        int minY = yCoords.get(0); // north edge (smaller y in screen coordinates)
-        int maxY = yCoords.get(1); // south edge (larger y in screen coordinates)
+        // Fill the rectangle by drawing horizontal lines. yCoords.get(0)/(1) are the NE/SE
+        // corners from above; north is the smaller screen y since y increases downward.
+        int minY = yCoords.get(0); // NE corner (north edge, smaller y in screen coordinates)
+        int maxY = yCoords.get(1); // SE corner (south edge, larger y in screen coordinates)
         int minX = xCoords.get(2); // west edge
         int maxX = xCoords.get(0); // east edge
 

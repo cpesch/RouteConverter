@@ -119,11 +119,11 @@ public class RouteConverter extends BaseRouteConverter {
             JMenu coverageMenu = createMenu("show-coverage");
             viewMenu.add(coverageMenu, 1);
             ButtonGroup coverageGroup = new ButtonGroup();
-            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-none", CoverageOverlayController.CATEGORY_NONE, true);
-            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-maps", CoverageOverlayController.CATEGORY_MAPS, false);
-            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-routing", CoverageOverlayController.CATEGORY_ROUTING, false);
-            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-elevation", CoverageOverlayController.CATEGORY_ELEVATION, false);
-            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-poi", CoverageOverlayController.CATEGORY_POI, false);
+            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-none", CoverageOverlayController.Category.NONE, true);
+            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-maps", CoverageOverlayController.Category.MAPS, false);
+            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-routing", CoverageOverlayController.Category.ROUTING, false);
+            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-elevation", CoverageOverlayController.Category.ELEVATION, false);
+            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-poi", CoverageOverlayController.Category.POI, false);
             viewMenu.add(createItem("show-themes"), 2);
             viewMenu.add(createItem("show-theme-styles"), 3);
             JMenu overlaysMenu = createMenu("show-overlays");
@@ -134,7 +134,7 @@ public class RouteConverter extends BaseRouteConverter {
         }
     }
 
-    private void addCoverageMenuItem(JMenu menu, ButtonGroup group, String name, String category, boolean selected) {
+    private void addCoverageMenuItem(JMenu menu, ButtonGroup group, String name, CoverageOverlayController.Category category, boolean selected) {
         getContext().getActionManager().register(name, new SelectCoverageAction(coverageOverlayController, category));
         JRadioButtonMenuItem item = createRadioItem(name);
         item.setSelected(selected);

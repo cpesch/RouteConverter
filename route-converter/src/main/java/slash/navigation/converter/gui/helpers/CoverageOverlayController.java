@@ -46,14 +46,10 @@ import static slash.common.io.Directories.getApplicationDirectory;
  */
 
 public class CoverageOverlayController {
-    public static final String CATEGORY_NONE = "none";
-    public static final String CATEGORY_MAPS = "maps";
-    public static final String CATEGORY_ROUTING = "routing";
-    public static final String CATEGORY_ELEVATION = "elevation";
-    public static final String CATEGORY_POI = "poi";
+    public enum Category { NONE, MAPS, ROUTING, ELEVATION, POI }
 
-    private String category = CATEGORY_NONE;
-    private String lastCategory;
+    private Category category = Category.NONE;
+    private Category lastCategory;
     private BoundingBox lastViewport;
 
     public CoverageOverlayController() {
@@ -63,13 +59,9 @@ public class CoverageOverlayController {
         timer.start();
     }
 
-    public void selectCategory(String category) {
+    public void selectCategory(Category category) {
         this.category = category;
         refresh();
-    }
-
-    public boolean isCategorySelected(String category) {
-        return this.category.equals(category);
     }
 
     // bypasses the viewport/category dedup below -- used after a download completes, where the
@@ -81,7 +73,7 @@ public class CoverageOverlayController {
 
     private void refresh() {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
-        if (CATEGORY_NONE.equals(category)) {
+        if (category == Category.NONE) {
             r.showCoverageOverlay(null, null, null);
             return;
         }
@@ -96,17 +88,17 @@ public class CoverageOverlayController {
         // recomputing coverage over hundreds of candidate maps is expensive enough (POI took over
         // a second per tick at a whole-continent zoom) that doing it unconditionally every tick
         // froze the EDT repeatedly, which is what showed up as the overlay blinking
-        if (category.equals(lastCategory) && viewport.equals(lastViewport))
+        if (category == lastCategory && viewport.equals(lastViewport))
             return;
         lastCategory = category;
         lastViewport = viewport;
 
         Map<BoundingBox, Boolean> coverageTiles = switch (category) {
-            case CATEGORY_ROUTING -> computeRoutingCoverage(viewport, r);
-            case CATEGORY_ELEVATION -> computeElevationCoverage(viewport, r);
-            case CATEGORY_MAPS -> computeMapsCoverage(viewport);
-            case CATEGORY_POI -> computePoiCoverage(viewport);
-            default -> null;
+            case ROUTING -> computeRoutingCoverage(viewport, r);
+            case ELEVATION -> computeElevationCoverage(viewport, r);
+            case MAPS -> computeMapsCoverage(viewport);
+            case POI -> computePoiCoverage(viewport);
+            case NONE -> null;
         };
 
         if (coverageTiles == null || coverageTiles.isEmpty()) {
@@ -114,7 +106,7 @@ public class CoverageOverlayController {
             return;
         }
 
-        r.showCoverageOverlay(viewport, category, coverageTiles);
+        r.showCoverageOverlay(viewport, category.name(), coverageTiles);
     }
 
     private Map<BoundingBox, Boolean> computeRoutingCoverage(BoundingBox viewport, BaseRouteConverter r) {
