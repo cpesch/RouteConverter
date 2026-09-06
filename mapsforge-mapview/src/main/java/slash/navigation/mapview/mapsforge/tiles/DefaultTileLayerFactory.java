@@ -85,7 +85,10 @@ public class DefaultTileLayerFactory implements TileLayerFactory {
     }
 
     private TileRendererLayer createTileRendererLayer(MapFile mapFile, String cacheId) {
-        return new TileRendererLayer(createTileCache(cacheId), mapFile,
+        // a plain TileRendererLayer stops rendering once it has been removed from and re-added to
+        // the Layers, which happens to the background layer when the displayed map goes away and
+        // comes back (see ReattachableTileRendererLayer)
+        return new ReattachableTileRendererLayer(createTileCache(cacheId), mapFile,
                 mapViewPosition, true, true, true,
                 graphicFactory, hillsRenderConfig);
     }
