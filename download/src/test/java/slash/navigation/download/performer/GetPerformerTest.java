@@ -44,6 +44,7 @@ import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.download.Action.Copy;
 
@@ -116,6 +117,37 @@ public class GetPerformerTest {
         assertEquals(State.ChecksumError, download.getState());
         assertEquals(1, bodiesServed.get());
         assertFalse("temp file must be deleted after a failed validation", download.getTempFile().exists());
+    }
+
+    @Test
+    public void testValidateFailureCarriesAnnouncedContentLength() {
+        // the Content-Length the response announced survives the failed validation, so a listener
+        // can tell a completely transferred file from a truncated one (see GitHub #382)
+        Checksum wrongChecksum = new Checksum(null, (long) BODY.length() + 999L, "wrong-sha1");
+        Download download = manager.queueForDownload("mismatching checksum", url("/ok"), Copy,
+                new FileAndChecksum(target, wrongChecksum), null);
+        manager.waitForCompletion(singletonList(download));
+
+        assertEquals(State.ChecksumError, download.getState());
+        assertEquals((long) BODY.length(), (long) download.getAnnouncedContentLength());
+        assertEquals((long) BODY.length(), (long) download.getFile().getActualChecksum().getContentLength());
+    }
+
+    @Test
+    public void testFailedTransferDoesNotCarryAnnouncedValues() throws IOException {
+        // a transport failure must not leave announced values behind that could vouch for
+        // the content of the failed attempt
+        Download download = new Download("missing resource", url("/missing"), Copy,
+                new FileAndChecksum(target, null), null);
+        manager.getModel().setDownloads(singletonList(download));
+        DownloadExecutor executor = new DownloadExecutor(download, manager);
+        GetPerformer performer = new GetPerformer();
+        performer.setDownloadExecutor(executor);
+        performer.run();
+
+        assertEquals(State.Failed, download.getState());
+        assertNull(download.getAnnouncedContentLength());
+        assertNull(download.getAnnouncedLastModified());
     }
 
     @Test

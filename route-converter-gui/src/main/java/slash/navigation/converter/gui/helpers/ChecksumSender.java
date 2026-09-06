@@ -20,6 +20,8 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.converter.gui.BaseRouteConverter;
+import slash.navigation.download.Checksum;
+import slash.navigation.download.ChecksumReportPolicy;
 import slash.navigation.download.Download;
 import slash.navigation.download.DownloadListener;
 import slash.navigation.download.FileAndChecksum;
@@ -43,9 +45,17 @@ public class ChecksumSender implements DownloadListener {
         FileAndChecksum file = download.getFile();
         if (file.getActualChecksum() == null)
             return;
-        if (file.getActualChecksum().laterThan(file.getExpectedChecksum()) ||
-                file.getExpectedChecksum().getSHA1() == null && file.getActualChecksum().getSHA1() != null)
+        // the file's checksum is only a new known-good build if the transfer provably completed
+        // and validation failed on the complete content; anything else is a broken download whose
+        // checksum must not be published (see GitHub #382)
+        if (ChecksumReportPolicy.shouldReportFailedDownload(download.getState(),
+                download.getAnnouncedContentLength(), file.getActualChecksum().getContentLength(),
+                download.getAnnouncedLastModified(), lastModifiedMillis(file.getActualChecksum())))
             sendChecksums(download);
+    }
+
+    private Long lastModifiedMillis(Checksum checksum) {
+        return checksum.getLastModified() != null ? checksum.getLastModified().getTimeInMillis() : null;
     }
 
     public void succeeded(Download download) {

@@ -53,6 +53,8 @@ public class Download {
     private State state;
     private long processedBytes;
     private Long expectedBytes;
+    private Long announcedContentLength;
+    private Long announcedLastModified;
 
     public Download(String description, String url, Action action, FileAndChecksum file,
                     List<FileAndChecksum> fragments, String eTag, State state, File tempFile) {
@@ -156,6 +158,30 @@ public class Download {
 
     public void setExpectedBytes(Long expectedBytes) {
         this.expectedBytes = expectedBytes;
+    }
+
+    /**
+     * The Content-Length the last HTTP response announced, before it is folded into any
+     * {@link Checksum}; lets listeners tell a completely transferred file from a truncated one.
+     */
+    public Long getAnnouncedContentLength() {
+        return announcedContentLength;
+    }
+
+    public void setAnnouncedContentLength(Long announcedContentLength) {
+        this.announcedContentLength = announcedContentLength;
+    }
+
+    /**
+     * The Last-Modified the last HTTP response announced, in epoch milliseconds; lets listeners
+     * compare the written file against the build the server announced.
+     */
+    public Long getAnnouncedLastModified() {
+        return announcedLastModified;
+    }
+
+    public void setAnnouncedLastModified(Long announcedLastModified) {
+        this.announcedLastModified = announcedLastModified;
     }
 
     private static final Set<State> DOWNLOADED = new HashSet<>(asList(NotModified, Succeeded));
