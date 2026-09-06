@@ -87,7 +87,7 @@ public class ReattachableTileRendererLayerTest {
     }
 
     /**
-     * Documents the mapsforge bug the subclass works around. When this test fails after a mapsforge
+     * Documents the mapsforge bug (mapsforge/mapsforge#1817) the subclass works around. When this test fails after a mapsforge
      * upgrade, the bug is fixed upstream and ReattachableTileRendererLayer can be dropped.
      */
     @Test

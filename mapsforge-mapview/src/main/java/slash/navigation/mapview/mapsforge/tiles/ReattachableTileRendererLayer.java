@@ -36,7 +36,7 @@ import org.mapsforge.map.model.MapViewPosition;
  * A {@link TileRendererLayer} that keeps rendering after it has been removed from and re-added to
  * the {@link Layers} of a map view.
  * <p>
- * Works around a mapsforge (0.30.0) bug: {@link Layers#add} calls {@link #setDisplayModel} on every add,
+ * Works around a mapsforge (0.30.0) bug, reported as mapsforge/mapsforge#1817: {@link Layers#add} calls {@link #setDisplayModel} on every add,
  * and {@link TileLayer#setDisplayModel} replaces the layer's {@link JobQueue} with a fresh instance each
  * time, but {@link TileRendererLayer#setDisplayModel} creates its {@link MapWorkerPool} only once, bound
  * to the queue that existed on the first add. After a re-add, {@code TileLayer.draw()} queues tile jobs
