@@ -122,20 +122,30 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
             return;
         }
 
-        // Parse all segments
+        // Parse all segments, tracking each timelinePath segment's immediately preceding
+        // activity segment: semantic segments are sequential, non-overlapping slices of the
+        // day, so a path segment's own point timestamps never fall inside a *different*
+        // activity segment's [startTime, endTime] window - the activity that applies to a
+        // path segment is whichever one came right before it, not whichever one's window
+        // happens to contain a given point's timestamp.
         List<JsonNode> pathSegments = new ArrayList<>();
+        List<Activity> precedingActivityForPathSegment = new ArrayList<>();
         List<JsonNode> visitSegments = new ArrayList<>();
-        List<Activity> activities = new ArrayList<>();
 
+        Activity currentActivity = null;
         for (JsonNode segment : segments) {
             if (segment == null) continue;
 
             if (segment.has("timelinePath")) {
                 pathSegments.add(segment);
+                precedingActivityForPathSegment.add(currentActivity);
             } else if (segment.has("visit")) {
                 visitSegments.add(segment);
             } else if (segment.has("activity")) {
-                activities.add(parseActivity(segment, isAndroid));
+                Activity activity = parseActivity(segment, isAndroid);
+                if (activity != null) {
+                    currentActivity = activity;
+                }
             }
         }
 
@@ -147,8 +157,10 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
             if (a.after(b)) return 1;
             return 0;
         });
-        for (JsonNode segment : pathSegments) {
-            List<Wgs84Position> points = parseTimelinePath(segment, activities, isIOS, isAndroid);
+        for (int i = 0; i < pathSegments.size(); i++) {
+            JsonNode segment = pathSegments.get(i);
+            Activity activity = precedingActivityForPathSegment.get(i);
+            List<Wgs84Position> points = parseTimelinePath(segment, activity, isIOS, isAndroid);
             for (Wgs84Position point : points) {
                 if (point.getTime() == null) continue;
 
@@ -250,44 +262,6 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         }
     }
 
-    /**
-     * Find the activity type active at a given time point.
-     */
-    static String activityTypeAt(List<Activity> activities, CompactCalendar time) {
-        if (activities == null || activities.isEmpty() || time == null) {
-            return null;
-        }
-
-        Activity bestMatch = null;
-        for (Activity activity : activities) {
-            if (activity.startTime == null || activity.endTime == null) {
-                continue;
-            }
-
-            // Check if point is within activity window [startTime, endTime] inclusive
-            boolean inWindow = !time.before(activity.startTime) && !time.after(activity.endTime);
-            if (inWindow) {
-                if (bestMatch == null) {
-                    bestMatch = activity;
-                } else {
-                    // Resolve conflicts by probability, then by startTime, then by file order
-                    int probabilityCompare = Double.compare(activity.probability, bestMatch.probability);
-                    if (probabilityCompare > 0) {
-                        bestMatch = activity;
-                    } else if (probabilityCompare == 0) {
-                        if (activity.startTime != null && bestMatch.startTime != null &&
-                            activity.startTime.before(bestMatch.startTime)) {
-                            bestMatch = activity;
-                        }
-                        // If still equal, earlier in file wins (current bestMatch is earlier)
-                    }
-                }
-            }
-        }
-
-        return bestMatch != null ? bestMatch.type : null;
-    }
-
     private CompactCalendar getStartOfDay(CompactCalendar time) {
         Calendar day = time.getCalendar();
         day.set(Calendar.HOUR_OF_DAY, 0);
@@ -317,15 +291,10 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         }
 
         String type = topCandidate.path("type").asText();
-        double probability = topCandidate.path("probability").asDouble(0.0);
-
-        CompactCalendar startTime = parseTime(segment.path("startTime").asText(null));
-        CompactCalendar endTime = parseTime(segment.path("endTime").asText(null));
-
-        return new Activity(type, probability, startTime, endTime);
+        return new Activity(type);
     }
 
-    private List<Wgs84Position> parseTimelinePath(JsonNode segment, List<Activity> activities,
+    private List<Wgs84Position> parseTimelinePath(JsonNode segment, Activity precedingActivity,
                                                    boolean isIOS, boolean isAndroid) {
         List<Wgs84Position> positions = new ArrayList<>();
 
@@ -353,7 +322,7 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
                 continue;
             }
 
-            Wgs84Position position = parsePathPoint(point, segmentStart, activities, isIOS);
+            Wgs84Position position = parsePathPoint(point, segmentStart, precedingActivity, isIOS);
             if (position != null) {
                 positions.add(position);
             }
@@ -363,7 +332,7 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     }
 
     private Wgs84Position parsePathPoint(JsonNode point, CompactCalendar segmentStart,
-                                        List<Activity> activities, boolean isIOS) {
+                                        Activity precedingActivity, boolean isIOS) {
         JsonNode locationNode = point.path("location");
         if (locationNode == null || locationNode.isMissingNode()) {
             return null;
@@ -400,8 +369,9 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
             return null;
         }
 
-        // Determine activity type for this point
-        String description = activityTypeAt(activities, time);
+        // Points inherit the type of whichever activity segment immediately precedes
+        // this path segment (see the comment where precedingActivityForPathSegment is built)
+        String description = precedingActivity != null ? precedingActivity.type : null;
 
         return new Wgs84Position(coords[0], coords[1], null, null, time, description);
     }
@@ -462,15 +432,9 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
 
     private static class Activity {
         final String type;
-        final double probability;
-        final CompactCalendar startTime;
-        final CompactCalendar endTime;
 
-        Activity(String type, double probability, CompactCalendar startTime, CompactCalendar endTime) {
+        Activity(String type) {
             this.type = type;
-            this.probability = probability;
-            this.startTime = startTime;
-            this.endTime = endTime;
         }
     }
 }
