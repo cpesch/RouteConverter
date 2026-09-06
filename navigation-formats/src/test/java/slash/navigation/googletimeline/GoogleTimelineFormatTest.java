@@ -314,7 +314,7 @@ public class GoogleTimelineFormatTest {
     }
 
     @Test
-    public void testActivityTypeAtPointInsideWindow() {
+    public void testActivityTypeAtPointInsideWindow() throws Exception {
         // Test through end-to-end read with activity data
         GoogleTimelineFormat format = new GoogleTimelineFormat();
         ParserContext<Wgs84Route> context = createParserContext();
