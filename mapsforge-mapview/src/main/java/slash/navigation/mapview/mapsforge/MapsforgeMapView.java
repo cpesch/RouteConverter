@@ -587,7 +587,9 @@ public class MapsforgeMapView extends BaseMapView {
         // the layer is built now; a no-op inside handleBackground() (e.g. no map displayed
         // yet) must not discard it, since nothing would rebuild it afterwards
         backgroundLayer = builtLayer;
-        handleBackground();
+        // this attach can race a startup/theme rebuild's in-flight tile job the same way
+        // handleMapAndThemeUpdate() does (issue #376), so force the same repair redraw
+        handleBackground(true);
         log.info(format("Loaded background map %s (%d bytes)", backgroundMap, length));
     }
 

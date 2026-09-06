@@ -46,6 +46,7 @@ import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 import java.io.File;
 import java.util.prefs.Preferences;
 
+import static org.mapsforge.map.rendertheme.internal.MapsforgeThemes.OSMARENDER;
 import static slash.common.io.Directories.getTemporaryDirectory;
 import static slash.common.io.Transfer.encodeUri;
 
@@ -115,8 +116,10 @@ public class DefaultTileLayerFactory implements TileLayerFactory {
 
     public Layer createBackgroundLayer(File backgroundMap) {
         TileRendererLayer backgroundLayer = createTileRendererLayer(new MapFile(backgroundMap), backgroundMap.getName());
-        LocalTheme theme = mapManager.getAppliedThemeModel().getItem();
-        backgroundLayer.setXmlRenderTheme(theme.getXmlRenderTheme());
+        // Always render with a generic OSM theme, not whatever theme the user applied to their
+        // displayed map: a themed style like a hiking/lightning theme has no rules for the plain
+        // land/coastline/boundary tags in this low-detail world map and would draw nothing at all.
+        backgroundLayer.setXmlRenderTheme(OSMARENDER);
         return backgroundLayer;
     }
 }
