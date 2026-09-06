@@ -21,6 +21,9 @@ package slash.navigation.mapview.mapsforge.overlays;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mapsforge.core.graphics.Canvas;
+import org.mapsforge.core.model.Point;
+import org.mapsforge.core.model.Rotation;
 import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
@@ -31,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.Arrays.asList;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.INSTANCE;
@@ -99,6 +103,48 @@ public class CoverageOverlayTest {
 
         // Verify overlay was created
         assert overlay != null;
+    }
+
+    @Test
+    public void drawNeverCallsCanvasForAllMissingTiles() {
+        Map<BoundingBox, Boolean> allMissing = new HashMap<>();
+        allMissing.put(createBoundingBox(0.0, 0.0, 1.0, 1.0), false);
+        CoverageOverlay overlay = new CoverageOverlay(allMissing, INSTANCE, 256);
+
+        Canvas canvas = mock(Canvas.class);
+        overlay.draw(null, (byte) 5, canvas, new Point(0, 0), Rotation.NULL_ROTATION);
+
+        verify(canvas, never()).drawLine(anyInt(), anyInt(), anyInt(), anyInt(), any());
+    }
+
+    @Test
+    public void drawCallsCanvasForCoveredTiles() {
+        Map<BoundingBox, Boolean> allCovered = new HashMap<>();
+        allCovered.put(createBoundingBox(0.0, 0.0, 1.0, 1.0), true);
+        CoverageOverlay overlay = new CoverageOverlay(allCovered, INSTANCE, 256);
+
+        Canvas canvas = mock(Canvas.class);
+        overlay.draw(null, (byte) 5, canvas, new Point(0, 0), Rotation.NULL_ROTATION);
+
+        verify(canvas, atLeastOnce()).drawLine(anyInt(), anyInt(), anyInt(), anyInt(), any());
+    }
+
+    // regression test for the green-only rendering: a missing tile mixed in with a covered one
+    // must contribute zero draw calls of its own, not just a different color
+    @Test
+    public void drawIgnoresMissingTilesEvenWhenMixedWithCovered() {
+        Canvas mixedCanvas = mock(Canvas.class);
+        CoverageOverlay mixed = new CoverageOverlay(coverageTiles, INSTANCE, 256); // one covered, one missing (setUp)
+        mixed.draw(null, (byte) 5, mixedCanvas, new Point(0, 0), Rotation.NULL_ROTATION);
+
+        Canvas coveredOnlyCanvas = mock(Canvas.class);
+        Map<BoundingBox, Boolean> coveredOnly = new HashMap<>();
+        coveredOnly.put(createBoundingBox(0.0, 0.0, 1.0, 1.0), true); // the same covered tile as in setUp
+        CoverageOverlay overlay = new CoverageOverlay(coveredOnly, INSTANCE, 256);
+        overlay.draw(null, (byte) 5, coveredOnlyCanvas, new Point(0, 0), Rotation.NULL_ROTATION);
+
+        assertEquals(mockingDetails(coveredOnlyCanvas).getInvocations().size(),
+                mockingDetails(mixedCanvas).getInvocations().size());
     }
 
     private BoundingBox createBoundingBox(double swLon, double swLat, double neLon, double neLat) {

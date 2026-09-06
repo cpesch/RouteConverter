@@ -179,7 +179,10 @@ public class CoverageOverlayController {
     // rectangle drowns out the fact that only a small part of the viewport is actually backed
     // by it. Break the viewport into a 1x1-degree grid and mark a tile covered only if a covered
     // map's bounding box actually reaches into it.
-    private Map<BoundingBox, Boolean> computeTileCoverage(BoundingBox viewport, List<BoundingBox> coveredBoundingBoxes) {
+    // package-private for testing -- the rest of this class is coupled to
+    // BaseRouteConverter#getInstance() static singletons and isn't unit-testable as-is,
+    // but this tiling logic is pure and worth covering directly
+    Map<BoundingBox, Boolean> computeTileCoverage(BoundingBox viewport, List<BoundingBox> coveredBoundingBoxes) {
         Map<BoundingBox, Boolean> result = new HashMap<>();
         if (coveredBoundingBoxes.isEmpty())
             return result;

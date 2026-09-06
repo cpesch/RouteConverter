@@ -142,6 +142,21 @@ public class BRouterTest {
     }
 
     @Test
+    public void testGetCoverageTilesReturnsCorrectTileBounds() {
+        // asymmetric bounding box (2 degrees of longitude, 1 degree of latitude) -- a square
+        // bbox would hide a longitude/latitude swap in the tile BoundingBox construction
+        NavigationPosition southWest = new SimpleNavigationPosition(10.0, 40.0);
+        NavigationPosition northEast = new SimpleNavigationPosition(12.0, 41.0);
+        BoundingBox bbox = new BoundingBox(northEast, southWest);
+
+        Map<BoundingBox, Boolean> coverageTiles = router.getCoverageTiles(bbox);
+
+        assertEquals(2, coverageTiles.size());
+        assertTrue(coverageTiles.containsKey(new BoundingBox(11.0, 41.0, 10.0, 40.0)));
+        assertTrue(coverageTiles.containsKey(new BoundingBox(12.0, 41.0, 11.0, 40.0)));
+    }
+
+    @Test
     public void testGetCoverageTilesHandlesPartialOverlap() {
         // Tiles are chunked 1x1 starting at the bounding box's own corner, not aligned to a fixed
         // degree grid, so a 1x1 degree area yields exactly one tile regardless of its offset.
