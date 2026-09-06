@@ -38,21 +38,18 @@ import static org.mapsforge.core.util.MercatorProjection.latitudeToPixelY;
 import static org.mapsforge.core.util.MercatorProjection.getMapSize;
 
 /**
- * Paints a coverage overlay on the map canvas showing which parts of a map area
- * already have data downloaded (covered) and which don't (missing).
+ * Paints a coverage overlay on the map canvas highlighting the parts of a map area
+ * that already have data downloaded. Uncovered areas are left undrawn.
  *
  * @author Christian Pesch
  */
 public class CoverageOverlay extends Layer {
     private final List<BoundingBox> coveredBoxes;
-    private final List<BoundingBox> missingBoxes;
     private final Paint coveredPaint;
-    private final Paint missingPaint;
     private final int tileSize;
 
     public CoverageOverlay(Map<BoundingBox, Boolean> coverageTiles, GraphicFactory graphicFactory, int tileSize) {
         this.coveredBoxes = new ArrayList<>();
-        this.missingBoxes = new ArrayList<>();
         this.tileSize = tileSize;
 
         // Create covered paint (translucent green)
@@ -61,28 +58,15 @@ public class CoverageOverlay extends Layer {
         coveredPaint.setStyle(Style.FILL);
         coveredPaint.setStrokeWidth(1);
 
-        // Create missing paint (translucent red)
-        this.missingPaint = graphicFactory.createPaint();
-        missingPaint.setColor(graphicFactory.createColor(80, 200, 0, 0)); // alpha 80, RGB(200,0,0)
-        missingPaint.setStyle(Style.FILL);
-        missingPaint.setStrokeWidth(1);
-
-        // Split tiles into covered and missing
         for (Map.Entry<BoundingBox, Boolean> entry : coverageTiles.entrySet()) {
             if (entry.getValue()) {
                 coveredBoxes.add(entry.getKey());
-            } else {
-                missingBoxes.add(entry.getKey());
             }
         }
     }
 
     @Override
     public void draw(org.mapsforge.core.model.BoundingBox boundingBox, byte zoomLevel, Canvas canvas, Point topLeftPoint, Rotation rotation) {
-        // Draw missing tiles first (red), then covered tiles (green) on top
-        for (BoundingBox box : missingBoxes) {
-            drawBoundingBox(box, boundingBox, zoomLevel, canvas, topLeftPoint, missingPaint);
-        }
         for (BoundingBox box : coveredBoxes) {
             drawBoundingBox(box, boundingBox, zoomLevel, canvas, topLeftPoint, coveredPaint);
         }

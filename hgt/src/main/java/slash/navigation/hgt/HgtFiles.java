@@ -220,7 +220,7 @@ public class HgtFiles implements ElevationService {
                 double east = Math.min(longitude + 1.0, boundingBox.northEast().getLongitude());
                 double south = latitude;
                 double north = Math.min(latitude + 1.0, boundingBox.northEast().getLatitude());
-                BoundingBox tileBoundingBox = new BoundingBox(north, south, west, east);
+                BoundingBox tileBoundingBox = new BoundingBox(east, north, west, south);
                 consumer.accept(longitude, latitude, tileBoundingBox);
                 latitude += 1.0;
             }

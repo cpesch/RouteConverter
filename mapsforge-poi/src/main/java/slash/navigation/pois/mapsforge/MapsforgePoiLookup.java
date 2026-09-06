@@ -143,6 +143,30 @@ public class MapsforgePoiLookup {
             dataSourceManager.queueForDownload(file.getDataSource(), file);
     }
 
+    // Bounding boxes of POI catalog entries already downloaded locally, for map-coverage display.
+    // calculateRemainingDownloadSize() is not usable for this: it sums every still-missing matching
+    // file across every POI provider/schema (v3, v4, legacy) for an area, so it stays non-zero as
+    // long as any one of several redundant datasets is missing, even once a usable local file
+    // exists. Deliberately NOT collectLocalPoiDescriptors() either: that walks every POI directory
+    // on disk and opens a SQLite connection per file to read its embedded bounds -- fine for a
+    // one-off file lookup, far too expensive to run on every coverage refresh (it froze the EDT).
+    // This scans the catalog (already loaded in memory) once and does a plain File#exists() check.
+    public List<BoundingBox> findLocalPoiCoverage(BoundingBox viewport) {
+        List<BoundingBox> result = new ArrayList<>();
+        for (DataSource dataSource : dataSourceManager.getDataSourceService().getDataSources()) {
+            for (slash.navigation.datasources.File file : dataSource.getFiles()) {
+                if (!DOT_POI.equals(getExtension(file.getUri())))
+                    continue;
+                BoundingBox fileBounds = file.getBoundingBox();
+                if (fileBounds == null || viewport.intersect(fileBounds) == null)
+                    continue;
+                if (createFile(file).exists())
+                    result.add(fileBounds);
+            }
+        }
+        return result;
+    }
+
     private Set<slash.navigation.datasources.File> findRemotePoiFiles(List<MapDescriptor> mapDescriptors) {
         Set<slash.navigation.datasources.File> result = new LinkedHashSet<>();
         for (MapDescriptor mapDescriptor : mapDescriptors) {
