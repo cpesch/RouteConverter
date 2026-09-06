@@ -51,7 +51,7 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     private static final Logger log = Logger.getLogger(GoogleTimelineFormat.class.getName());
 
     private static final String GEO_PREFIX = "geo:";
-    private static final Pattern COORDINATE_PATTERN = Pattern.compile("(-?\\d+\\.\\d+)[°,]\\s*(-?\\d+\\.\\d+)[°]?");
+    private static final Pattern COORDINATE_PATTERN = Pattern.compile("(-?\\d+\\.\\d+)°?,?\\s*(-?\\d+\\.\\d+)°?");
 
     public String getExtension() {
         return ".json";
