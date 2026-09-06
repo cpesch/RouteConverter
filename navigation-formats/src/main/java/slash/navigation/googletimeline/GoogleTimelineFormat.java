@@ -140,7 +140,13 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         }
 
         // Process path points grouped by calendar day
-        Map<CompactCalendar, List<Wgs84Position>> pointsByDay = new TreeMap<>();
+        // CompactCalendar is not Comparable, so a natural-ordering TreeMap would throw
+        // ClassCastException as soon as a second key needs to be compared
+        Map<CompactCalendar, List<Wgs84Position>> pointsByDay = new TreeMap<>((a, b) -> {
+            if (a.before(b)) return -1;
+            if (a.after(b)) return 1;
+            return 0;
+        });
         for (JsonNode segment : pathSegments) {
             List<Wgs84Position> points = parseTimelinePath(segment, activities, isIOS, isAndroid);
             for (Wgs84Position point : points) {
