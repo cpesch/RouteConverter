@@ -41,15 +41,16 @@ public class ChecksumReportPolicy {
     private ChecksumReportPolicy() {}
 
     /**
-     * @param state the terminal state of the failed download
+     * @param state the terminal state of the download
      * @param announcedContentLength the Content-Length announced by the HTTP response, if any
      * @param actualContentLength the size of the file that was written
      * @param announcedLastModified the Last-Modified announced by the HTTP response, if any
      * @param actualLastModified the last-modified of the file that was written
-     * @return true iff the checksum of this download may be reported to the server as a new known-good build
+     * @return true iff this checksum is trustworthy enough to be reported to the server as a
+     * new known-good build
      */
-    public static boolean shouldReportFailedDownload(State state, Long announcedContentLength, Long actualContentLength,
-                                                     Long announcedLastModified, Long actualLastModified) {
+    public static boolean isReportableChecksum(State state, Long announcedContentLength, Long actualContentLength,
+                                               Long announcedLastModified, Long actualLastModified) {
         // only a validation failure happens on a completely transferred file; a transport error
         // leaves the content in an unknown state whose checksum is meaningless
         if (state != State.ChecksumError)

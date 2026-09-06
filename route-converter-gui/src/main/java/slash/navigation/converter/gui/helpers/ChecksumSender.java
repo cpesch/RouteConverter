@@ -48,7 +48,7 @@ public class ChecksumSender implements DownloadListener {
         // the file's checksum is only a new known-good build if the transfer provably completed
         // and validation failed on the complete content; anything else is a broken download whose
         // checksum must not be published (see GitHub #382)
-        if (ChecksumReportPolicy.shouldReportFailedDownload(download.getState(),
+        if (ChecksumReportPolicy.isReportableChecksum(download.getState(),
                 download.getAnnouncedContentLength(), file.getActualChecksum().getContentLength(),
                 download.getAnnouncedLastModified(), lastModifiedMillis(file.getActualChecksum())))
             sendChecksums(download);

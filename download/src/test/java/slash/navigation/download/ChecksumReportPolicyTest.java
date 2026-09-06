@@ -24,7 +24,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static slash.navigation.download.ChecksumReportPolicy.shouldReportFailedDownload;
+import static slash.navigation.download.ChecksumReportPolicy.isReportableChecksum;
 import static slash.navigation.download.State.ChecksumError;
 import static slash.navigation.download.State.Failed;
 import static slash.navigation.download.State.NoFileError;
@@ -50,79 +50,79 @@ public class ChecksumReportPolicyTest {
     @Test
     public void genuineRebuildIsReported() {
         // upstream rebuilt the file; catalog is stale but the download is complete and correct
-        assertTrue(shouldReportFailedDownload(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE,
+        assertTrue(isReportableChecksum(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE,
                 ANNOUNCED_LAST_MODIFIED, LAST_MODIFIED));
     }
 
     @Test
     public void truncatedDownloadIsNotReported() {
         // interrupted transfer: the file is smaller than the announced Content-Length
-        assertFalse(shouldReportFailedDownload(ChecksumError, ANNOUNCED, TRUNCATED_SIZE,
+        assertFalse(isReportableChecksum(ChecksumError, ANNOUNCED, TRUNCATED_SIZE,
                 ANNOUNCED_LAST_MODIFIED, LAST_MODIFIED));
     }
 
     @Test
     public void largerThanAnnouncedDownloadIsNotReported() {
-        assertFalse(shouldReportFailedDownload(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE + 1,
+        assertFalse(isReportableChecksum(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE + 1,
                 ANNOUNCED_LAST_MODIFIED, LAST_MODIFIED));
     }
 
     @Test
     public void missingAnnouncedContentLengthIsNotReported() {
         // without a Content-Length completeness cannot be proven
-        assertFalse(shouldReportFailedDownload(ChecksumError, null, WORLD_MAP_SIZE,
+        assertFalse(isReportableChecksum(ChecksumError, null, WORLD_MAP_SIZE,
                 ANNOUNCED_LAST_MODIFIED, LAST_MODIFIED));
     }
 
     @Test
     public void missingActualContentLengthIsNotReported() {
-        assertFalse(shouldReportFailedDownload(ChecksumError, ANNOUNCED, null,
+        assertFalse(isReportableChecksum(ChecksumError, ANNOUNCED, null,
                 ANNOUNCED_LAST_MODIFIED, LAST_MODIFIED));
     }
 
     @Test
     public void differingLastModifiedIsNotReported() {
         // sizes match, but the file is not the build the server announced
-        assertFalse(shouldReportFailedDownload(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE,
+        assertFalse(isReportableChecksum(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE,
                 ANNOUNCED_LAST_MODIFIED, LAST_MODIFIED_OTHER));
     }
 
     @Test
     public void missingAnnouncedLastModifiedIsNotReported() {
-        assertFalse(shouldReportFailedDownload(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE,
+        assertFalse(isReportableChecksum(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE,
                 null, LAST_MODIFIED));
     }
 
     @Test
     public void missingActualLastModifiedIsNotReported() {
-        assertFalse(shouldReportFailedDownload(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE,
+        assertFalse(isReportableChecksum(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE,
                 ANNOUNCED_LAST_MODIFIED, null));
     }
 
     @Test
     public void transportFailureIsNotReported() {
         // even with matching sizes, a transport error leaves the content in an unknown state
-        assertFalse(shouldReportFailedDownload(Failed, ANNOUNCED, WORLD_MAP_SIZE,
+        assertFalse(isReportableChecksum(Failed, ANNOUNCED, WORLD_MAP_SIZE,
                 ANNOUNCED_LAST_MODIFIED, LAST_MODIFIED));
     }
 
     @Test
     public void missingFileErrorIsNotReported() {
-        assertFalse(shouldReportFailedDownload(NoFileError, ANNOUNCED, WORLD_MAP_SIZE,
+        assertFalse(isReportableChecksum(NoFileError, ANNOUNCED, WORLD_MAP_SIZE,
                 ANNOUNCED_LAST_MODIFIED, LAST_MODIFIED));
     }
 
     @Test
     public void successIsNeverRoutedThroughThePredicate() {
         // Succeeded is reported by the unchanged succeeded() path, not by this predicate
-        assertFalse(shouldReportFailedDownload(Succeeded, ANNOUNCED, WORLD_MAP_SIZE,
+        assertFalse(isReportableChecksum(Succeeded, ANNOUNCED, WORLD_MAP_SIZE,
                 ANNOUNCED_LAST_MODIFIED, LAST_MODIFIED));
     }
 
     @Test
     public void lastModifiedComparisonIgnoresMillisecondPrecision() {
         // HTTP dates and file mtimes carry no milliseconds; sub-second drift must not reject a report
-        assertTrue(shouldReportFailedDownload(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE,
+        assertTrue(isReportableChecksum(ChecksumError, ANNOUNCED, WORLD_MAP_SIZE,
                 ANNOUNCED_LAST_MODIFIED, LAST_MODIFIED + 42));
     }
 }
