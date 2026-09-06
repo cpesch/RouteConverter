@@ -31,6 +31,7 @@ import slash.navigation.download.DownloadManager;
 import slash.navigation.download.FileAndChecksum;
 import slash.navigation.download.State;
 import slash.navigation.download.executor.DownloadExecutor;
+import slash.navigation.rest.RFC2616;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +48,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.download.Action.Copy;
+import static slash.navigation.download.ChecksumReportPolicy.isReportableChecksum;
 
 /**
  * Hermetic (no external network) tests that a download's scratch temp file is deleted on the
@@ -58,6 +60,8 @@ import static slash.navigation.download.Action.Copy;
  */
 public class GetPerformerTest {
     private static final String BODY = "Lorem ipsum dolor sit amet";
+    // second precision: HTTP dates carry no milliseconds, so this round-trips through RFC 1123
+    private static final long LAST_MODIFIED = 1_700_000_123_000L;
 
     @Rule
     public final Timeout testTimeout = Timeout.seconds(30);
@@ -81,6 +85,16 @@ public class GetPerformerTest {
         });
         server.createContext("/missing", exchange -> {
             exchange.sendResponseHeaders(404, -1);
+            exchange.close();
+        });
+        server.createContext("/ok-last-modified", exchange -> {
+            byte[] body = BODY.getBytes(StandardCharsets.UTF_8);
+            bodiesServed.incrementAndGet();
+            exchange.getResponseHeaders().add("Last-Modified", RFC2616.formatDate(LAST_MODIFIED));
+            exchange.sendResponseHeaders(200, body.length);
+            try (OutputStream out = exchange.getResponseBody()) {
+                out.write(body);
+            }
             exchange.close();
         });
         server.start();
@@ -131,6 +145,33 @@ public class GetPerformerTest {
         assertEquals(State.ChecksumError, download.getState());
         assertEquals((long) BODY.length(), (long) download.getAnnouncedContentLength());
         assertEquals((long) BODY.length(), (long) download.getFile().getActualChecksum().getContentLength());
+    }
+
+    @Test
+    public void testValidateFailureCarriesAnnouncedLastModifiedEndToEnd() {
+        // the genuine-rebuild path (see GitHub #382): a completed transfer whose validation fails
+        // must carry the announced Last-Modified through to the actual checksum, because that is
+        // what lets a listener prove the file is the build the server announced rather than a
+        // truncated fragment of it
+        Checksum wrongChecksum = new Checksum(null, (long) BODY.length() + 999L, "wrong-sha1");
+        Download download = manager.queueForDownload("mismatching checksum", url("/ok-last-modified"),
+                Copy, new FileAndChecksum(target, wrongChecksum), null);
+        manager.waitForCompletion(singletonList(download));
+
+        assertEquals(State.ChecksumError, download.getState());
+        assertEquals((long) BODY.length(), (long) download.getAnnouncedContentLength());
+        assertEquals(LAST_MODIFIED, (long) download.getAnnouncedLastModified());
+
+        Checksum actual = download.getFile().getActualChecksum();
+        assertEquals((long) BODY.length(), (long) actual.getContentLength());
+        // copy() stamps the target with the announced Last-Modified and createChecksum() reads it
+        // back, so the actual checksum's mtime mirrors the announced one
+        assertEquals(LAST_MODIFIED, actual.getLastModified().getTimeInMillis());
+
+        // exactly what ChecksumSender.failed() asks the policy, with the real download's values
+        assertTrue(isReportableChecksum(download.getState(), download.getAnnouncedContentLength(),
+                actual.getContentLength(), download.getAnnouncedLastModified(),
+                actual.getLastModified().getTimeInMillis()));
     }
 
     @Test

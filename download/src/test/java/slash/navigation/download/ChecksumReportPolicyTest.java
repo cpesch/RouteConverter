@@ -42,7 +42,9 @@ public class ChecksumReportPolicyTest {
     private static final long WORLD_MAP_SIZE = 3_276_950L;
     private static final long TRUNCATED_SIZE = 1_662_901L;
     private static final long LAST_MODIFIED = 1_700_000_000_123L;
-    private static final long LAST_MODIFIED_OTHER = 1_700_000_000_456L;
+    // a genuinely different build: whole seconds apart, not just sub-second noise the
+    // second-precision comparison is designed to ignore
+    private static final long LAST_MODIFIED_OTHER = 1_700_000_001_456L;
 
     private static final Long ANNOUNCED = WORLD_MAP_SIZE;
     private static final Long ANNOUNCED_LAST_MODIFIED = LAST_MODIFIED;
