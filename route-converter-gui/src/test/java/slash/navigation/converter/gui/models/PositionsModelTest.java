@@ -83,4 +83,15 @@ public class PositionsModelTest {
         assertEquals("a", model.getPosition(0).getDescription());
         assertEquals("e", model.getPosition(1).getDescription());
     }
+
+    @Test
+    public void testRemoveWithScatteredIndices() {
+        initialize();
+        // two separate single-element ranges, not one contiguous block
+        model.remove(new int[]{1, 3});
+        assertEquals(3, model.getRowCount());
+        assertEquals("a", model.getPosition(0).getDescription());
+        assertEquals("c", model.getPosition(1).getDescription());
+        assertEquals("e", model.getPosition(2).getDescription());
+    }
 }

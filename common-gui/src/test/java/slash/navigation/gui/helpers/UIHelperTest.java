@@ -28,6 +28,12 @@ import static org.junit.Assert.assertEquals;
 /**
  * Tests for {@link UIHelper}.
  *
+ * Assertions use {@link Font#getName()} rather than {@link Font#getFamily()}: the
+ * latter resolves the logical name against the host's native font manager, which
+ * throws ("Fontconfig head is null") on headless CI runners without a fontconfig
+ * setup. getName() just returns the name passed to the constructor, which is all
+ * these tests need to verify.
+ *
  * @author Christian Pesch
  */
 public class UIHelperTest {
@@ -37,7 +43,7 @@ public class UIHelperTest {
         Font base = new Font("SansSerif", Font.PLAIN, 12);
         Font result = UIHelper.scaleFont(base, 100);
         assertEquals(12, result.getSize());
-        assertEquals("SansSerif", result.getFamily());
+        assertEquals("SansSerif", result.getName());
         assertEquals(Font.PLAIN, result.getStyle());
     }
 
@@ -46,7 +52,7 @@ public class UIHelperTest {
         Font base = new Font("SansSerif", Font.PLAIN, 12);
         Font result = UIHelper.scaleFont(base, 150);
         assertEquals(18, result.getSize());
-        assertEquals("SansSerif", result.getFamily());
+        assertEquals("SansSerif", result.getName());
         assertEquals(Font.PLAIN, result.getStyle());
     }
 
@@ -55,7 +61,7 @@ public class UIHelperTest {
         Font base = new Font("SansSerif", Font.PLAIN, 12);
         Font result = UIHelper.scaleFont(base, 50);
         assertEquals(6, result.getSize());
-        assertEquals("SansSerif", result.getFamily());
+        assertEquals("SansSerif", result.getName());
         assertEquals(Font.PLAIN, result.getStyle());
     }
 
@@ -64,7 +70,7 @@ public class UIHelperTest {
         Font base = new Font("SansSerif", Font.PLAIN, 11);
         Font result = UIHelper.scaleFont(base, 125);
         assertEquals(14, result.getSize()); // 11 * 1.25 = 13.75 -> rounds to 14
-        assertEquals("SansSerif", result.getFamily());
+        assertEquals("SansSerif", result.getName());
         assertEquals(Font.PLAIN, result.getStyle());
     }
 
@@ -73,7 +79,7 @@ public class UIHelperTest {
         Font base = new Font("SansSerif", Font.PLAIN, 4);
         Font result = UIHelper.scaleFont(base, 10);
         assertEquals(1, result.getSize()); // 4 * 0.10 = 0.4 -> rounds to 0 -> clamped to 1
-        assertEquals("SansSerif", result.getFamily());
+        assertEquals("SansSerif", result.getName());
         assertEquals(Font.PLAIN, result.getStyle());
     }
 
@@ -82,7 +88,7 @@ public class UIHelperTest {
         Font base = new Font("Serif", Font.BOLD | Font.ITALIC, 12);
         Font result = UIHelper.scaleFont(base, 150);
         assertEquals(18, result.getSize());
-        assertEquals("Serif", result.getFamily());
+        assertEquals("Serif", result.getName());
         assertEquals(Font.BOLD | Font.ITALIC, result.getStyle());
     }
 

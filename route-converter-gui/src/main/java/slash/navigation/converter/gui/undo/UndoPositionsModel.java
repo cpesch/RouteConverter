@@ -260,18 +260,18 @@ public class UndoPositionsModel implements PositionsModel {
         final RemovePositions edit = new RemovePositions(this);
 
         new ContinousRange(rows, new RangeOperation() {
-            private List<NavigationPosition> removed = new ArrayList<>();
-
             public void performOnIndex(int index) {
-                removed.add(0, getRoute().remove(index));
+                // removal happens once per contiguous range in performOnRange below,
+                // not per index -- ArrayList#remove(int) per scattered index is O(n)
+                // each, so deleting most of a 100k+ position track was O(n^2)
             }
 
             public void performOnRange(int firstIndex, int lastIndex) {
+                List<NavigationPosition> removed = new ArrayList<>(getRoute().remove(firstIndex, lastIndex + 1));
                 if (fireEvent)
                     delegate.fireTableRowsDeletedInContinousRange(firstIndex, lastIndex);
                 if (trackUndo)
                     edit.add(firstIndex, removed);
-                removed = new ArrayList<>();
             }
 
             public boolean isInterrupted() {

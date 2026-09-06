@@ -22,7 +22,9 @@ package slash.navigation.download;
 import com.sun.net.httpserver.HttpServer;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Timeout;
 
 import java.io.File;
 import java.io.IOException;
@@ -58,6 +60,9 @@ public class DownloadManager304Test {
     private static final String ETAG = "\"abc123\"";
     private static final String BODY = "Lorem ipsum dolor sit amet";
 
+    @Rule
+    public final Timeout testTimeout = Timeout.seconds(30);
+
     private HttpServer server;
     private final AtomicInteger bodiesServed = new AtomicInteger();
     private DownloadManager manager;
@@ -73,11 +78,15 @@ public class DownloadManager304Test {
                 exchange.sendResponseHeaders(304, -1); // no body
             } else {
                 byte[] body = BODY.getBytes(StandardCharsets.UTF_8);
+                // Count the body BEFORE writing it: with Content-Length set the client can read the
+                // whole body, complete the download and let the test's waitForCompletion() return
+                // while this handler thread has not yet run the counter bump, so a test asserting
+                // on the count would race the handler (see DownloadManagerStateMachineTest).
+                bodiesServed.incrementAndGet();
                 exchange.sendResponseHeaders(200, body.length);
                 try (OutputStream out = exchange.getResponseBody()) {
                     out.write(body);
                 }
-                bodiesServed.incrementAndGet();
             }
             exchange.close();
         });

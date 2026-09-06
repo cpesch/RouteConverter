@@ -54,16 +54,21 @@ public class PositionWithLayer implements ObjectWithLayer {
         this.layer = layer;
     }
 
+    /**
+     * Identity is the {@link NavigationPosition} alone. The {@link Layer} is a rendering handle
+     * that is attached later, when a marker is actually created, so including it would mean a
+     * freshly built instance could never equal an already rendered one - which is exactly what
+     * {@link SelectionUpdater#setSelectedPositions(int[], boolean)} compares in its additive path.
+     */
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PositionWithLayer that = (PositionWithLayer) o;
-        return Objects.equals(getPosition(), that.getPosition()) &&
-                Objects.equals(getLayer(), that.getLayer());
+        return Objects.equals(getPosition(), that.getPosition());
     }
 
     public int hashCode() {
-        return Objects.hash(getPosition(), getLayer());
+        return Objects.hash(getPosition());
     }
 
     public String toString() {

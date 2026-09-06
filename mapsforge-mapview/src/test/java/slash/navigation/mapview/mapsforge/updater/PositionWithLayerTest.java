@@ -24,6 +24,7 @@ import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -61,23 +62,37 @@ public class PositionWithLayerTest {
     }
 
     @Test
-    public void equalityIsByPositionAndLayer() {
+    public void equalityIsByPositionAlone() {
+        PositionWithLayer one = new PositionWithLayer(position);
+        one.setLayer(mock(Layer.class));
+        PositionWithLayer same = new PositionWithLayer(position);
+        same.setLayer(mock(Layer.class));
+
+        assertEquals("the layer is a rendering handle, not part of the identity", one, same);
+        assertEquals(one.hashCode(), same.hashCode());
+    }
+
+    @Test
+    public void anAlreadyRenderedPositionEqualsAFreshlyBuiltOne() {
+        PositionWithLayer rendered = new PositionWithLayer(position);
+        rendered.setLayer(mock(Layer.class));
+
+        PositionWithLayer candidate = new PositionWithLayer(position);
+
+        assertEquals(rendered, candidate);
+        assertEquals(rendered.hashCode(), candidate.hashCode());
+        assertTrue(singletonList(rendered).contains(candidate));
+    }
+
+    @Test
+    public void differentPositionsAreNotEqual() {
         Layer layer = mock(Layer.class);
 
         PositionWithLayer one = new PositionWithLayer(position);
         one.setLayer(layer);
-        PositionWithLayer same = new PositionWithLayer(position);
-        same.setLayer(layer);
-
-        assertEquals(one, same);
-        assertEquals(one.hashCode(), same.hashCode());
-
-        PositionWithLayer differentLayer = new PositionWithLayer(position);
-        differentLayer.setLayer(mock(Layer.class));
-        assertNotEquals(one, differentLayer);
-
         PositionWithLayer differentPosition = new PositionWithLayer(noCoordinates);
         differentPosition.setLayer(layer);
+
         assertNotEquals(one, differentPosition);
     }
 

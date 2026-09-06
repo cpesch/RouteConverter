@@ -115,6 +115,7 @@ public class MapsDialog extends SimpleDialog {
         sorterAvailableMaps.setComparator(DESCRIPTION_COLUMN,
                 (Comparator<TileDownloadMap>) (m1, m2) -> m1.description().compareToIgnoreCase(m2.description()));
         sorterAvailableMaps.setComparator(ACTIVE_COLUMN, (Comparator<Boolean>) Boolean::compareTo);
+        sorterAvailableMaps.setSortKeys(List.of(new RowSorter.SortKey(DESCRIPTION_COLUMN, SortOrder.ASCENDING)));
         tableAvailableOnlineMaps.setRowSorter(sorterAvailableMaps);
         tableAvailableOnlineMaps.getSelectionModel().addListSelectionListener(e -> {
             if (e.getValueIsAdjusting()) {
@@ -223,7 +224,8 @@ public class MapsDialog extends SimpleDialog {
         actionManager.register("display-offline-map", new DisplayMapAction(this, tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("delete-offline-maps", new DeleteMapsAction(this, tableAvailableOfflineMaps, getMapsforgeMapManager()));
         actionManager.register("download-maps", new DownloadMapsAction(this, tableDownloadableMaps, getMapsforgeMapManager(),
-                checkBoxDownloadRoutingData, checkBoxDownloadElevationData, checkBoxDownloadPoiData));
+                checkBoxDownloadRoutingData, checkBoxDownloadElevationData, checkBoxDownloadPoiData,
+                getCoverageOverlayController()::forceRefresh));
         new AvailableOfflineMapsTablePopupMenu(tableAvailableOfflineMaps).createPopupMenu();
         new DownloadableMapsTablePopupMenu(tableDownloadableMaps).createPopupMenu();
         registerAction(buttonDisplayOfflineMap, "display-offline-map");
@@ -300,6 +302,10 @@ public class MapsDialog extends SimpleDialog {
         return ((RouteConverter) BaseRouteConverter.getInstance()).getMapsforgePoiLookup();
     }
 
+    private CoverageOverlayController getCoverageOverlayController() {
+        return ((RouteConverter) BaseRouteConverter.getInstance()).getCoverageOverlayController();
+    }
+
     private void close() {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
         r.showMapBorder(null);
@@ -330,7 +336,7 @@ public class MapsDialog extends SimpleDialog {
         contentPane = new JPanel();
         contentPane.setLayout(new GridLayoutManager(4, 1, new Insets(10, 10, 10, 10), -1, -1));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new GridLayoutManager(1, 3, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.setLayout(new GridLayoutManager(1, 4, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel1, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
         buttonHelp = new JButton();
@@ -338,12 +344,20 @@ public class MapsDialog extends SimpleDialog {
         panel1.add(buttonHelp,
                 new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        buttonDownload = new JButton();
+        this.$$$loadButtonText$$$(buttonDownload,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "download-maps-action"));
+        buttonDownload.setToolTipText(
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "download-maps-action-tooltip"));
+        panel1.add(buttonDownload, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
+                null, 0, false));
         final Spacer spacer1 = new Spacer();
-        panel1.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel1.add(spacer1, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
         panel2.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel2, new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel1.add(panel2, new GridConstraints(0, 3, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         buttonClose = new JButton();
@@ -360,25 +374,9 @@ public class MapsDialog extends SimpleDialog {
         panel3.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         tabbedPane1.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "offline-tab"), panel3);
         final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(7, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel4.setLayout(new GridLayoutManager(9, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel3.add(panel4, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, 1, null, null, null, 0, false));
-        final JPanel panel5 = new JPanel();
-        panel5.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel4.add(panel5, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        buttonDownload = new JButton();
-        this.$$$loadButtonText$$$(buttonDownload,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "download-maps-action"));
-        buttonDownload.setToolTipText(
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "download-maps-action-tooltip"));
-        panel5.add(buttonDownload, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
-                null, 0, false));
-        final Spacer spacer2 = new Spacer();
-        panel5.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
-                GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         checkBoxDownloadElevationData = new JCheckBox();
         checkBoxDownloadElevationData.setSelected(true);
         panel4.add(checkBoxDownloadElevationData, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
@@ -471,10 +469,10 @@ public class MapsDialog extends SimpleDialog {
         final JScrollPane scrollPane2 = new JScrollPane();
         panel7.add(scrollPane2, new GridConstraints(5, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 120), null, null, 1,
+                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(-1, 200), null, null, 1,
                 false));
         tableDownloadableMaps = new JTable();
-        tableDownloadableMaps.setPreferredScrollableViewportSize(new Dimension(400, 200));
+        tableDownloadableMaps.setPreferredScrollableViewportSize(new Dimension(400, 320));
         tableDownloadableMaps.setShowHorizontalLines(false);
         tableDownloadableMaps.setShowVerticalLines(false);
         scrollPane2.setViewportView(tableDownloadableMaps);

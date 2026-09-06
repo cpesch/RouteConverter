@@ -21,12 +21,14 @@
 package slash.navigation.mapview.mapsforge.updater;
 
 import org.junit.Test;
+import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.models.PositionsModel;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static java.util.Arrays.asList;
@@ -37,9 +39,11 @@ import static org.mockito.Mockito.*;
 public class SelectionUpdaterTest {
     private final NavigationPosition p1 = new SimpleNavigationPosition(1.0, 0.0);
     private final NavigationPosition p2 = new SimpleNavigationPosition(2.0, 0.0);
+    private final NavigationPosition p3 = new SimpleNavigationPosition(3.0, 0.0);
 
     private final PositionWithLayer w1 = new PositionWithLayer(p1);
     private final PositionWithLayer w2 = new PositionWithLayer(p2);
+    private final PositionWithLayer w3 = new PositionWithLayer(p3);
 
     @Test
     public void testNavigationPositionEqualsAndHashCode() {
@@ -100,6 +104,69 @@ public class SelectionUpdaterTest {
         assertEquals(singletonList(w1), selectionUpdater.getPositionWithLayers());
         verify(selectionOperation, never()).add(new ArrayList<PositionWithLayer>());
         verify(selectionOperation, times(1)).remove(singletonList(w2));
+    }
+
+    /**
+     * A {@link SelectionOperation} that behaves like the real one in MapsforgeMapView: it attaches
+     * a {@link Layer} to every position it renders. A mock never does, which is why the additive
+     * path used to pass with a broken PositionWithLayer#equals - see issue #358.
+     */
+    private static class RenderingSelectionOperation implements SelectionOperation {
+        private final List<List<PositionWithLayer>> added = new ArrayList<>();
+        private final List<List<PositionWithLayer>> removed = new ArrayList<>();
+
+        public void add(List<PositionWithLayer> positionWithLayers) {
+            added.add(new ArrayList<>(positionWithLayers));
+            for (PositionWithLayer positionWithLayer : positionWithLayers)
+                positionWithLayer.setLayer(mock(Layer.class));
+        }
+
+        public void remove(List<PositionWithLayer> positionWithLayers) {
+            removed.add(new ArrayList<>(positionWithLayers));
+        }
+    }
+
+    @Test
+    public void testAddedToAnAlreadyRenderedSelection() {
+        PositionsModel positionsModel = mock(PositionsModel.class);
+        when(positionsModel.getPosition(1)).thenReturn(p1);
+        when(positionsModel.getPosition(2)).thenReturn(p2);
+        when(positionsModel.getPosition(3)).thenReturn(p3);
+        when(positionsModel.getRowCount()).thenReturn(4);
+        RenderingSelectionOperation selectionOperation = new RenderingSelectionOperation();
+
+        SelectionUpdater selectionUpdater = new SelectionUpdater(positionsModel, selectionOperation);
+        selectionUpdater.setSelectedPositions(new int[]{1, 2}, false);
+
+        assertEquals(asList(w1, w2), selectionUpdater.getPositionWithLayers());
+        assertEquals(singletonList(asList(w1, w2)), selectionOperation.added);
+        assertTrue(selectionOperation.removed.isEmpty());
+
+        // the stored entries now carry a Layer, the candidates built from the model do not
+        selectionUpdater.setSelectedPositions(new int[]{1, 2, 3}, false);
+
+        assertEquals(asList(w1, w2, w3), selectionUpdater.getPositionWithLayers());
+        assertEquals("only the new position may be rendered again",
+                asList(asList(w1, w2), singletonList(w3)), selectionOperation.added);
+        assertTrue("nothing was deselected, so nothing may be removed", selectionOperation.removed.isEmpty());
+    }
+
+    @Test
+    public void testRemovedFromAnAlreadyRenderedSelection() {
+        PositionsModel positionsModel = mock(PositionsModel.class);
+        when(positionsModel.getPosition(1)).thenReturn(p1);
+        when(positionsModel.getPosition(2)).thenReturn(p2);
+        when(positionsModel.getRowCount()).thenReturn(3);
+        RenderingSelectionOperation selectionOperation = new RenderingSelectionOperation();
+
+        SelectionUpdater selectionUpdater = new SelectionUpdater(positionsModel, selectionOperation);
+        selectionUpdater.setSelectedPositions(new int[]{1, 2}, false);
+        selectionUpdater.setSelectedPositions(new int[]{1}, false);
+
+        assertEquals(singletonList(w1), selectionUpdater.getPositionWithLayers());
+        assertEquals("the position that stayed selected must not be rendered twice",
+                singletonList(asList(w1, w2)), selectionOperation.added);
+        assertEquals(singletonList(singletonList(w2)), selectionOperation.removed);
     }
 
     @Test

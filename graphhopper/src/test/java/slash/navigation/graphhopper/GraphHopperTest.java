@@ -19,7 +19,11 @@
 */
 package slash.navigation.graphhopper;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.datasources.DataSource;
@@ -29,8 +33,8 @@ import slash.navigation.routing.DownloadFuture;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.UUID;
 
-import static java.io.File.createTempFile;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
@@ -40,9 +44,31 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.ensureDirectory;
 import static slash.common.io.Directories.getApplicationDirectory;
+import static slash.common.io.Files.recursiveDelete;
 
 public class GraphHopperTest {
     private static final String MALA_FATRA_URI = "europe/slovakia/mala-fatra-latest.osm.pbf";
+
+    @Rule
+    public final TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    // the production code resolves graph files below the application directory, so use a name
+    // unique per test and delete whatever the test created below it again in tearDown()
+    private String dataSourceDirectoryName;
+
+    @Before
+    public void setUp() {
+        GraphHopper.TEST_MODE = true;
+
+        dataSourceDirectoryName = "graphhopper-test-" + UUID.randomUUID();
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        File directory = new File(getApplicationDirectory(), dataSourceDirectoryName);
+        if (directory.exists())
+            recursiveDelete(directory);
+    }
 
     // rc#105: a graph already loaded for one region must not make GraphHopper believe a later,
     // geographically distant route is already covered. isRequiresDownload() has to check the
@@ -50,25 +76,23 @@ public class GraphHopperTest {
     // happens to still be loaded from an earlier, unrelated route.
     @Test
     public void isRequiresDownloadChecksTheGraphNeededForTheCurrentRouteNotTheOneAlreadyLoaded() throws IOException {
-        GraphHopper.TEST_MODE = true;
-
         slash.navigation.datasources.File malaFatraFile = mock(slash.navigation.datasources.File.class);
         when(malaFatraFile.getUri()).thenReturn(MALA_FATRA_URI);
         when(malaFatraFile.getBoundingBox()).thenReturn(new BoundingBox(19.5, 49.6, 18.5, 48.9));
 
         DataSource graphHopperDataSource = mock(DataSource.class);
-        when(graphHopperDataSource.getDirectory()).thenReturn("graphhopper-test-" + hashCode());
+        when(graphHopperDataSource.getDirectory()).thenReturn(dataSourceDirectoryName);
         when(graphHopperDataSource.getAction()).thenReturn(Action.Copy.name());
         when(graphHopperDataSource.getBaseUrl()).thenReturn("http://download.geofabrik.de/");
         when(graphHopperDataSource.getFiles()).thenReturn(singletonList(malaFatraFile));
         when(malaFatraFile.getDataSource()).thenReturn(graphHopperDataSource);
 
-        GraphHopper hopper = new GraphHopper(new DownloadManager(createTempFile("queueFile", ".xml")));
+        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
         hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
 
         // simulate a graph for a distant, unrelated region that is already loaded from an
         // earlier route drawn in this session -- the file still exists on disk
-        File previouslyLoadedFile = createTempFile("denmark-latest", ".osm.pbf");
+        File previouslyLoadedFile = temporaryFolder.newFile("denmark-latest.osm.pbf");
         hopper.setOsmPbfFile(previouslyLoadedFile);
 
         // now route through Mala Fatra, Slovakia: nowhere near the previously loaded graph
@@ -88,14 +112,12 @@ public class GraphHopperTest {
     // instead of leaving the stale, previously loaded graph in place.
     @Test
     public void isRequiresDownloadSwitchesToAnAlreadyPresentGraphForTheCurrentRoute() throws IOException {
-        GraphHopper.TEST_MODE = true;
-
         slash.navigation.datasources.File malaFatraFile = mock(slash.navigation.datasources.File.class);
         when(malaFatraFile.getUri()).thenReturn(MALA_FATRA_URI);
         when(malaFatraFile.getBoundingBox()).thenReturn(new BoundingBox(19.5, 49.6, 18.5, 48.9));
 
         DataSource graphHopperDataSource = mock(DataSource.class);
-        when(graphHopperDataSource.getDirectory()).thenReturn("graphhopper-test-" + hashCode());
+        when(graphHopperDataSource.getDirectory()).thenReturn(dataSourceDirectoryName);
         when(graphHopperDataSource.getAction()).thenReturn(Action.Copy.name());
         when(graphHopperDataSource.getBaseUrl()).thenReturn("http://download.geofabrik.de/");
         when(graphHopperDataSource.getFiles()).thenReturn(singletonList(malaFatraFile));
@@ -103,17 +125,16 @@ public class GraphHopperTest {
 
         // the file GraphHopper resolves for the Mala Fatra graph descriptor is already fully
         // downloaded at the location the production code would compute for it
-        File directory = getApplicationDirectory(graphHopperDataSource.getDirectory());
-        File malaFatraLocalFile = new File(directory, MALA_FATRA_URI);
+        File malaFatraLocalFile = new File(getApplicationDirectory(dataSourceDirectoryName), MALA_FATRA_URI);
         ensureDirectory(malaFatraLocalFile.getParentFile());
         assertTrue(malaFatraLocalFile.createNewFile());
 
-        GraphHopper hopper = new GraphHopper(new DownloadManager(createTempFile("queueFile", ".xml")));
+        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
         hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
 
         // simulate a graph for a distant, unrelated region that is already loaded from an
         // earlier route drawn in this session -- the file still exists on disk
-        File previouslyLoadedFile = createTempFile("denmark-latest", ".osm.pbf");
+        File previouslyLoadedFile = temporaryFolder.newFile("denmark-latest.osm.pbf");
         hopper.setOsmPbfFile(previouslyLoadedFile);
 
         // now route through Mala Fatra, Slovakia, whose graph is already present locally

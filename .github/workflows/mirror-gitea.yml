@@ -56,11 +56,34 @@ jobs:
             git push origin HEAD:master
             echo "Mirrored gitea master into github master."
           else
+            # read the conflicts before aborting - the abort throws the index away
+            conflicts="$(git diff --name-only --diff-filter=U || true)"
+            gitea_head="$(git rev-parse --short gitea/master)"
             git merge --abort
             echo "::warning::gitea->github mirror hit a merge conflict; manual reconciliation needed."
-            gh issue create \
-              --title "Mirror: gitea->github needs manual reconciliation" \
-              --body "The scheduled gitea->github mirror could not auto-merge because of a conflict. Reconcile the two masters by hand (git fetch gitea && git merge gitea/master), then push. See the recurring workflow-config-guard add/add on actions/checkout version." \
-              || true
+
+            title="Mirror: gitea->github needs manual reconciliation"
+            {
+              echo "The scheduled gitea->github mirror could not auto-merge gitea/master (\`${gitea_head}\`) into github master."
+              echo
+              echo "Conflicting paths:"
+              echo '```'
+              echo "${conflicts:-<none reported>}"
+              echo '```'
+              echo
+              echo "Reconcile by hand, resolve the paths above, then push master:"
+              echo
+              echo '    git fetch gitea && git merge gitea/master'
+            } > "${RUNNER_TEMP}/mirror-conflict.md"
+
+            # one issue per conflict, not one per scheduled run - this job runs every 3 hours
+            existing="$(gh issue list --state open --limit 50 --json number,title \
+              --jq "[.[] | select(.title == \"${title}\")] | .[0].number // empty" || true)"
+            if [ -n "${existing}" ]; then
+              gh issue comment "${existing}" --body-file "${RUNNER_TEMP}/mirror-conflict.md" || true
+              echo "Recorded the conflict on the open issue #${existing}."
+            else
+              gh issue create --title "${title}" --body-file "${RUNNER_TEMP}/mirror-conflict.md" || true
+            fi
             exit 1
           fi

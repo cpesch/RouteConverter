@@ -20,11 +20,13 @@
 package slash.navigation.converter.gui;
 
 import slash.navigation.brouter.BRouter;
+import slash.navigation.converter.gui.actions.SelectCoverageAction;
 import slash.navigation.converter.gui.actions.ShowMapsAction;
 import slash.navigation.converter.gui.actions.ShowThemeStyleAction;
 import slash.navigation.converter.gui.actions.ShowThemesAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
 import slash.navigation.converter.gui.helpers.AutomaticGeocodingService;
+import slash.navigation.converter.gui.helpers.CoverageOverlayController;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.converter.gui.helpers.OverlaysMenu;
 import slash.navigation.datasources.DataSource;
@@ -72,6 +74,7 @@ public class RouteConverter extends BaseRouteConverter {
     private HgtFilesService hgtFilesService;
     private MapsforgeMapManager mapsforgeMapManager;
     private MapsforgePoiLookup mapsforgePoiLookup;
+    private CoverageOverlayController coverageOverlayController;
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
@@ -101,6 +104,7 @@ public class RouteConverter extends BaseRouteConverter {
         hgtFilesService = new HgtFilesService(getDataSourceManager());
         mapsforgeMapManager = new MapsforgeMapManager(getDataSourceManager(), getTileServerMapManager());
         mapsforgePoiLookup = new MapsforgePoiLookup(getDataSourceManager());
+        coverageOverlayController = new CoverageOverlayController();
         mapAfterStart = getMapsforgeMapManager().getDisplayedMapModel().getItem();
     }
 
@@ -112,14 +116,30 @@ public class RouteConverter extends BaseRouteConverter {
         JMenu viewMenu = findMenu(getContext().getMenuBar(), "view");
         if (viewMenu != null) {
             viewMenu.add(createItem("show-maps"), 0);
-            viewMenu.add(createItem("show-themes"), 1);
-            viewMenu.add(createItem("show-theme-styles"), 2);
+            JMenu coverageMenu = createMenu("show-coverage");
+            viewMenu.add(coverageMenu, 1);
+            ButtonGroup coverageGroup = new ButtonGroup();
+            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-none", CoverageOverlayController.Category.NONE, true);
+            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-maps", CoverageOverlayController.Category.MAPS, false);
+            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-routing", CoverageOverlayController.Category.ROUTING, false);
+            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-elevation", CoverageOverlayController.Category.ELEVATION, false);
+            addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-poi", CoverageOverlayController.Category.POI, false);
+            viewMenu.add(createItem("show-themes"), 2);
+            viewMenu.add(createItem("show-theme-styles"), 3);
             JMenu overlaysMenu = createMenu("show-overlays");
-            viewMenu.add(overlaysMenu, 3);
+            viewMenu.add(overlaysMenu, 4);
             new OverlaysMenu(overlaysMenu, getTileServerMapManager().getAvailableOverlaysModel(), getTileServerMapManager().getAppliedOverlaysModel());
-            viewMenu.add(createCheckBoxItem("show-shaded-hills", getMapPreferencesModel().getShowShadedHills()), 4);
-            viewMenu.add(new JPopupMenu.Separator(), 5);
+            viewMenu.add(createCheckBoxItem("show-shaded-hills", getMapPreferencesModel().getShowShadedHills()), 5);
+            viewMenu.add(new JPopupMenu.Separator(), 6);
         }
+    }
+
+    private void addCoverageMenuItem(JMenu menu, ButtonGroup group, String name, CoverageOverlayController.Category category, boolean selected) {
+        getContext().getActionManager().register(name, new SelectCoverageAction(coverageOverlayController, category));
+        JRadioButtonMenuItem item = createRadioItem(name);
+        item.setSelected(selected);
+        group.add(item);
+        menu.add(item);
     }
 
     private HgtFilesService getHgtFilesService() {
@@ -132,6 +152,10 @@ public class RouteConverter extends BaseRouteConverter {
 
     public MapsforgePoiLookup getMapsforgePoiLookup() {
         return mapsforgePoiLookup;
+    }
+
+    public CoverageOverlayController getCoverageOverlayController() {
+        return coverageOverlayController;
     }
 
     protected MapsforgeMapViewCallback getMapViewCallback() {

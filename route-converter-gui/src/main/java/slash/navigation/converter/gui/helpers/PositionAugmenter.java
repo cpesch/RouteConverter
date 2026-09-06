@@ -45,6 +45,7 @@ import java.util.logging.Logger;
 
 import static java.lang.Math.*;
 import static java.lang.String.format;
+import static java.lang.String.join;
 import static java.util.Arrays.asList;
 import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -130,6 +131,36 @@ public class PositionAugmenter {
         void performOnStart();
         boolean run(int index, NavigationPosition position) throws Exception;
         String getMessagePrefix();
+
+        // number of positions this operation could not complete although it was asked to, e.g.
+        // because no elevation service had data for a position; 0 means nothing was skipped
+        default int getSkippedCount() {
+            return 0;
+        }
+
+        // human-readable names/indices of the skipped positions, logged for diagnosis; may be null
+        default String getSkippedDetails() {
+            return null;
+        }
+    }
+
+    // shared by Operations that report positions they could not complete, e.g. because
+    // no elevation service had data for a position; avoids duplicating the tracking list
+    // and the getSkippedCount()/getSkippedDetails() implementations in every such Operation
+    private static class SkipTracker {
+        private final List<String> skippedPositions = new ArrayList<>();
+
+        void add(String description) {
+            skippedPositions.add(description);
+        }
+
+        int getCount() {
+            return skippedPositions.size();
+        }
+
+        String getDetails() {
+            return join(", ", skippedPositions);
+        }
     }
 
     private NotificationManager getNotificationManager() {
@@ -214,9 +245,17 @@ public class PositionAugmenter {
                                 MessageFormat.format(errorMessage, getLocalizedMessage(lastException[0])), frame.getTitle());
                     }
                 } finally {
-                    if (lastException[0] == null || !isComputerOffline(lastException[0]))
-                        invokeLater(() -> getNotificationManager().showNotification(MessageFormat.format(
-                                BaseRouteConverter.getBundle().getString("augmenting-finished"), count[0]), null));
+                    if (lastException[0] == null || !isComputerOffline(lastException[0])) {
+                        int skippedCount = operation.getSkippedCount();
+                        if (skippedCount > 0)
+                            log.warning(format("%s could not determine data for %d of %d positions: %s",
+                                    operation.getName(), skippedCount, rows.length, operation.getSkippedDetails()));
+
+                        String message = skippedCount > 0 ?
+                                MessageFormat.format(BaseRouteConverter.getBundle().getString("augmenting-finished-with-skipped"), count[0], skippedCount) :
+                                MessageFormat.format(BaseRouteConverter.getBundle().getString("augmenting-finished"), count[0]);
+                        invokeLater(() -> getNotificationManager().showNotification(message, null));
+                    }
                 }
             }
         });
@@ -268,6 +307,8 @@ public class PositionAugmenter {
                                    final OverwritePredicate predicate) {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
+                    private final SkipTracker skipTracker = new SkipTracker();
+
                     public String getName() {
                         return "ElevationPositionAugmenter";
                     }
@@ -283,6 +324,8 @@ public class PositionAugmenter {
                     public boolean run(int index, NavigationPosition position) throws Exception {
                         String previousElevation = formatElevation(position.getElevation());
                         String nextElevation = getElevationFor(position);
+                        if (isElevationLookupSkipped(position, nextElevation))
+                            skipTracker.add(describePosition(index, position));
                         boolean changed = nextElevation != null && !nextElevation.equals(previousElevation);
                         if (changed)
                             positionsModel.edit(index, new PositionColumnValues(ELEVATION_COLUMN_INDEX, nextElevation), false, true);
@@ -292,8 +335,27 @@ public class PositionAugmenter {
                     public String getMessagePrefix() {
                         return "add-elevation-";
                     }
+
+                    public int getSkippedCount() {
+                        return skipTracker.getCount();
+                    }
+
+                    public String getSkippedDetails() {
+                        return skipTracker.getDetails();
+                    }
                 }
         );
+    }
+
+    String describePosition(int index, NavigationPosition position) {
+        String description = position.getDescription();
+        return description != null ? (index + 1) + ": " + description : String.valueOf(index + 1);
+    }
+
+    // an elevation lookup counts as skipped only if it was actually attempted, i.e. the
+    // position had coordinates to look up; a position without coordinates was never queried
+    boolean isElevationLookupSkipped(NavigationPosition position, String elevation) {
+        return elevation == null && position.hasCoordinates();
     }
 
     private String getElevationFor(NavigationPosition position) throws IOException {
@@ -630,6 +692,7 @@ public class PositionAugmenter {
         executeOperation(positionsTable, positionsModel, rows, true, predicate,
                 new Operation() {
                     private int predecessorIndex, successorIndex;
+                    private final SkipTracker skipTracker = new SkipTracker();
 
                     public String getName() {
                         return "DataPositionAugmenter";
@@ -668,9 +731,11 @@ public class PositionAugmenter {
                         }
 
                         if (complementElevation) {
+                            boolean lookupElevation = waitForDownload || elevationServiceFacade.isDownload();
                             String previousElevation = formatElevation(position.getElevation());
-                            String nextElevation = waitForDownload || elevationServiceFacade.isDownload() ?
-                                    getElevationFor(position) : null;
+                            String nextElevation = lookupElevation ? getElevationFor(position) : null;
+                            if (lookupElevation && isElevationLookupSkipped(position, nextElevation))
+                                skipTracker.add(describePosition(index, position));
                             boolean changed = nextElevation != null && !nextElevation.equals(previousElevation);
                             if (changed) {
                                 columnIndices.add(ELEVATION_COLUMN_INDEX);
@@ -705,6 +770,14 @@ public class PositionAugmenter {
                         else if (complementTime)
                             messageKey = "add-time-";
                         return messageKey;
+                    }
+
+                    public int getSkippedCount() {
+                        return skipTracker.getCount();
+                    }
+
+                    public String getSkippedDetails() {
+                        return skipTracker.getDetails();
                     }
                 }
         );

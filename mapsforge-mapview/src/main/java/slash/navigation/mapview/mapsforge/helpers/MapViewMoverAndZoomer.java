@@ -21,6 +21,7 @@ package slash.navigation.mapview.mapsforge.helpers;
 
 import org.mapsforge.core.model.Dimension;
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.map.layer.GroupLayer;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
@@ -34,6 +35,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.util.List;
 
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static java.lang.Thread.sleep;
@@ -112,21 +114,47 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         zoomToMousePosition((byte) -e.getWheelRotation());
     }
 
+    /**
+     * Recursively searches for a DraggableMarker at the given tap point.
+     * Handles both top-level markers and markers nested in GroupLayers (e.g., selectionLayer).
+     * Returns the topmost marker under the tap (last in list wins, matching original scan order).
+     *
+     * @param layers       the list of layers to search (top-level or nested)
+     * @param projection   the map projection for coordinate conversion
+     * @param tapLatLong   the tap point in geographic coordinates
+     * @param tapXY        the tap point in pixel coordinates
+     * @return the DraggableMarker at the tap point, or null if none found
+     */
+    static DraggableMarker findDraggableMarkerAt(List<Layer> layers, MapViewProjection projection,
+                                                 LatLong tapLatLong, org.mapsforge.core.model.Point tapXY) {
+        for (int i = layers.size() - 1; i >= 0; --i) {
+            Layer layer = layers.get(i);
+            if (layer instanceof GroupLayer groupLayer) {
+                // Recurse into GroupLayer children to find markers inside
+                DraggableMarker found = findDraggableMarkerAt(groupLayer.layers, projection, tapLatLong, tapXY);
+                if (found != null)
+                    return found;
+                continue;
+            }
+            if (!(layer instanceof DraggableMarker draggableMarker))
+                continue;
+
+            org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
+            if (draggableMarker.onTap(tapLatLong, layerXY, tapXY))
+                return draggableMarker;
+        }
+        return null;
+    }
+
     private MarkerAndDelta getMarkerFor(MouseEvent e) {
         if((e.getModifiersEx() & CTRL_DOWN_MASK) != CTRL_DOWN_MASK) {
             LatLong tapLatLong = projection.fromPixels(e.getX(), e.getY());
             org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(e.getX(), e.getY());
 
-            Layers layers = layerManager.getLayers();
-            for (int i = layers.size() - 1; i >= 0; --i) {
-                Layer layer = layers.get(i);
-                if (!(layer instanceof Marker))
-                    continue;
-
-                org.mapsforge.core.model.Point layerXY = projection.toPixels(layer.getPosition());
-                if (layer.onTap(tapLatLong, layerXY, tapXY) && layer instanceof DraggableMarker draggableMarker) {
-                    return new MarkerAndDelta(draggableMarker, layerXY.x - tapXY.x, layerXY.y - tapXY.y);
-                }
+            DraggableMarker marker = findDraggableMarkerAt(layerManager.getLayers().getLayers(), projection, tapLatLong, tapXY);
+            if (marker != null) {
+                org.mapsforge.core.model.Point layerXY = projection.toPixels(marker.getPosition());
+                return new MarkerAndDelta(marker, layerXY.x - tapXY.x, layerXY.y - tapXY.y);
             }
         }
         return null;

@@ -66,6 +66,7 @@ import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.mapsforge.helpers.*;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.models.ThemeStyleImpl;
+import slash.navigation.mapview.mapsforge.overlays.CoverageOverlay;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
 import slash.navigation.mapview.mapsforge.overlays.OverlayManager;
 import slash.navigation.mapview.mapsforge.renderer.BorderPainter;
@@ -85,6 +86,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -119,6 +121,8 @@ import static slash.navigation.maps.mapsforge.MapType.Mapsforge;
 import static slash.navigation.maps.mapsforge.helpers.MapUtil.toBoundingBox;
 import static slash.navigation.mapview.mapsforge.AwtGraphicMapView.GRAPHIC_FACTORY;
 import static slash.navigation.mapview.mapsforge.helpers.ColorHelper.asAlpha;
+import static slash.navigation.mapview.mapsforge.helpers.GroupLayerHelper.addToGroupLayer;
+import static slash.navigation.mapview.mapsforge.helpers.GroupLayerHelper.removeFromGroupLayer;
 import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.collectBoundingPositions;
 import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.computeAddRow;
 import static slash.navigation.mapview.mapsforge.helpers.MapViewCalculations.thresholdForPixel;
@@ -206,16 +210,20 @@ public class MapsforgeMapView extends BaseMapView {
     private final MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private final BorderPainter borderPainter = new BorderPainter();
     private final MagnifierPainter magnifierPainter = new MagnifierPainter();
+    private Layer currentCoverageOverlay;
     private RouteRenderer routeRenderer;
     private TrackRenderer trackRenderer;
     private TileLayerFactory tileLayerFactory;
     private OverlayManager overlayManager;
     private Layer backgroundLayer;
+    private final GroupLayer trackLayer = new GroupLayer();
     private final DelegatingShadeTileSource shadeTileSource = new DelegatingShadeTileSource();
     private final HillsRenderConfig hillsRenderConfig = new HillsRenderConfig(shadeTileSource);
+    private final GroupLayer selectionLayer = new GroupLayer();
     private SelectionUpdater selectionUpdater;
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private UpdateDecoupler updateDecoupler;
+    private final GroupLayer waypointLayer = new GroupLayer();
 
     // initialization
 
@@ -250,24 +258,49 @@ public class MapsforgeMapView extends BaseMapView {
 
             public void add(List<PositionWithLayer> positionWithLayers) {
                 LatLong center = null;
-                List<PositionWithLayer> withLayers = new ArrayList<>();
-                for (final PositionWithLayer positionWithLayer : positionWithLayers) {
-                    if (!positionWithLayer.hasCoordinates())
-                        continue;
-
-                    LatLong latLong = asLatLong(positionWithLayer.getPosition());
-                    Marker marker = createMarker(positionWithLayer, latLong);
-                    positionWithLayer.setLayer(marker);
-                    withLayers.add(positionWithLayer);
-                    center = latLong;
+                synchronized (selectionLayer) {
+                    List<Layer> markers = new ArrayList<>(positionWithLayers.size());
+                    for (final PositionWithLayer positionWithLayer : positionWithLayers) {
+                        if (!positionWithLayer.hasCoordinates())
+                            continue;
+                        LatLong latLong = asLatLong(positionWithLayer.getPosition());
+                        Marker marker = createMarker(positionWithLayer, latLong);
+                        positionWithLayer.setLayer(marker);
+                        markers.add(marker);
+                        center = latLong;
+                    }
+                    addToGroupLayer(selectionLayer, getDisplayModel(), markers);
                 }
-                addObjectsWithLayer(withLayers);
+                selectionLayer.requestRedraw();
                 if (center != null)
                     setCenter(center, false);
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                removeObjectWithLayers(positionWithLayers);
+                synchronized (selectionLayer) {
+                    if (positionWithLayers.size() == selectionLayer.layers.size()) {
+                        selectionLayer.layers.clear();
+                    } else {
+                        // ArrayList#removeAll(Collection) is O(n) only if the argument's
+                        // contains() is O(1) -- a plain List here would degrade back to
+                        // O(n*m), so collect into a Set first
+                        Set<Layer> toRemove = new HashSet<>(positionWithLayers.size());
+                        for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                            Layer layer = positionWithLayer.getLayer();
+                            if (layer != null)
+                                toRemove.add(layer);
+                            else
+                                log.warning("Could not find layer to remove for " + positionWithLayer);
+                        }
+                        selectionLayer.layers.removeAll(toRemove);
+                    }
+                    // Clear the layer references inside the synchronized block to ensure
+                    // atomicity with the layer removal - prevents race conditions where
+                    // mouse events could access PositionWithLayer objects with stale layer refs
+                    for (PositionWithLayer positionWithLayer : positionWithLayers)
+                        positionWithLayer.setLayer(null);
+                }
+                selectionLayer.requestRedraw();
             }
         });
 
@@ -278,13 +311,14 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             public void update(List<PairWithLayer> pairWithLayers) {
-                removeLayers(toLayers(pairWithLayers));
+                removeFromGroupLayer(trackLayer, toLayers(pairWithLayers));
                 routeRenderer.renderRoute(getMapIdentifier(), pairWithLayers,
                         () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
-                removeLayers(toLayers(pairWithLayers));
+                removeFromGroupLayer(trackLayer, toLayers(pairWithLayers));
+                trackLayer.requestRedraw();
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
             }
         });
@@ -295,12 +329,13 @@ public class MapsforgeMapView extends BaseMapView {
             }
 
             public void update(List<PairWithLayer> pairWithLayers) {
-                removeLayers(toLayers(pairWithLayers));
+                removeFromGroupLayer(trackLayer, toLayers(pairWithLayers));
                 trackRenderer.renderTrack(pairWithLayers, () -> mapViewCallback.getDistanceAndTimeAggregator().updateDistancesAndTimes(toDistanceAndTimes(pairWithLayers)));
             }
 
             public void remove(List<PairWithLayer> pairWithLayers) {
-                removeLayers(toLayers(pairWithLayers));
+                removeFromGroupLayer(trackLayer, toLayers(pairWithLayers));
+                trackLayer.requestRedraw();
                 mapViewCallback.getDistanceAndTimeAggregator().removeDistancesAndTimes(toDistanceAndTimes(pairWithLayers));
             }
         });
@@ -320,17 +355,51 @@ public class MapsforgeMapView extends BaseMapView {
                     positionWithLayer.setLayer(marker);
                     withLayers.add(positionWithLayer);
                 }
-                addObjectsWithLayer(withLayers);
+                addToGroupLayer(waypointLayer, getDisplayModel(), toLayers(withLayers));
+                waypointLayer.requestRedraw();
             }
 
             public void update(List<PositionWithLayer> positionWithLayers) {
                 List<Layer> remove = toLayers(positionWithLayers);
-                removeLayers(remove);
+                synchronized (waypointLayer) {
+                    if (remove.size() == waypointLayer.layers.size()) {
+                        waypointLayer.layers.clear();
+                    } else {
+                        Set<Layer> toRemove = new HashSet<>(remove.size());
+                        for (Layer layer : remove) {
+                            if (layer != null)
+                                toRemove.add(layer);
+                            else
+                                log.warning("Could not find layer to remove for " + layer);
+                        }
+                        waypointLayer.layers.removeAll(toRemove);
+                    }
+                }
+                waypointLayer.requestRedraw();
                 add(positionWithLayers);
             }
 
             public void remove(List<PositionWithLayer> positionWithLayers) {
-                removeObjectWithLayers(positionWithLayers);
+                synchronized (waypointLayer) {
+                    if (positionWithLayers.size() == waypointLayer.layers.size()) {
+                        waypointLayer.layers.clear();
+                    } else {
+                        Set<Layer> toRemove = new HashSet<>(positionWithLayers.size());
+                        for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                            Layer layer = positionWithLayer.getLayer();
+                            if (layer != null)
+                                toRemove.add(layer);
+                            else
+                                log.warning("Could not find layer to remove for " + positionWithLayer);
+                        }
+                        waypointLayer.layers.removeAll(toRemove);
+                    }
+                }
+                waypointLayer.requestRedraw();
+                // keep the existing bookkeeping
+                for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                    positionWithLayer.setLayer(null);
+                }
             }
         });
 
@@ -473,6 +542,9 @@ public class MapsforgeMapView extends BaseMapView {
         mapViewPosition.setZoomLevelMin(MINIMUM_ZOOM_LEVEL);
         mapViewPosition.setZoomLevelMax(MAXIMUM_ZOOM_LEVEL);
 
+        // Add the selection layer once on top; markers are added/removed from its child list
+        getLayerManager().getLayers().add(selectionLayer);
+
         double longitude = preferences.getDouble(CENTER_LONGITUDE_PREFERENCE, -25.0);
         double latitude = preferences.getDouble(CENTER_LATITUDE_PREFERENCE, 35.0);
         byte zoom = (byte) preferences.getInt(CENTER_ZOOM_PREFERENCE, MINIMUM_ZOOM_LEVEL);
@@ -515,7 +587,9 @@ public class MapsforgeMapView extends BaseMapView {
         // the layer is built now; a no-op inside handleBackground() (e.g. no map displayed
         // yet) must not discard it, since nothing would rebuild it afterwards
         backgroundLayer = builtLayer;
-        handleBackground();
+        // this attach can race a startup/theme rebuild's in-flight tile job the same way
+        // handleMapAndThemeUpdate() does (issue #376), so force the same repair redraw
+        handleBackground(true);
         log.info(format("Loaded background map %s (%d bytes)", backgroundMap, length));
     }
 
@@ -682,8 +756,9 @@ public class MapsforgeMapView extends BaseMapView {
         layers.add(0, layer);
         mapsToLayers.put(map, layer);
 
-        handleBackground();
+        handleBackground(true);
         handleOverlays();
+        handleTrackLayer();
         handleNonSelectedPositionLists();
 
         // then start download layer threads
@@ -709,14 +784,39 @@ public class MapsforgeMapView extends BaseMapView {
         layers.add(overlayManager.getLayer());
     }
 
+    private void handleTrackLayer() {
+        Layers layers = getLayerManager().getLayers();
+        layers.remove(trackLayer);
+
+        // insert directly above the overlays so that the selected route/track is always
+        // drawn on top of overlays but below the gray set (non-selected position lists)
+        int index = 0;
+        for (Layer layer : mapsToLayers.values())
+            index = max(index, layers.indexOf(layer) + 1);
+        index = max(index, layers.indexOf(overlayManager.getLayer()) + 1);
+        layers.add(index, trackLayer);
+    }
+
     private void handleBackground() {
+        handleBackground(false);
+    }
+
+    // stackRebuilt is true when called from handleMapAndThemeUpdate(), which tears down and
+    // rebuilds the displayed map layer stack; an in-flight tile job of an already attached
+    // background layer can be killed by that rebuild and never re-issued (issue #376), so
+    // force one redraw afterwards to let TileLayer.draw() re-queue the dropped job
+    private void handleBackground(boolean stackRebuilt) {
         Layers layers = getLayerManager().getLayers();
         if (backgroundLayer != null)
             layers.remove(backgroundLayer);
 
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
-        if (BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null, map != null))
+        boolean backgroundAttached = BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null, map != null);
+        if (backgroundAttached)
             layers.add(0, backgroundLayer);
+
+        if (BackgroundMapAttachment.shouldRedrawAfterStackRebuild(backgroundAttached, stackRebuilt))
+            getLayerManager().redrawLayers();
     }
 
     private void handleNonSelectedPositionLists() {
@@ -733,6 +833,11 @@ public class MapsforgeMapView extends BaseMapView {
 
         // catch position lists that were loaded before the map was initialized
         nonSelectedPositionListsRenderer.update();
+
+        // add the waypoint layer if not already present
+        if (!layers.contains(waypointLayer)) {
+            layers.add(waypointLayer);
+        }
     }
 
     private void updateNonSelectedPositionLists() {
@@ -843,8 +948,29 @@ public class MapsforgeMapView extends BaseMapView {
         borderPainter.showMapBorder(mapBoundingBox);
     }
 
+    public void showCoverageOverlay(BoundingBox mapBoundingBox, String category, Map<BoundingBox, Boolean> coverageTiles) {
+        // Remove existing overlay if present
+        if (currentCoverageOverlay != null) {
+            removeLayer(currentCoverageOverlay);
+            currentCoverageOverlay = null;
+        }
+
+        // If category is null or no bounding box, we're done
+        if (category == null || mapBoundingBox == null || coverageTiles == null) {
+            return;
+        }
+
+        // Create and add new overlay
+        currentCoverageOverlay = new CoverageOverlay(coverageTiles, GRAPHIC_FACTORY, getTileSize());
+        addLayers(singletonList(currentCoverageOverlay));
+    }
+
     public void showPositionMagnifier(List<NavigationPosition> positions) {
         magnifierPainter.showPositionMagnifier(positions);
+    }
+
+    public DisplayModel getDisplayModel() {
+        return mapView.getModel().displayModel;
     }
 
     public void addLayer(Layer layer) {
@@ -1091,6 +1217,10 @@ public class MapsforgeMapView extends BaseMapView {
 
     public /*for DraggableMarker*/ MapView getMapView() {
         return mapView;
+    }
+
+    public GroupLayer getTrackLayer() {
+        return trackLayer;
     }
 
     public boolean isSupportsPrinting() {
