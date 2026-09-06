@@ -23,6 +23,7 @@ import org.junit.Test;
 import slash.common.type.CompactCalendar;
 import slash.common.type.ISO8601;
 import slash.navigation.base.ParserContext;
+import slash.navigation.base.ParserContextImpl;
 import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.base.Wgs84Position;
 import slash.navigation.base.Wgs84Route;
@@ -30,7 +31,6 @@ import slash.navigation.base.Wgs84Route;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -550,20 +550,6 @@ public class GoogleTimelineFormatTest {
     }
 
     private ParserContext<Wgs84Route> createParserContext() {
-        return new ParserContext<Wgs84Route>() {
-            private final List<Wgs84Route> routes = new ArrayList<>();
-
-            public List<Wgs84Route> getRoutes() {
-                return routes;
-            }
-
-            public void appendRoute(Wgs84Route route) {
-                routes.add(route);
-            }
-
-            public java.io.File getFile() {
-                return new java.io.File("test.json");
-            }
-        };
+        return new ParserContextImpl<>(new java.io.File("test.json"), null);
     }
 }
