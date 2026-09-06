@@ -23,11 +23,13 @@ package slash.navigation.gui;
 import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 import static java.awt.AWTEvent.KEY_EVENT_MASK;
 import static java.awt.event.KeyEvent.KEY_PRESSED;
 import static java.awt.event.KeyEvent.VK_F1;
+import static slash.common.helpers.LocaleHelper.resolveDomain;
 
 /**
  * Opens web-based help pages in the system browser (specs/00030 §11).
@@ -52,8 +54,7 @@ public class HelpManager {
         String override = System.getenv("RC_HELP_BASE_URL");
         if (override != null && !override.isEmpty()) return stripTrailingSlash(override);
         if (baseUrl != null && !baseUrl.isEmpty()) return stripTrailingSlash(baseUrl);
-        return localeTag.toLowerCase().startsWith("de")
-                ? "https://www.routeconverter.de" : "https://www.routeconverter.com";
+        return resolveDomain(Locale.forLanguageTag(localeTag));
     }
 
     private static String stripTrailingSlash(String url) {
