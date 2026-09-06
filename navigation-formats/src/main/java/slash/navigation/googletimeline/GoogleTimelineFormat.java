@@ -159,7 +159,9 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
                 if (a.getTime() == null && b.getTime() == null) return 0;
                 if (a.getTime() == null) return 1;
                 if (b.getTime() == null) return -1;
-                return a.getTime().compareTo(b.getTime());
+                if (a.getTime().before(b.getTime())) return -1;
+                if (a.getTime().after(b.getTime())) return 1;
+                return 0;
             });
 
             String routeName = formatDateName(entry.getKey());
@@ -234,9 +236,9 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         // iOS: add minute offset to segment start
         try {
             int minutes = Integer.parseInt(minuteOffset);
-            CompactCalendar result = (CompactCalendar) segmentStart.clone();
-            result.add(Calendar.MINUTE, minutes);
-            return result;
+            Calendar calendar = segmentStart.getCalendar();
+            calendar.add(Calendar.MINUTE, minutes);
+            return CompactCalendar.fromCalendar(calendar);
         } catch (NumberFormatException e) {
             return null;
         }
@@ -281,12 +283,12 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     }
 
     private CompactCalendar getStartOfDay(CompactCalendar time) {
-        CompactCalendar day = (CompactCalendar) time.clone();
+        Calendar day = time.getCalendar();
         day.set(Calendar.HOUR_OF_DAY, 0);
         day.set(Calendar.MINUTE, 0);
         day.set(Calendar.SECOND, 0);
         day.set(Calendar.MILLISECOND, 0);
-        return day;
+        return CompactCalendar.fromCalendar(day);
     }
 
     private String formatDateName(CompactCalendar day) {
