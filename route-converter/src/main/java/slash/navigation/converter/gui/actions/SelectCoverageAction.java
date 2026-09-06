@@ -32,9 +32,9 @@ import javax.swing.*;
 
 public class SelectCoverageAction extends FrameAction {
     private final CoverageOverlayController coverageOverlayController;
-    private final String category;
+    private final CoverageOverlayController.Category category;
 
-    public SelectCoverageAction(CoverageOverlayController coverageOverlayController, String category) {
+    public SelectCoverageAction(CoverageOverlayController coverageOverlayController, CoverageOverlayController.Category category) {
         this.coverageOverlayController = coverageOverlayController;
         this.category = category;
     }
