@@ -50,4 +50,13 @@ public class LocaleHelper {
     public static final Locale TURKEY = Locale.of("tr", "TR");
     public static final Locale UKRAINE = Locale.of("uk", "UA");
     public static final Locale UZBEKISTAN = Locale.of("uz", "UZ");
+
+    /**
+     * Resolves the routeconverter.com/.de domain to use for the given {@link Locale},
+     * picking .de for German and .com otherwise.
+     */
+    public static String resolveDomain(Locale locale) {
+        return locale != null && "de".equalsIgnoreCase(locale.getLanguage()) ?
+                "https://www.routeconverter.de" : "https://www.routeconverter.com";
+    }
 }

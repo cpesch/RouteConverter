@@ -34,12 +34,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static java.util.Locale.getDefault;
+import static slash.common.helpers.LocaleHelper.resolveDomain;
+import static slash.common.io.Transfer.encodeUri;
 import static slash.navigation.datasources.DataSourceManager.*;
 import static slash.navigation.datasources.helpers.DataSourcesUtil.*;
 import static slash.navigation.rest.HttpRequest.APPLICATION_JSON;
@@ -141,11 +144,59 @@ public class RouteFeedback {
         return request.getLocation();
     }
 
-    public String getUpdateCheckUrl(String version, long startTime) {
-        // Offer the latest release directory (lets the user pick OS/architecture).
-        // The version/startTime are no longer encoded into the URL; the host always serves the
-        // latest stable build from releases.routeconverter.com.
-        return "https://releases.routeconverter.com/latest/";
+    private static final String TIME_ALBUM_PRO_EDITION_ID = "timealbum";
+    private static final String ROUTE_CONVERTER_EDITION_ID = "offline";
+
+    public String getUpdateCheckUrl(String version, String edition, String osName, String osArch, Locale locale) {
+        StringBuilder url = new StringBuilder(resolveDomain(locale)).append("/downloads/thanks/?from=app");
+
+        String os = toUpdateCheckOsName(osName);
+        if (os != null)
+            url.append("&os=").append(os);
+
+        String arch = toUpdateCheckOsArch(osArch);
+        if (arch != null)
+            url.append("&arch=").append(arch);
+
+        url.append("&v=").append(encodeUri(version));
+
+        String product = toUpdateCheckProduct(edition);
+        if (product != null)
+            url.append("&product=").append(product);
+
+        return url.toString();
+    }
+
+    private static String toUpdateCheckProduct(String edition) {
+        if (TIME_ALBUM_PRO_EDITION_ID.equals(edition))
+            return "timealbumpro";
+        if (ROUTE_CONVERTER_EDITION_ID.equals(edition))
+            return "routeconverter";
+        return null;
+    }
+
+    private static String toUpdateCheckOsName(String osName) {
+        if (osName == null)
+            return null;
+        String lower = osName.toLowerCase(Locale.ROOT);
+        if (lower.startsWith("windows"))
+            return "windows";
+        if (lower.contains("mac") || lower.contains("darwin"))
+            return "mac";
+        if (lower.contains("linux"))
+            return "linux";
+        return null;
+    }
+
+    private static String toUpdateCheckOsArch(String osArch) {
+        if (osArch == null)
+            return null;
+        String lower = osArch.toLowerCase(Locale.ROOT);
+        if (lower.equals("amd64") || lower.equals("x86_64") || lower.equals("x64"))
+            return "x64";
+        if (lower.equals("aarch64") || lower.equals("arm64"))
+            return "aarch64";
+        return null;
     }
 
     public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,

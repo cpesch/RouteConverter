@@ -32,6 +32,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
@@ -164,7 +165,11 @@ public class UpdateChecker {
 
     private void offerRouteConverterUpdate(Window window, UpdateResult result) {
         String latestVersion = result.getLatestRouteConverterVersion();
-        String downloadUrl = routeFeedback.getUpdateCheckUrl(result.getMyRouteConverterVersion(), getStartTime());
+        String downloadUrl = routeFeedback.getUpdateCheckUrl(result.getMyRouteConverterVersion(),
+                BaseRouteConverter.getInstance().getEditionId(),
+                System.getProperty("os.name"),
+                System.getProperty("os.arch"),
+                Locale.getDefault());
         String message = format(BaseRouteConverter.getBundle().getString("confirm-routeconverter-update"),
                 result.getMyRouteConverterVersion(),
                 BaseRouteConverter.getInstance().getEdition(),
