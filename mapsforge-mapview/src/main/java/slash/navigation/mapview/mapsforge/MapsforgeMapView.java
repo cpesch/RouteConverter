@@ -584,6 +584,12 @@ public class MapsforgeMapView extends BaseMapView {
             log.severe(format("Cannot load background map %s (%d bytes): %s", backgroundMap, length, e));
             return;
         }
+        // a re-downloaded world.map replaces the previous layer: detach and destroy that one,
+        // otherwise it stays in the layer list underneath the new one for the whole session
+        if (backgroundLayer != null) {
+            getLayerManager().getLayers().remove(backgroundLayer);
+            destroyLayer(backgroundLayer);
+        }
         // the layer is built now; a no-op inside handleBackground() (e.g. no map displayed
         // yet) must not discard it, since nothing would rebuild it afterwards
         backgroundLayer = builtLayer;
@@ -745,15 +751,16 @@ public class MapsforgeMapView extends BaseMapView {
         for (Map.Entry<LocalMap, Layer> entry : mapsToLayers.entrySet()) {
             Layer remove = entry.getValue();
             layers.remove(remove);
-            remove.onDestroy();
-
-            if (remove instanceof TileLayer<?> tileLayer)
-                tileLayer.getTileCache().destroy();
+            destroyLayer(remove);
         }
         mapsToLayers.clear();
 
-        // add map as the first to be behind all additional layers
-        layers.add(0, layer);
+        // add map directly above the world-map background (or as the first layer if none is
+        // attached) to be behind all additional layers. Inserting it at index 0 and moving the
+        // background back below it would remove and re-add the background layer, and a re-added
+        // TileRendererLayer never renders another tile (see ReattachableTileRendererLayer)
+        int backgroundLayerIndex = backgroundLayer != null ? layers.indexOf(backgroundLayer) : -1;
+        layers.add(BackgroundMapAttachment.displayedMapLayerIndex(backgroundLayerIndex), layer);
         mapsToLayers.put(map, layer);
 
         handleBackground(true);
@@ -797,26 +804,34 @@ public class MapsforgeMapView extends BaseMapView {
         layers.add(index, trackLayer);
     }
 
-    private void handleBackground() {
-        handleBackground(false);
-    }
-
     // stackRebuilt is true when called from handleMapAndThemeUpdate(), which tears down and
     // rebuilds the displayed map layer stack; an in-flight tile job of an already attached
     // background layer can be killed by that rebuild and never re-issued (issue #376), so
     // force one redraw afterwards to let TileLayer.draw() re-queue the dropped job
     private void handleBackground(boolean stackRebuilt) {
         Layers layers = getLayerManager().getLayers();
-        if (backgroundLayer != null)
-            layers.remove(backgroundLayer);
+        boolean attached = backgroundLayer != null && layers.indexOf(backgroundLayer) >= 0;
 
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
         boolean backgroundAttached = BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null, map != null);
-        if (backgroundAttached)
+        // attach or detach only when the state changes: Layers.add() and Layers.remove() restart the
+        // layer's worker pool, and removing and re-adding a plain TileRendererLayer leaves its worker
+        // pool on a stale job queue so that it never renders again (see ReattachableTileRendererLayer).
+        // handleMapAndThemeUpdate() inserts the displayed map above the background, so an attached
+        // background is already at the bottom and never needs to move
+        if (backgroundAttached && !attached)
             layers.add(0, backgroundLayer);
+        else if (!backgroundAttached && attached)
+            layers.remove(backgroundLayer);
 
         if (BackgroundMapAttachment.shouldRedrawAfterStackRebuild(backgroundAttached, stackRebuilt))
             getLayerManager().redrawLayers();
+    }
+
+    private static void destroyLayer(Layer layer) {
+        layer.onDestroy();
+        if (layer instanceof TileLayer<?> tileLayer)
+            tileLayer.getTileCache().destroy();
     }
 
     private void handleNonSelectedPositionLists() {
