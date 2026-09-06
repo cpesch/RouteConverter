@@ -279,8 +279,8 @@ public class GoogleTimelineFormatTest {
         CompactCalendar start = parseTime("2024-12-23T10:00:00Z");
         CompactCalendar result = GoogleTimelineFormat.pointTime(start, "47");
         assertNotNull(result);
-        long expected = start.getTime() + (47L * 60 * 1000);
-        assertEquals(expected, result.getTime());
+        long expected = start.getTimeInMillis() + (47L * 60 * 1000);
+        assertEquals(expected, result.getTimeInMillis());
     }
 
     @Test
@@ -288,8 +288,8 @@ public class GoogleTimelineFormatTest {
         CompactCalendar start = parseTime("2024-12-23T10:00:00Z");
         CompactCalendar result = GoogleTimelineFormat.pointTime(start, "121");
         assertNotNull(result);
-        long expected = start.getTime() + (121L * 60 * 1000);
-        assertEquals(expected, result.getTime());
+        long expected = start.getTimeInMillis() + (121L * 60 * 1000);
+        assertEquals(expected, result.getTimeInMillis());
     }
 
     @Test
