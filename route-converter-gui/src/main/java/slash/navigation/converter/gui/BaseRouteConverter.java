@@ -241,6 +241,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         show();
         askForCrashReportConsent();
         updateChecker.implicitCheck(getFrame());
+        updateChecker.checkSupportNudge(getFrame());
         crashReporter.offerSpooledReports();
         // show() returns once the synchronous bring-up is done, but the frame and
         // map/profile views are realized later on the EDT — see the "frame shown"

@@ -36,6 +36,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 
 import static java.lang.System.currentTimeMillis;
 import static java.text.MessageFormat.format;
@@ -48,6 +49,7 @@ import static slash.feature.client.Feature.initializeFeatures;
 import static slash.feature.client.Feature.initializePreferences;
 import static slash.navigation.converter.gui.BaseRouteConverter.getPreferences;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowser;
+import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForPayPal;
 import static slash.navigation.converter.gui.helpers.ExternalPrograms.startBrowserForRouteConverterForum;
 
 /**
@@ -157,9 +159,13 @@ public class UpdateChecker {
      * The link (not a Yes/No prompt) is the call to action, to foster updates.
      */
     private void showUpdateMessage(Window window, String message, String url) {
+        showUpdateMessage(window, message, url, () -> startBrowser(window, url));
+    }
+
+    private void showUpdateMessage(Window window, String message, String linkText, Runnable onLinkClick) {
         JPanel panel = new JPanel(new BorderLayout(0, 10));
         panel.add(new JLabel("<html>" + message.replace("\n", "<br>") + "</html>"), BorderLayout.NORTH);
-        panel.add(createLink(url, () -> startBrowser(window, url)), BorderLayout.SOUTH);
+        panel.add(createLink(linkText, onLinkClick), BorderLayout.SOUTH);
         showInformation(window, panel, BaseRouteConverter.getTitle());
     }
 
@@ -221,6 +227,21 @@ public class UpdateChecker {
         }, "UpdateChecker").start();
     }
 
+    public void checkSupportNudge(Window window) {
+        Integer threshold = SupportNudge.thresholdToShow(getStartCount(), getPreferences());
+        if (threshold == null)
+            return;
+
+        SupportNudge.markShown(threshold, getPreferences());
+        invokeLater(() -> showSupportNudge(window, threshold));
+    }
+
+    private void showSupportNudge(Window window, int threshold) {
+        String message = format(BaseRouteConverter.getBundle().getString("support-nudge-message"), threshold);
+        showUpdateMessage(window, message, BaseRouteConverter.getBundle().getString("about-routeconverter-support-paypal"),
+                () -> startBrowserForPayPal(window));
+    }
+
     public void explicitCheck(Window window) {
         UpdateResult result = check();
         if (result.existsLaterRouteConverterVersion())
@@ -230,6 +251,31 @@ public class UpdateChecker {
 
         if (result.existsLaterJavaVersion())
             offerJavaUpdate(window, result);
+    }
+
+    static class SupportNudge {
+        static final String NUDGE_100_SHOWN_PREFERENCE = "supportNudge100Shown";
+        static final String NUDGE_500_SHOWN_PREFERENCE = "supportNudge500Shown";
+
+        private SupportNudge() {
+        }
+
+        private static String shownPreferenceFor(int threshold) {
+            return threshold >= 500 ? NUDGE_500_SHOWN_PREFERENCE : NUDGE_100_SHOWN_PREFERENCE;
+        }
+
+        // higher threshold wins if a run happens to cross both at once, so at most one dialog shows per start
+        static Integer thresholdToShow(int startCount, Preferences preferences) {
+            for (int threshold : new int[]{500, 100}) {
+                if (startCount >= threshold && !preferences.getBoolean(shownPreferenceFor(threshold), false))
+                    return threshold;
+            }
+            return null;
+        }
+
+        static void markShown(int threshold, Preferences preferences) {
+            preferences.putBoolean(shownPreferenceFor(threshold), true);
+        }
     }
 
     static class UpdateResult {
