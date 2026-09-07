@@ -20,12 +20,15 @@
 
 package slash.navigation.routing;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -100,5 +103,11 @@ public class StraightLine extends BaseRoutingService {
 
     public void downloadRoutingData(List<MapDescriptor> mapDescriptors) {
         throw new UnsupportedOperationException();
+    }
+
+    // straight-line routing needs no downloadable data, so there is no coverage to report;
+    // isDownload() is false, so callers should never rely on this returning real tiles
+    public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
+        return Collections.emptyMap();
     }
 }

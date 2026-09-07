@@ -58,16 +58,25 @@ public class DownloadMapsAction extends DialogAction {
     private final JCheckBox checkBoxDownloadRoutingData;
     private final JCheckBox checkBoxDownloadElevationData;
     private final JCheckBox checkBoxDownloadPoiData;
+    private final Runnable onDownloadComplete;
 
     public DownloadMapsAction(JDialog dialog, JTable table, MapsforgeMapManager mapManager,
                               JCheckBox checkBoxDownloadRoutingData, JCheckBox checkBoxDownloadElevationData,
                               JCheckBox checkBoxDownloadPoiData) {
+        this(dialog, table, mapManager, checkBoxDownloadRoutingData, checkBoxDownloadElevationData,
+                checkBoxDownloadPoiData, null);
+    }
+
+    public DownloadMapsAction(JDialog dialog, JTable table, MapsforgeMapManager mapManager,
+                              JCheckBox checkBoxDownloadRoutingData, JCheckBox checkBoxDownloadElevationData,
+                              JCheckBox checkBoxDownloadPoiData, Runnable onDownloadComplete) {
         super(dialog);
         this.table = table;
         this.mapManager = mapManager;
         this.checkBoxDownloadRoutingData = checkBoxDownloadRoutingData;
         this.checkBoxDownloadElevationData = checkBoxDownloadElevationData;
         this.checkBoxDownloadPoiData = checkBoxDownloadPoiData;
+        this.onDownloadComplete = onDownloadComplete;
     }
 
     private Action getAction() {
@@ -109,6 +118,9 @@ public class DownloadMapsAction extends DialogAction {
                         ((RouteConverter) r).getMapsforgePoiLookup().downloadPoiData(mapDescriptors);
 
                     mapManager.scanMaps();
+
+                    if (onDownloadComplete != null)
+                        invokeLater(onDownloadComplete);
                 } catch (Exception e) {
                     invokeLater(() -> {
                         log.warning("Could not download maps: " + e);

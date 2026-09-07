@@ -489,4 +489,12 @@ public class GraphHopper extends BaseRoutingService {
             break;
         }
     }
+
+    // GraphHopper's routing data is downloaded per map region (see downloadRoutingData()), not
+    // on a degree-tile grid, so there is no per-tile coverage to report here. Callers that need
+    // GraphHopper coverage fall back to a per-map calculateRemainingDownloadSize() check instead
+    // (see CoverageOverlayController#computeRoutingCoverageByMap()).
+    public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
+        return Collections.emptyMap();
+    }
 }

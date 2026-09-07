@@ -455,6 +455,59 @@ public class MapsforgePoiLookupTest {
         assertEquals(500L, size);
     }
 
+    @Test
+    public void findsLocalPoiCoverageForExistingFile() throws Exception {
+        String directory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
+        DataSource dataSource = poiDataSource(directory, poiFileType("present.poi", MAP_BOUNDS, 12345L));
+        markAsExistingLocally(directory, "present.poi");
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManagerWith(dataSource));
+
+        List<BoundingBox> coverage = lookup.findLocalPoiCoverage(MAP_BOUNDS);
+
+        assertEquals(List.of(MAP_BOUNDS), coverage);
+    }
+
+    @Test
+    public void findsNoLocalPoiCoverageForMissingFile() throws Exception {
+        String directory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
+        DataSource dataSource = poiDataSource(directory, poiFileType("missing.poi", MAP_BOUNDS, 12345L));
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManagerWith(dataSource));
+
+        assertTrue(lookup.findLocalPoiCoverage(MAP_BOUNDS).isEmpty());
+    }
+
+    @Test
+    public void findsNoLocalPoiCoverageWhenViewportDoesNotIntersect() throws Exception {
+        String directory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
+        DataSource dataSource = poiDataSource(directory, poiFileType("present.poi", MAP_BOUNDS, 12345L));
+        markAsExistingLocally(directory, "present.poi");
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManagerWith(dataSource));
+
+        BoundingBox farAway = new BoundingBox(-60.0, -10.0, -61.0, -11.0);
+        assertTrue(lookup.findLocalPoiCoverage(farAway).isEmpty());
+    }
+
+    @Test
+    public void findsLocalPoiCoverageOnlyForFilesThatActuallyExist() throws Exception {
+        String directory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
+        BoundingBox presentBounds = new BoundingBox(14.0, 53.0, 13.0, 52.0);
+        BoundingBox missingBounds = new BoundingBox(15.0, 53.0, 14.0, 52.0);
+        DataSource dataSource = poiDataSource(directory,
+                poiFileType("present.poi", presentBounds, 500L),
+                poiFileType("missing.poi", missingBounds, 700L));
+        markAsExistingLocally(directory, "present.poi");
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManagerWith(dataSource));
+
+        BoundingBox viewport = new BoundingBox(15.0, 53.0, 13.0, 52.0);
+        List<BoundingBox> coverage = lookup.findLocalPoiCoverage(viewport);
+
+        assertEquals(List.of(presentBounds), coverage);
+    }
+
     private DataSource poiDataSource(String directory, FileType... fileTypes) {
         ObjectFactory factory = new ObjectFactory();
         DatasourceType datasourceType = factory.createDatasourceType();
