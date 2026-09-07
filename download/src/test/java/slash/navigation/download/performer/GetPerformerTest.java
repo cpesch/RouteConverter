@@ -39,6 +39,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.io.File.createTempFile;
@@ -211,5 +212,68 @@ public class GetPerformerTest {
 
         assertEquals(State.Failed, download.getState());
         assertFalse("stale temp file must be deleted after a failed download", download.getTempFile().exists());
+    }
+
+    @Test
+    public void testResumeCompletesAtTheAnnouncedByteAndSucceeds() throws IOException {
+        // the off-by-one fix (GitHub #383): a resume must ask for and receive exactly the
+        // remaining bytes, ending the temp file at precisely the catalog's content length
+        byte[] fullBody = "ABCDEFGHIJKLMNO".getBytes(StandardCharsets.UTF_8); // 15 bytes
+        byte[] prefix = Arrays.copyOfRange(fullBody, 0, 10);
+
+        server.createContext("/resume", exchange -> {
+            String range = exchange.getRequestHeaders().getFirst("Range");
+            String[] bounds = range.substring("bytes=".length()).split("-");
+            int start = Integer.parseInt(bounds[0]);
+            int end = Integer.parseInt(bounds[1]);
+            byte[] slice = Arrays.copyOfRange(fullBody, start, end + 1);
+            exchange.getResponseHeaders().add("Content-Range", "bytes " + start + "-" + end + "/" + fullBody.length);
+            exchange.sendResponseHeaders(206, slice.length);
+            try (OutputStream out = exchange.getResponseBody()) {
+                out.write(slice);
+            }
+            exchange.close();
+        });
+
+        Checksum expectedChecksum = new Checksum(null, (long) fullBody.length, null);
+        Download download = new Download("resume", url("/resume"), Copy,
+                new FileAndChecksum(target, expectedChecksum), null);
+        Files.write(download.getTempFile().toPath(), prefix);
+
+        manager.getModel().setDownloads(singletonList(download));
+        DownloadExecutor executor = new DownloadExecutor(download, manager);
+        GetPerformer performer = new GetPerformer();
+        performer.setDownloadExecutor(executor);
+        performer.run();
+
+        assertEquals(State.Succeeded, download.getState());
+        assertEquals(fullBody.length, target.length());
+        assertFalse("temp file must be deleted after a successful resume", download.getTempFile().exists());
+    }
+
+    @Test
+    public void testTruncatedDownloadFailsAndKeepsTempFileForResume() {
+        // a connection dropping mid-body must not let the partially written file reach
+        // bringToTarget(): the existing target must survive and the temp file, being shorter
+        // than the announced Content-Length, must be kept for a later resume (GitHub #383)
+        server.createContext("/truncated", exchange -> {
+            byte[] body = "x".repeat(60).getBytes(StandardCharsets.UTF_8);
+            exchange.sendResponseHeaders(200, 100);
+            try (OutputStream out = exchange.getResponseBody()) {
+                out.write(body);
+            } catch (IOException e) {
+                // expected: promising 100 bytes but writing only 60 makes close() tear the
+                // connection down early, simulating a transfer that drops mid-body
+            }
+            exchange.close();
+        });
+
+        Download download = manager.queueForDownload("truncated", url("/truncated"), Copy,
+                new FileAndChecksum(target, null), null);
+        manager.waitForCompletion(singletonList(download));
+
+        assertEquals(State.Failed, download.getState());
+        assertFalse("target must not be created from a truncated transfer", target.exists());
+        assertTrue("temp file must survive a truncated transfer for a later resume", download.getTempFile().exists());
     }
 }

@@ -47,4 +47,8 @@ public class Get extends ReadRequest {
         // Apache accepts just bytes=1234-1235 while the spec says bytes 1234-1235/1236
         setHeader(RANGE, "bytes=" + startIndex + "-" + (endIndex != null ? endIndex : ""));
     }
+
+    public void disableContentCompression() {
+        super.disableContentCompression();
+    }
 }
