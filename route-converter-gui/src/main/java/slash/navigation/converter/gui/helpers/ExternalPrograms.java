@@ -42,6 +42,9 @@ import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 public class ExternalPrograms {
     protected static final Logger log = Logger.getLogger(ExternalPrograms.class.getName());
 
+    private static final String PAYPAL_BUTTON_ID_EN = "84383W9CS6E36";
+    private static final String PAYPAL_BUTTON_ID_DE = "YB3425JVDT8MN";
+
     private ExternalPrograms() {
     }
 
@@ -107,6 +110,11 @@ public class ExternalPrograms {
 
     public static void startBrowserForMapboxApiKey(Window window) {
         startBrowser(window, "https://account.mapbox.com/access-tokens/");
+    }
+
+    public static void startBrowserForPayPal(Window window) {
+        String buttonId = isGerman() ? PAYPAL_BUTTON_ID_DE : PAYPAL_BUTTON_ID_EN;
+        startBrowser(window, "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=" + buttonId);
     }
 
     public static void startBrowser(Window window, String uri) {

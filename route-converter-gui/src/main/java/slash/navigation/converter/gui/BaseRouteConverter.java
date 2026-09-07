@@ -1358,6 +1358,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
         actionManager.register("send-error-report", new SendErrorReportAction());
         actionManager.register("show-translation", new ShowTranslationAction());
+        actionManager.register("support-routeconverter", new ShowSupportRouteConverterAction());
         actionManager.register("show-about", createAboutAction());
     }
 
