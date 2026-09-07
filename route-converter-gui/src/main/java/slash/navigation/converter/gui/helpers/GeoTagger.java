@@ -349,19 +349,25 @@ public class GeoTagger {
                 wgs84Position.setWaypointType(Photo);
                 wgs84Position.setOrigin(source);
 
-                invokeLater(new Runnable() {
-                    public void run() {
-                        PositionsModel originalPositionsModel = BaseRouteConverter.getInstance().getConvertPanel().getPositionsModel();
-                        int index = originalPositionsModel.getIndex(wgs84Position);
-                        originalPositionsModel.fireTableRowsUpdated(index, index, ALL_COLUMNS);
-                    }
-                });
+                PositionsModel originalPositionsModel = BaseRouteConverter.getInstance().getConvertPanel().getPositionsModel();
+                notifyPositionUpdatedOnEventDispatchThread(originalPositionsModel, wgs84Position);
             }
 
         } finally {
             long end = currentTimeMillis();
             log.info("Updating metadata of " + target + " took " + (end - start) + " milliseconds");
         }
+    }
+
+    static void notifyPositionUpdatedOnEventDispatchThread(final PositionsModel positionsModel, final NavigationPosition position) {
+        final int index = positionsModel.getIndex(position);
+        if (index < 0)
+            return;
+        invokeLater(new Runnable() {
+            public void run() {
+                positionsModel.fireTableRowsUpdated(index, index, ALL_COLUMNS);
+            }
+        });
     }
 
     private File createSubDirectory(File source, String name) {
