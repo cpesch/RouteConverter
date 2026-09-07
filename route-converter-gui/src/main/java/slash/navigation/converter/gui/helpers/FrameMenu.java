@@ -124,6 +124,7 @@ public class FrameMenu {
         helpMenu.add(createItem("check-for-update"));
         helpMenu.add(createItem("send-error-report"));
         helpMenu.add(createItem("show-translation"));
+        helpMenu.add(createItem("support-routeconverter"));
         if (!isMac())
             helpMenu.add(createItem("show-about"));
 

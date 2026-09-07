@@ -59,6 +59,7 @@ public class AboutRouteConverterDialog extends SimpleDialog {
     private JLabel labelAbout;
     private JLabel labelContact;
     private JLabel labelResources;
+    private JLabel labelSupportPayPal;
     private JLabel labelUserNameCaption;
     private JLabel labelUserName;
     private JLabel labelFeatureCaption;
@@ -85,6 +86,7 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         enableLink(labelAbout, () -> startBrowserForRouteConverter(r.getFrame()));
         enableLink(labelResources, () -> startBrowserForRouteConverterResources(r.getFrame()));
         enableLink(labelContact, () -> startBrowserForRouteConverterForum(r.getFrame()));
+        enableLink(labelSupportPayPal, () -> startBrowserForPayPal(r.getFrame()));
 
         String username = BaseRouteConverter.getInstance().getUserNamePreference();
         if (username != null) {
@@ -216,7 +218,7 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         panel1.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
                 GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -232,10 +234,27 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         panel2.add(labelContact,
                 new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JPanel panelSupport = new JPanel();
+        panelSupport.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), 5, -1));
+        panel2.add(panelSupport,
+                new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel labelSupportCaption = new JLabel();
+        this.$$$loadLabelText$$$(labelSupportCaption,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-routeconverter-support"));
+        panelSupport.add(labelSupportCaption,
+                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        labelSupportPayPal = new JLabel();
+        this.$$$loadLabelText$$$(labelSupportPayPal,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-routeconverter-support-paypal"));
+        panelSupport.add(labelSupportPayPal,
+                new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel2.add(panel3,
-                new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
+                new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelUserNameCaption = new JLabel();
         labelUserNameCaption.setVisible(false);

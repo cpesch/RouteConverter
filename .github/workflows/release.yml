@@ -14,7 +14,33 @@ permissions:
   contents: write
 
 jobs:
+  verify-version:
+    # Guards against a repeat of the 3.5 release (rc/RouteConverter#132):
+    # that tag was pushed by hand, bypassing release-prepare.yml's
+    # `mvn release:prepare` version bump, so pom.xml was still
+    # 3.5-SNAPSHOT at build time and every jar manifest's
+    # Specification-Version rendered as "3.5-SNAPSHOT-<build>" instead
+    # of "3.5". Fail fast here instead of shipping another mislabeled
+    # release.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Assert pom.xml version matches tag and is not a SNAPSHOT
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          POM_VERSION=$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' pom.xml | head -1)
+          if [[ "$POM_VERSION" == *-SNAPSHOT ]]; then
+            echo "::error::pom.xml version is '$POM_VERSION' (still -SNAPSHOT) for tag '$TAG'. This tag was not cut via release-prepare.yml (mvn release:prepare never bumped pom.xml). Delete the tag, bump pom.xml to a release version, and re-tag — or re-run release-prepare.yml."
+            exit 1
+          fi
+          if [[ "$POM_VERSION" != "$TAG" ]]; then
+            echo "::error::pom.xml version ('$POM_VERSION') does not match tag ('$TAG')."
+            exit 1
+          fi
+          echo "ok: pom.xml version '$POM_VERSION' matches tag '$TAG'"
+
   build-linux-mac:
+    needs: verify-version
     uses: ./.github/workflows/_build-linux-mac.yml
     with:
       artefact-name: release-linux-mac
@@ -24,6 +50,7 @@ jobs:
     secrets: inherit
 
   build-windows:
+    needs: verify-version
     uses: ./.github/workflows/_build-windows.yml
     with:
       artefact-name: release-windows
