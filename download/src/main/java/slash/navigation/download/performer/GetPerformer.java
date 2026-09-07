@@ -125,13 +125,18 @@ public class GetPerformer implements ActionPerformer {
                 if (length != null)
                     getModelUpdater().expectingBytes(length);
                 new Copier(getModelUpdater()).copyAndClose(inputStream, new FileOutputStream(getDownload().getTempFile()), 0, length);
-                return new Result(request, true, request.getLastModified());
+                return new Result(request, true, request.getLastModified(), request.getContentLength());
             }
             return new Result(request, request.isSuccessful(), request.isNotModified());
         });
     }
 
     public void run() throws IOException {
+        // only the values announced by the response of this attempt may vouch for the
+        // transferred file; a leftover from a previous attempt must not
+        getDownload().setAnnouncedContentLength(null);
+        getDownload().setAnnouncedLastModified(null);
+
         Result result = new Result(null, false);
         if (canResume())
             result = resume();
@@ -143,6 +148,9 @@ public class GetPerformer implements ActionPerformer {
             downloadExecutor.notModified();
 
         } else if (result.success) {
+            getDownload().setAnnouncedContentLength(result.contentLength());
+            getDownload().setAnnouncedLastModified(result.lastModified);
+
             updateDownload(getDownload(), result.request, false);
 
             if(!getDownload().getTempFile().exists())
@@ -247,18 +255,18 @@ public class GetPerformer implements ActionPerformer {
         }
     }
 
-    private record Result(Get request, boolean success, boolean notModified, Long lastModified) {
+    private record Result(Get request, boolean success, boolean notModified, Long lastModified, Long contentLength) {
             public Result(Get request, boolean success) {
-                this(request, success, null);
-            }
-
-            public Result(Get request, boolean success, Long lastModified) {
-                this(request, success, false, lastModified);
+                this(request, success, false, null, null);
             }
 
             private Result(Get request, boolean success, boolean notModified) {
-                this(request, success, notModified, null);
+                this(request, success, notModified, null, null);
             }
 
+            // a full-body transfer: the response vouches for both the build and its length
+            public Result(Get request, boolean success, Long lastModified, Long contentLength) {
+                this(request, success, false, lastModified, contentLength);
+            }
     }
 }
