@@ -22,11 +22,7 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.rest.Get;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -38,23 +34,17 @@ import java.util.regex.Pattern;
 import static java.util.Collections.emptyList;
 
 /**
- * Provides the first bullet points of a RouteConverter release, to show as
- * highlights in the update nudge dialog.
- * <p>
- * The primary source is the live release page on the RouteConverter website
- * (routeconverter.com/de, published independently of any particular client
- * build, so it can describe a version newer than the running one). If that
- * page cannot be reached or parsed, this falls back to the RELEASE_NOTES.md
- * bundled into this jar at build time - which only ever covers versions up
- * to the running client's own build, so it can't describe a future release,
- * but degrades gracefully when offline.
+ * Fetches the first bullet points of a RouteConverter release from its live
+ * release page on the RouteConverter website (routeconverter.com/de), to show
+ * as highlights in the update nudge dialog. The page is published independently
+ * of any particular client build, so - unlike anything bundled into this jar
+ * at build time - it can describe a version newer than the running one.
  *
  * @author Christian Pesch
  */
 public class ReleaseHighlights {
     private static final Logger log = Logger.getLogger(ReleaseHighlights.class.getName());
     static final int MAX_BULLETS = 5;
-    private static final String RESOURCE_NAME = "/RELEASE_NOTES.md";
     // the release page template wraps its content in a single <article class="prose"> with one flat <ul>
     private static final Pattern ARTICLE_PATTERN = Pattern.compile("<article[^>]*class=\"prose\"[^>]*>(.*?)</article>", Pattern.DOTALL);
     private static final Pattern LIST_ITEM_PATTERN = Pattern.compile("<li[^>]*>(.*?)</li>", Pattern.DOTALL);
@@ -68,18 +58,6 @@ public class ReleaseHighlights {
 
     // package-private seam for tests: inject a fake page fetcher instead of hitting the network
     static List<String> first(String version, Locale locale, Function<String, String> pageFetcher) {
-        List<String> fromWeb = fromWebPage(version, locale, pageFetcher);
-        if (!fromWeb.isEmpty())
-            return fromWeb;
-        return fromBundledReleaseNotes(version);
-    }
-
-    static String releasePageUrl(String version, Locale locale) {
-        String host = "de".equalsIgnoreCase(locale.getLanguage()) ? "https://www.routeconverter.de/" : "https://www.routeconverter.com/";
-        return host + "releases/" + version.replace('.', '-') + "/";
-    }
-
-    private static List<String> fromWebPage(String version, Locale locale, Function<String, String> pageFetcher) {
         try {
             String html = pageFetcher.apply(releasePageUrl(version, locale));
             return html != null ? extractFromHtml(html, MAX_BULLETS) : emptyList();
@@ -87,6 +65,11 @@ public class ReleaseHighlights {
             log.fine("Cannot fetch release highlights for " + version + ": " + e.getMessage());
             return emptyList();
         }
+    }
+
+    static String releasePageUrl(String version, Locale locale) {
+        String host = "de".equalsIgnoreCase(locale.getLanguage()) ? "https://www.routeconverter.de/" : "https://www.routeconverter.com/";
+        return host + "releases/" + version.replace('.', '-') + "/";
     }
 
     private static String fetchPage(String url) {
@@ -118,47 +101,5 @@ public class ReleaseHighlights {
     private static String unescapeHtml(String text) {
         return text.replace("&amp;", "&").replace("&lt;", "<").replace("&gt;", ">")
                 .replace("&quot;", "\"").replace("&#39;", "'");
-    }
-
-    private static List<String> fromBundledReleaseNotes(String version) {
-        try (InputStream in = ReleaseHighlights.class.getResourceAsStream(RESOURCE_NAME)) {
-            if (in == null)
-                return emptyList();
-            return extract(readLines(in), version, MAX_BULLETS);
-        } catch (IOException e) {
-            return emptyList();
-        }
-    }
-
-    private static List<String> readLines(InputStream in) throws IOException {
-        List<String> lines = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-            String line;
-            while ((line = reader.readLine()) != null)
-                lines.add(line);
-        }
-        return lines;
-    }
-
-    static List<String> extract(List<String> lines, String version, int max) {
-        List<String> result = new ArrayList<>();
-        String sectionMarker = "## " + version;
-        boolean inSection = false;
-        for (String line : lines) {
-            if (line.startsWith("## ")) {
-                if (inSection)
-                    break;
-                inSection = line.equals(sectionMarker) || line.startsWith(sectionMarker + " ");
-                continue;
-            }
-            if (!inSection)
-                continue;
-            if (line.startsWith("- ")) {
-                result.add(line.substring(2).trim());
-                if (result.size() >= max)
-                    break;
-            }
-        }
-        return result;
     }
 }

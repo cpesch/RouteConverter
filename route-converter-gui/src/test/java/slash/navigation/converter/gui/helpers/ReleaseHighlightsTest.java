@@ -64,77 +64,20 @@ public class ReleaseHighlightsTest {
     }
 
     @Test
-    public void prefersWebPageOverBundledReleaseNotes() {
+    public void usesInjectedPageFetcher() {
         List<String> highlights = ReleaseHighlights.first("3.7", Locale.ENGLISH, url -> RELEASE_PAGE_HTML);
         assertEquals(Arrays.asList("adds web bullet one", "adds web bullet two with a link", "fixes web bullet three & more"), highlights);
     }
 
     @Test
-    public void fallsBackToBundledReleaseNotesWhenWebPageUnavailable() {
-        // real bundled RELEASE_NOTES.md on the test classpath, looking up a version it actually has
-        List<String> highlights = ReleaseHighlights.first("3.6", Locale.ENGLISH, url -> null);
-        assertEquals(Arrays.asList(
-                "Added Columbus Fusion track format (Type=GNSS, GNSS with satellite info, GNSS+IMU, IMU) with device-local timestamps, waypoint/POI/parking tags, and 3-axis acceleration",
-                "Added Columbus GNSS GPX support: course/hdop extensions, correct km/h speed for current firmware, cb: namespace extensions and standard hdop for new firmware",
-                "Added position list columns: Heading, HDOP, Quality, acceleration (ax/ay/az) — hidden by default, enable via the column header context menu",
-                "Added Parking count and POI count to the track description (TimeAlbum Pro)",
-                "Elevation, heading, HDOP and acceleration are shown with two decimal places"), highlights);
+    public void noHighlightsWhenPageFetchFails() {
+        assertTrue(ReleaseHighlights.first("3.7", Locale.ENGLISH, url -> null).isEmpty());
     }
 
     @Test
-    public void fallsBackToBundledReleaseNotesYieldsNoHighlightsForUnknownVersion() {
-        List<String> highlights = ReleaseHighlights.first("__no-such-version__", Locale.ENGLISH, url -> null);
-        assertTrue(highlights.isEmpty());
-    }
-
-    private static final List<String> NOTES = Arrays.asList(
-            "# Release notes",
-            "",
-            "## 3.6 — 2026-08-23",
-            "",
-            "### Highlights (EN)",
-            "",
-            "Some prose paragraph, not a bullet.",
-            "",
-            "### New features",
-            "",
-            "- feature one",
-            "- feature two",
-            "- feature three",
-            "",
-            "### Fixes",
-            "",
-            "- fix one",
-            "- fix two",
-            "- fix three",
-            "",
-            "## 3.5 — 2026-06-01",
-            "",
-            "### New features",
-            "",
-            "- older feature"
-    );
-
-    @Test
-    public void extractsFirstBulletsOfMatchingVersion() {
-        List<String> highlights = ReleaseHighlights.extract(NOTES, "3.6", 5);
-        assertEquals(Arrays.asList("feature one", "feature two", "feature three", "fix one", "fix two"), highlights);
-    }
-
-    @Test
-    public void stopsAtMaxBullets() {
-        List<String> highlights = ReleaseHighlights.extract(NOTES, "3.6", 2);
-        assertEquals(Arrays.asList("feature one", "feature two"), highlights);
-    }
-
-    @Test
-    public void doesNotBleedIntoOtherVersions() {
-        List<String> highlights = ReleaseHighlights.extract(NOTES, "3.5", 5);
-        assertEquals(Arrays.asList("older feature"), highlights);
-    }
-
-    @Test
-    public void unknownVersionYieldsNoHighlights() {
-        assertTrue(ReleaseHighlights.extract(NOTES, "9.9", 5).isEmpty());
+    public void noHighlightsWhenPageFetcherThrows() {
+        assertTrue(ReleaseHighlights.first("3.7", Locale.ENGLISH, url -> {
+            throw new RuntimeException("network down");
+        }).isEmpty());
     }
 }
