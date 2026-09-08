@@ -25,6 +25,8 @@
                 <directory>${project.basedir}/..</directory>
                 <includes>
                     <include>LICENSE-GPL.txt</include>
+                    <!-- read by ReleaseHighlights to show release highlights in the update nudge dialog -->
+                    <include>RELEASE_NOTES.md</include>
                 </includes>
             </resource>
         </resources>
