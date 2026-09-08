@@ -66,6 +66,7 @@ import slash.navigation.mapview.MapViewCallback;
 import slash.navigation.mapview.mapsforge.helpers.*;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.models.ThemeStyleImpl;
+import slash.navigation.mapview.mapsforge.overlays.CoverageOverlay;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
 import slash.navigation.mapview.mapsforge.overlays.OverlayManager;
 import slash.navigation.mapview.mapsforge.renderer.BorderPainter;
@@ -85,6 +86,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -208,6 +210,7 @@ public class MapsforgeMapView extends BaseMapView {
     private final MapViewCoordinateDisplayer mapViewCoordinateDisplayer = new MapViewCoordinateDisplayer();
     private final BorderPainter borderPainter = new BorderPainter();
     private final MagnifierPainter magnifierPainter = new MagnifierPainter();
+    private Layer currentCoverageOverlay;
     private RouteRenderer routeRenderer;
     private TrackRenderer trackRenderer;
     private TileLayerFactory tileLayerFactory;
@@ -581,10 +584,18 @@ public class MapsforgeMapView extends BaseMapView {
             log.severe(format("Cannot load background map %s (%d bytes): %s", backgroundMap, length, e));
             return;
         }
+        // a re-downloaded world.map replaces the previous layer: detach and destroy that one,
+        // otherwise it stays in the layer list underneath the new one for the whole session
+        if (backgroundLayer != null) {
+            getLayerManager().getLayers().remove(backgroundLayer);
+            destroyLayer(backgroundLayer);
+        }
         // the layer is built now; a no-op inside handleBackground() (e.g. no map displayed
         // yet) must not discard it, since nothing would rebuild it afterwards
         backgroundLayer = builtLayer;
-        handleBackground();
+        // this attach can race a startup/theme rebuild's in-flight tile job the same way
+        // handleMapAndThemeUpdate() does (issue #376), so force the same repair redraw
+        handleBackground(true);
         log.info(format("Loaded background map %s (%d bytes)", backgroundMap, length));
     }
 
@@ -740,18 +751,19 @@ public class MapsforgeMapView extends BaseMapView {
         for (Map.Entry<LocalMap, Layer> entry : mapsToLayers.entrySet()) {
             Layer remove = entry.getValue();
             layers.remove(remove);
-            remove.onDestroy();
-
-            if (remove instanceof TileLayer<?> tileLayer)
-                tileLayer.getTileCache().destroy();
+            destroyLayer(remove);
         }
         mapsToLayers.clear();
 
-        // add map as the first to be behind all additional layers
-        layers.add(0, layer);
+        // add map directly above the world-map background (or as the first layer if none is
+        // attached) to be behind all additional layers. Inserting it at index 0 and moving the
+        // background back below it would remove and re-add the background layer, and a re-added
+        // TileRendererLayer never renders another tile (see ReattachableTileRendererLayer)
+        int backgroundLayerIndex = backgroundLayer != null ? layers.indexOf(backgroundLayer) : -1;
+        layers.add(BackgroundMapAttachment.displayedMapLayerIndex(backgroundLayerIndex), layer);
         mapsToLayers.put(map, layer);
 
-        handleBackground();
+        handleBackground(true);
         handleOverlays();
         handleTrackLayer();
         handleNonSelectedPositionLists();
@@ -792,14 +804,34 @@ public class MapsforgeMapView extends BaseMapView {
         layers.add(index, trackLayer);
     }
 
-    private void handleBackground() {
+    // stackRebuilt is true when called from handleMapAndThemeUpdate(), which tears down and
+    // rebuilds the displayed map layer stack; an in-flight tile job of an already attached
+    // background layer can be killed by that rebuild and never re-issued (issue #376), so
+    // force one redraw afterwards to let TileLayer.draw() re-queue the dropped job
+    private void handleBackground(boolean stackRebuilt) {
         Layers layers = getLayerManager().getLayers();
-        if (backgroundLayer != null)
-            layers.remove(backgroundLayer);
+        boolean attached = backgroundLayer != null && layers.indexOf(backgroundLayer) >= 0;
 
         LocalMap map = getMapManager().getDisplayedMapModel().getItem();
-        if (BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null, map != null))
+        boolean backgroundAttached = BackgroundMapAttachment.shouldAttachBackground(backgroundLayer != null, map != null);
+        // attach or detach only when the state changes: Layers.add() and Layers.remove() restart the
+        // layer's worker pool, and removing and re-adding a plain TileRendererLayer leaves its worker
+        // pool on a stale job queue so that it never renders again (see ReattachableTileRendererLayer).
+        // handleMapAndThemeUpdate() inserts the displayed map above the background, so an attached
+        // background is already at the bottom and never needs to move
+        if (backgroundAttached && !attached)
             layers.add(0, backgroundLayer);
+        else if (!backgroundAttached && attached)
+            layers.remove(backgroundLayer);
+
+        if (BackgroundMapAttachment.shouldRedrawAfterStackRebuild(backgroundAttached, stackRebuilt))
+            getLayerManager().redrawLayers();
+    }
+
+    private static void destroyLayer(Layer layer) {
+        layer.onDestroy();
+        if (layer instanceof TileLayer<?> tileLayer)
+            tileLayer.getTileCache().destroy();
     }
 
     private void handleNonSelectedPositionLists() {
@@ -929,6 +961,23 @@ public class MapsforgeMapView extends BaseMapView {
 
     public void showMapBorder(BoundingBox mapBoundingBox) {
         borderPainter.showMapBorder(mapBoundingBox);
+    }
+
+    public void showCoverageOverlay(BoundingBox mapBoundingBox, String category, Map<BoundingBox, Boolean> coverageTiles) {
+        // Remove existing overlay if present
+        if (currentCoverageOverlay != null) {
+            removeLayer(currentCoverageOverlay);
+            currentCoverageOverlay = null;
+        }
+
+        // If category is null or no bounding box, we're done
+        if (category == null || mapBoundingBox == null || coverageTiles == null) {
+            return;
+        }
+
+        // Create and add new overlay
+        currentCoverageOverlay = new CoverageOverlay(coverageTiles, GRAPHIC_FACTORY, getTileSize());
+        addLayers(singletonList(currentCoverageOverlay));
     }
 
     public void showPositionMagnifier(List<NavigationPosition> positions) {

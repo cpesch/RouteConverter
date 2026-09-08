@@ -19,6 +19,7 @@
 */
 package slash.navigation.converter.gui.helpers;
 
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.elevation.ElevationService;
@@ -136,6 +137,11 @@ public class AutomaticElevationService implements ElevationService {
         ElevationService service = elevationServiceFacade.findElevationService(getPreferredDownloadName());
         if (service != null)
             service.downloadElevationData(mapDescriptors);
+    }
+
+    public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
+        ElevationService service = elevationServiceFacade.findElevationService(getPreferredDownloadName());
+        return service != null ? service.getCoverageTiles(area) : Collections.emptyMap();
     }
 
     private static class ElevationServicePriorityComparator implements Comparator<ElevationService> {

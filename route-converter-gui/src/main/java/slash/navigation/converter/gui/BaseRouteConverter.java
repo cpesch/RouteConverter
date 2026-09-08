@@ -241,6 +241,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         show();
         askForCrashReportConsent();
         updateChecker.implicitCheck(getFrame());
+        updateChecker.checkSupportNudge(getFrame());
         crashReporter.offerSpooledReports();
         // show() returns once the synchronous bring-up is done, but the frame and
         // map/profile views are realized later on the EDT — see the "frame shown"
@@ -945,6 +946,12 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         }
     }
 
+    public void showCoverageOverlay(BoundingBox mapBoundingBox, String category, Map<BoundingBox, Boolean> coverageTiles) {
+        if (isMapViewAvailable()) {
+            getMapView().showCoverageOverlay(mapBoundingBox, category, coverageTiles);
+        }
+    }
+
     public void showPositionMagnifier(List<NavigationPosition> positions) {
         if (isMapViewAvailable()) {
             getMapView().showPositionMagnifier(positions);
@@ -1352,6 +1359,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         actionManager.register("check-for-update", new CheckForUpdateAction(updateChecker));
         actionManager.register("send-error-report", new SendErrorReportAction());
         actionManager.register("show-translation", new ShowTranslationAction());
+        actionManager.register("support-routeconverter", new ShowSupportRouteConverterAction());
         actionManager.register("show-about", createAboutAction());
     }
 

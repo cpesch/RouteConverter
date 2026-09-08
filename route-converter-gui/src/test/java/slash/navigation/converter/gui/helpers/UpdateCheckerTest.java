@@ -22,9 +22,56 @@ package slash.navigation.converter.gui.helpers;
 
 import org.junit.Test;
 
+import java.util.prefs.Preferences;
+
 import static org.junit.Assert.*;
 
 public class UpdateCheckerTest {
+    private Preferences supportNudgePreferences() {
+        Preferences preferences = Preferences.userNodeForPackage(UpdateCheckerTest.class).node("supportNudgeTest");
+        preferences.putBoolean(UpdateChecker.SupportNudge.NUDGE_100_SHOWN_PREFERENCE, false);
+        preferences.putBoolean(UpdateChecker.SupportNudge.NUDGE_500_SHOWN_PREFERENCE, false);
+        return preferences;
+    }
+
+    @Test
+    public void supportNudgeNotShownBelow100() {
+        Preferences preferences = supportNudgePreferences();
+        assertNull(UpdateChecker.SupportNudge.thresholdToShow(99, preferences));
+    }
+
+    @Test
+    public void supportNudgeShownOnceAt100() {
+        Preferences preferences = supportNudgePreferences();
+        assertEquals(Integer.valueOf(100), UpdateChecker.SupportNudge.thresholdToShow(100, preferences));
+        UpdateChecker.SupportNudge.markShown(100, preferences);
+        assertNull(UpdateChecker.SupportNudge.thresholdToShow(100, preferences));
+        assertNull(UpdateChecker.SupportNudge.thresholdToShow(101, preferences));
+    }
+
+    @Test
+    public void supportNudgeShownOnceAt500() {
+        Preferences preferences = supportNudgePreferences();
+        UpdateChecker.SupportNudge.markShown(100, preferences);
+        assertEquals(Integer.valueOf(500), UpdateChecker.SupportNudge.thresholdToShow(500, preferences));
+        UpdateChecker.SupportNudge.markShown(500, preferences);
+        assertNull(UpdateChecker.SupportNudge.thresholdToShow(500, preferences));
+    }
+
+    @Test
+    public void supportNudgePrefers500OverUnshown100() {
+        Preferences preferences = supportNudgePreferences();
+        assertEquals(Integer.valueOf(500), UpdateChecker.SupportNudge.thresholdToShow(500, preferences));
+    }
+
+    @Test
+    public void supportNudgeOptOutNeverShows() {
+        Preferences preferences = supportNudgePreferences();
+        UpdateChecker.SupportNudge.markShown(100, preferences);
+        UpdateChecker.SupportNudge.markShown(500, preferences);
+        assertNull(UpdateChecker.SupportNudge.thresholdToShow(1000, preferences));
+    }
+
     @Test
     public void testSetParameters() {
         UpdateChecker.UpdateResult result = new UpdateChecker.UpdateResult("2.2", "1.5");

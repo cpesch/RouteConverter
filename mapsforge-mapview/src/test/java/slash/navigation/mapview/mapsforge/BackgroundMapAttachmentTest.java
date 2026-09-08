@@ -21,9 +21,12 @@ package slash.navigation.mapview.mapsforge;
 
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static slash.navigation.mapview.mapsforge.BackgroundMapAttachment.displayedMapLayerIndex;
 import static slash.navigation.mapview.mapsforge.BackgroundMapAttachment.shouldAttachBackground;
+import static slash.navigation.mapview.mapsforge.BackgroundMapAttachment.shouldRedrawAfterStackRebuild;
 
 /**
  * Tests for {@link BackgroundMapAttachment}.
@@ -48,5 +51,35 @@ public class BackgroundMapAttachmentTest {
         // selectable map is the online OpenStreetMap default still shows a map
         // instead of staying gray when those tiles cannot be reached
         assertTrue(shouldAttachBackground(true, true));
+    }
+
+    @Test
+    public void doesNotRedrawWhenNothingAttached() {
+        // nothing attached, nothing to repair
+        assertFalse(shouldRedrawAfterStackRebuild(false, true));
+    }
+
+    @Test
+    public void doesNotRedrawWhenNoStackRebuildHappened() {
+        // no rebuild happened, do not force redraws on every update
+        assertFalse(shouldRedrawAfterStackRebuild(true, false));
+    }
+
+    @Test
+    public void redrawsWhenBackgroundAttachedAndStackWasRebuilt() {
+        // background attached and the stack was rebuilt under it: force one redraw
+        // so a tile job dropped during the rebuild gets re-queued
+        assertTrue(shouldRedrawAfterStackRebuild(true, true));
+    }
+
+    @Test
+    public void displayedMapIsTheBottomLayerWhenNoBackgroundIsAttached() {
+        assertEquals(0, displayedMapLayerIndex(-1));
+    }
+
+    @Test
+    public void displayedMapSitsDirectlyAboveAnAttachedBackground() {
+        // inserting it there instead of at 0 avoids moving (removing and re-adding) the background layer
+        assertEquals(1, displayedMapLayerIndex(0));
     }
 }

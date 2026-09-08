@@ -47,4 +47,31 @@ public class BackgroundMapAttachment {
     public static boolean shouldAttachBackground(boolean layerReady, boolean hasDisplayedMap) {
         return layerReady && hasDisplayedMap;
     }
+
+    /**
+     * The displayed map layer has to sit directly above the world-map background. Inserting it there
+     * instead of always at index 0 and then moving the background back below it avoids removing and
+     * re-adding the background layer, which mapsforge's {@code TileRendererLayer} does not survive
+     * (see {@code ReattachableTileRendererLayer}).
+     *
+     * @param backgroundLayerIndex  index of the attached background layer in the layer list, or -1 if none is attached
+     * @return the index at which the displayed map layer has to be inserted
+     */
+    public static int displayedMapLayerIndex(int backgroundLayerIndex) {
+        return backgroundLayerIndex < 0 ? 0 : backgroundLayerIndex + 1;
+    }
+
+    /**
+     * A layer-stack rebuild (map/theme change) can kill in-flight tile jobs of an already
+     * attached background layer without re-issuing them, leaving unpainted tiles behind
+     * until the user pans or zooms. Forcing one redraw afterwards lets
+     * {@code TileLayer.draw()} re-queue whatever job the rebuild dropped.
+     *
+     * @param backgroundAttached    whether the background layer is attached as the base layer now
+     * @param stackRebuilt          whether the displayed map/theme layer stack was just torn down and rebuilt
+     * @return true iff one redraw of the layer stack should be forced to repair a job dropped during the rebuild
+     */
+    public static boolean shouldRedrawAfterStackRebuild(boolean backgroundAttached, boolean stackRebuilt) {
+        return backgroundAttached && stackRebuilt;
+    }
 }

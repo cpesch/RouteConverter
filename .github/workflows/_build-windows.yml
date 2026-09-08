@@ -122,6 +122,91 @@ jobs:
         working-directory: TimeAlbumProWindows
         run: makensis "target\TimeAlbumPro.nsi"
 
+      - name: Smoke test — bundled-jar warm-launch caching (issue #372)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+
+          function Wait-ForWarmSignal($proc, $productRoot) {
+            $sw = [System.Diagnostics.Stopwatch]::StartNew()
+            $cap = [TimeSpan]::FromSeconds(90)
+            while ($sw.Elapsed -lt $cap) {
+              $stamp = Get-ChildItem -Path "$productRoot\app-*\.stamp" -ErrorAction SilentlyContinue
+              $javaChild = Get-CimInstance Win32_Process `
+                -Filter "Name='java.exe' AND ParentProcessId=$($proc.Id)" `
+                -ErrorAction SilentlyContinue
+              if ($stamp -and $javaChild) {
+                $sw.Stop()
+                return $sw.Elapsed
+              }
+              Start-Sleep -Milliseconds 100
+            }
+            throw "timed out waiting for warm signal ($($proc.Path))"
+          }
+
+          function Stop-ProcessTree($procId) {
+            taskkill /T /F /PID $procId | Out-Null
+            Start-Sleep -Milliseconds 500
+          }
+
+          function Test-WarmLaunchCaching($exePath, $productRoot, $jarName) {
+            Write-Host "=== warm-launch smoke test: $exePath ==="
+
+            # Run 1 (cold): first-ever launch must do the slow path and leave
+            # a cached jar + stamp behind (assertion A).
+            $p1 = Start-Process -FilePath $exePath -PassThru
+            $elapsed1 = Wait-ForWarmSignal $p1 $productRoot
+            Write-Host "run 1: warm signal after $($elapsed1.TotalSeconds) s"
+
+            $jar1 = Get-ChildItem -Path "$productRoot\app-*\$jarName" -ErrorAction SilentlyContinue
+            if (-not $jar1 -or $jar1.Length -le 10MB) {
+              throw "assertion A failed: $productRoot\app-*\$jarName missing or <= 10MB"
+            }
+            if (-not (Get-ChildItem -Path "$productRoot\app-*\.stamp" -ErrorAction SilentlyContinue)) {
+              throw "assertion A failed: .stamp missing after run 1"
+            }
+
+            Stop-ProcessTree $p1.Id
+
+            # Run 2 (warm): must take the fast path.
+            $p2 = Start-Process -FilePath $exePath -PassThru
+            $elapsed2 = Wait-ForWarmSignal $p2 $productRoot
+            Write-Host "run 2: warm signal after $($elapsed2.TotalSeconds) s"
+
+            # Assertion B: the app jar is never re-extracted into a fresh
+            # %TEMP%\ns*.tmp — only the small nsExec plugin DLL may land there.
+            $bigTmpJars = Get-ChildItem -Path "$env:TEMP\ns*.tmp" -Recurse -Filter *.jar -ErrorAction SilentlyContinue |
+                          Where-Object { $_.Length -gt 10MB }
+            if ($bigTmpJars) {
+              throw "assertion B failed: large jar under %TEMP%\ns*.tmp: $($bigTmpJars.FullName -join ', ')"
+            }
+
+            # Assertion C: warm path is a stamp read plus a string compare.
+            if ($elapsed2.TotalSeconds -ge 3) {
+              throw "assertion C failed: run 2 took $($elapsed2.TotalSeconds) s (expected < 3 s)"
+            }
+
+            Stop-ProcessTree $p2.Id
+
+            # Assertion D: pruning left exactly one app-* generation.
+            $appDirs = @(Get-ChildItem -Path $productRoot -Directory -Filter 'app-*' -ErrorAction SilentlyContinue)
+            if ($appDirs.Count -ne 1) {
+              throw "assertion D failed: expected exactly one app-* dir under $productRoot, found $($appDirs.Count): $($appDirs.FullName -join ', ')"
+            }
+
+            Write-Host "=== OK: $exePath ==="
+          }
+
+          Test-WarmLaunchCaching `
+            (Resolve-Path 'RouteConverterWindows\target\RouteConverterWindows.exe').Path `
+            "$env:LOCALAPPDATA\RouteConverter" `
+            'RouteConverterWindows.jar'
+
+          Test-WarmLaunchCaching `
+            (Resolve-Path 'TimeAlbumProWindows\target\TimeAlbumProWindows.exe').Path `
+            "$env:LOCALAPPDATA\TimeAlbumPro" `
+            'TimeAlbumProWindows.jar'
+
       - name: Cache PortableApps.com Installer
         id: pa-cache
         uses: actions/cache@v6
@@ -158,6 +243,22 @@ jobs:
           }
           Write-Host "found: $exe"
           "exe=$exe" >> $env:GITHUB_OUTPUT
+
+      - name: Verify Portable launcher jar matches the copied jar
+        shell: pwsh
+        run: |
+          $tree = "RouteConverterPortable\target\classes\RouteConverterPortable"
+          $ini  = Get-Content "$tree\App\AppInfo\Launcher\RouteConverterPortable.ini" -Raw
+          if ($ini -notmatch '-jar "%PAL:AppDir%\\([^"]+)"') {
+            throw "no -jar path found in launcher ini"
+          }
+          $rel = $Matches[1] -replace '/','\'
+          $jar = Join-Path "$tree\App" $rel
+          if (-not (Test-Path $jar)) {
+            Get-ChildItem "$tree\App\RouteConverter"
+            throw "launcher ini names '$rel' but that file is not in the Portable tree"
+          }
+          Write-Host "launcher jar OK: $rel"
 
       - name: Build RouteConverterPortable .paf.exe
         # cmd shell matches the smoke run that proved this works

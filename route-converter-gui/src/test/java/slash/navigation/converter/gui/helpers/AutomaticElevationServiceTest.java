@@ -20,13 +20,16 @@
 package slash.navigation.converter.gui.helpers;
 
 import org.junit.Test;
+import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.elevation.ElevationService;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -169,6 +172,7 @@ public class AutomaticElevationServiceTest {
         public void downloadElevationDataFor(List<LongitudeAndLatitude> ll, boolean wait) {}
         public long calculateRemainingDownloadSize(List<MapDescriptor> m) { return 0; }
         public void downloadElevationData(List<MapDescriptor> m) {}
+        public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) { return Collections.emptyMap(); }
     }
 }
 
