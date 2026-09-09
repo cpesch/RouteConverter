@@ -65,7 +65,9 @@ public class GetPerformerTest {
     private static final long LAST_MODIFIED = 1_700_000_123_000L;
 
     @Rule
-    public final Timeout testTimeout = Timeout.seconds(30);
+    // must exceed HttpRequest's 30s default response timeout: a truncated transfer relies on
+    // that timeout firing to reach the Failed state, so a 30s rule here races it
+    public final Timeout testTimeout = Timeout.seconds(45);
 
     private HttpServer server;
     private final AtomicInteger bodiesServed = new AtomicInteger();
