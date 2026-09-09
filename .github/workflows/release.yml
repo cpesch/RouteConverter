@@ -115,6 +115,14 @@ jobs:
             done
           done
           ls -la "previous-releases/$VERSION/"
+      - name: Generate sha256 checksums
+        run: |
+          for dir in artefacts "previous-releases/${{ steps.ver.outputs.version }}"; do
+            (cd "$dir" && for f in *; do
+              [[ "$f" == *.sha256 ]] && continue
+              sha256sum "$f" > "$f.sha256"
+            done)
+          done
       - name: Configure SSH
         env:
           DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
