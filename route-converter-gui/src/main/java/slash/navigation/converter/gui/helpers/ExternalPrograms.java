@@ -33,6 +33,7 @@ import static java.util.Locale.GERMAN;
 import static java.util.Locale.getDefault;
 import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
+import static slash.common.helpers.LocaleHelper.resolveDomain;
 
 /**
  * Knows how to cope with external programs like mail.
@@ -53,7 +54,7 @@ public class ExternalPrograms {
     }
 
     public static void startBrowserForRouteConverter(Window window) {
-        startBrowser(window, "https://www.routeconverter.com");
+        startBrowser(window, resolveDomain(getDefault()));
     }
 
     public static void startBrowserForTimeAlbumProDownload(Window window) {
@@ -61,8 +62,7 @@ public class ExternalPrograms {
     }
 
     public static void startBrowserForTerms(Window window) {
-        String language = isGerman() ? "de" : "en";
-        startBrowser(window, "https://www.routeconverter.com/routecatalog-terms-" + language);
+        startBrowser(window, resolveDomain(getDefault()) + "/terms/");
     }
 
     public static void startBrowserForTranslation(Window window) {
@@ -86,7 +86,7 @@ public class ExternalPrograms {
     }
 
     public static void startBrowserForRouteConverterResources(Window window) {
-        startBrowser(window, "https://www.routeconverter.com/resources/");
+        startBrowser(window, resolveDomain(getDefault()) + "/resources/");
     }
 
     public static void startBrowserForDouglasPeucker(Window window) {
