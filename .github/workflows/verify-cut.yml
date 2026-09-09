@@ -62,6 +62,19 @@ jobs:
           fi
           echo "all 8 GH Release assets present"
 
+          missing_sha=()
+          for name in "${expected[@]}"; do
+            if ! grep -qxF "${name}.sha256" <<< "$actual"; then
+              missing_sha+=("${name}.sha256")
+            fi
+          done
+          if [[ ${#missing_sha[@]} -gt 0 ]]; then
+            echo "::error::missing sha256 checksums on GH Release $TAG:"
+            printf '  %s\n' "${missing_sha[@]}"
+            exit 1
+          fi
+          echo "all 8 sha256 checksums present"
+
       - name: Verify releases.routeconverter.com assets serve
         env:
           TAG: ${{ steps.ctx.outputs.tag }}
