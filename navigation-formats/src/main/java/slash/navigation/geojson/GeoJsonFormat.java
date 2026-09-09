@@ -80,8 +80,9 @@ public class GeoJsonFormat extends SimpleFormat<Wgs84Route> {
             if (!positions.isEmpty()) {
                 context.appendRoute(new Wgs84Route(this, Waypoints, "FeatureCollection", positions));
             }
-        } else
-            log.warning("Reading GeoJSON object with type " + root.path("type").asText() + " is not supported.");
+        } else {
+            log.warning("Reading GeoJSON object with type " + (root != null ? root.path("type").asText() : null) + " is not supported.");
+        }
     }
 
     private CompactCalendar parseTime(String string) {
