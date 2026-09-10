@@ -125,8 +125,6 @@ class FileOperations {
                     log.info("Opened: " + path);
                     final NavigationFormat<?> format = result.getFormat();
                     panel.countRead(format);
-                    if (!ConvertPanel.checkReadFormat(format))
-                        return;
                     invokeLater(() -> {
                         panel.formatAndRoutesModel.setRoutes(FormatAndRoutes.of(result.getFormat(), result.getAllRoutes()));
                         panel.urlModel.setString(path);

@@ -1,5 +1,11 @@
 # Release notes
 
+## 3.7 — unreleased
+
+### Fixes
+
+- Haicom Logger files open without limit; the read gate is gone.
+
 ## 3.6 — 2026-08-23
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.6
