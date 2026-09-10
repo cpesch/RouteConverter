@@ -335,6 +335,10 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
                                         Activity precedingActivity, boolean isIOS) {
         JsonNode locationNode = point.path("location");
         if (locationNode == null || locationNode.isMissingNode()) {
+            // on-device export shape: bare "point": "geo:lat,lng" instead of "location"
+            locationNode = point.path("point");
+        }
+        if (locationNode == null || locationNode.isMissingNode()) {
             return null;
         }
 

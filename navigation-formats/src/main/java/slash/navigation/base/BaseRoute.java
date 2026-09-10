@@ -46,6 +46,7 @@ import slash.navigation.fpl.GarminFlightPlanFormat;
 import slash.navigation.fpl.GarminFlightPlanPosition;
 import slash.navigation.fpl.GarminFlightPlanRoute;
 import slash.navigation.geojson.GeoJsonFormat;
+import slash.navigation.googletimeline.GoogleTimelineFormat;
 import slash.navigation.gopal.*;
 import slash.navigation.gpx.Gpx10Format;
 import slash.navigation.gpx.Gpx11Format;
@@ -744,6 +745,13 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof GeoJsonFormat)
             return (SimpleRoute) this;
         return asSimpleFormat(new GeoJsonFormat());
+    }
+
+    @SuppressWarnings({"UnusedDeclaration", "rawtypes"})
+    public SimpleRoute asGoogleTimelineFormat() {
+        if (getFormat() instanceof GoogleTimelineFormat)
+            return (SimpleRoute) this;
+        return asSimpleFormat(new GoogleTimelineFormat());
     }
 
     @SuppressWarnings({"UnusedDeclaration"})
