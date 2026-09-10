@@ -30,6 +30,7 @@ import slash.navigation.common.NavigationPosition;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,6 +50,7 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     private static final Logger log = Logger.getLogger(GoogleTimelineFormat.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(GoogleTimelineFormat.class);
 
     private static final String GEO_PREFIX = "geo:";
     private static final Pattern COORDINATE_PATTERN = Pattern.compile("(-?\\d+\\.\\d+)°?,?\\s*(-?\\d+\\.\\d+)°?");
@@ -56,8 +58,10 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     // Calendar-day grouping is an artifact of the export, not of the trip: an overnight
     // stay splits one continuous track at midnight even though the last point of one day
     // and the first point of the next are (almost) the same place. Bridge that gap instead
-    // of emitting two routes that visibly touch.
-    private static final double ADJACENT_DAY_MERGE_THRESHOLD_METERS = 300.0;
+    // of emitting two routes that visibly touch. Hidden preference, no Options dialog UI:
+    // set with Preferences.userNodeForPackage(GoogleTimelineFormat.class).putDouble(
+    //   "adjacentDayMergeThresholdMeters", <meters>) to override.
+    private static final double ADJACENT_DAY_MERGE_THRESHOLD_METERS_DEFAULT = 500.0;
 
     public String getExtension() {
         return ".json";
@@ -308,8 +312,9 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     }
 
     private boolean isSameLocation(Wgs84Position a, Wgs84Position b) {
+        double threshold = preferences.getDouble("adjacentDayMergeThresholdMeters", ADJACENT_DAY_MERGE_THRESHOLD_METERS_DEFAULT);
         Double distance = b.calculateDistance(a);
-        return distance != null && distance <= ADJACENT_DAY_MERGE_THRESHOLD_METERS;
+        return distance != null && distance <= threshold;
     }
 
     private Activity parseActivity(JsonNode segment, boolean isAndroid) {
