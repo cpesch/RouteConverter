@@ -30,6 +30,7 @@ import slash.navigation.common.NavigationPosition;
 import java.io.*;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,9 +50,18 @@ import static slash.navigation.base.RouteCharacteristics.Waypoints;
  */
 public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     private static final Logger log = Logger.getLogger(GoogleTimelineFormat.class.getName());
+    private static final Preferences preferences = Preferences.userNodeForPackage(GoogleTimelineFormat.class);
 
     private static final String GEO_PREFIX = "geo:";
     private static final Pattern COORDINATE_PATTERN = Pattern.compile("(-?\\d+\\.\\d+)°?,?\\s*(-?\\d+\\.\\d+)°?");
+
+    // Calendar-day grouping is an artifact of the export, not of the trip: an overnight
+    // stay splits one continuous track at midnight even though the last point of one day
+    // and the first point of the next are (almost) the same place. Bridge that gap instead
+    // of emitting two routes that visibly touch. Hidden preference, no Options dialog UI:
+    // set with Preferences.userNodeForPackage(GoogleTimelineFormat.class).putDouble(
+    //   "adjacentDayMergeThresholdMeters", <meters>) to override.
+    private static final double ADJACENT_DAY_MERGE_THRESHOLD_METERS_DEFAULT = 500.0;
 
     public String getExtension() {
         return ".json";
@@ -169,7 +179,13 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
             }
         }
 
-        // Emit day tracks in ascending date order
+        // Emit day tracks in ascending date order, merging a day into the still-open
+        // previous track when its first point is (almost) the same place as the previous
+        // track's last point - see ADJACENT_DAY_MERGE_THRESHOLD_METERS above.
+        List<Wgs84Position> pendingPoints = null;
+        CompactCalendar pendingFirstDay = null;
+        CompactCalendar pendingLastDay = null;
+
         for (Map.Entry<CompactCalendar, List<Wgs84Position>> entry : pointsByDay.entrySet()) {
             List<Wgs84Position> dayPoints = entry.getValue();
             // Sort by timestamp, stable for ties
@@ -182,9 +198,19 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
                 return 0;
             });
 
-            String routeName = formatDateName(entry.getKey());
-            context.appendRoute(new Wgs84Route(this, Track, routeName, dayPoints));
+            if (pendingPoints != null && isSameLocation(pendingPoints.get(pendingPoints.size() - 1), dayPoints.get(0))) {
+                pendingPoints.addAll(dayPoints);
+                pendingLastDay = entry.getKey();
+            } else {
+                if (pendingPoints != null)
+                    context.appendRoute(new Wgs84Route(this, Track, formatRouteName(pendingFirstDay, pendingLastDay), pendingPoints));
+                pendingPoints = dayPoints;
+                pendingFirstDay = entry.getKey();
+                pendingLastDay = entry.getKey();
+            }
         }
+        if (pendingPoints != null)
+            context.appendRoute(new Wgs84Route(this, Track, formatRouteName(pendingFirstDay, pendingLastDay), pendingPoints));
 
         // Process visits into a single Waypoints route
         List<Wgs84Position> visitPositions = new ArrayList<>();
@@ -279,6 +305,18 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         return String.format("%04d-%02d-%02d", year, month, dayOfMonth);
     }
 
+    private String formatRouteName(CompactCalendar firstDay, CompactCalendar lastDay) {
+        String firstName = formatDateName(firstDay);
+        String lastName = formatDateName(lastDay);
+        return firstName.equals(lastName) ? firstName : firstName + " – " + lastName;
+    }
+
+    private boolean isSameLocation(Wgs84Position a, Wgs84Position b) {
+        double threshold = preferences.getDouble("adjacentDayMergeThresholdMeters", ADJACENT_DAY_MERGE_THRESHOLD_METERS_DEFAULT);
+        Double distance = b.calculateDistance(a);
+        return distance != null && distance <= threshold;
+    }
+
     private Activity parseActivity(JsonNode segment, boolean isAndroid) {
         JsonNode activityNode = segment.path("activity");
         if (activityNode == null || activityNode.isMissingNode()) {
@@ -334,6 +372,10 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     private Wgs84Position parsePathPoint(JsonNode point, CompactCalendar segmentStart,
                                         Activity precedingActivity, boolean isIOS) {
         JsonNode locationNode = point.path("location");
+        if (locationNode == null || locationNode.isMissingNode()) {
+            // on-device export shape: bare "point": "geo:lat,lng" instead of "location"
+            locationNode = point.path("point");
+        }
         if (locationNode == null || locationNode.isMissingNode()) {
             return null;
         }
