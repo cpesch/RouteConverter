@@ -91,6 +91,17 @@ public class UpdatePolicyTest {
     }
 
     @Test
+    public void releasesBehindIgnoresPreReleaseSuffix() {
+        assertEquals(0, UpdatePolicy.releasesBehind(new Version("3.7-SNAPSHOT"), new Version("3.7")));
+        assertEquals(1, UpdatePolicy.releasesBehind(new Version("3.6-SNAPSHOT"), new Version("3.7")));
+    }
+
+    @Test
+    public void snapshotIsNotNudgedAsSeveralReleasesBehind() {
+        assertEquals(HIGHLIGHTS, UpdatePolicy.decide(new Version("3.6-SNAPSHOT"), V3_6, 2));
+    }
+
+    @Test
     public void isEndOfLifeBelowMajor3() {
         assertTrue(UpdatePolicy.isEndOfLife(new Version("2.30")));
         assertTrue(UpdatePolicy.isEndOfLife(new Version("2.9")));

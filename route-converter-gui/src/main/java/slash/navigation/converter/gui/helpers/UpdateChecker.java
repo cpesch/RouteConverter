@@ -66,7 +66,11 @@ public class UpdateChecker {
     private static final String START_TIME_PREFERENCE = "startTime";
     private static final String SKIP_VERSION_PREFERENCE = "skipUpdateVersion";
     private static final String OFFER_COUNT_PREFERENCE_PREFIX = "updateOfferCount.";
-    private static final String EOL_NOTICE_SHOWN_PREFERENCE = "eolNoticeShown-2.x";
+    // tied to UpdatePolicy#END_OF_LIFE_BEFORE_MAJOR, so a bumped boundary yields a new key and
+    // the notice for the next end-of-life generation is shown once again; UpdateCheckerTest pins
+    // today's value, since a rename would show the notice again to everyone who dismissed it
+    static final String EOL_NOTICE_SHOWN_PREFERENCE =
+            "eolNoticeShown-" + (UpdatePolicy.END_OF_LIFE_BEFORE_MAJOR - 1) + ".x";
     private final RouteFeedback routeFeedback;
 
     static {
@@ -326,16 +330,24 @@ public class UpdateChecker {
                 () -> startBrowserForPayPal(window));
     }
 
+    /**
+     * Called from the menu action, i.e. on the EDT - so the check and the highlights lookup,
+     * both of which do a blocking HTTP round trip, run on a background thread and only the
+     * dialogs are handed back to the EDT.
+     */
     public void explicitCheck(Window window) {
-        UpdateResult result = check();
-        if (result.existsLaterRouteConverterVersion()) {
-            UpdatePolicy.Nudge nudge = decideNudge(result);
-            offerRouteConverterUpdate(window, result, nudge, resolveHighlights(result, nudge));
-        } else
-            noUpdateAvailable(window);
+        new Thread(() -> {
+            UpdateResult result = check();
+            if (result.existsLaterRouteConverterVersion()) {
+                UpdatePolicy.Nudge nudge = decideNudge(result);
+                List<String> highlights = resolveHighlights(result, nudge);
+                invokeLater(() -> offerRouteConverterUpdate(window, result, nudge, highlights));
+            } else
+                invokeLater(() -> noUpdateAvailable(window));
 
-        if (result.existsLaterJavaVersion())
-            offerJavaUpdate(window, result);
+            if (result.existsLaterJavaVersion())
+                invokeLater(() -> offerJavaUpdate(window, result));
+        }, "UpdateChecker").start();
     }
 
     static class SupportNudge {
