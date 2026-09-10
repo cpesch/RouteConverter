@@ -57,7 +57,7 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     // stay splits one continuous track at midnight even though the last point of one day
     // and the first point of the next are (almost) the same place. Bridge that gap instead
     // of emitting two routes that visibly touch.
-    private static final double ADJACENT_DAY_MERGE_THRESHOLD_METERS = 50.0;
+    private static final double ADJACENT_DAY_MERGE_THRESHOLD_METERS = 300.0;
 
     public String getExtension() {
         return ".json";
