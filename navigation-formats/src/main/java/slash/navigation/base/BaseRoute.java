@@ -65,6 +65,8 @@ import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.ovl.OvlRoute;
 import slash.navigation.photo.PhotoFormat;
+import slash.navigation.rtz.RtzFormat;
+import slash.navigation.rtz.RtzRoute;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
@@ -1166,6 +1168,18 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
         if (getFormat() instanceof Route66Format)
             return (SimpleRoute) this;
         return asSimpleFormat(new Route66Format());
+    }
+
+    @SuppressWarnings({"UnusedDeclaration"})
+    public RtzRoute asRtzFormat() {
+        if (getFormat() instanceof RtzFormat)
+            return (RtzRoute) this;
+
+        List<Wgs84Position> wgs84Positions = new ArrayList<>();
+        for (P position : getPositions()) {
+            wgs84Positions.add(position.asWgs84Position());
+        }
+        return new RtzRoute(getName(), wgs84Positions);
     }
 
     @SuppressWarnings({"UnusedDeclaration", "rawtypes"})

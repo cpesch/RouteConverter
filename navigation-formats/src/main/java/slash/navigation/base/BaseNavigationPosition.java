@@ -396,6 +396,11 @@ public abstract class BaseNavigationPosition implements NavigationPosition {
     }
 
     @SuppressWarnings("UnusedDeclaration")
+    public Wgs84Position asRtzPosition() {
+        return asWgs84Position();
+    }
+
+    @SuppressWarnings("UnusedDeclaration")
     public Wgs84Position asSygicUnicodePosition() {
         return asWgs84Position();
     }

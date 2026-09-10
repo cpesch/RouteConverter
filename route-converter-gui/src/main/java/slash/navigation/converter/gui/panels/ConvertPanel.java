@@ -53,6 +53,7 @@ import slash.navigation.gui.helpers.AbstractListDataListener;
 import slash.navigation.gui.helpers.JTableHelper;
 import slash.navigation.gui.undo.UndoManager;
 import slash.navigation.msfs.MSFSFlightPlanFormat;
+import slash.navigation.rtz.RtzFormat;
 import slash.navigation.simple.GoRiderGpsFormat;
 
 import javax.swing.*;
@@ -576,6 +577,8 @@ public class ConvertPanel implements PanelInTab {
                 "Write Garmin Flight Plan")) ||
                 (format instanceof MSFSFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10
                         && !checkForFeature("msfs-pln", "Write MSFS2020 Flight Plan")) ||
+                (format instanceof RtzFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10
+                        && !checkForFeature("rtz-ecdis", "Write RTZ Route Exchange")) ||
                 (format instanceof GoRiderGpsFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10
                         && !checkForFeature("rt-gorider", "Write GoRider GPS")));
     }
