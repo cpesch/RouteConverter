@@ -54,7 +54,6 @@ import slash.navigation.gui.helpers.JTableHelper;
 import slash.navigation.gui.undo.UndoManager;
 import slash.navigation.msfs.MSFSFlightPlanFormat;
 import slash.navigation.simple.GoRiderGpsFormat;
-import slash.navigation.simple.HaicomLoggerFormat;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -570,11 +569,6 @@ public class ConvertPanel implements PanelInTab {
         fileOperations.saveFile(selected, selectedFormat, true, true, !formatAndRoutesModel.getFormat().equals(selectedFormat));
     }
 
-
-    static boolean checkReadFormat(NavigationFormat<?> format) {
-        return !((format instanceof HaicomLoggerFormat && preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10
-                && !checkForFeature("csv-haicom", "Read Haicom Logger")));
-    }
 
     static boolean checkWriteFormat(NavigationFormat<?> format) {
         return !((format instanceof GarminFlightPlanFormat
