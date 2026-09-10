@@ -163,7 +163,9 @@ public class TileRendererLayerLifecycleTest {
     }
 
     private void assertAllTilesRendered() throws InterruptedException {
-        long deadline = System.currentTimeMillis() + 5000;
+        // generous headroom: cold theme parsing + rendering can take well over 5s on a loaded
+        // Windows CI runner, which flaked here despite rendering completing correctly
+        long deadline = System.currentTimeMillis() + 15000;
         List<RendererJob> missing;
         do {
             missing = new ArrayList<>();
