@@ -144,10 +144,39 @@ jobs:
           check RouteConverterMac/target/RouteConverterMac-aarch64-app.zip RouteConverter
           check TimeAlbumProMac/target/TimeAlbumProMac-x64-app.zip         TimeAlbumPro
           check TimeAlbumProMac/target/TimeAlbumProMac-aarch64-app.zip     TimeAlbumPro
+      - name: Build Linux .deb (jpackage, spec 00059 P4)
+        # jpackage bundles its own jlinked runtime (like the Windows/Mac
+        # launchers), so the .deb has no system-Java dependency. --app-version
+        # rejects a -SNAPSHOT qualifier, so numeric components only.
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fakeroot
+          POM_VERSION=$(sed -n 's:.*<version>\(.*\)</version>.*:\1:p' pom.xml | head -1)
+          APP_VERSION="${POM_VERSION%%-*}"
+          mkdir -p deb-input deb-dist
+          cp RouteConverterLinux/target/RouteConverterLinux.jar deb-input/
+          jpackage \
+            --type deb \
+            --name RouteConverter \
+            --input deb-input \
+            --main-jar RouteConverterLinux.jar \
+            --main-class slash.navigation.converter.gui.RouteConverter \
+            --icon RouteConverterLinux/src/main/app-resources/RouteConverter.png \
+            --app-version "$APP_VERSION" \
+            --vendor "Christian Pesch" \
+            --description "Convert, edit and visualize GPS routes, tracks and waypoints" \
+            --linux-shortcut \
+            --linux-menu-group "Utility;Science;" \
+            --linux-package-name routeconverter \
+            --linux-app-category utils \
+            --dest deb-dist
+          ls -la deb-dist/
       - name: Stage artefacts
         run: |
           mkdir -p artefacts
           cp RouteConverterLinux/target/RouteConverterLinux.* artefacts/
+          cp deb-dist/*.deb artefacts/RouteConverterLinux.deb
           cp RouteConverterMac/target/RouteConverterMac-x64-app.zip artefacts/
           cp RouteConverterMac/target/RouteConverterMac-aarch64-app.zip artefacts/
           cp RouteConverterCmdLine/target/RouteConverterCmdLine.* artefacts/

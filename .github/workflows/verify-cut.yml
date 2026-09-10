@@ -41,6 +41,7 @@ jobs:
           expected=(
             RouteConverterCmdLine.jar
             RouteConverterLinux.jar
+            RouteConverterLinux.deb
             RouteConverterMac-app.zip
             RouteConverterWindows.exe
             RouteConverterPortable.paf.exe
@@ -60,7 +61,7 @@ jobs:
             printf '  %s\n' "${missing[@]}"
             exit 1
           fi
-          echo "all 8 GH Release assets present"
+          echo "all 9 GH Release assets present"
 
           missing_sha=()
           for name in "${expected[@]}"; do
@@ -73,7 +74,7 @@ jobs:
             printf '  %s\n' "${missing_sha[@]}"
             exit 1
           fi
-          echo "all 8 sha256 checksums present"
+          echo "all 9 sha256 checksums present"
 
       - name: Verify releases.routeconverter.com assets serve
         env:
@@ -82,6 +83,7 @@ jobs:
           set -euo pipefail
           base=https://releases.routeconverter.com/latest
           for f in RouteConverterCmdLine.jar RouteConverterLinux.jar \
+                   RouteConverterLinux.deb \
                    RouteConverterMac-app.zip \
                    RouteConverterWindows.exe RouteConverterPortable.paf.exe \
                    TimeAlbumProLinux.jar TimeAlbumProMac-app.zip \
@@ -92,7 +94,7 @@ jobs:
               exit 1
             fi
           done
-          echo "all 8 latest/ URLs return 200"
+          echo "all 9 latest/ URLs return 200"
           arch_base=https://releases.routeconverter.com/previous-releases/${TAG}
           code=$(curl -sI -o /dev/null -w '%{http_code}' "${arch_base}/RouteConverterCmdLine.jar")
           [[ "$code" == "200" ]] || { echo "::error::previous-releases archive missing: $arch_base"; exit 1; }
