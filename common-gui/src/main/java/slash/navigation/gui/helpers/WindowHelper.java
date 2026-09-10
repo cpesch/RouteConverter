@@ -52,6 +52,7 @@ public class WindowHelper {
     private static final int MAXIMUM_MESSAGE_LINES = 12;
     private static final int MAXIMUM_MESSAGE_CHARACTERS = 800;
     private static final int SCROLL_WIDTH = 600;
+    private static final int BUTTON_PADDING = 6;
     private static final int SCROLL_HEIGHT = 400;
 
     public static JFrame getFrame() {
@@ -98,6 +99,39 @@ public class WindowHelper {
 
     private static void showMessage(Window owner, Object message, String title, int messageType) {
         showMessageDialog(owner, boundMessage(message), title, messageType);
+    }
+
+    /**
+     * An informational dialog whose call to action sits in the button row, left of OK,
+     * instead of floating inside the message. Returns true if the action was chosen.
+     */
+    public static boolean showInformationWithAction(Window owner, Object message, String title, String actionText) {
+        String okText = UIManager.getString("OptionPane.okButtonText");
+        JOptionPane pane = new JOptionPane(boundMessage(message), INFORMATION_MESSAGE, DEFAULT_OPTION, null,
+                new Object[]{actionText, okText}, okText);
+        JDialog dialog = pane.createDialog(owner, title);
+        alignButtons(pane);
+        dialog.pack();
+        dialog.setVisible(true);
+        dialog.dispose();
+        return actionText.equals(pane.getValue());
+    }
+
+    /**
+     * Lays the option row out right aligned, flush with the right edge of the message, and
+     * in the order the options were given - Aqua would otherwise reverse them, and the other
+     * look and feels center them.
+     */
+    private static void alignButtons(Container container) {
+        for (Component component : container.getComponents()) {
+            if (component instanceof Container) {
+                if ("OptionPane.buttonArea".equals(component.getName())) {
+                    ((Container) component).setLayout(new FlowLayout(FlowLayout.RIGHT, BUTTON_PADDING, 0));
+                    return;
+                }
+                alignButtons((Container) component);
+            }
+        }
     }
 
     // --- confirm / input -----------------------------------------------------

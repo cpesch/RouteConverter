@@ -34,6 +34,15 @@ public class UpdateCheckerTest {
         return preferences;
     }
 
+    /**
+     * The key is derived from the end-of-life boundary; this pins the value it derives to
+     * today, because a changed key shows the notice again to everyone who already dismissed it.
+     */
+    @Test
+    public void eolNoticePreferenceKeyMatchesTheCurrentGeneration() {
+        assertEquals("eolNoticeShown-2.x", UpdateChecker.EOL_NOTICE_SHOWN_PREFERENCE);
+    }
+
     @Test
     public void supportNudgeNotShownBelow100() {
         Preferences preferences = supportNudgePreferences();

@@ -30,7 +30,6 @@ import slash.navigation.gui.actions.DialogAction;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -59,7 +58,7 @@ public class AboutRouteConverterDialog extends SimpleDialog {
     private JLabel labelAbout;
     private JLabel labelContact;
     private JLabel labelResources;
-    private JLabel labelSupportPayPal;
+    private JButton buttonSupportPayPal;
     private JLabel labelUserNameCaption;
     private JLabel labelUserName;
     private JLabel labelFeatureCaption;
@@ -69,7 +68,6 @@ public class AboutRouteConverterDialog extends SimpleDialog {
     private JLabel labelRouteConverterVersion;
     private JLabel labelJavaVersion;
     private JLabel labelOperatingSystem;
-    private JButton buttonCopySystemInfo;
     private JLabel labelLogo;
 
     public AboutRouteConverterDialog() {
@@ -86,7 +84,11 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         enableLink(labelAbout, () -> startBrowserForRouteConverter(r.getFrame()));
         enableLink(labelResources, () -> startBrowserForRouteConverterResources(r.getFrame()));
         enableLink(labelContact, () -> startBrowserForRouteConverterForum(r.getFrame()));
-        enableLink(labelSupportPayPal, () -> startBrowserForPayPal(r.getFrame()));
+        buttonSupportPayPal.addActionListener(new DialogAction(this) {
+            public void run() {
+                startBrowserForPayPal(r.getFrame());
+            }
+        });
 
         String username = BaseRouteConverter.getInstance().getUserNamePreference();
         if (username != null) {
@@ -107,12 +109,6 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         labelRouteConverterVersion.setText(BaseRouteConverter.getTitle());
         labelJavaVersion.setText(Platform.getJava());
         labelOperatingSystem.setText(Platform.getPlatform());
-
-        buttonCopySystemInfo.addActionListener(new DialogAction(this) {
-            public void run() {
-                copySystemInfo();
-            }
-        });
 
         setMnemonic(buttonClose, "close-mnemonic");
         buttonClose.addActionListener(new DialogAction(this) {
@@ -170,11 +166,6 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         });
     }
 
-    private static void copySystemInfo() {
-        String info = BaseRouteConverter.getTitle() + "\n" + Platform.getJava() + "\n" + Platform.getPlatform();
-        Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(info), null);
-    }
-
     /**
      * Masks the local part of any e-mail address (keeps the first character and the domain)
      * so it is not fully exposed in screenshots or screen-shares.
@@ -218,7 +209,7 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         panel1.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
                 GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(4, 2, new Insets(0, 0, 0, 0), -1, -1));
         contentPane.add(panel2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -234,27 +225,10 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         panel2.add(labelContact,
                 new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panelSupport = new JPanel();
-        panelSupport.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), 5, -1));
-        panel2.add(panelSupport,
-                new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel labelSupportCaption = new JLabel();
-        this.$$$loadLabelText$$$(labelSupportCaption,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-routeconverter-support"));
-        panelSupport.add(labelSupportCaption,
-                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        labelSupportPayPal = new JLabel();
-        this.$$$loadLabelText$$$(labelSupportPayPal,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-routeconverter-support-paypal"));
-        panelSupport.add(labelSupportPayPal,
-                new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JPanel panel3 = new JPanel();
         panel3.setLayout(new GridLayoutManager(5, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel2.add(panel3,
-                new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
+                new GridConstraints(3, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelUserNameCaption = new JLabel();
         labelUserNameCaption.setVisible(false);
@@ -275,20 +249,20 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         labelFeature.setVisible(false);
         panel3.add(labelFeature, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label1 = new JLabel();
-        this.$$$loadLabelText$$$(label1,
+        final JLabel label2 = new JLabel();
+        this.$$$loadLabelText$$$(label2,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-routeconverter-version"));
-        panel3.add(label1,
+        panel3.add(label2,
                 new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelRouteConverterVersion = new JLabel();
         labelRouteConverterVersion.setText("?");
         panel3.add(labelRouteConverterVersion, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label2 = new JLabel();
-        this.$$$loadLabelText$$$(label2,
+        final JLabel label3 = new JLabel();
+        this.$$$loadLabelText$$$(label3,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-java-version"));
-        panel3.add(label2,
+        panel3.add(label3,
                 new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelJavaVersion = new JLabel();
@@ -296,10 +270,10 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         panel3.add(labelJavaVersion,
                 new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label3 = new JLabel();
-        this.$$$loadLabelText$$$(label3,
+        final JLabel label4 = new JLabel();
+        this.$$$loadLabelText$$$(label4,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-os-version"));
-        panel3.add(label3,
+        panel3.add(label4,
                 new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         labelOperatingSystem = new JLabel();
@@ -312,24 +286,24 @@ public class AboutRouteConverterDialog extends SimpleDialog {
         panel2.add(labelResources,
                 new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel4 = new JPanel();
-        panel4.setLayout(new GridLayoutManager(1, 3, new Insets(3, 0, 1, 0), -1, -1));
-        contentPane.add(panel4, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL,
+        final JPanel panel5 = new JPanel();
+        panel5.setLayout(new GridLayoutManager(1, 3, new Insets(3, 0, 1, 0), -1, -1));
+        contentPane.add(panel5, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         buttonClose = new JButton();
         this.$$$loadButtonText$$$(buttonClose, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "close"));
-        panel4.add(buttonClose,
+        panel5.add(buttonClose,
                 new GridConstraints(0, 2, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        buttonCopySystemInfo = new JButton();
-        this.$$$loadButtonText$$$(buttonCopySystemInfo,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "about-copy-system-info"));
-        panel4.add(buttonCopySystemInfo, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
-                null, 0, false));
+        buttonSupportPayPal = new JButton();
+        this.$$$loadButtonText$$$(buttonSupportPayPal,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "donate-button"));
+        panel5.add(buttonSupportPayPal,
+                new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
-        panel4.add(spacer2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
+        panel5.add(spacer2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL,
                 GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
     }
 
