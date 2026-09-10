@@ -41,10 +41,11 @@ import java.util.prefs.Preferences;
 
 import static java.lang.System.currentTimeMillis;
 import static java.text.MessageFormat.format;
-import static java.util.Collections.emptyList;
+import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.JOptionPane.*;
 import static slash.navigation.converter.gui.helpers.UpdatePolicy.Nudge.HIGHLIGHTS_NO_SKIP;
 import static slash.navigation.gui.helpers.WindowHelper.showInformation;
+import static slash.navigation.gui.helpers.WindowHelper.showInformationWithAction;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Version.parseVersionFromManifest;
@@ -65,12 +66,12 @@ public class UpdateChecker {
     private static final String START_COUNT_PREFERENCE = "startCount";
     private static final String START_TIME_PREFERENCE = "startTime";
     private static final String SKIP_VERSION_PREFERENCE = "skipUpdateVersion";
-    private static final String OFFER_COUNT_PREFERENCE_PREFIX = "updateOfferCount.";
     // tied to UpdatePolicy#END_OF_LIFE_BEFORE_MAJOR, so a bumped boundary yields a new key and
     // the notice for the next end-of-life generation is shown once again; UpdateCheckerTest pins
     // today's value, since a rename would show the notice again to everyone who dismissed it
     static final String EOL_NOTICE_SHOWN_PREFERENCE =
             "eolNoticeShown-" + (UpdatePolicy.END_OF_LIFE_BEFORE_MAJOR - 1) + ".x";
+    private static final int MESSAGE_WIDTH = 420;
     private final RouteFeedback routeFeedback;
 
     static {
@@ -124,14 +125,6 @@ public class UpdateChecker {
         getPreferences().put(SKIP_VERSION_PREFERENCE, version);
     }
 
-    private static int getOfferCount(String version) {
-        return getPreferences().getInt(OFFER_COUNT_PREFERENCE_PREFIX + version, 0);
-    }
-
-    private static void incrementOfferCount(String version) {
-        getPreferences().putInt(OFFER_COUNT_PREFERENCE_PREFIX + version, getOfferCount(version) + 1);
-    }
-
     private static boolean isEolNoticeShown() {
         return getPreferences().getBoolean(EOL_NOTICE_SHOWN_PREFERENCE, false);
     }
@@ -179,23 +172,40 @@ public class UpdateChecker {
         return link;
     }
 
+    private static String downloadButtonText() {
+        return BaseRouteConverter.getBundle().getString("download-button");
+    }
+
     /**
-     * Shows an informational dialog with the given message and a clickable link below it.
-     * The link (not a Yes/No prompt) is the call to action, to foster updates.
+     * Shows an informational dialog whose call to action sits in the button row, left of OK.
+     * A button (not a URL, not a Yes/No prompt) is the call to action, to foster updates.
      */
     private void showUpdateMessage(Window window, String message, String url) {
-        showUpdateMessage(window, message, url, () -> startBrowser(window, url));
+        showUpdateMessage(window, message, downloadButtonText(), () -> startBrowser(window, url));
     }
 
-    private void showUpdateMessage(Window window, String message, String linkText, Runnable onLinkClick) {
-        JPanel panel = new JPanel(new BorderLayout(0, 10));
-        panel.add(new JLabel("<html>" + message.replace("\n", "<br>") + "</html>"), BorderLayout.NORTH);
-        panel.add(createLink(linkText, onLinkClick), BorderLayout.SOUTH);
-        showInformation(window, panel, BaseRouteConverter.getTitle());
+    private void showUpdateMessage(Window window, String message, String buttonText, Runnable onButtonClick) {
+        if (showInformationWithAction(window, htmlLabel(message), BaseRouteConverter.getTitle(), buttonText))
+            onButtonClick.run();
     }
 
+    /**
+     * A JLabel that renders the message as HTML. A text wider than {@link #MESSAGE_WIDTH}
+     * pixels is wrapped at that width instead of stretching the dialog across the screen; a
+     * shorter one keeps its natural width, so the dialog (and the button row aligned to its
+     * right edge) does not carry empty space. A bundle string that brings its own
+     * {@code <html>} (and thus its own width) is rendered as it is.
+     */
     private static JLabel htmlLabel(String html) {
-        JLabel label = new JLabel("<html>" + html.replace("\n", "<br>") + "</html>");
+        JLabel label;
+        if (html.regionMatches(true, 0, "<html", 0, 5))
+            label = new JLabel(html);
+        else {
+            String body = html.replace("\n", "<br>");
+            label = new JLabel("<html>" + body);
+            if (label.getPreferredSize().width > MESSAGE_WIDTH)
+                label = new JLabel("<html><body width='" + MESSAGE_WIDTH + "'>" + body);
+        }
         label.setAlignmentX(Component.LEFT_ALIGNMENT);
         return label;
     }
@@ -207,14 +217,12 @@ public class UpdateChecker {
     // split out so the (possibly blocking, network-fetching) highlights lookup can be
     // resolved by the caller before the dialog is built on the EDT
     private UpdatePolicy.Nudge decideNudge(UpdateResult result) {
-        String latestVersion = result.getLatestRouteConverterVersion();
         return UpdatePolicy.decide(new Version(result.getMyRouteConverterVersion()),
-                new Version(latestVersion), getOfferCount(latestVersion));
+                new Version(result.getLatestRouteConverterVersion()));
     }
 
-    private List<String> resolveHighlights(UpdateResult result, UpdatePolicy.Nudge nudge) {
-        return nudge == UpdatePolicy.Nudge.SHORT ? emptyList() :
-                ReleaseHighlights.first(result.getLatestRouteConverterVersion(), Locale.getDefault());
+    private List<String> resolveHighlights(UpdateResult result) {
+        return ReleaseHighlights.first(result.getLatestRouteConverterVersion(), Locale.getDefault());
     }
 
     private void offerRouteConverterUpdate(Window window, UpdateResult result, UpdatePolicy.Nudge nudge, List<String> highlights) {
@@ -238,23 +246,15 @@ public class UpdateChecker {
             for (String highlight : highlights)
                 panel.add(htmlLabel("&#8226; " + escapeHtml(highlight)));
         } else {
+            // no release page for this version yet, or no network: fall back to the bare prompt
             String message = format(BaseRouteConverter.getBundle().getString("confirm-routeconverter-update"),
                     result.getMyRouteConverterVersion(), BaseRouteConverter.getInstance().getEdition(), latestVersion);
             panel.add(htmlLabel(message));
         }
         panel.add(Box.createVerticalStrut(10));
 
-        JPanel linkRow = new JPanel(new BorderLayout());
-        linkRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-        linkRow.add(createLink(BaseRouteConverter.getBundle().getString("update-whats-new"),
-                () -> startBrowserForRouteConverterForum(window)), BorderLayout.WEST);
-        if (showHighlights) {
-            JButton downloadButton = new JButton(format(BaseRouteConverter.getBundle().getString("update-download-button"), latestVersion));
-            downloadButton.addActionListener(e -> startBrowser(window, downloadUrl));
-            linkRow.add(downloadButton, BorderLayout.EAST);
-        } else
-            linkRow.add(createLink(downloadUrl, () -> startBrowser(window, downloadUrl)), BorderLayout.EAST);
-        panel.add(linkRow);
+        panel.add(createLink(BaseRouteConverter.getBundle().getString("update-whats-new"),
+                () -> startBrowserForRouteConverterForum(window)));
         panel.add(Box.createVerticalStrut(10));
 
         boolean hideSkipCheckbox = showHighlights && nudge == HIGHLIGHTS_NO_SKIP;
@@ -262,14 +262,18 @@ public class UpdateChecker {
         if (!hideSkipCheckbox) {
             skipVersion = new JCheckBox(format(BaseRouteConverter.getBundle().getString("update-skip-version"), latestVersion));
             skipVersion.setAlignmentX(Component.LEFT_ALIGNMENT);
+            // the look and feel's own border indents the box, which would misalign it with the message text
+            skipVersion.setBorder(createEmptyBorder());
+            skipVersion.setMargin(new Insets(0, 0, 0, 0));
             panel.add(skipVersion);
         }
 
-        showInformation(window, panel, BaseRouteConverter.getTitle());
+        boolean download = showInformationWithAction(window, panel, BaseRouteConverter.getTitle(), downloadButtonText());
 
         if (skipVersion != null && skipVersion.isSelected())
             setSkippedVersion(latestVersion);
-        incrementOfferCount(latestVersion);
+        if (download)
+            startBrowser(window, downloadUrl);
     }
 
     private void offerEolNotice(Window window, UpdateResult result) {
@@ -301,7 +305,7 @@ public class UpdateChecker {
             if (result.existsLaterRouteConverterVersion()
                     && !result.getLatestRouteConverterVersion().equals(getSkippedVersion())) {
                 UpdatePolicy.Nudge nudge = decideNudge(result);
-                List<String> highlights = resolveHighlights(result, nudge);
+                List<String> highlights = resolveHighlights(result);
                 invokeLater(() -> offerRouteConverterUpdate(window, result, nudge, highlights));
 
             } else if (result.existsLaterJavaVersion()) {
@@ -326,7 +330,7 @@ public class UpdateChecker {
 
     private void showSupportNudge(Window window, int threshold) {
         String message = format(BaseRouteConverter.getBundle().getString("support-nudge-message"), threshold);
-        showUpdateMessage(window, message, BaseRouteConverter.getBundle().getString("about-routeconverter-support-paypal"),
+        showUpdateMessage(window, message, BaseRouteConverter.getBundle().getString("donate-button"),
                 () -> startBrowserForPayPal(window));
     }
 
@@ -340,7 +344,7 @@ public class UpdateChecker {
             UpdateResult result = check();
             if (result.existsLaterRouteConverterVersion()) {
                 UpdatePolicy.Nudge nudge = decideNudge(result);
-                List<String> highlights = resolveHighlights(result, nudge);
+                List<String> highlights = resolveHighlights(result);
                 invokeLater(() -> offerRouteConverterUpdate(window, result, nudge, highlights));
             } else
                 invokeLater(() -> noUpdateAvailable(window));

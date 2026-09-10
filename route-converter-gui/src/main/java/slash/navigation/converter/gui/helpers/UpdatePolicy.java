@@ -27,14 +27,12 @@ import java.util.regex.Pattern;
 
 /**
  * Decides how insistently {@link UpdateChecker} should nudge towards a newer
- * RouteConverter version, based on how often the update has already been
- * offered and how far the running version has fallen behind.
+ * RouteConverter version, based on how far the running version has fallen
+ * behind.
  *
  * @author Christian Pesch
  */
 public class UpdatePolicy {
-    // from the 3rd offer of the same version on, show highlights instead of the one-line message
-    static final int HIGHLIGHTS_FROM_OFFER_COUNT = 2;
     // 2 or more releases behind: hide the "skip this version" checkbox, keep the dialog dismissible
     static final int NO_SKIP_FROM_RELEASES_BEHIND = 2;
     // below this major version, RouteConverter is considered end of life (bundled Java 8, no map/routing updates)
@@ -42,15 +40,17 @@ public class UpdatePolicy {
     private static final Pattern LEADING_NUMBER = Pattern.compile("\\d+");
 
     public enum Nudge {
-        SHORT, HIGHLIGHTS, HIGHLIGHTS_NO_SKIP
+        HIGHLIGHTS, HIGHLIGHTS_NO_SKIP
     }
 
     private UpdatePolicy() {
     }
 
-    public static Nudge decide(Version mine, Version latest, int offerCount) {
-        if (offerCount < HIGHLIGHTS_FROM_OFFER_COUNT)
-            return Nudge.SHORT;
+    /**
+     * Every offer shows the release highlights; how far the running version has fallen behind
+     * only decides whether the "skip this version" checkbox is still offered.
+     */
+    public static Nudge decide(Version mine, Version latest) {
         return releasesBehind(mine, latest) >= NO_SKIP_FROM_RELEASES_BEHIND ? Nudge.HIGHLIGHTS_NO_SKIP : Nudge.HIGHLIGHTS;
     }
 

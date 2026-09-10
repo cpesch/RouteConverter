@@ -29,7 +29,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static slash.navigation.converter.gui.helpers.UpdatePolicy.Nudge.HIGHLIGHTS;
 import static slash.navigation.converter.gui.helpers.UpdatePolicy.Nudge.HIGHLIGHTS_NO_SKIP;
-import static slash.navigation.converter.gui.helpers.UpdatePolicy.Nudge.SHORT;
 
 public class UpdatePolicyTest {
     private static final Version V3_4 = new Version("3.4");
@@ -37,52 +36,27 @@ public class UpdatePolicyTest {
     private static final Version V3_6 = new Version("3.6"); // 2 releases behind 3.4
     private static final Version V3_3 = new Version("3.3");
 
-    // offerCount 0 or 1: always SHORT, regardless of how far behind
-
     @Test
-    public void offerCount0IsAlwaysShort() {
-        assertEquals(SHORT, UpdatePolicy.decide(V3_4, V3_5, 0));
-        assertEquals(SHORT, UpdatePolicy.decide(V3_4, V3_6, 0));
-        assertEquals(SHORT, UpdatePolicy.decide(V3_3, V3_6, 0));
+    public void oneReleaseBehindShowsHighlightsWithSkip() {
+        assertEquals(HIGHLIGHTS, UpdatePolicy.decide(V3_4, V3_5));
     }
 
     @Test
-    public void offerCount1IsAlwaysShort() {
-        assertEquals(SHORT, UpdatePolicy.decide(V3_4, V3_5, 1));
-        assertEquals(SHORT, UpdatePolicy.decide(V3_4, V3_6, 1));
-        assertEquals(SHORT, UpdatePolicy.decide(V3_3, V3_6, 1));
-    }
-
-    // offerCount 2 (the 3rd offer) and beyond: highlights, no-skip once 2+ releases behind
-
-    @Test
-    public void offerCount2WithOneReleaseBehindShowsHighlightsWithSkip() {
-        assertEquals(HIGHLIGHTS, UpdatePolicy.decide(V3_4, V3_5, 2));
+    public void twoReleasesBehindHidesSkip() {
+        assertEquals(HIGHLIGHTS_NO_SKIP, UpdatePolicy.decide(V3_4, V3_6));
     }
 
     @Test
-    public void offerCount2WithTwoReleasesBehindHidesSkip() {
-        assertEquals(HIGHLIGHTS_NO_SKIP, UpdatePolicy.decide(V3_4, V3_6, 2));
+    public void threeReleasesBehindHidesSkip() {
+        assertEquals(HIGHLIGHTS_NO_SKIP, UpdatePolicy.decide(V3_3, V3_6));
     }
 
+    /** Highlights are no longer earned by repeated offers: the first offer already shows them. */
     @Test
-    public void offerCount2WithThreeReleasesBehindHidesSkip() {
-        assertEquals(HIGHLIGHTS_NO_SKIP, UpdatePolicy.decide(V3_3, V3_6, 2));
-    }
-
-    @Test
-    public void offerCount3WithOneReleaseBehindShowsHighlightsWithSkip() {
-        assertEquals(HIGHLIGHTS, UpdatePolicy.decide(V3_4, V3_5, 3));
-    }
-
-    @Test
-    public void offerCount3WithTwoReleasesBehindHidesSkip() {
-        assertEquals(HIGHLIGHTS_NO_SKIP, UpdatePolicy.decide(V3_4, V3_6, 3));
-    }
-
-    @Test
-    public void offerCount3WithThreeReleasesBehindHidesSkip() {
-        assertEquals(HIGHLIGHTS_NO_SKIP, UpdatePolicy.decide(V3_3, V3_6, 3));
+    public void everyDecisionShowsHighlights() {
+        for (Version latest : new Version[]{V3_5, V3_6})
+            for (Version mine : new Version[]{V3_3, V3_4})
+                assertTrue(UpdatePolicy.decide(mine, latest).name().startsWith("HIGHLIGHTS"));
     }
 
     @Test
@@ -98,7 +72,7 @@ public class UpdatePolicyTest {
 
     @Test
     public void snapshotIsNotNudgedAsSeveralReleasesBehind() {
-        assertEquals(HIGHLIGHTS, UpdatePolicy.decide(new Version("3.6-SNAPSHOT"), V3_6, 2));
+        assertEquals(HIGHLIGHTS, UpdatePolicy.decide(new Version("3.6-SNAPSHOT"), V3_6));
     }
 
     @Test
