@@ -79,11 +79,12 @@ public class GetPerformer implements ActionPerformer {
 
         long fileSize = getDownload().getTempFile().length();
         Long contentLength = getDownload().getFile().getExpectedChecksum() != null ? getDownload().getFile().getExpectedChecksum().getContentLength() : null;
-        log.info(format("Resuming bytes %d-%s from %s", fileSize, contentLength != null ? contentLength.toString() : "?", getDownload().getUrl()));
+        Long rangeEnd = TransferCompleteness.resumeRangeEnd(contentLength);
+        log.info(format("Resuming bytes %d-%s from %s", fileSize, rangeEnd != null ? rangeEnd.toString() : "?", getDownload().getUrl()));
 
         Get request = new Get(getDownload().getUrl());
         request.setCacheControlNoCache();
-        request.setRange(fileSize, contentLength);
+        request.setRange(fileSize, rangeEnd);
 
         return request.execute(new HttpClientResponseHandler<Result>() {
             public Result handleResponse(ClassicHttpResponse response) throws IOException {
@@ -92,6 +93,13 @@ public class GetPerformer implements ActionPerformer {
                     getModelUpdater().expectingBytes(contentLength != null ? contentLength : request.getContentLength() != null ? request.getContentLength() : 0);
                     InputStream inputStream = response.getEntity().getContent();
                     new Copier(getModelUpdater()).copyAndClose(inputStream, new FileOutputStream(getDownload().getTempFile(), true), fileSize, contentLength);
+
+                    Long expectedBytesOnDisk = TransferCompleteness.expectedBytesOnDisk(fileSize, request.getContentLength());
+                    long bytesOnDisk = getDownload().getTempFile().length();
+                    if (!TransferCompleteness.isComplete(bytesOnDisk, expectedBytesOnDisk)) {
+                        log.warning(format("Resume from %s delivered %d bytes, expected %d", getDownload().getUrl(), bytesOnDisk, expectedBytesOnDisk));
+                        return Result.incomplete(request, TransferCompleteness.keepForResume(bytesOnDisk, expectedBytesOnDisk));
+                    }
                     return new Result(request, true);
                 }
                 return new Result(request, false);
@@ -107,6 +115,9 @@ public class GetPerformer implements ActionPerformer {
 
         Get request = new Get(getDownload().getUrl());
         request.setCacheControlNoCache();
+        // avoid GZIP'ed transfers: the completeness check below compares bytes on disk against the
+        // announced Content-Length, which would be the compressed size if the entity got re-inflated
+        request.disableContentCompression();
         if (new Validator(getDownload()).isExistsTargets() && getDownload().getETag() != null)
             request.setIfNoneMatch(getDownload().getETag());
 
@@ -125,6 +136,13 @@ public class GetPerformer implements ActionPerformer {
                 if (length != null)
                     getModelUpdater().expectingBytes(length);
                 new Copier(getModelUpdater()).copyAndClose(inputStream, new FileOutputStream(getDownload().getTempFile()), 0, length);
+
+                Long expectedBytesOnDisk = request.getContentLength();
+                long bytesOnDisk = getDownload().getTempFile().length();
+                if (!TransferCompleteness.isComplete(bytesOnDisk, expectedBytesOnDisk)) {
+                    log.warning(format("Download from %s delivered %d bytes, expected %d", getDownload().getUrl(), bytesOnDisk, expectedBytesOnDisk));
+                    return Result.incomplete(request, TransferCompleteness.keepForResume(bytesOnDisk, expectedBytesOnDisk));
+                }
                 return new Result(request, true, request.getLastModified(), request.getContentLength());
             }
             return new Result(request, request.isSuccessful(), request.isNotModified());
@@ -163,7 +181,8 @@ public class GetPerformer implements ActionPerformer {
 
         } else {
             downloadExecutor.downloadFailed();
-            deleteTempFileQuietly();
+            if (!result.keepTempFile)
+                deleteTempFileQuietly();
         }
     }
 
@@ -255,18 +274,24 @@ public class GetPerformer implements ActionPerformer {
         }
     }
 
-    private record Result(Get request, boolean success, boolean notModified, Long lastModified, Long contentLength) {
+    private record Result(Get request, boolean success, boolean notModified, Long lastModified, Long contentLength, boolean keepTempFile) {
             public Result(Get request, boolean success) {
-                this(request, success, false, null, null);
+                this(request, success, false, null, null, false);
             }
 
             private Result(Get request, boolean success, boolean notModified) {
-                this(request, success, notModified, null, null);
+                this(request, success, notModified, null, null, false);
             }
 
             // a full-body transfer: the response vouches for both the build and its length
             public Result(Get request, boolean success, Long lastModified, Long contentLength) {
-                this(request, success, false, lastModified, contentLength);
+                this(request, success, false, lastModified, contentLength, false);
+            }
+
+            // an incomplete transfer: keepTempFile tells run() whether the bytes on disk are a valid
+            // prefix a later resume() can continue, or corrupt overshoot that must be deleted
+            public static Result incomplete(Get request, boolean keepTempFile) {
+                return new Result(request, false, false, null, null, keepTempFile);
             }
     }
 }

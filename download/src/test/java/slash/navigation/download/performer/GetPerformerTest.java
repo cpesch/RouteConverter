@@ -33,12 +33,18 @@ import slash.navigation.download.State;
 import slash.navigation.download.executor.DownloadExecutor;
 import slash.navigation.rest.RFC2616;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static java.io.File.createTempFile;
@@ -211,5 +217,91 @@ public class GetPerformerTest {
 
         assertEquals(State.Failed, download.getState());
         assertFalse("stale temp file must be deleted after a failed download", download.getTempFile().exists());
+    }
+
+    @Test
+    public void testResumeCompletesAtTheAnnouncedByteAndSucceeds() throws IOException {
+        // the off-by-one fix (GitHub #383): a resume must ask for and receive exactly the
+        // remaining bytes, ending the temp file at precisely the catalog's content length
+        byte[] fullBody = "ABCDEFGHIJKLMNO".getBytes(StandardCharsets.UTF_8); // 15 bytes
+        byte[] prefix = Arrays.copyOfRange(fullBody, 0, 10);
+
+        server.createContext("/resume", exchange -> {
+            String range = exchange.getRequestHeaders().getFirst("Range");
+            String[] bounds = range.substring("bytes=".length()).split("-");
+            int start = Integer.parseInt(bounds[0]);
+            int end = Integer.parseInt(bounds[1]);
+            byte[] slice = Arrays.copyOfRange(fullBody, start, end + 1);
+            exchange.getResponseHeaders().add("Content-Range", "bytes " + start + "-" + end + "/" + fullBody.length);
+            exchange.sendResponseHeaders(206, slice.length);
+            try (OutputStream out = exchange.getResponseBody()) {
+                out.write(slice);
+            }
+            exchange.close();
+        });
+
+        Checksum expectedChecksum = new Checksum(null, (long) fullBody.length, null);
+        Download download = new Download("resume", url("/resume"), Copy,
+                new FileAndChecksum(target, expectedChecksum), null);
+        Files.write(download.getTempFile().toPath(), prefix);
+
+        manager.getModel().setDownloads(singletonList(download));
+        DownloadExecutor executor = new DownloadExecutor(download, manager);
+        GetPerformer performer = new GetPerformer();
+        performer.setDownloadExecutor(executor);
+        performer.run();
+
+        assertEquals(State.Succeeded, download.getState());
+        assertEquals(fullBody.length, target.length());
+        assertFalse("temp file must be deleted after a successful resume", download.getTempFile().exists());
+    }
+
+    @Test
+    public void testTruncatedDownloadFailsAndKeepsTempFileForResume() throws IOException {
+        // a connection dropping mid-body must not let the partially written file reach
+        // bringToTarget(): the existing target must survive and the temp file, being shorter
+        // than the announced Content-Length, must be kept for a later resume (GitHub #383).
+        //
+        // this bypasses HttpServer's own promised-vs-written mismatch handling: that only
+        // aborts the connection on close() without necessarily flushing the partial body
+        // first, which on some platforms leaves the client blocked reading nothing until
+        // its response timeout fires instead of observing a prompt truncated transfer.
+        int port = startTruncatingServer(100, 60);
+
+        Download download = manager.queueForDownload("truncated", "http://127.0.0.1:" + port + "/truncated", Copy,
+                new FileAndChecksum(target, null), null);
+        manager.waitForCompletion(singletonList(download));
+
+        assertEquals(State.Failed, download.getState());
+        assertFalse("target must not be created from a truncated transfer", target.exists());
+        assertTrue("temp file must survive a truncated transfer for a later resume", download.getTempFile().exists());
+    }
+
+    // a raw socket server that sends only `actualBodyBytes` of a `declaredContentLength`
+    // response, flushes them, then resets the connection so the client sees the truncation
+    // immediately instead of depending on HttpServer's platform-dependent abort-on-close
+    private int startTruncatingServer(int declaredContentLength, int actualBodyBytes) throws IOException {
+        ServerSocket serverSocket = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"));
+        Thread thread = new Thread(() -> {
+            try (ServerSocket toClose = serverSocket; Socket socket = serverSocket.accept()) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.ISO_8859_1));
+                String line;
+                while ((line = in.readLine()) != null && !line.isEmpty()) {
+                    // consume the request line and headers
+                }
+                OutputStream out = socket.getOutputStream();
+                out.write(("HTTP/1.1 200 OK\r\nContent-Length: " + declaredContentLength + "\r\nConnection: close\r\n\r\n")
+                        .getBytes(StandardCharsets.ISO_8859_1));
+                out.write("x".repeat(actualBodyBytes).getBytes(StandardCharsets.UTF_8));
+                out.flush();
+                // force an immediate RST on close instead of a graceful FIN
+                socket.setSoLinger(true, 0);
+            } catch (IOException e) {
+                // best-effort test server; the client-side assertions surface any real failure
+            }
+        }, "truncating-test-server");
+        thread.setDaemon(true);
+        thread.start();
+        return serverSocket.getLocalPort();
     }
 }
