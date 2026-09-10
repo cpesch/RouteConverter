@@ -53,6 +53,12 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
     private static final String GEO_PREFIX = "geo:";
     private static final Pattern COORDINATE_PATTERN = Pattern.compile("(-?\\d+\\.\\d+)°?,?\\s*(-?\\d+\\.\\d+)°?");
 
+    // Calendar-day grouping is an artifact of the export, not of the trip: an overnight
+    // stay splits one continuous track at midnight even though the last point of one day
+    // and the first point of the next are (almost) the same place. Bridge that gap instead
+    // of emitting two routes that visibly touch.
+    private static final double ADJACENT_DAY_MERGE_THRESHOLD_METERS = 50.0;
+
     public String getExtension() {
         return ".json";
     }
@@ -169,7 +175,13 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
             }
         }
 
-        // Emit day tracks in ascending date order
+        // Emit day tracks in ascending date order, merging a day into the still-open
+        // previous track when its first point is (almost) the same place as the previous
+        // track's last point - see ADJACENT_DAY_MERGE_THRESHOLD_METERS above.
+        List<Wgs84Position> pendingPoints = null;
+        CompactCalendar pendingFirstDay = null;
+        CompactCalendar pendingLastDay = null;
+
         for (Map.Entry<CompactCalendar, List<Wgs84Position>> entry : pointsByDay.entrySet()) {
             List<Wgs84Position> dayPoints = entry.getValue();
             // Sort by timestamp, stable for ties
@@ -182,9 +194,19 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
                 return 0;
             });
 
-            String routeName = formatDateName(entry.getKey());
-            context.appendRoute(new Wgs84Route(this, Track, routeName, dayPoints));
+            if (pendingPoints != null && isSameLocation(pendingPoints.get(pendingPoints.size() - 1), dayPoints.get(0))) {
+                pendingPoints.addAll(dayPoints);
+                pendingLastDay = entry.getKey();
+            } else {
+                if (pendingPoints != null)
+                    context.appendRoute(new Wgs84Route(this, Track, formatRouteName(pendingFirstDay, pendingLastDay), pendingPoints));
+                pendingPoints = dayPoints;
+                pendingFirstDay = entry.getKey();
+                pendingLastDay = entry.getKey();
+            }
         }
+        if (pendingPoints != null)
+            context.appendRoute(new Wgs84Route(this, Track, formatRouteName(pendingFirstDay, pendingLastDay), pendingPoints));
 
         // Process visits into a single Waypoints route
         List<Wgs84Position> visitPositions = new ArrayList<>();
@@ -277,6 +299,17 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
         int month = calendar.get(MONTH) + 1; // Calendar.MONTH is 0-based
         int dayOfMonth = calendar.get(DAY_OF_MONTH);
         return String.format("%04d-%02d-%02d", year, month, dayOfMonth);
+    }
+
+    private String formatRouteName(CompactCalendar firstDay, CompactCalendar lastDay) {
+        String firstName = formatDateName(firstDay);
+        String lastName = formatDateName(lastDay);
+        return firstName.equals(lastName) ? firstName : firstName + " – " + lastName;
+    }
+
+    private boolean isSameLocation(Wgs84Position a, Wgs84Position b) {
+        Double distance = b.calculateDistance(a);
+        return distance != null && distance <= ADJACENT_DAY_MERGE_THRESHOLD_METERS;
     }
 
     private Activity parseActivity(JsonNode segment, boolean isAndroid) {
