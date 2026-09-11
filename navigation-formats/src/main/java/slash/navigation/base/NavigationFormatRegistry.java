@@ -65,6 +65,7 @@ import slash.navigation.nmea.NmeaFormat;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.photo.PhotoFormat;
+import slash.navigation.rtz.RtzFormat;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
@@ -155,6 +156,7 @@ public class NavigationFormatRegistry {
         addFormat(NokiaLandmarkExchangeFormat.class);
         addFormat(KlickTelRouteFormat.class);
         addFormat(GarminFlightPlanFormat.class);
+        addFormat(RtzFormat.class);
         addFormat(WintecWbt201Tk1Format.class);
         addFormat(WintecWbt201Tk2Format.class);
         addFormat(ColumbusGpsBinaryFormat.class);

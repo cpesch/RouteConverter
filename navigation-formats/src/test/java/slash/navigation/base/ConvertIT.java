@@ -57,6 +57,7 @@ import slash.navigation.nmea.MagellanRouteFormat;
 import slash.navigation.nmn.*;
 import slash.navigation.ovl.OvlFormat;
 import slash.navigation.photo.PhotoFormat;
+import slash.navigation.rtz.RtzFormat;
 import slash.navigation.simple.*;
 import slash.navigation.tcx.Tcx1Format;
 import slash.navigation.tcx.Tcx2Format;
@@ -90,6 +91,16 @@ public class ConvertIT {
     @Test
     public void testConvertGpxToTomTomRoute() throws IOException {
         convertRoundtrip(TEST_PATH + "from10.gpx", new Gpx10Format(), new TomTom95RouteFormat());
+    }
+
+    @Test
+    public void testConvertGpxToRtz() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.gpx", new Gpx11Format(), new RtzFormat());
+    }
+
+    @Test
+    public void testConvertRtzToGpx() throws IOException {
+        convertRoundtrip(TEST_PATH + "from.rtz", new RtzFormat(), new Gpx11Format());
     }
 
     @Test

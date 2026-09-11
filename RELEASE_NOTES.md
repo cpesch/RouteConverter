@@ -1,5 +1,11 @@
 # Release notes
 
+## Next release
+
+### New features
+
+- RTZ route exchange format (IEC 61174, ECDIS) — read and write
+
 ## 3.6 — 2026-08-23
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.6
