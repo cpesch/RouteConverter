@@ -238,6 +238,22 @@
                         </configuration>
                     </execution>
                     <execution>
+                        <id>generate-rtz-bindings</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>${project.basedir}/src/main/doc/rtz/rtz-1.0.xsd</source>
+                            </sources>
+                            <packageName>slash.navigation.rtz.binding10</packageName>
+                            <outputDirectory>${project.build.directory}/generated-sources/jaxb</outputDirectory>
+                            <clearOutputDir>false</clearOutputDir>
+                            <encoding>UTF-8</encoding>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>generate-tcx1-bindings</id>
                         <phase>generate-sources</phase>
                         <goals>

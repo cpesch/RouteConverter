@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<!--
+  Route exchange format RTZ 1.0 (IEC 61174 / CIRM), as used by ECDIS.
+  RTZ 1.1 uses the namespace http://www.cirm.org/RTZ/1/1 and adds a few optional
+  attributes; structurally both versions are identical for our purposes and are
+  read with this schema. The zipped .rtzp package is out of scope.
+-->
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified"
+           targetNamespace="http://www.cirm.org/RTZ/1/0"
+           xmlns="http://www.cirm.org/RTZ/1/0"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="route">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element minOccurs="0" name="routeInfo">
+          <xs:complexType>
+            <xs:attribute name="routeName" type="xs:string"/>
+            <xs:attribute name="routeAuthor" type="xs:string"/>
+            <xs:attribute name="routeStatus" type="xs:string"/>
+            <xs:attribute name="vesselName" type="xs:string"/>
+            <xs:attribute name="validityPeriodStart" type="xs:dateTime"/>
+            <xs:attribute name="validityPeriodEnd" type="xs:dateTime"/>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="waypoints">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element minOccurs="0" name="defaultWaypoint">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element minOccurs="0" name="leg" type="legType"/>
+                  </xs:sequence>
+                  <xs:attribute name="radius" type="xs:double"/>
+                </xs:complexType>
+              </xs:element>
+              <xs:element maxOccurs="unbounded" name="waypoint">
+                <xs:complexType>
+                  <xs:sequence>
+                    <xs:element name="position">
+                      <xs:complexType>
+                        <xs:attribute name="lat" type="xs:double" use="required"/>
+                        <xs:attribute name="lon" type="xs:double" use="required"/>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element minOccurs="0" name="leg" type="legType"/>
+                  </xs:sequence>
+                  <xs:attribute name="id" type="xs:int" use="required"/>
+                  <xs:attribute name="name" type="xs:string"/>
+                  <xs:attribute name="radius" type="xs:double"/>
+                  <xs:attribute name="revision" type="xs:int"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" name="schedules">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element maxOccurs="unbounded" name="schedule">
+                <xs:complexType>
+                  <xs:choice>
+                    <xs:element name="manual">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element maxOccurs="unbounded" name="scheduleElement" type="scheduleElementType"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                    <xs:element name="calculated">
+                      <xs:complexType>
+                        <xs:sequence>
+                          <xs:element maxOccurs="unbounded" name="scheduleElement" type="scheduleElementType"/>
+                        </xs:sequence>
+                      </xs:complexType>
+                    </xs:element>
+                  </xs:choice>
+                  <xs:attribute name="id" type="xs:int" use="required"/>
+                  <xs:attribute name="name" type="xs:string"/>
+                </xs:complexType>
+              </xs:element>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element minOccurs="0" name="extensions">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:any maxOccurs="unbounded" minOccurs="0" processContents="lax"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+      <xs:attribute name="version" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:complexType name="legType">
+    <xs:attribute name="starboardXTD" type="xs:double"/>
+    <xs:attribute name="portsideXTD" type="xs:double"/>
+    <xs:attribute name="speedMin" type="xs:double"/>
+    <xs:attribute name="speedMax" type="xs:double"/>
+    <xs:attribute name="geometryType" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="scheduleElementType">
+    <xs:attribute name="waypointId" type="xs:int" use="required"/>
+    <xs:attribute name="eta" type="xs:dateTime"/>
+    <xs:attribute name="etd" type="xs:dateTime"/>
+    <xs:attribute name="speed" type="xs:double"/>
+  </xs:complexType>
+</xs:schema>
