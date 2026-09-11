@@ -4,7 +4,7 @@
 
 ### New features
 
-- RTZ route exchange format (IEC 61174, ECDIS) — read and write; writing more than 10 files is a sponsor feature
+- RTZ route exchange format (IEC 61174, ECDIS) — read and write
 
 ## 3.6 — 2026-08-23
 
