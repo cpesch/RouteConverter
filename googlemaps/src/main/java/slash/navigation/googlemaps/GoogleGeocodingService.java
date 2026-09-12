@@ -21,90 +21,57 @@
 package slash.navigation.googlemaps;
 
 import jakarta.xml.bind.JAXBException;
-import slash.common.helpers.APIKeyRegistry;
-import slash.navigation.common.BoundingBox;
-import slash.navigation.common.LongitudeAndLatitude;
-import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.geocoding.BaseGeocodingService;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
-import slash.navigation.elevation.ElevationService;
 import slash.navigation.geocoding.GeocodingResult;
 import slash.navigation.geocoding.SimpleCategorizedNavigationPosition;
-import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 import slash.navigation.rest.Get;
 import slash.navigation.rest.exception.ServiceUnavailableException;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.encodeUri;
 import static slash.navigation.common.Bearing.calculateBearing;
-import static slash.navigation.googlemaps.GoogleMapsServer.getGoogleMapsServer;
-import static slash.navigation.googlemaps.GoogleUtil.unmarshalElevation;
 import static slash.navigation.googlemaps.GoogleUtil.unmarshalGeocode;
 
 /**
- * Encapsulates REST access to the Google Elevation and Geocoding API Services.
+ * Encapsulates REST access to the Google Geocoding API Service.
  *
  * @author Christian Pesch
  */
 
-public class GoogleService extends BaseGeocodingService implements ElevationService {
-    private static final Logger log = Logger.getLogger(GoogleService.class.getName());
-    private int overQueryLimitCount, deniedCount;
+public class GoogleGeocodingService extends BaseGeocodingService {
+    private static final Logger log = Logger.getLogger(GoogleGeocodingService.class.getName());
+    private final GoogleApiClient apiClient = new GoogleApiClient();
 
     public String getName() {
         return "Google";
     }
 
+    public boolean isDownload() {
+        return false;
+    }
+
     public boolean isOverQueryLimit() {
-        return overQueryLimitCount > 5 || deniedCount > 5;
-    }
-
-    private String getGoogleApiUrl(String apiType, String payload) {
-        String language = Locale.getDefault().getLanguage();
-        String apiKey = APIKeyRegistry.getInstance().getAPIKey("google", apiType);
-        return getGoogleMapsServer().getApiUrl() + "/maps/api/" + apiType + "/xml?" + payload +
-                "&sensor=false&language=" + language + "&key=" + apiKey;
-    }
-
-    private String getElevationUrl(String payload) {
-        return getGoogleApiUrl("elevation", payload);
+        return apiClient.isOverQueryLimit();
     }
 
     private String getGeocodingUrl(String payload) {
-        return getGoogleApiUrl("geocode", payload);
-    }
-
-    private Get get(String url) {
-        return new Get(url);
+        return apiClient.getGoogleApiUrl("geocode", payload);
     }
 
     private void checkForError(String url, String status) throws ServiceUnavailableException {
-        if (status.equals("OVER_QUERY_LIMIT")) {
-            overQueryLimitCount++;
-            log.warning("Google API is over query limit, count: " + overQueryLimitCount + ", url: " + url);
-            throw new ServiceUnavailableException(getClass().getSimpleName(), url, status);
-        }
-
-        if (status.equals("REQUEST_DENIED")) {
-            deniedCount++;
-            log.warning("Google API access is denied, count: " + deniedCount + ", url: " + url);
-            throw new ServiceUnavailableException(getClass().getSimpleName(), url, status);
-        }
+        apiClient.checkForError(getClass().getSimpleName(), url, status);
     }
 
     public String getAddressFor(NavigationPosition position) throws IOException {
         String url = getGeocodingUrl("latlng=" + position.getLatitude() + "," + position.getLongitude());
-        Get get = get(url);
+        Get get = apiClient.get(url);
         log.info("Getting location for " + position.getLongitude() + "," + position.getLatitude());
         String result = get.executeAsString();
         if (get.isSuccessful())
@@ -139,7 +106,7 @@ public class GoogleService extends BaseGeocodingService implements ElevationServ
 
     public List<GeocodingResult> getPositionsFor(String address) throws IOException {
         String url = getGeocodingUrl("address=" + encodeUri(address));
-        Get get = get(url);
+        Get get = apiClient.get(url);
         log.info("Getting positions for " + address);
         String result = get.executeAsString();
         if (get.isSuccessful())
@@ -169,65 +136,5 @@ public class GoogleService extends BaseGeocodingService implements ElevationServ
         String type = response.getType().isEmpty() ? null : response.getType().get(0);
         return new SimpleCategorizedNavigationPosition(location.getLng().doubleValue(), location.getLat().doubleValue(),
                 null, response.getFormattedAddress(), type);
-    }
-
-    public Double getElevationFor(double longitude, double latitude) throws IOException {
-        String url = getElevationUrl("locations=" + latitude + "," + longitude); // could be up to 512 locations
-        Get get = get(url);
-        log.info("Getting elevation for " + longitude + "," + latitude);
-        String result = get.executeAsString();
-        if (get.isSuccessful())
-            try {
-                ElevationResponse elevationResponse = unmarshalElevation(result);
-                if (elevationResponse != null) {
-                    String status = elevationResponse.getStatus();
-                    checkForError(url, status);
-                    List<Double> elevations = extractElevations(elevationResponse.getResult());
-                    return !elevations.isEmpty() ? elevations.get(0) : null;
-                }
-            } catch (JAXBException e) {
-                throw new IOException("Cannot unmarshall " + result + ": " + e, e);
-            }
-        return null;
-    }
-
-    private List<Double> extractElevations(List<ElevationResponse.Result> responses) {
-        List<Double> results = new ArrayList<>(responses.size());
-        for (ElevationResponse.Result response : responses) {
-            results.add(response.getElevation().doubleValue());
-        }
-        return results;
-    }
-
-    public boolean isDownload() {
-        return false;
-    }
-
-    public String getPath() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void setPath(String path) {
-        throw new UnsupportedOperationException();
-    }
-
-    public File getDirectory() {
-        throw new UnsupportedOperationException();
-    }
-
-    public void downloadElevationDataFor(List<LongitudeAndLatitude> longitudeAndLatitudes, boolean waitForDownload) {
-        throw new UnsupportedOperationException();
-    }
-
-    public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
-        throw new UnsupportedOperationException();
-    }
-
-    public void downloadElevationData(List<MapDescriptor> mapDescriptors) {
-        throw new UnsupportedOperationException();
-    }
-
-    public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
-        return Collections.emptyMap();
     }
 }

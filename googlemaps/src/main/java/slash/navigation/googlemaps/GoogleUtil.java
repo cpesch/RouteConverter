@@ -21,6 +21,7 @@
 package slash.navigation.googlemaps;
 
 import slash.common.helpers.JAXBHelper;
+import slash.navigation.googlemaps.directions.DirectionsResponse;
 import slash.navigation.googlemaps.elevation.ElevationResponse;
 import slash.navigation.googlemaps.geocode.GeocodeResponse;
 
@@ -39,6 +40,10 @@ public class GoogleUtil {
         return JAXBHelper.newUnmarshaller(newContext(slash.navigation.googlemaps.geocode.ObjectFactory.class));
     }
 
+    private static Unmarshaller newUnmarshallerDirections() {
+        return JAXBHelper.newUnmarshaller(newContext(slash.navigation.googlemaps.directions.ObjectFactory.class));
+    }
+
     public static ElevationResponse unmarshalElevation(String string) throws JAXBException {
         try (StringReader reader = new StringReader(string)) {
             return (ElevationResponse) newUnmarshallerElevation().unmarshal(reader);
@@ -50,6 +55,14 @@ public class GoogleUtil {
     public static GeocodeResponse unmarshalGeocode(String string) throws JAXBException {
         try (StringReader reader = new StringReader(string)) {
             return (GeocodeResponse) newUnmarshallerGeocode().unmarshal(reader);
+        } catch (ClassCastException e) {
+            throw new JAXBException("Parse error: " + e, e);
+        }
+    }
+
+    public static DirectionsResponse unmarshalDirections(String string) throws JAXBException {
+        try (StringReader reader = new StringReader(string)) {
+            return (DirectionsResponse) newUnmarshallerDirections().unmarshal(reader);
         } catch (ClassCastException e) {
             throw new JAXBException("Parse error: " + e, e);
         }

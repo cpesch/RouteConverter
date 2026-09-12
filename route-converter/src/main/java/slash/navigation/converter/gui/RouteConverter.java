@@ -31,7 +31,9 @@ import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.converter.gui.helpers.OverlaysMenu;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.geonames.GeoNamesService;
-import slash.navigation.googlemaps.GoogleService;
+import slash.navigation.googlemaps.GoogleElevationService;
+import slash.navigation.googlemaps.GoogleGeocodingService;
+import slash.navigation.googlemaps.GoogleRoutingService;
 import slash.navigation.graphhopper.GraphHopper;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.notifications.NotificationManager;
@@ -171,7 +173,7 @@ public class RouteConverter extends BaseRouteConverter {
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
         }
-        getElevationServiceFacade().addElevationService(new GoogleService());
+        getElevationServiceFacade().addElevationService(new GoogleElevationService());
     }
 
     protected void updateElevationServices() {
@@ -194,7 +196,7 @@ public class RouteConverter extends BaseRouteConverter {
         getGeocodingServiceFacade().addGeocodingService(new GeoNamesService());
         getGeocodingServiceFacade().addGeocodingService(new NominatimService());
         getGeocodingServiceFacade().addGeocodingService(new PhotonService());
-        getGeocodingServiceFacade().addGeocodingService(new GoogleService());
+        getGeocodingServiceFacade().addGeocodingService(new GoogleGeocodingService());
     }
 
     protected void initializeRoutingServices() {
@@ -207,6 +209,10 @@ public class RouteConverter extends BaseRouteConverter {
 
         GraphHopper hopper = new GraphHopper(getDownloadManager());
         getRoutingServiceFacade().addRoutingService(hopper);
+
+        // last resort, after BRouter and GraphHopper: never preferred, only reached
+        // via explicit manual selection or when both are unavailable
+        getRoutingServiceFacade().addRoutingService(new GoogleRoutingService());
 
         configureRoutingServices();
 

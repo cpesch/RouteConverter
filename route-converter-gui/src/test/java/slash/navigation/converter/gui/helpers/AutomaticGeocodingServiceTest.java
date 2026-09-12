@@ -77,7 +77,7 @@ public class AutomaticGeocodingServiceTest {
             AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
             facade.addGeocodingService(automatic);
             facade.addGeocodingService(new TestGeocodingService("Nominatim", emptyList()));
-            facade.addGeocodingService(new FailingGeocodingService("Google Maps"));
+            facade.addGeocodingService(new FailingGeocodingService("Google"));
 
             List<GeocodingResult> results = automatic.getPositionsFor("mannheim hofgarten");
 
@@ -97,7 +97,7 @@ public class AutomaticGeocodingServiceTest {
             AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
             facade.addGeocodingService(automatic);
             facade.addGeocodingService(new FailingGeocodingService("Nominatim"));
-            facade.addGeocodingService(new FailingGeocodingService("Google Maps"));
+            facade.addGeocodingService(new FailingGeocodingService("Google"));
 
             try {
                 automatic.getPositionsFor("anything");
