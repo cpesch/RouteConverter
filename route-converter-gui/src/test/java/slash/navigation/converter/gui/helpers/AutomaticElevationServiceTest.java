@@ -102,7 +102,7 @@ public class AutomaticElevationServiceTest {
         // Lower priority number = preferred first
         StubElevationService lidarService  = new StubElevationService("Sonny LiDAR DTM 0.5", 100.0);
         StubElevationService srtmService   = new StubElevationService("NASA SRTM 3", 999.0);
-        StubElevationService googleService = new StubElevationService("Google Maps", 50.0);
+        StubElevationService googleService = new StubElevationService("Google", 50.0);
 
         facade.addElevationService(automatic);
         facade.addElevationService(srtmService);
@@ -136,7 +136,7 @@ public class AutomaticElevationServiceTest {
         ElevationServiceFacade facade = newFacade();
         AutomaticElevationService automatic = newAutomatic(facade);
 
-        StubElevationService limited = new StubElevationService("Google Maps", 99.0) {
+        StubElevationService limited = new StubElevationService("Google", 99.0) {
             @Override public boolean isOverQueryLimit() { return true; }
         };
         StubElevationService ok = new StubElevationService("GeoNames", 55.0);

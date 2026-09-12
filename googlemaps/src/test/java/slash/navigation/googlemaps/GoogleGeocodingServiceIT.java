@@ -33,8 +33,8 @@ import static java.util.Collections.singletonList;
 import static java.util.Locale.ENGLISH;
 import static org.junit.Assert.*;
 
-public class GoogleServiceIT {
-    private final GoogleService service = new GoogleService();
+public class GoogleGeocodingServiceIT {
+    private final GoogleGeocodingService service = new GoogleGeocodingService();
 
     @Before
     public void setUp() {
@@ -57,22 +57,9 @@ public class GoogleServiceIT {
     @Test
     public void getPositionsFor() throws IOException {
         List<GeocodingResult> expected = singletonList(
-                new GeocodingResult(new SimpleCategorizedNavigationPosition(10.2004268, 50.0010792, null, "B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany", "route"), service.getName())
+                new GeocodingResult(new SimpleCategorizedNavigationPosition(10.2004268, 50.0010792, null, "Bühlstraße, 97506 Grafenrheinfeld, Germany", "route"), service.getName())
         );
-        List<GeocodingResult> actual = service.getPositionsFor("B\u00fchlstra\u00dfe, 97506 Grafenrheinfeld, Germany");
+        List<GeocodingResult> actual = service.getPositionsFor("Bühlstraße, 97506 Grafenrheinfeld, Germany");
         assertEquals(expected, actual);
-    }
-
-    @Test
-    public void getElevationFor() throws IOException {
-        assertEquals(39.3, service.getElevationFor(11.2, 59.0), 0.5);
-        assertEquals(179.4086151, service.getElevationFor(11.2, 60.0), 0.5);
-        assertEquals(650.1, service.getElevationFor(11.2, 61.0), 0.5);
-
-        assertEquals(77.2, service.getElevationFor(-68.0, -54.0), 0.5);
-        assertEquals(457.6, service.getElevationFor(-68.0, -55.0), 0.5);
-        assertEquals(-106.956543, service.getElevationFor(-68.0, -56.0), 1.0);
-        assertEquals(-109.3644409, service.getElevationFor(-68.0, -56.1), 1.0);
-        assertEquals(-2883.9584961, service.getElevationFor(-68.0, -57.0), 1.0);
     }
 }

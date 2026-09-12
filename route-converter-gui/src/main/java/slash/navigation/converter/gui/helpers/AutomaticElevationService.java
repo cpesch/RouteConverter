@@ -155,7 +155,7 @@ public class AutomaticElevationService implements ElevationService {
             PRIORITY.put("Sonny LiDAR DTM 3", 6);
             PRIORITY.put("NASA SRTM 3", 7);
             PRIORITY.put("GeoNames", 8);
-            PRIORITY.put("Google Maps", 9);
+            PRIORITY.put("Google", 9);
         }
 
         private int getPriority(ElevationService elevationService) {

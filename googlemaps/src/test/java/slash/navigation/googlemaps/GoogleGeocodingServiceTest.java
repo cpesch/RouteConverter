@@ -9,8 +9,8 @@ import java.math.BigDecimal;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-public class GoogleServiceTest {
-    private final GoogleService service = new GoogleService();
+public class GoogleGeocodingServiceTest {
+    private final GoogleGeocodingService service = new GoogleGeocodingService();
 
     @Test
     public void extractsCategorizedPositionFromGeocodeResult() {
@@ -47,4 +47,3 @@ public class GoogleServiceTest {
         return geometry;
     }
 }
-

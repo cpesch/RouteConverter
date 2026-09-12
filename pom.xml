@@ -122,7 +122,7 @@
             <properties>
                 <skip.integration.tests>false</skip.integration.tests>
                 <skip.unit.tests>true</skip.unit.tests>
-                <failsafe.hermetic.excludes>%regex[.*/(DownloadManagerIT|SnapshotCatalogIT|Remote(Category|File|Route)IT|RouteFeedbackIT|SendChecksumsIT|GeoNamesServiceIT|GoogleServiceIT|NominatimServiceIT|PhotonServiceIT|HgtFilesIT|GraphHopperIT|BRouterIT)\.class]</failsafe.hermetic.excludes>
+                <failsafe.hermetic.excludes>%regex[.*/(DownloadManagerIT|SnapshotCatalogIT|Remote(Category|File|Route)IT|RouteFeedbackIT|SendChecksumsIT|GeoNamesServiceIT|GoogleGeocodingServiceIT|GoogleElevationServiceIT|NominatimServiceIT|PhotonServiceIT|HgtFilesIT|GraphHopperIT|BRouterIT)\.class]</failsafe.hermetic.excludes>
             </properties>
         </profile>
         <!-- Unit and Integration tests combined -->
@@ -139,7 +139,7 @@
             <properties>
                 <skip.integration.tests>false</skip.integration.tests>
                 <skip.unit.tests>false</skip.unit.tests>
-                <failsafe.hermetic.excludes>%regex[.*/(DownloadManagerIT|SnapshotCatalogIT|Remote(Category|File|Route)IT|RouteFeedbackIT|SendChecksumsIT|GeoNamesServiceIT|GoogleServiceIT|NominatimServiceIT|PhotonServiceIT|HgtFilesIT|GraphHopperIT|BRouterIT)\.class]</failsafe.hermetic.excludes>
+                <failsafe.hermetic.excludes>%regex[.*/(DownloadManagerIT|SnapshotCatalogIT|Remote(Category|File|Route)IT|RouteFeedbackIT|SendChecksumsIT|GeoNamesServiceIT|GoogleGeocodingServiceIT|GoogleElevationServiceIT|NominatimServiceIT|PhotonServiceIT|HgtFilesIT|GraphHopperIT|BRouterIT)\.class]</failsafe.hermetic.excludes>
             </properties>
         </profile>
     </profiles>

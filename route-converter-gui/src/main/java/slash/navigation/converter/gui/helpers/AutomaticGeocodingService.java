@@ -135,7 +135,7 @@ public class AutomaticGeocodingService extends BaseGeocodingService {
             PRIORITY.put("Mapsforge POI", 1);
             PRIORITY.put("Mapsforge Map", 2);
             PRIORITY.put("Mapsforge", 2);
-            PRIORITY.put("Google Maps", 3);
+            PRIORITY.put("Google", 3);
             PRIORITY.put("Nominatim", 4);
             PRIORITY.put("Photon", 5);
             PRIORITY.put("GeoNames", 6);
