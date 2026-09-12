@@ -77,10 +77,6 @@ public class GoogleRoutingService extends BaseRoutingService {
         return false;
     }
 
-    public boolean isOnline() {
-        return true;
-    }
-
     public List<TravelMode> getAvailableTravelModes() {
         return TRAVEL_MODES;
     }

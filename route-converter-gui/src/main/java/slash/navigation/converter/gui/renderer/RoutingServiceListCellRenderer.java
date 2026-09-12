@@ -24,6 +24,7 @@ package slash.navigation.converter.gui.renderer;
 
 import slash.navigation.gui.Application;
 import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.StraightLine;
 
 import javax.swing.*;
 import java.awt.*;
@@ -40,7 +41,10 @@ public class RoutingServiceListCellRenderer extends DefaultListCellRenderer {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         RoutingService service = (RoutingService) value;
         String text = getLabelFor(service);
-        if(service.isOnline())
+        // isDownload() means "works offline because it downloads data" (BRouter, GraphHopper) --
+        // false covers both StraightLine (offline, no download needed) and Google (online, no
+        // download needed), so StraightLine is excluded here explicitly rather than by that bit
+        if(!service.isDownload() && !(service instanceof StraightLine))
             text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
         label.setText(text);
         return label;
