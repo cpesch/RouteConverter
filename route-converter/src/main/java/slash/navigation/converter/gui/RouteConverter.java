@@ -171,7 +171,7 @@ public class RouteConverter extends BaseRouteConverter {
         for (HgtFiles hgtFile : getHgtFilesService().getHgtFiles()) {
             getElevationServiceFacade().addElevationService(hgtFile);
         }
-        getGeocodingServiceFacade().addGeocodingService(new GoogleService());
+        getElevationServiceFacade().addElevationService(new GoogleService());
     }
 
     protected void updateElevationServices() {
