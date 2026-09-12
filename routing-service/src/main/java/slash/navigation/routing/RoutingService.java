@@ -38,6 +38,7 @@ public interface RoutingService {
     String getName();
     boolean isInitialized();
     boolean isDownload();
+
     List<TravelMode> getAvailableTravelModes();
     TravelRestrictions getAvailableTravelRestrictions();
     TravelMode getPreferredTravelMode();
