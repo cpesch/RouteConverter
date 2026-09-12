@@ -38,6 +38,13 @@ public interface RoutingService {
     String getName();
     boolean isInitialized();
     boolean isDownload();
+
+    // true only for services that make a network call per request (e.g. GoogleRoutingService);
+    // StraightLine and the download-based services (BRouter, GraphHopper) are both false here --
+    // isDownload() == false does not imply online, it just means no local data is required
+    default boolean isOnline() {
+        return false;
+    }
     List<TravelMode> getAvailableTravelModes();
     TravelRestrictions getAvailableTravelRestrictions();
     TravelMode getPreferredTravelMode();

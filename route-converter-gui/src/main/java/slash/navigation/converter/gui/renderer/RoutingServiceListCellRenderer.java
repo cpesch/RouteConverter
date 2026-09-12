@@ -40,7 +40,7 @@ public class RoutingServiceListCellRenderer extends DefaultListCellRenderer {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
         RoutingService service = (RoutingService) value;
         String text = getLabelFor(service);
-        if(!service.isDownload())
+        if(service.isOnline())
             text = text + " (" + Application.getInstance().getContext().getBundle().getString("online") + ")";
         label.setText(text);
         return label;
