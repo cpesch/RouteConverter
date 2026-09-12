@@ -29,7 +29,6 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.googlemaps.directions.DirectionsResponse;
 import slash.navigation.rest.Get;
-import slash.navigation.rest.exception.ServiceUnavailableException;
 import slash.navigation.routing.BaseRoutingService;
 import slash.navigation.routing.DownloadFuture;
 import slash.navigation.routing.RoutingResult;

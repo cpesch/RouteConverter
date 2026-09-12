@@ -77,7 +77,7 @@ public class GoogleElevationService implements ElevationService {
                     String status = elevationResponse.getStatus();
                     checkForError(url, status);
                     List<Double> elevations = extractElevations(elevationResponse.getResult());
-                    return !elevations.isEmpty() ? elevations.get(0) : null;
+                    return !elevations.isEmpty() ? elevations.getFirst() : null;
                 }
             } catch (JAXBException e) {
                 throw new IOException("Cannot unmarshall " + result + ": " + e, e);

@@ -101,7 +101,7 @@ public class GoogleGeocodingService extends BaseGeocodingService {
                 })
                 .map(GeocodeResponse.Result::getFormattedAddress)
                 .toList();
-        return !locations.isEmpty() ? locations.get(0) : null;
+        return !locations.isEmpty() ? locations.getFirst() : null;
     }
 
     public List<GeocodingResult> getPositionsFor(String address) throws IOException {
