@@ -275,11 +275,22 @@ public class GetPerformerTest {
         assertEquals(State.Failed, download.getState());
         assertFalse("target must not be created from a truncated transfer", target.exists());
         assertTrue("temp file must survive a truncated transfer for a later resume", download.getTempFile().exists());
+        // the partial body itself is what a resume continues from, so assert it arrived rather
+        // than letting a platform that drops it pass this test with an empty temp file
+        assertEquals("temp file must hold the bytes that did arrive", 60, download.getTempFile().length());
     }
 
     // a raw socket server that sends only `actualBodyBytes` of a `declaredContentLength`
-    // response, flushes them, then resets the connection so the client sees the truncation
-    // immediately instead of depending on HttpServer's platform-dependent abort-on-close
+    // response, then half-closes so the client reads those bytes and hits EOF before the
+    // announced length -- a deterministic truncation on every platform, unlike
+    // HttpServer's own abort-on-close.
+    //
+    // it must be an orderly FIN (shutdownOutput), never an abortive RST via
+    // setSoLinger(true, 0): Windows discards data still sitting in the receiver's buffer
+    // when an RST arrives, so the client saw the reset with none of the partial body and
+    // left no temp file to resume from -- green on Linux and macOS, red on the Windows
+    // build job (first exposed by the prerelease run on 2026-09-13, commit bad612065).
+    // TCP orders the FIN behind the bytes already written, so a half-close cannot race them.
     private int startTruncatingServer(int declaredContentLength, int actualBodyBytes) throws IOException {
         ServerSocket serverSocket = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"));
         Thread thread = new Thread(() -> {
@@ -294,8 +305,8 @@ public class GetPerformerTest {
                         .getBytes(StandardCharsets.ISO_8859_1));
                 out.write("x".repeat(actualBodyBytes).getBytes(StandardCharsets.UTF_8));
                 out.flush();
-                // force an immediate RST on close instead of a graceful FIN
-                socket.setSoLinger(true, 0);
+                // FIN after the flushed bytes: the client reads the partial body, then EOF
+                socket.shutdownOutput();
             } catch (IOException e) {
                 // best-effort test server; the client-side assertions surface any real failure
             }
