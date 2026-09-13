@@ -674,10 +674,13 @@ public class ConvertPanel implements PanelInTab {
         loginButton.addActionListener(e -> {
             count(preferences, LOCK_LOGIN_PREFERENCE + feature.name());
 
-            // same construction as LoginAction
+            // same construction AND showing as LoginAction / RouteServiceOperator#showLogin:
+            // showWithPreferences packs the dialog and restores its bounds. A bare setVisible
+            // leaves it unpacked at 0x0 - and because it is modal, the whole application looks
+            // frozen with no way out but a force quit.
             LoginDialog loginDialog =
                     new LoginDialog(BaseRouteConverter.getInstance().getRouteServiceOperator().getRouteFeedback());
-            loginDialog.setVisible(true);
+            loginDialog.showWithPreferences();
 
             if (loginDialog.isSuccessful()) {
                 // the features arrive with the update-check that follows a login, so an account
@@ -717,12 +720,20 @@ public class ConvertPanel implements PanelInTab {
 
         panel.add(createLockHtmlLabel(MessageFormat.format(bundle.getString("feature-locked-step-mail"), userName)));
 
+        // copies a ready-to-send mail, not just the user name: support needs to know which
+        // feature to unlock for which account, and a bare user name in the clipboard left the
+        // user to compose the mail themselves
+        String mailText = MessageFormat.format(bundle.getString("feature-locked-mail-text"),
+                feature.description(), userName);
+        JButton copyButton = new JButton(bundle.getString("feature-locked-copy"));
+        copyButton.addActionListener(e ->
+                Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(mailText), null));
+
+        // right-aligned like the donate button of step 1, so both steps end on the same edge
         Box copyRow = Box.createHorizontalBox();
         copyRow.setAlignmentX(Component.LEFT_ALIGNMENT);
-        copyRow.add(Box.createHorizontalStrut(15));
-        copyRow.add(createLinkLabel(bundle.getString("feature-locked-copy"),
-                () -> Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(userName), null)));
         copyRow.add(Box.createHorizontalGlue());
+        copyRow.add(copyButton);
         panel.add(copyRow);
         panel.add(Box.createVerticalStrut(10));
 
