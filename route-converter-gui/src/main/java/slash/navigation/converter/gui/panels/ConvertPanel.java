@@ -29,6 +29,7 @@ import slash.navigation.common.SimpleNavigationPosition;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.actions.*;
 import slash.navigation.converter.gui.dialogs.CompleteFlightPlanDialog;
+import slash.navigation.converter.gui.dialogs.LoginDialog;
 import slash.navigation.converter.gui.dnd.ClipboardInteractor;
 import slash.navigation.converter.gui.dnd.PanelDropHandler;
 import slash.navigation.converter.gui.dnd.PositionSelection;
@@ -61,6 +62,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.ListDataEvent;
 import javax.swing.filechooser.FileFilter;
 import java.awt.*;
+import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
@@ -85,8 +87,8 @@ import static javax.swing.DropMode.ON;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static javax.swing.JOptionPane.*;
+import static javax.swing.BorderFactory.createEmptyBorder;
 import static slash.navigation.gui.helpers.WindowHelper.showConfirm;
-import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static javax.swing.KeyStroke.getKeyStroke;
 import static javax.swing.SwingUtilities.invokeLater;
 import static javax.swing.event.TableModelEvent.ALL_COLUMNS;
@@ -126,7 +128,46 @@ public class ConvertPanel implements PanelInTab {
     private static final String WRITE_PATH_PREFERENCE = "writePath";
     private static final String DUPLICATE_FIRST_POSITION_PREFERENCE = "duplicateFirstPosition";
 
+    // how often the lock dialog of a sponsor feature was shown, its donate button was clicked
+    // and its log-in prompt was used - sent along with the update-check via FeatureLocks.encode
+    public static final String LOCK_SHOWN_PREFERENCE = "lockShown.";
+    public static final String LOCK_CLICKED_PREFERENCE = "lockClicked.";
+    public static final String LOCK_LOGIN_PREFERENCE = "lockLogin.";
+
+    // writes per sponsor format that are free; the lock dialog names this number too
+    static final int FREE_USES = 10;
+
     private static final int ROW_HEIGHT_FOR_PHOTO_COLUMN = 200;
+    private static final int LOCK_MESSAGE_WIDTH = 380;
+
+    /**
+     * A write format that is free to use {@link #FREE_USES} times and is gated behind a donation
+     * afterwards: the feature id the licence is granted for and the format class the gate applies to.
+     * How the lock dialog names the format is the bundle key {@code feature-locked-desc-<feature id>}.
+     */
+    record SponsorFeature(String name, Class<? extends NavigationFormat<?>> formatClass) {
+        String description() {
+            return BaseRouteConverter.getBundle().getString("feature-locked-desc-" + name());
+        }
+    }
+
+    /**
+     * All sponsor features in registry order - the iteration order of the gate in
+     * {@link #checkWriteFormat} and the order in which {@link FeatureLocks#encode} sends the
+     * lock counters with the update-check.
+     */
+    static final List<SponsorFeature> SPONSOR_FEATURES = List.of(
+            new SponsorFeature("fpl-g1000", GarminFlightPlanFormat.class),
+            new SponsorFeature("msfs-pln", MSFSFlightPlanFormat.class),
+            new SponsorFeature("rt-gorider", GoRiderGpsFormat.class),
+            new SponsorFeature("rtz-ecdis", RtzFormat.class));
+
+    /**
+     * The sponsor feature ids in registry order.
+     */
+    static List<String> getSponsorFeatureNames() {
+        return SPONSOR_FEATURES.stream().map(SponsorFeature::name).toList();
+    }
 
     final UrlDocument urlModel = new UrlDocument();
     final RecentUrlsModel recentUrlsModel = new RecentUrlsModel();
@@ -572,26 +613,154 @@ public class ConvertPanel implements PanelInTab {
 
 
     static boolean checkWriteFormat(NavigationFormat<?> format) {
-        return !((format instanceof GarminFlightPlanFormat
-                && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10 && !checkForFeature("fpl-g1000",
-                "Write Garmin Flight Plan")) ||
-                (format instanceof MSFSFlightPlanFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10
-                        && !checkForFeature("msfs-pln", "Write MSFS2020 Flight Plan")) ||
-                (format instanceof RtzFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10
-                        && !checkForFeature("rtz-ecdis", "Write RTZ Route Exchange")) ||
-                (format instanceof GoRiderGpsFormat && preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) > 10
-                        && !checkForFeature("rt-gorider", "Write GoRider GPS")));
-    }
+        if (preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0) <= FREE_USES)
+            return true;
 
-    private static boolean checkForFeature(String featureName, String featureDescription) {
-        if (!hasFeature(featureName)) {
-            final BaseRouteConverter r = BaseRouteConverter.getInstance();
-            showError(r.getFrame(),
-                    new JLabel(MessageFormat.format(BaseRouteConverter.getBundle().getString("feature-not-available"), featureDescription)),
-                    r.getFrame().getTitle());
-            return false;
+        for (SponsorFeature feature : SPONSOR_FEATURES) {
+            // isInstance so a subclass of a sponsor format cannot slip past the lock
+            if (feature.formatClass().isInstance(format))
+                return checkForFeature(feature);
         }
         return true;
+    }
+
+    private static boolean checkForFeature(SponsorFeature feature) {
+        if (hasFeature(feature.name()))
+            return true;
+
+        count(preferences, LOCK_SHOWN_PREFERENCE + feature.name());
+        logFormatUsage();
+
+        final BaseRouteConverter r = BaseRouteConverter.getInstance();
+        final JDialog dialog = new JDialog(r.getFrame(),
+                BaseRouteConverter.getBundle().getString("feature-locked-title"), JDialog.ModalityType.APPLICATION_MODAL);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        // the log-in is required before the donate step: the unlock is assigned to the account,
+        // so without a user name there is nothing support could attach a licence to
+        showFeatureLockedState(dialog, feature);
+        dialog.setVisible(true);
+
+        // the dialog closes via Close - or right after a login whose account already carries the
+        // licence, in which case the write proceeds instead of showing the donate step at all
+        return hasFeature(feature.name());
+    }
+
+    private static void showFeatureLockedState(JDialog dialog, SponsorFeature feature) {
+        boolean loggedIn = BaseRouteConverter.getInstance().getCredentials().userName() != null;
+        dialog.setContentPane(loggedIn ?
+                createFeatureLockedDonatePanel(dialog, feature) :
+                createFeatureLockedLoginPanel(dialog, feature));
+        dialog.pack();
+        dialog.setLocationRelativeTo(dialog.getOwner());
+    }
+
+    private static JPanel createFeatureLockedPanel() {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(createEmptyBorder(10, 10, 10, 10));
+        return panel;
+    }
+
+    private static JPanel createFeatureLockedLoginPanel(JDialog dialog, SponsorFeature feature) {
+        ResourceBundle bundle = BaseRouteConverter.getBundle();
+
+        JPanel panel = createFeatureLockedPanel();
+        panel.add(createLockHtmlLabel(MessageFormat.format(bundle.getString("feature-locked-login-intro"),
+                feature.description(), FREE_USES)));
+        panel.add(Box.createVerticalStrut(10));
+
+        JButton loginButton = new JButton(bundle.getString("feature-locked-login-link"));
+        loginButton.addActionListener(e -> {
+            count(preferences, LOCK_LOGIN_PREFERENCE + feature.name());
+
+            // same construction as LoginAction
+            LoginDialog loginDialog =
+                    new LoginDialog(BaseRouteConverter.getInstance().getRouteServiceOperator().getRouteFeedback());
+            loginDialog.setVisible(true);
+
+            if (loginDialog.isSuccessful()) {
+                // the features arrive with the update-check that follows a login, so an account
+                // that already carries the licence closes this dialog and lets the write proceed
+                if (hasFeature(feature.name()))
+                    dialog.dispose();
+                else
+                    // swap in place to the donate/mail state - the username, not hasFeature, gates the swap
+                    showFeatureLockedState(dialog, feature);
+            }
+        });
+        panel.add(createLockButtonRow(dialog, loginButton));
+        return panel;
+    }
+
+    private static JPanel createFeatureLockedDonatePanel(JDialog dialog, SponsorFeature feature) {
+        ResourceBundle bundle = BaseRouteConverter.getBundle();
+        String userName = BaseRouteConverter.getInstance().getCredentials().userName();
+
+        JPanel panel = createFeatureLockedPanel();
+        panel.add(createLockHtmlLabel(MessageFormat.format(bundle.getString("feature-locked-intro"),
+                feature.description(), FREE_USES)));
+        panel.add(Box.createVerticalStrut(10));
+
+        Box donateRow = Box.createHorizontalBox();
+        donateRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        donateRow.add(createLockHtmlLabel(bundle.getString("feature-locked-step-donate")));
+        donateRow.add(Box.createHorizontalGlue());
+        JButton donateButton = new JButton(bundle.getString("feature-locked-donate-button"));
+        donateButton.addActionListener(e -> {
+            count(preferences, LOCK_CLICKED_PREFERENCE + feature.name());
+            ExternalPrograms.startBrowserForPayPal(dialog);
+        });
+        donateRow.add(donateButton);
+        panel.add(donateRow);
+        panel.add(Box.createVerticalStrut(5));
+
+        panel.add(createLockHtmlLabel(MessageFormat.format(bundle.getString("feature-locked-step-mail"), userName)));
+
+        Box copyRow = Box.createHorizontalBox();
+        copyRow.setAlignmentX(Component.LEFT_ALIGNMENT);
+        copyRow.add(Box.createHorizontalStrut(15));
+        copyRow.add(createLinkLabel(bundle.getString("feature-locked-copy"),
+                () -> Toolkit.getDefaultToolkit().getSystemClipboard().setContents(new StringSelection(userName), null)));
+        copyRow.add(Box.createHorizontalGlue());
+        panel.add(copyRow);
+        panel.add(Box.createVerticalStrut(10));
+
+        panel.add(createCloseOnlyButtonRow(dialog));
+        return panel;
+    }
+
+    private static Box createLockButtonRow(JDialog dialog, JButton actionButton) {
+        Box row = Box.createHorizontalBox();
+        row.setAlignmentX(Component.LEFT_ALIGNMENT);
+        row.add(Box.createHorizontalGlue());
+        row.add(actionButton);
+        row.add(Box.createHorizontalStrut(5));
+        row.add(createLockCloseButton(dialog));
+        return row;
+    }
+
+    private static Box createCloseOnlyButtonRow(JDialog dialog) {
+        Box row = Box.createHorizontalBox();
+        row.setAlignmentX(Component.LEFT_ALIGNMENT);
+        row.add(Box.createHorizontalGlue());
+        row.add(createLockCloseButton(dialog));
+        return row;
+    }
+
+    private static JButton createLockCloseButton(JDialog dialog) {
+        // Close aborts the sponsored write from both dialog states, like the window decoration does
+        JButton closeButton = new JButton(BaseRouteConverter.getBundle().getString("close"));
+        closeButton.addActionListener(e -> dialog.dispose());
+        return closeButton;
+    }
+
+    private static JLabel createLockHtmlLabel(String html) {
+        // the bundle strings bring their own <html>; a fixed body width wraps the long sentences
+        // instead of stretching the dialog across the screen
+        JLabel label = new JLabel(html.replaceFirst("(?i)<html>", "<html><body width='" + LOCK_MESSAGE_WIDTH + "'>"));
+        label.setAlignmentX(Component.LEFT_ALIGNMENT);
+        return label;
     }
 
     void completeGarminFlightPlan(GarminFlightPlanRoute garminFlightPlanRoute) {
@@ -843,13 +1012,22 @@ public class ConvertPanel implements PanelInTab {
         preferences.put(WRITE_FORMAT_PREFERENCE, preference);
     }
 
-    private void logFormatUsage() {
+    private static void logFormatUsage() {
         StringBuilder builder = new StringBuilder();
-        for (NavigationFormat<?> format : getNavigationFormatRegistry().getFormatsSortedByName()) {
+        for (NavigationFormat<?> format : BaseRouteConverter.getInstance().getNavigationFormatRegistry().getFormatsSortedByName()) {
             int reads = preferences.getInt(READ_COUNT_PREFERENCE + format.getClass().getName(), 0);
             int writes = preferences.getInt(WRITE_COUNT_PREFERENCE + format.getClass().getName(), 0);
             if (reads > 0 || writes > 0) {
                 builder.append(format("%n%s, reads: %d, writes: %d", format.getName(), reads, writes));
+            }
+        }
+        for (SponsorFeature feature : SPONSOR_FEATURES) {
+            int shown = preferences.getInt(LOCK_SHOWN_PREFERENCE + feature.name(), 0);
+            int clicked = preferences.getInt(LOCK_CLICKED_PREFERENCE + feature.name(), 0);
+            int logins = preferences.getInt(LOCK_LOGIN_PREFERENCE + feature.name(), 0);
+            if (shown > 0 || clicked > 0 || logins > 0) {
+                builder.append(format("%n%s, locks shown: %d, donate clicked: %d, logins: %d",
+                        feature.name(), shown, clicked, logins));
             }
         }
         log.info("Format usage:" + builder);
@@ -861,6 +1039,13 @@ public class ConvertPanel implements PanelInTab {
 
     void countWrite(NavigationFormat<?> format) {
         count(preferences, WRITE_COUNT_PREFERENCE + format.getClass().getName());
+    }
+
+    /**
+     * The lock counters of all sponsor features, encoded for the update-check.
+     */
+    public static String encodeFeatureLocks() {
+        return FeatureLocks.encode(preferences, getSponsorFeatureNames());
     }
 
     // map view related helpers

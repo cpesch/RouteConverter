@@ -203,7 +203,7 @@ public class RouteFeedback {
                                  String javaVersion, String javaBits,
                                  String osName, String osVersion, String osArch,
                                  String javaMaxMemory, String osTotalMemory, String screenResolution,
-                                 long startTime) throws IOException {
+                                 long startTime, String featureLocks) throws IOException {
         log.fine("Checking for update for version " + routeConverterVersion);
         Post request = new Post(apiUrl + UPDATE_CHECK_URI, credentials);
         request.addString("id", valueOf(startTime));
@@ -219,6 +219,8 @@ public class RouteFeedback {
         request.addString("rcStartCount", Long.toString(startCount));
         request.addString("rcVersion", routeConverterVersion);
         request.addString("rcBits", routeConverterBits);
+        if (featureLocks != null && !featureLocks.isEmpty())
+            request.addString("featureLocks", featureLocks);
         return request.executeAsString().replace("\"", "");
     }
 
