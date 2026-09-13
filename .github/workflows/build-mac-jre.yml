@@ -147,12 +147,31 @@ jobs:
         # local-mac build path via the RouteConverterMac/TimeAlbumProMac pom
         # profile). One byte-identical stub serves both apps (it introspects its
         # own bundle at runtime).
+        #
+        # -mmacosx-version-min is NOT optional: without it clang stamps
+        # LC_BUILD_VERSION.minos with the host SDK, so the floor silently follows
+        # whatever `macos-latest` currently is. That shipped a minos 26.0 stub in
+        # 3.6..3.6.5, which macOS 15 and earlier refuse to exec -- crossed-out
+        # greyed Finder icon, no dialog, no log (#393). 11.0 is the app's real
+        # floor anyway: the bundled JRE above is itself minos 11.0, and arm64 has
+        # no lower target.
         shell: bash
+        env:
+          MIN_MACOS: '11.0'
         run: |
           set -euo pipefail
-          clang -arch x86_64 -arch arm64 -framework Cocoa \
+          clang -arch x86_64 -arch arm64 -mmacosx-version-min="$MIN_MACOS" -framework Cocoa \
             -o macos-launcher-stub mac-launcher/JavaAppLauncher.m
           lipo -info macos-launcher-stub
+          for arch in x86_64 arm64; do
+            minos="$(vtool -arch "$arch" -show-build-version macos-launcher-stub \
+              | awk '$1 == "minos" { print $2 }')"
+            echo "$arch: minos $minos"
+            [ "$minos" = "$MIN_MACOS" ] || {
+              echo "::error::launcher stub $arch slice has minos $minos, expected $MIN_MACOS (see #393)"
+              exit 1
+            }
+          done
           shasum -a 256 macos-launcher-stub \
             | awk '{print $1"  macos-launcher-stub"}' > macos-launcher-stub.sha256
           cat macos-launcher-stub.sha256

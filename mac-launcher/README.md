@@ -29,6 +29,41 @@ runtime, so one build serves both.
   `os.family=mac`) compiles the stub with `clang`; pass `-DmacApp` to also
   assemble the `.app`.
 
+## The deployment target is not optional
+
+Every `clang` invocation that builds the stub **must** pass
+`-mmacosx-version-min=11.0`. Without it clang stamps `LC_BUILD_VERSION.minos`
+with the host SDK version, so the minimum macOS the app supports silently
+follows whatever the build machine happens to be. macOS refuses to `exec` a
+Mach-O whose `minos` is higher than the running OS, and the Finder shows such a
+bundle with a prohibition badge on a greyed icon — no dialog, no log, no hint.
+
+That is exactly what shipped: once the `macos-latest` runner image moved to
+macOS 26, the hosted stub carried `minos 26.0`, and RouteConverter 3.6 through
+3.6.5 could not be started by anyone still on macOS 15 or earlier (#393,
+support report 1348).
+
+`11.0` is the floor for a reason — it is what the bundled Adoptium JRE itself
+declares (`Contents/bin/java` and `lib/server/libjvm.dylib` are `minos 11.0`),
+and `arm64` has no lower target. `LSMinimumSystemVersion` in both
+`src/main/app-resources/Info.plist` files says the same, and the three clang
+sites (`build-mac-jre.yml`, `RouteConverterMac/pom.xml`,
+`TimeAlbumProMac/pom.xml`) must stay in step.
+
+Two gates enforce it, because the runner image will move again:
+
+- `build-mac-jre.yml` checks the freshly compiled stub with `vtool
+  -show-build-version` per slice, before it is hashed and hosted.
+- the `.app` smoke-check in `_build-linux-mac.yml` checks the stub inside each
+  assembled zip with `scripts/check-macho-minos.py` — a stdlib-only Mach-O
+  parser, because the assembly runner is Linux and has neither `vtool` nor
+  `otool`. `scripts/test-check-macho-minos.sh` exercises that parser on macOS
+  and skips elsewhere.
+
+Note that *building* at a low target does not by itself prove the app runs on
+that macOS; it only removes the kernel-level refusal. Verify a real launch on
+the oldest supported macOS before a release that touches the stub.
+
 ## Checklist: is a hand-rolled Maven/CI build change runner-safe?
 
 The Mac `.app` is **assembled on a Linux runner**, and different workflows run

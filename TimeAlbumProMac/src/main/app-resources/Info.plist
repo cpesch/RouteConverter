@@ -31,7 +31,7 @@
         <key>NSHumanReadableCopyright</key>
         <string>Created by Christian Pesch</string>
         <key>LSMinimumSystemVersion</key>
-        <string>10.9</string>
+        <string>11.0</string>
         <key>LSApplicationCategoryType</key>
         <string>Navigation</string>
     </dict>

@@ -6,6 +6,10 @@
 
 - RTZ route exchange format (IEC 61174, ECDIS) — read and write
 
+### Fixes
+
+- macOS: the app runs on macOS 11 and later again. 3.6 through 3.6.5 were built against macOS 26 by mistake, so on macOS 15 (Sequoia) and earlier the icon appeared crossed out and greyed and the app would not start at all (#393, thanks Edgar Kraus)
+
 ## 3.6 — 2026-08-23
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.6

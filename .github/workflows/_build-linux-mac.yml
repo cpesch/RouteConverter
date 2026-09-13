@@ -119,7 +119,11 @@ jobs:
         # missing its universal launcher stub, JRE, or jar -- the failure modes
         # behind the 2026-07 Open-with regression + the mislocated assembly.
         # Runs on ubuntu, so use `file` (not the macOS-only `lipo`) to confirm
-        # the stub is a fat Mach-O with both arches.
+        # the stub is a fat Mach-O with both arches, and scripts/check-macho-minos.py
+        # (stdlib Python, no vtool/otool on Linux) to confirm the deployment target.
+        # The minos check catches a stale or wrongly built hosted stub here rather
+        # than in a user's Finder: 3.6..3.6.5 shipped minos 26.0 and would not start
+        # on macOS 15 or earlier (#393).
         run: |
           set -euo pipefail
           check() {  # $1 = app-zip, $2 = executable/app name
@@ -138,6 +142,9 @@ jobs:
             esac
             printf '%s' "$info" | grep -q x86_64 && printf '%s' "$info" | grep -q arm64 \
               || { echo "::error::$zip: MacOS/${exe} missing an arch (need x86_64 + arm64)"; exit 1; }
+            python3 scripts/check-macho-minos.py "$t/${app}/Contents/MacOS/${exe}" \
+              x86_64=11.0 arm64=11.0 \
+              || { echo "::error::$zip: MacOS/${exe} deployment target too high (see #393)"; exit 1; }
             echo "  OK"
           }
           check RouteConverterMac/target/RouteConverterMac-x64-app.zip     RouteConverter
