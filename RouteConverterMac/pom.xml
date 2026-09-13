@@ -84,7 +84,11 @@
                  universal target/RouteConverter that the assembly descriptors
                  require. On CI the Linux assembly runner fetches the hosted
                  stub instead (see the assembly comment above), so this gate
-                 keeps clang — unavailable off macOS — from breaking that build. -->
+                 keeps clang — unavailable off macOS — from breaking that build.
+                 -mmacosx-version-min is mandatory: without it clang stamps the
+                 stub with the host SDK as its floor, and macOS refuses to exec a
+                 binary whose minos exceeds the running OS (#393). Keep it in step
+                 with .github/workflows/build-mac-jre.yml. -->
             <id>mac-native-launcher</id>
             <activation>
                 <os>
@@ -108,7 +112,7 @@
                                     <executable>/bin/sh</executable>
                                     <arguments>
                                         <argument>-c</argument>
-                                        <argument>mkdir -p "${project.build.directory}" &amp;&amp; clang -arch x86_64 -arch arm64 -framework Cocoa -o "${project.build.directory}/RouteConverter" "${basedir}/../mac-launcher/JavaAppLauncher.m"</argument>
+                                        <argument>mkdir -p "${project.build.directory}" &amp;&amp; clang -arch x86_64 -arch arm64 -mmacosx-version-min=11.0 -framework Cocoa -o "${project.build.directory}/RouteConverter" "${basedir}/../mac-launcher/JavaAppLauncher.m"</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
