@@ -22,14 +22,13 @@ package slash.navigation.converter.gui.helpers;
 
 import slash.common.system.Version;
 import slash.navigation.converter.gui.BaseRouteConverter;
+import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.feedback.domain.RouteFeedback;
 
 import com.sun.management.OperatingSystemMXBean;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.List;
@@ -44,6 +43,7 @@ import static java.text.MessageFormat.format;
 import static javax.swing.BorderFactory.createEmptyBorder;
 import static javax.swing.JOptionPane.*;
 import static slash.navigation.converter.gui.helpers.UpdatePolicy.Nudge.HIGHLIGHTS_NO_SKIP;
+import static slash.navigation.gui.helpers.UIHelper.createLinkLabel;
 import static slash.navigation.gui.helpers.WindowHelper.showInformation;
 import static slash.navigation.gui.helpers.WindowHelper.showInformationWithAction;
 import static javax.swing.SwingUtilities.invokeLater;
@@ -149,27 +149,13 @@ public class UpdateChecker {
                     getMaxMemory(),
                     getTotalMemory(),
                     getScreenResolution(),
-                    getStartTime());
+                    getStartTime(),
+                    ConvertPanel.encodeFeatureLocks());
             result.setParameters(parameters);
         } catch (Throwable t) {
             log.severe("Cannot check for update: " + t.getMessage());
         }
         return result;
-    }
-
-    /**
-     * A JLabel rendered as a clickable hyperlink that runs the given action when clicked.
-     */
-    private static JLabel createLink(String text, Runnable onClick) {
-        JLabel link = new JLabel("<html><a href=\"\">" + text + "</a></html>");
-        link.setAlignmentX(Component.LEFT_ALIGNMENT);
-        link.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        link.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                onClick.run();
-            }
-        });
-        return link;
     }
 
     private static String downloadButtonText() {
@@ -253,7 +239,7 @@ public class UpdateChecker {
         }
         panel.add(Box.createVerticalStrut(10));
 
-        panel.add(createLink(BaseRouteConverter.getBundle().getString("update-whats-new"),
+        panel.add(createLinkLabel(BaseRouteConverter.getBundle().getString("update-whats-new"),
                 () -> startBrowserForRouteConverterForum(window)));
         panel.add(Box.createVerticalStrut(10));
 

@@ -22,12 +22,15 @@ package slash.navigation.gui.helpers;
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 import static java.awt.Cursor.DEFAULT_CURSOR;
+import static java.awt.Cursor.HAND_CURSOR;
 import static java.awt.Cursor.WAIT_CURSOR;
 import static java.awt.dnd.DragSource.DefaultMoveDrop;
 import static java.util.prefs.Preferences.userNodeForPackage;
@@ -156,6 +159,21 @@ public class UIHelper {
             UIManager.put("FileChooser.useSystemExtensionHiding", false);
         }
         return new JFileChooser();
+    }
+
+    /**
+     * A JLabel rendered as a clickable hyperlink that runs the given action when clicked.
+     */
+    public static JLabel createLinkLabel(String text, Runnable onClick) {
+        JLabel link = new JLabel("<html><a href=\"\">" + text + "</a></html>");
+        link.setAlignmentX(Component.LEFT_ALIGNMENT);
+        link.setCursor(Cursor.getPredefinedCursor(HAND_CURSOR));
+        link.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent e) {
+                onClick.run();
+            }
+        });
+        return link;
     }
 
     public static File chooseDirectory(Component parent, String title, String currentPath) {
