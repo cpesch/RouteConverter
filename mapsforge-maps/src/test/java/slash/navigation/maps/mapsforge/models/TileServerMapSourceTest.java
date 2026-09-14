@@ -22,7 +22,9 @@ package slash.navigation.maps.mapsforge.models;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static slash.navigation.maps.mapsforge.models.TileServerMapSource.appendApiKey;
+import static slash.navigation.maps.mapsforge.models.TileServerMapSource.userAgent;
 
 public class TileServerMapSourceTest {
 
@@ -49,5 +51,35 @@ public class TileServerMapSourceTest {
     @Test
     public void testMapboxWithExistingQueryAppendsAccessToken() {
         assertEquals("https://example.com/tile?a=b&access_token=key", appendApiKey("https://example.com/tile?a=b", "key", true));
+    }
+
+    private static final String ROUTE_CONVERTER_USER_AGENT =
+            "RouteConverter/" + System.getProperty("rest", "3.0") + " (+https://www.routeconverter.com/)";
+
+    @Test
+    public void testIdentifiesAsRouteConverterToOrdinaryTileServers() {
+        assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent(new String[]{"tile.openstreetmap.org"}));
+    }
+
+    @Test
+    public void testIdentifiesAsJavaToOutdoorActiveHosts() {
+        // OutdoorActive 404s any User-Agent containing "routeconverter", so those hosts get the JDK default
+        assertTrue(userAgent(new String[]{"w0.oastatic.com"}).startsWith("Java/"));
+    }
+
+    @Test
+    public void testIdentifiesAsJavaWhenAnyHostIsOutdoorActive() {
+        assertTrue(userAgent(new String[]{"w0.example.org", "w1.oastatic.com"}).startsWith("Java/"));
+    }
+
+    @Test
+    public void testOutdoorActiveMatchIsCaseInsensitive() {
+        assertTrue(userAgent(new String[]{"W2.OaStatic.Com"}).startsWith("Java/"));
+    }
+
+    @Test
+    public void testLookalikeHostsStillGetTheRouteConverterUserAgent() {
+        assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent(new String[]{"notoastatic.com"}));
+        assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent(new String[]{"oastatic.com.example.org"}));
     }
 }
