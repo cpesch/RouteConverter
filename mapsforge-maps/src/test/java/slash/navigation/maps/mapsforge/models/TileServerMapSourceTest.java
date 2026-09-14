@@ -68,6 +68,12 @@ public class TileServerMapSourceTest {
     }
 
     @Test
+    public void testIdentifiesAsJavaToOutdoorActiveComHosts() {
+        // the CH Swissmap and Outdoor Topo entries use outdooractive.com, which blocks identically
+        assertTrue(userAgent(new String[]{"w0.outdooractive.com"}).startsWith("Java/"));
+    }
+
+    @Test
     public void testIdentifiesAsJavaWhenAnyHostIsOutdoorActive() {
         assertTrue(userAgent(new String[]{"w0.example.org", "w1.oastatic.com"}).startsWith("Java/"));
     }
@@ -81,5 +87,6 @@ public class TileServerMapSourceTest {
     public void testLookalikeHostsStillGetTheRouteConverterUserAgent() {
         assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent(new String[]{"notoastatic.com"}));
         assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent(new String[]{"oastatic.com.example.org"}));
+        assertEquals(ROUTE_CONVERTER_USER_AGENT, userAgent(new String[]{"myoutdooractive.com"}));
     }
 }

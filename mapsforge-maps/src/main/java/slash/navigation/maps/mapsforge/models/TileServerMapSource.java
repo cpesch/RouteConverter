@@ -40,7 +40,7 @@ import java.util.prefs.Preferences;
 public class TileServerMapSource extends AbstractTileSource {
     private static final Preferences preferences = Preferences.userNodeForPackage(TileServerMapSource.class);
     private static final String PARALLEL_REQUEST_LIMIT_PREFERENCE = "parallelRequestLimit";
-    private static final String OUTDOOR_ACTIVE_TILE_DOMAIN = "oastatic.com";
+    private static final String[] OUTDOOR_ACTIVE_TILE_DOMAINS = {"oastatic.com", "outdooractive.com"};
     private final TileServer tileServer;
     private boolean alpha = false;
 
@@ -68,8 +68,9 @@ public class TileServerMapSource extends AbstractTileSource {
      * <p>
      * Exception for OutdoorActive: their tile servers answer 404 to every request whose User-Agent contains
      * "routeconverter" (in the name or in the +URL) or "osmand", while serving any other client - browsers,
-     * competing apps and plain wget alike (measured 2026-09-14). That left the "OAC Summer" and "OSM Summer"
-     * maps blank, so for those hosts we send the JDK's own default identification instead of ours.
+     * competing apps and plain wget alike (measured 2026-09-14). That left the "OAC Summer", "OSM Summer",
+     * "Outdoor Topo", "CH Swissmap" and "UK Ordnance Survey" maps blank, so for those hosts we send the JDK's
+     * own default identification instead of ours.
      */
     static String userAgent(String[] hostNames) {
         for (String hostName : hostNames)
@@ -80,7 +81,10 @@ public class TileServerMapSource extends AbstractTileSource {
 
     private static boolean isOutdoorActiveHost(String hostName) {
         String lowerCase = hostName.toLowerCase();
-        return lowerCase.equals(OUTDOOR_ACTIVE_TILE_DOMAIN) || lowerCase.endsWith("." + OUTDOOR_ACTIVE_TILE_DOMAIN);
+        for (String domain : OUTDOOR_ACTIVE_TILE_DOMAINS)
+            if (lowerCase.equals(domain) || lowerCase.endsWith("." + domain))
+                return true;
+        return false;
     }
 
     public int getParallelRequestsLimit() {
