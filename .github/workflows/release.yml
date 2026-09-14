@@ -162,6 +162,57 @@ jobs:
             --generate-notes \
             --verify-tag
 
+  bump-homebrew-cask:
+    # Spec 00059 P3 (rc-meta#583/#600): keep cpesch/homebrew-routeconverter's
+    # cask in lockstep with each release. Requires HOMEBREW_TAP_TOKEN -- a
+    # fine-grained PAT scoped to Contents:write on that one repo only, added
+    # as a repo secret by a maintainer (no CLI path to mint that token).
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Resolve version from tag
+        id: ver
+        run: echo "version=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+      - name: Checkout tap
+        uses: actions/checkout@v7
+        with:
+          repository: cpesch/homebrew-routeconverter
+          token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+      - name: Fetch sha256 for both mac archs
+        id: sha
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          base="https://releases.routeconverter.com/previous-releases/$VERSION"
+          for arch in x64 aarch64; do
+            hash=$(curl -fsSL "${base}/RouteConverterMac-${arch}.app.zip.sha256" | awk '{print $1}')
+            [[ "$hash" =~ ^[0-9a-f]{64}$ ]] || { echo "::error::bad sha256 for $arch: '$hash'"; exit 1; }
+            echo "${arch}=$hash" >> "$GITHUB_OUTPUT"
+          done
+      - name: Update cask
+        env:
+          VERSION:      ${{ steps.ver.outputs.version }}
+          SHA_X64:      ${{ steps.sha.outputs.x64 }}
+          SHA_AARCH64:  ${{ steps.sha.outputs.aarch64 }}
+        run: |
+          set -euo pipefail
+          f=Casks/routeconverter.rb
+          sed -i -E "s/^(  version \").*(\")\$/\1${VERSION}\2/" "$f"
+          sed -i -E "s/^(  sha256 arm:   \").*(\",)\$/\1${SHA_AARCH64}\2/" "$f"
+          sed -i -E "s/^(         intel: \").*(\")\$/\1${SHA_X64}\2/" "$f"
+          grep -F "$VERSION" "$f"
+          grep -F "$SHA_AARCH64" "$f"
+          grep -F "$SHA_X64" "$f"
+      - name: Commit and push
+        env:
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          git config user.name "RouteConverter release bot"
+          git config user.email "release@routeconverter.com"
+          git commit -am "routeconverter ${VERSION}"
+          git push
+
   publish-javadoc:
     needs: publish
     runs-on: ubuntu-latest
