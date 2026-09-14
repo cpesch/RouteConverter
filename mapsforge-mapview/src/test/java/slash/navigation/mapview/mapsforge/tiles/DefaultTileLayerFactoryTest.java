@@ -21,6 +21,7 @@ package slash.navigation.mapview.mapsforge.tiles;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mapsforge.core.graphics.TileBitmap;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.download.TileDownloadLayer;
 import org.mapsforge.map.layer.hills.HillsRenderConfig;
@@ -32,8 +33,11 @@ import slash.navigation.maps.mapsforge.impl.TileDownloadMap;
 import slash.navigation.maps.mapsforge.models.TileServerMapSource;
 import slash.navigation.maps.tileserver.TileServer;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -73,5 +77,48 @@ public class DefaultTileLayerFactoryTest {
         Layer layer = factory.createLayerForMap(map);
 
         assertTrue("Download map must produce a TileDownloadLayer", layer instanceof TileDownloadLayer);
+    }
+
+    /**
+     * OutdoorActive switched the "OAC Summer"/"OSM Summer" tiles from PNG to WebP while keeping the
+     * URLs ending in "t.png". ImageIO picks its decoder by magic bytes, not by file extension, so the
+     * only thing needed is a WebP ImageReaderSpi on the classpath (imageio-webp, runtime scope).
+     * Without it this fails with IOException("ImageIO failed to read inputStream") and the map stays blank.
+     */
+    @Test
+    public void createTileBitmapDecodesWebpDespitePngNamedUrl() throws IOException {
+        // lossy VP8 ("VP8 " fourcc) — what w0.oastatic.com actually serves
+        assertDecodesAs2x2(new byte[]{
+                (byte) 0x52, (byte) 0x49, (byte) 0x46, (byte) 0x46, (byte) 0x38, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x57, (byte) 0x45, (byte) 0x42, (byte) 0x50, (byte) 0x56, (byte) 0x50, (byte) 0x38, (byte) 0x20,
+                (byte) 0x2C, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x90, (byte) 0x01, (byte) 0x00, (byte) 0x9D,
+                (byte) 0x01, (byte) 0x2A, (byte) 0x02, (byte) 0x00, (byte) 0x02, (byte) 0x00, (byte) 0x02, (byte) 0x00,
+                (byte) 0x34, (byte) 0x25, (byte) 0xA0, (byte) 0x02, (byte) 0x74, (byte) 0xBA, (byte) 0x00, (byte) 0x03,
+                (byte) 0x98, (byte) 0x00, (byte) 0xFE, (byte) 0xEF, (byte) 0x76, (byte) 0xD7, (byte) 0xE3, (byte) 0x79,
+                (byte) 0xBC, (byte) 0xD6, (byte) 0xCE, (byte) 0x3F, (byte) 0xFE, (byte) 0xC1, (byte) 0xDF, (byte) 0xFE,
+                (byte) 0x83, (byte) 0xBF, (byte) 0xFD, (byte) 0x07, (byte) 0x7F, (byte) 0xB2, (byte) 0x40, (byte) 0x00
+        });
+    }
+
+    @Test
+    public void createTileBitmapDecodesLosslessWebp() throws IOException {
+        // lossless VP8L ("VP8L" fourcc) — a tile server may switch to it without notice
+        assertDecodesAs2x2(new byte[]{
+                (byte) 0x52, (byte) 0x49, (byte) 0x46, (byte) 0x46, (byte) 0x2C, (byte) 0x00, (byte) 0x00, (byte) 0x00,
+                (byte) 0x57, (byte) 0x45, (byte) 0x42, (byte) 0x50, (byte) 0x56, (byte) 0x50, (byte) 0x38, (byte) 0x4C,
+                (byte) 0x1F, (byte) 0x00, (byte) 0x00, (byte) 0x00, (byte) 0x2F, (byte) 0x01, (byte) 0x40, (byte) 0x00,
+                (byte) 0x00, (byte) 0x1F, (byte) 0x20, (byte) 0x10, (byte) 0x48, (byte) 0xDA, (byte) 0x1F, (byte) 0x7A,
+                (byte) 0x8D, (byte) 0xF9, (byte) 0x17, (byte) 0x10, (byte) 0x14, (byte) 0xF9, (byte) 0x3F, (byte) 0xDA,
+                (byte) 0xFC, (byte) 0x07, (byte) 0x5F, (byte) 0x24, (byte) 0xE0, (byte) 0x07, (byte) 0x08, (byte) 0x11,
+                (byte) 0xFD, (byte) 0x0F, (byte) 0x01, (byte) 0x00
+        });
+    }
+
+    private static void assertDecodesAs2x2(byte[] tileBytes) throws IOException {
+        TileBitmap bitmap = INSTANCE.createTileBitmap(new ByteArrayInputStream(tileBytes), 2, false);
+
+        assertNotNull("WebP-decoded tile bitmap must not be null once imageio-webp is on the classpath", bitmap);
+        assertEquals(2, bitmap.getWidth());
+        assertEquals(2, bitmap.getHeight());
     }
 }
