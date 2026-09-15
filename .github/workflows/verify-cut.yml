@@ -42,11 +42,13 @@ jobs:
             RouteConverterCmdLine.jar
             RouteConverterLinux.jar
             RouteConverterLinux.deb
-            RouteConverterMac-app.zip
+            RouteConverterMac-x64-app.zip
+            RouteConverterMac-aarch64-app.zip
             RouteConverterWindows.exe
             RouteConverterPortable.paf.exe
             TimeAlbumProLinux.jar
-            TimeAlbumProMac-app.zip
+            TimeAlbumProMac-x64-app.zip
+            TimeAlbumProMac-aarch64-app.zip
             TimeAlbumProWindows.exe
           )
           actual=$(gh release view "$TAG" --repo "$REPO" --json assets --jq '.assets[].name' | sort)
@@ -61,7 +63,7 @@ jobs:
             printf '  %s\n' "${missing[@]}"
             exit 1
           fi
-          echo "all 9 GH Release assets present"
+          echo "all 11 GH Release assets present"
 
           missing_sha=()
           for name in "${expected[@]}"; do
@@ -74,7 +76,7 @@ jobs:
             printf '  %s\n' "${missing_sha[@]}"
             exit 1
           fi
-          echo "all 9 sha256 checksums present"
+          echo "all 11 sha256 checksums present"
 
       - name: Verify releases.routeconverter.com assets serve
         env:
@@ -84,17 +86,17 @@ jobs:
           base=https://releases.routeconverter.com/latest
           for f in RouteConverterCmdLine.jar RouteConverterLinux.jar \
                    RouteConverterLinux.deb \
-                   RouteConverterMac-app.zip \
+                   RouteConverterMac-x64-app.zip RouteConverterMac-aarch64-app.zip \
                    RouteConverterWindows.exe RouteConverterPortable.paf.exe \
-                   TimeAlbumProLinux.jar TimeAlbumProMac-app.zip \
-                   TimeAlbumProWindows.exe; do
+                   TimeAlbumProLinux.jar TimeAlbumProMac-x64-app.zip \
+                   TimeAlbumProMac-aarch64-app.zip TimeAlbumProWindows.exe; do
             code=$(curl -sI -o /dev/null -w '%{http_code}' "${base}/${f}")
             if [[ "$code" != "200" ]]; then
               echo "::error::${base}/${f} returned HTTP $code"
               exit 1
             fi
           done
-          echo "all 9 latest/ URLs return 200"
+          echo "all 11 latest/ URLs return 200"
           arch_base=https://releases.routeconverter.com/previous-releases/${TAG}
           code=$(curl -sI -o /dev/null -w '%{http_code}' "${arch_base}/RouteConverterCmdLine.jar")
           [[ "$code" == "200" ]] || { echo "::error::previous-releases archive missing: $arch_base"; exit 1; }
