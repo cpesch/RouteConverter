@@ -103,7 +103,7 @@ jobs:
         # -DmacApp activates the mac-app profile in RouteConverterMac/TimeAlbumProMac
         # so the .app bundles are assembled here (stub fetched above). The plain
         # `mvn verify` CI omits it, so it does not fail on the absent stub.
-        run: ./mvnw --batch-mode -Prouteconverter -DmacApp -Dmaven.build.number=${{ github.run_number }} -DcrashReportSecret=${{ secrets.CRASH_REPORT_HMAC_SECRET }} package
+        run: ./mvnw --batch-mode -Prouteconverter -DmacApp -Dmaven.build.number=${{ github.run_number }} -DcrashReportSecret=${{ secrets.CRASH_REPORT_HMAC_SECRET }} -DtimeAlbumGoogleMapsApiKey=${{ secrets.TIMEALBUM_GOOGLE_MAPS_API_KEY }} package
       - name: Verify runtime on stripped JRE (class-load gate)
         # Reproduces the minimized-JRE condition from scripts/jre-modules.txt and
         # fails the build on a ClassNotFoundException/NoClassDefFoundError that a
