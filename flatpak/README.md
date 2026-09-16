@@ -1,4 +1,4 @@
-# Flatpak manifest (spec 00059 P4)
+# Flatpak manifest
 
 Not yet submitted to Flathub. Staged here, build- and run-verified.
 
