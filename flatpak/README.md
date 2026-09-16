@@ -40,8 +40,10 @@ flatpak run com.routeconverter.RouteConverter
 
 ## Before submitting to Flathub
 
-1. At least one real screenshot, hosted at an https URL, added to the
-   `<screenshots>` block in the metainfo.
+1. ~~At least one real screenshot, hosted at an https URL, added to the
+   `<screenshots>` block in the metainfo.~~ **Done 2026-09-16:** synthetic
+   Alpine-pass demo (map + elevation profile), hosted at
+   `https://www.routeconverter.com/_shared/img/routeconverter-flathub-screenshot.png`.
 2. Domain ownership verification for `routeconverter.com` — Flathub's
    review checks this automatically once the submission PR is open;
    needs prod web access to place whatever file/record it asks for.
