@@ -72,7 +72,7 @@ jobs:
 
       - name: Build (incl. bundle modules, resource-filters .nsi)
         shell: cmd
-        run: ./mvnw.cmd --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} -DcrashReportSecret=${{ secrets.CRASH_REPORT_HMAC_SECRET }} clean package
+        run: ./mvnw.cmd --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} -DcrashReportSecret=${{ secrets.CRASH_REPORT_HMAC_SECRET }} -DtimeAlbumGoogleMapsApiKey=${{ secrets.TIMEALBUM_GOOGLE_MAPS_API_KEY }} clean package
 
       - name: Pin NSIS 3.11
         shell: pwsh
@@ -302,7 +302,7 @@ jobs:
 
       - name: Submit signing request to SignPath
         if: ${{ inputs.sign }}
-        uses: signpath/github-action-submit-signing-request@v2
+        uses: signpath/github-action-submit-signing-request@v3
         with:
           api-token: ${{ secrets.SIGNPATH_API_TOKEN }}
           organization-id: ${{ vars.SIGNPATH_ORG_ID }}
