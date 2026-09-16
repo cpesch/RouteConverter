@@ -6,7 +6,7 @@ Not yet submitted to Flathub. Staged here, build- and run-verified.
 
 - `com.routeconverter.RouteConverter.yml` — the manifest. Downloads the
   already-built, signed `RouteConverterLinux.jar` from the pinned
-  `previous-releases/<version>/` URL (rc-meta#146) rather than compiling
+  `previous-releases/<version>/` URL rather than compiling
   from source in the sandbox — Maven has no network access inside a
   Flatpak build, and vendoring the full dependency tree via a generated
   sources list is a separate, larger effort.
@@ -37,19 +37,3 @@ flatpak-builder --user --install --force-clean build-dir \
   com.routeconverter.RouteConverter.yml
 flatpak run com.routeconverter.RouteConverter
 ```
-
-## Before submitting to Flathub
-
-1. ~~At least one real screenshot, hosted at an https URL, added to the
-   `<screenshots>` block in the metainfo.~~ **Done 2026-09-16:** synthetic
-   Alpine-pass demo (map + elevation profile), hosted at
-   `https://www.routeconverter.com/_shared/img/routeconverter-flathub-screenshot.png`.
-2. Domain ownership verification for `routeconverter.com` — Flathub's
-   review checks this automatically once the submission PR is open;
-   needs prod web access to place whatever file/record it asks for.
-3. `sha256` in the manifest is pinned to release 3.6 — bump alongside
-   future releases (not yet automated; the winget/Homebrew bump jobs
-   are the pattern to follow here).
-4. Submission itself: PR to https://github.com/flathub/flathub proposing
-   the new app (manual maintainer review, similar cadence to the winget
-   moderator queue).
