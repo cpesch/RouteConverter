@@ -23,10 +23,20 @@ import org.junit.Test;
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.layer.GroupLayer;
 import org.mapsforge.map.layer.Layer;
+import org.mapsforge.map.layer.LayerManager;
+import org.mapsforge.map.layer.Layers;
 import org.mapsforge.map.util.MapViewProjection;
+import slash.navigation.mapview.mapsforge.AwtGraphicMapView;
 import slash.navigation.mapview.mapsforge.overlays.DraggableMarker;
 
+import java.awt.Container;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.List;
+
+import static java.awt.event.InputEvent.BUTTON1_DOWN_MASK;
+import static java.awt.event.MouseEvent.MOUSE_DRAGGED;
+import static java.awt.event.MouseEvent.MOUSE_PRESSED;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -59,6 +69,10 @@ public class MapViewMoverAndZoomerTest {
     }
 
     private final MapViewProjection projection = mock(MapViewProjection.class);
+    private final AwtGraphicMapView mapView = mock(AwtGraphicMapView.class);
+    private final LayerManager layerManager = mock(LayerManager.class);
+    private final LatLong draggedTo = new LatLong(11.0, 21.0);
+    private final Container eventSource = new Container();
     private final LatLong tapLatLong = new LatLong(10.0, 20.0);
     private final org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(100, 200);
 
@@ -194,5 +208,62 @@ public class MapViewMoverAndZoomerTest {
 
         // Flat marker should win because it comes later in the list
         assertSame(flatMarker, result);
+    }
+
+    /**
+     * Dragging a selection marker must repaint the map. The marker's own requestRedraw() cannot:
+     * only Layers#add assigns a Redrawer, and selection markers are children of a GroupLayer
+     * (#357), so the dragged pin stayed frozen at its old position until the drop while only the
+     * drag cursor moved -- reported 2026-09-16.
+     */
+    @Test
+    public void testDraggingAMarkerRedrawsTheMap() {
+        FakeDraggableMarker marker = draggableMarkerUnderTheCursor();
+        MapViewMoverAndZoomer moverAndZoomer = new MapViewMoverAndZoomer(mapView, layerManager, projection);
+
+        moverAndZoomer.mousePressed(mouseEvent(MOUSE_PRESSED, 100, 200));
+        assertTrue(moverAndZoomer.isMousePressedOnMarker());
+
+        moverAndZoomer.mouseDragged(mouseEvent(MOUSE_DRAGGED, 140, 260));
+
+        verify(layerManager).redrawLayers();
+        assertEquals(draggedTo, marker.getLatLong());
+    }
+
+    /**
+     * The dragged position follows the cursor hotspot, not the point grabbed on the bitmap: a
+     * selection marker is anchored ~25px below the middle of its icon, so honouring the grab
+     * offset dropped the position that far below the pointer.
+     */
+    @Test
+    public void testDraggingAMarkerIgnoresTheGrabOffset() {
+        FakeDraggableMarker marker = draggableMarkerUnderTheCursor();
+        MapViewMoverAndZoomer moverAndZoomer = new MapViewMoverAndZoomer(mapView, layerManager, projection);
+
+        // grab the marker well above its anchor, as one does when grabbing a pin by its head
+        moverAndZoomer.mousePressed(mouseEvent(MOUSE_PRESSED, 100, 175));
+        moverAndZoomer.mouseDragged(mouseEvent(MOUSE_DRAGGED, 140, 260));
+
+        // the marker sits at the cursor, not 25px below it
+        assertEquals(draggedTo, marker.getLatLong());
+        verify(projection, never()).fromPixels(140.0, 285.0);
+    }
+
+    private FakeDraggableMarker draggableMarkerUnderTheCursor() {
+        LatLong markerPosition = new LatLong(10.0, 20.0);
+        FakeDraggableMarker marker = new FakeDraggableMarker(markerPosition, true);
+
+        Layers layers = mock(Layers.class);
+        when(layers.getLayers()).thenReturn(List.of(marker));
+        when(layerManager.getLayers()).thenReturn(layers);
+        when(projection.toPixels(markerPosition)).thenReturn(new org.mapsforge.core.model.Point(100, 200));
+        when(projection.fromPixels(anyDouble(), anyDouble())).thenReturn(tapLatLong);
+        when(projection.fromPixels(140.0, 260.0)).thenReturn(draggedTo);
+        return marker;
+    }
+
+    private MouseEvent mouseEvent(int id, int x, int y) {
+        // a mocked Component cannot source a MouseEvent: the constructor reads its screen location
+        return new MouseEvent(eventSource, id, 0L, BUTTON1_DOWN_MASK, x, y, 1, false);
     }
 }
