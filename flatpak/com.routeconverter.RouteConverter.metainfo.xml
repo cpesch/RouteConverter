@@ -22,8 +22,13 @@
     <name>Christian Pesch</name>
   </developer>
   <content_rating type="oars-1.1" />
+  <screenshots>
+    <screenshot type="default">
+      <caption>Editing a route with an elevation profile on the map</caption>
+      <image>https://www.routeconverter.com/_shared/img/routeconverter-flathub-screenshot.png</image>
+    </screenshot>
+  </screenshots>
   <releases>
     <release version="3.6" date="2026-08-23" />
   </releases>
-  <!-- TODO before Flathub submission: at least one https screenshot -->
 </component>
