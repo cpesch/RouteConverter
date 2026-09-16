@@ -25,7 +25,6 @@ import org.mapsforge.map.layer.GroupLayer;
 import org.mapsforge.map.layer.Layer;
 import org.mapsforge.map.layer.LayerManager;
 import org.mapsforge.map.layer.Layers;
-import org.mapsforge.map.layer.overlay.Marker;
 import org.mapsforge.map.model.MapViewPosition;
 import org.mapsforge.map.util.MapViewProjection;
 import slash.navigation.mapview.mapsforge.AwtGraphicMapView;
@@ -55,11 +54,15 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     private final MapViewProjection projection;
     private final LayerManager layerManager;
     private Point lastMousePressPoint;
-    private MarkerAndDelta markerAndDelta;
+    private DraggableMarker pressedMarker;
 
     public MapViewMoverAndZoomer(AwtGraphicMapView mapView, LayerManager layerManager) {
+        this(mapView, layerManager, new MapViewProjection(mapView));
+    }
+
+    MapViewMoverAndZoomer(AwtGraphicMapView mapView, LayerManager layerManager, MapViewProjection projection) {
         this.mapView = mapView;
-        this.projection = new MapViewProjection(mapView);
+        this.projection = projection;
         this.layerManager = layerManager;
         mapView.addMouseListener(this);
         mapView.addMouseMotionListener(this);
@@ -72,8 +75,8 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public void mousePressed(MouseEvent e) {
-        markerAndDelta = getMarkerFor(e);
-        if (markerAndDelta == null)
+        pressedMarker = getMarkerFor(e);
+        if (pressedMarker == null)
             lastMousePressPoint = e.getPoint();
     }
 
@@ -81,10 +84,8 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         if (isLeftMouseButton(e)) {
             if (isMousePressedOnMarker()) {
                 startDragCursor(mapView);
-                LatLong latLong = projection.fromPixels(e.getX() + markerAndDelta.deltaX(), e.getY() + markerAndDelta.deltaY());
-                Marker marker = markerAndDelta.marker();
-                marker.setLatLong(latLong);
-                marker.requestRedraw();
+                pressedMarker.setLatLong(draggedTo(e));
+                requestRedraw();
 
             } else if (getLastMousePoint() != null) {
                 Point point = e.getPoint();
@@ -98,15 +99,35 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
 
     public void mouseReleased(MouseEvent e) {
         if (isMousePressedOnMarker() && isDragCursor(mapView)) {
-            LatLong latLong = projection.fromPixels(e.getX() + markerAndDelta.deltaX(), e.getY() + markerAndDelta.deltaY());
-            DraggableMarker marker = markerAndDelta.marker();
-            marker.onDrop(latLong);
+            pressedMarker.onDrop(draggedTo(e));
             stopWaitCursor(mapView);
         }
         // clear the pressed-on-marker state on every release: a plain click on a marker (no drag)
         // must not leave isMousePressedOnMarker() stuck true, which would suppress selecting that
         // position and let a subsequent "new position" fall back to the map center (off the route)
-        markerAndDelta = null;
+        pressedMarker = null;
+    }
+
+    /**
+     * The position a drag puts the marker at: the cursor hotspot itself, not the point grabbed on
+     * the marker bitmap. A selection marker is anchored at the pin tip, ~25px below the middle of
+     * its icon, so honouring the grab offset used to drop the position that far below the pointer
+     * while the drag cursor gives no hint where it actually is — several attempts per move, as a
+     * user reported on 2026-09-16. Dragging by the hotspot makes the drop point the arrow tip.
+     */
+    private LatLong draggedTo(MouseEvent e) {
+        return projection.fromPixels(e.getX(), e.getY());
+    }
+
+    /**
+     * Repaints the map after a marker moved. {@link Layer#requestRedraw()} cannot do it: it is a
+     * no-op until a {@link org.mapsforge.map.layer.Redrawer} is assigned, and only {@link Layers#add}
+     * assigns one. Selection markers are children of the selectionLayer {@link GroupLayer} instead
+     * (#357), so they never get a redrawer and the dragged pin stayed frozen at its old position
+     * until the drop. Ask the {@link LayerManager}, which is the redrawer the group layer uses.
+     */
+    private void requestRedraw() {
+        layerManager.redrawLayers();
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
@@ -146,16 +167,12 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         return null;
     }
 
-    private MarkerAndDelta getMarkerFor(MouseEvent e) {
+    private DraggableMarker getMarkerFor(MouseEvent e) {
         if((e.getModifiersEx() & CTRL_DOWN_MASK) != CTRL_DOWN_MASK) {
             LatLong tapLatLong = projection.fromPixels(e.getX(), e.getY());
             org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(e.getX(), e.getY());
 
-            DraggableMarker marker = findDraggableMarkerAt(layerManager.getLayers().getLayers(), projection, tapLatLong, tapXY);
-            if (marker != null) {
-                org.mapsforge.core.model.Point layerXY = projection.toPixels(marker.getPosition());
-                return new MarkerAndDelta(marker, layerXY.x - tapXY.x, layerXY.y - tapXY.y);
-            }
+            return findDraggableMarkerAt(layerManager.getLayers().getLayers(), projection, tapLatLong, tapXY);
         }
         return null;
     }
@@ -212,9 +229,6 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public boolean isMousePressedOnMarker() {
-        return markerAndDelta != null;
-    }
-
-    private record MarkerAndDelta(DraggableMarker marker, double deltaX, double deltaY) {
+        return pressedMarker != null;
     }
 }
