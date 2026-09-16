@@ -1,11 +1,14 @@
 name: _sign-mac
 
-# Reusable workflow: consumes the unsigned RouteConverterMac-{x64,aarch64}-app.zip
-# artefacts produced by _build-linux-mac.yml, code-signs each RouteConverter.app
-# with a Hardened Runtime on a macos-latest runner, then (creds present)
-# notarises + staples. Re-zips and uploads the signed app zips under a name that
-# does NOT match the caller's prerelease-*/release-* flatten pattern, so publish
-# overlays them explicitly (see prerelease.yml / release.yml).
+# Reusable workflow: consumes the unsigned {RouteConverterMac,TimeAlbumProMac}-
+# {x64,aarch64}-app.zip artefacts produced by _build-linux-mac.yml, code-signs
+# each RouteConverter.app / TimeAlbumPro.app with a Hardened Runtime on a
+# macos-latest runner, then (creds present) notarises + staples. Both products
+# take the SAME loop — product parity is the point, so the day the MACOS_*
+# secrets land they flip to real signing together. Re-zips and uploads the
+# signed app zips under a name that does NOT match the caller's
+# prerelease-*/release-* flatten pattern, so publish overlays them explicitly
+# (see prerelease.yml / release.yml).
 #
 # Called by:
 #   - prerelease.yml (signed-artefact: mac-signed-prerelease)
@@ -126,100 +129,108 @@ jobs:
             RUNTIME_FLAGS=(--options runtime)                # no --timestamp for ad-hoc
           fi
 
+          # Both products run the IDENTICAL sign / (notarise) / staple / re-zip
+          # path. "${product%Mac}" maps the artefact stem to the bundle
+          # (RouteConverterMac -> RouteConverter, TimeAlbumProMac ->
+          # TimeAlbumPro); a third product is one more list entry here plus an
+          # overlay glob in the callers.
           for arch in x64 aarch64; do
-            zip="unsigned/RouteConverterMac-${arch}-app.zip"
-            [[ -f "$zip" ]] || { echo "::error::missing $zip in ${{ inputs.unsigned-artefact }}"; exit 1; }
-            work="$RUNNER_TEMP/$arch"; rm -rf "$work"; mkdir -p "$work"
-            ditto -x -k "$zip" "$work"
-            APP="$work/RouteConverter.app"
-            [[ -d "$APP" ]] || { echo "::error::no RouteConverter.app inside $zip"; exit 1; }
+            for product in RouteConverterMac TimeAlbumProMac; do
+              app="${product%Mac}"
+              zip="unsigned/${product}-${arch}-app.zip"
+              [[ -f "$zip" ]] || { echo "::error::missing $zip in ${{ inputs.unsigned-artefact }}"; exit 1; }
+              work="$RUNNER_TEMP/$product-$arch"; rm -rf "$work"; mkdir -p "$work"
+              ditto -x -k "$zip" "$work"
+              APP="$work/$app.app"
+              [[ -d "$APP" ]] || { echo "::error::no $app.app inside $zip"; exit 1; }
 
-            # 1) inner Mach-O: JRE dylibs, .jnilib, jspawnhelper
-            find "$APP/Contents" \
-                 \( -name '*.dylib' -o -name '*.jnilib' -o -name 'jspawnhelper' \) \
-                 -type f -print0 \
-              | xargs -0 -I{} codesign --force "${RUNTIME_FLAGS[@]}" \
-                  --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" {}
-
-            # JRE executables under Contents/bin (java, etc.)
-            if [[ -d "$APP/Contents/bin" ]]; then
-              find "$APP/Contents/bin" -type f -print0 \
+              # 1) inner Mach-O: JRE dylibs, .jnilib, jspawnhelper
+              find "$APP/Contents" \
+                   \( -name '*.dylib' -o -name '*.jnilib' -o -name 'jspawnhelper' \) \
+                   -type f -print0 \
                 | xargs -0 -I{} codesign --force "${RUNTIME_FLAGS[@]}" \
                     --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" {}
-            fi
 
-            # 1b) Mach-O natives EMBEDDED inside the fat jar. notarytool scans
-            # inside jars; sqlite-jdbc (via mapsforge-poi/mbtiles) ships
-            # org/sqlite/native/Mac/{x86_64,aarch64}/libsqlitejdbc.dylib, which
-            # are unsigned Mach-O and would fail notarisation. Extract-sign-repack
-            # each in place, BEFORE the bundle is sealed. Match both macOS native
-            # extensions (.dylib and .jnilib, e.g. JNA); non-Mach-O natives
-            # (Linux .so, Windows .dll) are ignored by notarisation, so skipped.
-            # bash-3.2 safe (macOS default): no mapfile/associative arrays.
-            find "$APP/Contents/Java" -name '*.jar' -type f -print0 \
-            | while IFS= read -r -d '' JAR; do
-                JAR="$(cd "$(dirname "$JAR")" && pwd)/$(basename "$JAR")"   # absolutise for `zip -u`
-                natives=$(unzip -Z1 "$JAR" 2>/dev/null | grep -E '\.(dylib|jnilib)$' || true)
-                [ -z "$natives" ] && continue
-                jtmp="$RUNNER_TEMP/jar-$arch"; rm -rf "$jtmp"; mkdir -p "$jtmp"
-                printf '%s\n' "$natives" | while IFS= read -r d; do
-                  [ -z "$d" ] && continue
-                  unzip -o -q "$JAR" "$d" -d "$jtmp"
-                  codesign --force "${RUNTIME_FLAGS[@]}" \
-                    --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" "$jtmp/$d"
-                  ( cd "$jtmp" && zip -q "$JAR" "$d" )       # replace entry in the jar
-                  echo "signed embedded $d in $(basename "$JAR")"
+              # JRE executables under Contents/bin (java, etc.)
+              if [[ -d "$APP/Contents/bin" ]]; then
+                find "$APP/Contents/bin" -type f -print0 \
+                  | xargs -0 -I{} codesign --force "${RUNTIME_FLAGS[@]}" \
+                      --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" {}
+              fi
+
+              # 1b) Mach-O natives EMBEDDED inside the fat jar. notarytool scans
+              # inside jars; sqlite-jdbc (via mapsforge-poi/mbtiles) ships
+              # org/sqlite/native/Mac/{x86_64,aarch64}/libsqlitejdbc.dylib, which
+              # are unsigned Mach-O and would fail notarisation. Extract-sign-repack
+              # each in place, BEFORE the bundle is sealed. Match both macOS native
+              # extensions (.dylib and .jnilib, e.g. JNA); non-Mach-O natives
+              # (Linux .so, Windows .dll) are ignored by notarisation, so skipped.
+              # bash-3.2 safe (macOS default): no mapfile/associative arrays.
+              find "$APP/Contents/Java" -name '*.jar' -type f -print0 \
+              | while IFS= read -r -d '' JAR; do
+                  JAR="$(cd "$(dirname "$JAR")" && pwd)/$(basename "$JAR")"   # absolutise for `zip -u`
+                  natives=$(unzip -Z1 "$JAR" 2>/dev/null | grep -E '\.(dylib|jnilib)$' || true)
+                  [ -z "$natives" ] && continue
+                  jtmp="$RUNNER_TEMP/jar-$product-$arch"; rm -rf "$jtmp"; mkdir -p "$jtmp"
+                  printf '%s\n' "$natives" | while IFS= read -r d; do
+                    [ -z "$d" ] && continue
+                    unzip -o -q "$JAR" "$d" -d "$jtmp"
+                    codesign --force "${RUNTIME_FLAGS[@]}" \
+                      --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" "$jtmp/$d"
+                    ( cd "$jtmp" && zip -q "$JAR" "$d" )       # replace entry in the jar
+                    echo "signed embedded $d in $(basename "$JAR")"
+                  done
                 done
-              done
 
-            # 2) the bundle LAST (covers the launcher + Info.plist seal)
-            codesign --force "${RUNTIME_FLAGS[@]}" \
-              --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" "$APP"
-            codesign --verify --deep --strict --verbose=2 "$APP"
+              # 2) the bundle LAST (covers the launcher + Info.plist seal)
+              codesign --force "${RUNTIME_FLAGS[@]}" \
+                --sign "$SIGN_ID" --entitlements "$ENTITLEMENTS" "$APP"
+              codesign --verify --deep --strict --verbose=2 "$APP"
 
-            # 3) GUARD: codesign --deep does NOT recurse into jars, so a Mach-O
-            # nested in a jar that step 1b missed (a new native dep, or a native
-            # under an unexpected extension) would sail through unsigned and only
-            # blow up at notarytool. Verify by magic (file(1)), not by trusting
-            # the sign glob. Candidate set = the native-ish extensions plus
-            # extensionless entries; the magic check then drops non-Mach-O
-            # (Linux .so = ELF, Windows .dll = PE), so this stays cheap without
-            # extracting the whole fat jar. A .fail marker carries the verdict out
-            # of the pipe subshells (bash-3.2: no shared flag across `|`). Ad-hoc
-            # signatures pass codesign --verify, so this also gates the dry-run.
-            guard="$RUNNER_TEMP/guard-$arch"; rm -rf "$guard"; mkdir -p "$guard"
-            find "$APP/Contents/Java" -name '*.jar' -type f -print0 \
-            | while IFS= read -r -d '' JAR; do
-                cands=$(unzip -Z1 "$JAR" 2>/dev/null \
-                          | grep -iE '\.(dylib|jnilib|so|dll)$|/[^/.]+$' || true)
-                [ -z "$cands" ] && continue
-                x="$guard/x"; rm -rf "$x"; mkdir -p "$x"
-                printf '%s\n' "$cands" | while IFS= read -r e; do
-                  [ -z "$e" ] && continue
-                  unzip -o -q "$JAR" "$e" -d "$x" 2>/dev/null || continue
-                  f="$x/$e"
-                  file "$f" | grep -q 'Mach-O' || continue      # skip ELF/PE/text
-                  if ! codesign --verify --strict "$f" 2>/dev/null; then
-                    echo "::error::unsigned Mach-O in $(basename "$JAR"): $e"
-                    touch "$guard/.fail"
-                  fi
+              # 3) GUARD: codesign --deep does NOT recurse into jars, so a Mach-O
+              # nested in a jar that step 1b missed (a new native dep, or a native
+              # under an unexpected extension) would sail through unsigned and only
+              # blow up at notarytool. Verify by magic (file(1)), not by trusting
+              # the sign glob. Candidate set = the native-ish extensions plus
+              # extensionless entries; the magic check then drops non-Mach-O
+              # (Linux .so = ELF, Windows .dll = PE), so this stays cheap without
+              # extracting the whole fat jar. A .fail marker carries the verdict out
+              # of the pipe subshells (bash-3.2: no shared flag across `|`). Ad-hoc
+              # signatures pass codesign --verify, so this also gates the dry-run.
+              guard="$RUNNER_TEMP/guard-$product-$arch"; rm -rf "$guard"; mkdir -p "$guard"
+              find "$APP/Contents/Java" -name '*.jar' -type f -print0 \
+              | while IFS= read -r -d '' JAR; do
+                  cands=$(unzip -Z1 "$JAR" 2>/dev/null \
+                            | grep -iE '\.(dylib|jnilib|so|dll)$|/[^/.]+$' || true)
+                  [ -z "$cands" ] && continue
+                  x="$guard/x"; rm -rf "$x"; mkdir -p "$x"
+                  printf '%s\n' "$cands" | while IFS= read -r e; do
+                    [ -z "$e" ] && continue
+                    unzip -o -q "$JAR" "$e" -d "$x" 2>/dev/null || continue
+                    f="$x/$e"
+                    file "$f" | grep -q 'Mach-O' || continue      # skip ELF/PE/text
+                    if ! codesign --verify --strict "$f" 2>/dev/null; then
+                      echo "::error::unsigned Mach-O in $(basename "$JAR"): $e"
+                      touch "$guard/.fail"
+                    fi
+                  done
                 done
-              done
-            if [ -f "$guard/.fail" ]; then
-              echo "::error::embedded Mach-O signing guard FAILED ($arch) — extend the step 1b glob"
-              exit 1
-            fi
+              if [ -f "$guard/.fail" ]; then
+                echo "::error::embedded Mach-O signing guard FAILED ($product $arch) — extend the step 1b glob"
+                exit 1
+              fi
 
-            if [[ "$REAL" == "true" ]]; then
-              # notarytool wants a container, not a raw .app
-              subm="$RUNNER_TEMP/RouteConverterMac-${arch}.zip"
-              ditto -c -k --keepParent "$APP" "$subm"
-              xcrun notarytool submit "$subm" --keychain-profile rc-notary --wait
-              xcrun stapler staple "$APP"
-              xcrun stapler validate "$APP"
-            fi
+              if [[ "$REAL" == "true" ]]; then
+                # notarytool wants a container, not a raw .app
+                subm="$RUNNER_TEMP/${product}-${arch}.zip"
+                ditto -c -k --keepParent "$APP" "$subm"
+                xcrun notarytool submit "$subm" --keychain-profile rc-notary --wait
+                xcrun stapler staple "$APP"
+                xcrun stapler validate "$APP"
+              fi
 
-            ditto -c -k --keepParent "$APP" "signed/RouteConverterMac-${arch}-app.zip"
+              ditto -c -k --keepParent "$APP" "signed/${product}-${arch}-app.zip"
+            done
           done
           ls -la signed/
 
