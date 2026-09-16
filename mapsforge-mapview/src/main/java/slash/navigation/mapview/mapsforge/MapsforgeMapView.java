@@ -1271,6 +1271,8 @@ public class MapsforgeMapView extends BaseMapView {
             return;
         }
 
+        log.info("Moving position to latitude=" + latitude + ", longitude=" + longitude + " in row " + row);
+
         NavigationPosition reference = positionsModel.getPosition(row);
         Double diffLongitude = reference != null ? longitude - reference.getLongitude() : 0.0;
         Double diffLatitude = reference != null ? latitude - reference.getLatitude() : 0.0;
