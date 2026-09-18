@@ -28,8 +28,8 @@ import slash.navigation.maps.tileserver.TileServer;
 
 import javax.swing.event.TableModelListener;
 
-import static javax.swing.event.TableModelEvent.*;
 import static java.util.Locale.ROOT;
+import static javax.swing.event.TableModelEvent.*;
 
 /**
  * Converts {@link TileServer} to {@link LocalMap}

@@ -46,11 +46,11 @@ import java.util.prefs.Preferences;
 import static java.text.MessageFormat.format;
 import static java.text.NumberFormat.getIntegerInstance;
 import static java.text.NumberFormat.getNumberInstance;
+import static java.util.Locale.ROOT;
 import static org.jfree.chart.axis.NumberAxis.createIntegerTickUnits;
 import static org.jfree.chart.axis.NumberAxis.createStandardTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 import static org.jfree.chart.ui.Layer.FOREGROUND;
-import static java.util.Locale.ROOT;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
 
 /**

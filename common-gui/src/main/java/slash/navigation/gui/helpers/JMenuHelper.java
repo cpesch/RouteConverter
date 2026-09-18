@@ -29,8 +29,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ResourceBundle;
 
-import static javax.swing.KeyStroke.getKeyStroke;
 import static java.util.Locale.ROOT;
+import static javax.swing.KeyStroke.getKeyStroke;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Platform.isMac;
 
