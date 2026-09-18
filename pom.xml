@@ -91,6 +91,12 @@
              entry in pluginManagement below). -->
         <jaxb-api.version>4.0.5</jaxb-api.version>
         <jaxb-impl.version>4.0.9</jaxb-impl.version>
+        <!-- Single source of truth for the JUnit 5 platform (junit-bom pins
+             jupiter, vintage engine and the platform itself). Phase 1 of the
+             JUnit 4 -> 5 migration: the vintage engine keeps the still
+             un-migrated JUnit 4 test classes running; it is removed in the
+             final migration phase. -->
+        <junit.version>5.13.4</junit.version>
         <!-- Single source of truth for log4j. Keeps the transitive log4j-api
              (via poi-ooxml, which still ships a vulnerable 2.24.3) in lockstep
              with the log4j-to-slf4j bridge in the launcher poms
@@ -644,9 +650,17 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- Keeps the JUnit 4 test classes of the not yet migrated modules
+             running on the JUnit platform; removed by the migration's final
+             phase. Also puts junit:junit on the test classpath they compile
+             against. -->
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -752,6 +766,13 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-to-slf4j</artifactId>
                 <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit</groupId>
+                <artifactId>junit-bom</artifactId>
+                <version>${junit.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>

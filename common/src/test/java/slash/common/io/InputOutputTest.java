@@ -20,15 +20,14 @@
 
 package slash.common.io;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for {@link InputOutput}.
@@ -38,8 +37,8 @@ import static org.junit.Assert.*;
 
 public class InputOutputTest {
 
-    @Rule
-    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+    @TempDir
+    public File temporaryFolder;
 
     @Test
     public void testDefaultBufferSize() {
@@ -89,7 +88,7 @@ public class InputOutputTest {
 
     @Test
     public void testReadFileToString() throws IOException {
-        File file = temporaryFolder.newFile("test.txt");
+        File file = new File(temporaryFolder, "test.txt");
         String content = "file content line";
         try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8)) {
             fw.write(content);
@@ -100,7 +99,7 @@ public class InputOutputTest {
 
     @Test
     public void testReadFileToStringUtf8() throws IOException {
-        File file = temporaryFolder.newFile("utf8.txt");
+        File file = new File(temporaryFolder, "utf8.txt");
         String content = "Zürich ? München";
         try (FileWriter fw = new FileWriter(file, StandardCharsets.UTF_8)) {
             fw.write(content);

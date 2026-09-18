@@ -20,14 +20,14 @@
 
 package slash.common.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.common.helpers.LegacyParserFormatter.ParserType.DATE;
 import static slash.common.helpers.LegacyParserFormatter.ParserType.DATETIME;
 import static slash.common.helpers.LegacyParserFormatter.ParserType.TIME;

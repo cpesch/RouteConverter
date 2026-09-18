@@ -20,38 +20,39 @@
 
 package slash.common.io;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import java.io.File;
 import java.io.IOException;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FileFileFilterTest {
 
-    @Rule
-    public TemporaryFolder tmp = new TemporaryFolder();
+    @TempDir
+    public File tmp;
 
     private final FileFileFilter filter = new FileFileFilter();
 
     @Test
     public void testAcceptsRegularFile() throws IOException {
-        File file = tmp.newFile("test.txt");
+        File file = new File(tmp, "test.txt");
+        assertTrue(file.createNewFile());
         assertTrue(filter.accept(file));
     }
 
     @Test
     public void testRejectsDirectory() throws IOException {
-        File dir = tmp.newFolder("subdir");
+        File dir = new File(tmp, "subdir");
+        assertTrue(dir.mkdir());
         assertFalse(filter.accept(dir));
     }
 
     @Test
     public void testRejectsNonExistentPath() throws IOException {
-        File nonExistent = new File(tmp.getRoot(), "no-such-file.txt");
+        File nonExistent = new File(tmp, "no-such-file.txt");
         assertFalse(filter.accept(nonExistent));
     }
 }

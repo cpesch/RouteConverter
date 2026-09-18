@@ -20,11 +20,11 @@
 
 package slash.common.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.TimeZone;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for {@link TimeZoneAndId}.

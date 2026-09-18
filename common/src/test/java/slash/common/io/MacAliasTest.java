@@ -20,19 +20,19 @@
 
 package slash.common.io;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import static java.lang.String.format;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assume.assumeTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
 import static slash.common.io.Files.recursiveDelete;
 import static slash.common.system.Platform.isMac;
 
@@ -47,7 +47,7 @@ public class MacAliasTest {
     private File targetFile;
     private File targetDirectory;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         base = new File(System.getProperty("java.io.tmpdir"), "mac-alias-test-" + System.currentTimeMillis());
         assertTrue(base.mkdir());
@@ -57,7 +57,7 @@ public class MacAliasTest {
         assertTrue(targetDirectory.mkdir());
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         recursiveDelete(base);
     }

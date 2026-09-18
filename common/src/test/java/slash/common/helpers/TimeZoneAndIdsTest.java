@@ -20,9 +20,9 @@
 
 package slash.common.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests for {@link TimeZoneAndIds}.
@@ -56,7 +56,7 @@ public class TimeZoneAndIdsTest {
                 break;
             }
         }
-        assertTrue("UTC should be present", found);
+        assertTrue(found, "UTC should be present");
     }
 
     @Test
@@ -83,7 +83,7 @@ public class TimeZoneAndIdsTest {
         TimeZoneAndId[] zones = TimeZoneAndIds.getInstance().getTimeZones();
         java.util.Set<String> ids = new java.util.HashSet<>();
         for (TimeZoneAndId tz : zones) {
-            assertTrue("Duplicate id: " + tz.id(), ids.add(tz.id()));
+            assertTrue(ids.add(tz.id()), "Duplicate id: " + tz.id());
         }
     }
 }

@@ -19,9 +19,9 @@
 */
 package slash.common.io;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -33,11 +33,11 @@ import java.net.URL;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 import static slash.common.io.Files.absolutize;
 import static slash.common.io.Files.asLogString;
 import static slash.common.io.Files.checkDirectory;
@@ -63,14 +63,14 @@ import static slash.common.io.Files.toUrls;
 public class FilesFilesystemTest {
     private File directory;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         directory = File.createTempFile("filesfilesystem", "");
         assertTrue(directory.delete());
         assertTrue(directory.mkdirs());
     }
 
-    @After
+    @AfterEach
     public void tearDown() throws IOException {
         if (directory.exists())
             recursiveDelete(directory);
