@@ -32,7 +32,6 @@ import java.util.prefs.Preferences;
 import static java.awt.Cursor.DEFAULT_CURSOR;
 import static java.awt.Cursor.HAND_CURSOR;
 import static java.awt.Cursor.WAIT_CURSOR;
-import static java.awt.dnd.DragSource.DefaultMoveDrop;
 import static java.util.prefs.Preferences.userNodeForPackage;
 import static slash.common.system.Platform.*;
 
@@ -133,14 +132,6 @@ public class UIHelper {
 
     private static void startWaitCursor(Component component) {
         component.setCursor(Cursor.getPredefinedCursor(WAIT_CURSOR));
-    }
-
-    public static void startDragCursor(Component component) {
-        component.setCursor(DefaultMoveDrop);
-    }
-
-    public static boolean isDragCursor(Component component) {
-        return component.getCursor().equals(DefaultMoveDrop);
     }
 
     public static void stopWaitCursor(JComponent component) {

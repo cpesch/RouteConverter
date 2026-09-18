@@ -231,22 +231,22 @@ public class MapViewMoverAndZoomerTest {
     }
 
     /**
-     * The dragged position follows the cursor hotspot, not the point grabbed on the bitmap: a
-     * selection marker is anchored ~25px below the middle of its icon, so honouring the grab
-     * offset dropped the position that far below the pointer.
+     * The pin keeps the offset it was grabbed with, so its tip decides where the position lands --
+     * as brouter-web, graphhopper and kurviger do, and as RouteConverter did up to 3.6. Grabbing
+     * the pin by its head must not make it jump so that its tip sits under the pointer.
      */
     @Test
-    public void testDraggingAMarkerIgnoresTheGrabOffset() {
+    public void testDraggingAMarkerKeepsTheGrabOffset() {
         FakeDraggableMarker marker = draggableMarkerUnderTheCursor();
         MapViewMoverAndZoomer moverAndZoomer = new MapViewMoverAndZoomer(mapView, layerManager, projection);
 
-        // grab the marker well above its anchor, as one does when grabbing a pin by its head
+        // grab the marker 25px above its anchor, as one does when grabbing a pin by its head
         moverAndZoomer.mousePressed(mouseEvent(MOUSE_PRESSED, 100, 175));
         moverAndZoomer.mouseDragged(mouseEvent(MOUSE_DRAGGED, 140, 260));
 
-        // the marker sits at the cursor, not 25px below it
+        // the anchor stays 25px below the pointer: 260 + (200 - 175)
+        verify(projection).fromPixels(140.0, 285.0);
         assertEquals(draggedTo, marker.getLatLong());
-        verify(projection, never()).fromPixels(140.0, 285.0);
     }
 
     private FakeDraggableMarker draggableMarkerUnderTheCursor() {
@@ -259,6 +259,7 @@ public class MapViewMoverAndZoomerTest {
         when(projection.toPixels(markerPosition)).thenReturn(new org.mapsforge.core.model.Point(100, 200));
         when(projection.fromPixels(anyDouble(), anyDouble())).thenReturn(tapLatLong);
         when(projection.fromPixels(140.0, 260.0)).thenReturn(draggedTo);
+        when(projection.fromPixels(140.0, 285.0)).thenReturn(draggedTo);
         return marker;
     }
 
