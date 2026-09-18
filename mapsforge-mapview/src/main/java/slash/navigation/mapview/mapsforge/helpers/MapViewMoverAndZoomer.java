@@ -54,7 +54,8 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     private final MapViewProjection projection;
     private final LayerManager layerManager;
     private Point lastMousePressPoint;
-    private DraggableMarker pressedMarker;
+    private GrabbedMarker grabbedMarker;
+    private boolean dragging;
 
     public MapViewMoverAndZoomer(AwtGraphicMapView mapView, LayerManager layerManager) {
         this(mapView, layerManager, new MapViewProjection(mapView));
@@ -75,16 +76,17 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public void mousePressed(MouseEvent e) {
-        pressedMarker = getMarkerFor(e);
-        if (pressedMarker == null)
+        grabbedMarker = getMarkerFor(e);
+        dragging = false;
+        if (grabbedMarker == null)
             lastMousePressPoint = e.getPoint();
     }
 
     public void mouseDragged(MouseEvent e) {
         if (isLeftMouseButton(e)) {
             if (isMousePressedOnMarker()) {
-                startDragCursor(mapView);
-                pressedMarker.setLatLong(draggedTo(e));
+                dragging = true;
+                grabbedMarker.marker().setLatLong(draggedTo(e));
                 requestRedraw();
 
             } else if (getLastMousePoint() != null) {
@@ -98,25 +100,23 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public void mouseReleased(MouseEvent e) {
-        if (isMousePressedOnMarker() && isDragCursor(mapView)) {
-            pressedMarker.onDrop(draggedTo(e));
-            stopWaitCursor(mapView);
-        }
+        if (isMousePressedOnMarker() && dragging)
+            grabbedMarker.marker().onDrop(draggedTo(e));
         // clear the pressed-on-marker state on every release: a plain click on a marker (no drag)
         // must not leave isMousePressedOnMarker() stuck true, which would suppress selecting that
         // position and let a subsequent "new position" fall back to the map center (off the route)
-        pressedMarker = null;
+        grabbedMarker = null;
+        dragging = false;
     }
 
     /**
-     * The position a drag puts the marker at: the cursor hotspot itself, not the point grabbed on
-     * the marker bitmap. A selection marker is anchored at the pin tip, ~25px below the middle of
-     * its icon, so honouring the grab offset used to drop the position that far below the pointer
-     * while the drag cursor gives no hint where it actually is — several attempts per move, as a
-     * user reported on 2026-09-16. Dragging by the hotspot makes the drop point the arrow tip.
+     * The position a drag puts the marker at: the pin keeps the offset it was grabbed with, so its
+     * tip -- the anchor, ~25px below the middle of the icon -- decides where the position lands,
+     * not the mouse pointer. That is how brouter-web, graphhopper and kurviger behave and what
+     * RouteConverter did up to 3.6, so grabbing the pin by its head stays predictable.
      */
     private LatLong draggedTo(MouseEvent e) {
-        return projection.fromPixels(e.getX(), e.getY());
+        return projection.fromPixels(e.getX() + grabbedMarker.offsetX(), e.getY() + grabbedMarker.offsetY());
     }
 
     /**
@@ -167,12 +167,16 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         return null;
     }
 
-    private DraggableMarker getMarkerFor(MouseEvent e) {
+    private GrabbedMarker getMarkerFor(MouseEvent e) {
         if((e.getModifiersEx() & CTRL_DOWN_MASK) != CTRL_DOWN_MASK) {
             LatLong tapLatLong = projection.fromPixels(e.getX(), e.getY());
             org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(e.getX(), e.getY());
 
-            return findDraggableMarkerAt(layerManager.getLayers().getLayers(), projection, tapLatLong, tapXY);
+            DraggableMarker marker = findDraggableMarkerAt(layerManager.getLayers().getLayers(), projection, tapLatLong, tapXY);
+            if (marker != null) {
+                org.mapsforge.core.model.Point layerXY = projection.toPixels(marker.getPosition());
+                return new GrabbedMarker(marker, layerXY.x - tapXY.x, layerXY.y - tapXY.y);
+            }
         }
         return null;
     }
@@ -229,6 +233,13 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public boolean isMousePressedOnMarker() {
-        return pressedMarker != null;
+        return grabbedMarker != null;
+    }
+
+    /**
+     * A marker under the mouse together with the offset from the grab point to its anchor, so the
+     * pin can be dragged without jumping under the pointer.
+     */
+    private record GrabbedMarker(DraggableMarker marker, double offsetX, double offsetY) {
     }
 }
