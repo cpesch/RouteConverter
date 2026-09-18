@@ -29,6 +29,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -145,6 +146,41 @@ public class GpxUtilTest {
     @Test(expected = IOException.class)
     public void testUnmarshal11BadXml() throws IOException {
         unmarshal11("<notvalid/>");
+    }
+
+    // ---- written GPX must use the default namespace, not a generated prefix ----
+    //
+    // The @XmlNs(prefix = "") in the hand-authored package-info.java of binding10/binding11 is what
+    // makes the marshaller write <gpx xmlns="http://www.topografix.com/GPX/1/x"> instead of
+    // <ns2:gpx xmlns:ns2="...">. These tests guard that behaviour across the conversion of the
+    // bindings from checked-in sources to build-time xjc generation.
+
+    @Test
+    public void testMarshal11UsesDefaultNamespaceWithoutPrefix() throws IOException, JAXBException {
+        GpxType gpxType = new GpxType();
+        gpxType.setVersion("1.1");
+        gpxType.setCreator("prefix-test");
+        StringWriter writer = new StringWriter();
+        marshal11(gpxType, writer);
+        String xml = writer.toString();
+        assertTrue("marshalled GPX 1.1 must declare the GPX namespace as default namespace",
+                xml.contains("xmlns=\"" + GPX_11_NAMESPACE_URI + "\""));
+        assertFalse("marshalled GPX 1.1 must not use a generated namespace prefix",
+                xml.contains("ns1:") || xml.contains("ns2:"));
+    }
+
+    @Test
+    public void testMarshal10UsesDefaultNamespaceWithoutPrefix() throws IOException, JAXBException {
+        Gpx gpx = new Gpx();
+        gpx.setVersion("1.0");
+        gpx.setCreator("prefix-test");
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        marshal10(gpx, out);
+        String xml = out.toString(StandardCharsets.UTF_8);
+        assertTrue("marshalled GPX 1.0 must declare the GPX namespace as default namespace",
+                xml.contains("xmlns=\"" + GPX_10_NAMESPACE_URI + "\""));
+        assertFalse("marshalled GPX 1.0 must not use a generated namespace prefix",
+                xml.contains("ns1:") || xml.contains("ns2:"));
     }
 
     // ---- trekbuddy nmea extensions (binding must be registered in newContext11) ----
