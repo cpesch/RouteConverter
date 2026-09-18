@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.BaseRouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -40,7 +41,7 @@ public class WaypointTypeListCellRenderer extends DefaultListCellRenderer {
         String text = "?";
         if (waypointType != null) {
             try {
-                text = BaseRouteConverter.getBundle().getString("waypoint-type-" + waypointType.name().toLowerCase());
+                text = BaseRouteConverter.getBundle().getString("waypoint-type-" + waypointType.name().toLowerCase(Locale.ROOT));
             } catch (MissingResourceException e) {
                 text = waypointType.name();
             }

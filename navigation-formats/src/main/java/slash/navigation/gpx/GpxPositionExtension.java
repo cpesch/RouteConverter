@@ -34,6 +34,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static java.util.Arrays.asList;
+import static java.util.Locale.ROOT;
 import static slash.common.io.Transfer.formatDouble;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.common.NavigationConversion.*;
@@ -92,7 +93,7 @@ public class GpxPositionExtension {
     }
 
     private boolean isWellKnownElementName(Element element) {
-        return WELL_KNOWN_ELEMENT_NAMES.contains(element.getLocalName().toLowerCase());
+        return WELL_KNOWN_ELEMENT_NAMES.contains(element.getLocalName().toLowerCase(ROOT));
     }
 
     // Matches a plain DOM element by local name only (namespace-agnostic), reproducing the
@@ -100,7 +101,7 @@ public class GpxPositionExtension {
     // matches (e.g. Columbus GNSS's cb: namespace) were introduced.
     private static Predicate<Element> byName(String... names) {
         Set<String> nameSet = new HashSet<>(asList(names));
-        return element -> nameSet.contains(element.getLocalName().toLowerCase());
+        return element -> nameSet.contains(element.getLocalName().toLowerCase(ROOT));
     }
 
     // Adapts a readExtension() name predicate (already used for JAXBElement local-name
@@ -114,7 +115,7 @@ public class GpxPositionExtension {
     private static Predicate<Element> byCbName(String... names) {
         Set<String> nameSet = new HashSet<>(asList(names));
         return element -> CBGPS_NAMESPACE_URI.equals(element.getNamespaceURI())
-                && nameSet.contains(element.getLocalName().toLowerCase());
+                && nameSet.contains(element.getLocalName().toLowerCase(ROOT));
     }
 
     // Finds the first plain DOM element in <extensions> matching the given predicate, or null.

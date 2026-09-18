@@ -23,6 +23,7 @@ package slash.navigation.bcr;
 import slash.navigation.base.IniFileSection;
 
 import java.util.HashSet;
+import java.util.Locale;
 
 /**
  * Represents a section in a Map&Guide Tourenplaner Route (.bcr) file,
@@ -58,7 +59,7 @@ class BcrSection extends IniFileSection {
     }
 
     public void put(String name, String value) {
-        super.put(name.toUpperCase(), value);
+        super.put(name.toUpperCase(Locale.ROOT), value);
     }
 
     public boolean equals(Object o) {

@@ -50,6 +50,7 @@ import static org.jfree.chart.axis.NumberAxis.createIntegerTickUnits;
 import static org.jfree.chart.axis.NumberAxis.createStandardTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 import static org.jfree.chart.ui.Layer.FOREGROUND;
+import static java.util.Locale.ROOT;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
 
 /**
@@ -84,9 +85,9 @@ public class ProfileView implements PositionsSelectionModel {
 
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         for (XAxisMode mode : XAxisMode.values())
-            actionManager.register("show-" + mode.name().toLowerCase(), new ToggleXAxisProfileModeAction(profileModeModel, mode));
+            actionManager.register("show-" + mode.name().toLowerCase(ROOT), new ToggleXAxisProfileModeAction(profileModeModel, mode));
         for (YAxisMode mode : YAxisMode.values())
-            actionManager.register("show-" + mode.name().toLowerCase(), new ToggleYAxisProfileModeAction(profileModeModel, mode));
+            actionManager.register("show-" + mode.name().toLowerCase(ROOT), new ToggleYAxisProfileModeAction(profileModeModel, mode));
         // since JFreeChart is not very nice to extensions - constructors calling protected methods... ST_WRITE_TO_STATIC_FROM_INSTANCE_METHOD
         LazyToolTipChartPanel.profileModeModel = profileModeModel;
         chartPanel = new LazyToolTipChartPanel(chart, false, true, true, true, true);
@@ -172,12 +173,12 @@ public class ProfileView implements PositionsSelectionModel {
     private void updateAxis() {
         YAxisMode yAxisMode = profileModel.getYAxisMode();
         String yAxisUnit = getYAxisUnit(yAxisMode);
-        String yAxisKey = yAxisMode.name().toLowerCase() + "-axis";
+        String yAxisKey = yAxisMode.name().toLowerCase(ROOT) + "-axis";
         plot.getRangeAxis().setLabel(format(getBundle().getString(yAxisKey), yAxisUnit));
 
         XAxisMode xAxisMode = profileModel.getXAxisMode();
         String xAxisUnit = getXAxisUnit(xAxisMode);
-        String xAxisKey = xAxisMode.name().toLowerCase() + "-axis";
+        String xAxisKey = xAxisMode.name().toLowerCase(ROOT) + "-axis";
         plot.getDomainAxis().setLabel(format(getBundle().getString(xAxisKey), xAxisUnit));
 
         chartPanel.setToolTipGenerator(new StandardXYToolTipGenerator(

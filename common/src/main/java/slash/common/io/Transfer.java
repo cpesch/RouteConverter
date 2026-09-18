@@ -43,6 +43,7 @@ import static java.lang.Integer.toHexString;
 import static java.lang.Math.*;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Calendar.*;
+import static java.util.Locale.ROOT;
 import static java.util.Locale.US;
 import static slash.common.type.CompactCalendar.UTC;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -125,12 +126,13 @@ public class Transfer {
     }
 
     public static String toMixedCase(String string) {
-        if (string != null && string.toUpperCase().equals(string)) {
+        if (string != null && string.toUpperCase(ROOT).equals(string)) {
             StringBuilder buffer = new StringBuilder();
             StringTokenizer tokenizer = new StringTokenizer(string, " -", true);
             while (tokenizer.hasMoreTokens()) {
                 String token = tokenizer.nextToken();
                 if (token.length() > 1)
+                    // deliberately locale-sensitive: this word-capitalisation produces text a user reads
                     buffer.append(token.substring(0, 1).toUpperCase()).append(token.substring(1).toLowerCase());
                 else
                     buffer.append(token);

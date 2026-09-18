@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Locale.ROOT;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteCalculations.asWgs84Position;
 
@@ -79,7 +80,7 @@ public class Route66Format extends SimpleLineBasedFormat<Wgs84Route> {
 
     private static String escape(String string) {
         string = Transfer.escape(string, SEPARATOR, ';');
-        return string != null ? string.toUpperCase() : "";
+        return string != null ? string.toUpperCase(ROOT) : "";
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

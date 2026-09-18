@@ -30,6 +30,7 @@ import java.awt.*;
 import java.util.ResourceBundle;
 
 import static javax.swing.KeyStroke.getKeyStroke;
+import static java.util.Locale.ROOT;
 import static slash.common.io.Transfer.trim;
 import static slash.common.system.Platform.isMac;
 
@@ -86,7 +87,7 @@ public class JMenuHelper {
         } else {
             int mnemonicIndex = text.indexOf(mnemonic);
             if (mnemonicIndex == -1)
-                mnemonicIndex = text.toLowerCase().indexOf(Character.toLowerCase(mnemonic));
+                mnemonicIndex = text.toLowerCase(ROOT).indexOf(Character.toLowerCase(mnemonic));
             if (mnemonicIndex != -1)
                 item.setDisplayedMnemonicIndex(mnemonicIndex);
         }

@@ -28,6 +28,7 @@ import slash.navigation.routing.StraightLine;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -58,7 +59,7 @@ public class RoutingServiceListCellRenderer extends DefaultListCellRenderer {
     private String getLabelFor(RoutingService service) {
         String name = service.getName();
         try {
-            return Application.getInstance().getContext().getBundle().getString("routing-service-" + name.toLowerCase());
+            return Application.getInstance().getContext().getBundle().getString("routing-service-" + name.toLowerCase(Locale.ROOT));
         } catch (MissingResourceException e) {
             return name;
         }

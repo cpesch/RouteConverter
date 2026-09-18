@@ -29,6 +29,7 @@ import slash.navigation.maps.tileserver.TileServer;
 import javax.swing.event.TableModelListener;
 
 import static javax.swing.event.TableModelEvent.*;
+import static java.util.Locale.ROOT;
 
 /**
  * Converts {@link TileServer} to {@link LocalMap}
@@ -64,11 +65,11 @@ public class TileServerToTileMapMediator {
 
     private TileDownloadMap convert(TileServer tileServer) {
         TileServerMapSource tileSource = new TileServerMapSource(tileServer);
-        if (THUNDER_FOREST_API_KEY != null && tileServer.copyright().toLowerCase().contains("thunderforest"))
+        if (THUNDER_FOREST_API_KEY != null && tileServer.copyright().toLowerCase(ROOT).contains("thunderforest"))
             tileSource.setApiKey(THUNDER_FOREST_API_KEY);
-        if (MAPBOX_API_KEY != null && tileServer.copyright().toLowerCase().contains("mapbox"))
+        if (MAPBOX_API_KEY != null && tileServer.copyright().toLowerCase(ROOT).contains("mapbox"))
             tileSource.setApiKey(MAPBOX_API_KEY);
-        if (tileServer.copyright().toLowerCase().contains("openstreetmap"))
+        if (tileServer.copyright().toLowerCase(ROOT).contains("openstreetmap"))
             tileSource.setReferer("https://www.routeconverter.com");
 
         return new TileDownloadMap(tileServer.id(), tileServer.description(), tileServer.active(), tileSource, tileServer.copyrightText());

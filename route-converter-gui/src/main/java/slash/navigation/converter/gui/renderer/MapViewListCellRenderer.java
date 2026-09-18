@@ -29,6 +29,7 @@ import slash.navigation.mapview.MapView;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -43,7 +44,7 @@ public class MapViewListCellRenderer extends DefaultListCellRenderer {
         MapViewImplementation mapView = (MapViewImplementation) value;
         String text;
         try {
-            text = BaseRouteConverter.getBundle().getString("map-view-" + mapView.name().toLowerCase());
+            text = BaseRouteConverter.getBundle().getString("map-view-" + mapView.name().toLowerCase(Locale.ROOT));
         } catch (MissingResourceException e) {
             text = mapView.name();
         }

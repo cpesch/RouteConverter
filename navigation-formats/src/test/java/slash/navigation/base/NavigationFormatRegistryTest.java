@@ -28,13 +28,17 @@ import slash.navigation.columbus.GarbleColumbusGpsType1Format;
 import slash.navigation.csv.CsvCommaFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
 import slash.navigation.csv.Flightradar24Format;
+import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.simple.*;
 import slash.navigation.url.GoogleMapsUrlFormat;
 
 import java.util.List;
+import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static slash.common.io.Files.getExtension;
 
 public class NavigationFormatRegistryTest {
     private final NavigationFormatRegistry registry = new NavigationFormatRegistry();
@@ -51,6 +55,18 @@ public class NavigationFormatRegistryTest {
         List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".OV2");
         assertEquals(NmnUrlFormat.class, formats.get(0).getClass());
         assertEquals(GoogleMapsUrlFormat.class, formats.get(1).getClass());
+    }
+
+    @Test
+    public void testGetReadFormatsSortedByExtensionIsLocaleIndependent() {
+        Locale previous = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.of("tr", "TR"));
+            List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(getExtension("CURRENT.ITN"));
+            assertTrue(formats.get(0) instanceof TomTomRouteFormat);
+        } finally {
+            Locale.setDefault(previous);
+        }
     }
 
     @Test

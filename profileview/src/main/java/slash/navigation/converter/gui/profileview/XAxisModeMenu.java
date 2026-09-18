@@ -25,6 +25,7 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import static java.util.Locale.ROOT;
 import static slash.navigation.gui.helpers.JMenuHelper.createRadioItem;
 
 /**
@@ -46,7 +47,7 @@ public class XAxisModeMenu {
     private void initializeMenu() {
         ButtonGroup buttonGroup = new ButtonGroup();
         for (XAxisMode mode : XAxisMode.values()) {
-            JRadioButtonMenuItem menuItem = createRadioItem("show-" + mode.name().toLowerCase());
+            JRadioButtonMenuItem menuItem = createRadioItem("show-" + mode.name().toLowerCase(ROOT));
             profileModeModel.addChangeListener(new XAxisModeListener(menuItem, mode));
             buttonGroup.add(menuItem);
             menu.add(menuItem);
