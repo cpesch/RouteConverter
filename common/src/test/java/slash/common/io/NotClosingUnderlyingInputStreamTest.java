@@ -147,7 +147,7 @@ public class NotClosingUnderlyingInputStreamTest {
             return position < data.length ? (data[position++] & 0xFF) : -1;
         }
 
-        public int read(byte b[], int off, int len) {
+        public int read(byte[] b, int off, int len) {
             bulkReads++;
             if (position >= data.length)
                 return -1;

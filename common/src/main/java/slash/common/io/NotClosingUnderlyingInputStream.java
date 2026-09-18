@@ -57,11 +57,11 @@ public class NotClosingUnderlyingInputStream extends InputStream {
         return delegate.read();
     }
 
-    public int read(byte b[]) throws IOException {
+    public int read(byte[] b) throws IOException {
         return delegate.read(b);
     }
 
-    public int read(byte b[], int off, int len) throws IOException {
+    public int read(byte[] b, int off, int len) throws IOException {
         return delegate.read(b, off, len);
     }
 
