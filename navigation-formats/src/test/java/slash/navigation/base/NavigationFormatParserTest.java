@@ -134,6 +134,34 @@ public class NavigationFormatParserTest {
     }
 
     @Test
+    public void testReadFileLargerThanProbeCap() throws IOException {
+        // a large XML comment pads the file past the probe cap; detection must
+        // still read the route with the mark() size bounded at TOTAL_BUFFER_SIZE
+        String padding = "<!--" + "0".repeat(NavigationFormatParser.TOTAL_BUFFER_SIZE) + "-->";
+        ParserResult result = parser.read(temporaryFile(".gpx", (GPX_11 + padding).getBytes(UTF_8)));
+        assertTrue(result.isSuccessful());
+        assertEquals(Gpx11Format.class, result.getFormat().getClass());
+        assertEquals(1, result.getTheRoute().getPositionCount());
+    }
+
+    @Test
+    public void testMarkSizeFor() {
+        assertEquals(0, NavigationFormatParser.markSizeFor(0L));
+        assertEquals(1, NavigationFormatParser.markSizeFor(1L));
+        assertEquals(NavigationFormatParser.TOTAL_BUFFER_SIZE - 1,
+                NavigationFormatParser.markSizeFor((long) NavigationFormatParser.TOTAL_BUFFER_SIZE - 1));
+        assertEquals(NavigationFormatParser.TOTAL_BUFFER_SIZE,
+                NavigationFormatParser.markSizeFor((long) NavigationFormatParser.TOTAL_BUFFER_SIZE));
+        assertEquals(NavigationFormatParser.TOTAL_BUFFER_SIZE,
+                NavigationFormatParser.markSizeFor((long) NavigationFormatParser.TOTAL_BUFFER_SIZE + 1));
+        // a file above 2 GiB must not overflow the int mark size into a negative value
+        assertEquals(NavigationFormatParser.TOTAL_BUFFER_SIZE, NavigationFormatParser.markSizeFor(3_000_000_000L));
+        assertEquals(NavigationFormatParser.TOTAL_BUFFER_SIZE, NavigationFormatParser.markSizeFor(Long.MAX_VALUE));
+        // an unreadable file reports a length of 0
+        assertEquals(0, NavigationFormatParser.markSizeFor(-1L));
+    }
+
+    @Test
     public void testReadRemoteFileLargerThanDefaultBuffer() throws Exception {
         byte[] body = columbusBody(20000);
         // the body must exceed the default buffer to exercise the mark()/reset() path
