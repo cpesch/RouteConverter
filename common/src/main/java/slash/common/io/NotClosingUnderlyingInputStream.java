@@ -24,7 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
- * An {@link InputStream} which protects the underlying {@link InputStream} from beeing {@link #close()}ed.
+ * An {@link InputStream} which protects the underlying {@link InputStream} from being {@link #close()}ed.
  *
  * @author Christian Pesch
  */
@@ -55,6 +55,18 @@ public class NotClosingUnderlyingInputStream extends InputStream {
 
     public int read() throws IOException {
         return delegate.read();
+    }
+
+    public int read(byte[] b) throws IOException {
+        return delegate.read(b);
+    }
+
+    public int read(byte[] b, int off, int len) throws IOException {
+        return delegate.read(b, off, len);
+    }
+
+    public long skip(long n) throws IOException {
+        return delegate.skip(n);
     }
 
     public void closeUnderlyingInputStream() throws IOException {

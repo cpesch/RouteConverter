@@ -101,5 +101,68 @@ public class NotClosingUnderlyingInputStreamTest {
         ncis.reset();
         assertEquals(5, ncis.read());
     }
+
+    @Test
+    public void readIntoArrayDelegatesToUnderlyingStream() throws IOException {
+        byte[] data = new byte[1024];
+        for (int i = 0; i < data.length; i++)
+            data[i] = (byte) i;
+        InputStream delegate = new ByteArrayInputStream(data);
+        NotClosingUnderlyingInputStream ncis = new NotClosingUnderlyingInputStream(delegate);
+        byte[] buffer = new byte[1024];
+        assertEquals(1024, ncis.read(buffer, 0, buffer.length));
+        assertArrayEquals(data, buffer);
+    }
+
+    @Test
+    public void readIntoArrayIssuesASingleUnderlyingCall() throws IOException {
+        CountingInputStream delegate = new CountingInputStream(1024);
+        NotClosingUnderlyingInputStream ncis = new NotClosingUnderlyingInputStream(delegate);
+        assertEquals(1024, ncis.read(new byte[1024]));
+        assertEquals(1, delegate.bulkReads);
+        assertEquals(0, delegate.singleByteReads);
+    }
+
+    @Test
+    public void skipDelegates() throws IOException {
+        CountingInputStream delegate = new CountingInputStream(1024);
+        NotClosingUnderlyingInputStream ncis = new NotClosingUnderlyingInputStream(delegate);
+        assertEquals(100, ncis.skip(100));
+        assertEquals(1, delegate.skips);
+    }
+
+    private static class CountingInputStream extends InputStream {
+        private final byte[] data;
+        private int position;
+        private int singleByteReads;
+        private int bulkReads;
+        private int skips;
+
+        CountingInputStream(int size) {
+            this.data = new byte[size];
+        }
+
+        public int read() {
+            singleByteReads++;
+            return position < data.length ? (data[position++] & 0xFF) : -1;
+        }
+
+        public int read(byte[] b, int off, int len) {
+            bulkReads++;
+            if (position >= data.length)
+                return -1;
+            int count = Math.min(len, data.length - position);
+            System.arraycopy(data, position, b, off, count);
+            position += count;
+            return count;
+        }
+
+        public long skip(long n) {
+            skips++;
+            long skipped = Math.min(n, data.length - position);
+            position += (int) skipped;
+            return skipped;
+        }
+    }
 }
 
