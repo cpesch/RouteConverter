@@ -27,6 +27,7 @@ import java.nio.ByteBuffer;
 import java.util.List;
 
 import static java.nio.ByteOrder.LITTLE_ENDIAN;
+import static java.util.Locale.ROOT;
 import static slash.common.io.Transfer.ISO_LATIN1_ENCODING;
 
 /**
@@ -55,8 +56,8 @@ public class WintecWbt201Tk2Format extends WintecWbt201Format {
         buffer.position(0);
         byte[] bytes = new byte[16];
         buffer.get(bytes, 0, 16);
-        String formatDescriptor = new String(bytes, 0, 12, ISO_LATIN1_ENCODING).toLowerCase();
-        return formatDescriptor.equals(FORMAT_DESCRIPTOR.toLowerCase());
+        String formatDescriptor = new String(bytes, 0, 12, ISO_LATIN1_ENCODING).toLowerCase(ROOT);
+        return formatDescriptor.equals(FORMAT_DESCRIPTOR.toLowerCase(ROOT));
     }
 
     protected List<Wgs84Route> internalRead(ByteBuffer buffer) {

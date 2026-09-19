@@ -83,6 +83,7 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Arrays.sort;
+import static java.util.Locale.ROOT;
 
 /**
  * Managed the navigation formats.
@@ -260,7 +261,7 @@ public class NavigationFormatRegistry {
 
     private List<NavigationFormat<?>> sortByName(List<NavigationFormat<?>> formats) {
         NavigationFormat<?>[] formatsArray = formats.toArray(new NavigationFormat<?>[0]);
-        sort(formatsArray, Comparator.comparing(f -> f.getName().toLowerCase()));
+        sort(formatsArray, Comparator.comparing(f -> f.getName().toLowerCase(ROOT)));
         return asList(formatsArray);
     }
 

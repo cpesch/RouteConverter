@@ -29,6 +29,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
+import static java.util.Locale.ROOT;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.PreferencesHelper.count;
 import static slash.common.io.Transfer.trim;
@@ -40,7 +41,9 @@ import static slash.common.io.Transfer.trim;
  */
 
 public class APIKeyRegistry {
-    private static final Preferences preferences = Preferences.userNodeForPackage(APIKeyRegistry.class);
+    // deliberately a static utility, so the test seam is a setter rather than
+    // constructor injection; tests must restore the default node in their teardown
+    private static Preferences preferences = Preferences.userNodeForPackage(APIKeyRegistry.class);
     private static final Logger log = Logger.getLogger(APIKeyRegistry.class.getName());
     private static final String API_KEY_PREFERENCE = "ApiKey";
     private static final String API_USAGES = "ApiUsages";
@@ -54,6 +57,11 @@ public class APIKeyRegistry {
         if (instance == null)
             instance = new APIKeyRegistry();
         return instance;
+    }
+
+    // visible for testing
+    static void setPreferences(Preferences preferences) {
+        APIKeyRegistry.preferences = preferences;
     }
 
     private Set<String> determineServiceNames() throws BackingStoreException {
@@ -111,7 +119,7 @@ public class APIKeyRegistry {
             Properties properties = new Properties();
             properties.load(inputStream);
             String property = properties.getProperty(serviceName + API_KEY_PREFERENCE);
-            if(property != null && !property.toLowerCase().contains((serviceName + API_KEY_PREFERENCE).toLowerCase()))
+            if(property != null && !property.toLowerCase(ROOT).contains((serviceName + API_KEY_PREFERENCE).toLowerCase(ROOT)))
                 return property;
         }
         catch (IOException e) {

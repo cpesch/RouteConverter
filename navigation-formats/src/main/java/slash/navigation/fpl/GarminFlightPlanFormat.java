@@ -36,6 +36,7 @@ import java.util.Set;
 import java.util.prefs.Preferences;
 
 import static java.lang.Math.min;
+import static java.util.Locale.ROOT;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.base.RouteComments.createRouteName;
 import static slash.navigation.base.WaypointType.Airport;
@@ -86,7 +87,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     public static boolean hasValidIdentifier(String identifier) {
         return identifier != null &&
                 identifier.equals(toLettersAndNumbers(identifier)) &&
-                identifier.equals(identifier.toUpperCase()) &&
+                identifier.equals(identifier.toUpperCase(ROOT)) &&
                 identifier.length() <= getMaximumIdentifierLength();
     }
 
@@ -104,7 +105,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
 
     static String createValidIdentifier(String identifier) {
         if (identifier != null) {
-            identifier = toLettersAndNumbers(identifier).toUpperCase();
+            identifier = toLettersAndNumbers(identifier).toUpperCase(ROOT);
             identifier = identifier.substring(0, min(identifier.length(), getMaximumIdentifierLength()));
         }
         return identifier;
@@ -132,13 +133,13 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
     public static boolean hasValidDescription(String description) {
         return description != null &&
                 description.equals(toLettersAndNumbersAndSpaces(description)) &&
-                description.equals(description.toUpperCase()) &&
+                description.equals(description.toUpperCase(ROOT)) &&
                 description.length() <= getMaximumDescriptionLength();
     }
 
     public static String createValidDescription(String description) {
         if (description != null) {
-            description = toLettersAndNumbersAndSpaces(description).toUpperCase();
+            description = toLettersAndNumbersAndSpaces(description).toUpperCase(ROOT);
             description = description.substring(0, min(description.length(), getMaximumDescriptionLength()));
         }
         return description;
@@ -180,7 +181,7 @@ public class GarminFlightPlanFormat extends XmlNavigationFormat<GarminFlightPlan
         String name = trim(route.getName());
         if(name == null)
             name = createRouteName(route.getPositions());
-        return asRouteName(toLettersAndNumbersAndSpaces(name.toUpperCase()));
+        return asRouteName(toLettersAndNumbersAndSpaces(name.toUpperCase(ROOT)));
     }
 
     private FlightPlan.WaypointTable.Waypoint find(FlightPlan.WaypointTable waypointTable, String waypointIdentifier) {

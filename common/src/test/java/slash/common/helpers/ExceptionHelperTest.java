@@ -20,7 +20,7 @@
 
 package slash.common.helpers;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.SSLException;
 import java.net.ConnectException;
@@ -28,10 +28,10 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.List;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static slash.common.helpers.ExceptionHelper.getCauseChain;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.ExceptionHelper.getMessageWithCauses;
@@ -180,8 +180,8 @@ public class ExceptionHelperTest {
 
         assertEquals(1, getCauseChain(a).size());
         assertEquals(a, getRootCause(a));
-        assertEquals("only one distinct throwable is rendered", 1,
-                getMessageWithCauses(a).split("caused by", -1).length);
+        assertEquals(1, getMessageWithCauses(a).split("caused by", -1).length,
+                "only one distinct throwable is rendered");
     }
 
     /**
@@ -213,8 +213,8 @@ public class ExceptionHelperTest {
         String message = getMessageWithCauses(a);
         assertTrue(message.contains("A"));
         assertTrue(message.contains("B"));
-        assertEquals("the loop is walked once, not repeatedly", 2,
-                message.split("caused by", -1).length);
+        assertEquals(2, message.split("caused by", -1).length,
+                "the loop is walked once, not repeatedly");
     }
 }
 

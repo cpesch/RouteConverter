@@ -31,6 +31,7 @@ import java.util.ResourceBundle;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Locale.ROOT;
 import static slash.common.helpers.ThreadHelper.invokeInAwtEventQueue;
 import static slash.common.io.Transfer.formatBoolean;
 import static slash.common.io.Transfer.formatInt;
@@ -91,7 +92,7 @@ public class TileServerMapManager {
     public static String retrieveCopyrightText(String copyrightKey) {
         ResourceBundle bundle = ResourceBundle.getBundle("slash/navigation/maps/tileserver/copyright");
         try {
-            return bundle.getString(copyrightKey.toLowerCase() + "-copyright-text");
+            return bundle.getString(copyrightKey.toLowerCase(ROOT) + "-copyright-text");
 
         }
         catch (MissingResourceException e) {

@@ -43,6 +43,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Logger;
 
 import static java.io.File.separatorChar;
+import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static slash.common.io.Files.getExtension;
@@ -149,7 +150,7 @@ public class NavigationFormatParser {
                 try {
                     buffer.reset();
                 } catch (IOException e) {
-                    log.severe("Cannot reset() stream to mark(): " + e.getLocalizedMessage());
+                    log.severe("Cannot reset() stream to mark() (probe cap " + TOTAL_BUFFER_SIZE + " bytes): " + e.getLocalizedMessage());
                     break;
                 }
             }
@@ -164,7 +165,7 @@ public class NavigationFormatParser {
     public ParserResult read(File source, List<NavigationFormat<?>> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
         try (InputStream inputStream = new FileInputStream(source)) {
-            return read(inputStream, (int) source.length(), extractStartDate(source), source, widen(formats));
+            return read(inputStream, markSizeFor(source.length()), extractStartDate(source), source, widen(formats));
         }
     }
 
@@ -241,7 +242,7 @@ public class NavigationFormatParser {
             }
             log.info("Reading '" + url + "' with " + bytes.length + " bytes");
             internalSetStartDate(extractStartDate(url));
-            bufferedInternalRead(new ByteArrayInputStream(bytes), bytes.length, widen(getNavigationFormatRegistry().getReadFormats()), this);
+            bufferedInternalRead(new ByteArrayInputStream(bytes), markSizeFor(bytes.length), widen(getNavigationFormatRegistry().getReadFormats()), this);
         }
     }
 
@@ -254,8 +255,21 @@ public class NavigationFormatParser {
     }
 
     /**
-     * Buffers the source and marks past its end so reset() between format
-     * attempts always succeeds, then probes the formats into the context.
+     * Returns the mark() size for probing a source of the given length: the
+     * length itself for sources up to {@link #TOTAL_BUFFER_SIZE} - so their end
+     * stays inside the mark and reset() between all format attempts succeeds -
+     * and the cap for larger ones, so opening a big file does not buffer it
+     * completely into the heap and a length above 2 GiB cannot overflow the
+     * int mark size into a negative value.
+     */
+    static int markSizeFor(long length) {
+        return (int) min(max(length, 0L), (long) TOTAL_BUFFER_SIZE);
+    }
+
+    /**
+     * Buffers the source and marks past its end, capped at
+     * {@link #TOTAL_BUFFER_SIZE}, so reset() between format attempts succeeds
+     * unless a format reads past the cap, then probes the formats into the context.
      */
     private void bufferedInternalRead(InputStream source, int markSize, List<NavigationFormat<BaseRoute<?, ?>>> formats,
                                       ParserContext<BaseRoute<?, ?>> context) throws IOException {

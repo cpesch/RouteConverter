@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.models.FixMapMode;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -39,7 +40,7 @@ public class FixMapModeListCellRenderer extends DefaultListCellRenderer {
         FixMapMode fixMapMode = (FixMapMode) value;
         String text;
         try {
-            text = BaseRouteConverter.getBundle().getString("fix-map-mode-" + fixMapMode.name().toLowerCase());
+            text = BaseRouteConverter.getBundle().getString("fix-map-mode-" + fixMapMode.name().toLowerCase(Locale.ROOT));
         } catch (MissingResourceException e) {
             text = fixMapMode.name();
         }

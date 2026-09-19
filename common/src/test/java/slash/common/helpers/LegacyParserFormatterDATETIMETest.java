@@ -20,9 +20,9 @@
 
 package slash.common.helpers;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 
 import java.util.Calendar;
@@ -36,7 +36,7 @@ public class LegacyParserFormatterDATETIMETest {
     private DateTimeParserFormatter sut;
     private Locale testLocale;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         testLocale = Locale.GERMAN;
         sut = new LegacyParserFormatter(LegacyParserFormatter.ParserType.DATETIME, () -> testLocale);
@@ -45,18 +45,18 @@ public class LegacyParserFormatterDATETIMETest {
     @Test
     public void testFormat() {
         sut.setZone(ZONE_UTC.getID());
-        Assert.assertEquals("02.03.25, 21:34:56", sut.format(cal(2025, 3, 2, 21, 34, 56)));
+        Assertions.assertEquals("02.03.25, 21:34:56", sut.format(cal(2025, 3, 2, 21, 34, 56)));
 
         sut.setZone(ZONE_BERLIN.getID());
-        Assert.assertEquals("02.03.25, 22:34:56", sut.format(cal(2025, 3, 2, 21, 34, 56)));
+        Assertions.assertEquals("02.03.25, 22:34:56", sut.format(cal(2025, 3, 2, 21, 34, 56)));
 
         testLocale = Locale.ROOT;
 
         sut.setZone(ZONE_UTC.getID());
-        Assert.assertEquals("2025-03-02 21:34:56", sut.format(cal(2025, 3, 2, 21, 34, 56)));
+        Assertions.assertEquals("2025-03-02 21:34:56", sut.format(cal(2025, 3, 2, 21, 34, 56)));
 
         sut.setZone(ZONE_BERLIN.getID());
-        Assert.assertEquals("2025-03-02 22:34:56", sut.format(cal(2025, 3, 2, 21, 34, 56)));
+        Assertions.assertEquals("2025-03-02 22:34:56", sut.format(cal(2025, 3, 2, 21, 34, 56)));
     }
 
     @Test
@@ -122,7 +122,7 @@ public class LegacyParserFormatterDATETIMETest {
 
         Calendar expectedCal = expected.getCalendar();
         expectedCal.setTimeZone(zone);
-        Assert.assertEquals(result, expectedCal);
+        Assertions.assertEquals(result, expectedCal);
     }
 
     private static CompactCalendar cal(int year, int month, int day, int hour, int minute, int second) {

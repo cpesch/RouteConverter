@@ -36,16 +36,22 @@ import static slash.common.io.Transfer.trim;
  */
 
 public class BooleanModel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(BooleanModel.class);
-
+    private final Preferences preferences;
     private final String preferencesName;
     private final boolean defaultValue;
 
     private final EventListenerList listenerList = new EventListenerList();
 
     public BooleanModel(String preferencesName, boolean defaultValue) {
+        this(preferencesName, defaultValue, Preferences.userNodeForPackage(BooleanModel.class));
+    }
+
+    // package-private seam so tests can inject an isolated (in-memory) store
+    // instead of the shared OS node, mirroring IntegerModel
+    BooleanModel(String preferencesName, boolean defaultValue, Preferences preferences) {
         this.preferencesName = preferencesName;
         this.defaultValue = defaultValue;
+        this.preferences = preferences;
     }
 
     public boolean getBoolean() {

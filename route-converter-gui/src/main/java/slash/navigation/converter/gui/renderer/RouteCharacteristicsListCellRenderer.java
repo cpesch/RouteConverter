@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.BaseRouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -41,7 +42,7 @@ public class RouteCharacteristicsListCellRenderer extends DefaultListCellRendere
         String text = "?";
         if(characteristics != null) {
             try {
-                text = BaseRouteConverter.getBundle().getString(characteristics.name().toLowerCase() + "-characteristics");
+                text = BaseRouteConverter.getBundle().getString(characteristics.name().toLowerCase(Locale.ROOT) + "-characteristics");
             } catch (MissingResourceException e) {
                 text = characteristics.name();
             }

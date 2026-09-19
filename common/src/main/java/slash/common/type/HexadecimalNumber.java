@@ -22,6 +22,7 @@ package slash.common.type;
 
 import org.apache.commons.codec.DecoderException;
 
+import static java.util.Locale.ROOT;
 import static org.apache.commons.codec.binary.Hex.decodeHex;
 import static org.apache.commons.codec.binary.Hex.encodeHex;
 
@@ -37,7 +38,7 @@ public class HexadecimalNumber {
     }
 
     public static String encodeBytes(byte[] bytes) {
-        return new String(encodeHex(bytes)).toUpperCase();
+        return new String(encodeHex(bytes)).toUpperCase(ROOT);
     }
 
     public static byte[] decodeBytes(String string) {

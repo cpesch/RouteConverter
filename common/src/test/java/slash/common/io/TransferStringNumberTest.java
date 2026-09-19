@@ -19,12 +19,12 @@
 */
 package slash.common.io;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static slash.common.io.Transfer.*;
 
 /**

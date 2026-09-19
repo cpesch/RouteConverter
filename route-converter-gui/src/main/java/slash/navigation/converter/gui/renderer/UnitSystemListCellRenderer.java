@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.BaseRouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -41,7 +42,7 @@ public class UnitSystemListCellRenderer extends DefaultListCellRenderer {
         UnitSystem unitSystem = (UnitSystem) value;
         String text;
         try {
-            text = BaseRouteConverter.getBundle().getString("unitsystem-" + unitSystem.name().toLowerCase());
+            text = BaseRouteConverter.getBundle().getString("unitsystem-" + unitSystem.name().toLowerCase(Locale.ROOT));
         } catch (MissingResourceException e) {
             text = unitSystem.name();
         }

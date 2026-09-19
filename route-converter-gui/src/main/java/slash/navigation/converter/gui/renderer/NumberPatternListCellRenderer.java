@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.BaseRouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -40,7 +41,7 @@ public class NumberPatternListCellRenderer extends DefaultListCellRenderer {
         NumberPattern numberPattern = (NumberPattern) value;
         String text;
         try {
-            text = BaseRouteConverter.getBundle().getString("number-pattern-" + numberPattern.name().toLowerCase());
+            text = BaseRouteConverter.getBundle().getString("number-pattern-" + numberPattern.name().toLowerCase(Locale.ROOT));
         } catch (MissingResourceException e) {
             text = numberPattern.name();
         }

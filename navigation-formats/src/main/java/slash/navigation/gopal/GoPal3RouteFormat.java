@@ -33,6 +33,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Locale.ROOT;
 import static slash.navigation.gopal.GoPalUtil.marshal3;
 import static slash.navigation.gopal.GoPalUtil.unmarshal3;
 
@@ -59,7 +60,7 @@ public class GoPal3RouteFormat extends GoPalRouteFormat<GoPalRoute> {
     }
 
     public static String createGoPalFileName(String fileName) {
-        fileName = fileName.toUpperCase();
+        fileName = fileName.toUpperCase(ROOT);
         fileName = fileName.replaceAll("[^\\w.]", " ");
         return fileName;
     }
