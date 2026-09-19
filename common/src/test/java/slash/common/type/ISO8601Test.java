@@ -22,10 +22,15 @@ package slash.common.type;
 
 import org.junit.jupiter.api.Test;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.text.DecimalFormat;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -168,5 +173,67 @@ public class ISO8601Test {
         Calendar actual = parseDate("0000-01-01T00:00:00Z");
         assertNotNull(actual);
         assertEquals("0000-01-01T00:00:00Z", formatDate(actual, false));
+    }
+
+    @Test
+    public void testFormatDigitSymbolsArePinnedToRootLocale() throws Exception {
+        // structural pin, independent of the default locale and of class-init order: the
+        // shared DecimalFormat fields must stay package-private (the seam this test reads,
+        // re-hiding them fails the modifiers check) and must use Locale.ROOT symbols, whose
+        // zero digit is the ASCII '0'. The locale is set to ar first, so in a fresh JVM where
+        // this class is the first to use ISO8601, fields taking their symbols from the
+        // default locale capture '٠' and fail this. Reflection is used on purpose: it pins
+        // the fields' state without depending on compile-time visibility.
+        Locale previousLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("ar"));
+            for (String name : new String[]{"XX_FORMAT", "XXX_FORMAT", "XXXX_FORMAT"}) {
+                Field field = ISO8601.class.getDeclaredField(name);
+                assertFalse(Modifier.isPrivate(field.getModifiers()),
+                        name + " must stay package-private so this pin can hold it in place");
+                field.setAccessible(true);
+                DecimalFormat format = (DecimalFormat) field.get(null);
+                assertEquals('0', format.getDecimalFormatSymbols().getZeroDigit());
+            }
+        } finally {
+            Locale.setDefault(previousLocale);
+        }
+    }
+
+    @Test
+    public void testFormatUsesAsciiDigitsUnderAnArabicLocale() {
+        Locale previousLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("ar"));
+            assertEquals("2026-09-19T08:05:03Z", formatDate(calendar(2026, 9, 19, 8, 5, 3)));
+        } finally {
+            Locale.setDefault(previousLocale);
+        }
+    }
+
+    @Test
+    public void testFormatUsesAsciiDigitsUnderAPersianLocale() {
+        Locale previousLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("fa-IR"));
+            assertEquals("2026-09-19T08:05:03Z", formatDate(calendar(2026, 9, 19, 8, 5, 3)));
+        } finally {
+            Locale.setDefault(previousLocale);
+        }
+    }
+
+    @Test
+    public void testFormatStillParsesBackAfterAnArabicLocaleRoundTrip() {
+        Locale previousLocale = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.forLanguageTag("ar"));
+            String formatted = formatDate(calendar(2026, 9, 19, 8, 5, 3));
+            assertEquals("2026-09-19T08:05:03Z", formatted);
+            Calendar parsed = parseDate(formatted);
+            assertNotNull(parsed);
+            assertEquals(formatted, formatDate(parsed, false));
+        } finally {
+            Locale.setDefault(previousLocale);
+        }
     }
 }

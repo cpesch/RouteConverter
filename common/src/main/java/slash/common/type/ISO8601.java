@@ -21,7 +21,9 @@
 package slash.common.type;
 
 import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import static java.lang.Character.isDigit;
@@ -60,9 +62,16 @@ import static slash.common.type.CompactCalendar.UTC;
  */
 
 public class ISO8601 {
-    private static final DecimalFormat XX_FORMAT = new DecimalFormat("00");
-    private static final DecimalFormat XXX_FORMAT = new DecimalFormat("000");
-    private static final DecimalFormat XXXX_FORMAT = new DecimalFormat("0000");
+    // These are wire-format digits for ISO 8601, never user-facing text: RFC 3339 requires
+    // ASCII digits, so the symbols are pinned to Locale.ROOT. An unqualified DecimalFormat
+    // takes its digit symbols from the default locale at class-load time and would emit
+    // Eastern Arabic numerals under an ar or fa locale, making files unreadable by other tools.
+    // Package-private so ISO8601Test can pin the symbols structurally.
+    // not thread-safe: format() mutates internal state, and these are shared across every
+    // format writer; properly fixed by the java.time migration of this class.
+    static final DecimalFormat XX_FORMAT = new DecimalFormat("00", DecimalFormatSymbols.getInstance(Locale.ROOT));
+    static final DecimalFormat XXX_FORMAT = new DecimalFormat("000", DecimalFormatSymbols.getInstance(Locale.ROOT));
+    static final DecimalFormat XXXX_FORMAT = new DecimalFormat("0000", DecimalFormatSymbols.getInstance(Locale.ROOT));
 
     /**
      * Parses an ISO8601-compliant date/time string.
