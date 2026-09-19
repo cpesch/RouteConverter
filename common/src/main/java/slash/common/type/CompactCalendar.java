@@ -23,6 +23,9 @@ package slash.common.type;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DateTimeException;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,8 +34,6 @@ import static java.text.DateFormat.MEDIUM;
 import static java.text.DateFormat.SHORT;
 import static java.util.Calendar.DAY_OF_YEAR;
 import static java.util.Calendar.YEAR;
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.unmodifiableMap;
 
 /**
  * A compact representation of a calendar, that saves some memory.
@@ -46,20 +47,35 @@ public class CompactCalendar {
     public static final TimeZone UTC = TimeZone.getTimeZone("UTC");
     private static final long MILLI_SECONDS_PER_DAY = 24 * 60 * 60 * 1000;
 
-    private final long timeInMillis;
-    private final String timeZoneId;
+    private final Instant instant;
+    private final ZoneId zoneId;
 
-    private CompactCalendar(long timeInMillis, String timeZoneId) {
-        this.timeInMillis = timeInMillis;
-        this.timeZoneId = timeZoneId.equals("UTC") ? "UTC" : timeZoneId.intern();
+    private CompactCalendar(Instant instant, ZoneId zoneId) {
+        this.instant = instant;
+        this.zoneId = zoneId;
     }
 
+    private static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
+
+    private static ZoneId toZoneId(String timeZoneId) {
+        if ("UTC".equals(timeZoneId))
+            return UTC_ZONE_ID;
+        try {
+            return ZoneId.of(timeZoneId);
+        } catch (DateTimeException e) {
+            log.warning("Could not resolve time zone id '" + timeZoneId + "', falling back to UTC");
+            return UTC_ZONE_ID;
+        }
+    }
+
+    // user-facing; locale-sensitive by design
     public static DateFormat createDateFormat(String pattern) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         simpleDateFormat.setTimeZone(UTC);
         return simpleDateFormat;
     }
 
+    // user-facing; locale-sensitive by design
     public static DateFormat createDateFormat(String pattern, Locale locale) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern, locale);
         simpleDateFormat.setTimeZone(UTC);
@@ -85,7 +101,7 @@ public class CompactCalendar {
     }
 
     public static CompactCalendar fromMillisAndTimeZone(long timeInMillis, String timeZoneId) {
-        return new CompactCalendar(timeInMillis, timeZoneId);
+        return new CompactCalendar(Instant.ofEpochMilli(timeInMillis), toZoneId(timeZoneId));
     }
 
     public static CompactCalendar fromMillis(long timeInMillis) {
@@ -107,19 +123,20 @@ public class CompactCalendar {
     }
 
     public CompactCalendar asUTCTimeInTimeZone(TimeZone timeZone) {
-        return new CompactCalendar(timeInMillis - timeZone.getOffset(timeInMillis), "UTC");
+        long timeInMillis = getTimeInMillis();
+        return new CompactCalendar(Instant.ofEpochMilli(timeInMillis - timeZone.getOffset(timeInMillis)), UTC_ZONE_ID);
     }
 
     public long getTimeInMillis() {
-        return timeInMillis;
+        return instant.toEpochMilli();
     }
 
     public String getTimeZoneId() {
-        return timeZoneId;
+        return zoneId.getId();
     }
 
     public Calendar getCalendar() {
-        Calendar result = Calendar.getInstance(getTimeZone());
+        Calendar result = Calendar.getInstance(TimeZone.getTimeZone(zoneId));
         result.setTimeInMillis(getTimeInMillis());
         return result;
     }
@@ -130,33 +147,7 @@ public class CompactCalendar {
     }
 
     public Date getTime() {
-        return getCalendar().getTime();
-    }
-
-    private static volatile Map<String, TimeZone> timeZones = emptyMap();
-
-    private TimeZone getTimeZone() {
-        if ("UTC".equals(getTimeZoneId()))
-            return UTC;
-        // try global read-only map. No synchronization necessary because the field is volatile.
-        // (this is only *guaranteed* to work with the Java 5 revised memory model, but works on older JVMs anyway)
-        TimeZone result = timeZones.get(getTimeZoneId());
-        if (result != null)
-            return result;
-        synchronized (CompactCalendar.class) {
-            // the time zone might have been added while we waited for monitor entry
-            result = timeZones.get(getTimeZoneId());
-            if (result != null)
-                return result;
-            // add new timezone to new version of global map.
-            // The following call is allegedly expensive (that's why we go through all this trouble)
-            result = TimeZone.getTimeZone(getTimeZoneId());
-            Map<String, TimeZone> newTimeZones = new HashMap<>(timeZones);
-            newTimeZones.put(getTimeZoneId(), result);
-            newTimeZones = unmodifiableMap(newTimeZones); // paranoia
-            timeZones = newTimeZones;
-        }
-        return result;
+        return Date.from(instant);
     }
 
     public boolean after(CompactCalendar other) {
@@ -181,18 +172,19 @@ public class CompactCalendar {
 
         CompactCalendar that = (CompactCalendar) o;
 
-        return timeInMillis == that.timeInMillis && timeZoneId.equals(that.timeZoneId);
+        return getTimeInMillis() == that.getTimeInMillis() && getTimeZoneId().equals(that.getTimeZoneId());
     }
 
     public int hashCode() {
+        long timeInMillis = getTimeInMillis();
         int result = (int) (timeInMillis ^ (timeInMillis >>> 32));
-        result = 31 * result + timeZoneId.hashCode();
+        result = 31 * result + getTimeZoneId().hashCode();
         return result;
     }
 
     public String toString() {
         DateFormat format = DateFormat.getDateTimeInstance(SHORT, MEDIUM);
-        format.setTimeZone(getTimeZone());
+        format.setTimeZone(TimeZone.getTimeZone(zoneId));
         return format.format(getTime()) + " " + format.getTimeZone().getID();
     }
 }
