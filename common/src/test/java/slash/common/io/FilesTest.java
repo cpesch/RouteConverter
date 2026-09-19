@@ -20,10 +20,10 @@
 
 package slash.common.io;
 
-import org.junit.After;
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assumptions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import slash.common.type.CompactCalendar;
 
 import java.io.File;
@@ -38,7 +38,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static java.io.File.createTempFile;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static slash.common.TestCase.calendar;
 import static slash.common.io.Files.*;
 import static slash.common.type.CompactCalendar.fromMillis;
@@ -46,7 +46,7 @@ import static slash.common.type.CompactCalendar.fromMillis;
 public class FilesTest {
     private File file;
 
-    @Before
+    @BeforeEach
     public void setUp() throws Exception {
         file = createTempFile("convert", ".tmp");
         File renamed = new File(file.getParentFile(), "convert.tmp");
@@ -54,7 +54,7 @@ public class FilesTest {
         file = renamed;
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         assertTrue(file.delete());
     }
@@ -351,7 +351,8 @@ public class FilesTest {
         try {
             java.nio.file.Files.createSymbolicLink(link, target);
         } catch (UnsupportedOperationException | IOException | SecurityException e) {
-            Assume.assumeNoException(e);
+            // Jupiter has no assumeNoException; abort() skips the test the same way
+            Assumptions.abort("symbolic links are not supported: " + e);
         }
     }
 

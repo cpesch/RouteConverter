@@ -19,7 +19,7 @@
 */
 package slash.common.io;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.net.URI;
@@ -27,7 +27,7 @@ import java.net.URL;
 import java.util.List;
 
 import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static slash.common.io.Files.*;
 
 /**

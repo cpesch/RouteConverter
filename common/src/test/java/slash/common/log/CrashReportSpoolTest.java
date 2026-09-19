@@ -20,9 +20,9 @@
 
 package slash.common.log;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,21 +31,21 @@ import java.util.List;
 
 import static java.nio.file.Files.createTempDirectory;
 import static java.util.Comparator.comparing;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CrashReportSpoolTest {
     private File directory;
     private CrashReportSpool spool;
 
-    @Before
+    @BeforeEach
     public void setUp() throws IOException {
         directory = createTempDirectory("crash-report-spool").toFile();
         spool = new CrashReportSpool(directory);
     }
 
-    @After
+    @AfterEach
     public void tearDown() {
         File[] files = directory.listFiles();
         if (files != null)
@@ -84,9 +84,9 @@ public class CrashReportSpoolTest {
         written.sort(comparing(File::getName));
         int deleted = written.size() - CrashReportSpool.MAXIMUM_FILES;
         for (int i = 0; i < deleted; i++)
-            assertFalse("oldest report should be deleted: " + written.get(i), written.get(i).exists());
+            assertFalse(written.get(i).exists(), "oldest report should be deleted: " + written.get(i));
         for (int i = deleted; i < written.size(); i++)
-            assertTrue("newest report should survive: " + written.get(i), written.get(i).exists());
+            assertTrue(written.get(i).exists(), "newest report should survive: " + written.get(i));
     }
 
     @Test
@@ -107,9 +107,9 @@ public class CrashReportSpoolTest {
         // the name unique across concurrent RouteConverter processes writing in the same
         // millisecond with sequence counters that both start at zero
         String pattern = "crash-\\d{8}-\\d{6}-\\d{3}-\\d{4}-" + pid + "\\.json";
-        assertTrue("unexpected name " + first.getName(), first.getName().matches(pattern));
-        assertTrue("unexpected name " + second.getName(), second.getName().matches(pattern));
-        assertFalse("two writes must not collide", first.getName().equals(second.getName()));
+        assertTrue(first.getName().matches(pattern), "unexpected name " + first.getName());
+        assertTrue(second.getName().matches(pattern), "unexpected name " + second.getName());
+        assertFalse(first.getName().equals(second.getName()), "two writes must not collide");
     }
 
     @Test

@@ -20,12 +20,12 @@
 
 package slash.common.system;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.text.DateFormat;
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static slash.common.TestCase.calendar;
 import static slash.common.system.Version.compareVersion;
 

@@ -20,12 +20,12 @@
 
 package slash.common.log;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.log.DiagnosticReport.BUNDLED_JRE_PROPERTY;
 
 public class DiagnosticReportTest {
@@ -150,8 +150,8 @@ public class DiagnosticReportTest {
         // a two-character user name must still be scrubbed (the old length>=3 guard let
         // it leak) but only as a whole word, never inside an unrelated token like "json"
         String scrubbed = DiagnosticReport.scrub("parsing json failed for jo", null, "jo");
-        assertTrue("standalone user name is scrubbed", scrubbed.contains("<USER>"));
-        assertTrue("substring inside another word is left intact", scrubbed.contains("json"));
+        assertTrue(scrubbed.contains("<USER>"), "standalone user name is scrubbed");
+        assertTrue(scrubbed.contains("json"), "substring inside another word is left intact");
         assertFalse(scrubbed.contains("for jo"));
     }
 
@@ -178,7 +178,7 @@ public class DiagnosticReportTest {
         // the cause chain carrying the huge message is truncated, so the payload stays
         // well under the 64 KB the crash-report endpoint accepts (no forever-retry loop)
         assertTrue(json.contains("[truncated]"));
-        assertTrue("payload must stay under the sender limit, was " + json.length(), json.length() < 64 * 1024);
+        assertTrue(json.length() < 64 * 1024, "payload must stay under the sender limit, was " + json.length());
     }
 
     @Test
