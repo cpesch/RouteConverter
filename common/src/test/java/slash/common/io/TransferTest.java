@@ -20,16 +20,37 @@
 
 package slash.common.io;
 
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import slash.common.prefs.InMemoryPreferences;
 
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.prefs.Preferences;
+
+import static javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static slash.common.TestCase.assertDoubleEquals;
 import static slash.common.io.Transfer.*;
 import static slash.common.type.CompactCalendar.fromMillis;
 
 public class TransferTest {
+    private final InMemoryPreferences preferences = new InMemoryPreferences();
+
+    @BeforeEach
+    public void setUp() {
+        Transfer.setPreferences(preferences);
+    }
+
+    @AfterEach
+    public void tearDown() {
+        Transfer.setPreferences(Preferences.userNodeForPackage(Transfer.class));
+    }
+
     @Test
     public void testCeiling() {
         assertEquals(3, ceiling(184, 90, true));
@@ -259,5 +280,31 @@ public class TransferTest {
     public void testFormatTimeBeyondOneDayNotWrapped() {
         // 25h 01m 01s -> hours are not capped at 24
         assertEquals("25:01:01", formatTime(fromMillis(90_061_000L)));
+    }
+
+    // ---- formatXMLTime / reduceTimeToSecondPrecision preference ----
+
+    @Test
+    public void testFormatXMLTimeKeepsMillisecondPrecisionWhenPreferenceIsUnset() {
+        assertFalse(preferences.getBoolean("reduceTimeToSecondPrecision", false));
+        XMLGregorianCalendar calendar = formatXMLTime(fromMillis(500L));
+        assertNotNull(calendar.getFractionalSecond());
+        assertEquals(500, calendar.getMillisecond());
+    }
+
+    @Test
+    public void testFormatXMLTimeKeepsMillisecondPrecisionWhenPreferenceIsFalse() {
+        preferences.putBoolean("reduceTimeToSecondPrecision", false);
+        XMLGregorianCalendar calendar = formatXMLTime(fromMillis(500L));
+        assertNotNull(calendar.getFractionalSecond());
+        assertEquals(500, calendar.getMillisecond());
+    }
+
+    @Test
+    public void testFormatXMLTimeReducesToSecondPrecisionWhenPreferenceIsTrue() {
+        preferences.putBoolean("reduceTimeToSecondPrecision", true);
+        XMLGregorianCalendar calendar = formatXMLTime(fromMillis(500L));
+        assertNull(calendar.getFractionalSecond());
+        assertEquals(FIELD_UNDEFINED, calendar.getMillisecond());
     }
 }

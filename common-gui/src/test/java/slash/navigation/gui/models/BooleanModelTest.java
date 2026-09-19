@@ -21,9 +21,11 @@
 package slash.navigation.gui.models;
 
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.prefs.Preferences;
 
 import static org.junit.Assert.*;
 
@@ -35,26 +37,33 @@ import static org.junit.Assert.*;
 
 public class BooleanModelTest {
 
+    // isolated in-memory store per test instance, so concurrent forks cannot
+    // clobber each other's writes on the shared OS preferences node
+    private final Preferences preferences = new InMemoryPreferences();
+
     private static String key(String suffix) {
         return "test.bool." + suffix + "." + UUID.randomUUID();
     }
 
+    private BooleanModel model(String suffix, boolean defaultValue) {
+        return new BooleanModel(key(suffix), defaultValue, preferences);
+    }
+
     @Test
     public void testDefaultValueTrue() {
-        BooleanModel model = new BooleanModel(key("default.true"), true);
+        BooleanModel model = model("default.true", true);
         assertTrue(model.getBoolean());
     }
 
     @Test
     public void testDefaultValueFalse() {
-        BooleanModel model = new BooleanModel(key("default.false"), false);
+        BooleanModel model = model("default.false", false);
         assertFalse(model.getBoolean());
     }
 
     @Test
     public void testSetBooleanTrue() {
-        // Write false first so the key exists, then overwrite with true
-        BooleanModel model = new BooleanModel(key("set.true"), true);
+        BooleanModel model = model("set.true", true);
         model.setBoolean(false);
         model.setBoolean(true);
         assertTrue(model.getBoolean());
@@ -62,14 +71,26 @@ public class BooleanModelTest {
 
     @Test
     public void testSetBooleanFalse() {
-        BooleanModel model = new BooleanModel(key("set.false"), true);
+        BooleanModel model = model("set.false", true);
         model.setBoolean(false);
         assertFalse(model.getBoolean());
     }
 
     @Test
+    public void testSetBooleanRoundTripsThroughTheInjectedStore() {
+        String preferencesName = key("round.trip");
+        BooleanModel model = new BooleanModel(preferencesName, false, preferences);
+        model.setBoolean(true);
+        assertEquals("true", preferences.get(preferencesName, null));
+        assertTrue(model.getBoolean());
+        model.setBoolean(false);
+        assertEquals("false", preferences.get(preferencesName, null));
+        assertFalse(model.getBoolean());
+    }
+
+    @Test
     public void testSetBooleanFiresChangeListener() {
-        BooleanModel model = new BooleanModel(key("change"), false);
+        BooleanModel model = model("change", false);
         AtomicInteger count = new AtomicInteger(0);
         model.addChangeListener(e -> count.incrementAndGet());
         model.setBoolean(true);
@@ -78,7 +99,7 @@ public class BooleanModelTest {
 
     @Test
     public void testSetBooleanFiresMultipleChangeListeners() {
-        BooleanModel model = new BooleanModel(key("multi"), false);
+        BooleanModel model = model("multi", false);
         AtomicInteger count = new AtomicInteger(0);
         model.addChangeListener(e -> count.incrementAndGet());
         model.addChangeListener(e -> count.incrementAndGet());
@@ -88,7 +109,7 @@ public class BooleanModelTest {
 
     @Test
     public void testRemoveChangeListenerNoFire() {
-        BooleanModel model = new BooleanModel(key("remove"), false);
+        BooleanModel model = model("remove", false);
         AtomicInteger count = new AtomicInteger(0);
         javax.swing.event.ChangeListener listener = e -> count.incrementAndGet();
         model.addChangeListener(listener);
@@ -97,4 +118,3 @@ public class BooleanModelTest {
         assertEquals(0, count.get());
     }
 }
-

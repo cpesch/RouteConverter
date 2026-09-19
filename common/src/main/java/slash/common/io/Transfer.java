@@ -57,7 +57,9 @@ import static slash.common.type.CompactCalendar.fromMillis;
 public class Transfer {
     private Transfer() {}
 
-    private static final Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
+    // deliberately a static utility, so the test seam is a setter rather than
+    // constructor injection; tests must restore the default node in their teardown
+    private static Preferences preferences = Preferences.userNodeForPackage(Transfer.class);
     private static final Logger log = Logger.getLogger(Transfer.class.getName());
     private static final String REDUCE_TIME_TO_SECOND_PRECISION_PREFERENCE = "reduceTimeToSecondPrecision";
 
@@ -415,6 +417,11 @@ public class Transfer {
             datatypeFactory = DatatypeFactory.newInstance();
         }
         return datatypeFactory;
+    }
+
+    // visible for testing
+    static void setPreferences(Preferences preferences) {
+        Transfer.preferences = preferences;
     }
 
     public static XMLGregorianCalendar formatXMLTime(CompactCalendar time) {

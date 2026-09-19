@@ -36,7 +36,12 @@ import static slash.common.system.Platform.isWindows;
 
 public class Directories {
     private static final Logger log = Logger.getLogger(Files.class.getName());
-    private static final Preferences preferences = Preferences.userNodeForPackage(Files.class);
+    // deliberately a static utility, so the test seam is a setter rather than
+    // constructor injection; tests must restore the default node in their teardown.
+    // The default node is Files' package, not Directories': existing users' stored
+    // preferences live there, so changing it would orphan them
+    private static Preferences preferences = Preferences.userNodeForPackage(Files.class);
+
     private static final String APPLICATION_DIRECTORY_PREFERENCE = "applicationDirectory";
     private static final String TEMPORARY_DIRECTORY_PREFERENCE = "temporaryDirectory";
 
@@ -51,8 +56,15 @@ public class Directories {
                 System.getProperty("java.io.tmpdir") + separator + "routeconverter" + (!isWindows() ? "-" + System.getProperty("user.name") : "");
     }
 
-    private static final String applicationDirectory = preferences.get(APPLICATION_DIRECTORY_PREFERENCE, getDefaultApplicationDirectory());
-    private static final String temporaryDirectory = preferences.get(TEMPORARY_DIRECTORY_PREFERENCE, getDefaultTemporaryDirectory());
+    private static String applicationDirectory = preferences.get(APPLICATION_DIRECTORY_PREFERENCE, getDefaultApplicationDirectory());
+    private static String temporaryDirectory = preferences.get(TEMPORARY_DIRECTORY_PREFERENCE, getDefaultTemporaryDirectory());
+
+    // visible for testing; re-reads the directories so a test-injected node takes effect
+    static void setPreferences(Preferences preferences) {
+        Directories.preferences = preferences;
+        applicationDirectory = preferences.get(APPLICATION_DIRECTORY_PREFERENCE, getDefaultApplicationDirectory());
+        temporaryDirectory = preferences.get(TEMPORARY_DIRECTORY_PREFERENCE, getDefaultTemporaryDirectory());
+    }
 
     public static File ensureDirectory(File directory) {
         if (!directory.exists()) {
