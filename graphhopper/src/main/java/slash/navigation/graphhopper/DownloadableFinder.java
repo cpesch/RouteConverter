@@ -72,8 +72,9 @@ class DownloadableFinder {
         List<GraphDescriptor> localDescriptors = graphManager.getLocalGraphDescriptors().stream()
                 .filter(graphDescriptor -> graphDescriptor.matches(mapDescriptor))
                 .toList();
+        // prefer the remote graphs with the trustworthy bounding boxes
         List<GraphDescriptor> remoteDescriptors = graphManager.getRemoteGraphDescriptors().stream()
-                .filter(graphDescriptor -> graphDescriptor.matches(mapDescriptor))
+                .filter(graphDescriptor -> graphDescriptor.matches(mapDescriptor) && graphDescriptor.hasValidBoundingBox())
                 .sorted(new GraphDescriptorComparator())
                 .toList();
         // if there is no other choice use the graphs with the invalid bounding boxes
