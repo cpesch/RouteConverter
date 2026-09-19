@@ -296,6 +296,38 @@ public class NavigationFormatParserTest {
         assertEquals(60000, result.getTheRoute().getPositionCount());
     }
 
+    // simulates the file disappearing between probes, so the reopen attempt after a failed
+    // reset() (source.get(), i.e. openFileInputStream) throws instead of returning null
+    // (rc/RouteConverter#194)
+    private static final class DeletesFileWhileOverrunningFormat extends Gpx11Format {
+        private final File file;
+
+        DeletesFileWhileOverrunningFormat(File file) {
+            this.file = file;
+        }
+
+        public void read(InputStream source, ParserContext<GpxRoute> context) throws IOException {
+            source.readAllBytes();
+            //noinspection ResultOfMethodCallIgnored
+            file.delete();
+            throw new IOException("does not recognize this format");
+        }
+    }
+
+    @Test
+    public void testReopenThrowingDuringProbeStopsWithoutPropagating() throws IOException {
+        byte[] body = columbusBody(60000);
+        assertTrue(body.length > NavigationFormatParser.TOTAL_BUFFER_SIZE);
+        File file = temporaryFile(".hst", body);
+
+        List<NavigationFormat<?>> formats = List.of(new DeletesFileWhileOverrunningFormat(file), new ColumbusGpsType1Format());
+        // the file is gone by the time probing tries to reopen it after the failed reset(),
+        // so openFileInputStream's UncheckedIOException must stop probing, not propagate
+        ParserResult result = parser.read(file, formats);
+
+        assertFalse(result.isSuccessful());
+    }
+
     @Test
     public void testSingleUseInputStreamStillBreaksOnResetFailure() throws IOException {
         byte[] body = columbusBody(60000);

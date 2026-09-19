@@ -121,32 +121,46 @@ public class NavigationFormatParser {
         return positionCounts;
     }
 
+    // outcome of trying a single candidate format against the shared buffer, shared by both
+    // probe loops below (internalRead and bufferedInternalRead) since only what happens after
+    // a MATCHED/DECLINED-with-reset-failure result differs between them (rc/RouteConverter#194)
+    private enum ProbeOutcome { MATCHED, READ, DECLINED }
+
+    private ProbeOutcome probeFormat(NavigationFormat<BaseRoute<?, ?>> format, InputStream buffer,
+                                     ParserContext<BaseRoute<?, ?>> context, int routeCountBefore) {
+        notifyReading(format);
+
+        log.fine(format("Trying to read with %s", format));
+        boolean declined = false;
+        try {
+            format.read(buffer, context);
+        } catch (Exception e) {
+            // probing tries every candidate format in turn, so a format declining a file it does
+            // not handle (e.g. Gpx11Format on a GPX 1.0 file, before Gpx10Format reads it) is normal
+            // control flow, not an error - keep it at fine so it does not raise a false alarm
+            log.fine(format("Cannot read with %s, trying next format: %s", format, e));
+            declined = true;
+        }
+
+        if (context.getRoutes().size() > routeCountBefore) {
+            context.addFormat(format);
+            return ProbeOutcome.MATCHED;
+        }
+        return declined ? ProbeOutcome.DECLINED : ProbeOutcome.READ;
+    }
+
     private void internalRead(InputStream buffer, List<NavigationFormat<BaseRoute<?, ?>>> formats, ParserContext<BaseRoute<?, ?>> context) throws IOException {
         int routeCountBefore = context.getRoutes().size();
         NavigationFormat<BaseRoute<?, ?>> firstSuccessfulFormat = null;
 
         try {
             for (NavigationFormat<BaseRoute<?, ?>> format : formats) {
-                notifyReading(format);
-
-                log.fine(format("Trying to read with %s", format));
-                try {
-                    format.read(buffer, context);
-
-                    // if no route has been read, take the first that didn't throw an exception
-                    if (firstSuccessfulFormat == null)
-                        firstSuccessfulFormat = format;
-                } catch (Exception e) {
-                    // probing tries every candidate format in turn, so a format declining a file it does
-                    // not handle (e.g. Gpx11Format on a GPX 1.0 file, before Gpx10Format reads it) is normal
-                    // control flow, not an error - keep it at fine so it does not raise a false alarm
-                    log.fine(format("Cannot read with %s, trying next format: %s", format, e));
-                }
-
-                if (context.getRoutes().size() > routeCountBefore) {
-                    context.addFormat(format);
+                ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore);
+                if (outcome == ProbeOutcome.MATCHED)
                     break;
-                }
+                // if no route has been read, take the first that didn't throw an exception
+                if (outcome == ProbeOutcome.READ && firstSuccessfulFormat == null)
+                    firstSuccessfulFormat = format;
 
                 try {
                     buffer.reset();
@@ -289,26 +303,12 @@ public class NavigationFormatParser {
         NotClosingUnderlyingInputStream buffer = openAndMark(getStream(source), markSize);
         try {
             for (NavigationFormat<BaseRoute<?, ?>> format : formats) {
-                notifyReading(format);
-
-                log.fine(format("Trying to read with %s", format));
-                try {
-                    format.read(buffer, context);
-
-                    // if no route has been read, take the first that didn't throw an exception
-                    if (firstSuccessfulFormat == null)
-                        firstSuccessfulFormat = format;
-                } catch (Exception e) {
-                    // probing tries every candidate format in turn, so a format declining a file it does
-                    // not handle (e.g. Gpx11Format on a GPX 1.0 file, before Gpx10Format reads it) is normal
-                    // control flow, not an error - keep it at fine so it does not raise a false alarm
-                    log.fine(format("Cannot read with %s, trying next format: %s", format, e));
-                }
-
-                if (context.getRoutes().size() > routeCountBefore) {
-                    context.addFormat(format);
+                ProbeOutcome outcome = probeFormat(format, buffer, context, routeCountBefore);
+                if (outcome == ProbeOutcome.MATCHED)
                     break;
-                }
+                // if no route has been read, take the first that didn't throw an exception
+                if (outcome == ProbeOutcome.READ && firstSuccessfulFormat == null)
+                    firstSuccessfulFormat = format;
 
                 try {
                     buffer.reset();
