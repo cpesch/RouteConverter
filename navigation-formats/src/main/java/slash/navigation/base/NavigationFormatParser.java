@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Supplier;
 import java.util.logging.Logger;
 
 import static java.io.File.separatorChar;
@@ -164,8 +165,14 @@ public class NavigationFormatParser {
 
     public ParserResult read(File source, List<NavigationFormat<?>> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
-        try (InputStream inputStream = new FileInputStream(source)) {
-            return read(inputStream, markSizeFor(source.length()), extractStartDate(source), source, widen(formats));
+        return read(() -> openFileInputStream(source), markSizeFor(source.length()), extractStartDate(source), source, widen(formats));
+    }
+
+    private static InputStream openFileInputStream(File source) {
+        try {
+            return new FileInputStream(source);
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
         }
     }
 
@@ -242,13 +249,13 @@ public class NavigationFormatParser {
             }
             log.info("Reading '" + url + "' with " + bytes.length + " bytes");
             internalSetStartDate(extractStartDate(url));
-            bufferedInternalRead(new ByteArrayInputStream(bytes), markSizeFor(bytes.length), widen(getNavigationFormatRegistry().getReadFormats()), this);
+            bufferedInternalRead(() -> new ByteArrayInputStream(bytes), markSizeFor(bytes.length), widen(getNavigationFormatRegistry().getReadFormats()), this);
         }
     }
 
-    private ParserResult read(InputStream source, int readBufferSize, CompactCalendar startDate, File file,
+    private ParserResult read(Supplier<InputStream> source, int readBufferSize, CompactCalendar startDate, File file,
                               List<NavigationFormat<BaseRoute<?, ?>>> formats) throws IOException {
-        log.fine("Reading '" + source + "' with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
+        log.fine("Reading with a buffer of " + readBufferSize + " bytes by " + formats.size() + " formats");
         ParserContext<BaseRoute<?, ?>> context = new InternalParserContext(file, startDate);
         bufferedInternalRead(source, readBufferSize, formats, context);
         return createResult(context);
@@ -267,19 +274,101 @@ public class NavigationFormatParser {
     }
 
     /**
-     * Buffers the source and marks past its end, capped at
-     * {@link #TOTAL_BUFFER_SIZE}, so reset() between format attempts succeeds
-     * unless a format reads past the cap, then probes the formats into the context.
+     * Opens the source and marks past its end, capped at {@link #TOTAL_BUFFER_SIZE}, so
+     * reset() between format attempts succeeds unless a format reads past the cap - in which
+     * case the candidate that overran the cap is skipped and probing re-opens a fresh stream
+     * from {@code source} to continue with the remaining candidates (rc/RouteConverter#188).
+     * A {@code source} that cannot be re-opened (e.g. a one-shot {@link InputStream}) returns
+     * {@code null} on its second call, which stops probing exactly as a failed reset() used to.
      */
-    private void bufferedInternalRead(InputStream source, int markSize, List<NavigationFormat<BaseRoute<?, ?>>> formats,
+    private void bufferedInternalRead(Supplier<InputStream> source, int markSize, List<NavigationFormat<BaseRoute<?, ?>>> formats,
                                       ParserContext<BaseRoute<?, ?>> context) throws IOException {
-        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(source, CHUNK_BUFFER_SIZE));
-        buffer.mark(markSize + CHUNK_BUFFER_SIZE * 2);
+        int routeCountBefore = context.getRoutes().size();
+        NavigationFormat<BaseRoute<?, ?>> firstSuccessfulFormat = null;
+
+        NotClosingUnderlyingInputStream buffer = openAndMark(getStream(source), markSize);
         try {
-            internalRead(buffer, formats, context);
+            for (NavigationFormat<BaseRoute<?, ?>> format : formats) {
+                notifyReading(format);
+
+                log.fine(format("Trying to read with %s", format));
+                try {
+                    format.read(buffer, context);
+
+                    // if no route has been read, take the first that didn't throw an exception
+                    if (firstSuccessfulFormat == null)
+                        firstSuccessfulFormat = format;
+                } catch (Exception e) {
+                    // probing tries every candidate format in turn, so a format declining a file it does
+                    // not handle (e.g. Gpx11Format on a GPX 1.0 file, before Gpx10Format reads it) is normal
+                    // control flow, not an error - keep it at fine so it does not raise a false alarm
+                    log.fine(format("Cannot read with %s, trying next format: %s", format, e));
+                }
+
+                if (context.getRoutes().size() > routeCountBefore) {
+                    context.addFormat(format);
+                    break;
+                }
+
+                try {
+                    buffer.reset();
+                } catch (IOException e) {
+                    // the candidate above read past the mark cap, so this buffer's mark is gone - that
+                    // only invalidates the candidate that overran it, not the remaining candidates, so
+                    // re-open a fresh stream and keep probing instead of aborting the whole loop
+                    log.warning("Cannot reset() stream to mark() (probe cap " + TOTAL_BUFFER_SIZE +
+                            " bytes), reopening for the next candidate: " + e.getLocalizedMessage());
+
+                    InputStream reopened;
+                    try {
+                        reopened = source.get();
+                    } catch (RuntimeException reopenFailure) {
+                        log.severe("Cannot reopen stream after failed reset(): " + reopenFailure.getLocalizedMessage());
+                        break;
+                    }
+                    if (reopened == null) {
+                        log.severe("Cannot reopen stream after failed reset(): no source left to reopen from");
+                        break;
+                    }
+
+                    buffer.closeUnderlyingInputStream();
+                    buffer = openAndMark(reopened, markSize);
+                }
+            }
         } finally {
             buffer.closeUnderlyingInputStream();
         }
+
+        if (context.getRoutes().isEmpty() && context.getFormats().isEmpty() && firstSuccessfulFormat != null)
+            context.addFormat(firstSuccessfulFormat);
+    }
+
+    private static InputStream getStream(Supplier<InputStream> source) throws IOException {
+        try {
+            return source.get();
+        } catch (UncheckedIOException e) {
+            throw e.getCause();
+        }
+    }
+
+    private static NotClosingUnderlyingInputStream openAndMark(InputStream raw, int markSize) {
+        NotClosingUnderlyingInputStream buffer = new NotClosingUnderlyingInputStream(new BufferedInputStream(raw, CHUNK_BUFFER_SIZE));
+        buffer.mark(markSize + CHUNK_BUFFER_SIZE * 2);
+        return buffer;
+    }
+
+    /**
+     * A {@link Supplier} for a source that can only be read once, e.g. a caller-supplied
+     * {@link InputStream} that cannot be re-opened: returns {@code source} on the first call
+     * and {@code null} on every call after, signalling "cannot recover" to the probe loop.
+     */
+    private static Supplier<InputStream> oneShot(InputStream source) {
+        InputStream[] holder = {source};
+        return () -> {
+            InputStream result = holder[0];
+            holder[0] = null;
+            return result;
+        };
     }
 
     public ParserResult read(String source) throws IOException {
@@ -291,7 +380,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(InputStream source, List<NavigationFormat<?>> formats) throws IOException {
-        return read(source, TOTAL_BUFFER_SIZE, null, null, widen(formats));
+        return read(oneShot(source), TOTAL_BUFFER_SIZE, null, null, widen(formats));
     }
 
     private CompactCalendar extractStartDate(File file) {
@@ -333,7 +422,7 @@ public class NavigationFormatParser {
             List<NavigationFormat<?>> readFormats = new ArrayList<>(formats);
             readFormats.add(0, urlParsingFormat);
             byte[] bytes = url.toExternalForm().getBytes();
-            return read(new ByteArrayInputStream(bytes), bytes.length, null, null, widen(readFormats));
+            return read(() -> new ByteArrayInputStream(bytes), bytes.length, null, null, widen(readFormats));
         }
 
         if (isGoogleMapsProfileUrl(url)) {
@@ -349,7 +438,7 @@ public class NavigationFormatParser {
         try (InputStream inputStream = url.openStream()) {
             byte[] bytes = inputStream.readAllBytes();
             log.info("Reading '" + url + "' with " + bytes.length + " bytes");
-            return read(new ByteArrayInputStream(bytes), bytes.length, extractStartDate(url), extractFile(url), widen(formats));
+            return read(() -> new ByteArrayInputStream(bytes), bytes.length, extractStartDate(url), extractFile(url), widen(formats));
         }
     }
 
