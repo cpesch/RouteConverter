@@ -29,6 +29,7 @@ import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static java.lang.String.format;
+import static java.util.Locale.ROOT;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.PreferencesHelper.count;
 import static slash.common.io.Transfer.trim;
@@ -111,7 +112,7 @@ public class APIKeyRegistry {
             Properties properties = new Properties();
             properties.load(inputStream);
             String property = properties.getProperty(serviceName + API_KEY_PREFERENCE);
-            if(property != null && !property.toLowerCase().contains((serviceName + API_KEY_PREFERENCE).toLowerCase()))
+            if(property != null && !property.toLowerCase(ROOT).contains((serviceName + API_KEY_PREFERENCE).toLowerCase(ROOT)))
                 return property;
         }
         catch (IOException e) {

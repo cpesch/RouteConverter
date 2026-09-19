@@ -20,6 +20,8 @@
 
 package slash.common.system;
 
+import java.util.Locale;
+
 /**
  * Provides platform detection functionality.
  *
@@ -67,7 +69,7 @@ public class Platform {
     }
 
     private static String canonical(String value) {
-        return value.toLowerCase().replaceAll("[\\\\/ ]", "_");
+        return value.toLowerCase(Locale.ROOT).replaceAll("[\\\\/ ]", "_");
     }
 
     public static String getOperationSystem() {

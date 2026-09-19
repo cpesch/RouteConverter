@@ -80,7 +80,7 @@ public class TileServerMapSource extends AbstractTileSource {
     }
 
     private static boolean isOutdoorActiveHost(String hostName) {
-        String lowerCase = hostName.toLowerCase();
+        String lowerCase = hostName.toLowerCase(Locale.ROOT);
         for (String domain : OUTDOOR_ACTIVE_TILE_DOMAINS)
             if (lowerCase.equals(domain) || lowerCase.endsWith("." + domain))
                 return true;
@@ -123,7 +123,7 @@ public class TileServerMapSource extends AbstractTileSource {
                 .arg("tiley", Integer.toString(tile.tileY))
                 .arg("zoom", Integer.toString(tile.zoomLevel))
                 .fmt();
-        url = appendApiKey(url, getApiKey(), tileServer.copyright().toLowerCase().contains("mapbox"));
+        url = appendApiKey(url, getApiKey(), tileServer.copyright().toLowerCase(Locale.ROOT).contains("mapbox"));
         return URI.create(url).toURL();
     }
 }

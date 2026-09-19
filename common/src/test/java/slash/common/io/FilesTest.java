@@ -33,6 +33,7 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -159,6 +160,21 @@ public class FilesTest {
             fail("IllegalArgumentException expected");
         } catch (IllegalArgumentException e) {
             // intentionally left empty
+        }
+    }
+
+    @Test
+    public void testGetExtensionIsLocaleIndependent() {
+        Locale previous = Locale.getDefault();
+        try {
+            Locale.setDefault(Locale.of("tr", "TR"));
+            assertEquals(".itn", getExtension("CURRENT.ITN"));
+            assertEquals(".fit", getExtension("TRACK001.FIT"));
+            assertEquals(".igc", getExtension("FLIGHT.IGC"));
+            assertEquals(".gpi", getExtension("POI.GPI"));
+            assertEquals(".ikt", getExtension("MAP.IKT"));
+        } finally {
+            Locale.setDefault(previous);
         }
     }
 

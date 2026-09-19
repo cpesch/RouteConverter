@@ -30,6 +30,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.MissingResourceException;
 
+import static java.util.Locale.ROOT;
 import static slash.navigation.base.WaypointType.Waypoint;
 
 /**
@@ -53,7 +54,7 @@ public class WaypointTypeColumnTableCellEditor extends PositionsTableCellEditor 
             else {
                 WaypointType waypointType = getWaypointType(position);
                 if (waypointType != null && waypointType != Waypoint)
-                    key = waypointType.name().toLowerCase();
+                    key = waypointType.name().toLowerCase(ROOT);
             }
 
             Icon icon = null;
@@ -70,7 +71,7 @@ public class WaypointTypeColumnTableCellEditor extends PositionsTableCellEditor 
         WaypointType waypointType = getWaypointType(position);
         if (waypointType != null) {
             try {
-                text = BaseRouteConverter.getBundle().getString("waypoint-type-" + waypointType.name().toLowerCase());
+                text = BaseRouteConverter.getBundle().getString("waypoint-type-" + waypointType.name().toLowerCase(ROOT));
             } catch (MissingResourceException e) {
                 text = waypointType.name();
             }

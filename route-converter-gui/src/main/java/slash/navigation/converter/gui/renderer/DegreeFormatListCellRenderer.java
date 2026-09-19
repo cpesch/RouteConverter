@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.BaseRouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -41,7 +42,7 @@ public class DegreeFormatListCellRenderer extends DefaultListCellRenderer {
         DegreeFormat degreeFormat = (DegreeFormat) value;
         String text;
         try {
-            text = BaseRouteConverter.getBundle().getString("degreeformat-" + degreeFormat.name().toLowerCase());
+            text = BaseRouteConverter.getBundle().getString("degreeformat-" + degreeFormat.name().toLowerCase(Locale.ROOT));
         } catch (MissingResourceException e) {
             text = degreeFormat.name();
         }

@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.BaseRouteConverter;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -39,7 +40,7 @@ public class FilterPredicateListCellRenderer extends DefaultListCellRenderer {
         FilterPredicate<?> filterPredicate = (FilterPredicate) value;
         String text;
         try {
-            text = BaseRouteConverter.getBundle().getString("filter-photos-" + filterPredicate.name().toLowerCase());
+            text = BaseRouteConverter.getBundle().getString("filter-photos-" + filterPredicate.name().toLowerCase(Locale.ROOT));
         } catch (MissingResourceException e) {
             text = filterPredicate.name();
         }

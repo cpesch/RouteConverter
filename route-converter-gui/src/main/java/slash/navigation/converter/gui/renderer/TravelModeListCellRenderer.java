@@ -25,6 +25,7 @@ import slash.navigation.routing.TravelMode;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -39,7 +40,7 @@ public class TravelModeListCellRenderer extends DefaultListCellRenderer {
         TravelMode travelMode = (TravelMode) value;
         String text;
         try {
-            text = BaseRouteConverter.getBundle().getString("travel-mode-" + travelMode.name().toLowerCase());
+            text = BaseRouteConverter.getBundle().getString("travel-mode-" + travelMode.name().toLowerCase(Locale.ROOT));
         } catch (MissingResourceException e) {
             text = travelMode.name();
         }

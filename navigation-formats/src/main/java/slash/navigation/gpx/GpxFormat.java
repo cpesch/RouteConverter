@@ -30,6 +30,7 @@ import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Locale.ROOT;
 import static slash.common.io.Transfer.parseDouble;
 
 /**
@@ -94,7 +95,7 @@ public abstract class GpxFormat extends XmlNavigationFormat<GpxRoute> implements
     static Integer parseFix(String fix) {
         if (fix == null)
             return null;
-        return switch (fix.toLowerCase()) {
+        return switch (fix.toLowerCase(ROOT)) {
             case "none" -> 0;
             case "2d" -> 1;
             case "3d" -> 1;

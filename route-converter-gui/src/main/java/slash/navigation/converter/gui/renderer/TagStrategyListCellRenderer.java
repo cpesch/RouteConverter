@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.helpers.TagStrategy;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Locale;
 import java.util.MissingResourceException;
 
 /**
@@ -40,7 +41,7 @@ public class TagStrategyListCellRenderer extends DefaultListCellRenderer {
         TagStrategy tagStrategy = (TagStrategy) value;
         String text;
         try {
-            text = BaseRouteConverter.getBundle().getString("tag-strategy-" + tagStrategy.name().toLowerCase());
+            text = BaseRouteConverter.getBundle().getString("tag-strategy-" + tagStrategy.name().toLowerCase(Locale.ROOT));
         } catch (MissingResourceException e) {
             text = tagStrategy.name();
         }

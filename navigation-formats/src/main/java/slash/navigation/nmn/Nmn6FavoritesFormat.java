@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.Locale.ROOT;
 import static slash.common.io.Transfer.*;
 import static slash.navigation.common.NavigationConversion.formatPositionAsString;
 
@@ -82,7 +83,7 @@ public class Nmn6FavoritesFormat extends NmnFormat {
     }
 
     private static String escapeBraces(String string) {
-        return string != null ? string.replaceAll("[\\" + LEFT_BRACE + "|" + REGEX_SEPARATOR + "|\\" + RIGHT_BRACE + "]", "").toUpperCase() : "";
+        return string != null ? string.replaceAll("[\\" + LEFT_BRACE + "|" + REGEX_SEPARATOR + "|\\" + RIGHT_BRACE + "]", "").toUpperCase(ROOT) : "";
     }
 
     protected void writePosition(Wgs84Position position, PrintWriter writer, int index, boolean firstPosition) {

@@ -38,6 +38,7 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static java.util.Locale.ROOT;
 import static slash.common.io.InputOutput.DEFAULT_BUFFER_SIZE;
 import static slash.common.type.CompactCalendar.fromMillis;
 import static slash.common.type.HexadecimalNumber.encodeBytes;
@@ -68,7 +69,7 @@ public class Files {
         int index = name.lastIndexOf(".");
         if (index == -1)
             return "";
-        return name.substring(index).toLowerCase();
+        return name.substring(index).toLowerCase(ROOT);
     }
 
     public static String getExtension(URL url) {
@@ -430,7 +431,7 @@ public class Files {
     public static List<File> collectFiles(File path, String... extensions) {
         Set<String> lowercase = extensions != null ? Arrays.stream(extensions).
                 filter(Objects::nonNull).
-                map(String::toLowerCase).
+                map(extension -> extension.toLowerCase(ROOT)).
                 collect(Collectors.toSet()) : null;
 
         List<File> list = new ArrayList<>(1);
