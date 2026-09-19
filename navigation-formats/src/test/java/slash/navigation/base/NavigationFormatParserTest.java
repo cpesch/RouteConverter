@@ -26,10 +26,12 @@ import org.junit.Test;
 import slash.navigation.bcr.MTP0809Format;
 import slash.navigation.columbus.ColumbusGpsType1Format;
 import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.gpx.GpxRoute;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.URI;
@@ -41,6 +43,7 @@ import java.util.List;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -268,6 +271,74 @@ public class NavigationFormatParserTest {
         // the parser still reports the first format that did not throw
         ParserResult result = parser.read("");
         assertTrue(result.isSuccessful());
+    }
+
+    // simulates a candidate format that, like a real one can on an unrelated large file
+    // (rc/RouteConverter#188), reads past the probe cap before declining to handle the source
+    private static final class OverrunFormat extends Gpx11Format {
+        public void read(InputStream source, ParserContext<GpxRoute> context) throws IOException {
+            source.readAllBytes();
+            throw new IOException("does not recognize this format");
+        }
+    }
+
+    @Test
+    public void testProbeContinuesAfterAFormatReadsPastTheCap() throws IOException {
+        byte[] body = columbusBody(60000);
+        assertTrue(body.length > NavigationFormatParser.TOTAL_BUFFER_SIZE);
+        File file = temporaryFile(".hst", body);
+
+        List<NavigationFormat<?>> formats = List.of(new OverrunFormat(), new ColumbusGpsType1Format());
+        ParserResult result = parser.read(file, formats);
+
+        assertTrue(result.isSuccessful());
+        assertEquals(ColumbusGpsType1Format.class, result.getFormat().getClass());
+        assertEquals(60000, result.getTheRoute().getPositionCount());
+    }
+
+    // simulates the file disappearing between probes, so the reopen attempt after a failed
+    // reset() (source.get(), i.e. openFileInputStream) throws instead of returning null
+    // (rc/RouteConverter#194)
+    private static final class DeletesFileWhileOverrunningFormat extends Gpx11Format {
+        private final File file;
+
+        DeletesFileWhileOverrunningFormat(File file) {
+            this.file = file;
+        }
+
+        public void read(InputStream source, ParserContext<GpxRoute> context) throws IOException {
+            source.readAllBytes();
+            //noinspection ResultOfMethodCallIgnored
+            file.delete();
+            throw new IOException("does not recognize this format");
+        }
+    }
+
+    @Test
+    public void testReopenThrowingDuringProbeStopsWithoutPropagating() throws IOException {
+        byte[] body = columbusBody(60000);
+        assertTrue(body.length > NavigationFormatParser.TOTAL_BUFFER_SIZE);
+        File file = temporaryFile(".hst", body);
+
+        List<NavigationFormat<?>> formats = List.of(new DeletesFileWhileOverrunningFormat(file), new ColumbusGpsType1Format());
+        // the file is gone by the time probing tries to reopen it after the failed reset(),
+        // so openFileInputStream's UncheckedIOException must stop probing, not propagate
+        ParserResult result = parser.read(file, formats);
+
+        assertFalse(result.isSuccessful());
+    }
+
+    @Test
+    public void testSingleUseInputStreamStillBreaksOnResetFailure() throws IOException {
+        byte[] body = columbusBody(60000);
+        assertTrue(body.length > NavigationFormatParser.TOTAL_BUFFER_SIZE);
+
+        List<NavigationFormat<?>> formats = List.of(new OverrunFormat(), new ColumbusGpsType1Format());
+        // a raw InputStream cannot be re-opened after a failed reset(), so probing still stops
+        // at the overrunning candidate instead of reaching the correct format afterwards
+        ParserResult result = parser.read(new ByteArrayInputStream(body), formats);
+
+        assertFalse(result.isSuccessful());
     }
 
     private interface UrlConsumer {
