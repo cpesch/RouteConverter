@@ -24,6 +24,7 @@ import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.Polygon;
 
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,15 @@ public interface RoutingService {
     long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors);
     void downloadRoutingData(List<MapDescriptor> mapDescriptors);
     Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area);
+
+    /**
+     * The exact area for which the routing data of the given map is valid, if known. Never blocks:
+     * returns null if the area is not (yet) known, in which case the caller falls back to the map's
+     * bounding box. If the area is fetched in the background, onAvailable is called once it arrives.
+     */
+    default Polygon getRoutingCoverage(MapDescriptor mapDescriptor, Runnable onAvailable) {
+        return null;
+    }
 
     void addRoutingServiceListener(RoutingServiceListener routingServiceListener);
 }

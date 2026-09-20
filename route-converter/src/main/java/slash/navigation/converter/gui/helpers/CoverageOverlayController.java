@@ -20,6 +20,7 @@
 package slash.navigation.converter.gui.helpers;
 
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.Polygon;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.RouteConverter;
 import slash.navigation.elevation.ElevationService;
@@ -34,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -46,6 +48,17 @@ import static slash.common.io.Directories.getApplicationDirectory;
  */
 
 public class CoverageOverlayController {
+    private static final Logger log = Logger.getLogger(CoverageOverlayController.class.getName());
+
+    /**
+     * A covered map: its bounding box, and if known its exact polygon, which is much tighter.
+     */
+    record CoveredArea(BoundingBox boundingBox, Polygon polygon) {
+        boolean intersects(BoundingBox tile) {
+            return polygon != null ? polygon.intersects(tile) : boundingBox.intersect(tile) != null;
+        }
+    }
+
     public enum Category { NONE, MAPS, ROUTING, ELEVATION, POI }
 
     private Category category = Category.NONE;
@@ -141,13 +154,21 @@ public class CoverageOverlayController {
     // Fallback for routing services without a real getCoverageTiles() grid (e.g. GraphHopper),
     // whose routing data is downloaded per map region rather than per degree tile
     private Map<BoundingBox, Boolean> computeRoutingCoverageByMap(BoundingBox viewport, RoutingService routingService) {
-        List<BoundingBox> covered = new ArrayList<>();
+        List<CoveredArea> covered = new ArrayList<>();
         for (RemoteMap map : getCoverageCandidateMaps(viewport)) {
-            long remaining = routingService.calculateRemainingDownloadSize(singletonList(new RemoteMapDescriptor(map)));
-            if (remaining == 0)
-                covered.add(map.getBoundingBox());
+            RemoteMapDescriptor mapDescriptor = new RemoteMapDescriptor(map);
+            long remaining = routingService.calculateRemainingDownloadSize(singletonList(mapDescriptor));
+            if (remaining == 0) {
+                // never blocks: a polygon that is not there yet is fetched in the background and
+                // refreshes the overlay when it arrives, until then the bounding box is used
+                Polygon polygon = routingService.getRoutingCoverage(mapDescriptor,
+                        () -> SwingUtilities.invokeLater(this::forceRefresh));
+                if (polygon == null)
+                    log.fine("No routing polygon for " + map.description() + ", using its bounding box");
+                covered.add(new CoveredArea(map.getBoundingBox(), polygon));
+            }
         }
-        return computeTileCoverage(viewport, covered);
+        return computeAreaCoverage(viewport, covered);
     }
 
     // POI is covered if a local POI file's own bounding box reaches into the viewport. This scans
@@ -183,8 +204,14 @@ public class CoverageOverlayController {
     // BaseRouteConverter#getInstance() static singletons and isn't unit-testable as-is,
     // but this tiling logic is pure and worth covering directly
     Map<BoundingBox, Boolean> computeTileCoverage(BoundingBox viewport, List<BoundingBox> coveredBoundingBoxes) {
+        return computeAreaCoverage(viewport, coveredBoundingBoxes.stream().map(b -> new CoveredArea(b, null)).toList());
+    }
+
+    // like computeTileCoverage(), but a covered map that has a polygon only covers the tiles
+    // that its polygon reaches into, not all that its bounding box reaches into
+    Map<BoundingBox, Boolean> computeAreaCoverage(BoundingBox viewport, List<CoveredArea> coveredAreas) {
         Map<BoundingBox, Boolean> result = new HashMap<>();
-        if (coveredBoundingBoxes.isEmpty())
+        if (coveredAreas.isEmpty())
             return result;
 
         double longitude = viewport.southWest().getLongitude();
@@ -196,8 +223,8 @@ public class CoverageOverlayController {
                 double south = latitude;
                 double north = Math.min(latitude + 1.0, viewport.northEast().getLatitude());
                 BoundingBox tile = new BoundingBox(east, north, west, south);
-                for (BoundingBox coveredBoundingBox : coveredBoundingBoxes) {
-                    if (coveredBoundingBox.intersect(tile) != null) {
+                for (CoveredArea coveredArea : coveredAreas) {
+                    if (coveredArea.intersects(tile)) {
                         result.put(tile, true);
                         break;
                     }
