@@ -148,7 +148,7 @@ public class GraphHopperCoverageTest {
     }
 
     @Test
-    public void getRoutingCoverageCachesNegativeResultAndNeverFiresOnAvailableWhenDownloadFails() throws IOException {
+    public void getRoutingCoverageCachesNegativeResultAndNeverFiresOnAvailableWhenDownloadFails() throws IOException, InterruptedException {
         Download download = new Download("Coverage", BASE_URL + GERMANY_POLY_URI, Action.Copy,
                 new FileAndChecksum(expectedPolyFile(), null), null);
         when(downloadManager.queueForDownload(anyString(), anyString(), eq(Action.Copy), any(), isNull()))
@@ -174,7 +174,7 @@ public class GraphHopperCoverageTest {
     }
 
     @Test
-    public void getRoutingCoverageFetchesInBackgroundAndFiresOnAvailableOnceThePolygonArrives() throws IOException {
+    public void getRoutingCoverageFetchesInBackgroundAndFiresOnAvailableOnceThePolygonArrives() throws IOException, InterruptedException {
         File polyFile = expectedPolyFile();
         Download download = new Download("Coverage", BASE_URL + GERMANY_POLY_URI, Action.Copy,
                 new FileAndChecksum(polyFile, null), null);
