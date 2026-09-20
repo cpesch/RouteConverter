@@ -342,9 +342,9 @@
                     <version>3.6.2</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>3.0.5</version>
+                    <groupId>com.github.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>4.10.4.1</version>
                 </plugin>
                 <!-- The bundled JAXB tooling version here is the xjc version used
                      for codegen (4.1.0 -> xjc 4.0.6); keep jaxb-api.version /
@@ -506,10 +506,10 @@
                 </executions>
             </plugin>
 
-            <!-- FINDSBUGS - code quality -->
+            <!-- SPOTBUGS - code quality -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
             </plugin>
 
             <plugin>
@@ -630,10 +630,10 @@
                 </reportSets>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
                 <configuration>
-                    <threshold>Normal</threshold>
+                    <threshold>Medium</threshold>
                     <effort>Default</effort>
                     <failOnError>false</failOnError>
                 </configuration>
