@@ -42,7 +42,9 @@ import slash.navigation.routing.*;
 import slash.navigation.routing.RoutingResult.Validity;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -531,8 +533,14 @@ public class GraphHopper extends BaseRoutingService {
         if (cached != null)
             return cached.orElse(null);
 
+        // a download for this uri is already in flight: don't inspect the target file, since
+        // downloadPolygon()'s queueForDownload/waitForCompletion may have created it before all
+        // bytes are written, and reading it here would risk parsing a partial file
+        if (polygonsRequested.contains(uri))
+            return null;
+
         String polyUri = uri.substring(0, uri.length() - PBF_SUFFIX.length()) + POLY_SUFFIX;
-        java.io.File file = new java.io.File(getDirectory(downloadable.getDataSource()), polyUri);
+        File file = new File(getDirectory(downloadable.getDataSource()), polyUri);
         if (file.isFile())
             return readPolygon(uri, file);
 
@@ -543,9 +551,9 @@ public class GraphHopper extends BaseRoutingService {
         return null;
     }
 
-    private Polygon readPolygon(String uri, java.io.File file) {
+    private Polygon readPolygon(String uri, File file) {
         Polygon polygon = null;
-        try (java.io.InputStream inputStream = new java.io.FileInputStream(file)) {
+        try (InputStream inputStream = new FileInputStream(file)) {
             polygon = PolyUtil.parse(inputStream);
         } catch (IOException e) {
             log.fine(format("Cannot read polygon %s: %s", file, e.getLocalizedMessage()));
@@ -556,7 +564,7 @@ public class GraphHopper extends BaseRoutingService {
         return polygon;
     }
 
-    private void downloadPolygon(String uri, String url, java.io.File file, Runnable onAvailable) {
+    private void downloadPolygon(String uri, String url, File file, Runnable onAvailable) {
         try {
             Download download = downloadManager.queueForDownload(getName() + " Coverage: " + uri, url, Action.Copy,
                     FileAndChecksum.forChecksums(file, null), null);
