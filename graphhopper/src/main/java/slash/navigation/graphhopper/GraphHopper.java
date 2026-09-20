@@ -42,8 +42,13 @@ import slash.navigation.routing.*;
 import slash.navigation.routing.RoutingResult.Validity;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
@@ -79,7 +84,18 @@ public class GraphHopper extends BaseRoutingService {
     private static final List<TravelMode> TRAVEL_MODES = asList(new TravelMode("bike"), CAR, new TravelMode("foot"));
     static boolean TEST_MODE = false;
 
+    private static final String PBF_SUFFIX = "-latest.osm.pbf";
+    private static final String POLY_SUFFIX = ".poly";
+
     private final DownloadManager downloadManager;
+    // keyed by uri of the PBF; an empty value is a negative result (no or unusable polygon)
+    private final Map<String, Optional<Polygon>> polygons = new ConcurrentHashMap<>();
+    private final Set<String> polygonsRequested = ConcurrentHashMap.newKeySet();
+    private final ExecutorService polygonExecutor = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(runnable, "GraphHopper-Poly");
+        thread.setDaemon(true);
+        return thread;
+    });
     private GraphManager graphManager;
 
     private DownloadableFinder finder;
@@ -496,5 +512,72 @@ public class GraphHopper extends BaseRoutingService {
     // (see CoverageOverlayController#computeRoutingCoverageByMap()).
     public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
         return Collections.emptyMap();
+    }
+
+    // Geofabrik publishes the clip polygon of every extract next to it: europe/germany-latest.osm.pbf
+    // has europe/germany.poly. Combined extracts have none, some polygons are empty, so a missing
+    // or unusable polygon is a normal, silent case and the caller falls back to the bounding box.
+    public Polygon getRoutingCoverage(MapDescriptor mapDescriptor, Runnable onAvailable) {
+        if (finder == null)
+            return null;
+
+        Downloadable downloadable = finder.getGraphDescriptorsFor(singletonList(mapDescriptor)).stream()
+                .map(GraphDescriptor::getRemoteFile)
+                .filter(Objects::nonNull)
+                .findFirst().orElse(null);
+        if (downloadable == null || !downloadable.getUri().endsWith(PBF_SUFFIX))
+            return null;
+
+        String uri = downloadable.getUri();
+        Optional<Polygon> cached = polygons.get(uri);
+        if (cached != null)
+            return cached.orElse(null);
+
+        // a download for this uri is already in flight: don't inspect the target file, since
+        // downloadPolygon()'s queueForDownload/waitForCompletion may have created it before all
+        // bytes are written, and reading it here would risk parsing a partial file
+        if (polygonsRequested.contains(uri))
+            return null;
+
+        String polyUri = uri.substring(0, uri.length() - PBF_SUFFIX.length()) + POLY_SUFFIX;
+        File file = new File(getDirectory(downloadable.getDataSource()), polyUri);
+        if (file.isFile())
+            return readPolygon(uri, file);
+
+        if (polygonsRequested.add(uri)) {
+            String url = getBaseUrl(downloadable.getDataSource()) + polyUri;
+            polygonExecutor.execute(() -> downloadPolygon(uri, url, file, onAvailable));
+        }
+        return null;
+    }
+
+    private Polygon readPolygon(String uri, File file) {
+        Polygon polygon = null;
+        try (InputStream inputStream = new FileInputStream(file)) {
+            polygon = PolyUtil.parse(inputStream);
+        } catch (IOException e) {
+            log.fine(format("Cannot read polygon %s: %s", file, e.getLocalizedMessage()));
+        }
+        if (polygon == null)
+            log.fine(format("No usable polygon in %s, using bounding box", file));
+        polygons.put(uri, Optional.ofNullable(polygon));
+        return polygon;
+    }
+
+    private void downloadPolygon(String uri, String url, File file, Runnable onAvailable) {
+        try {
+            Download download = downloadManager.queueForDownload(getName() + " Coverage: " + uri, url, Action.Copy,
+                    FileAndChecksum.forChecksums(file, null), null);
+            downloadManager.waitForCompletion(singletonList(download));
+        } catch (RuntimeException e) {
+            log.fine(format("Cannot download polygon %s: %s", url, e.getLocalizedMessage()));
+        }
+
+        if (file.isFile())
+            readPolygon(uri, file);
+        else
+            polygons.put(uri, Optional.empty());
+        if (polygons.get(uri).isPresent() && onAvailable != null)
+            onAvailable.run();
     }
 }
