@@ -22,6 +22,7 @@ package slash.navigation.converter.gui.helpers;
 import org.junit.Test;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
+import slash.navigation.common.Polygon;
 import slash.navigation.common.SimpleNavigationPosition;
 
 import java.util.List;
@@ -83,5 +84,35 @@ public class CoverageOverlayControllerTest {
         NavigationPosition southWest = new SimpleNavigationPosition(swLon, swLat);
         NavigationPosition northEast = new SimpleNavigationPosition(neLon, neLat);
         return new BoundingBox(northEast, southWest);
+    }
+
+    @Test
+    public void computeAreaCoverageUsesThePolygonInsteadOfTheBoundingBox() {
+        BoundingBox viewport = boundingBox(10.0, 40.0, 12.0, 41.0);
+        BoundingBox wide = boundingBox(9.0, 39.0, 13.0, 42.0);
+        // triangle that reaches the western tile but not the eastern one
+        Polygon triangle = Polygon.of(List.of(List.of(position(9.0, 39.0), position(11.0, 39.0),
+                position(9.0, 42.0), position(9.0, 39.0))), List.of(false));
+
+        Map<BoundingBox, Boolean> result = controller.computeAreaCoverage(viewport,
+                List.of(new CoverageOverlayController.CoveredArea(wide, triangle)));
+
+        assertEquals(1, result.size());
+        assertTrue(result.containsKey(boundingBox(10.0, 40.0, 11.0, 41.0)));
+    }
+
+    @Test
+    public void computeAreaCoverageFallsBackToTheBoundingBoxWithoutAPolygon() {
+        BoundingBox viewport = boundingBox(10.0, 40.0, 12.0, 41.0);
+        BoundingBox wide = boundingBox(9.0, 39.0, 13.0, 42.0);
+
+        Map<BoundingBox, Boolean> result = controller.computeAreaCoverage(viewport,
+                List.of(new CoverageOverlayController.CoveredArea(wide, null)));
+
+        assertEquals(2, result.size());
+    }
+
+    private static NavigationPosition position(double longitude, double latitude) {
+        return new SimpleNavigationPosition(longitude, latitude);
     }
 }
