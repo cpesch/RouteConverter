@@ -75,7 +75,7 @@ public class ColorsOptionsPanel {
                     // French locale has different names
                     "Echantillons", "TSV", "TSL",
                     // Chinese locale has different names
-                    "样本(S)", "HSV(H)", "HSL(L)"
+                    "\u6837\u672c(S)", "HSV(H)", "HSL(L)"
             )
     );
 
