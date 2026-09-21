@@ -476,6 +476,11 @@ public class GraphHopper extends BaseRoutingService {
                 FileAndChecksum.forChecksums(file, downloadable.getChecksums()), null);
     }
 
+    // overrides the getCoverageTiles()-based default: GraphHopper has no tile grid (see
+    // getCoverageTiles()), so the default would always see an empty map and answer false,
+    // while calculateRemainingDownloadSize() == 0 cannot tell "downloaded" from "nothing
+    // published at all" -- which is what the coverage overlay showed as green (issue 178)
+    @Override
     public boolean isRoutingDataAvailable(MapDescriptor mapDescriptor) {
         List<GraphDescriptor> graphDescriptors = finder.getGraphDescriptorsFor(singletonList(mapDescriptor));
         for (GraphDescriptor graphDescriptor : graphDescriptors) {

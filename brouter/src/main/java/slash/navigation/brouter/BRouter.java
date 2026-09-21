@@ -477,11 +477,6 @@ public class BRouter extends BaseRoutingService {
         return result;
     }
 
-    public boolean isRoutingDataAvailable(MapDescriptor mapDescriptor) {
-        Map<BoundingBox, Boolean> coverageTiles = getCoverageTiles(mapDescriptor.getBoundingBox());
-        return !coverageTiles.isEmpty() && coverageTiles.values().stream().allMatch(Boolean::booleanValue);
-    }
-
     private Collection<Downloadable> getDownloadablesFor(BoundingBox boundingBox) {
         Collection<Downloadable> result = new HashSet<>();
         forEachTileInBoundingBox(boundingBox, (longitude, latitude, tileBoundingBox) -> {
