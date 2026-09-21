@@ -33,11 +33,11 @@ import slash.navigation.common.NumberPattern;
 import slash.navigation.common.NumberingStrategy;
 import slash.navigation.common.UnitSystem;
 import slash.navigation.converter.gui.BaseRouteConverter;
+import slash.navigation.converter.gui.dialogs.options.ColorsOptionsPanel;
 import slash.navigation.converter.gui.helpers.CheckBoxPreferencesSynchronizer;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.converter.gui.helpers.RouteConverterLocales;
 import slash.navigation.converter.gui.helpers.RoutingServiceFacade;
-import slash.navigation.converter.gui.models.ColorModel;
 import slash.navigation.converter.gui.models.FixMapMode;
 import slash.navigation.converter.gui.renderer.*;
 import slash.navigation.elevation.ElevationService;
@@ -53,7 +53,6 @@ import slash.navigation.routing.RoutingService;
 import slash.navigation.routing.TravelMode;
 
 import javax.swing.*;
-import javax.swing.colorchooser.AbstractColorChooserPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
@@ -68,7 +67,6 @@ import java.util.logging.Logger;
 
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.awt.event.KeyEvent.VK_ESCAPE;
-import static java.util.Arrays.asList;
 import static java.util.Comparator.comparing;
 import static java.util.Locale.*;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
@@ -137,11 +135,7 @@ public class OptionsDialog extends SimpleDialog {
     private JRadioButton radioButtonV1000UTC;
     private JButton buttonHelp;
     private JButton buttonClose;
-    private JColorChooser colorChooserRoute;
-    private JColorChooser colorChooserTrack;
-    private JColorChooser colorChooserWaypoint;
-    private JSpinner lineWidthSpinnerRoute;
-    private JSpinner lineWidthSpinnerTrack;
+    private JPanel colorsPanel;
     private JComboBox<GeocodingService> comboBoxGeocodingService;
     private JTextField textFieldGoogleApiKey;
     private JTextField textFieldThunderforestApiKey;
@@ -620,13 +614,7 @@ public class OptionsDialog extends SimpleDialog {
         radioButtonV1000UTC.setSelected(!ColumbusV1000Device.getUseLocalTimeZone());
         radioButtonV1000LocalTime.addChangeListener(e -> ColumbusV1000Device.setUseLocalTimeZone(radioButtonV1000LocalTime.isSelected()));
 
-        setupColorChooser(colorChooserRoute, r.getMapPreferencesModel().getRouteColorModel());
-        setupColorChooser(colorChooserTrack, r.getMapPreferencesModel().getTrackColorModel());
-        setupColorChooser(colorChooserWaypoint, r.getMapPreferencesModel().getWaypointColorModel());
-        lineWidthSpinnerRoute.setModel(new SpinnerNumberModel(r.getMapPreferencesModel().getRouteLineWidthModel().getInteger().intValue(), 1, 20, 1));
-        lineWidthSpinnerRoute.addChangeListener(e -> r.getMapPreferencesModel().getRouteLineWidthModel().setInteger((Integer) lineWidthSpinnerRoute.getValue()));
-        lineWidthSpinnerTrack.setModel(new SpinnerNumberModel(r.getMapPreferencesModel().getTrackLineWidthModel().getInteger().intValue(), 1, 20, 1));
-        lineWidthSpinnerTrack.addChangeListener(e -> r.getMapPreferencesModel().getTrackLineWidthModel().setInteger((Integer) lineWidthSpinnerTrack.getValue()));
+        colorsPanel.add(new ColorsOptionsPanel().getRootPanel());
 
         setMnemonic(buttonClose, "close-mnemonic");
         buttonClose.addActionListener(new DialogAction(this) {
@@ -657,51 +645,6 @@ public class OptionsDialog extends SimpleDialog {
     private void restartMapView() {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
         r.setMapView(r.getMapViewPreference());
-    }
-
-    private static final Set<String> REMOVEABLE_COLOR_PANELS = new HashSet<>(
-            asList("Swatches", "HSV", "HSL", "CMYK",
-                    // German Mac OS X has different names
-                    "Muster",
-                    // French locale has different names
-                    "Echantillons", "TSV", "TSL",
-                    // Chinese locale has different names
-                    "\u6837\u672c(S)", "HSV(H)", "HSL(L)"
-            )
-    );
-
-    private void setupColorChooser(JColorChooser chooser, ColorModel colorModel) {
-        chooser.setColor(colorModel.getColor());
-        reducePanels(chooser);
-        chooser.getSelectionModel().addChangeListener(e -> colorModel.setColor(chooser.getColor()));
-
-        // add a right-aligned "reset to default color" button directly below the chooser:
-        // wrap the chooser in place (keeping its original grid cell) so the button sits
-        // beneath it. Clicking it sets the chooser to the model's built-in default, which
-        // propagates to the model - and on to the map - via the selection listener above.
-        JButton resetButton = new JButton(getBundle().getString("reset-color"));
-        resetButton.addActionListener(e -> chooser.setColor(colorModel.getDefaultColor()));
-
-        Container parent = chooser.getParent();
-        GridConstraints constraints = ((GridLayoutManager) parent.getLayout()).getConstraintsForComponent(chooser);
-        parent.remove(chooser);
-
-        JPanel buttons = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
-        buttons.add(resetButton);
-        JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.add(chooser, BorderLayout.CENTER);
-        wrapper.add(buttons, BorderLayout.SOUTH);
-        parent.add(wrapper, constraints);
-    }
-
-    private void reducePanels(JColorChooser chooser) {
-        chooser.setPreviewPanel(new JPanel());
-        for (AbstractColorChooserPanel panel : chooser.getChooserPanels()) {
-            String displayName = panel.getDisplayName();
-            if (REMOVEABLE_COLOR_PANELS.contains(displayName)) {
-                chooser.removeChooserPanel(panel);
-            }
-        }
     }
 
     private void handleMapServiceUpdate() {
@@ -1159,78 +1102,9 @@ public class OptionsDialog extends SimpleDialog {
         panel15.add(buttonChooseThemesPath,
                 new GridConstraints(4, 2, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel17 = new JPanel();
-        panel17.setLayout(new GridLayoutManager(1, 1, new Insets(5, 0, 0, 0), -1, -1));
-        tabbedPane1.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "colors-options-tab"), panel17);
-        final JTabbedPane tabbedPane2 = new JTabbedPane();
-        panel17.add(tabbedPane2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, new Dimension(200, 200), null, 0,
-                false));
-        final JPanel panel18 = new JPanel();
-        panel18.setLayout(new GridLayoutManager(3, 2, new Insets(3, 3, 3, 3), -1, -1));
-        tabbedPane2.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "route-tab"), panel18);
-        colorChooserRoute = new JColorChooser();
-        panel18.add(colorChooserRoute, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label24 = new JLabel();
-        this.$$$loadLabelText$$$(label24, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "route-color"));
-        panel18.add(label24,
-                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final Spacer spacer6 = new Spacer();
-        panel18.add(spacer6, new GridConstraints(2, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
-                GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        final JLabel label25 = new JLabel();
-        this.$$$loadLabelText$$$(label25,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "route-line-width"));
-        panel18.add(label25,
-                new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        lineWidthSpinnerRoute = new JSpinner();
-        panel18.add(lineWidthSpinnerRoute, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel19 = new JPanel();
-        panel19.setLayout(new GridLayoutManager(3, 2, new Insets(3, 3, 3, 3), -1, -1));
-        tabbedPane2.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "track-tab"), panel19);
-        final Spacer spacer7 = new Spacer();
-        panel19.add(spacer7, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
-                GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        colorChooserTrack = new JColorChooser();
-        panel19.add(colorChooserTrack, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label26 = new JLabel();
-        this.$$$loadLabelText$$$(label26, this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "track-color"));
-        panel19.add(label26,
-                new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JLabel label27 = new JLabel();
-        this.$$$loadLabelText$$$(label27,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "track-line-width"));
-        panel19.add(label27,
-                new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        lineWidthSpinnerTrack = new JSpinner();
-        panel19.add(lineWidthSpinnerTrack, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
-                GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        final JPanel panel20 = new JPanel();
-        panel20.setLayout(new GridLayoutManager(3, 2, new Insets(3, 3, 3, 3), -1, -1));
-        tabbedPane2.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "waypoint-tab"), panel20);
-        final Spacer spacer8 = new Spacer();
-        panel20.add(spacer8, new GridConstraints(2, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1,
-                GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        colorChooserWaypoint = new JColorChooser();
-        panel20.add(colorChooserWaypoint, new GridConstraints(1, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_NONE,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
-                GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        final JLabel label28 = new JLabel();
-        this.$$$loadLabelText$$$(label28,
-                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "waypoint-color"));
-        panel20.add(label28,
-                new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
-                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        colorsPanel = new JPanel();
+        colorsPanel.setLayout(new BorderLayout(0, 0));
+        tabbedPane1.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "colors-options-tab"), colorsPanel);
         final JPanel panel21 = new JPanel();
         panel21.setLayout(new GridLayoutManager(3, 1, new Insets(5, 0, 0, 0), -1, -1));
         tabbedPane1.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "routing-services-options-tab"),
