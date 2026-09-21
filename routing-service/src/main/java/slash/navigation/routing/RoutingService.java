@@ -55,6 +55,13 @@ public interface RoutingService {
     Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area);
 
     /**
+     * Whether routing data for the given map is present locally. Distinct from
+     * calculateRemainingDownloadSize() == 0, which is also true when nothing is
+     * published for the region and therefore nothing is missing.
+     */
+    boolean isRoutingDataAvailable(MapDescriptor mapDescriptor);
+
+    /**
      * The exact area for which the routing data of the given map is valid, if known. Never blocks:
      * returns null if the area is not (yet) known, in which case the caller falls back to the map's
      * bounding box. If the area is fetched in the background, onAvailable is called once it arrives.

@@ -110,4 +110,9 @@ public class StraightLine extends BaseRoutingService {
     public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
         return Collections.emptyMap();
     }
+
+    // no downloadable data, so there is nothing to be "available" -- see isDownload()
+    public boolean isRoutingDataAvailable(MapDescriptor mapDescriptor) {
+        return false;
+    }
 }

@@ -476,6 +476,19 @@ public class GraphHopper extends BaseRoutingService {
                 FileAndChecksum.forChecksums(file, downloadable.getChecksums()), null);
     }
 
+    public boolean isRoutingDataAvailable(MapDescriptor mapDescriptor) {
+        List<GraphDescriptor> graphDescriptors = finder.getGraphDescriptorsFor(singletonList(mapDescriptor));
+        for (GraphDescriptor graphDescriptor : graphDescriptors) {
+            if (graphDescriptor.getLocalFile() != null && graphDescriptor.hasGraphDirectory())
+                return true;
+
+            Downloadable downloadable = graphDescriptor.getRemoteFile();
+            if (downloadable != null && createFile(downloadable).exists())
+                return true;
+        }
+        return false;
+    }
+
     public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
         List<GraphDescriptor> graphDescriptors = finder.getGraphDescriptorsFor(mapDescriptors);
         long notExists = 0L;

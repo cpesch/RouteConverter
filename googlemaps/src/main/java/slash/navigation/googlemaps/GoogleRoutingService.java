@@ -202,4 +202,10 @@ public class GoogleRoutingService extends BaseRoutingService {
     public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
         return Collections.emptyMap();
     }
+
+    // a remote API call, not downloadable data -- there is nothing to be "available" locally,
+    // see isDownload()
+    public boolean isRoutingDataAvailable(MapDescriptor mapDescriptor) {
+        return false;
+    }
 }

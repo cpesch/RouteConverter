@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.getApplicationDirectory;
 
 /**
@@ -157,8 +156,7 @@ public class CoverageOverlayController {
         List<CoveredArea> covered = new ArrayList<>();
         for (RemoteMap map : getCoverageCandidateMaps(viewport)) {
             RemoteMapDescriptor mapDescriptor = new RemoteMapDescriptor(map);
-            long remaining = routingService.calculateRemainingDownloadSize(singletonList(mapDescriptor));
-            if (remaining == 0) {
+            if (routingService.isRoutingDataAvailable(mapDescriptor)) {
                 // never blocks: a polygon that is not there yet is fetched in the background and
                 // refreshes the overlay when it arrives, until then the bounding box is used
                 Polygon polygon = routingService.getRoutingCoverage(mapDescriptor,
