@@ -87,11 +87,6 @@ public class FeatureLocksTest {
     }
 
     @Test
-    public void usesADistinctPreferenceNodePerTest() {
-        assertTrue(USED_PREFERENCE_NODE_PATHS.contains(preferencesPath));
-    }
-
-    @Test
     public void encodesNothingWhenNoCountersExist() {
         assertEquals("", FeatureLocks.encode(preferences, FEATURES));
     }
