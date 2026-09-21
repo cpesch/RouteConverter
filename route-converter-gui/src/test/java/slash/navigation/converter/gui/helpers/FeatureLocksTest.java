@@ -24,39 +24,71 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class FeatureLocksTest {
-    private static final String TEST_NODE = "test/feature-locks";
+    private static final Set<String> USED_PREFERENCE_NODE_PATHS = new HashSet<>();
     private static final List<String> FEATURES = asList("fpl-g1000", "msfs-pln", "rt-gorider", "rtz-ecdis");
 
     private Preferences preferences;
+    private String preferencesPath;
 
     @Before
     public void setUp() throws Exception {
-        preferences = Preferences.userRoot().node(TEST_NODE);
+        preferences = Preferences.userRoot().node("/RouteConverter-test/" + getClass().getName() + "/" + UUID.randomUUID());
+        preferencesPath = preferences.absolutePath();
+        assertTrue("preference node path was reused across tests: " + preferencesPath,
+                USED_PREFERENCE_NODE_PATHS.add(preferencesPath));
+        preferences.flush();
     }
 
     @After
     public void tearDown() throws Exception {
-        preferences.removeNode();
+        try {
+            preferences.removeNode();
+            preferences.flush();
+        } catch (BackingStoreException e) {
+            fail("failed to remove and flush preference node " + preferencesPath + ": " + e.getMessage());
+        }
     }
 
     private void lockShown(String featureName, int count) {
         preferences.putInt("lockShown." + featureName, count);
+        flushPreferences();
     }
 
     private void lockClicked(String featureName, int count) {
         preferences.putInt("lockClicked." + featureName, count);
+        flushPreferences();
     }
 
     private void lockLogin(String featureName, int count) {
         preferences.putInt("lockLogin." + featureName, count);
+        flushPreferences();
+    }
+
+    private void flushPreferences() {
+        try {
+            preferences.flush();
+        } catch (BackingStoreException e) {
+            fail("failed to flush preference node " + preferencesPath + ": " + e.getMessage());
+        }
+    }
+
+    @Test
+    public void usesADistinctPreferenceNodePerTest() {
+        assertTrue(USED_PREFERENCE_NODE_PATHS.contains(preferencesPath));
     }
 
     @Test
