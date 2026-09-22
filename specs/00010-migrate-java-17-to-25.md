@@ -3,7 +3,7 @@ name: 00010-migrate-java-17-to-25
 status: in-flight
 phases_done: [java21-floor-in-repo, publish-hosted-jre-21, smoke-launch-bundles-21]
 phases_next: [java25-bump]
-last_touched: 2026-07-14
+last_touched: 2026-09-22
 ---
 
 # 00010 - Migrate the toolchain from Java 17 to Java 25 (LTS)
@@ -70,8 +70,9 @@ A "Java version" in this project is really three independent settings:
 1. **Build JDK** — the JDK that compiles the code (CI `actions/setup-java`,
    local sdkman). Currently `17` / `17.0.19` in every workflow.
 2. **Bytecode target** — `<java.version>17</java.version>` in root `pom.xml`,
-   feeding maven-compiler `<source>`/`<target>` (not `<release>` — see
-   Optimizations). This is the **minimum runtime** a BYO-JDK user (Linux) needs.
+   feeding maven-compiler `<release>` (switched from `<source>`/`<target>` with
+   the 21 floor — see the June 28, 2026 entry and Optimizations). This is the
+   **minimum runtime** a BYO-JDK user (Linux) needs.
 3. **Bundled jlink JRE** — `<jre.version>17.0.19</jre.version>` in the root
    `pom.xml` `<properties>` (was `route-converter-build/pom.xml` until spec 00045
    folded that module into root). The stripped runtime shipped *inside* the
@@ -80,18 +81,20 @@ A "Java version" in this project is really three independent settings:
 
 This migration moves all three to 25.
 
-**Constraint: all three must be the same version.** Because the compiler uses
-`<source>`/`<target>` (not `<release>` — see Optimizations), building on a newer
-JDK than the target does *not* prevent the compiler from emitting calls to APIs
-that exist only in the newer JDK. So a "build on 25, target+ship 17" split is
-**not safe** — it can silently produce bytecode/API references that fail on the
-17 JRE (`UnsupportedClassVersionError` / `NoSuchMethodError` at runtime, not
-caught at compile time). Build JDK, bytecode target, and bundled JRE therefore
-move together, atomically, to the same 25.x line. (Adopting `<release>` would
-relax this and permit a build-ahead split — but that is the Optimization, not
-the default.) This also means there is **no safe mechanical-only sub-slice** to
-hand to the factory: the JRE bump forces the hosted-JRE publish + native-bundle
-smoke, which are human/CI steps a context-only minion cannot perform.
+**Constraint: all three must be the same version.** Since the 21 floor the
+compiler is wired with `<release>${java.version}</release>` (root `pom.xml`,
+see the June 28, 2026 entry and Optimizations), so building on a newer JDK than
+the target *is* validated against the target's API: the silent-newer-API footgun
+that made a "build on 25, target+ship 17" split **unsafe** under the old
+`<source>`/`<target>` wiring (`UnsupportedClassVersionError` / `NoSuchMethodError`
+at runtime, not caught at compile time) is now caught at compile time. The
+policy is unchanged, though: build JDK, bytecode target, and bundled JRE still
+move together, atomically, to the same 25.x line — `<release>` only guards the
+API surface, not runtime behaviour, and a build-ahead split would put BYO-JDK
+Linux users and the bundled JRE on different runtimes. This also means there is
+**no safe mechanical-only sub-slice** to hand to the factory: the JRE bump
+forces the hosted-JRE publish + native-bundle smoke, which are human/CI steps a
+context-only minion cannot perform.
 
 ## Decision: 25, not 21
 
@@ -167,12 +170,13 @@ stripped bundle with the existing `scripts/verify-runtime.sh`, watching for
 
 ## Optimizations (optional, fold into this bump)
 
-- The compiler is wired with `<source>`/`<target>` (`${java.version}`). Consider
-  switching to `<release>${java.version}</release>`: `--release` validates code
-  against the *target* JDK's API, catching accidental use of APIs newer than the
-  floor — which `source`/`target` silently allows once the build JDK (25) is
-  ahead of the target. One-line change, removes a latent footgun now that build
-  JDK and target diverge.
+- ~~The compiler is wired with `<source>`/`<target>` (`${java.version}`);
+  switch it to `<release>${java.version}</release>`~~ — **done 2026-06-28** as
+  part of the 21 floor (root `pom.xml`, maven-compiler `<release>`):
+  `--release` validates code against the *target* JDK's API, catching accidental
+  use of APIs newer than the floor — which `source`/`target` silently allows
+  once the build JDK (matrix 25) is ahead of the target. Kept here for the
+  rationale; the sections above now describe the `<release>` wiring.
 
 ## Acceptance criteria
 
