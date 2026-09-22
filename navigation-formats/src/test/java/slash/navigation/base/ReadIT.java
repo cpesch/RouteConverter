@@ -29,7 +29,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -71,7 +70,7 @@ public class ReadIT {
             @SuppressWarnings({"unchecked"})
             public void test(File file) throws IOException {
                 File readableFile = createHermeticSampleFile(file);
-                ParserResult result = parser.read(readableFile, new ArrayList<>(parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(file.getName()))));
+                ParserResult result = parser.read(readableFile, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(file.getName())));
                 assertNotNull(result);
                 assertTrue("Cannot read route from " + file, result.isSuccessful());
                 assertNotNull(result.getFormat());

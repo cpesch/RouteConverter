@@ -92,10 +92,10 @@ public class NavigationFormatParser {
     // format's own narrower R is exactly a BaseRoute<?, ?>, so the widening is sound even
     // though javac cannot verify it across independently-typed NavigationFormat<?> instances.
     // NavigationFormatRegistry.widen() owns that single unchecked cast for formats it hands out;
-    // the loop below reuses it to widen the public read(..., List<NavigationFormat<?>>) API's
+    // the loop below reuses it to widen the public read(..., List<? extends NavigationFormat<?>>) API's
     // caller-supplied lists (e.g. from tests), which are not necessarily registry instances, so
     // no additional unchecked cast is introduced here.
-    private static List<NavigationFormat<BaseRoute<?, ?>>> widen(List<NavigationFormat<?>> formats) {
+    private static List<NavigationFormat<BaseRoute<?, ?>>> widen(List<? extends NavigationFormat<?>> formats) {
         List<NavigationFormat<BaseRoute<?, ?>>> result = new ArrayList<>(formats.size());
         for (NavigationFormat<?> format : formats)
             result.add(NavigationFormatRegistry.widen(format));
@@ -181,7 +181,7 @@ public class NavigationFormatParser {
             context.addFormat(firstSuccessfulFormat);
     }
 
-    public ParserResult read(File source, List<NavigationFormat<?>> formats) throws IOException {
+    public ParserResult read(File source, List<? extends NavigationFormat<?>> formats) throws IOException {
         log.info("Reading '" + source.getAbsolutePath() + "' by " + formats.size() + " formats");
         return read(() -> openFileInputStream(source), markSizeFor(source.length()), extractStartDate(source), source, widen(formats));
     }
@@ -195,7 +195,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(File source) throws IOException {
-        return read(source, new ArrayList<>(getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source))));
+        return read(source, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source)));
     }
 
     private NavigationFormat<BaseRoute<?, ?>> determineFormat(List<BaseRoute<?, ?>> routes, NavigationFormat<BaseRoute<?, ?>> preferredFormat) {
@@ -380,10 +380,10 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(InputStream source) throws IOException {
-        return read(source, new ArrayList<>(getNavigationFormatRegistry().getReadFormats()));
+        return read(source, getNavigationFormatRegistry().getReadFormats());
     }
 
-    public ParserResult read(InputStream source, List<NavigationFormat<?>> formats) throws IOException {
+    public ParserResult read(InputStream source, List<? extends NavigationFormat<?>> formats) throws IOException {
         return read(oneShot(source), TOTAL_BUFFER_SIZE, null, null, widen(formats));
     }
 
@@ -420,7 +420,7 @@ public class NavigationFormatParser {
         return null;
     }
 
-    public ParserResult read(URL url, List<NavigationFormat<?>> formats) throws IOException {
+    public ParserResult read(URL url, List<? extends NavigationFormat<?>> formats) throws IOException {
         BaseUrlParsingFormat urlParsingFormat = getUrlParsingFormat(url.toExternalForm());
         if(urlParsingFormat != null) {
             List<NavigationFormat<?>> readFormats = new ArrayList<>(formats);
@@ -447,7 +447,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(URL url) throws IOException {
-        return read(url, new ArrayList<>(getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(url))));
+        return read(url, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(url)));
     }
 
 

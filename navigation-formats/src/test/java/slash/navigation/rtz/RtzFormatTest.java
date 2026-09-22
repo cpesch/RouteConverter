@@ -34,7 +34,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -57,7 +56,7 @@ public class RtzFormatTest extends NavigationTestCase {
 
     private BaseRoute<?, ?> readFile(String fileName) throws IOException {
         ParserResult result = parser.read(new File(TEST_PATH + fileName),
-                new ArrayList<>(parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(".rtz")));
+                parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(".rtz"));
         assertNotNull("Cannot read route from " + fileName, result);
         assertTrue(result.isSuccessful());
         assertEquals(RtzFormat.class, result.getFormat().getClass());
@@ -66,7 +65,7 @@ public class RtzFormatTest extends NavigationTestCase {
 
     private BaseRoute<?, ?> readRtz(String rtz) throws IOException {
         ParserResult result = parser.read(new ByteArrayInputStream(rtz.getBytes(StandardCharsets.UTF_8)),
-                new ArrayList<>(parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(".rtz")));
+                parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(".rtz"));
         assertNotNull("Cannot read route", result);
         assertTrue(result.isSuccessful());
         assertEquals(RtzFormat.class, result.getFormat().getClass());

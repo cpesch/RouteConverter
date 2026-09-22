@@ -27,7 +27,6 @@ import slash.navigation.tcx.TcxFormat;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +54,7 @@ public abstract class ConvertBase {
         assertTrue(targetFormat.isSupportsWriting());
 
         File source = new File(testFileName);
-        ParserResult result = parser.read(source, new ArrayList<>(parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(testFileName))));
+        ParserResult result = parser.read(source, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(testFileName)));
         assertNotNull("Cannot read route from " + source, result);
         assertTrue(result.isSuccessful());
         assertNotNull(result.getFormat());
@@ -101,9 +100,9 @@ public abstract class ConvertBase {
             parser.write(sourceRoute, targetFormat, false, false, null, target);
             assertTrue(target.exists());
 
-            ParserResult sourceResult = parser.read(source, new ArrayList<>(parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source))));
+            ParserResult sourceResult = parser.read(source, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source)));
             assertNotNull(sourceResult);
-            ParserResult targetResult = parser.read(target, new ArrayList<>(parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(target))));
+            ParserResult targetResult = parser.read(target, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(target)));
             assertNotNull(targetResult);
 
             assertEquals(sourceFormat.getClass(), sourceResult.getFormat().getClass());
@@ -140,10 +139,10 @@ public abstract class ConvertBase {
             parser.write(sourceRoutes, (MultipleRoutesFormat<BaseRoute<?, ?>>) targetFormat, target);
             assertTrue(target.exists());
 
-            ParserResult sourceResult = parser.read(source, new ArrayList<>(parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source))));
+            ParserResult sourceResult = parser.read(source, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source)));
             assertNotNull(sourceResult);
             assertTrue(sourceResult.isSuccessful());
-            ParserResult targetResult = parser.read(target, new ArrayList<>(parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(target))));
+            ParserResult targetResult = parser.read(target, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(target)));
             assertNotNull(targetResult);
             assertTrue(targetResult.isSuccessful());
 

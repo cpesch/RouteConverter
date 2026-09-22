@@ -25,7 +25,6 @@ import slash.navigation.base.*;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -40,7 +39,7 @@ public class OziExplorerFormatIT {
 
     private void checkFile(String testFileName, RouteCharacteristics characteristics, int routeCount, int positionCount) throws IOException {
         File source = new File(TEST_PATH + testFileName);
-        ParserResult result = parser.read(source, new ArrayList<>(parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(testFileName))));
+        ParserResult result = parser.read(source, parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(testFileName)));
         assertNotNull(result);
         List<BaseRoute<?, ?>> routes = result.getAllRoutes();
         assertEquals(routeCount, routes.size());

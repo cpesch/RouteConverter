@@ -542,11 +542,11 @@ public class ConvertPanel implements PanelInTab {
         prepareForNewPositionList();
 
         List<URL> urls = toUrls(selected);
-        List<NavigationFormat<?>> formats;
+        List<? extends NavigationFormat<?>> formats;
         if (selectedFormat != null) {
             formats = getNavigationFormatRegistry().getReadFormatsWithPreferredFormat(selectedFormat);
         } else {
-            formats = new ArrayList<>(getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls)));
+            formats = getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls));
         }
         fileOperations.openPositionList(urls, formats);
     }
@@ -557,7 +557,7 @@ public class ConvertPanel implements PanelInTab {
         }
 
         prepareForNewPositionList();
-        fileOperations.openPositionList(urls, new ArrayList<>(getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls))));
+        fileOperations.openPositionList(urls, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls)));
     }
 
     public void newFile() {

@@ -34,8 +34,10 @@ import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.simple.*;
 import slash.navigation.url.GoogleMapsUrlFormat;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -64,7 +66,7 @@ public class NavigationFormatRegistryTest {
         try {
             Locale.setDefault(Locale.of("tr", "TR"));
             List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(getExtension("CURRENT.ITN"));
-            assertTrue(((NavigationFormat<?>) formats.get(0)) instanceof TomTomRouteFormat);
+            assertTrue(formats.get(0) instanceof TomTomRouteFormat);
         } finally {
             Locale.setDefault(previous);
         }
@@ -98,7 +100,7 @@ public class NavigationFormatRegistryTest {
     @Test
     public void testGetReadFormatsPreferredByExtensionPutsTomTomRouteFormatFirst() {
         List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".itn");
-        assertTrue(((NavigationFormat<?>) formats.get(0)) instanceof TomTomRouteFormat);
+        assertTrue(formats.get(0) instanceof TomTomRouteFormat);
     }
 
     @Test
@@ -111,12 +113,18 @@ public class NavigationFormatRegistryTest {
         // WebPageFormat and TomTom8RouteFormat are pre-existing, write-only exceptions
         // (isSupportsReading() returns false for both); every other write format is also
         // a read format, which is the invariant this change must not disturb.
-        List<NavigationFormat<BaseRoute<?, ?>>> readFormats = registry.getReadFormats();
+        // getReadFormats()/getWriteFormats() each reflectively instantiate fresh objects,
+        // so the two lists never share instances for the same format class - compare by
+        // class instead of relying on List.contains()'s identity-based equals().
+        Set<Class<?>> readFormatClasses = new HashSet<>();
+        for (NavigationFormat<BaseRoute<?, ?>> readFormat : registry.getReadFormats())
+            readFormatClasses.add(readFormat.getClass());
+
         for (NavigationFormat<BaseRoute<?, ?>> writeFormat : registry.getWriteFormats()) {
             NavigationFormat<?> anyWriteFormat = writeFormat;
             if (anyWriteFormat instanceof WebPageFormat || anyWriteFormat instanceof TomTom8RouteFormat)
                 continue;
-            assertTrue(readFormats.contains(writeFormat));
+            assertTrue(readFormatClasses.contains(writeFormat.getClass()));
         }
     }
 }

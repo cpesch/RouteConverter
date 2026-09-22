@@ -8,7 +8,6 @@ import slash.navigation.gpx.Gpx11Format;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 
 import static org.junit.Assert.assertNotNull;
 import static slash.common.TestCase.assertEquals;
@@ -28,7 +27,7 @@ public class ZipFormatIT {
     @Test
     public void readGPX11AndKML22Archive() throws IOException {
         ParserResult result = parser.read(new File(TEST_PATH + "from-gpx-kml.zip"),
-                new ArrayList<>(parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(".zip")));
+                parser.getNavigationFormatRegistry().getReadFormatsPreferredByExtension(".zip"));
         assertNotNull(result);
         assertEquals(7, result.getAllRoutes().size());
         assertEquals(Gpx11Format.class, result.getFormat().getClass());
