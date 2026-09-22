@@ -30,6 +30,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.cos;
+import static java.lang.Math.max;
+import static java.lang.Math.sqrt;
+import static java.lang.Math.toRadians;
 import static org.junit.Assert.*;
 import static slash.common.type.CompactCalendar.fromMillis;
 
@@ -200,6 +205,47 @@ public class RouteCalculationsTest {
         assertArrayEquals("Simplification result should be invariant under a longitude shift, " +
                         "including across the antimeridian",
                 baselineResult, shiftedResult);
+    }
+
+    // --- planarOrthogonalDistance ---
+
+    @Test
+    public void planarOrthogonalDistanceIsThePerpendicularDistanceInThePlane() {
+        // point 3 east, 4 north of the origin, segment running 6 east
+        assertEquals(4.0, RouteCalculations.planarOrthogonalDistance(3.0, 4.0, 6.0, 0.0, 6.0), 0.000001);
+        // point 3 east, 4 north of the origin, segment rising 3 east, 4 north: on the line
+        assertEquals(0.0, RouteCalculations.planarOrthogonalDistance(3.0, 4.0, 3.0, 4.0, 5.0), 0.000001);
+        // zero-length segment: distance to the origin, which the exact cross-track
+        // calculation cannot answer since the course of such a segment is undefined
+        assertEquals(5.0, RouteCalculations.planarOrthogonalDistance(3.0, 4.0, 0.0, 0.0, 0.0), 0.000001);
+    }
+
+    @Test
+    public void planarOrthogonalDistanceApproximatesTheExactCrossTrackDistance() {
+        // RouteCalculations projects positions into a local plane around the mean earth
+        // radius; against the exact cross-track distance calculated on the WGS84 ellipsoid
+        // the planar result must stay within 1% (1 meter for the nearly collinear case)
+        double earthRadius = 6371000.0;
+        Wgs84Position a = pos(10.0, 50.0);
+        Wgs84Position b = pos(10.02, 50.01);
+        double cosLatitude0 = cos(toRadians(a.getLatitude()));
+        double dx = toRadians(b.getLongitude() - a.getLongitude()) * cosLatitude0 * earthRadius;
+        double dy = toRadians(b.getLatitude() - a.getLatitude()) * earthRadius;
+        double len = sqrt(dx * dx + dy * dy);
+
+        for (Wgs84Position d : Arrays.asList(
+                pos(10.01, 50.005),    // on the line from a to b
+                pos(10.006, 50.008),   // left of the line from a to b, ~440 meter
+                pos(10.014, 50.002))) { // right of the line from a to b, ~440 meter
+            double px = toRadians(d.getLongitude() - a.getLongitude()) * cosLatitude0 * earthRadius;
+            double py = toRadians(d.getLatitude() - a.getLatitude()) * earthRadius;
+            double planar = RouteCalculations.planarOrthogonalDistance(px, py, dx, dy, len);
+            Double exact = d.calculateOrthogonalDistance(a, b);
+
+            assertNotNull(exact);
+            assertTrue("planar " + planar + " vs exact " + exact,
+                    abs(planar - abs(exact)) <= max(1.0, 0.01 * abs(exact)));
+        }
     }
 
     // --- asWgs84Position ---
