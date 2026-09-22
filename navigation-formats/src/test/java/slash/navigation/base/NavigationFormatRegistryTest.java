@@ -66,7 +66,8 @@ public class NavigationFormatRegistryTest {
         try {
             Locale.setDefault(Locale.of("tr", "TR"));
             List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(getExtension("CURRENT.ITN"));
-            assertTrue(formats.get(0) instanceof TomTomRouteFormat);
+            NavigationFormat<?> first = formats.get(0);
+            assertTrue(first instanceof TomTomRouteFormat);
         } finally {
             Locale.setDefault(previous);
         }
@@ -100,7 +101,8 @@ public class NavigationFormatRegistryTest {
     @Test
     public void testGetReadFormatsPreferredByExtensionPutsTomTomRouteFormatFirst() {
         List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".itn");
-        assertTrue(formats.get(0) instanceof TomTomRouteFormat);
+        NavigationFormat<?> first = formats.get(0);
+        assertTrue(first instanceof TomTomRouteFormat);
     }
 
     @Test
