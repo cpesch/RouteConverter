@@ -542,9 +542,12 @@ public class ConvertPanel implements PanelInTab {
         prepareForNewPositionList();
 
         List<URL> urls = toUrls(selected);
-        List<NavigationFormat<?>> formats = selectedFormat != null ?
-                getNavigationFormatRegistry().getReadFormatsWithPreferredFormat(selectedFormat) :
-                getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls));
+        List<NavigationFormat<?>> formats;
+        if (selectedFormat != null) {
+            formats = getNavigationFormatRegistry().getReadFormatsWithPreferredFormat(selectedFormat);
+        } else {
+            formats = new ArrayList<>(getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls)));
+        }
         fileOperations.openPositionList(urls, formats);
     }
 
@@ -554,7 +557,7 @@ public class ConvertPanel implements PanelInTab {
         }
 
         prepareForNewPositionList();
-        fileOperations.openPositionList(urls, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls)));
+        fileOperations.openPositionList(urls, new ArrayList<>(getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(urls))));
     }
 
     public void newFile() {
@@ -986,7 +989,7 @@ public class ConvertPanel implements PanelInTab {
         return new File(calculateConvertFileName(new File(path.getParentFile(), fileName), "", format.getMaximumFileNameLength()));
     }
 
-    private void setFormatFileFilters(JFileChooser chooser, List<NavigationFormat<?>> formats, String selectedFormat) {
+    private void setFormatFileFilters(JFileChooser chooser, List<? extends NavigationFormat<?>> formats, String selectedFormat) {
         chooser.resetChoosableFileFilters();
         FileFilter fileFilter = chooser.getFileFilter();
         for (NavigationFormat<?> format : formats) {

@@ -20,6 +20,7 @@
 package slash.navigation.columbus;
 
 import org.junit.Test;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 import slash.navigation.gpx.Gpx11Format;
@@ -39,7 +40,7 @@ public class ColumbusNavigationFormatRegistryTest {
 
     @Test
     public void testNotExistingExtension() {
-        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".ov2");
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".ov2");
         assertEquals(NmeaFormat.class, formats.get(0).getClass());
         assertEquals(Kml22Format.class, formats.get(1).getClass());
         assertEquals(Kmz22Format.class, formats.get(2).getClass());
@@ -47,7 +48,7 @@ public class ColumbusNavigationFormatRegistryTest {
 
     @Test
     public void testGetReadFormatsSortedByExtensionCsv() {
-        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".csv");
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".csv");
         assertEquals(ColumbusGpsType1Format.class, formats.get(0).getClass());
         assertEquals(ColumbusGpsType2Format.class, formats.get(1).getClass());
         assertEquals(ColumbusFusionFormat.class, formats.get(2).getClass());
@@ -56,23 +57,23 @@ public class ColumbusNavigationFormatRegistryTest {
 
     @Test
     public void testGetReadFormatsSortedByExtensionGps() {
-        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".gps");
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".gps");
         assertEquals(ColumbusGpsBinaryFormat.class, formats.get(0).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByExtensionGpx() {
-        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".gpx");
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".gpx");
         assertEquals(Gpx11Format.class, formats.get(0).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByExtensionKml() {
-        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".kml");
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".kml");
         assertEquals(Kml22Format.class, formats.get(0).getClass());
     }
 
-    private boolean containsFormat(List<NavigationFormat<?>> formats, Class clazz) {
+    private boolean containsFormat(List<? extends NavigationFormat<?>> formats, Class clazz) {
         for(NavigationFormat<?> format : formats) {
             if(clazz.isInstance(format))
                 return true;
@@ -82,7 +83,7 @@ public class ColumbusNavigationFormatRegistryTest {
 
     @Test
     public void testNoCompetitorFormats() {
-        List<NavigationFormat<?>> formats = registry.getReadFormats();
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormats();
         assertTrue(containsFormat(formats, Kml22Format.class));
         assertFalse(containsFormat(formats, Igo8RouteFormat.class));
         assertFalse(containsFormat(formats, MagellanExploristFormat.class));

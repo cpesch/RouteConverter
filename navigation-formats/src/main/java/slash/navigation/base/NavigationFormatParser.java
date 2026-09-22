@@ -91,16 +91,20 @@ public class NavigationFormatParser {
     // candidates need a single common route ceiling for the duration of the probe - each
     // format's own narrower R is exactly a BaseRoute<?, ?>, so the widening is sound even
     // though javac cannot verify it across independently-typed NavigationFormat<?> instances.
-    @SuppressWarnings("unchecked")
+    // NavigationFormatRegistry.widen() owns that single unchecked cast for formats it hands out;
+    // the loop below reuses it to widen the public read(..., List<NavigationFormat<?>>) API's
+    // caller-supplied lists (e.g. from tests), which are not necessarily registry instances, so
+    // no additional unchecked cast is introduced here.
     private static List<NavigationFormat<BaseRoute<?, ?>>> widen(List<NavigationFormat<?>> formats) {
-        return (List<NavigationFormat<BaseRoute<?, ?>>>) (List<?>) formats;
+        List<NavigationFormat<BaseRoute<?, ?>>> result = new ArrayList<>(formats.size());
+        for (NavigationFormat<?> format : formats)
+            result.add(NavigationFormatRegistry.widen(format));
+        return result;
     }
 
-    @SuppressWarnings("unchecked")
-    private static NavigationFormat<BaseRoute<?, ?>> widen(NavigationFormat<?> format) {
-        return (NavigationFormat<BaseRoute<?, ?>>) format;
-    }
-
+    // MultipleRoutesFormat<?> is a distinct interface from NavigationFormat<?> (adds write(List<R>, ...)),
+    // so NavigationFormatRegistry.widen() cannot be reused for it; this single remaining cast widens a
+    // write()-only format argument supplied by the caller, unrelated to the registry's read-path lists.
     @SuppressWarnings("unchecked")
     private static MultipleRoutesFormat<BaseRoute<?, ?>> widen(MultipleRoutesFormat<?> format) {
         return (MultipleRoutesFormat<BaseRoute<?, ?>>) format;
@@ -191,7 +195,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(File source) throws IOException {
-        return read(source, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source)));
+        return read(source, new ArrayList<>(getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(source))));
     }
 
     private NavigationFormat<BaseRoute<?, ?>> determineFormat(List<BaseRoute<?, ?>> routes, NavigationFormat<BaseRoute<?, ?>> preferredFormat) {
@@ -210,7 +214,7 @@ public class NavigationFormatParser {
                 continue;
 
             // default for multiple routes is GPX 1.1
-            result = widen(new Gpx11Format());
+            result = NavigationFormatRegistry.widen(new Gpx11Format());
         }
         return result;
     }
@@ -250,7 +254,7 @@ public class NavigationFormatParser {
 
         public void parse(InputStream inputStream, CompactCalendar startDate, String preferredExtension) throws IOException {
             internalSetStartDate(startDate);
-            internalRead(inputStream, widen(getNavigationFormatRegistry().getReadFormatsPreferredByExtension(preferredExtension)), this);
+            internalRead(inputStream, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(preferredExtension), this);
         }
 
         public void parse(String urlString) throws IOException {
@@ -263,7 +267,7 @@ public class NavigationFormatParser {
             }
             log.info("Reading '" + url + "' with " + bytes.length + " bytes");
             internalSetStartDate(extractStartDate(url));
-            bufferedInternalRead(() -> new ByteArrayInputStream(bytes), markSizeFor(bytes.length), widen(getNavigationFormatRegistry().getReadFormats()), this);
+            bufferedInternalRead(() -> new ByteArrayInputStream(bytes), markSizeFor(bytes.length), getNavigationFormatRegistry().getReadFormats(), this);
         }
     }
 
@@ -376,7 +380,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(InputStream source) throws IOException {
-        return read(source, getNavigationFormatRegistry().getReadFormats());
+        return read(source, new ArrayList<>(getNavigationFormatRegistry().getReadFormats()));
     }
 
     public ParserResult read(InputStream source, List<NavigationFormat<?>> formats) throws IOException {
@@ -443,7 +447,7 @@ public class NavigationFormatParser {
     }
 
     public ParserResult read(URL url) throws IOException {
-        return read(url, getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(url)));
+        return read(url, new ArrayList<>(getNavigationFormatRegistry().getReadFormatsPreferredByExtension(getExtension(url))));
     }
 
 
@@ -503,7 +507,7 @@ public class NavigationFormatParser {
             if (!(format instanceof PhotoFormat))
                 targetStreams[i] = new FileOutputStream(targets[i]);
         }
-        write(route, widen(format), duplicateFirstPosition, ignoreMaximumPositionCount, parserCallback, targetStreams);
+        write(route, NavigationFormatRegistry.widen(format), duplicateFirstPosition, ignoreMaximumPositionCount, parserCallback, targetStreams);
         for (File target : targets)
             log.info("Wrote '" + target.getAbsolutePath() + "'");
     }
