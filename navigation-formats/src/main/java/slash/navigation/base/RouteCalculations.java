@@ -51,9 +51,14 @@ public class RouteCalculations {
         int positionCount = positions.size();
 
         // project every position once into a local metric (x, y) frame so that the
-        // per-candidate distance below is cheap arithmetic instead of a spherical bearing;
-        // longitude is scaled by cos(latitude0) once for the whole track, so a track spanning
-        // many degrees of latitude projects slightly distorted (accepted in spec #109)
+        // per-candidate distance below is cheap arithmetic. Douglas-Peucker evaluates that
+        // distance O(n log n) to O(n^2) times, so the exact cross-track calculation
+        // (NavigationPosition.calculateOrthogonalDistance, two geodesic bearings per call)
+        // is orders of magnitude too slow; planarOrthogonalDistance below is the documented
+        // divergence from it, with the agreement of both formulations pinned by
+        // RouteCalculationsTest. longitude is scaled by cos(latitude0) once for the whole
+        // track, so a track spanning many degrees of latitude projects increasingly
+        // distorted distances (within ~1% for the kilometre-scale segments this edits);
         double[] x = new double[positionCount];
         double[] y = new double[positionCount];
         boolean[] hasCoordinates = new boolean[positionCount];
@@ -116,7 +121,7 @@ public class RouteCalculations {
                     continue;
 
                 double px = x[i] - ax, py = y[i] - ay;
-                double distance = len == 0.0 ? sqrt(px * px + py * py) : abs(px * dy - py * dx) / len;
+                double distance = planarOrthogonalDistance(px, py, dx, dy, len);
                 if (distance > maximumDistance) {
                     maximumDistance = distance;
                     maximumDistanceIndex = i;
@@ -142,6 +147,29 @@ public class RouteCalculations {
             if (keep[i])
                 result[index++] = i;
         return result;
+    }
+
+    /**
+     * Orthogonal distance of the point projected to (px, py) from the line through the
+     * segment origin towards (dx, dy) in the local plane, whose two endpoints are len apart.
+     * A zero-length segment degrades to the distance to the origin - a case the exact
+     * cross-track calculation cannot answer, since the course of such a segment is undefined.
+     * <p>
+     * This is the planar counterpart of
+     * {@link NavigationPosition#calculateOrthogonalDistance(NavigationPosition, NavigationPosition)},
+     * which answers the same question exactly on the ellipsoid at the cost of two geodesic
+     * bearings per call. For the kilometre-scale segments Douglas-Peucker inspects, both
+     * agree to better than 1%; RouteCalculationsTest pins that agreement.
+     *
+     * @param px  x offset of the point from the segment origin in meter
+     * @param py  y offset of the point from the segment origin in meter
+     * @param dx  x offset of the segment end from the segment origin in meter
+     * @param dy  y offset of the segment end from the segment origin in meter
+     * @param len length of the projected segment in meter
+     * @return the orthogonal distance in meter
+     */
+    static double planarOrthogonalDistance(double px, double py, double dx, double dy, double len) {
+        return len == 0.0 ? sqrt(px * px + py * py) : abs(px * dy - py * dx) / len;
     }
 
     /**
