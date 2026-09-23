@@ -46,6 +46,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeFalse;
+import static slash.common.system.Platform.isWindows;
 
 /**
  * Unit tests for {@link NavigationFormatParser} read/write paths that do not
@@ -316,6 +318,12 @@ public class NavigationFormatParserTest {
 
     @Test
     public void testReopenThrowingDuringProbeStopsWithoutPropagating() throws IOException {
+        // Windows refuses to unlink a file that is still open, so DeletesFileWhileOverrunningFormat's
+        // delete() is a no-op there: the reopen succeeds, probing reaches ColumbusGpsType1Format and
+        // the parse is successful. The scenario under test - the source vanishing between probes -
+        // cannot be provoked this way on Windows, so skip rather than assert POSIX semantics.
+        assumeFalse("a file cannot be unlinked while open on Windows", isWindows());
+
         byte[] body = columbusBody(60000);
         assertTrue(body.length > NavigationFormatParser.TOTAL_BUFFER_SIZE);
         File file = temporaryFile(".hst", body);
