@@ -26,8 +26,10 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.download.Action;
+import slash.navigation.download.Checksum;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.routing.DownloadFuture;
 
@@ -36,6 +38,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -148,5 +151,96 @@ public class GraphHopperTest {
         assertEquals("GraphHopper must switch osmPbfFile to the already present graph for the " +
                         "current route instead of leaving the previously loaded graph in place",
                 malaFatraLocalFile, hopper.getOsmPbfFile());
+    }
+
+    // rc#178: calculateRemainingDownloadSize(...) == 0 used to double as "covered", but it is also
+    // 0 when GraphHopper has nothing published for the region at all -- the headline regression,
+    // green-on-nothing. isRoutingDataAvailable() must tell the two apart.
+    @Test
+    public void isRoutingDataAvailableIsFalseWhenNoGraphIsPublishedForTheRegion() throws IOException {
+        DataSource graphHopperDataSource = mock(DataSource.class);
+        when(graphHopperDataSource.getDirectory()).thenReturn(dataSourceDirectoryName);
+        when(graphHopperDataSource.getFiles()).thenReturn(emptyList());
+
+        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
+        hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
+
+        MapDescriptor mapDescriptor = mock(MapDescriptor.class);
+        when(mapDescriptor.getIdentifier()).thenReturn("test-map");
+        when(mapDescriptor.getBoundingBox()).thenReturn(new BoundingBox(19.5, 49.6, 18.5, 48.9));
+
+        assertFalse("No graph descriptor at all for the region must not be reported as available",
+                hopper.isRoutingDataAvailable(mapDescriptor));
+    }
+
+    @Test
+    public void isRoutingDataAvailableIsFalseWhenTheRemoteFileHasNoChecksum() throws IOException {
+        slash.navigation.datasources.File malaFatraFile = mock(slash.navigation.datasources.File.class);
+        when(malaFatraFile.getUri()).thenReturn(MALA_FATRA_URI);
+        when(malaFatraFile.getBoundingBox()).thenReturn(new BoundingBox(19.5, 49.6, 18.5, 48.9));
+        // getLatestChecksum() is left unstubbed, i.e. null -- unknown content length
+
+        DataSource graphHopperDataSource = mock(DataSource.class);
+        when(graphHopperDataSource.getDirectory()).thenReturn(dataSourceDirectoryName);
+        when(graphHopperDataSource.getFiles()).thenReturn(singletonList(malaFatraFile));
+        when(malaFatraFile.getDataSource()).thenReturn(graphHopperDataSource);
+
+        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
+        hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
+
+        MapDescriptor mapDescriptor = mock(MapDescriptor.class);
+        when(mapDescriptor.getIdentifier()).thenReturn("test-map");
+        when(mapDescriptor.getBoundingBox()).thenReturn(new BoundingBox(19.2, 49.5, 18.7, 49.0));
+
+        assertFalse("A remote file without a checksum must not be reported as available",
+                hopper.isRoutingDataAvailable(mapDescriptor));
+    }
+
+    @Test
+    public void isRoutingDataAvailableIsFalseWhenTheGraphIsPublishedButNotDownloaded() throws IOException {
+        slash.navigation.datasources.File malaFatraFile = mock(slash.navigation.datasources.File.class);
+        when(malaFatraFile.getUri()).thenReturn(MALA_FATRA_URI);
+        when(malaFatraFile.getBoundingBox()).thenReturn(new BoundingBox(19.5, 49.6, 18.5, 48.9));
+        Checksum checksum = mock(Checksum.class);
+        when(checksum.getContentLength()).thenReturn(1234L);
+        when(malaFatraFile.getLatestChecksum()).thenReturn(checksum);
+
+        DataSource graphHopperDataSource = mock(DataSource.class);
+        when(graphHopperDataSource.getDirectory()).thenReturn(dataSourceDirectoryName);
+        when(graphHopperDataSource.getFiles()).thenReturn(singletonList(malaFatraFile));
+        when(malaFatraFile.getDataSource()).thenReturn(graphHopperDataSource);
+
+        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
+        hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
+
+        MapDescriptor mapDescriptor = mock(MapDescriptor.class);
+        when(mapDescriptor.getIdentifier()).thenReturn("test-map");
+        when(mapDescriptor.getBoundingBox()).thenReturn(new BoundingBox(19.2, 49.5, 18.7, 49.0));
+
+        assertFalse("A graph that is published but not yet downloaded must not be reported as available",
+                hopper.isRoutingDataAvailable(mapDescriptor));
+    }
+
+    @Test
+    public void isRoutingDataAvailableIsTrueWhenTheGraphDirectoryExistsLocally() throws IOException {
+        DataSource graphHopperDataSource = mock(DataSource.class);
+        when(graphHopperDataSource.getDirectory()).thenReturn(dataSourceDirectoryName);
+
+        // a graph directory ("mala-fatra") with its properties marker file, sitting next to the
+        // PBF it was imported from -- the genuine "already downloaded and processed" case
+        File graphHopperDirectory = getApplicationDirectory(dataSourceDirectoryName);
+        File pbfFile = new File(graphHopperDirectory, "mala-fatra-latest.osm.pbf");
+        assertTrue(pbfFile.createNewFile());
+        File graphDirectory = ensureDirectory(new File(graphHopperDirectory, "mala-fatra"));
+        assertTrue(new File(graphDirectory, "properties").createNewFile());
+
+        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml")));
+        hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
+
+        MapDescriptor mapDescriptor = mock(MapDescriptor.class);
+        when(mapDescriptor.getIdentifier()).thenReturn("mala-fatra");
+
+        assertTrue("A graph directory that already exists locally must be reported as available",
+                hopper.isRoutingDataAvailable(mapDescriptor));
     }
 }

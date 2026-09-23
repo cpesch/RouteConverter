@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.getApplicationDirectory;
 
 /**
@@ -154,21 +153,30 @@ public class CoverageOverlayController {
     // Fallback for routing services without a real getCoverageTiles() grid (e.g. GraphHopper),
     // whose routing data is downloaded per map region rather than per degree tile
     private Map<BoundingBox, Boolean> computeRoutingCoverageByMap(BoundingBox viewport, RoutingService routingService) {
+        return computeAreaCoverage(viewport, computeCoveredRoutingAreas(getCoverageCandidateMaps(viewport), routingService));
+    }
+
+    // The per-map availability gate: a candidate map is covered exactly when the routing service
+    // reports its routing data as available, which is what replaced the old
+    // calculateRemainingDownloadSize() == 0 check that also read "covered" when a service
+    // published nothing at all for the region (issue 178).
+    // package-private for testing -- getCoverageCandidateMaps() is coupled to
+    // BaseRouteConverter#getInstance(), but this decision over an injected map list is not
+    List<CoveredArea> computeCoveredRoutingAreas(List<RemoteMap> maps, RoutingService routingService) {
         List<CoveredArea> covered = new ArrayList<>();
-        for (RemoteMap map : getCoverageCandidateMaps(viewport)) {
+        for (RemoteMap map : maps) {
             RemoteMapDescriptor mapDescriptor = new RemoteMapDescriptor(map);
-            long remaining = routingService.calculateRemainingDownloadSize(singletonList(mapDescriptor));
-            if (remaining == 0) {
-                // never blocks: a polygon that is not there yet is fetched in the background and
-                // refreshes the overlay when it arrives, until then the bounding box is used
-                Polygon polygon = routingService.getRoutingCoverage(mapDescriptor,
-                        () -> SwingUtilities.invokeLater(this::forceRefresh));
-                if (polygon == null)
-                    log.fine("No routing polygon for " + map.description() + ", using its bounding box");
-                covered.add(new CoveredArea(map.getBoundingBox(), polygon));
-            }
+            if (!routingService.isRoutingDataAvailable(mapDescriptor))
+                continue;
+            // never blocks: a polygon that is not there yet is fetched in the background and
+            // refreshes the overlay when it arrives, until then the bounding box is used
+            Polygon polygon = routingService.getRoutingCoverage(mapDescriptor,
+                    () -> SwingUtilities.invokeLater(this::forceRefresh));
+            if (polygon == null)
+                log.fine("No routing polygon for " + map.description() + ", using its bounding box");
+            covered.add(new CoveredArea(map.getBoundingBox(), polygon));
         }
-        return computeAreaCoverage(viewport, covered);
+        return covered;
     }
 
     // POI is covered if a local POI file's own bounding box reaches into the viewport. This scans

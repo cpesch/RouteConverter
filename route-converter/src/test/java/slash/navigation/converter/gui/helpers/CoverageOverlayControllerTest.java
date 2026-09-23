@@ -21,23 +21,38 @@ package slash.navigation.converter.gui.helpers;
 
 import org.junit.Test;
 import slash.navigation.common.BoundingBox;
+import slash.navigation.common.LongitudeAndLatitude;
+import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.Polygon;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.maps.mapsforge.RemoteMap;
+import slash.navigation.routing.BaseRoutingService;
+import slash.navigation.routing.DownloadFuture;
+import slash.navigation.routing.RoutingResult;
+import slash.navigation.routing.RoutingService;
+import slash.navigation.routing.TravelMode;
+import slash.navigation.routing.TravelRestrictions;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
- * Tests for {@link CoverageOverlayController}'s tiling logic.
+ * Tests for {@link CoverageOverlayController}'s tiling logic and its per-map routing
+ * availability gate.
  * <p>
  * The rest of the class is coupled to {@code BaseRouteConverter#getInstance()} static
- * singletons and isn't unit-testable as-is; {@code computeTileCoverage} is pure and
- * package-private specifically so it can be covered directly here.
+ * singletons and isn't unit-testable as-is; {@code computeTileCoverage},
+ * {@code computeAreaCoverage} and {@code computeCoveredRoutingAreas} are package-private
+ * specifically so they can be covered directly here.
  *
  * @author Christian Pesch
  */
@@ -114,5 +129,129 @@ public class CoverageOverlayControllerTest {
 
     private static NavigationPosition position(double longitude, double latitude) {
         return new SimpleNavigationPosition(longitude, latitude);
+    }
+
+    // rc#178: computeRoutingCoverageByMap() decides per candidate map with
+    // RoutingService.isRoutingDataAvailable() -- the gate that replaced the old
+    // calculateRemainingDownloadSize() == 0 check, which also read "covered" when a routing
+    // service published nothing at all for the region. That method is coupled to
+    // BaseRouteConverter#getInstance() (via getCoverageCandidateMaps()), so this drives the
+    // decision helper it delegates to, with the same kind of maps the candidate list holds.
+    @Test
+    public void computeCoveredRoutingAreasOnlyIncludesMapsTheRoutingServiceReportsAsAvailable() {
+        BoundingBox availableBox = boundingBox(9.0, 39.0, 10.9, 42.0);
+        BoundingBox unavailableBox = boundingBox(11.0, 39.0, 13.0, 42.0);
+        RoutingService routingService = new StubRoutingService(Set.of("available-map"));
+
+        List<CoverageOverlayController.CoveredArea> covered = controller.computeCoveredRoutingAreas(
+                List.of(remoteMap("available-map", availableBox), remoteMap("unavailable-map", unavailableBox)),
+                routingService);
+
+        assertEquals(1, covered.size());
+        assertEquals(availableBox, covered.get(0).boundingBox());
+        assertNull("without a routing polygon the map's bounding box is used", covered.get(0).polygon());
+    }
+
+    @Test
+    public void computeCoveredRoutingAreasCarriesTheRoutingPolygonIntoTheCoveredArea() {
+        BoundingBox box = boundingBox(9.0, 39.0, 10.9, 42.0);
+        // triangle that reaches the western tile but not the eastern one
+        Polygon triangle = Polygon.of(List.of(List.of(position(9.0, 39.0), position(11.0, 39.0),
+                position(9.0, 42.0), position(9.0, 39.0))), List.of(false));
+        RoutingService routingService = new StubRoutingService(Set.of("covered-map"), triangle);
+
+        List<CoverageOverlayController.CoveredArea> covered = controller.computeCoveredRoutingAreas(
+                List.of(remoteMap("covered-map", box)), routingService);
+
+        assertEquals(1, covered.size());
+        assertEquals(box, covered.get(0).boundingBox());
+        assertEquals(triangle, covered.get(0).polygon());
+    }
+
+    private static RemoteMap remoteMap(String description, BoundingBox boundingBox) {
+        RemoteMap map = mock(RemoteMap.class);
+        when(map.description()).thenReturn(description);
+        when(map.getBoundingBox()).thenReturn(boundingBox);
+        return map;
+    }
+
+    private static class StubRoutingService extends BaseRoutingService {
+        private final Set<String> availableIdentifiers;
+        private final Polygon routingCoverage;
+
+        StubRoutingService(Set<String> availableIdentifiers) {
+            this(availableIdentifiers, null);
+        }
+
+        StubRoutingService(Set<String> availableIdentifiers, Polygon routingCoverage) {
+            this.availableIdentifiers = availableIdentifiers;
+            this.routingCoverage = routingCoverage;
+        }
+
+        public String getName() {
+            return "Stub";
+        }
+
+        public boolean isInitialized() {
+            return true;
+        }
+
+        public boolean isDownload() {
+            return true;
+        }
+
+        public List<TravelMode> getAvailableTravelModes() {
+            throw new UnsupportedOperationException();
+        }
+
+        public TravelRestrictions getAvailableTravelRestrictions() {
+            throw new UnsupportedOperationException();
+        }
+
+        public TravelMode getPreferredTravelMode() {
+            throw new UnsupportedOperationException();
+        }
+
+        public String getPath() {
+            throw new UnsupportedOperationException();
+        }
+
+        public void setPath(String path) {
+            throw new UnsupportedOperationException();
+        }
+
+        public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode, TravelRestrictions travelRestrictions) {
+            throw new UnsupportedOperationException();
+        }
+
+        public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
+            throw new UnsupportedOperationException();
+        }
+
+        public DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes) {
+            throw new UnsupportedOperationException();
+        }
+
+        public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
+            throw new UnsupportedOperationException();
+        }
+
+        public void downloadRoutingData(List<MapDescriptor> mapDescriptors) {
+            throw new UnsupportedOperationException();
+        }
+
+        public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
+            return Map.of();
+        }
+
+        public boolean isRoutingDataAvailable(MapDescriptor mapDescriptor) {
+            // the descriptor is constructed by the code under test, so match on the identifier
+            // it derives from the map, the way a real service looks up its own data
+            return availableIdentifiers.contains(mapDescriptor.getIdentifier());
+        }
+
+        public Polygon getRoutingCoverage(MapDescriptor mapDescriptor, Runnable onAvailable) {
+            return routingCoverage;
+        }
     }
 }
