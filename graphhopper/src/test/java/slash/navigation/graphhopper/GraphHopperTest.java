@@ -73,6 +73,47 @@ public class GraphHopperTest {
             recursiveDelete(directory);
     }
 
+    private slash.navigation.datasources.File downloadable(String uri, BoundingBox boundingBox, Long contentLength) {
+        slash.navigation.datasources.File file = mock(slash.navigation.datasources.File.class);
+        when(file.getUri()).thenReturn(uri);
+        when(file.getBoundingBox()).thenReturn(boundingBox);
+        if (contentLength != null) {
+            Checksum checksum = mock(Checksum.class);
+            when(checksum.getContentLength()).thenReturn(contentLength);
+            when(file.getLatestChecksum()).thenReturn(checksum);
+        } // else getLatestChecksum() stays unstubbed, i.e. null -- unknown content length
+        return file;
+    }
+
+    private DataSource dataSource(String name, slash.navigation.datasources.File... files) {
+        DataSource dataSource = mock(DataSource.class);
+        when(dataSource.getDirectory()).thenReturn(dataSourceDirectoryName + "-" + name);
+        when(dataSource.getFiles()).thenReturn(asList(files));
+        for (slash.navigation.datasources.File file : files)
+            when(file.getDataSource()).thenReturn(dataSource);
+        return dataSource;
+    }
+
+    private GraphHopper hopperWith(DataSource kurviger, DataSource mapsforge, DataSource graphHopper) throws IOException {
+        GraphHopper hopper = new GraphHopper(mock(DownloadManager.class));
+        hopper.setDataSources(kurviger, mapsforge, graphHopper);
+        return hopper;
+    }
+
+    private MapDescriptor mapDescriptor(String identifier, BoundingBox boundingBox) {
+        MapDescriptor mapDescriptor = mock(MapDescriptor.class);
+        when(mapDescriptor.getIdentifier()).thenReturn(identifier);
+        when(mapDescriptor.getBoundingBox()).thenReturn(boundingBox);
+        return mapDescriptor;
+    }
+
+    private File createLocalFile(DataSource dataSource, String uri) throws IOException {
+        File file = new File(getApplicationDirectory(dataSource.getDirectory()), uri);
+        ensureDirectory(file.getParentFile());
+        assertTrue(file.createNewFile());
+        return file;
+    }
+
     // rc#105: a graph already loaded for one region must not make GraphHopper believe a later,
     // geographically distant route is already covered. isRequiresDownload() has to check the
     // graph descriptor computed for the CURRENT route (next), not whatever osmPbfFile/hopper
@@ -242,5 +283,89 @@ public class GraphHopperTest {
 
         assertTrue("A graph directory that already exists locally must be reported as available",
                 hopper.isRoutingDataAvailable(mapDescriptor));
+    }
+
+    // rc#180: the method is named "remaining download size" and sums into an accumulator, but
+    // stopped at the first missing graph -- a call covering several maps reported the size of the
+    // first missing one, not the remaining total. The pick-one-alternative rule has to apply per
+    // map, the sum across maps.
+    @Test
+    public void remainingSizeSumsAcrossSeveralMissingMaps() throws IOException {
+        DataSource dataSource = dataSource("routing",
+                downloadable("europe/germany/germany-latest.osm.pbf", new BoundingBox(15.0, 55.1, 5.9, 47.3), 100L),
+                downloadable("europe/austria/austria-latest.osm.pbf", new BoundingBox(17.2, 49.0, 9.5, 46.4), 200L));
+
+        GraphHopper hopper = hopperWith(dataSource("kurviger"), dataSource("mapsforge"), dataSource);
+
+        assertEquals("The remaining download size for several maps must sum the sizes of every " +
+                        "map's missing graph instead of stopping after the first",
+                300L, hopper.calculateRemainingDownloadSize(asList(
+                        mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)),
+                        mapDescriptor("europe/austria", new BoundingBox(16.9, 48.8, 9.7, 46.5)))));
+    }
+
+    // rc#180: kurviger graphs, mapsforge graphs and geofabrik PBFs are interchangeable sources
+    // for the same region -- only one of them would ever be downloaded, so only one of them is
+    // counted (mirroring the deliberate break in downloadRoutingData()).
+    @Test
+    public void remainingSizeCountsOneAlternativePerMap() throws IOException {
+        BoundingBox germany = new BoundingBox(15.0, 55.1, 5.9, 47.3);
+        GraphHopper hopper = hopperWith(
+                dataSource("kurviger", downloadable("europe/germany.zip", germany, 100L)),
+                dataSource("mapsforge", downloadable("mapsforge/europe/germany.map", germany, 200L)),
+                dataSource("routing", downloadable("europe/germany-latest.osm.pbf", germany, 300L)));
+
+        assertEquals("Interchangeable alternatives for one map must count once, not add up",
+                100L, hopper.calculateRemainingDownloadSize(singletonList(
+                        mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)))));
+    }
+
+    // rc#180: since the per-map rule now looks at every map separately, a downloadable that
+    // serves several maps of one call (a Europe-wide PBF serving both germany and austria) must
+    // still be counted only once.
+    @Test
+    public void remainingSizeCountsASharedDownloadableOnce() throws IOException {
+        DataSource dataSource = dataSource("routing",
+                downloadable("europe/europe-latest.osm.pbf", new BoundingBox(30.0, 70.0, 5.0, 45.0), 100L));
+
+        GraphHopper hopper = hopperWith(dataSource("kurviger"), dataSource("mapsforge"), dataSource);
+
+        assertEquals("A downloadable serving several maps of one call must be counted once",
+                100L, hopper.calculateRemainingDownloadSize(asList(
+                        mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)),
+                        mapDescriptor("europe/austria", new BoundingBox(16.9, 48.8, 9.7, 46.5)))));
+    }
+
+    // rc#180: nothing is missing, so nothing remains to download -- for any number of maps.
+    @Test
+    public void remainingSizeIsZeroWhenEveryGraphIsPresent() throws IOException {
+        DataSource dataSource = dataSource("routing",
+                downloadable("europe/germany/germany-latest.osm.pbf", new BoundingBox(15.0, 55.1, 5.9, 47.3), 100L),
+                downloadable("europe/austria/austria-latest.osm.pbf", new BoundingBox(17.2, 49.0, 9.5, 46.4), 200L));
+        createLocalFile(dataSource, "europe/germany/germany-latest.osm.pbf");
+        createLocalFile(dataSource, "europe/austria/austria-latest.osm.pbf");
+
+        GraphHopper hopper = hopperWith(dataSource("kurviger"), dataSource("mapsforge"), dataSource);
+
+        assertEquals("Present graphs must not add to the remaining download size",
+                0L, hopper.calculateRemainingDownloadSize(asList(
+                        mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)),
+                        mapDescriptor("europe/austria", new BoundingBox(16.9, 48.8, 9.7, 46.5)))));
+    }
+
+    // rc#180: a downloadable without a checksum has an unknown size -- it is skipped, and the
+    // search for the map's first countable alternative continues with the next descriptor.
+    @Test
+    public void remainingSizeSkipsDescriptorsWithoutChecksum() throws IOException {
+        BoundingBox germany = new BoundingBox(15.0, 55.1, 5.9, 47.3);
+        GraphHopper hopper = hopperWith(
+                dataSource("kurviger", downloadable("europe/germany.zip", germany, null)),
+                dataSource("mapsforge", downloadable("mapsforge/europe/germany.map", germany, 200L)),
+                dataSource("routing"));
+
+        assertEquals("A descriptor without a checksum must be skipped in favor of the next " +
+                        "alternative instead of ending the search for the map's size",
+                200L, hopper.calculateRemainingDownloadSize(singletonList(
+                        mapDescriptor("europe/germany", new BoundingBox(13.8, 54.9, 6.2, 47.5)))));
     }
 }

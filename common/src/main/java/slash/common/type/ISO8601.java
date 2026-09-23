@@ -20,14 +20,16 @@
 
 package slash.common.type;
 
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.Calendar;
-import java.util.Locale;
 import java.util.TimeZone;
 
 import static java.lang.Character.isDigit;
+import static java.lang.Math.abs;
+import static java.lang.String.format;
 import static java.lang.Integer.parseInt;
+import static java.util.Locale.ROOT;
 import static java.util.Calendar.*;
 import static java.util.GregorianCalendar.AD;
 import static java.util.GregorianCalendar.BC;
@@ -58,20 +60,15 @@ import static slash.common.type.CompactCalendar.UTC;
  *   TZD   = time zone designator (Z or +hh:mm or -hh:mm)
  * </pre>
  *
+ * Formatting is locale-independent and thread-safe: the numeric fields are rendered with
+ * {@link String#format} pinned to {@link java.util.Locale#ROOT} and the zone offset comes from
+ * {@link java.time.ZoneOffset}, so no shared mutable formatter is involved. An earlier version
+ * used static {@code DecimalFormat} instances, which are neither.
+ *
  * @author Unknown
  */
 
 public class ISO8601 {
-    // These are wire-format digits for ISO 8601, never user-facing text: RFC 3339 requires
-    // ASCII digits, so the symbols are pinned to Locale.ROOT. An unqualified DecimalFormat
-    // takes its digit symbols from the default locale at class-load time and would emit
-    // Eastern Arabic numerals under an ar or fa locale, making files unreadable by other tools.
-    // Package-private so ISO8601Test can pin the symbols structurally.
-    // not thread-safe: format() mutates internal state, and these are shared across every
-    // format writer; properly fixed by the java.time migration of this class.
-    static final DecimalFormat XX_FORMAT = new DecimalFormat("00", DecimalFormatSymbols.getInstance(Locale.ROOT));
-    static final DecimalFormat XXX_FORMAT = new DecimalFormat("000", DecimalFormatSymbols.getInstance(Locale.ROOT));
-    static final DecimalFormat XXXX_FORMAT = new DecimalFormat("0000", DecimalFormatSymbols.getInstance(Locale.ROOT));
 
     /**
      * Parses an ISO8601-compliant date/time string.
@@ -101,8 +98,11 @@ public class ISO8601 {
          * the expected format of the remainder of the string is:
          * YYYY-MM-DDThh:mm:ss
          *
-         * note that we cannot use java.text.SimpleDateFormat for
-         * parsing because it can't handle years <= 0 and TZD's
+         * parsed by hand rather than with a java.time DateTimeFormatter: this has to stay
+         * lenient in ways a strict formatter is not - years <= 0 with the astronomical/BCE
+         * convention, 'T' or a space as the date/time separator, one to three fractional
+         * digits, a missing or malformed zone falling back to UTC, and non-ASCII digits in
+         * files written by builds affected by the DecimalFormat locale defect (#189)
          */
 
         TimeZone timeZone = UTC;
@@ -265,44 +265,58 @@ public class ISO8601 {
 
         /*
          * the format of the date/time string is:
-         * YYYY-MM-DDThh:mm:ss
+         * YYYY-MM-DDThh:mm:ss[.SSS]TZD
          *
-         * note that we cannot use java.text.SimpleDateFormat for
-         * formatting because it can't handle years <= 0 and TZD's
+         * assembled by hand rather than with a java.time DateTimeFormatter because the year
+         * uses the astronomical/BCE convention above, which no ISO formatter reproduces
          */
         StringBuilder buffer = new StringBuilder();
-        // year ([-]YYYY)
-        buffer.append(XXXX_FORMAT.format(year));
+        // year ([-]YYYY) - the sign is written separately so the digits stay zero-padded to four
+        if (year < 0)
+            buffer.append('-').append(format(ROOT, "%04d", -year));
+        else
+            buffer.append(format(ROOT, "%04d", year));
         buffer.append('-');
         // month (MM)
-        buffer.append(XX_FORMAT.format(calendar.get(MONTH) + 1));
+        buffer.append(format(ROOT, "%02d", calendar.get(MONTH) + 1));
         buffer.append('-');
         // day (DD)
-        buffer.append(XX_FORMAT.format(calendar.get(DAY_OF_MONTH)));
+        buffer.append(format(ROOT, "%02d", calendar.get(DAY_OF_MONTH)));
         buffer.append('T');
         // hour (hh)
-        buffer.append(XX_FORMAT.format(calendar.get(HOUR_OF_DAY)));
+        buffer.append(format(ROOT, "%02d", calendar.get(HOUR_OF_DAY)));
         buffer.append(':');
         // minute (mm)
-        buffer.append(XX_FORMAT.format(calendar.get(MINUTE)));
+        buffer.append(format(ROOT, "%02d", calendar.get(MINUTE)));
         buffer.append(':');
         // second (ss)
-        buffer.append(XX_FORMAT.format(calendar.get(SECOND)));
+        buffer.append(format(ROOT, "%02d", calendar.get(SECOND)));
         if (includeMilliseconds) {
             // millisecond (SSS)
             buffer.append('.');
-            buffer.append(XXX_FORMAT.format(calendar.get(MILLISECOND)));
+            buffer.append(format(ROOT, "%03d", calendar.get(MILLISECOND)));
         }
         if (calendar.getTimeZone().equals(UTC))
             buffer.append('Z');
-        else {
-            buffer.append('+');
-            int offsetHours = calendar.getTimeZone().getRawOffset() / 1000 / 3600;
-            int offsetMinutes = calendar.getTimeZone().getRawOffset() / 1000 / 60 - offsetHours * 60;
-            buffer.append(XX_FORMAT.format(offsetHours));
-            buffer.append(':');
-            buffer.append(XX_FORMAT.format(offsetMinutes));
-        }
+        else
+            buffer.append(formatOffset(calendar));
         return buffer.toString();
+    }
+
+    /**
+     * Formats the zone offset as (+|-)hh:mm.
+     *
+     * Uses the offset in effect at this instant, not the zone's raw offset, so a summer time in a
+     * DST zone is written with its summer offset. Writes the sign once, in front: an earlier version
+     * always emitted '+' and then formatted a possibly negative offset, producing the unparseable
+     * "+-05:00" for every zone west of Greenwich (rc/RouteConverter#190).
+     */
+    private static String formatOffset(Calendar calendar) {
+        ZoneOffset offset = calendar.getTimeZone().toZoneId().getRules()
+                .getOffset(Instant.ofEpochMilli(calendar.getTimeInMillis()));
+        int totalSeconds = offset.getTotalSeconds();
+        int absoluteSeconds = abs(totalSeconds);
+        return format(ROOT, "%s%02d:%02d", totalSeconds < 0 ? "-" : "+",
+                absoluteSeconds / 3600, absoluteSeconds % 3600 / 60);
     }
 }

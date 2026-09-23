@@ -499,7 +499,15 @@ public class GraphHopper extends BaseRoutingService {
     }
 
     public long calculateRemainingDownloadSize(List<MapDescriptor> mapDescriptors) {
-        List<GraphDescriptor> graphDescriptors = finder.getGraphDescriptorsFor(mapDescriptors);
+        long total = 0L;
+        Set<Downloadable> alreadyCounted = new HashSet<>();
+        for (MapDescriptor mapDescriptor : mapDescriptors)
+            total += remainingDownloadSizeFor(mapDescriptor, alreadyCounted);
+        return total;
+    }
+
+    private long remainingDownloadSizeFor(MapDescriptor mapDescriptor, Set<Downloadable> alreadyCounted) {
+        List<GraphDescriptor> graphDescriptors = finder.getGraphDescriptorsFor(singletonList(mapDescriptor));
         long notExists = 0L;
         for (GraphDescriptor graphDescriptor : graphDescriptors) {
             Downloadable downloadable = graphDescriptor.getRemoteFile();
@@ -512,7 +520,12 @@ public class GraphHopper extends BaseRoutingService {
 
             java.io.File file = createFile(downloadable);
             if (!file.exists()) {
-                notExists += contentLength;
+                // avoid counting multiple sizes when kurviger, mapsforge graphs and geofabrik PBFs are
+                // returned: the descriptors for one map are interchangeable sources for the same region,
+                // so only the first missing one is counted -- and a downloadable serving several maps of
+                // this call is still counted only once
+                if (alreadyCounted.add(downloadable))
+                    notExists += contentLength;
                 break;
             }
         }
