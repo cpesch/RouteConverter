@@ -32,7 +32,7 @@ jobs:
       # Upload coverage once per build (Java 21 only — avoid duplicate uploads from the matrix)
       - name: Upload coverage to Codecov
         if: matrix.java == 21
-        uses: codecov/codecov-action@v7.0.0
+        uses: codecov/codecov-action@v7.1.1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
