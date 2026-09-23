@@ -40,6 +40,110 @@ import static slash.common.type.ISO8601.parseDate;
 
 public class ISO8601Test {
 
+    // ---- characterisation of behaviour the java.time migration must preserve (rc/RouteConverter#190) ----
+    //
+    // Written and confirmed green against the hand-rolled implementation BEFORE the migration, so
+    // they pin the existing contract rather than the new output. Offsets are deliberately NOT pinned
+    // here: negative offsets and DST are corrected by the migration and are covered separately.
+
+    private static Calendar utc(int year, int month, int day, int hour, int minute, int second, int millisecond) {
+        Calendar result = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        result.clear();
+        result.set(year, month - 1, day, hour, minute, second);
+        result.set(Calendar.MILLISECOND, millisecond);
+        return result;
+    }
+
+    @Test
+    public void testFormatEpoch() {
+        assertEquals("1970-01-01T00:00:00Z", formatDate(utc(1970, 1, 1, 0, 0, 0, 0), false));
+        assertEquals("1970-01-01T00:00:00.000Z", formatDate(utc(1970, 1, 1, 0, 0, 0, 0), true));
+    }
+
+    @Test
+    public void testFormatBefore1970() {
+        assertEquals("1969-07-20T20:17:40Z", formatDate(utc(1969, 7, 20, 20, 17, 40, 0), false));
+        assertEquals("1969-07-20T20:17:40.000Z", formatDate(utc(1969, 7, 20, 20, 17, 40, 0), true));
+    }
+
+    @Test
+    public void testFormatLeapDay() {
+        assertEquals("2024-02-29T12:00:00Z", formatDate(utc(2024, 2, 29, 12, 0, 0, 0), false));
+        assertEquals("2024-02-29T12:00:00.000Z", formatDate(utc(2024, 2, 29, 12, 0, 0, 0), true));
+    }
+
+    @Test
+    public void testFormatMillisecondsArePaddedToThreeDigits() {
+        assertEquals("2026-01-02T03:04:05.007Z", formatDate(utc(2026, 1, 2, 3, 4, 5, 7), true));
+        assertEquals("2026-01-02T03:04:05.123Z", formatDate(utc(2026, 1, 2, 3, 4, 5, 123), true));
+    }
+
+    @Test
+    public void testFormatWithoutMillisecondsDropsThem() {
+        assertEquals("2026-01-02T03:04:05Z", formatDate(utc(2026, 1, 2, 3, 4, 5, 123), false));
+    }
+
+    @Test
+    public void testFormatYearIsAlwaysFourDigits() {
+        assertEquals("0042-01-01T00:00:00Z", formatDate(utc(42, 1, 1, 0, 0, 0, 0), false));
+    }
+
+    @Test
+    public void testParseAndFormatRoundTripInUtc() {
+        String[] texts = {"1970-01-01T00:00:00Z", "1969-07-20T20:17:40Z", "2024-02-29T12:00:00Z",
+                "2026-01-02T03:04:05Z", "0042-01-01T00:00:00Z"};
+        for (String text : texts) {
+            Calendar parsed = parseDate(text);
+            assertNotNull(parsed, text);
+            assertEquals(text, formatDate(parsed, false), text);
+        }
+    }
+
+    @Test
+    public void testParseAcceptsSpaceInsteadOfT() {
+        Calendar withT = parseDate("2026-09-23T08:05:03Z");
+        Calendar withSpace = parseDate("2026-09-23 08:05:03Z");
+        assertNotNull(withT);
+        assertNotNull(withSpace);
+        assertEquals(withT.getTimeInMillis(), withSpace.getTimeInMillis());
+    }
+
+    @Test
+    public void testParseAcceptsFewerThanThreeFractionalDigits() {
+        Calendar actual = parseDate("2026-09-23T08:05:03.5Z");
+        assertNotNull(actual);
+        assertEquals(500, actual.get(Calendar.MILLISECOND));
+    }
+
+    @Test
+    public void testParseAcceptsEasternArabicDigits() {
+        // files written by builds affected by the DecimalFormat locale defect exist in the wild;
+        // parsing must keep accepting them (#189, #190 decision 3)
+        Calendar actual = parseDate("\u0662\u0660\u0662\u0666-\u0660\u0669-\u0662\u0663T\u0660\u0668:\u0660\u0665:\u0660\u0663Z");
+        assertNotNull(actual);
+        assertEquals("2026-09-23T08:05:03Z", formatDate(actual, false));
+    }
+
+    @Test
+    public void testParseHandlesTheEraBoundary() {
+        Calendar beforeChrist = parseDate("-0001-01-01T00:00:00Z");
+        assertNotNull(beforeChrist);
+        assertEquals("-0001-01-01T00:00:00Z", formatDate(beforeChrist, false));
+
+        Calendar yearZero = parseDate("0000-01-01T00:00:00Z");
+        assertNotNull(yearZero);
+        assertEquals("0000-01-01T00:00:00Z", formatDate(yearZero, false));
+    }
+
+    @Test
+    public void testParseReturnsNullForUnparseableInput() {
+        assertNull(parseDate(null));
+        assertNull(parseDate(""));
+        assertNull(parseDate("garbage"));
+        assertNull(parseDate("2026-13-01T00:00:00Z"));
+        assertNull(parseDate("2026/09/23T08:05:03Z"));
+    }
+
     @Test
     public void testParseGMT() {
         Calendar actual = parseDate("2007-03-04T14:49:05Z");
