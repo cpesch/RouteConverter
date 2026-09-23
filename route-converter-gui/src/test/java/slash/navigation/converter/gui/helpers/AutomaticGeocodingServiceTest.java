@@ -31,7 +31,6 @@ import slash.common.prefs.InMemoryPreferences;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.prefs.Preferences;
 
 import static java.util.Collections.emptyList;
@@ -71,42 +70,34 @@ public class AutomaticGeocodingServiceTest {
         // must not raise an error just because an incidental service (here: Google)
         // is denied/over-limit. A reachable service returning no matches is a valid
         // empty result, not a failure.
-        Preferences preferences = Preferences.userRoot().node("/RouteConverter-test/" + getClass().getName() + "/" + UUID.randomUUID());
-        try {
-            GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
-            AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
-            facade.addGeocodingService(automatic);
-            facade.addGeocodingService(new TestGeocodingService("Nominatim", emptyList()));
-            facade.addGeocodingService(new FailingGeocodingService("Google"));
+        Preferences preferences = new InMemoryPreferences();
+        GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
+        AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
+        facade.addGeocodingService(automatic);
+        facade.addGeocodingService(new TestGeocodingService("Nominatim", emptyList()));
+        facade.addGeocodingService(new FailingGeocodingService("Google"));
 
-            List<GeocodingResult> results = automatic.getPositionsFor("mannheim hofgarten");
+        List<GeocodingResult> results = automatic.getPositionsFor("mannheim hofgarten");
 
-            assertTrue(results.isEmpty());
-        } finally {
-            preferences.removeNode();
-        }
+        assertTrue(results.isEmpty());
     }
 
     @Test
     public void throwsWhenEveryServiceFails() throws Exception {
         // Total failure (e.g. offline) still surfaces the error rather than
         // masquerading as "no matches".
-        Preferences preferences = Preferences.userRoot().node("/RouteConverter-test/" + getClass().getName() + "/" + UUID.randomUUID());
-        try {
-            GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
-            AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
-            facade.addGeocodingService(automatic);
-            facade.addGeocodingService(new FailingGeocodingService("Nominatim"));
-            facade.addGeocodingService(new FailingGeocodingService("Google"));
+        Preferences preferences = new InMemoryPreferences();
+        GeocodingServiceFacade facade = new GeocodingServiceFacade(preferences);
+        AutomaticGeocodingService automatic = new AutomaticGeocodingService(facade);
+        facade.addGeocodingService(automatic);
+        facade.addGeocodingService(new FailingGeocodingService("Nominatim"));
+        facade.addGeocodingService(new FailingGeocodingService("Google"));
 
-            try {
-                automatic.getPositionsFor("anything");
-                fail("expected IOException when no service can complete a query");
-            } catch (IOException expected) {
-                // expected
-            }
-        } finally {
-            preferences.removeNode();
+        try {
+            automatic.getPositionsFor("anything");
+            fail("expected IOException when no service can complete a query");
+        } catch (IOException expected) {
+            // expected
         }
     }
 
