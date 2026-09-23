@@ -100,7 +100,7 @@ class FileOperations {
         }
     }
 
-    void openPositionList(final List<URL> urls, final List<NavigationFormat<?>> formats) {
+    void openPositionList(final List<URL> urls, final List<? extends NavigationFormat<?>> formats) {
         final BaseRouteConverter r = BaseRouteConverter.getInstance();
 
         final URL url = urls.get(0);

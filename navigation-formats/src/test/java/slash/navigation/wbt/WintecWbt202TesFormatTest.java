@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import slash.navigation.base.AllNavigationFormatRegistry;
 import slash.navigation.base.BaseNavigationPosition;
+import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 
@@ -34,7 +35,7 @@ public class WintecWbt202TesFormatTest {
 	@Test
 	public void testGetReadFormatsByExtension() {
 		@SuppressWarnings("rawtypes")
-		List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".tes");
+		List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".tes");
 		assertNotNull("returned formats is null", formats);
 		assertFalse("formats are empty", formats.isEmpty());
 		assertEquals(WintecWbt202TesFormat.class, formats.get(0).getClass());
