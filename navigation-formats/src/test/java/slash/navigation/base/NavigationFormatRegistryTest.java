@@ -28,13 +28,16 @@ import slash.navigation.columbus.GarbleColumbusGpsType1Format;
 import slash.navigation.csv.CsvCommaFormat;
 import slash.navigation.csv.CsvSemicolonFormat;
 import slash.navigation.csv.Flightradar24Format;
+import slash.navigation.itn.TomTom8RouteFormat;
 import slash.navigation.itn.TomTomRouteFormat;
 import slash.navigation.nmn.NmnUrlFormat;
 import slash.navigation.simple.*;
 import slash.navigation.url.GoogleMapsUrlFormat;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -45,14 +48,14 @@ public class NavigationFormatRegistryTest {
 
     @Test
     public void testGetReadFormatsSortedByExtension() {
-        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".ov2");
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".ov2");
         assertEquals(TomTomPoiFormat.class, formats.get(0).getClass());
         assertEquals(NmnUrlFormat.class, formats.get(1).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByExtensionIsCaseSensitive() {
-        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".OV2");
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".OV2");
         assertEquals(NmnUrlFormat.class, formats.get(0).getClass());
         assertEquals(GoogleMapsUrlFormat.class, formats.get(1).getClass());
     }
@@ -62,8 +65,9 @@ public class NavigationFormatRegistryTest {
         Locale previous = Locale.getDefault();
         try {
             Locale.setDefault(Locale.of("tr", "TR"));
-            List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(getExtension("CURRENT.ITN"));
-            assertTrue(formats.get(0) instanceof TomTomRouteFormat);
+            List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(getExtension("CURRENT.ITN"));
+            NavigationFormat<?> first = formats.get(0);
+            assertTrue(first instanceof TomTomRouteFormat);
         } finally {
             Locale.setDefault(previous);
         }
@@ -71,13 +75,13 @@ public class NavigationFormatRegistryTest {
 
     @Test
     public void testGetReadFormatsSortedByNotExistingExtension() {
-        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".zzz");
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".zzz");
         assertEquals(NmnUrlFormat.class, formats.get(0).getClass());
     }
 
     @Test
     public void testGetReadFormatsSortedByExtensionMultipleResults() {
-        List<NavigationFormat<?>> formats = registry.getReadFormatsPreferredByExtension(".csv");
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".csv");
         int index = 0;
         assertEquals(HaicomLoggerFormat.class, formats.get(index++).getClass());
         assertEquals(Route66Format.class, formats.get(index++).getClass());
@@ -92,5 +96,37 @@ public class NavigationFormatRegistryTest {
         assertEquals(GarbleColumbusGpsType1Format.class, formats.get(index++).getClass());
         assertEquals(GarbleHaicomLoggerFormat.class, formats.get(index++).getClass());
         assertEquals(NmnUrlFormat.class, formats.get(index).getClass());
+    }
+
+    @Test
+    public void testGetReadFormatsPreferredByExtensionPutsTomTomRouteFormatFirst() {
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getReadFormatsPreferredByExtension(".itn");
+        NavigationFormat<?> first = formats.get(0);
+        assertTrue(first instanceof TomTomRouteFormat);
+    }
+
+    @Test
+    public void testGetReadFormatsIsNonEmpty() {
+        assertTrue(!registry.getReadFormats().isEmpty());
+    }
+
+    @Test
+    public void testGetWriteFormatsIsSubsetOfGetReadFormats() {
+        // WebPageFormat and TomTom8RouteFormat are pre-existing, write-only exceptions
+        // (isSupportsReading() returns false for both); every other write format is also
+        // a read format, which is the invariant this change must not disturb.
+        // getReadFormats()/getWriteFormats() each reflectively instantiate fresh objects,
+        // so the two lists never share instances for the same format class - compare by
+        // class instead of relying on List.contains()'s identity-based equals().
+        Set<Class<?>> readFormatClasses = new HashSet<>();
+        for (NavigationFormat<BaseRoute<?, ?>> readFormat : registry.getReadFormats())
+            readFormatClasses.add(readFormat.getClass());
+
+        for (NavigationFormat<BaseRoute<?, ?>> writeFormat : registry.getWriteFormats()) {
+            NavigationFormat<?> anyWriteFormat = writeFormat;
+            if (anyWriteFormat instanceof WebPageFormat || anyWriteFormat instanceof TomTom8RouteFormat)
+                continue;
+            assertTrue(readFormatClasses.contains(writeFormat.getClass()));
+        }
     }
 }

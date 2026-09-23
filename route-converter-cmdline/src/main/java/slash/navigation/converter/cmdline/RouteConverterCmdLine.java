@@ -56,7 +56,7 @@ public class RouteConverterCmdLine {
     }
 
     private void logFormatNames(boolean read) {
-        List<NavigationFormat<?>> formats = read ? registry.getReadFormatsSortedByName() : registry.getWriteFormatsSortedByName();
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = read ? registry.getReadFormatsSortedByName() : registry.getWriteFormatsSortedByName();
 
         log.info("Supported formats:");
         for (NavigationFormat<?> format : formats)
@@ -64,7 +64,7 @@ public class RouteConverterCmdLine {
     }
 
     private BaseNavigationFormat<?> findFormat(String formatName) {
-        List<NavigationFormat<?>> formats = registry.getWriteFormats();
+        List<NavigationFormat<BaseRoute<?, ?>>> formats = registry.getWriteFormats();
         for (NavigationFormat<?> format : formats)
             if (formatName.equals(format.getClass().getSimpleName()))
                 return (BaseNavigationFormat<?>) format;

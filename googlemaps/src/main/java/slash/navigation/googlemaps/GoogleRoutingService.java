@@ -199,6 +199,9 @@ public class GoogleRoutingService extends BaseRoutingService {
         throw new UnsupportedOperationException();
     }
 
+    // a remote API call, not downloadable data -- there is no coverage to report and nothing
+    // to be "available" locally, see isDownload(). The empty map also makes the
+    // isRoutingDataAvailable() default answer false.
     public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
         return Collections.emptyMap();
     }

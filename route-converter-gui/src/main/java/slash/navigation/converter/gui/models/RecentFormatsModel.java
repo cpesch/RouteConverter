@@ -20,6 +20,7 @@
 
 package slash.navigation.converter.gui.models;
 
+import slash.navigation.base.BaseRoute;
 import slash.navigation.base.NavigationFormat;
 import slash.navigation.base.NavigationFormatRegistry;
 
@@ -102,8 +103,8 @@ public class RecentFormatsModel {
         for (char c : recentFormats.toCharArray()) {
             String formatString = preferences.get(RECENT_FORMAT_PREFERENCE + c, null);
             if (formatString != null) {
-                List<NavigationFormat<?>> writeFormats = navigationFormatRegistry.getWriteFormats();
-                for (NavigationFormat<?> format : writeFormats) {
+                List<NavigationFormat<BaseRoute<?, ?>>> writeFormats = navigationFormatRegistry.getWriteFormats();
+                for (NavigationFormat<BaseRoute<?, ?>> format : writeFormats) {
                     if (format.getClass().getName().equals(formatString)) {
                         result.add(0, format);
                         break;

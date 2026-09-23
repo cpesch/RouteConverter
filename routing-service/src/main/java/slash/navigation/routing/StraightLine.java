@@ -106,7 +106,8 @@ public class StraightLine extends BaseRoutingService {
     }
 
     // straight-line routing needs no downloadable data, so there is no coverage to report;
-    // isDownload() is false, so callers should never rely on this returning real tiles
+    // isDownload() is false, so callers should never rely on this returning real tiles. The
+    // empty map also makes the isRoutingDataAvailable() default answer false.
     public Map<BoundingBox, Boolean> getCoverageTiles(BoundingBox area) {
         return Collections.emptyMap();
     }

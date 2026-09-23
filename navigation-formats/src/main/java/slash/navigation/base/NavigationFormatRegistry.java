@@ -81,8 +81,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static java.util.Arrays.sort;
 import static java.util.Locale.ROOT;
 
 /**
@@ -236,14 +234,25 @@ public class NavigationFormatRegistry {
         return true;
     }
 
-    private List<NavigationFormat<?>> getFormatInstances(boolean includeReadableFormats, boolean includeWritableFormats) {
-        List<NavigationFormat<?>> result = new ArrayList<>();
+    // getFormatInstances() reflectively instantiates each registered format class, so every
+    // instance is concretely typed as NavigationFormat<SomeRouteSubclass> - never literally
+    // NavigationFormat<BaseRoute<?, ?>>, even though every route subclass extends BaseRoute<?, ?>.
+    // Java's invariant generics cannot verify that across independently-typed instances, so this
+    // single package-visible cast is the one place that launders the type; NavigationFormatParser
+    // reuses it instead of declaring its own (rc/RouteConverter#174).
+    @SuppressWarnings("unchecked")
+    static NavigationFormat<BaseRoute<?, ?>> widen(NavigationFormat<?> format) {
+        return (NavigationFormat<BaseRoute<?, ?>>) format;
+    }
+
+    private List<NavigationFormat<BaseRoute<?, ?>>> getFormatInstances(boolean includeReadableFormats, boolean includeWritableFormats) {
+        List<NavigationFormat<BaseRoute<?, ?>>> result = new ArrayList<>();
         for (Class<? extends NavigationFormat<?>> formatClass : formats) {
             try {
                 NavigationFormat<?> format = formatClass.getDeclaredConstructor().newInstance();
                 if (includeReadableFormats && format.isSupportsReading() && includeReadFormat(format) ||
                         includeWritableFormats && format.isSupportsWriting())
-                    result.add(format);
+                    result.add(widen(format));
             } catch (Exception e) {
                 throw new IllegalArgumentException("Cannot instantiate " + formatClass, e);
             }
@@ -251,38 +260,40 @@ public class NavigationFormatRegistry {
         return result;
     }
 
-    public List<NavigationFormat<?>> getReadFormats() {
+    public List<NavigationFormat<BaseRoute<?, ?>>> getReadFormats() {
         return getFormatInstances(true, false);
     }
 
-    public List<NavigationFormat<?>> getWriteFormats() {
+    public List<NavigationFormat<BaseRoute<?, ?>>> getWriteFormats() {
         return getFormatInstances(false, true);
     }
 
-    private List<NavigationFormat<?>> sortByName(List<NavigationFormat<?>> formats) {
-        NavigationFormat<?>[] formatsArray = formats.toArray(new NavigationFormat<?>[0]);
-        sort(formatsArray, Comparator.comparing(f -> f.getName().toLowerCase(ROOT)));
-        return asList(formatsArray);
+    private List<NavigationFormat<BaseRoute<?, ?>>> sortByName(List<NavigationFormat<BaseRoute<?, ?>>> formats) {
+        // sorted via List.sort() rather than an array, since a generic array of a parameterized
+        // type (NavigationFormat<BaseRoute<?, ?>>[]) cannot be created in Java
+        List<NavigationFormat<BaseRoute<?, ?>>> result = new ArrayList<>(formats);
+        result.sort(Comparator.comparing(f -> f.getName().toLowerCase(ROOT)));
+        return result;
     }
 
-    public List<NavigationFormat<?>> getFormatsSortedByName() {
+    public List<NavigationFormat<BaseRoute<?, ?>>> getFormatsSortedByName() {
         return sortByName(getFormatInstances(true, true));
     }
 
-    private List<NavigationFormat<?>> filterByGarble(List<NavigationFormat<?>> formats) {
-        List<NavigationFormat<?>> result = new ArrayList<>();
-        for(NavigationFormat<?> format : formats) {
+    private List<NavigationFormat<BaseRoute<?, ?>>> filterByGarble(List<NavigationFormat<BaseRoute<?, ?>>> formats) {
+        List<NavigationFormat<BaseRoute<?, ?>>> result = new ArrayList<>();
+        for(NavigationFormat<BaseRoute<?, ?>> format : formats) {
             if(!(format instanceof GarbleNavigationFormat))
                 result.add(format);
         }
         return result;
     }
 
-    public List<NavigationFormat<?>> getReadFormatsSortedByName() {
+    public List<NavigationFormat<BaseRoute<?, ?>>> getReadFormatsSortedByName() {
         return sortByName(filterByGarble(getReadFormats()));
     }
 
-    public List<NavigationFormat<?>> getWriteFormatsSortedByName() {
+    public List<NavigationFormat<BaseRoute<?, ?>>> getWriteFormatsSortedByName() {
         return sortByName(filterByGarble(getWriteFormats()));
     }
 
@@ -302,14 +313,14 @@ public class NavigationFormatRegistry {
         return formats;
     }
 
-    public List<NavigationFormat<?>> getReadFormatsPreferredByExtension(String preferredExtension) {
-        List<NavigationFormat<?>> preferredFormats = new ArrayList<>();
-        for(NavigationFormat<?> format : getReadFormats()) {
+    public List<NavigationFormat<BaseRoute<?, ?>>> getReadFormatsPreferredByExtension(String preferredExtension) {
+        List<NavigationFormat<BaseRoute<?, ?>>> preferredFormats = new ArrayList<>();
+        for(NavigationFormat<BaseRoute<?, ?>> format : getReadFormats()) {
             if(format.getExtension().equals(preferredExtension))
                 preferredFormats.add(format);
         }
 
-        List<NavigationFormat<?>> result = new ArrayList<>(getReadFormats());
+        List<NavigationFormat<BaseRoute<?, ?>>> result = new ArrayList<>(getReadFormats());
         result.removeAll(preferredFormats);
         result.addAll(0, preferredFormats);
         return result;
