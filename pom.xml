@@ -208,7 +208,11 @@
                              -Xlint bulk and are enforced below for main sources
                              (rawtypes measured clean at 9ec6c736f in specs/00018;
                              deprecation and fallthrough measured 0 reactor-wide,
-                             main sources, on 2026-09-26, issue #215). unchecked,
+                             main sources, on 2026-09-26, issue #215, host JDK 21 —
+                             the CI matrix's other JDK, 25, isn't a separate risk here:
+                             <release>${java.version}</release> pins the API surface to
+                             21 regardless of host JDK, and fallthrough is purely
+                             syntactic). unchecked,
                              serial and this-escape stay OFF deliberately: unchecked
                              has 16 residual hits in kml's generated JAXB
                              ObjectFactory classes (binding21/binding22/binding22beta)
