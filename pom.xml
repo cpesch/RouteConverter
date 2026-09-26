@@ -345,6 +345,9 @@
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
                     <version>4.10.4.1</version>
+                    <configuration>
+                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/spotbugs-exclude.xml</excludeFilterFile>
+                    </configuration>
                 </plugin>
                 <!-- The bundled JAXB tooling version here is the xjc version used
                      for codegen (4.1.0 -> xjc 4.0.6); keep jaxb-api.version /
@@ -636,6 +639,7 @@
                     <threshold>Medium</threshold>
                     <effort>Default</effort>
                     <failOnError>false</failOnError>
+                    <excludeFilterFile>${maven.multiModuleProjectDirectory}/spotbugs-exclude.xml</excludeFilterFile>
                 </configuration>
             </plugin>
         </plugins>

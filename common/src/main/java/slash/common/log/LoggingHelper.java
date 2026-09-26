@@ -37,15 +37,16 @@ public class LoggingHelper {
     private static final PrintStream stdout = System.out, stderr = System.err;
     private static final int LOG_SIZE = 5 * 1024 * 1024;
     private static final String ROUTE_CONVERTER_LOG_FILE = "RouteConverter.log";
-    private static LoggingHelper instance;
 
     private LoggingHelper() {
     }
 
+    private static class InstanceHolder {
+        private static final LoggingHelper INSTANCE = new LoggingHelper();
+    }
+
     public static LoggingHelper getInstance() {
-        if (instance == null)
-            instance = new LoggingHelper();
-        return instance;
+        return InstanceHolder.INSTANCE;
     }
 
     private FileHandler createFileHandler() throws IOException {

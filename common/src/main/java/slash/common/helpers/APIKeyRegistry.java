@@ -48,15 +48,15 @@ public class APIKeyRegistry {
     private static final String API_KEY_PREFERENCE = "ApiKey";
     private static final String API_USAGES = "ApiUsages";
 
-    private static APIKeyRegistry instance = new APIKeyRegistry();
-
     private APIKeyRegistry() {
     }
 
-    public static synchronized APIKeyRegistry getInstance() {
-        if (instance == null)
-            instance = new APIKeyRegistry();
-        return instance;
+    private static class InstanceHolder {
+        private static final APIKeyRegistry INSTANCE = new APIKeyRegistry();
+    }
+
+    public static APIKeyRegistry getInstance() {
+        return InstanceHolder.INSTANCE;
     }
 
     // visible for testing
