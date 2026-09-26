@@ -32,6 +32,7 @@ import javax.net.ssl.SSLException;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -80,8 +81,14 @@ public class DownloadExecutor implements Runnable {
             performer.setDownloadExecutor(this);
             performer.run();
         } catch (Exception e) {
-            log.severe(format("Failed to download content from %s: %s %s", download.getUrl(), getLocalizedMessage(e),
-                    isComputerOffline(e) ? "" : printStackTrace(e)));
+            // attach the throwable itself to the log record when it is a genuine
+            // failure, so a Handler (and the crash telemetry) can see it; a known
+            // offline condition is common and transient, so it is logged without one
+            String message = format("Failed to download content from %s: %s", download.getUrl(), getLocalizedMessage(e));
+            if (isComputerOffline(e))
+                log.severe(message);
+            else
+                log.log(Level.SEVERE, message, e);
             downloadFailed();
         }
 

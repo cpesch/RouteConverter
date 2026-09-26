@@ -35,6 +35,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -42,7 +43,6 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.*;
 
@@ -96,7 +96,9 @@ public class DownloadManager {
                 return;
             model.setDownloads(downloads);
         } catch (Exception e) {
-            log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
+            // attach the throwable to the log record (not just its text) so a
+            // Handler -- and the crash telemetry built on one -- can see it
+            log.log(Level.SEVERE, format("Could not load download queue from '%s': %s", queueFile, e), e);
         }
 
         restartDownloadsWithState(Running, Resuming, Downloading, Processing, Queued);
@@ -161,7 +163,7 @@ public class DownloadManager {
         try {
             new QueuePersister().save(queueFile, model.getDownloads());
         } catch (Exception e) {
-            log.severe(format("Could not save %d download queue to '%s': %s, %s", model.getRowCount(), queueFile, e, printStackTrace(e)));
+            log.log(Level.SEVERE, format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e), e);
         }
     }
 

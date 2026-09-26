@@ -26,8 +26,9 @@ import jakarta.xml.bind.JAXBException;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.io.Transfer.formatXMLTime;
 import static slash.common.io.Transfer.parseXMLTime;
 import static slash.navigation.download.queue.QueueUtil.marshal;
@@ -40,6 +41,7 @@ import static slash.navigation.download.queue.QueueUtil.unmarshal;
  */
 
 public class QueuePersister {
+    private static final Logger log = Logger.getLogger(QueuePersister.class.getName());
 
     public List<Download> load(File file) throws IOException {
         if (!file.exists())
@@ -49,6 +51,9 @@ public class QueuePersister {
         try (InputStream inputStream = new FileInputStream(file)) {
             queueType = unmarshal(inputStream);
         } catch (JAXBException e) {
+            // log with the throwable attached (not just its text) before wrapping,
+            // so a Handler installed on this logger sees the original cause
+            log.log(Level.WARNING, "Cannot unmarshall " + file + ": " + e, e);
             throw new IOException("Cannot unmarshall " + file + ": " + e, e);
         }
         return asDownloads(queueType);
@@ -87,7 +92,8 @@ public class QueuePersister {
         try {
             marshal(queueType, new FileOutputStream(file));
         } catch (JAXBException e) {
-            throw new IOException("Cannot marshall " + file + ": " + e + "\n" + printStackTrace(e), e);
+            log.log(Level.WARNING, "Cannot marshall " + file + ": " + e, e);
+            throw new IOException("Cannot marshall " + file + ": " + e, e);
         }
     }
 
