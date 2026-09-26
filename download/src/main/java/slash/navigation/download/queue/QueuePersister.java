@@ -52,7 +52,9 @@ public class QueuePersister {
             queueType = unmarshal(inputStream);
         } catch (JAXBException e) {
             // log with the throwable attached (not just its text) before wrapping,
-            // so a Handler installed on this logger sees the original cause
+            // so a Handler installed on this logger sees the original cause;
+            // this is the only place that logs the throwable for this failure --
+            // the caller (DownloadManager) logs a short summary without it
             log.log(Level.WARNING, "Cannot unmarshall " + file + ": " + e, e);
             throw new IOException("Cannot unmarshall " + file + ": " + e, e);
         }
@@ -92,6 +94,10 @@ public class QueuePersister {
         try {
             marshal(queueType, new FileOutputStream(file));
         } catch (JAXBException e) {
+            // log with the throwable attached (not just its text) before wrapping,
+            // so a Handler installed on this logger sees the original cause;
+            // this is the only place that logs the throwable for this failure --
+            // the caller (DownloadManager) logs a short summary without it
             log.log(Level.WARNING, "Cannot marshall " + file + ": " + e, e);
             throw new IOException("Cannot marshall " + file + ": " + e, e);
         }

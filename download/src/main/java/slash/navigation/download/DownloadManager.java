@@ -35,7 +35,6 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.concurrent.PriorityBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -96,9 +95,9 @@ public class DownloadManager {
                 return;
             model.setDownloads(downloads);
         } catch (Exception e) {
-            // attach the throwable to the log record (not just its text) so a
-            // Handler -- and the crash telemetry built on one -- can see it
-            log.log(Level.SEVERE, format("Could not load download queue from '%s': %s", queueFile, e), e);
+            // don't re-attach the throwable here: QueuePersister already logged it once
+            // with the throwable attached, so this would double-count the failure
+            log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
         }
 
         restartDownloadsWithState(Running, Resuming, Downloading, Processing, Queued);
@@ -163,7 +162,9 @@ public class DownloadManager {
         try {
             new QueuePersister().save(queueFile, model.getDownloads());
         } catch (Exception e) {
-            log.log(Level.SEVERE, format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e), e);
+            // don't re-attach the throwable here: QueuePersister already logged it once
+            // with the throwable attached, so this would double-count the failure
+            log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e));
         }
     }
 

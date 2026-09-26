@@ -86,7 +86,9 @@ public class DownloadExecutor implements Runnable {
             // offline condition is common and transient, so it is logged without one
             String message = format("Failed to download content from %s: %s", download.getUrl(), getLocalizedMessage(e));
             if (isComputerOffline(e))
-                log.severe(message);
+                // known/transient condition, not a crash-worthy failure -- avoid spamming
+                // crash telemetry with offline traces at SEVERE
+                log.warning(message);
             else
                 log.log(Level.SEVERE, message, e);
             downloadFailed();
