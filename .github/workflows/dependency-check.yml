@@ -7,8 +7,11 @@ name: Dependency Check
 # the weekly run going red on the default branch IS the signal. Do not wire
 # ntfy or any other paging here.
 #
-# Reproduce locally: ./mvnw --batch-mode dependency-check:check -DfailBuildOnCVSS=7
+# Reproduce locally: ./mvnw --batch-mode dependency-check:aggregate -DfailBuildOnCVSS=7
 # (honours the same config/dependency-check-suppressions.xml as this workflow).
+# Use :aggregate, not :check - this is a ~30-module reactor, and :check run at
+# the root without -N/-pl scans each module's own dependency subset rather than
+# the single cross-module scan :aggregate performs, so the finding counts differ.
 
 on:
   schedule:
@@ -24,6 +27,10 @@ permissions:
 jobs:
   dependency-check:
     runs-on: ubuntu-latest
+    # Job is already expected to take 20+ minutes (NVD feed download); this is
+    # a conservative cap against a stalled/rate-limited download otherwise
+    # running for GitHub's default 6-hour job cap before failing.
+    timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
 

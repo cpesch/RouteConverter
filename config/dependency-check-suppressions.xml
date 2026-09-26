@@ -5,7 +5,10 @@
   Wired via <suppressionFile> in the root pom.xml's dependency-check-maven
   configuration, so both the weekly .github/workflows/dependency-check.yml run
   (`dependency-check:aggregate -DfailBuildOnCVSS=7`) and a local
-  `mvn dependency-check:check -DfailBuildOnCVSS=7` apply the same suppressions.
+  `mvn dependency-check:aggregate -DfailBuildOnCVSS=7` apply the same suppressions
+  (use :aggregate, not :check - :check at the root of this ~30-module reactor
+  scans each module's own dependency subset rather than the single cross-module
+  scan :aggregate performs, so the two would not report the same finding count).
 
   This file starts empty on purpose: don't add an entry to make a red run
   green. Every <suppress> below must carry, in its <notes>, a REASON the
