@@ -573,6 +573,24 @@
                 </executions>
             </plugin>
 
+            <!-- OWASP dependency-check (issue #212): no execution bound here, so
+                 `mvn verify` is unaffected and it never runs per-PR. This gives the
+                 plugin's <configuration> (in particular suppressionFile) to a
+                 direct `mvn dependency-check:aggregate -DfailBuildOnCVSS=7` the same
+                 way the weekly .github/workflows/dependency-check.yml invokes it,
+                 so both honour the same suppressions and scan the same
+                 cross-module dependency set (use :aggregate here too, not :check -
+                 :check at the reactor root scans each module's own dependency
+                 subset instead). -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <suppressionFile>${maven.multiModuleProjectDirectory}/config/dependency-check-suppressions.xml</suppressionFile>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -681,6 +699,7 @@
                 <artifactId>dependency-check-maven</artifactId>
                 <configuration>
                     <failOnError>false</failOnError>
+                    <suppressionFile>${maven.multiModuleProjectDirectory}/config/dependency-check-suppressions.xml</suppressionFile>
                 </configuration>
                 <reportSets>
                     <reportSet>
