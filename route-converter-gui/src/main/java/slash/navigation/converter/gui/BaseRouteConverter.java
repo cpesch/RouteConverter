@@ -48,6 +48,7 @@ import slash.navigation.gui.Application;
 import slash.navigation.gui.ApplicationContext;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.*;
+import slash.navigation.gui.helpers.BackgroundExecutor;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.mapview.MapView;
@@ -347,14 +348,16 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         createFrame(getTitle(), "/slash/navigation/converter/gui/" + getProduct() + ".png", contentPane, null,
                 new FrameMenu().createMenuBar());
         new ApplicationMenu().addApplicationMenuItems();
-        new Thread(() -> invokeLater(() -> {
+        // was new Thread(() -> invokeLater(...)).start(): a thread whose only job is to hop
+        // straight back onto the EDT collapses to a plain invokeLater, no thread at all
+        invokeLater(() -> {
             openFrame(contentPane);
             log.info(format("Frame shown %d ms after startup", millisSinceStartup()));
-        }), "FrameOpener").start();
+        });
     }
 
     private void openMapAndProfileView() {
-        new Thread(() -> {
+        BackgroundExecutor.submit("DownloadTileServerList", () -> {
             try {
                 File mapServers = new File(getApplicationDirectory("tileservers"), "mapservers.xml");
                 getDownloadManager().executeDownload("RouteConverter Map Servers", getApiUrl() + V1 + "mapservers/" + FORMAT_XML, Copy,
@@ -368,7 +371,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
             } catch (Exception e) {
                 log.warning("Could not download tile servers: " + e);
             }
-        }, "DownloadTileServerList").start();
+        });
 
         invokeLater(() -> {
             setMapView(getMapViewPreference());
@@ -480,6 +483,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         getDataSourceManager().dispose();
         getDownloadManager().saveQueue();
         getTileServerMapManager().dispose();
+        BackgroundExecutor.shutdownNow();
         super.shutdown();
 
         log.info(
@@ -1414,7 +1418,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
                     getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
         }
 
-        new Thread(() -> {
+        BackgroundExecutor.submit("DataSourceUpdater", () -> {
             scanLocalMapsAndThemes();
             scanRemoteMapsAndThemes();
             installBackgroundMap();
@@ -1434,7 +1438,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
             scanRemoteMapsAndThemes();
             scanForFilesMissingInQueue();
             scanForOutdatedFilesInQueue();
-        }, "DataSourceUpdater").start();
+        });
     }
 
     protected abstract void initializeElevationServices();
