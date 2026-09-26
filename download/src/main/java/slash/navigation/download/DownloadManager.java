@@ -42,7 +42,6 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.navigation.download.Action.*;
 import static slash.navigation.download.State.*;
 
@@ -96,6 +95,8 @@ public class DownloadManager {
                 return;
             model.setDownloads(downloads);
         } catch (Exception e) {
+            // don't re-attach the throwable here: QueuePersister already logged it once
+            // with the throwable attached, so this would double-count the failure
             log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
         }
 
@@ -161,7 +162,9 @@ public class DownloadManager {
         try {
             new QueuePersister().save(queueFile, model.getDownloads());
         } catch (Exception e) {
-            log.severe(format("Could not save %d download queue to '%s': %s, %s", model.getRowCount(), queueFile, e, printStackTrace(e)));
+            // don't re-attach the throwable here: QueuePersister already logged it once
+            // with the throwable attached, so this would double-count the failure
+            log.severe(format("Could not save %d download queue to '%s': %s", model.getRowCount(), queueFile, e));
         }
     }
 
