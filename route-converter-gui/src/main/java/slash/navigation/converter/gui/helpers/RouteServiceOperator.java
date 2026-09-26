@@ -23,12 +23,15 @@ package slash.navigation.converter.gui.helpers;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.dialogs.LoginDialog;
 import slash.navigation.feedback.domain.RouteFeedback;
-import slash.navigation.gui.helpers.BackgroundExecutor;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.swing.*;
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
@@ -49,6 +52,26 @@ import static slash.navigation.gui.helpers.UIHelper.stopWaitCursor;
 
 public class RouteServiceOperator {
     private static final Logger log = Logger.getLogger(RouteServiceOperator.class.getName());
+
+    /**
+     * A dedicated, named, unbounded pool - not {@link slash.navigation.gui.helpers.BackgroundExecutor}'s
+     * shared, bounded pool. {@link #executeOperation(Operation)} can block indefinitely inside
+     * {@code invokeAndWait} waiting on the modal {@link LoginDialog} when an operation hits an
+     * {@link UnAuthorizedException}; on the shared pool, enough concurrent logins would occupy
+     * every one of its few threads and starve unrelated fire-and-forget submitters (e.g.
+     * UpdateChecker, DataSourceUpdater, CrashReportSender). Threads are daemon threads, so an
+     * operation left blocked on a never-answered login dialog never keeps the JVM alive.
+     */
+    private static final ExecutorService EXECUTOR = Executors.newCachedThreadPool(new ThreadFactory() {
+        private final AtomicInteger counter = new AtomicInteger(0);
+
+        public Thread newThread(Runnable runnable) {
+            Thread thread = new Thread(runnable, "rc-route-service-operator-" + counter.getAndIncrement());
+            thread.setDaemon(true);
+            return thread;
+        }
+    });
+
     private final RouteFeedback routeFeedback;
     private final JFrame frame;
 
@@ -83,7 +106,7 @@ public class RouteServiceOperator {
     }
 
     public void executeOperation(final Operation operation) {
-        BackgroundExecutor.submit(operation.getName(), () -> {
+        EXECUTOR.submit(() -> {
             invokeLater(() -> startWaitCursor(frame.getRootPane()));
 
             while (true) {

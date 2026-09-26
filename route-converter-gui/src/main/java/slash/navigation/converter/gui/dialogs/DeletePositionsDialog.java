@@ -269,7 +269,13 @@ public class DeletePositionsDialog extends SimpleDialog {
                     labelSelection.setText(
                             MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-significance-result"),
                                     indices.length, threshold));
-                } catch (CancellationException | InterruptedException e) {
+                } catch (CancellationException e) {
+                    labelSelection.setText("");
+                    // InterruptedException from get() would mean the EDT thread itself was
+                    // interrupted while waiting, not that doInBackground() was cancelled -
+                    // cancellation surfaces as CancellationException above. Swing never
+                    // interrupts the EDT, so this is defensive rather than expected here.
+                } catch (InterruptedException e) {
                     labelSelection.setText("");
                 } catch (ExecutionException e) {
                     labelSelection.setText("");

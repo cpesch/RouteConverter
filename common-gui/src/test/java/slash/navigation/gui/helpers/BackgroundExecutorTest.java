@@ -24,14 +24,14 @@ import org.junit.Test;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Exercises {@link BackgroundExecutor} against an isolated pool (via the package-private
@@ -108,17 +108,40 @@ public class BackgroundExecutorTest {
     }
 
     @Test
-    public void shutdownNowStopsAcceptingWork() {
+    public void shutdownNowStopsAcceptingWorkWithoutThrowing() {
         BackgroundExecutor executor = newExecutor();
         executor.shutdownExecutorNow();
 
         AtomicBoolean ranAfterShutdown = new AtomicBoolean(false);
-        try {
-            executor.submitTask("late-task", () -> ranAfterShutdown.set(true));
-            fail("expected submission after shutdownNow() to be rejected");
-        } catch (RejectedExecutionException expected) {
-            // expected: the pool no longer accepts new work
-        }
+        // a rejected submission after shutdownNow() must be caught and logged, not thrown: a
+        // listener still firing during BaseRouteConverter.shutdown()'s teardown tail must not
+        // see an uncaught RuntimeException from a routine, expected-to-be-ignored submission
+        executor.submitTask("late-task", () -> ranAfterShutdown.set(true));
         assertTrue("submission was rejected, so the task must not have run", !ranAfterShutdown.get());
+    }
+
+    @Test
+    public void namedThreadFactoryNamesThreadsWithIncrementingCounterAndDaemonFlag() throws InterruptedException {
+        ThreadFactory factory = BackgroundExecutor.newNamedThreadFactory();
+
+        AtomicReference<String> firstName = new AtomicReference<>();
+        AtomicReference<String> secondName = new AtomicReference<>();
+        AtomicBoolean firstDaemon = new AtomicBoolean();
+        AtomicBoolean secondDaemon = new AtomicBoolean();
+
+        Thread first = factory.newThread(() -> {
+        });
+        firstName.set(first.getName());
+        firstDaemon.set(first.isDaemon());
+
+        Thread second = factory.newThread(() -> {
+        });
+        secondName.set(second.getName());
+        secondDaemon.set(second.isDaemon());
+
+        assertTrue("thread name must carry the rc-worker- prefix", firstName.get().startsWith("rc-worker-"));
+        assertNotEquals("successive threads must get distinct, incrementing names", firstName.get(), secondName.get());
+        assertTrue("pool threads must be daemon threads so they never keep the JVM alive", firstDaemon.get());
+        assertTrue("pool threads must be daemon threads so they never keep the JVM alive", secondDaemon.get());
     }
 }

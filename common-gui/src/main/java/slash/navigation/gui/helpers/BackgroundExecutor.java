@@ -21,6 +21,7 @@ package slash.navigation.gui.helpers;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Level;
@@ -82,11 +83,26 @@ public class BackgroundExecutor {
     }
 
     void submitTask(String taskName, Runnable task) {
-        executor.submit(() -> runNamed(taskName, task));
+        try {
+            executor.submit(() -> runNamed(taskName, task));
+        } catch (RejectedExecutionException e) {
+            // the pool has already been shut down (e.g. BaseRouteConverter.shutdown() is
+            // tearing down while a listener still fires) - log and drop the task rather than
+            // letting an uncaught RuntimeException escape to whichever thread submitted it
+            log.log(Level.WARNING, "Task " + taskName + " rejected, executor is shutting down: " + e, e);
+        }
     }
 
     void shutdownExecutorNow() {
         executor.shutdownNow();
+    }
+
+    /**
+     * Package-private: lets tests exercise the real thread factory (prefix, incrementing
+     * counter, daemon flag) instead of an inline stand-in.
+     */
+    static ThreadFactory newNamedThreadFactory() {
+        return new NamedThreadFactory();
     }
 
     private static void runNamed(String taskName, Runnable task) {
