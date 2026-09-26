@@ -58,6 +58,9 @@ public class RemoteMapTableCellRenderer extends AlternatingColorTableCellRendere
                 label.setToolTipText(map.getUrl());
                 label.setHorizontalAlignment(RIGHT);
             }
+            default -> {
+                // other columns keep the default rendering
+            }
         }
         return label;
     }

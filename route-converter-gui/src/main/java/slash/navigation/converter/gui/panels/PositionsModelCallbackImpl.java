@@ -133,6 +133,9 @@ public class PositionsModelCallbackImpl implements PositionsModelCallback {
             case LATITUDE_COLUMN_INDEX -> position.setLatitude(parseLatitude(value, string));
             case ELEVATION_COLUMN_INDEX -> position.setElevation(parseElevation(value, string));
             case SPEED_COLUMN_INDEX -> position.setSpeed(parseSpeed(value, string));
+            default -> {
+                // the remaining columns are derived and not editable
+            }
         }
     }
 

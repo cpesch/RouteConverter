@@ -57,10 +57,9 @@ class ColumnTypeToRowIndexMapping {
     }
 
     public Integer getIndex(ColumnType type) {
-        for(Integer index : mapping.keySet()) {
-           ColumnType found = mapping.get(index);
-           if(type.equals(found))
-               return index;
+        for(Map.Entry<Integer, ColumnType> entry : mapping.entrySet()) {
+           if(type.equals(entry.getValue()))
+               return entry.getKey();
         }
         return null;
     }

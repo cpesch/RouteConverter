@@ -62,7 +62,8 @@ public class RouteRenderer {
     private static final Logger log = Logger.getLogger(RouteRenderer.class.getName());
 
     private final Object notificationMutex = new Object();
-    private boolean drawingRoute, drawingStraightLine;
+    private volatile boolean drawingRoute;
+    private boolean drawingStraightLine;
 
     private final MapsforgeMapView mapView;
     private final MapsforgeMapViewCallback mapViewCallback;

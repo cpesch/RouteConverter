@@ -48,6 +48,7 @@ import slash.navigation.gui.Application;
 import slash.navigation.gui.ApplicationContext;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.gui.actions.*;
+import slash.navigation.gui.helpers.BackgroundExecutor;
 import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.mapview.MapView;
@@ -218,9 +219,11 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     private JSplitPane mapSplitPane, profileSplitPane;
     private JTabbedPane tabbedPane;
     private JPanel convertPanel, pointOfInterestPanel, photoPanel, browsePanel, mapPanel, profilePanel;
-    // private monitor instead of synchronized methods: a caller holding this component's monitor cannot deadlock it
-    private final Object lazyInitializationLock = new Object();
-    private volatile MapView mapView;
+    // owns the lazily-initialised map view, audio player and position augmenter,
+    // each behind an initialization-on-demand accessor over a private lock (issue #214)
+    private final ServiceRegistry services = new ServiceRegistry(
+            () -> getConvertPanel().getPositionsView(), () -> getConvertPanel().getPositionsModel(), this::getFrame,
+            elevationServiceFacade, geocodingServiceFacade);
     private ProfileView profileView;
     private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
             SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
@@ -341,28 +344,20 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         APIKeyRegistry.getInstance().logUsage();
     }
 
-    private MapView createMapView(String className) {
-        try {
-            Class<?> aClass = Class.forName(className);
-            return (MapView) aClass.getDeclaredConstructor().newInstance();
-        } catch (Throwable t) {
-            log.info("Cannot create " + className + ": " + t);
-            return null;
-        }
-    }
-
     private void openFrame() {
         createFrame(getTitle(), "/slash/navigation/converter/gui/" + getProduct() + ".png", contentPane, null,
                 new FrameMenu().createMenuBar());
         new ApplicationMenu().addApplicationMenuItems();
-        new Thread(() -> invokeLater(() -> {
+        // was new Thread(() -> invokeLater(...)).start(): a thread whose only job is to hop
+        // straight back onto the EDT collapses to a plain invokeLater, no thread at all
+        invokeLater(() -> {
             openFrame(contentPane);
             log.info(format("Frame shown %d ms after startup", millisSinceStartup()));
-        }), "FrameOpener").start();
+        });
     }
 
     private void openMapAndProfileView() {
-        new Thread(() -> {
+        BackgroundExecutor.submit("DownloadTileServerList", () -> {
             try {
                 File mapServers = new File(getApplicationDirectory("tileservers"), "mapservers.xml");
                 getDownloadManager().executeDownload("RouteConverter Map Servers", getApiUrl() + V1 + "mapservers/" + FORMAT_XML, Copy,
@@ -376,7 +371,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
             } catch (Exception e) {
                 log.warning("Could not download tile servers: " + e);
             }
-        }, "DownloadTileServerList").start();
+        });
 
         invokeLater(() -> {
             setMapView(getMapViewPreference());
@@ -395,40 +390,39 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     public void setMapView(MapViewImplementation mapViewImplementation) {
-        synchronized (lazyInitializationLock) {
-            log.info("Using map view: " + mapViewImplementation);
-            setMapViewPreference(mapViewImplementation);
+        log.info("Using map view: " + mapViewImplementation);
+        setMapViewPreference(mapViewImplementation);
 
-            if (isMapViewAvailable()) {
+        services.setMapView(mapViewImplementation.getClassName(), (previous, created) -> {
+            if (previous != null) {
                 mapPanel.removeAll();
-                mapView.dispose();
+                previous.dispose();
             }
 
-            mapView = createMapView(mapViewImplementation.getClassName());
-            if (mapView == null) {
+            if (created == null) {
                 mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
                         printStackTrace(new UnsupportedOperationException()).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
 
             } else {
-                getMapView().initialize(getConvertPanel().getPositionsModel(), getConvertPanel().getFormatAndRoutesModel(),
+                created.initialize(getConvertPanel().getPositionsModel(), getConvertPanel().getFormatAndRoutesModel(),
                         mapPreferencesModel, getMapViewCallback());
 
                 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-                Throwable cause = getMapView().getInitializationCause();
-                if (getMapView().getComponent() == null || cause != null) {
+                Throwable cause = created.getInitializationCause();
+                if (created.getComponent() == null || cause != null) {
                     mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
                             printStackTrace(cause).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
                 } else {
-                    mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
+                    mapPanel.add(created.getComponent(), MAP_PANEL_CONSTRAINTS);
                 }
             }
             mapPanel.setTransferHandler(new PanelDropHandler());
             mapPanel.revalidate();
-        }
+        });
     }
 
     public MapView getMapView() {
-        return mapView;
+        return services.getMapView();
     }
 
     private void openProfileView() {
@@ -482,21 +476,14 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     }
 
     protected void shutdown() {
-        if (isMapViewAvailable()) {
-            getMapView().dispose();
-        }
-        if (positionAugmenter != null) {
-            positionAugmenter.dispose();
-        }
-        if (audioPlayer != null) {
-            audioPlayer.dispose();
-        }
+        services.dispose();
         if (geoTagger != null) {
             geoTagger.dispose();
         }
         getDataSourceManager().dispose();
         getDownloadManager().saveQueue();
         getTileServerMapManager().dispose();
+        BackgroundExecutor.shutdownNow();
         super.shutdown();
 
         log.info(
@@ -847,37 +834,12 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         return getDataSourceManager().getDownloadManager();
     }
 
-    private volatile PositionAugmenter positionAugmenter;
-
     public PositionAugmenter getPositionAugmenter() {
-        PositionAugmenter result = positionAugmenter;
-        if (result == null) {
-            synchronized (lazyInitializationLock) {
-                result = positionAugmenter;
-                if (result == null) {
-                    result = new PositionAugmenter(getConvertPanel().getPositionsView(), getConvertPanel().getPositionsModel(),
-                            getFrame(), elevationServiceFacade, geocodingServiceFacade);
-                    positionAugmenter = result;
-                }
-            }
-        }
-        return result;
+        return services.getPositionAugmenter();
     }
 
-    private volatile AudioPlayer audioPlayer; // for TimeAlbum
-
-    public AudioPlayer getAudioPlayer() {
-        AudioPlayer result = audioPlayer;
-        if (result == null) {
-            synchronized (lazyInitializationLock) {
-                result = audioPlayer;
-                if (result == null) {
-                    result = new AudioPlayer(getFrame());
-                    audioPlayer = result;
-                }
-            }
-        }
-        return result;
+    public AudioPlayer getAudioPlayer() { // for TimeAlbum
+        return services.getAudioPlayer();
     }
 
     private GeoTagger geoTagger; // for TimeAlbum
@@ -920,7 +882,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     // map view related helpers
 
     public boolean isMapViewAvailable() {
-        return getMapView() != null;
+        return services.isMapViewAvailable();
     }
 
     public NavigationPosition getMapCenter() {
@@ -1456,7 +1418,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
                     getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
         }
 
-        new Thread(() -> {
+        BackgroundExecutor.submit("DataSourceUpdater", () -> {
             scanLocalMapsAndThemes();
             scanRemoteMapsAndThemes();
             installBackgroundMap();
@@ -1476,7 +1438,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
             scanRemoteMapsAndThemes();
             scanForFilesMissingInQueue();
             scanForOutdatedFilesInQueue();
-        }, "DataSourceUpdater").start();
+        });
     }
 
     protected abstract void initializeElevationServices();

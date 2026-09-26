@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OWASP dependency-check suppressions (issue #212).
+
+  Wired via <suppressionFile> in the root pom.xml's dependency-check-maven
+  configuration, so both the weekly .github/workflows/dependency-check.yml run
+  (`dependency-check:aggregate -DfailBuildOnCVSS=7`) and a local
+  `mvn dependency-check:aggregate -DfailBuildOnCVSS=7` apply the same suppressions
+  (use :aggregate, not :check - :check at the root of this ~30-module reactor
+  scans each module's own dependency subset rather than the single cross-module
+  scan :aggregate performs, so the two would not report the same finding count).
+
+  This file starts empty on purpose: don't add an entry to make a red run
+  green. Every <suppress> below must carry, in its <notes>, a REASON the
+  finding is a false positive or an accepted risk, and a RE-CHECK DATE by
+  which someone re-evaluates whether the suppression still holds (a
+  suppression with no expiry quietly hides a CVE forever). See
+  https://jeremylong.github.io/DependencyCheck/general/suppression.html for
+  the <suppress> element syntax (cve / vulnerabilityName / packageUrl /
+  cpe / filePath matchers).
+
+  Example (do not uncomment without a real reason and date):
+
+  <suppress>
+     <notes><![CDATA[
+        REASON: false positive - CPE match to unrelated "foo" project, not
+        our "foo-bar" dependency.
+        RE-CHECK: 2027-01-01
+     ]]></notes>
+     <packageUrl regex="true">^pkg:maven/com\.example/foo-bar@.*$</packageUrl>
+     <cve>CVE-0000-00000</cve>
+  </suppress>
+-->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+</suppressions>

@@ -77,7 +77,13 @@
         <jre.version>21.0.12</jre.version>
 
         <java.version>21</java.version>
-        <maven.version>[3.6.3,)</maven.version>
+        <!-- Floor tracks .mvn/wrapper/maven-wrapper.properties (the wrapper
+             is what CI and the release ritual use) exactly: spotbugs-maven-
+             plugin 4.10.x requires Maven >= 3.8.9, and the wrapper ships
+             3.9.16, so enforcing anything lower lets the enforcer pass on a
+             Maven that then fails later inside SpotBugs with an opaque
+             plugin-resolution error instead of the enforcer's own message. -->
+        <maven.version>[3.9.16,)</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -203,13 +209,27 @@
                         <release>${java.version}</release>
                         <encoding>UTF-8</encoding>
                         <!-- spec 00017 Scope B: javac warnings fail the build, so a
-                             warning-free compile cannot silently regress. rawtypes has
-                             graduated out of the -Xlint bulk and is enforced below for
-                             main sources; serial/this-escape stay OFF deliberately —
-                             see the tracking issue and specs/00018. -->
+                             warning-free compile cannot silently regress. rawtypes,
+                             deprecation and fallthrough have graduated out of the
+                             -Xlint bulk and are enforced below for main sources
+                             (rawtypes measured clean at 9ec6c736f in specs/00018;
+                             deprecation and fallthrough measured 0 reactor-wide,
+                             main sources, on 2026-09-26, issue #215, host JDK 21 —
+                             the CI matrix's other JDK, 25, isn't a separate risk here:
+                             <release>${java.version}</release> pins the API surface to
+                             21 regardless of host JDK, and fallthrough is purely
+                             syntactic). unchecked,
+                             serial and this-escape stay OFF deliberately: unchecked
+                             has 16 residual hits in kml's generated JAXB
+                             ObjectFactory classes (binding21/binding22/binding22beta)
+                             needing their own suppress-vs-regenerate decision (see
+                             specs/00018's 2026-08-11 Decision, item 3, and
+                             issue #222, filed for it); serial/this-escape are
+                             still the unmeasured -Xlint bulk — see the tracking
+                             issue and specs/00018. -->
                         <failOnWarning>true</failOnWarning>
                         <compilerArgs>
-                            <arg>-Xlint:rawtypes</arg>
+                            <arg>-Xlint:rawtypes,deprecation,fallthrough</arg>
                             <!-- javac silently caps warning output at 100 by default;
                                  raise it so a future CI failure log shows the true count
                                  instead of truncating (specs/00018 phase 1/2 both hit
@@ -245,6 +265,12 @@
                     <version>3.2.0</version>
                 </plugin>
                 <plugin>
+                    <!-- Version/config pinned here; the execution is activated
+                         for every module by the plugin entry (no version/config,
+                         just <executions>) in the real <plugins> below — same
+                         split as build-helper-maven-plugin and spotbugs-maven-plugin
+                         (issue #209: this plugin was pinned here but never actually
+                         bound anywhere, so it silently never ran). -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>3.6.3</version>
@@ -346,7 +372,10 @@
                     <artifactId>spotbugs-maven-plugin</artifactId>
                     <version>4.10.4.1</version>
                     <configuration>
-                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/spotbugs-exclude.xml</excludeFilterFile>
+                        <threshold>Medium</threshold>
+                        <effort>Max</effort>
+                        <failOnError>true</failOnError>
+                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/config/spotbugs-exclude.xml</excludeFilterFile>
                     </configuration>
                 </plugin>
                 <!-- The bundled JAXB tooling version here is the xjc version used
@@ -397,6 +426,25 @@
         </pluginManagement>
 
         <plugins>
+            <!-- ENFORCER - fails fast on an old Maven/Java, before anything else
+                 runs (issue #209). Version/config pinned in pluginManagement
+                 above; only <executions> needed here to activate it for every
+                 module (phase repeated explicitly, matching the spotbugs-check
+                 entry below, even though it's already enforce's default phase). -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Spotless (opt-in: no execution binding, so it never runs on a
                  normal build). Run `mvn spotless:check` to verify or
                  `mvn spotless:apply` to fix. ratchetFrom limits formatting to
@@ -509,10 +557,38 @@
                 </executions>
             </plugin>
 
-            <!-- SPOTBUGS - code quality -->
+            <!-- SPOTBUGS - code quality gate: fails verify on any finding that
+                 survives config/spotbugs-exclude.xml; skip with -Dspotbugs.skip -->
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>spotbugs-check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- OWASP dependency-check (issue #212): no execution bound here, so
+                 `mvn verify` is unaffected and it never runs per-PR. This gives the
+                 plugin's <configuration> (in particular suppressionFile) to a
+                 direct `mvn dependency-check:aggregate -DfailBuildOnCVSS=7` the same
+                 way the weekly .github/workflows/dependency-check.yml invokes it,
+                 so both honour the same suppressions and scan the same
+                 cross-module dependency set (use :aggregate here too, not :check -
+                 :check at the reactor root scans each module's own dependency
+                 subset instead). -->
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <configuration>
+                    <failOnError>false</failOnError>
+                    <suppressionFile>${maven.multiModuleProjectDirectory}/config/dependency-check-suppressions.xml</suppressionFile>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -623,6 +699,7 @@
                 <artifactId>dependency-check-maven</artifactId>
                 <configuration>
                     <failOnError>false</failOnError>
+                    <suppressionFile>${maven.multiModuleProjectDirectory}/config/dependency-check-suppressions.xml</suppressionFile>
                 </configuration>
                 <reportSets>
                     <reportSet>
@@ -637,9 +714,9 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <configuration>
                     <threshold>Medium</threshold>
-                    <effort>Default</effort>
+                    <effort>Max</effort>
                     <failOnError>false</failOnError>
-                    <excludeFilterFile>${maven.multiModuleProjectDirectory}/spotbugs-exclude.xml</excludeFilterFile>
+                    <excludeFilterFile>${maven.multiModuleProjectDirectory}/config/spotbugs-exclude.xml</excludeFilterFile>
                 </configuration>
             </plugin>
         </plugins>

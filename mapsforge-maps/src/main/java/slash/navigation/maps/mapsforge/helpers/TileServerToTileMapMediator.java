@@ -53,6 +53,7 @@ public class TileServerToTileMapMediator {
                 case INSERT -> handleAdd(e.getFirstRow(), e.getLastRow());
                 case DELETE -> handleRemove(e.getFirstRow(), e.getLastRow());
                 case UPDATE -> handleUpdate(e.getFirstRow(), e.getLastRow());
+                default -> throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
             }
         };
         sourceModel.addTableModelListener(listener);

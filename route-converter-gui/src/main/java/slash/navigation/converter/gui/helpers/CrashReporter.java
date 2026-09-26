@@ -26,6 +26,7 @@ import slash.common.system.Version;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.feedback.domain.CrashReportSender;
 import slash.navigation.gui.CrashHandler;
+import slash.navigation.gui.helpers.BackgroundExecutor;
 
 import java.io.File;
 import java.io.IOException;
@@ -114,9 +115,7 @@ public class CrashReporter implements CrashHandler {
      * throws, never blocks startup or shutdown.
      */
     void flushSpooledReportsAsync() {
-        Thread thread = new Thread(this::flushSpooledReports, "CrashReportSender");
-        thread.setDaemon(true);
-        thread.start();
+        BackgroundExecutor.submit("CrashReportSender", this::flushSpooledReports);
     }
 
     void flushSpooledReports() {

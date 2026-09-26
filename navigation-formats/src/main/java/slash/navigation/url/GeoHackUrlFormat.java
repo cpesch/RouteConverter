@@ -84,7 +84,9 @@ public class GeoHackUrlFormat extends BaseUrlParsingFormat {
         if(degrees == null || o == null)
             return null;
         boolean southOrWest = o.equals(South) || o.equals(West);
-        return southOrWest ? -degrees : degrees;
+        if (southOrWest)
+            return -degrees;
+        return degrees;
     }
 
     private String parseDescription(String description) {

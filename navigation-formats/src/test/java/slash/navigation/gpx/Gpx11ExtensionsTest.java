@@ -1190,4 +1190,71 @@ public class Gpx11ExtensionsTest {
         assertDoubleEquals(36.0, position.getSpeed());
         assertDoubleEquals(10.0, position.getTemperature());
     }
+
+    // Number of <trkseg> children of the first <trk> in the written document.
+    private int writtenTrkSegCount(String xml) throws Exception {
+        Element gpx = parse(xml);
+        NodeList trks = gpx.getElementsByTagNameNS(GPX_11_NAMESPACE_URI, "trk");
+        assertTrue("expected at least one <trk>", trks.getLength() > 0);
+        Element trk = (Element) trks.item(0);
+        int count = 0;
+        for (Node child = trk.getFirstChild(); child != null; child = child.getNextSibling())
+            if (child instanceof Element element && "trkseg".equals(element.getLocalName()))
+                count++;
+        return count;
+    }
+
+    @Test
+    public void testMultipleTrkSegsSurviveRoundtrip() throws Exception {
+        // issue #156: a <trk> with several <trkseg> elements (e.g. gaps where the GPS was off)
+        // must not be flattened into a single <trkseg> on read/write
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"OsmAnd\">" +
+                "<trk><trkseg>" +
+                "<trkpt lat=\"1.0\" lon=\"1.0\"><time>2020-08-03T07:47:16Z</time></trkpt>" +
+                "<trkpt lat=\"1.1\" lon=\"1.1\"><time>2020-08-03T08:04:03Z</time></trkpt>" +
+                "</trkseg><trkseg>" +
+                "<trkpt lat=\"2.0\" lon=\"2.0\"><time>2020-08-03T08:23:06Z</time></trkpt>" +
+                "<trkpt lat=\"2.1\" lon=\"2.1\"><time>2020-08-03T08:35:55Z</time></trkpt>" +
+                "</trkseg><trkseg>" +
+                "<trkpt lat=\"3.0\" lon=\"3.0\"><time>2020-08-03T08:36:17Z</time></trkpt>" +
+                "</trkseg></trk></gpx>";
+
+        List<GpxRoute> routes = readGpx(source);
+        assertEquals("all positions of all segments end up in one route", 1, routes.size());
+        GpxRoute route = routes.get(0);
+        assertEquals(5, route.getPositionCount());
+
+        // the first position of segment 2 and segment 3 record the boundary, the rest doesn't
+        assertFalse(route.getPosition(0).isStartsNewSegment());
+        assertFalse(route.getPosition(1).isStartsNewSegment());
+        assertTrue(route.getPosition(2).isStartsNewSegment());
+        assertFalse(route.getPosition(3).isStartsNewSegment());
+        assertTrue(route.getPosition(4).isStartsNewSegment());
+
+        String after = writeGpx(routes);
+        assertEquals("the three original <trkseg> boundaries must survive the write", 3, writtenTrkSegCount(after));
+
+        // and again after a second roundtrip
+        List<GpxRoute> routes2 = readGpx(after);
+        assertEquals(5, routes2.get(0).getPositionCount());
+        String after2 = writeGpx(routes2);
+        assertEquals(3, writtenTrkSegCount(after2));
+    }
+
+    @Test
+    public void testSingleTrkSegStillWritesOneSegment() throws Exception {
+        String source =
+                "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                "<gpx xmlns=\"http://www.topografix.com/GPX/1/1\" version=\"1.1\" creator=\"single-segment\">" +
+                "<trk><trkseg>" +
+                "<trkpt lat=\"1.0\" lon=\"1.0\"/><trkpt lat=\"1.1\" lon=\"1.1\"/>" +
+                "</trkseg></trk></gpx>";
+        List<GpxRoute> routes = readGpx(source);
+        assertFalse(routes.get(0).getPosition(1).isStartsNewSegment());
+
+        String after = writeGpx(routes);
+        assertEquals(1, writtenTrkSegCount(after));
+    }
 }
