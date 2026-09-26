@@ -96,6 +96,7 @@ public class TableModelToComboBoxModelAdapter<E extends Item> implements ComboBo
                             delegate.intervalRemoved(new ListDataEvent(this, INTERVAL_REMOVED, e.getFirstRow(), e.getLastRow()));
                     case UPDATE ->
                             delegate.contentsChanged(new ListDataEvent(this, CONTENTS_CHANGED, e.getFirstRow(), e.getLastRow()));
+                    default -> throw new IllegalArgumentException("Event type " + e.getType() + " is not supported");
                 }
             }
         }

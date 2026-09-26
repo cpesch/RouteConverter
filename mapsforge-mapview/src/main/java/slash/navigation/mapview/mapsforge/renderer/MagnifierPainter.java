@@ -27,6 +27,7 @@ import slash.navigation.common.NavigationPosition;
 import slash.navigation.mapview.mapsforge.MapsforgeMapView;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -48,9 +49,8 @@ public class MagnifierPainter {
 
     public MagnifierPainter(MapViewLayerOperations operations, GraphicFactory graphicFactory) {
         this.operations = operations;
-        try {
-            magnifierIcon = graphicFactory.renderSvg(MapsforgeMapView.class.getResourceAsStream("magnifier.svg"),
-                    1.0f, 57, 56, 100, 1234567891);
+        try (InputStream inputStream = MapsforgeMapView.class.getResourceAsStream("magnifier.svg")) {
+            magnifierIcon = graphicFactory.renderSvg(inputStream, 1.0f, 57, 56, 100, 1234567891);
         } catch (IOException e) {
             log.severe("Cannot create magnifier icon: " + e);
         }

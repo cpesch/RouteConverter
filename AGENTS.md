@@ -45,6 +45,12 @@ categories that actually hold a line are the ones named explicitly in `<compiler
 The `-Xlint` bulk (`rawtypes` 318, `serial` 117, `this-escape` 57) is deliberately NOT
 enabled — see tracking issue #256 and spec `00018-rawtypes-generics-campaign`.
 
+**SpotBugs gates `verify` too.** `spotbugs:check` (threshold Medium, effort Max) runs in
+the verify phase and fails on any finding not excluded by `config/spotbugs-exclude.xml`.
+Fix a finding in the code first; exclude only a deliberate pattern, with a targeted
+`<Match>` (class + method) that carries an XML comment giving the reason — no uncommented
+`<Match>`. `-Dspotbugs.skip` skips it locally. `mvn package` is unaffected.
+
 To re-measure that backlog: maven-compiler-plugin 3.15 **ignores**
 `-Dmaven.compiler.compilerArgument=-Xlint:all`, so the flag has to go into the root pom
 as `<compilerArgs><arg>-Xlint:all</arg></compilerArgs>`; and run with

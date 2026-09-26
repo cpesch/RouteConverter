@@ -25,6 +25,8 @@ import org.apache.commons.cli.help.HelpFormatter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.MissingResourceException;
 
 import static java.lang.System.exit;
@@ -49,8 +51,12 @@ public class FilterResourceBundles {
     }
 
     private void filter() throws IOException {
-        OrderedResourceBundle default0 = new OrderedResourceBundle(new FileInputStream(defaultBundle));
-        OrderedResourceBundle filter = new OrderedResourceBundle(new FileInputStream(filterBundle));
+        OrderedResourceBundle default0, filter;
+        try (InputStream defaultStream = new FileInputStream(defaultBundle);
+             InputStream filterStream = new FileInputStream(filterBundle)) {
+            default0 = new OrderedResourceBundle(defaultStream);
+            filter = new OrderedResourceBundle(filterStream);
+        }
         for(String key : default0.getOrderedKeys()) {
             String defaultValue = default0.getString(key);
             try {
@@ -64,7 +70,9 @@ public class FilterResourceBundles {
                 // intentionally left empty
             }
         }
-        filter.store(new FileOutputStream(filterBundle));
+        try (OutputStream outputStream = new FileOutputStream(filterBundle)) {
+            filter.store(outputStream);
+        }
     }
 
     @SuppressWarnings("AccessStaticViaInstance")

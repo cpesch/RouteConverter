@@ -15,7 +15,7 @@ import org.mapsforge.map.model.common.Observer;
 
 public class TileMBTilesLayer extends TileLayer<RendererJob> implements Observer {
     private final DatabaseRenderer databaseRenderer;
-    private MapWorkerPool mapWorkerPool;
+    private volatile MapWorkerPool mapWorkerPool;
 
     public TileMBTilesLayer(TileCache tileCache, MapViewPosition mapViewPosition, boolean isTransparent,
                             MBTilesFile file, GraphicFactory graphicFactory) {
