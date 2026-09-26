@@ -90,6 +90,27 @@ jobs:
           git config user.name  'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
 
+      - name: translation completeness report (Gitea issue #213)
+        # Informational-by-design placement: this runs in release-prepare,
+        # never in the PR build, because translation lag is not a reason to
+        # block a merge — but shipping a release with a fresh, untranslated
+        # dialog (e.g. the feature-lock dialog, #213) should be a conscious
+        # act. Fails only when a locale that was previously at or above
+        # ResourceBundleCompletenessReport.DEFAULT_REGRESSION_THRESHOLD
+        # (95%) has since dropped below it; a first sighting or a locale
+        # already below that floor (sr, ~79%, pre-existing) never fails
+        # the run. Update the baseline file's numbers when a release
+        # intentionally ships with (further) translation lag that should
+        # become the new floor.
+        run: |
+          ./mvnw --batch-mode -pl route-converter-tools -am package \
+            -Djacoco.skip=true -Dskip.unit.tests=true -Dskip.integration.tests=true
+          java -cp route-converter-tools/target/classes \
+            slash.navigation.converter.tools.ResourceBundleCompletenessReport \
+            route-converter-gui/src/main/resources/slash/navigation/converter/gui \
+            RouteConverter en \
+            route-converter-tools/src/main/resources/resource-bundle-completeness-baseline.properties
+
       - name: rewrite SSH github URLs to HTTPS
         # pom <developerConnection> is scm:git:git@github.com:... (SSH).
         # release-plugin pushes via developerConnection, but the runner

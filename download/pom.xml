@@ -33,6 +33,39 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>check-coverage</id>
+                        <goals><goal>check</goal></goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/binding*/**</exclude>
+                            </excludes>
+                            <rules>
+                                <rule>
+                                    <element>BUNDLE</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <!-- Floor set 2026-09-26 (issue #208): measured line coverage
+                                                 0.789766 (710/899 lines) on 27 classes (binding excluded,
+                                                 see target/site/jacoco/jacoco.csv), minus 0.02 headroom,
+                                                 floored to 0.76. Ratchet rule: raise this floor whenever
+                                                 coverage is re-measured, never lower it just to keep the
+                                                 build green. -->
+                                            <minimum>0.76</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>
                 <executions>

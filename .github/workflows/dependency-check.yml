@@ -1,0 +1,85 @@
+name: Dependency Check
+
+# OWASP dependency-check-maven (issue #212): a real CVSS gate for the ~40
+# third-party jars this desktop app bundles. Weekly + manual only, NEVER on
+# pull_request — the NVD feed download makes this far too slow for the PR
+# path (20+ minutes on a cold cache). A red run pages nobody automatically;
+# the weekly run going red on the default branch IS the signal. Do not wire
+# ntfy or any other paging here.
+#
+# Reproduce locally: ./mvnw --batch-mode dependency-check:aggregate -DfailBuildOnCVSS=7
+# (honours the same config/dependency-check-suppressions.xml as this workflow).
+# Use :aggregate, not :check - this is a ~30-module reactor, and :check run at
+# the root without -N/-pl scans each module's own dependency subset rather than
+# the single cross-module scan :aggregate performs, so the finding counts differ.
+
+on:
+  schedule:
+    # Monday 03:11 UTC - a fixed early-morning slot, offset from the
+    # dependency-submission.yml schedule (Monday 04:17 UTC) so the two
+    # long-running jobs don't compete for runners.
+    - cron: '11 3 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+    # Job is already expected to take 20+ minutes (NVD feed download); this is
+    # a conservative cap against a stalled/rate-limited download otherwise
+    # running for GitHub's default 6-hour job cap before failing.
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'zulu'
+          java-version: 21
+
+      - name: Cache Maven packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Compute cache week
+        id: week
+        run: echo "week=$(date -u +%G-W%V)" >> "$GITHUB_OUTPUT"
+
+      # The NVD feed itself is multiple GB and only needs a same-week refresh
+      # (NVD publishes incrementally); without this cache every run re-downloads
+      # the full feed and takes 20+ minutes just to warm up.
+      - name: Cache NVD data
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: nvd-data-${{ steps.week.outputs.week }}
+          restore-keys: nvd-data-
+
+      - name: Run OWASP dependency-check
+        env:
+          NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
+        run: |
+          if [ -z "$NVD_API_KEY" ]; then
+            echo "::warning::NVD_API_KEY repository secret is not set - the NVD feed download will be heavily rate-limited and this run may be much slower than usual. Add an API key at https://nvd.nist.gov/developers/request-an-api-key to speed it up."
+            NVD_ARGS=()
+          else
+            NVD_ARGS=("-DnvdApiKey=$NVD_API_KEY")
+          fi
+          ./mvnw --batch-mode -DskipTests dependency-check:aggregate \
+            -DfailBuildOnCVSS=7 -Dformat=HTML,JSON "${NVD_ARGS[@]}"
+
+      - name: Upload dependency-check report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: dependency-check-report
+          path: |
+            target/dependency-check-report.html
+            target/dependency-check-report.json
+          if-no-files-found: warn

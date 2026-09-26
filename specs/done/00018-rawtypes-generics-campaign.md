@@ -837,3 +837,11 @@ via the per-execution override. What remains:
    `preprocessRoute` — where the unsound insert lives — runs on write. Worth
    confirming that path is exercised before changing it, per the "one green run
    is not verification" rule.
+
+## Addendum (2026-09-26)
+
+`deprecation` and `fallthrough` have since graduated onto the same enforced
+`-Xlint` gate alongside `rawtypes`, per issue #215 / PR #225 — both measured 0
+reactor-wide, main sources. `unchecked` (16 residual hits, kml's generated JAXB
+`ObjectFactory` classes) is still open, tracked separately as issue #222. See
+the root `pom.xml` compiler-plugin comment for the current state of the gate.
