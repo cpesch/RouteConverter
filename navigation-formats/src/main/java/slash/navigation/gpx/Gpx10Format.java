@@ -160,12 +160,20 @@ public class Gpx10Format extends GpxFormat {
     private List<GpxPosition> extractTrack(Gpx.Trk trk, boolean hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<>();
         if (trk != null) {
+            boolean firstSegment = true;
             for (Gpx.Trk.Trkseg trkSeg : trk.getTrkseg()) {
+                boolean firstPositionOfSegment = true;
                 for (Gpx.Trk.Trkseg.Trkpt trkPt : trkSeg.getTrkpt()) {
                     GpxPosition position = new GpxPosition(trkPt.getLon(), trkPt.getLat(), trkPt.getEle(), getSpeed(trkPt.getSpeed(), trkPt.getCmt(), hasSpeedInKiloMeterPerHourInsteadOfMeterPerSecond), formatDouble(trkPt.getCourse()), parseXMLTime(trkPt.getTime()), asDescription(trkPt.getName(), trkPt.getDesc()), trkPt.getHdop(), trkPt.getPdop(), trkPt.getVdop(), trkPt.getSat(), trkPt);
                     position.setFixQuality(parseFix(trkPt.getFix()));
+                    // record every <trkseg> boundary but the very first one, so createTrack() can
+                    // re-emit the original segments instead of merging them into a single one
+                    if (!firstSegment && firstPositionOfSegment)
+                        position.setStartsNewSegment(true);
                     positions.add(position);
+                    firstPositionOfSegment = false;
                 }
+                firstSegment = false;
             }
         }
         return positions;
@@ -292,7 +300,10 @@ public class Gpx10Format extends GpxFormat {
             trk.setDesc(asDescription(route.getDescription()));
         }
         trks.add(trk);
-        Gpx.Trk.Trkseg trkseg = objectFactory.createGpxTrkTrkseg();
+        // start a fresh <trkseg> for every position with startsNewSegment() set, so the original
+        // segment boundaries survive the round-trip instead of being flattened into one <trkseg>
+        // (see issue #156)
+        Gpx.Trk.Trkseg trkseg = null;
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
@@ -317,9 +328,15 @@ public class Gpx10Format extends GpxFormat {
             trkpt.setVdop(isWriteAccuracy() && position.getVdop() != null ? formatAccuracy(position.getVdop()) : null);
             trkpt.setSat(isWriteAccuracy() && position.getSatellites() != null ? formatInt(position.getSatellites()) : null);
             trkpt.setFix(formatFix(position.getFixQuality()));
+
+            if (trkseg == null || position.isStartsNewSegment()) {
+                trkseg = objectFactory.createGpxTrkTrkseg();
+                trk.getTrkseg().add(trkseg);
+            }
             trkseg.getTrkpt().add(trkpt);
         }
-        trk.getTrkseg().add(trkseg);
+        if (trkseg == null)
+            trk.getTrkseg().add(objectFactory.createGpxTrkTrkseg());
         return trks;
     }
 

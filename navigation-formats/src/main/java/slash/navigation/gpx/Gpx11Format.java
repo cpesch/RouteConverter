@@ -208,13 +208,21 @@ public class Gpx11Format extends GpxFormat {
     private List<GpxPosition> extractTrack(TrkType trkType, boolean hasSpeedInKilometerPerHourInsteadOfMeterPerSecond) {
         List<GpxPosition> positions = new ArrayList<>();
         if (trkType != null) {
+            boolean firstSegment = true;
             for (TrksegType trkSegType : trkType.getTrkseg()) {
+                boolean firstPositionOfSegment = true;
                 for (WptType wptType : trkSegType.getTrkpt()) {
                     GpxPositionExtension positionExtension = new GpxPositionExtension(wptType, hasSpeedInKilometerPerHourInsteadOfMeterPerSecond);
                     GpxPosition position = new GpxPosition(wptType.getLon(), wptType.getLat(), wptType.getEle(), positionExtension, parseXMLTime(wptType.getTime()), asDescription(wptType.getName(), wptType.getDesc()), asHdop(wptType, positionExtension), wptType.getPdop(), wptType.getVdop(), wptType.getSat(), wptType);
                     position.setFixQuality(parseFix(wptType.getFix()));
+                    // record every <trkseg> boundary but the very first one, so createTrack() can
+                    // re-emit the original segments instead of merging them into a single one
+                    if (!firstSegment && firstPositionOfSegment)
+                        position.setStartsNewSegment(true);
                     positions.add(position);
+                    firstPositionOfSegment = false;
                 }
+                firstSegment = false;
             }
         }
         return positions;
@@ -394,19 +402,36 @@ public class Gpx11Format extends GpxFormat {
         }
         trkTypes.add(trkType);
 
-        TrksegType trksegType = route.getOrigin(TrksegType.class);
-        if (trksegType != null)
-            trksegType.getTrkpt().clear();
-        else
-            trksegType = objectFactory.createTrksegType();
-        trkType.getTrkseg().add(trksegType);
+        // reuse the origin <trkseg> (if any) only for the first segment written; every additional
+        // segment - i.e. every position with startsNewSegment() set by extractTrack() - gets a fresh
+        // TrksegType, so the original segment boundaries (and the time gaps they represent) survive
+        // the round-trip instead of being flattened into one <trkseg> (see issue #156)
+        TrksegType originTrksegType = route.getOrigin(TrksegType.class);
+        boolean reusedOrigin = false;
+        TrksegType trksegType = null;
 
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             WptType wptType = createWptType(position);
-            if (wptType != null)
-                trksegType.getTrkpt().add(wptType);
+            if (wptType == null)
+                continue;
+
+            if (trksegType == null || position.isStartsNewSegment()) {
+                if (!reusedOrigin && originTrksegType != null) {
+                    trksegType = originTrksegType;
+                    trksegType.getTrkpt().clear();
+                    reusedOrigin = true;
+                } else
+                    trksegType = objectFactory.createTrksegType();
+                trkType.getTrkseg().add(trksegType);
+            }
+            trksegType.getTrkpt().add(wptType);
+        }
+        if (trksegType == null) {
+            // no positions written - keep behavior of always emitting at least one (empty) <trkseg>
+            trksegType = !reusedOrigin && originTrksegType != null ? originTrksegType : objectFactory.createTrksegType();
+            trkType.getTrkseg().add(trksegType);
         }
         return trkTypes;
     }

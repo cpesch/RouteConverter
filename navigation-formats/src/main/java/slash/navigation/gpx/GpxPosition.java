@@ -46,6 +46,10 @@ import static slash.navigation.gpx.GpxFormat.*;
 public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigationPosition {
     private String reason;
     private GpxPositionExtension positionExtension;
+    // true if this position was the first point of a <trkseg> other than the track's first one;
+    // lets Gpx10Format/Gpx11Format re-emit the original segment boundaries on write instead of
+    // collapsing every <trkseg> of a <trk> into a single one (see issue #156)
+    private boolean startsNewSegment;
 
     public GpxPosition(Double longitude, Double latitude, Double elevation, Double speed, CompactCalendar time, String description) {
         this(longitude, latitude, elevation, speed, time, description, null);
@@ -136,6 +140,14 @@ public class GpxPosition extends Wgs84Position implements ExtendedSensorNavigati
 
     void setPositionExtension(GpxPositionExtension positionExtension) {
         this.positionExtension = positionExtension;
+    }
+
+    public boolean isStartsNewSegment() {
+        return startsNewSegment;
+    }
+
+    public void setStartsNewSegment(boolean startsNewSegment) {
+        this.startsNewSegment = startsNewSegment;
     }
 
     // Unlike heading/speed/temperature, hdop also has a canonical home outside the extensions -
