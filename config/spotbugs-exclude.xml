@@ -34,11 +34,37 @@
         <Bug pattern="CT_CONSTRUCTOR_THROW"/>
     </Match>
 
-    <!-- same threat model as above: these detectors guard against untrusted
-         code in the JVM grabbing a publicly reachable monitor; every monitor
-         here is only locked by RouteConverter's own code -->
+    <!-- USO_* stays active for new code: a publicly reachable monitor can be
+         locked by any caller and deadlock against us (see #206). The sites
+         below lock a public monitor on purpose. -->
+
+    <!-- the synchronized static getters create and hand out the shared
+         application and temporary directories -->
     <Match>
-        <Bug pattern="USO_UNSAFE_METHOD_SYNCHRONIZATION,USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION,USO_UNSAFE_OBJECT_SYNCHRONIZATION,USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION"/>
+        <Bug pattern="USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION"/>
+        <Class name="slash.common.io.Directories"/>
+    </Match>
+
+    <!-- the synchronized static getters serialize setting the time zone on
+         the shared date/time formatters -->
+    <Match>
+        <Bug pattern="USO_UNSAFE_STATIC_METHOD_SYNCHRONIZATION"/>
+        <Class name="slash.common.io.Transfer"/>
+    </Match>
+
+    <!-- the model's own monitor guards its list: every method is synchronized
+         on it, so the EDT callbacks that resolve row indices must use it too -->
+    <Match>
+        <Bug pattern="USO_UNSAFE_OBJECT_SYNCHRONIZATION"/>
+        <Class name="~slash\.navigation\.download\.DownloadTableModel\$.*"/>
+    </Match>
+
+    <!-- mapsforge's GroupLayer iterates its layers under synchronized(this),
+         so rebuilding them has to hold that same monitor -->
+    <Match>
+        <Bug pattern="USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION"/>
+        <Class name="slash.navigation.mapview.mapsforge.renderer.NonSelectedPositionListsRenderer"/>
+        <Method name="rebuild"/>
     </Match>
 
     <!-- RouteConverter never uses Java serialization; comparators and Swing
