@@ -218,7 +218,9 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     private JSplitPane mapSplitPane, profileSplitPane;
     private JTabbedPane tabbedPane;
     private JPanel convertPanel, pointOfInterestPanel, photoPanel, browsePanel, mapPanel, profilePanel;
-    private MapView mapView;
+    // private monitor instead of synchronized methods: a caller holding this component's monitor cannot deadlock it
+    private final Object lazyInitializationLock = new Object();
+    private volatile MapView mapView;
     private ProfileView profileView;
     private static final GridConstraints MAP_PANEL_CONSTRAINTS = new GridConstraints(0, 0, 1, 1, ANCHOR_CENTER, FILL_BOTH,
             SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW, SIZEPOLICY_CAN_SHRINK | SIZEPOLICY_CAN_GROW,
@@ -231,7 +233,7 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
 
     // application lifecycle callbacks
 
-    private long startupStartMillis;
+    private volatile long startupStartMillis;
 
     protected void startup() {
         startupStartMillis = System.currentTimeMillis();
@@ -392,35 +394,37 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         });
     }
 
-    public synchronized void setMapView(MapViewImplementation mapViewImplementation) {
-        log.info("Using map view: " + mapViewImplementation);
-        setMapViewPreference(mapViewImplementation);
+    public void setMapView(MapViewImplementation mapViewImplementation) {
+        synchronized (lazyInitializationLock) {
+            log.info("Using map view: " + mapViewImplementation);
+            setMapViewPreference(mapViewImplementation);
 
-        if (isMapViewAvailable()) {
-            mapPanel.removeAll();
-            mapView.dispose();
-        }
-
-        mapView = createMapView(mapViewImplementation.getClassName());
-        if (mapView == null) {
-            mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
-                    printStackTrace(new UnsupportedOperationException()).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
-
-        } else {
-            getMapView().initialize(getConvertPanel().getPositionsModel(), getConvertPanel().getFormatAndRoutesModel(),
-                    mapPreferencesModel, getMapViewCallback());
-
-            @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-            Throwable cause = getMapView().getInitializationCause();
-            if (getMapView().getComponent() == null || cause != null) {
-                mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
-                        printStackTrace(cause).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
-            } else {
-                mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
+            if (isMapViewAvailable()) {
+                mapPanel.removeAll();
+                mapView.dispose();
             }
+
+            mapView = createMapView(mapViewImplementation.getClassName());
+            if (mapView == null) {
+                mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
+                        printStackTrace(new UnsupportedOperationException()).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+
+            } else {
+                getMapView().initialize(getConvertPanel().getPositionsModel(), getConvertPanel().getFormatAndRoutesModel(),
+                        mapPreferencesModel, getMapViewCallback());
+
+                @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
+                Throwable cause = getMapView().getInitializationCause();
+                if (getMapView().getComponent() == null || cause != null) {
+                    mapPanel.add(new JLabel(MessageFormat.format(getBundle().getString("initialize-map-error"),
+                            printStackTrace(cause).replaceAll("\n", "<p>"))), MAP_PANEL_CONSTRAINTS);
+                } else {
+                    mapPanel.add(getMapView().getComponent(), MAP_PANEL_CONSTRAINTS);
+                }
+            }
+            mapPanel.setTransferHandler(new PanelDropHandler());
+            mapPanel.revalidate();
         }
-        mapPanel.setTransferHandler(new PanelDropHandler());
-        mapPanel.revalidate();
     }
 
     public MapView getMapView() {
@@ -843,23 +847,37 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
         return getDataSourceManager().getDownloadManager();
     }
 
-    private PositionAugmenter positionAugmenter;
+    private volatile PositionAugmenter positionAugmenter;
 
-    public synchronized PositionAugmenter getPositionAugmenter() {
-        if (positionAugmenter == null) {
-            positionAugmenter = new PositionAugmenter(getConvertPanel().getPositionsView(), getConvertPanel().getPositionsModel(),
-                    getFrame(), elevationServiceFacade, geocodingServiceFacade);
+    public PositionAugmenter getPositionAugmenter() {
+        PositionAugmenter result = positionAugmenter;
+        if (result == null) {
+            synchronized (lazyInitializationLock) {
+                result = positionAugmenter;
+                if (result == null) {
+                    result = new PositionAugmenter(getConvertPanel().getPositionsView(), getConvertPanel().getPositionsModel(),
+                            getFrame(), elevationServiceFacade, geocodingServiceFacade);
+                    positionAugmenter = result;
+                }
+            }
         }
-        return positionAugmenter;
+        return result;
     }
 
-    private AudioPlayer audioPlayer; // for TimeAlbum
+    private volatile AudioPlayer audioPlayer; // for TimeAlbum
 
-    public synchronized AudioPlayer getAudioPlayer() {
-        if (audioPlayer == null) {
-            audioPlayer = new AudioPlayer(getFrame());
+    public AudioPlayer getAudioPlayer() {
+        AudioPlayer result = audioPlayer;
+        if (result == null) {
+            synchronized (lazyInitializationLock) {
+                result = audioPlayer;
+                if (result == null) {
+                    result = new AudioPlayer(getFrame());
+                    audioPlayer = result;
+                }
+            }
         }
-        return audioPlayer;
+        return result;
     }
 
     private GeoTagger geoTagger; // for TimeAlbum
