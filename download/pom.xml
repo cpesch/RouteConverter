@@ -50,10 +50,12 @@
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
-                                            <!-- Floor set 2026-09-26 (issue #208): measured 0.79 on 27 classes
-                                                 (binding excluded), minus 0.02 headroom, rounded down. Ratchet
-                                                 rule: raise this floor whenever coverage is re-measured, never
-                                                 lower it just to keep the build green. -->
+                                            <!-- Floor set 2026-09-26 (issue #208): measured line coverage
+                                                 0.789766 (710/899 lines) on 27 classes (binding excluded,
+                                                 see target/site/jacoco/jacoco.csv), minus 0.02 headroom,
+                                                 floored to 0.76. Ratchet rule: raise this floor whenever
+                                                 coverage is re-measured, never lower it just to keep the
+                                                 build green. -->
                                             <minimum>0.76</minimum>
                                         </limit>
                                     </limits>
