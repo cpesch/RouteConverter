@@ -24,6 +24,7 @@ import slash.common.system.Version;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.panels.ConvertPanel;
 import slash.navigation.feedback.domain.RouteFeedback;
+import slash.navigation.gui.helpers.BackgroundExecutor;
 
 import com.sun.management.OperatingSystemMXBean;
 
@@ -286,7 +287,7 @@ public class UpdateChecker {
     }
 
     public void implicitCheck(final Window window) {
-        new Thread(() -> {
+        BackgroundExecutor.submit("UpdateChecker", () -> {
             final UpdateResult result = check();
             if (result.existsLaterRouteConverterVersion()
                     && !result.getLatestRouteConverterVersion().equals(getSkippedVersion())) {
@@ -302,7 +303,7 @@ public class UpdateChecker {
                 markEolNoticeShown();
                 invokeLater(() -> offerEolNotice(window, result));
             }
-        }, "UpdateChecker").start();
+        });
     }
 
     public void checkSupportNudge(Window window) {
@@ -326,7 +327,7 @@ public class UpdateChecker {
      * dialogs are handed back to the EDT.
      */
     public void explicitCheck(Window window) {
-        new Thread(() -> {
+        BackgroundExecutor.submit("UpdateChecker", () -> {
             UpdateResult result = check();
             if (result.existsLaterRouteConverterVersion()) {
                 UpdatePolicy.Nudge nudge = decideNudge(result);
@@ -337,7 +338,7 @@ public class UpdateChecker {
 
             if (result.existsLaterJavaVersion())
                 invokeLater(() -> offerJavaUpdate(window, result));
-        }, "UpdateChecker").start();
+        });
     }
 
     static class SupportNudge {
