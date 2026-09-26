@@ -304,13 +304,21 @@ public class Gpx10Format extends GpxFormat {
         // segment boundaries survive the round-trip instead of being flattened into one <trkseg>
         // (see issue #156)
         Gpx.Trk.Trkseg trkseg = null;
+        // startsNewSegment is recorded on exactly one GpxPosition (the first of a <trkseg>). If
+        // that position lacks valid lat/lon and gets skipped below, carry its boundary forward so
+        // it still starts a new <trkseg> once the next position with valid lat/lon is written,
+        // instead of silently merging into the previous segment.
+        boolean carriedStartsNewSegment = false;
         List<GpxPosition> positions = route.getPositions();
         for (int i = startIndex; i < endIndex; i++) {
             GpxPosition position = positions.get(i);
             BigDecimal latitude = formatPosition(position.getLatitude());
             BigDecimal longitude = formatPosition(position.getLongitude());
-            if(latitude == null || longitude == null)
+            if(latitude == null || longitude == null) {
+                if (position.isStartsNewSegment())
+                    carriedStartsNewSegment = true;
                 continue;
+            }
             Gpx.Trk.Trkseg.Trkpt trkpt = position.getOrigin(Gpx.Trk.Trkseg.Trkpt.class);
             if (trkpt == null || !reuseReadObjectsForWriting)
                 trkpt = objectFactory.createGpxTrkTrksegTrkpt();
@@ -329,9 +337,10 @@ public class Gpx10Format extends GpxFormat {
             trkpt.setSat(isWriteAccuracy() && position.getSatellites() != null ? formatInt(position.getSatellites()) : null);
             trkpt.setFix(formatFix(position.getFixQuality()));
 
-            if (trkseg == null || position.isStartsNewSegment()) {
+            if (trkseg == null || position.isStartsNewSegment() || carriedStartsNewSegment) {
                 trkseg = objectFactory.createGpxTrkTrkseg();
                 trk.getTrkseg().add(trkseg);
+                carriedStartsNewSegment = false;
             }
             trkseg.getTrkpt().add(trkpt);
         }
