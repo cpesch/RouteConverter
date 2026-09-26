@@ -48,6 +48,8 @@ import java.lang.reflect.Method;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.concurrent.CancellationException;
+import java.util.concurrent.ExecutionException;
 
 import static java.awt.event.KeyEvent.VK_ESCAPE;
 import static javax.swing.JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT;
@@ -85,7 +87,7 @@ public class DeletePositionsDialog extends SimpleDialog {
     private final DoubleDocument speed;
     // EDT-confined: every read/write of this field happens on the EDT (button click,
     // close(), and the worker's invokeLater), so no volatile/synchronization is needed
-    private Thread selectBySignificanceWorker;
+    private SwingWorker<int[], Void> selectBySignificanceWorker;
 
     public DeletePositionsDialog() {
         super(BaseRouteConverter.getInstance().getFrame(), "delete-positions");
@@ -234,7 +236,7 @@ public class DeletePositionsDialog extends SimpleDialog {
 
     private void selectBySignificance() {
         if (selectBySignificanceWorker != null) {
-            selectBySignificanceWorker.interrupt();
+            selectBySignificanceWorker.cancel(true);
             return;
         }
 
@@ -255,26 +257,30 @@ public class DeletePositionsDialog extends SimpleDialog {
         final PositionsModel positionsModel = r.getConvertPanel().getPositionsModel();
         final List<NavigationPosition> positions = positionsModel.getPositions(0, positionsModel.getRowCount());
 
-        selectBySignificanceWorker = new Thread(() -> {
-            try {
-                int[] indices = r.getConvertPanel().computeInsignificantPositions(threshold, positions);
-                invokeLater(() -> {
+        selectBySignificanceWorker = new SwingWorker<int[], Void>() {
+            protected int[] doInBackground() throws InterruptedException {
+                return r.getConvertPanel().computeInsignificantPositions(threshold, positions);
+            }
+
+            protected void done() {
+                try {
+                    int[] indices = get();
                     r.getConvertPanel().selectPositions(indices);
                     labelSelection.setText(
                             MessageFormat.format(BaseRouteConverter.getBundle().getString("delete-select-by-significance-result"),
                                     indices.length, threshold));
-                });
-            } catch (InterruptedException e) {
-                invokeLater(() -> labelSelection.setText(""));
-            } finally {
-                invokeLater(() -> {
+                } catch (CancellationException | InterruptedException e) {
+                    labelSelection.setText("");
+                } catch (ExecutionException e) {
+                    labelSelection.setText("");
+                } finally {
                     selectBySignificanceWorker = null;
                     buttonSelectBySignificance.setText(BaseRouteConverter.getBundle().getString("select"));
                     setMnemonic(buttonSelectBySignificance, "select-mnemonic");
-                });
+                }
             }
-        }, "SelectInsignificantPositions");
-        selectBySignificanceWorker.start();
+        };
+        selectBySignificanceWorker.execute();
     }
 
     private void clearSelection() {
@@ -302,7 +308,7 @@ public class DeletePositionsDialog extends SimpleDialog {
 
     private void close() {
         if (selectBySignificanceWorker != null) {
-            selectBySignificanceWorker.interrupt();
+            selectBySignificanceWorker.cancel(true);
         }
         savePreferences();
         dispose();

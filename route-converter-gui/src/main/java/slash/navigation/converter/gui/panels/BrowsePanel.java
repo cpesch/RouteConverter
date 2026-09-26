@@ -50,6 +50,7 @@ import slash.navigation.converter.gui.undo.UndoCatalogModel;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.actions.ActionManager;
 import slash.navigation.gui.actions.FrameAction;
+import slash.navigation.gui.helpers.BackgroundExecutor;
 import slash.navigation.routes.Catalog;
 import slash.navigation.routes.impl.*;
 import slash.navigation.routes.local.LocalCatalog;
@@ -188,7 +189,7 @@ public class BrowsePanel implements PanelInTab {
         handleRouteListUpdate();
         handleCategoryTreeUpdate();
 
-        new Thread(() -> {
+        BackgroundExecutor.submit("CategoryTreeInitializer", () -> {
             String selected = r.getCategoryPreference();
             if (TreePathStringConversion.isRemote(selected)) {
                 // do the loading in a separate thread since treeCategories.setModel(categoryTreeModel)
@@ -206,7 +207,7 @@ public class BrowsePanel implements PanelInTab {
                     stopWaitCursor(r.getFrame().getRootPane());
                 }
             });
-        }, "CategoryTreeInitializer").start();
+        });
     }
 
     private void initializeCategoryTree() {

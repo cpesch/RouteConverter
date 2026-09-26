@@ -23,6 +23,7 @@ package slash.navigation.converter.gui.helpers;
 import slash.navigation.converter.gui.BaseRouteConverter;
 import slash.navigation.converter.gui.dialogs.LoginDialog;
 import slash.navigation.feedback.domain.RouteFeedback;
+import slash.navigation.gui.helpers.BackgroundExecutor;
 import slash.navigation.rest.exception.UnAuthorizedException;
 
 import javax.swing.*;
@@ -82,7 +83,7 @@ public class RouteServiceOperator {
     }
 
     public void executeOperation(final Operation operation) {
-        new Thread(() -> {
+        BackgroundExecutor.submit(operation.getName(), () -> {
             invokeLater(() -> startWaitCursor(frame.getRootPane()));
 
             while (true) {
@@ -113,6 +114,6 @@ public class RouteServiceOperator {
                 }
                 break;
             }
-        }, operation.getName()).start();
+        });
     }
 }
