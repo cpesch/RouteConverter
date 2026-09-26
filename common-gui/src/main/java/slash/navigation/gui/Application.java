@@ -46,7 +46,7 @@ import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
 
 public abstract class Application {
     private static final Logger log = getLogger(SingleFrameApplication.class.getName());
-    private static Application application;
+    private static volatile Application application;
     private final List<ExitListener> exitListeners;
     private final ApplicationContext context;
     private final Preferences preferences = userNodeForPackage(getClass());
@@ -71,11 +71,11 @@ public abstract class Application {
         context = new ApplicationContext();
     }
 
-    public static synchronized Application getInstance() {
+    public static Application getInstance() {
         return application;
     }
 
-    private static synchronized void setInstance(Application theApplication) {
+    private static void setInstance(Application theApplication) {
         application = theApplication;
     }
 
