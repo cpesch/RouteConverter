@@ -27,7 +27,10 @@ nothing else to install. The **Linux** build ships as a runnable `.jar` that nee
 ## Build & run from source
 
 You need **JDK 21** (e.g. from [Adoptium](https://adoptium.net/)). Maven comes
-bundled via the wrapper — no separate install.
+bundled via the wrapper — no separate install. **Always build with `./mvnw`**,
+not a system-installed `mvn`: the wrapper pins the exact Maven version the
+build (and CI) is tested against, so a stale system Maven is never the thing
+under test.
 
 ```sh
 git clone git@github.com:cpesch/RouteConverter.git

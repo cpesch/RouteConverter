@@ -77,7 +77,13 @@
         <jre.version>21.0.12</jre.version>
 
         <java.version>21</java.version>
-        <maven.version>[3.6.3,)</maven.version>
+        <!-- Floor tracks .mvn/wrapper/maven-wrapper.properties (the wrapper
+             is what CI and the release ritual use) exactly: spotbugs-maven-
+             plugin 4.10.x requires Maven >= 3.8.9, and the wrapper ships
+             3.9.16, so enforcing anything lower lets the enforcer pass on a
+             Maven that then fails later inside SpotBugs with an opaque
+             plugin-resolution error instead of the enforcer's own message. -->
+        <maven.version>[3.9.16,)</maven.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
@@ -245,6 +251,12 @@
                     <version>3.2.0</version>
                 </plugin>
                 <plugin>
+                    <!-- Version/config pinned here; the execution is activated
+                         for every module by the plugin entry (no version/config,
+                         just <executions>) in the real <plugins> below — same
+                         split as build-helper-maven-plugin and spotbugs-maven-plugin
+                         (issue #209: this plugin was pinned here but never actually
+                         bound anywhere, so it silently never ran). -->
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <version>3.6.3</version>
@@ -400,6 +412,25 @@
         </pluginManagement>
 
         <plugins>
+            <!-- ENFORCER - fails fast on an old Maven/Java, before anything else
+                 runs (issue #209). Version/config pinned in pluginManagement
+                 above; only <executions> needed here to activate it for every
+                 module (phase repeated explicitly, matching the spotbugs-check
+                 entry below, even though it's already enforce's default phase). -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>enforce-maven</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- Spotless (opt-in: no execution binding, so it never runs on a
                  normal build). Run `mvn spotless:check` to verify or
                  `mvn spotless:apply` to fix. ratchetFrom limits formatting to
