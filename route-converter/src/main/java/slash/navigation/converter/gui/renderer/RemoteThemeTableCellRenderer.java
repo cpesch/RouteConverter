@@ -58,6 +58,9 @@ public class RemoteThemeTableCellRenderer extends AlternatingColorTableCellRende
                 label.setToolTipText(theme.getUrl());
                 label.setHorizontalAlignment(RIGHT);
             }
+            default -> {
+                // other columns keep the default rendering
+            }
         }
         return label;
     }

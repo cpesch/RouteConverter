@@ -308,9 +308,9 @@ public class BRouter extends BaseRoutingService {
     Set<String> createFileKeys(double longitude, double latitude) {
         // logic borrowed from RoutingEngine#preloadPosition in BRouter
         Set<String> result = new HashSet<>();
-        for (double deltaLatitude = -0.1; deltaLatitude <= 0.1; deltaLatitude += 0.1) {
-            for (double deltaLongitude = -0.1; deltaLongitude <= 0.1; deltaLongitude += 0.1) {
-                result.add(createFileKey(longitude + deltaLongitude, latitude + deltaLatitude));
+        for (int latitudeStep = -1; latitudeStep <= 1; latitudeStep++) {
+            for (int longitudeStep = -1; longitudeStep <= 1; longitudeStep++) {
+                result.add(createFileKey(longitude + longitudeStep * 0.1, latitude + latitudeStep * 0.1));
             }
         }
         return result;

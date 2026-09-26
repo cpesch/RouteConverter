@@ -37,6 +37,7 @@ import java.awt.event.ActionEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -340,7 +341,9 @@ public class GeoTagger {
                 source = sourceBackup;
             }
 
-            new PhotoFormat().write(position, source, new FileOutputStream(target));
+            try (OutputStream outputStream = new FileOutputStream(target)) {
+                new PhotoFormat().write(position, source, outputStream);
+            }
 
             position.setTagState(Tagged);
 

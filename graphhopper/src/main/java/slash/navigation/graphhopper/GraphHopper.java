@@ -99,7 +99,7 @@ public class GraphHopper extends BaseRoutingService {
     private GraphManager graphManager;
 
     private DownloadableFinder finder;
-    private com.graphhopper.GraphHopper hopper;
+    private volatile com.graphhopper.GraphHopper hopper;
     private java.io.File osmPbfFile;
 
     public GraphHopper(DownloadManager downloadManager) {
@@ -166,6 +166,7 @@ public class GraphHopper extends BaseRoutingService {
 
     public RoutingResult getRouteBetween(NavigationPosition from, NavigationPosition to, TravelMode travelMode, TravelRestrictions travelRestrictions) {
         initializeHopper();
+        com.graphhopper.GraphHopper hopper = this.hopper;
         if (hopper == null)
             throw new IllegalStateException("Could not initialize from graph directory of GraphHopper");
 
@@ -216,6 +217,9 @@ public class GraphHopper extends BaseRoutingService {
 
     public NavigationPosition getSnapToRoadPosition(NavigationPosition position) {
         try {
+            com.graphhopper.GraphHopper hopper = this.hopper;
+            if (hopper == null)
+                return null;
             LocationIndex locationIndex = hopper.getLocationIndex();
             Snap snap = locationIndex.findClosest(position.getLatitude(), position.getLongitude(), EdgeFilter.ALL_EDGES);
 

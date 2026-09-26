@@ -107,6 +107,9 @@ class MesgCreator {
         switch (characteristics) {
             case Track -> mesg.setType(ACTIVITY);
             case Route -> mesg.setType(COURSE);
+            default -> {
+                // waypoint lists have no FIT file type of their own
+            }
         }
         return mesg;
     }

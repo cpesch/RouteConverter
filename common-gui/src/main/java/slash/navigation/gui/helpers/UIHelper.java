@@ -98,7 +98,7 @@ public class UIHelper {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (ReflectiveOperationException | UnsupportedLookAndFeelException | RuntimeException e) {
             // intentionally do nothing
         }
         JFrame.setDefaultLookAndFeelDecorated(true);

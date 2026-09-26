@@ -95,8 +95,13 @@ public class GraphManager {
     List<java.io.File> collectGraphDirectories(DataSource dataSource) throws IOException {
         try (Stream<Path> files = java.nio.file.Files.walk(Paths.get(getDirectory(dataSource).getPath()))) {
             return files
-                    .filter(f -> isRegularFile(f) && f.getFileName().startsWith(PROPERTIES))
-                    .map(f -> f.getParent().toFile())
+                    .filter(f -> {
+                        Path fileName = f.getFileName();
+                        return isRegularFile(f) && fileName != null && fileName.startsWith(PROPERTIES);
+                    })
+                    .map(Path::getParent)
+                    .filter(Objects::nonNull)
+                    .map(Path::toFile)
                     .collect(toList());
         }
     }

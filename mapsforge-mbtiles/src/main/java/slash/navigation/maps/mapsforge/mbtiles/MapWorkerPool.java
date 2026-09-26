@@ -28,7 +28,8 @@ class MapWorkerPool implements Runnable {
     private boolean inShutdown, isRunning;
     private final JobQueue<RendererJob> jobQueue;
     private final Layer layer;
-    private ExecutorService self, workers;
+    private ExecutorService self;
+    private volatile ExecutorService workers;
     private final TileCache tileCache;
 
     MapWorkerPool(TileCache tileCache, JobQueue<RendererJob> jobQueue, DatabaseRenderer databaseRenderer, TileMBTilesLayer layer) {
@@ -141,7 +142,7 @@ class MapWorkerPool implements Runnable {
                     long te = totalExecutions.incrementAndGet();
                     long tt = totalTime.addAndGet(end - start);
                     if (te % 10 == 0) {
-                        LOGGER.info("TIMING " + te + " " + Double.toString(tt / te));
+                        LOGGER.info("TIMING " + te + " " + Double.toString((double) tt / te));
                     }
                     concurrentJobs.decrementAndGet();
                 }

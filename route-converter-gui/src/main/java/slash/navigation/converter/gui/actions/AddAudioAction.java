@@ -29,9 +29,8 @@ import slash.navigation.gui.helpers.WindowHelper;
 
 import javax.swing.*;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 
@@ -40,7 +39,6 @@ import static java.util.logging.Logger.getLogger;
 import static javax.swing.JFileChooser.APPROVE_OPTION;
 import static javax.swing.JFileChooser.FILES_ONLY;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
-import static slash.common.io.InputOutput.copyAndClose;
 import static slash.navigation.base.WaypointType.Voice;
 import static slash.navigation.converter.gui.helpers.PositionHelper.extractFile;
 import static slash.navigation.gui.helpers.UIHelper.createJFileChooser;
@@ -103,7 +101,7 @@ public class AddAudioAction extends FrameAction {
         File nextToTrack = new File(track.getParentFile(), selected.getName());
         if(!nextToTrack.exists()) {
             try {
-                copyAndClose(new FileInputStream(selected), new FileOutputStream(nextToTrack));
+                Files.copy(selected.toPath(), nextToTrack.toPath());
             }
             catch (IOException e) {
                 log.severe(format("Could copy audio %s to %s: %s", selected, nextToTrack, e));

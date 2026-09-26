@@ -220,6 +220,9 @@ public class GetPerformer implements ActionPerformer {
             case Copy -> copy(lastModified);
             case Flatten -> flatten(lastModified);
             case Extract -> extract(lastModified);
+            default -> {
+                // Head only checks for updates and has no target to bring the download to
+            }
         }
     }
 

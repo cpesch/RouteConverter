@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import static java.lang.String.format;
-import static slash.common.io.InputOutput.copyAndClose;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
@@ -162,10 +162,11 @@ class BRouterRouteRouter implements RouteRouter {
 
     private static File extractResource(String name, File directory) throws IOException {
         File target = new File(directory, name);
-        InputStream in = BRouterRouteRouter.class.getResourceAsStream(RESOURCE_PREFIX + name);
-        if (in == null)
-            throw new IOException("Resource " + RESOURCE_PREFIX + name + " not found on classpath");
-        copyAndClose(in, Files.newOutputStream(target.toPath()));
+        try (InputStream in = BRouterRouteRouter.class.getResourceAsStream(RESOURCE_PREFIX + name)) {
+            if (in == null)
+                throw new IOException("Resource " + RESOURCE_PREFIX + name + " not found on classpath");
+            Files.copy(in, target.toPath(), REPLACE_EXISTING);
+        }
         return target;
     }
 

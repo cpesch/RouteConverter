@@ -43,6 +43,9 @@ public class TileMapTableCellRenderer extends AlternatingColorTableCellRenderer 
                 label.setText(map.description());
                 label.setToolTipText(map.getUrl());
             }
+            default -> {
+                // other columns keep the default rendering
+            }
         }
         return component;
     }

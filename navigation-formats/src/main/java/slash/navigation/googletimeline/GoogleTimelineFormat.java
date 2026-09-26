@@ -346,8 +346,7 @@ public class GoogleTimelineFormat extends SimpleFormat<Wgs84Route> {
             return positions;
         }
 
-        JsonNode distanceNode = segment.path("distanceMeters");
-        // distance can be string (iOS) or number (Android), we don't use it
+        // distanceMeters can be string (iOS) or number (Android), we don't use it
 
         JsonNode pointsArray = timelinePathNode.has("points") ? timelinePathNode.path("points") :
                                (timelinePathNode.isArray() ? timelinePathNode : null);

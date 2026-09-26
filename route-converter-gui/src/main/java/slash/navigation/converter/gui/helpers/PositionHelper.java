@@ -157,7 +157,7 @@ public class PositionHelper {
             heartBeat = ((ExtendedSensorNavigationPosition) position).getHeartBeat();
         if(heartBeat == null)
             return "";
-        return format("%d bpm", round(heartBeat));
+        return format("%d bpm", heartBeat);
     }
 
     public static String formatHeading(Double heading) {

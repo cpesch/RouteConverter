@@ -57,4 +57,15 @@ public class OrderedProperties extends Properties {
     public synchronized Set<String> getKeys() {
         return properties.keySet();
     }
+
+    // the entries live in this map, not in the Hashtable that Properties compares
+    public synchronized boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        return properties.equals(((OrderedProperties) o).properties);
+    }
+
+    public synchronized int hashCode() {
+        return properties.hashCode();
+    }
 }

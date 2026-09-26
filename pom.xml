@@ -346,7 +346,10 @@
                     <artifactId>spotbugs-maven-plugin</artifactId>
                     <version>4.10.4.1</version>
                     <configuration>
-                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/spotbugs-exclude.xml</excludeFilterFile>
+                        <threshold>Medium</threshold>
+                        <effort>Max</effort>
+                        <failOnError>true</failOnError>
+                        <excludeFilterFile>${maven.multiModuleProjectDirectory}/config/spotbugs-exclude.xml</excludeFilterFile>
                     </configuration>
                 </plugin>
                 <!-- The bundled JAXB tooling version here is the xjc version used
@@ -509,10 +512,20 @@
                 </executions>
             </plugin>
 
-            <!-- SPOTBUGS - code quality -->
+            <!-- SPOTBUGS - code quality gate: fails verify on any finding that
+                 survives config/spotbugs-exclude.xml; skip with -Dspotbugs.skip -->
             <plugin>
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>spotbugs-check</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
 
             <plugin>
@@ -637,9 +650,9 @@
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <configuration>
                     <threshold>Medium</threshold>
-                    <effort>Default</effort>
+                    <effort>Max</effort>
                     <failOnError>false</failOnError>
-                    <excludeFilterFile>${maven.multiModuleProjectDirectory}/spotbugs-exclude.xml</excludeFilterFile>
+                    <excludeFilterFile>${maven.multiModuleProjectDirectory}/config/spotbugs-exclude.xml</excludeFilterFile>
                 </configuration>
             </plugin>
         </plugins>

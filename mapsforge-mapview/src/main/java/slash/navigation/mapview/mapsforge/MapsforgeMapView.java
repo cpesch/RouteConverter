@@ -184,6 +184,9 @@ public class MapsforgeMapView extends BaseMapView {
         switch (e.getType()) {
             case INSERT -> this.overlayManager.insert(e.getFirstRow(), e.getLastRow());
             case DELETE -> this.overlayManager.delete(e.getFirstRow(), e.getLastRow());
+            default -> {
+                // an updated overlay keeps its layer
+            }
         }
     };
     private final TableModelListener availableMapsListener = e -> {
@@ -366,11 +369,12 @@ public class MapsforgeMapView extends BaseMapView {
                         waypointLayer.layers.clear();
                     } else {
                         Set<Layer> toRemove = new HashSet<>(remove.size());
-                        for (Layer layer : remove) {
+                        for (PositionWithLayer positionWithLayer : positionWithLayers) {
+                            Layer layer = positionWithLayer.getLayer();
                             if (layer != null)
                                 toRemove.add(layer);
                             else
-                                log.warning("Could not find layer to remove for " + layer);
+                                log.warning("Could not find layer to remove for " + positionWithLayer);
                         }
                         waypointLayer.layers.removeAll(toRemove);
                     }
@@ -432,24 +436,27 @@ public class MapsforgeMapView extends BaseMapView {
 
     private static boolean initializedActions = false;
 
-    private synchronized void initializeActions() {
-        if (initializedActions)
-            return;
+    private void initializeActions() {
+        // the flag is static, so guard it with the class monitor, not the instance one
+        synchronized (MapsforgeMapView.class) {
+            if (initializedActions)
+                return;
 
-        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
-        actionManager.register("select-position", new SelectPositionAction());
-        actionManager.register("extend-selection", new ExtendSelectionAction());
-        actionManager.register("new-position-map", new AddPositionAction());
-        actionManager.registerLocal("new-position", MAP, "new-position-map");
-        actionManager.register("delete-position-map", new DeletePositionAction());
-        actionManager.registerLocal("delete", MAP, "delete-position-map");
-        actionManager.register("center-here", new CenterAction());
-        actionManager.register("snap-to-road-map", new SnapToRoadAction());
-        actionManager.registerLocal("snap-to-road", MAP, "snap-to-road-map");
-        actionManager.register("zoom-in", new ZoomAction(+1));
-        actionManager.register("zoom-out", new ZoomAction(-1));
+            ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+            actionManager.register("select-position", new SelectPositionAction());
+            actionManager.register("extend-selection", new ExtendSelectionAction());
+            actionManager.register("new-position-map", new AddPositionAction());
+            actionManager.registerLocal("new-position", MAP, "new-position-map");
+            actionManager.register("delete-position-map", new DeletePositionAction());
+            actionManager.registerLocal("delete", MAP, "delete-position-map");
+            actionManager.register("center-here", new CenterAction());
+            actionManager.register("snap-to-road-map", new SnapToRoadAction());
+            actionManager.registerLocal("snap-to-road", MAP, "snap-to-road-map");
+            actionManager.register("zoom-in", new ZoomAction(+1));
+            actionManager.register("zoom-out", new ZoomAction(-1));
 
-        initializedActions = true;
+            initializedActions = true;
+        }
     }
 
     private MapsforgeMapManager getMapManager() {
@@ -631,8 +638,8 @@ public class MapsforgeMapView extends BaseMapView {
     private static final int MARKER_ICON_HASH = 1234567892;
 
     private static Bitmap createIcon(String resource, int hash, int width, int height) throws IOException {
-        try {
-            return GRAPHIC_FACTORY.renderSvg(MapsforgeMapView.class.getResourceAsStream(resource), 1.0f, width, height, 100, hash);
+        try (InputStream inputStream = MapsforgeMapView.class.getResourceAsStream(resource)) {
+            return GRAPHIC_FACTORY.renderSvg(inputStream, 1.0f, width, height, 100, hash);
         } catch (IOException e) {
             // a failed load may leave a half loaded document behind that fails every later load, too
             removeDocument(Integer.toString(hash));

@@ -84,6 +84,7 @@ public class UpdateDecoupler {
                     case INSERT -> eventMapUpdater.handleAdd(firstRow, lastRow);
                     case UPDATE -> eventMapUpdater.handleUpdate(firstRow, lastRow);
                     case DELETE -> eventMapUpdater.handleRemove(firstRow, lastRow);
+                    default -> throw new IllegalArgumentException("Event type " + eventType + " is not supported");
                 }
             } catch (RuntimeException e) {
                 log.log(SEVERE, format("Cannot handle event type %d for rows %d..%d: %s", eventType, firstRow, lastRow, e), e);
