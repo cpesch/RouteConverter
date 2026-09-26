@@ -150,6 +150,13 @@ public class ResourceBundleCompletenessReportTest {
         assertEquals(50.0, result.get("fr").percent(), 0.001);
     }
 
+    @Test(expected = IOException.class)
+    public void testAnalyzeDirectoryOfNonExistentDirectoryThrows() throws IOException {
+        File directory = new File("does-not-exist-" + System.nanoTime());
+
+        report.analyzeDirectory(directory, "Bundle", "en");
+    }
+
     @Test
     public void testLoadBaselineReadsLocalePercentPairs() throws IOException {
         File directory = Files.createTempDirectory("resource-bundle-completeness-baseline-test").toFile();

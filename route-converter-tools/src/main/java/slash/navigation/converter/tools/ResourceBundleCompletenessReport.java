@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -168,8 +169,8 @@ public class ResourceBundleCompletenessReport {
 
         for (Map.Entry<String, LocaleCompleteness> entry : result.entrySet()) {
             LocaleCompleteness completeness = entry.getValue();
-            System.out.printf("%-8s %3d keys, %3d missing, %6.1f%%%n",
-                    entry.getKey(), completeness.keyCount(), completeness.missingCount(), completeness.percent());
+            System.out.print(String.format(Locale.ROOT, "%-8s %3d keys, %3d missing, %6.1f%%%n",
+                    entry.getKey(), completeness.keyCount(), completeness.missingCount(), completeness.percent()));
         }
 
         Map<String, Double> baseline = report.loadBaseline(baselineFile);
