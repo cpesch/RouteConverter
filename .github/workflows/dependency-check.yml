@@ -7,7 +7,7 @@ name: Dependency Check
 # the weekly run going red on the default branch IS the signal. Do not wire
 # ntfy or any other paging here.
 #
-# Reproduce locally: ./mvnw --batch-mode dependency-check:aggregate -DfailBuildOnCVSS=7
+# Reproduce locally: ./mvnw --batch-mode package dependency-check:aggregate -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip -Dspotbugs.skip -DfailBuildOnCVSS=7
 # (honours the same config/dependency-check-suppressions.xml as this workflow).
 # Use :aggregate, not :check - this is a ~30-module reactor, and :check run at
 # the root without -N/-pl scans each module's own dependency subset rather than
@@ -71,8 +71,20 @@ jobs:
           else
             NVD_ARGS=("-DnvdApiKey=$NVD_API_KEY")
           fi
-          ./mvnw --batch-mode -DskipTests dependency-check:aggregate \
+          # package first so the reactor's own modules resolve and their
+          # transitive dependencies are part of the aggregate scan; plain
+          # -DskipTests is ignored by this build, so skip tests and the other
+          # verify-phase gates with the project's own properties
+          ./mvnw --batch-mode package dependency-check:aggregate \
+            -Dskip.unit.tests=true -Dskip.integration.tests=true \
+            -Djacoco.skip -Dspotbugs.skip \
             -DfailBuildOnCVSS=7 -Dformat=HTML,JSON "${NVD_ARGS[@]}"
+
+      # the first manual run failed to upload with ENOTDIR on the report path;
+      # list what the plugin actually wrote so a repeat is diagnosable
+      - name: List dependency-check output
+        if: always()
+        run: ls -la target/ || true
 
       - name: Upload dependency-check report
         if: always()

@@ -210,26 +210,25 @@
                         <encoding>UTF-8</encoding>
                         <!-- spec 00017 Scope B: javac warnings fail the build, so a
                              warning-free compile cannot silently regress. rawtypes,
-                             deprecation and fallthrough have graduated out of the
-                             -Xlint bulk and are enforced below for main sources
+                             deprecation, fallthrough and unchecked have graduated out
+                             of the -Xlint bulk and are enforced below for main sources
                              (rawtypes measured clean at 9ec6c736f in specs/00018;
                              deprecation and fallthrough measured 0 reactor-wide,
                              main sources, on 2026-09-26, issue #215, host JDK 21 —
                              the CI matrix's other JDK, 25, isn't a separate risk here:
                              <release>${java.version}</release> pins the API surface to
                              21 regardless of host JDK, and fallthrough is purely
-                             syntactic). unchecked,
-                             serial and this-escape stay OFF deliberately: unchecked
-                             has 16 residual hits in kml's generated JAXB
-                             ObjectFactory classes (binding21/binding22/binding22beta)
-                             needing their own suppress-vs-regenerate decision (see
-                             specs/00018's 2026-08-11 Decision, item 3, and
-                             issue #222, filed for it); serial/this-escape are
-                             still the unmeasured -Xlint bulk — see the tracking
-                             issue and specs/00018. -->
+                             syntactic; unchecked measured 0 reactor-wide, main sources,
+                             on 2026-09-27, issue #222, after suppressing its 16 residual
+                             hits at the 6 generated-code call sites in kml's JAXB
+                             ObjectFactory classes — binding21/binding22/binding22beta,
+                             see the @SuppressWarnings("unchecked") comments there).
+                             serial and this-escape stay OFF deliberately: still the
+                             unmeasured -Xlint bulk — see the tracking issue and
+                             specs/00018. -->
                         <failOnWarning>true</failOnWarning>
                         <compilerArgs>
-                            <arg>-Xlint:rawtypes,deprecation,fallthrough</arg>
+                            <arg>-Xlint:rawtypes,deprecation,fallthrough,unchecked</arg>
                             <!-- javac silently caps warning output at 100 by default;
                                  raise it so a future CI failure log shows the true count
                                  instead of truncating (specs/00018 phase 1/2 both hit
@@ -852,6 +851,16 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-to-slf4j</artifactId>
                 <version>${log4j.version}</version>
+            </dependency>
+            <!-- graphhopper-core 11.0 (latest release) still pulls kotlin-stdlib
+                 1.6.20, which has CVE-2026-53914 (CVSS 9.8) and fails the weekly
+                 dependency-check gate (issue #212). kotlin-stdlib is backward
+                 compatible; 2.x no longer depends on kotlin-stdlib-common, so the
+                 1.6.20 -common jar drops out of the tree as well. -->
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>2.4.20</version>
             </dependency>
             <dependency>
                 <groupId>org.junit</groupId>
