@@ -85,6 +85,11 @@ public class CoverageOverlayController {
 
     private void refresh() {
         BaseRouteConverter r = BaseRouteConverter.getInstance();
+        // the poll timer starts in the constructor and can fire before Application.launch()
+        // has published the instance -- during early startup, or, as CoverageOverlayControllerTest
+        // shows, whenever this class is constructed directly without an Application at all
+        if (r == null)
+            return;
         if (category == Category.NONE) {
             r.showCoverageOverlay(null, null, null);
             return;
