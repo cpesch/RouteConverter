@@ -472,6 +472,8 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "coordinates")
+    // xjc 2.1 codegen erases the List<T> declaredType to a raw Class here; not hand-written, see issue #222
+    @SuppressWarnings("unchecked")
     public JAXBElement<List<String>> createCoordinates(List<String> value) {
         return new JAXBElement<List<String>>(_Coordinates_QNAME, ((Class) List.class), null, value);
     }
@@ -814,6 +816,8 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "http://earth.google.com/kml/2.1", name = "state", scope = ItemIconType.class)
+    // xjc 2.1 codegen erases the List<T> declaredType to a raw Class here; not hand-written, see issue #222
+    @SuppressWarnings("unchecked")
     public JAXBElement<List<ItemIconStateEnum>> createItemIconTypeState(List<ItemIconStateEnum> value) {
         return new JAXBElement<List<ItemIconStateEnum>>(_ItemIconTypeState_QNAME, ((Class) List.class), ItemIconType.class, value);
     }
