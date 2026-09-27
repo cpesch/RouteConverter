@@ -52,7 +52,7 @@ public class RouteConverterCmdLine {
             LogManager.getLogManager().readConfiguration(inputStream);
         } catch (IOException e) {
             // deliberate stderr output: the logger is not configured yet at this point,
-            // but still record it so the telemetry sees the failure
+            // but still record it via java.util.logging for anyone attaching a Handler
             System.err.println("Error initializing logging: " + e.getMessage());
             e.printStackTrace(System.err);
             log.log(Level.SEVERE, "Error initializing logging: " + e.getMessage(), e);
