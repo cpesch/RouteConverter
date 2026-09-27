@@ -70,6 +70,8 @@ public class LoggingHelper {
             FileHandler fileHandler = createFileHandler();
             logger.addHandler(fileHandler);
         } catch (IOException e) {
+            // last resort: this is the logging infrastructure itself failing to set up,
+            // so there is no logger to report to; stderr is all that is left
             System.err.println("Cannot configure file logging: " + e.getMessage());
             e.printStackTrace(System.err);
         }
