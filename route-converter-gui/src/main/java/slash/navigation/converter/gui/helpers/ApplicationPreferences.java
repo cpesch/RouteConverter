@@ -157,7 +157,7 @@ public class ApplicationPreferences {
 
     public void setCredentials(String userName, String password) {
         preferences.put(USERNAME_PREFERENCE, userName);
-        preferences.putByteArray(PASSWORD_PREFERENCE, password.getBytes());
+        preferences.putByteArray(PASSWORD_PREFERENCE, password.getBytes(UTF_8));
     }
 
     public void removeCredentials() {
