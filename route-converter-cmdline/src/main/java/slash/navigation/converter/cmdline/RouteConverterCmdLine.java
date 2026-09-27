@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.LogManager;
 import java.util.logging.Logger;
 
@@ -50,8 +51,11 @@ public class RouteConverterCmdLine {
         try (InputStream inputStream = RouteConverterCmdLine.class.getResourceAsStream("cmdline.properties")) {
             LogManager.getLogManager().readConfiguration(inputStream);
         } catch (IOException e) {
+            // deliberate stderr output: the logger is not configured yet at this point,
+            // but still record it so the telemetry sees the failure
             System.err.println("Error initializing logging: " + e.getMessage());
             e.printStackTrace(System.err);
+            log.log(Level.SEVERE, "Error initializing logging: " + e.getMessage(), e);
         }
     }
 
