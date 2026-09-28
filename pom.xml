@@ -89,9 +89,9 @@
 
         <alephformatter.version>0.1.1</alephformatter.version>
         <httpclient.version>5.6.4</httpclient.version>
-        <jackson.version>2.22.2</jackson.version>
+        <jackson.version>2.22.3</jackson.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
-        <jackson3.version>3.2.2</jackson3.version>
+        <jackson3.version>3.2.3</jackson3.version>
         <!-- jaxb-api.version / jaxb-impl.version must stay on the same JAXB
              major as the jaxb2-maven-plugin's bundled xjc (see the plugin
              entry in pluginManagement below). -->
@@ -109,7 +109,7 @@
              (CVE-2026-49844, Dependabot alerts 233-241). -->
         <log4j.version>2.26.1</log4j.version>
         <mapsforge.version>0.30.0</mapsforge.version>
-        <slf4j.version>2.0.19</slf4j.version>
+        <slf4j.version>2.0.20</slf4j.version>
     </properties>
 
     <profiles>
@@ -454,7 +454,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.10.2</version>
+                <version>3.10.3</version>
                 <configuration>
                     <ratchetFrom>origin/master</ratchetFrom>
                     <encoding>UTF-8</encoding>
@@ -751,7 +751,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>5.23.0</version>
+            <version>5.24.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
