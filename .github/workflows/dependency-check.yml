@@ -27,10 +27,12 @@ permissions:
 jobs:
   dependency-check:
     runs-on: ubuntu-latest
-    # Job is already expected to take 20+ minutes (NVD feed download); this is
-    # a conservative cap against a stalled/rate-limited download otherwise
-    # running for GitHub's default 6-hour job cap before failing.
-    timeout-minutes: 60
+    # A warm NVD cache makes this a few minutes. A cold cache means the full
+    # ~400k-record NVD download, which took 5 minutes on one day and did not
+    # finish in 60 on the next (NVD API throughput varies a lot), so the cap
+    # leaves room for that while still stopping a stalled download well before
+    # GitHub's default 6-hour job cap.
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v7
 
@@ -53,15 +55,20 @@ jobs:
 
       # The NVD feed itself is multiple GB and only needs a same-week refresh
       # (NVD publishes incrementally); without this cache every run re-downloads
-      # the full feed and takes 20+ minutes just to warm up.
-      - name: Cache NVD data
-        uses: actions/cache@v6
+      # the full feed. Restore and save are separate steps on purpose: the
+      # all-in-one actions/cache only saves when the whole job succeeds, and
+      # this job fails exactly when it finds a vulnerability - so the cache was
+      # never written and every run started from a cold download.
+      - name: Restore NVD data
+        id: nvd-cache
+        uses: actions/cache/restore@v6
         with:
           path: ~/.m2/repository/org/owasp/dependency-check-data
           key: nvd-data-${{ steps.week.outputs.week }}
           restore-keys: nvd-data-
 
-      - name: Run OWASP dependency-check
+      - name: Update NVD data
+        id: nvd-update
         env:
           NVD_API_KEY: ${{ secrets.NVD_API_KEY }}
         run: |
@@ -71,6 +78,19 @@ jobs:
           else
             NVD_ARGS=("-DnvdApiKey=$NVD_API_KEY")
           fi
+          ./mvnw --batch-mode -N dependency-check:update-only "${NVD_ARGS[@]}"
+
+      # saved as soon as the data is current, independent of the scan's outcome
+      - name: Save NVD data
+        if: always() && steps.nvd-update.outcome == 'success' && steps.nvd-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v6
+        with:
+          path: ~/.m2/repository/org/owasp/dependency-check-data
+          key: nvd-data-${{ steps.week.outputs.week }}
+
+      - name: Run OWASP dependency-check
+        run: |
+          # the NVD data was refreshed by the update step above
           # package first so the reactor's own modules resolve and their
           # transitive dependencies are part of the aggregate scan; plain
           # -DskipTests is ignored by this build, so skip tests and the other
@@ -78,13 +98,15 @@ jobs:
           ./mvnw --batch-mode package dependency-check:aggregate \
             -Dskip.unit.tests=true -Dskip.integration.tests=true \
             -Djacoco.skip -Dspotbugs.skip \
-            -DfailBuildOnCVSS=7 -Dformat=HTML,JSON "${NVD_ARGS[@]}"
+            -DautoUpdate=false -DfailBuildOnCVSS=7 -Dformat=HTML,JSON
 
       # the first manual run failed to upload with ENOTDIR on the report path;
       # list what the plugin actually wrote so a repeat is diagnosable
       - name: List dependency-check output
         if: always()
-        run: ls -la target/ || true
+        run: |
+          ls -la target/ || true
+          find . -maxdepth 3 -name 'dependency-check-report.*' -print
 
       - name: Upload dependency-check report
         if: always()
