@@ -36,6 +36,8 @@ on:
         required: false
       CRASH_REPORT_HMAC_SECRET:
         required: false
+      TIMEALBUM_GOOGLE_MAPS_API_KEY:
+        required: false
 
 jobs:
   build:
