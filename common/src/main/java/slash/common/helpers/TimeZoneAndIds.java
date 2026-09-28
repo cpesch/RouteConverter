@@ -34,18 +34,19 @@ public class TimeZoneAndIds {
     private static final String GMT_PLUS = "Etc/GMT+";
     private static final String GMT_MINUS = "Etc/GMT-";
 
-    private static TimeZoneAndIds instance;
     private TimeZoneAndId[] timeZoneAndIds;
 
     private TimeZoneAndIds() {
         initialize();
     }
 
+    // initialization-on-demand holder: lazy and thread-safe without locking
+    private static class Holder {
+        private static final TimeZoneAndIds INSTANCE = new TimeZoneAndIds();
+    }
+
     public static TimeZoneAndIds getInstance() {
-        if (instance == null) {
-            instance = new TimeZoneAndIds();
-        }
-        return instance;
+        return Holder.INSTANCE;
     }
 
     private void initialize() {
