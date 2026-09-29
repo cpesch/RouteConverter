@@ -90,6 +90,9 @@ jobs:
 
       - name: Run OWASP dependency-check
         run: |
+          # -Dformats (the String[] list parameter), not -Dformat: with
+          # -Dformat=HTML,JSON the plugin wrote one empty file literally named
+          # "HTML,JSON" into target/ instead of the two reports
           # the root module has pom packaging, so nothing creates its target/;
           # when the report location is missing, dependency-check writes the
           # report as a FILE named target instead of target/dependency-check-report.*
@@ -103,7 +106,7 @@ jobs:
           ./mvnw --batch-mode package dependency-check:aggregate \
             -Dskip.unit.tests=true -Dskip.integration.tests=true \
             -Djacoco.skip -Dspotbugs.skip \
-            -DautoUpdate=false -DfailBuildOnCVSS=7 -Dformat=HTML,JSON
+            -DautoUpdate=false -DfailBuildOnCVSS=7 -Dformats=HTML,JSON
 
       # the first manual run failed to upload with ENOTDIR on the report path;
       # list what the plugin actually wrote so a repeat is diagnosable
