@@ -79,7 +79,7 @@
         <dependency>
             <groupId>com.garmin</groupId>
             <artifactId>fit</artifactId>
-            <version>21.214.0</version>
+            <version>21.217.0</version>
         </dependency>
         <dependency>
             <groupId>de.grundid.opendatalab</groupId>
@@ -164,7 +164,7 @@
         <dependency>
             <groupId>org.apache.xmlbeans</groupId>
             <artifactId>xmlbeans</artifactId>
-            <version>5.4.0</version>
+            <version>5.4.1</version>
         </dependency>
     </dependencies>
 
