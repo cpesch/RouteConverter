@@ -90,6 +90,11 @@ jobs:
 
       - name: Run OWASP dependency-check
         run: |
+          # the root module has pom packaging, so nothing creates its target/;
+          # when the report location is missing, dependency-check writes the
+          # report as a FILE named target instead of target/dependency-check-report.*
+          # (seen on CI as "target/: Not a directory" and ENOTDIR on upload)
+          mkdir -p target
           # the NVD data was refreshed by the update step above
           # package first so the reactor's own modules resolve and their
           # transitive dependencies are part of the aggregate scan; plain
