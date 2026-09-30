@@ -30,7 +30,7 @@ modules:
       - >-
         jlink
         --module-path $JAVA_HOME/jmods
-        --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.scripting,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.management,jdk.net,jdk.unsupported
+        --add-modules java.base,java.compiler,java.datatransfer,java.desktop,java.logging,java.management,java.naming,java.prefs,java.scripting,java.security.jgss,java.sql,java.xml,java.xml.crypto,jdk.crypto.ec,jdk.localedata,jdk.management,jdk.net,jdk.unsupported
         --no-header-files --no-man-pages --strip-debug
         --output /app/jre
       - install -Dm644 RouteConverterLinux.jar /app/share/routeconverter/RouteConverterLinux.jar

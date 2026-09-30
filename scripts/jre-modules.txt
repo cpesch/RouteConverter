@@ -28,6 +28,9 @@ java.sql
 java.xml
 java.xml.crypto
 jdk.crypto.ec
+# Locale data beyond en-US (en_GB, de, fr, ...). Without it DateFormat/NumberFormat
+# fall back to US formats on the bundled JRE (issue #415).
+jdk.localedata
 # UpdateChecker.getTotalMemory() casts to com.sun.management.OperatingSystemMXBean
 # (provided by jdk.management). Without it the call hits the catch and reports "?".
 jdk.management
