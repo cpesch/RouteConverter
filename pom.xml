@@ -92,6 +92,7 @@
         <jackson.version>2.22.3</jackson.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
         <jackson3.version>3.2.3</jackson3.version>
+        <janino.version>3.1.12</janino.version>
         <!-- jaxb-api.version / jaxb-impl.version must stay on the same JAXB
              major as the jaxb2-maven-plugin's bundled xjc (see the plugin
              entry in pluginManagement below). -->
@@ -851,6 +852,20 @@
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-to-slf4j</artifactId>
                 <version>${log4j.version}</version>
+            </dependency>
+            <!-- graphhopper-core 11.0 (latest release) pulls janino/commons-compiler
+                 3.1.9, flagged with CVE-2023-33546 (CVSS 5.5) by the weekly
+                 dependency-check; GraphHopper uses janino to compile custom models
+                 (our travel restrictions). Keep both on the same patch release. -->
+            <dependency>
+                <groupId>org.codehaus.janino</groupId>
+                <artifactId>commons-compiler</artifactId>
+                <version>${janino.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.codehaus.janino</groupId>
+                <artifactId>janino</artifactId>
+                <version>${janino.version}</version>
             </dependency>
             <!-- graphhopper-core 11.0 (latest release) still pulls kotlin-stdlib
                  1.6.20, which has CVE-2026-53914 (CVSS 9.8) and fails the weekly
