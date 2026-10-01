@@ -42,7 +42,7 @@ import jakarta.xml.bind.*;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import slash.common.helpers.SecureXml;
 import javax.xml.transform.sax.SAXSource;
 import java.io.*;
 import java.util.ArrayList;
@@ -132,9 +132,8 @@ public class GpxUtil {
 
     private static GpxType unmarshal11Internal(InputSource inputSource) throws IOException {
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            SAXParser saxParser = factory.newSAXParser();
+            // hardened: no DOCTYPE, no external entities or DTDs (XXE)
+            SAXParser saxParser = SecureXml.newSaxParser();
             NamespaceFilter filter = new NamespaceFilter();
             filter.addMapping("https://www8.garmin.com/xmlschemas/TrackPointExtensionv1.xsd",
                     "http://www.garmin.com/xmlschemas/TrackPointExtension/v1");

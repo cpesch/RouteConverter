@@ -35,6 +35,7 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
 import java.io.ByteArrayInputStream;
+import java.io.StringReader;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -80,7 +81,8 @@ public class ViaMichelinUtil {
                 if (systemId != null && systemId.contains("viamichelin") && systemId.endsWith("export.dtd"))
                     return new InputSource(new ByteArrayInputStream(XML_PREAMBLE.getBytes()));
                 else
-                    return null;
+                    // never fetch other external entities or DTDs (XXE)
+                    return new InputSource(new StringReader(""));
             }
         };
         xmlReader.setEntityResolver(entityResolver);

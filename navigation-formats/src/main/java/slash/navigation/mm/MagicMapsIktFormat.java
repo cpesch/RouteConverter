@@ -20,6 +20,7 @@
 
 package slash.navigation.mm;
 
+import slash.common.helpers.SecureXml;
 import slash.navigation.base.*;
 import slash.navigation.common.NavigationPosition;
 
@@ -166,7 +167,7 @@ public class MagicMapsIktFormat extends XmlNavigationFormat<MagicMapsIktRoute> i
     }
 
     public void read(InputStream source, ParserContext<MagicMapsIktRoute> context) throws IOException {
-        XMLInputFactory factory = XMLInputFactory.newInstance();
+        XMLInputFactory factory = SecureXml.harden(XMLInputFactory.newInstance());
         try {
             XMLEventReader eventReader = factory.createXMLEventReader(source, UTF8_ENCODING);
             context.appendRoutes(process(eventReader));

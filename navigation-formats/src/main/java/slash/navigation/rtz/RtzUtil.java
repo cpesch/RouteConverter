@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import slash.common.helpers.SecureXml;
 import javax.xml.transform.sax.SAXSource;
 import java.io.IOException;
 import java.io.InputStream;
@@ -66,9 +66,8 @@ class RtzUtil {
     public static Route unmarshal(InputStream in) throws IOException {
         Route result;
         try {
-            SAXParserFactory factory = SAXParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            SAXParser saxParser = factory.newSAXParser();
+            // hardened: no DOCTYPE, no external entities or DTDs (XXE)
+            SAXParser saxParser = SecureXml.newSaxParser();
             // RTZ 1.1 is structurally identical to 1.0, so read it with the 1.0 bindings
             RtzNamespaceFilter filter = new RtzNamespaceFilter();
             filter.addMapping(RTZ_11_NAMESPACE_URI, RTZ_10_NAMESPACE_URI);

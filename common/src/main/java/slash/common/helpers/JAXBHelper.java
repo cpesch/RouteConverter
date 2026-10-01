@@ -88,7 +88,8 @@ public class JAXBHelper {
 
     public static Unmarshaller newUnmarshaller(JAXBContext context) {
         try {
-            return context.createUnmarshaller();
+            // hardened against XXE: the files come from third parties (and, online, from strangers)
+            return SecureXml.harden(context.createUnmarshaller());
         } catch (JAXBException e) {
             throw new RuntimeException(e);
         }

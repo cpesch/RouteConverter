@@ -26,10 +26,12 @@ import slash.navigation.base.RouteCharacteristics;
 import slash.navigation.common.NavigationPosition;
 
 import java.io.ByteArrayOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.regex.Pattern;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
@@ -37,6 +39,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import static java.lang.String.format;
+import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 /**
  * The base of all compressed Google Earth formats.
@@ -68,19 +71,83 @@ public abstract class KmzFormat extends BaseKmlFormat {
         return delegate.createRoute(characteristics, name, positions);
     }
 
+    /**
+     * Upper bound for the bytes that may be inflated from one KMZ, all entries together. A KMZ is a
+     * zip, and a few kilobytes can inflate to gigabytes (zip bomb). Override with
+     * {@code -Drc.kmz.max.uncompressed.bytes=...}, e.g. lower for a server that converts uploads.
+     */
+    static final String MAX_UNCOMPRESSED_BYTES_PROPERTY = "rc.kmz.max.uncompressed.bytes";
+    static final long DEFAULT_MAX_UNCOMPRESSED_BYTES = 256L * 1024 * 1024;
+    static final int MAX_ENTRIES = 1000;
+    private static final Pattern RESOURCE_ENTRY = Pattern.compile(".*\\.(png|jpe?g|gif|bmp|tiff?|ico|svg|dae|mp3|wav|ogg|mp4)$", CASE_INSENSITIVE);
+
+    static long getMaxUncompressedBytes() {
+        return Long.getLong(MAX_UNCOMPRESSED_BYTES_PROPERTY, DEFAULT_MAX_UNCOMPRESSED_BYTES);
+    }
+
+    private static class BudgetInputStream extends FilterInputStream {
+        private final long limit;
+        private long consumed;
+        private boolean exceeded;
+
+        BudgetInputStream(InputStream in, long limit) {
+            super(in);
+            this.limit = limit;
+        }
+
+        private void count(long bytes) throws IOException {
+            if (bytes <= 0)
+                return;
+            consumed += bytes;
+            if (consumed > limit) {
+                exceeded = true;
+                throw new IOException(format("KMZ inflates to more than %d bytes; refusing to read it", limit));
+            }
+        }
+
+        public int read() throws IOException {
+            int result = super.read();
+            if (result != -1)
+                count(1);
+            return result;
+        }
+
+        public int read(byte[] b, int off, int len) throws IOException {
+            int result = super.read(b, off, len);
+            count(result);
+            return result;
+        }
+
+        public long skip(long n) throws IOException {
+            // route skipping through read() so skipped bytes count as well
+            byte[] buffer = new byte[(int) Math.min(n, 8192)];
+            int read = read(buffer, 0, buffer.length);
+            return Math.max(read, 0);
+        }
+    }
+
     public void read(InputStream source, ParserContext<KmlRoute> context) throws IOException {
         try (ZipInputStream zip = new ZipInputStream(source)) {
+            BudgetInputStream budget = new BudgetInputStream(zip, getMaxUncompressedBytes());
             ZipEntry entry;
+            int entries = 0;
             while ((entry = zip.getNextEntry()) != null) {
-                if(entry.isDirectory())
+                if (++entries > MAX_ENTRIES)
+                    throw new IOException(format("KMZ contains more than %d entries; refusing to read it", MAX_ENTRIES));
+                // icons and models are never KML; do not feed them to the XML parser
+                if(entry.isDirectory() || RESOURCE_ENTRY.matcher(entry.getName()).matches())
                     continue;
 
                 try {
-                    delegate.read(new NotClosingUnderlyingInputStream(zip), context);
+                    delegate.read(new NotClosingUnderlyingInputStream(budget), context);
                 }
                 catch(Exception e) {
+                    if (budget.exceeded)
+                        throw new IOException(format("KMZ inflates to more than %d bytes; refusing to read it", budget.limit), e);
                     log.info(format("Error reading %s with %s: %s, %s", entry, delegate, e.getClass(), e));
                 }
+                // inflate (and count) what the delegate left unread instead of letting closeEntry() skip it unmetered
+                budget.transferTo(OutputStream.nullOutputStream());
                 zip.closeEntry();
             }
         }
