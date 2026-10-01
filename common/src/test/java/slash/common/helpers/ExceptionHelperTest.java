@@ -79,6 +79,36 @@ public class ExceptionHelperTest {
         assertTrue(msg.contains("api.routeconverter.com"));
     }
 
+    // rc#246: a server that accepts the connection but sends nothing must not read as "offline"
+    @Test
+    public void testGetLocalizedMessageForTimeoutNamesTheHostAndIsNotOffline() {
+        String msg = getLocalizedMessage(new SocketTimeoutException("Read timed out"),
+                "https://download.geofabrik.de/europe/germany/hamburg-latest.osm.pbf");
+        assertEquals("download.geofabrik.de did not respond in time (Read timed out).", msg);
+        assertFalse(msg.contains("not connected to the Internet"));
+    }
+
+    @Test
+    public void testGetLocalizedMessageForTimeoutWithoutUrl() {
+        assertEquals("The server did not respond in time (Read timed out).",
+                getLocalizedMessage(new SocketTimeoutException("Read timed out")));
+    }
+
+    @Test
+    public void testGetLocalizedMessageForSslFailureNamesTheHostAndIsNotOffline() {
+        String msg = getLocalizedMessage(new SSLException("handshake failed"),
+                "https://download.geofabrik.de/europe.poly");
+        assertEquals("Cannot establish a secure connection to download.geofabrik.de (handshake failed).", msg);
+        assertFalse(msg.contains("not connected to the Internet"));
+    }
+
+    @Test
+    public void testGetLocalizedMessageForUnknownHostStaysOfflineAndNamesTheHost() {
+        String msg = getLocalizedMessage(new UnknownHostException("download.geofabrik.de"),
+                "https://download.geofabrik.de/europe/germany/hamburg-latest.osm.pbf");
+        assertEquals("Your computer is not connected to the Internet and\ncannot access download.geofabrik.de.", msg);
+    }
+
     @Test
     public void testGetLocalizedMessageForOnlineExceptionWithMessage() {
         RuntimeException ex = new RuntimeException("something failed");

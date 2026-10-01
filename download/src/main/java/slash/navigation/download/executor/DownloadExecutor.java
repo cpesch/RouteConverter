@@ -84,7 +84,7 @@ public class DownloadExecutor implements Runnable {
             // attach the throwable itself to the log record when it is a genuine
             // failure, so a Handler (and the crash telemetry) can see it; a known
             // offline condition is common and transient, so it is logged without one
-            String message = format("Failed to download content from %s: %s", download.getUrl(), getLocalizedMessage(e));
+            String message = format("Failed to download content from %s: %s", download.getUrl(), getLocalizedMessage(e, download.getUrl()));
             if (isComputerOffline(e))
                 // known/transient condition, not a crash-worthy failure -- avoid spamming
                 // crash telemetry with offline traces at SEVERE
