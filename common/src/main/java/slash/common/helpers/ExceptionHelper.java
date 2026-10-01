@@ -24,6 +24,7 @@ import javax.net.ssl.SSLException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.ConnectException;
+import java.net.URI;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
@@ -40,15 +41,41 @@ import static java.util.Collections.newSetFromMap;
  */
 
 public class ExceptionHelper {
+    private static String extractHost(String url) {
+        if (url == null)
+            return null;
+        try {
+            String host = URI.create(url).getHost();
+            return host != null ? host : url;
+        } catch (IllegalArgumentException e) {
+            return url;
+        }
+    }
+
     public static boolean isComputerOffline(Throwable throwable) {
         return throwable instanceof ConnectException || throwable instanceof UnknownHostException ||
                 throwable instanceof SSLException || throwable instanceof SocketTimeoutException;
     }
 
     public static String getLocalizedMessage(Throwable throwable) {
+        return getLocalizedMessage(throwable, null);
+    }
+
+    /**
+     * Like {@link #getLocalizedMessage(Throwable)}, but names the host of the given url, if any.
+     * Only an unreachable host is reported as offline: a server that accepts the connection and
+     * then does not answer in time, or fails the TLS handshake, is not the computer's fault.
+     */
+    public static String getLocalizedMessage(Throwable throwable, String url) {
+        String host = extractHost(url);
+        String detail = throwable.getMessage() != null ? " (" + throwable.getMessage() + ")" : "";
+        if (throwable instanceof SocketTimeoutException)
+            return (host != null ? host : "The server") + " did not respond in time" + detail + ".";
+        if (throwable instanceof SSLException)
+            return "Cannot establish a secure connection to " + (host != null ? host : "the server") + detail + ".";
         if (isComputerOffline(throwable))
             return "Your computer is not connected to the Internet and\n" +
-                    "cannot access " + throwable.getMessage() + ".";
+                    "cannot access " + (host != null ? host : throwable.getMessage()) + ".";
         if (throwable.getLocalizedMessage() != null)
             return throwable.getLocalizedMessage();
         // a wrapper without its own message (e.g. ExceptionInInitializerError)
