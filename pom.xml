@@ -853,6 +853,15 @@
                 <artifactId>log4j-to-slf4j</artifactId>
                 <version>${log4j.version}</version>
             </dependency>
+            <!-- graphhopper-core 11.0 pulls GraphHopper's fork of the Jackson JTS
+                 module at 2.19.2; keep it on the latest release, which matches the
+                 managed jackson.version more closely. Its CVE-2021-23408 report is a
+                 CPE false positive, suppressed in config/dependency-check-suppressions.xml. -->
+            <dependency>
+                <groupId>com.graphhopper.external</groupId>
+                <artifactId>jackson-datatype-jts</artifactId>
+                <version>2.21.0</version>
+            </dependency>
             <!-- graphhopper-core 11.0 (latest release) pulls janino/commons-compiler
                  3.1.9, flagged with CVE-2023-33546 (CVSS 5.5) by the weekly
                  dependency-check; GraphHopper uses janino to compile custom models
