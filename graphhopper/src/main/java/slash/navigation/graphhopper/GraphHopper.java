@@ -379,38 +379,67 @@ public class GraphHopper extends BaseRoutingService {
         }
 
         List<GraphDescriptor> graphDescriptors = finder.getGraphDescriptorsFor(mapDescriptors);
-        return new DownloadFutureImpl(graphDescriptors);
+        return new DownloadFutureImpl(graphDescriptors, longitudeAndLatitudes);
+    }
+
+    // true if the loaded graph finds a road for every position; a graph that cannot be
+    // loaded answers true, so the caller keeps its previous behaviour
+    boolean coversAll(List<LongitudeAndLatitude> longitudeAndLatitudes) {
+        initializeHopper();
+        com.graphhopper.GraphHopper hopper = this.hopper;
+        if (hopper == null)
+            return true;
+
+        LocationIndex locationIndex = hopper.getLocationIndex();
+        for (LongitudeAndLatitude longitudeAndLatitude : longitudeAndLatitudes) {
+            Snap snap = locationIndex.findClosest(longitudeAndLatitude.latitude(), longitudeAndLatitude.longitude(), EdgeFilter.ALL_EDGES);
+            if (!snap.isValid())
+                return false;
+        }
+        return true;
     }
 
     private class DownloadFutureImpl implements DownloadFuture {
         private final List<GraphDescriptor> graphDescriptors;
+        private final List<LongitudeAndLatitude> longitudeAndLatitudes;
         private GraphDescriptor next;
 
-        DownloadFutureImpl(Collection<GraphDescriptor> graphDescriptors) {
+        DownloadFutureImpl(Collection<GraphDescriptor> graphDescriptors, List<LongitudeAndLatitude> longitudeAndLatitudes) {
             this.graphDescriptors = new ArrayList<>(graphDescriptors);
+            this.longitudeAndLatitudes = longitudeAndLatitudes;
             this.next = !graphDescriptors.isEmpty() ? this.graphDescriptors.remove(0) : null;
         }
 
         public boolean isRequiresDownload() {
-            if (next == null)
-                return false;
+            while (next != null) {
+                // check against the graph descriptor computed for THIS route (next), not against
+                // whatever osmPbfFile/hopper happens to be loaded from an earlier, possibly distant
+                // route: that stale singleton state otherwise stays "satisfied" forever and next is
+                // silently discarded, so the wrong graph keeps being used (rc#105)
+                File file = createFile(next);
+                boolean requiresDownload = !existsFile(file) && !existsGraphDirectory(file);
+                if (requiresDownload) {
+                    log.fine("existsGraphDirectory(next)=" + existsGraphDirectory(file) + " getGraphDirectory(next)=" + getGraphDirectory(file) +
+                            " existsFile(next)=" + existsFile(file) + " next=" + file +
+                            " graphDescriptors=" + graphDescriptors);
+                    return confirmDownload();
+                }
 
-            // check against the graph descriptor computed for THIS route (next), not against
-            // whatever osmPbfFile/hopper happens to be loaded from an earlier, possibly distant
-            // route: that stale singleton state otherwise stays "satisfied" forever and next is
-            // silently discarded, so the wrong graph keeps being used (rc#105)
-            File file = createFile(next);
-            boolean requiresDownload = !existsFile(file) && !existsGraphDirectory(file);
-            if (requiresDownload)
-                log.fine("existsGraphDirectory(next)=" + existsGraphDirectory(file) + " getGraphDirectory(next)=" + getGraphDirectory(file) +
-                        " existsFile(next)=" + existsFile(file) + " next=" + file +
-                        " graphDescriptors=" + graphDescriptors);
-            else
                 // next is already fully available locally: point osmPbfFile at it right away so
                 // initializeHopper() (called unconditionally from getRouteBetween()) switches the
                 // loaded graph even though no download/processing is triggered below
                 setOsmPbfFile(file);
-            return requiresDownload && confirmDownload();
+
+                // a local graph whose bounding box contains the route may still have no roads
+                // there, e.g. dk+sh-latest.osm.pbf for Hamburg, which is a state of its own; only
+                // an already imported graph can be asked cheaply, so try the next graph then (rc#243)
+                if (!existsGraphDirectory(file) || coversAll(longitudeAndLatitudes))
+                    return false;
+
+                log.info(format("Graph %s has no roads for %s, trying the next graph", file, longitudeAndLatitudes));
+                next = !graphDescriptors.isEmpty() ? graphDescriptors.remove(0) : null;
+            }
+            return false;
         }
 
         private boolean confirmDownload() {
