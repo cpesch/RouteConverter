@@ -32,4 +32,19 @@
   </suppress>
 -->
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+  <suppress>
+     <notes><![CDATA[
+        REASON: false positive - CVE-2021-23408 is a prototype-pollution bug in
+        the URL parser of GraphHopper's JavaScript web bundle
+        (com.graphhopper:graphhopper-web-bundle before 3.2 / 4.0). The
+        com.graphhopper.external group makes dependency-check assign this jar
+        the CPE graphhopper:graphhopper and read the Jackson module's own
+        version (2.x) as a GraphHopper version below 3.2. This jar is
+        GraphHopper's fork of the Jackson JTS datatype module, not the web
+        bundle, and our GraphHopper is graphhopper-core 11.0.
+        RE-CHECK: 2027-04-01
+     ]]></notes>
+     <packageUrl regex="true">^pkg:maven/com\.graphhopper\.external/jackson-datatype-jts@.*$</packageUrl>
+     <cve>CVE-2021-23408</cve>
+  </suppress>
 </suppressions>
