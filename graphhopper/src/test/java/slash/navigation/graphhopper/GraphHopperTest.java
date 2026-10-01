@@ -24,6 +24,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.openstreetmap.osmosis.osmbinary.Fileformat;
+import org.openstreetmap.osmosis.osmbinary.Osmformat;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.LongitudeAndLatitude;
 import slash.navigation.common.MapDescriptor;
@@ -33,7 +35,9 @@ import slash.navigation.download.Checksum;
 import slash.navigation.download.DownloadManager;
 import slash.navigation.routing.DownloadFuture;
 
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -51,6 +55,8 @@ import static slash.common.io.Files.recursiveDelete;
 
 public class GraphHopperTest {
     private static final String MALA_FATRA_URI = "europe/slovakia/mala-fatra-latest.osm.pbf";
+    private static final String DK_SH_URI = "europe/dk+sh-latest.osm.pbf";
+    private static final String HAMBURG_URI = "europe/germany/hamburg-latest.osm.pbf";
 
     @Rule
     public final TemporaryFolder temporaryFolder = new TemporaryFolder();
@@ -192,6 +198,91 @@ public class GraphHopperTest {
         assertEquals("GraphHopper must switch osmPbfFile to the already present graph for the " +
                         "current route instead of leaving the previously loaded graph in place",
                 malaFatraLocalFile, hopper.getOsmPbfFile());
+    }
+
+    // rc#243: a local graph whose bounding box contains the route may still have no roads there --
+    // dk+sh-latest.osm.pbf (Denmark + Schleswig-Holstein) for Hamburg, which is a state of its own.
+    // isRequiresDownload() must then move on to the next graph instead of routing with the local one.
+    private GraphHopper hopperWithLocalDkShAndRemoteHamburg(boolean localGraphCoversRoute) throws IOException {
+        slash.navigation.datasources.File dkShFile = mock(slash.navigation.datasources.File.class);
+        when(dkShFile.getUri()).thenReturn(DK_SH_URI);
+        when(dkShFile.getBoundingBox()).thenReturn(new BoundingBox(15.65449, 58.06239, 7.46458, 53.356904));
+        slash.navigation.datasources.File hamburgFile = mock(slash.navigation.datasources.File.class);
+        when(hamburgFile.getUri()).thenReturn(HAMBURG_URI);
+        when(hamburgFile.getBoundingBox()).thenReturn(new BoundingBox(10.33637, 53.7465, 9.613465, 53.38581));
+
+        DataSource graphHopperDataSource = mock(DataSource.class);
+        when(graphHopperDataSource.getDirectory()).thenReturn(dataSourceDirectoryName);
+        when(graphHopperDataSource.getAction()).thenReturn(Action.Copy.name());
+        when(graphHopperDataSource.getBaseUrl()).thenReturn("http://download.geofabrik.de/");
+        when(graphHopperDataSource.getFiles()).thenReturn(asList(dkShFile, hamburgFile));
+        when(dkShFile.getDataSource()).thenReturn(graphHopperDataSource);
+        when(hamburgFile.getDataSource()).thenReturn(graphHopperDataSource);
+
+        // dk+sh is downloaded and already imported as a graph, Hamburg is not downloaded
+        File dkShLocalFile = new File(getApplicationDirectory(dataSourceDirectoryName), DK_SH_URI);
+        ensureDirectory(dkShLocalFile.getParentFile());
+        // a PBF header with the real dk+sh bounding box, so the local file becomes a graph descriptor
+        writePbfHeader(dkShLocalFile, 7.46458, 15.65449, 58.06239, 53.356904);
+        File dkShProperties = new File(new File(dkShLocalFile.getParentFile(), "dk+sh"), PbfUtil.PROPERTIES);
+        ensureDirectory(dkShProperties.getParentFile());
+        assertTrue(dkShProperties.createNewFile());
+
+        GraphHopper hopper = new GraphHopper(new DownloadManager(temporaryFolder.newFile("queueFile.xml"))) {
+            boolean coversAll(java.util.List<LongitudeAndLatitude> longitudeAndLatitudes) {
+                return localGraphCoversRoute;
+            }
+        };
+        hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), graphHopperDataSource);
+        return hopper;
+    }
+
+    // the smallest PBF that PbfUtil.extractBoundingBox() reads: one raw OSMHeader blob with a bounding box
+    private static void writePbfHeader(File file, double left, double right, double top, double bottom) throws IOException {
+        Osmformat.HeaderBlock headerBlock = Osmformat.HeaderBlock.newBuilder()
+                .setBbox(Osmformat.HeaderBBox.newBuilder()
+                        .setLeft(nanoDegrees(left)).setRight(nanoDegrees(right))
+                        .setTop(nanoDegrees(top)).setBottom(nanoDegrees(bottom)))
+                .build();
+        byte[] blob = Fileformat.Blob.newBuilder().setRaw(headerBlock.toByteString()).build().toByteArray();
+        byte[] blobHeader = Fileformat.BlobHeader.newBuilder().setType("OSMHeader").setDatasize(blob.length).build().toByteArray();
+        try (DataOutputStream out = new DataOutputStream(new FileOutputStream(file))) {
+            out.writeInt(blobHeader.length);
+            out.write(blobHeader);
+            out.write(blob);
+        }
+    }
+
+    private static long nanoDegrees(double degrees) {
+        return Math.round(degrees * 1000.0 * 1000.0 * 1000.0);
+    }
+
+    @Test
+    public void isRequiresDownloadMovesOnWhenTheLocalGraphHasNoRoadsForTheRoute() throws IOException {
+        GraphHopper hopper = hopperWithLocalDkShAndRemoteHamburg(false);
+
+        // Hamburg: inside the dk+sh bounding box, but not part of the dk+sh extract
+        DownloadFuture future = hopper.downloadRoutingDataFor("test-map", asList(
+                new LongitudeAndLatitude(9.97, 53.55),
+                new LongitudeAndLatitude(9.98, 53.552)));
+
+        assertTrue("GraphHopper must move on to the Hamburg graph and require its download when " +
+                        "the local dk+sh graph has no roads for the route",
+                future.isRequiresDownload());
+    }
+
+    @Test
+    public void isRequiresDownloadKeepsTheLocalGraphWhenItHasRoadsForTheRoute() throws IOException {
+        GraphHopper hopper = hopperWithLocalDkShAndRemoteHamburg(true);
+
+        // Kiel: covered by the local dk+sh graph
+        DownloadFuture future = hopper.downloadRoutingDataFor("test-map", asList(
+                new LongitudeAndLatitude(10.12, 54.32),
+                new LongitudeAndLatitude(10.14, 54.33)));
+
+        assertFalse("GraphHopper must not require a download when the local graph covers the route",
+                future.isRequiresDownload());
+        assertEquals(new File(getApplicationDirectory(dataSourceDirectoryName), DK_SH_URI), hopper.getOsmPbfFile());
     }
 
     // rc#178: calculateRemainingDownloadSize(...) == 0 used to double as "covered", but it is also
