@@ -70,8 +70,11 @@ public class GraphHopperIT {
         hopper = new GraphHopper(new DownloadManager(createTempFile("queueFile", ".xml")));
         GraphHopper.TEST_MODE = true;
         hopper.setDataSources(mock(DataSource.class), mock(DataSource.class), dataSource);
-        DownloadFuture future = hopper.downloadRoutingDataFor(URI, asList(new LongitudeAndLatitude(10.33637, 53.7465),
-                new LongitudeAndLatitude(9.613465, 53.38581)));
+        // the route's own positions, as RouteRenderer passes them: since rc#243 the loaded graph is
+        // asked whether it has roads for them, which the bounding box corners may well lack
+        DownloadFuture future = hopper.downloadRoutingDataFor(URI, asList(
+                new LongitudeAndLatitude(FROM.getLongitude(), FROM.getLatitude()),
+                new LongitudeAndLatitude(TO.getLongitude(), TO.getLatitude())));
         if(future.isRequiresDownload())
             future.download();
         else {

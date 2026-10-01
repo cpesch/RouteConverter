@@ -29,6 +29,7 @@ import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
 import static slash.common.io.Transfer.formatSize;
+import static slash.navigation.download.Action.Head;
 
 /**
  * Shows notifications via the {@link NotificationManager} upon {@link DownloadListener} events on {@link Download}s.
@@ -40,15 +41,23 @@ public class DownloadNotifier implements DownloadListener {
         return Application.getInstance().getContext().getActionManager().get("show-downloads");
     }
 
-    private ResourceBundle getBundle() {
+    ResourceBundle getBundle() {
         return Application.getInstance().getContext().getBundle();
     }
 
-    private void showNotification(String message) {
+    void showNotification(String message) {
         Application.getInstance().getContext().getNotificationManager().showNotification(message, getAction());
     }
 
-    public void initialized(Download download) {}
+    // shown before the first byte arrives, so a slow or stalling server is visible right
+    // away and not only once the download fails; a Head request only checks for updates
+    // and transfers no content, so it gets no notification
+    public void initialized(Download download) {
+        if (download.getAction() == Head)
+            return;
+        String message = MessageFormat.format(getBundle().getString("download-started"), download.getUrl());
+        showNotification(message);
+    }
 
     public void progressed(Download download) {
         Integer percentage = download.getPercentage();

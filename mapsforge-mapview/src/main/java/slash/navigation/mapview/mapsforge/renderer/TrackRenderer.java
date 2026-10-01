@@ -57,6 +57,14 @@ public class TrackRenderer {
             if (!pairWithLayer.hasCoordinates())
                 continue;
 
+            // no position was recorded across a segment break, so draw no invented
+            // connection and count neither its distance nor its time
+            if (pairWithLayer.isSegmentBreak()) {
+                pairWithLayer.setLayer(null);
+                pairWithLayer.setDistanceAndTime(DistanceAndTime.ZERO);
+                continue;
+            }
+
             Line line = new Line(mapView.asLatLong(pairWithLayer.getFirst()), mapView.asLatLong(pairWithLayer.getSecond()), paint, tileSize);
             pairWithLayer.setLayer(line);
             lines.add(line);

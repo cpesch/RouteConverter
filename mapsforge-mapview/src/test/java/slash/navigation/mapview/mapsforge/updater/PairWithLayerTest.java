@@ -24,6 +24,7 @@ import org.mapsforge.map.layer.Layer;
 import slash.navigation.common.DistanceAndTime;
 import slash.navigation.common.NavigationPosition;
 import slash.navigation.common.SimpleNavigationPosition;
+import slash.navigation.gpx.GpxPosition;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -55,6 +56,19 @@ public class PairWithLayerTest {
         assertTrue(new PairWithLayer(first, second, 0).hasCoordinates());
         assertFalse(new PairWithLayer(first, noCoordinates, 0).hasCoordinates());
         assertFalse(new PairWithLayer(noCoordinates, second, 0).hasCoordinates());
+    }
+
+    @Test
+    public void isSegmentBreakOnlyWhenSecondStartsNewSegment() {
+        GpxPosition segmentStart = new GpxPosition(3.0, 4.0, null, null, null, null);
+        segmentStart.setStartsNewSegment(true);
+        GpxPosition sameSegment = new GpxPosition(3.0, 4.0, null, null, null, null);
+
+        assertTrue(new PairWithLayer(first, segmentStart, 0).isSegmentBreak());
+        assertFalse(new PairWithLayer(first, sameSegment, 0).isSegmentBreak());
+        assertFalse(new PairWithLayer(segmentStart, second, 0).isSegmentBreak());
+        // positions of formats without segments never break
+        assertFalse(new PairWithLayer(first, second, 0).isSegmentBreak());
     }
 
     @Test
