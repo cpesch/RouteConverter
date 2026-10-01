@@ -47,6 +47,16 @@ public interface NavigationPosition {
     boolean hasCoordinates();
 
     /**
+     * Return whether this position starts a new track segment, i.e. the GPS
+     * recorded no positions between the previous position and this one
+     *
+     * @return true if this position starts a new track segment
+     */
+    default boolean isStartsNewSegment() {
+        return false;
+    }
+
+    /**
      * Return the elevation in meters above sea level
      *
      * @return the elevation in meters above sea level
