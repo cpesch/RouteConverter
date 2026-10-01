@@ -58,11 +58,10 @@ public class TrackRenderer {
                 continue;
 
             // no position was recorded across a segment break, so draw no invented
-            // connection and add no distance; the elapsed time still counts
+            // connection and count neither its distance nor its time
             if (pairWithLayer.isSegmentBreak()) {
                 pairWithLayer.setLayer(null);
-                Long time = pairWithLayer.getFirst().calculateTime(pairWithLayer.getSecond());
-                pairWithLayer.setDistanceAndTime(new DistanceAndTime(0.0, time));
+                pairWithLayer.setDistanceAndTime(DistanceAndTime.ZERO);
                 continue;
             }
 
