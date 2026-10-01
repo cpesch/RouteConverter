@@ -64,6 +64,10 @@ public class PairWithLayer implements ObjectWithLayer {
         return getFirst().hasCoordinates() && getSecond().hasCoordinates();
     }
 
+    public boolean isSegmentBreak() {
+        return getSecond().isStartsNewSegment();
+    }
+
     public Layer getLayer() {
         return layer;
     }
