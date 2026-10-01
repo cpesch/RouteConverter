@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:xal="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0">
+    <Document>
+        <open>true</open>
+        <Style id="routeStyle">
+            <LineStyle>
+                <color>7FFF0055</color>
+                <width>3.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="trackStyle">
+            <LineStyle>
+                <color>FFFF00FF</color>
+                <width>3.0</width>
+            </LineStyle>
+        </Style>
+        <Placemark>
+            <name>1 Route</name>
+            <styleUrl>#routeStyle</styleUrl>
+            <MultiGeometry>
+                <LineString>
+                    <coordinates>10.40831,53.64174,298.0 10.46348,53.64352,76.0 10.76402,53.69937,5.0 10.69788,53.71293,44.0 10.6379,53.73403,18.0 10.57045,53.74867,30.0 10.31511,53.74202,35.0</coordinates>
+                </LineString>
+            </MultiGeometry>
+        </Placemark>
+        <Placemark>
+            <name>2 Track</name>
+            <styleUrl>#trackStyle</styleUrl>
+            <LineString>
+                <coordinates>6.328125,47.754097979680026,0.0 6.416015625,51.17934297928927,0.0 10.283203125,51.83577752045248,507.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Folder>
+            <name>Waypoints: 3</name>
+            <Placemark>
+                <name>D144, 70300 Brotte-lès-Luxeuil, Frankreich</name>
+                <visibility>false</visibility>
+                <Point>
+                    <coordinates>6.328125,47.754097979680026,298.0</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Hütterbaum 37, 41069 Mönchengladbach, Deutschland</name>
+                <visibility>false</visibility>
+                <Point>
+                    <coordinates>6.416015625,51.17934297928927,79.0</coordinates>
+                </Point>
+            </Placemark>
+            <Placemark>
+                <name>Am Sanickel 25, 38709 Wildemann, Deutschland</name>
+                <visibility>false</visibility>
+                <Point>
+                    <coordinates>10.283203125,51.83577752045248,40.0</coordinates>
+                </Point>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

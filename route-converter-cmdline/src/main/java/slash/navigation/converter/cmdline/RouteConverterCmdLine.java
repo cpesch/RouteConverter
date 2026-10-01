@@ -76,6 +76,12 @@ public class RouteConverterCmdLine {
     }
 
     private int run(String[] args) {
+        if (args.length >= 1 && "convert".equals(args[0])) {
+            // quiet: stderr is the only side channel of the server and carries nothing but warnings
+            Logger.getLogger("").setLevel(Level.WARNING);
+            return new ConvertCommand().run(args, System.out);
+        }
+
         Version version = parseVersionFromManifest();
         log.info("Started RouteConverter " + version.getVersion() + " from " + version.getDate() +
                 " on " + getJava() + " and " + getPlatform() + " with " + getMaximumMemory() + " MByte heap");
@@ -85,6 +91,7 @@ public class RouteConverterCmdLine {
 
         if (args.length != 3) {
             log.info("Usage: java -jar RouteConverterCmdLine.jar <source file> <target format> <target file>");
+            log.info("       java -jar RouteConverterCmdLine.jar convert --to <format> [--from <format>[,<format>...]] <source file> <target file>");
             log.info("       java -jar RouteConverterCmdLine.jar analyze <source file> [--brouter-segments <dir>]");
             logFormatNames(false);
             return 5;

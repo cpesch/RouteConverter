@@ -21,6 +21,7 @@
 package slash.navigation.converter.gui.panels;
 
 import org.junit.Test;
+import slash.navigation.base.SponsorGatedFormats;
 
 import java.util.HashSet;
 import java.util.List;
@@ -66,5 +67,15 @@ public class ConvertPanelSponsorFeatureTest {
             if (!formatClasses.add(feature.formatClass()))
                 throw new AssertionError("duplicate format class: " + feature.formatClass());
         assertEquals(SPONSOR_FEATURES.size(), formatClasses.size());
+    }
+
+    @Test
+    public void sponsorGatedFormatsOfTheNonInteractiveWritersMatchTheGate() {
+        // the command line and the online converter refuse exactly the formats the dialog gates
+        Set<Class<?>> gated = new HashSet<>(SponsorGatedFormats.CLASSES);
+        Set<Class<?>> gui = new HashSet<>();
+        for (ConvertPanel.SponsorFeature feature : SPONSOR_FEATURES)
+            gui.add(feature.formatClass());
+        assertEquals(gui, gated);
     }
 }

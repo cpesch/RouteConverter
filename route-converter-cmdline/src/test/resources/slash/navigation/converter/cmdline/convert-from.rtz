@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<route xmlns="http://www.cirm.org/RTZ/1/0" version="1.0">
+    <routeInfo routeName="Elbe estuary" routeAuthor="RouteConverter" routeStatus="Monitored" vesselName="Test vessel"/>
+    <waypoints>
+        <defaultWaypoint radius="0.5">
+            <leg geometryType="Loxodrome"/>
+        </defaultWaypoint>
+        <waypoint id="1" name="Elbe 1" radius="0.3" revision="0">
+            <position lat="53.995000" lon="8.713300"/>
+            <leg starboardXTD="0.1" portsideXTD="0.1" speedMin="5.0" speedMax="12.0" geometryType="Loxodrome"/>
+        </waypoint>
+        <waypoint id="2" name="Elbe 4" radius="0.3" revision="0">
+            <position lat="53.870000" lon="9.050000"/>
+            <leg geometryType="Loxodrome"/>
+        </waypoint>
+        <waypoint id="3" name="Cuxhaven" radius="0.3" revision="0">
+            <position lat="53.860000" lon="8.700000"/>
+            <leg geometryType="Loxodrome"/>
+        </waypoint>
+    </waypoints>
+    <schedules>
+        <schedule id="1" name="Default">
+            <manual>
+                <scheduleElement waypointId="2" eta="2026-09-10T09:00:00Z" speed="10.0"/>
+            </manual>
+        </schedule>
+    </schedules>
+    <extensions/>
+</route>

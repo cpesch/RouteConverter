@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TrainingCenterDatabase xmlns="http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2">
+  <Courses>
+    <Course>
+      <Name>Test course</Name>
+      <Lap>
+        <TotalTimeSeconds>120</TotalTimeSeconds>
+        <DistanceMeters>400</DistanceMeters>
+        <BeginPosition><LatitudeDegrees>52.5</LatitudeDegrees><LongitudeDegrees>13.4</LongitudeDegrees></BeginPosition>
+        <EndPosition><LatitudeDegrees>52.51</LatitudeDegrees><LongitudeDegrees>13.41</LongitudeDegrees></EndPosition>
+        <Intensity>Active</Intensity>
+      </Lap>
+      <Track>
+        <Trackpoint><Time>2020-05-01T08:00:00Z</Time><Position><LatitudeDegrees>52.5</LatitudeDegrees><LongitudeDegrees>13.4</LongitudeDegrees></Position><AltitudeMeters>30</AltitudeMeters><DistanceMeters>0</DistanceMeters></Trackpoint>
+        <Trackpoint><Time>2020-05-01T08:01:00Z</Time><Position><LatitudeDegrees>52.505</LatitudeDegrees><LongitudeDegrees>13.405</LongitudeDegrees></Position><AltitudeMeters>32</AltitudeMeters><DistanceMeters>200</DistanceMeters></Trackpoint>
+        <Trackpoint><Time>2020-05-01T08:02:00Z</Time><Position><LatitudeDegrees>52.51</LatitudeDegrees><LongitudeDegrees>13.41</LongitudeDegrees></Position><AltitudeMeters>31</AltitudeMeters><DistanceMeters>400</DistanceMeters></Trackpoint>
+      </Track>
+    </Course>
+  </Courses>
+</TrainingCenterDatabase>

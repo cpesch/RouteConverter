@@ -1,0 +1,15 @@
+{
+  "semanticSegments": [
+    {
+      "startTime": "2024-12-23T10:00:00Z",
+      "endTime": "2024-12-23T12:00:00Z",
+      "timelinePath": {
+        "points": [
+          {"location": {"latLng": "52.5200°, 13.4050°"}, "time": "2024-12-23T10:00:00Z"},
+          {"location": {"latLng": "52.5210°, 13.4060°"}, "time": "2024-12-23T10:30:00Z"},
+          {"location": {"latLng": "52.5230°, 13.4090°"}, "time": "2024-12-23T11:00:00Z"}
+        ]
+      }
+    }
+  ]
+}
