@@ -132,6 +132,19 @@ coordination with that codebase.
   to avoid duplicate/competing PRs — don't re-enable both at once. Root
   `crowdin.yml` still governs file mapping/language codes (e.g. `nb→nb_NO`)
   for whichever path runs.
+- **Rewording an English source string drops every locale's translation.**
+  Crowdin treats the changed text as a new string: the next sync deletes the
+  key from all `RouteConverter_*.properties`, and machine translation refills
+  it without context. A missing German key fails
+  `ResourceBundleTest.everyEnglishKeyIsTranslatedInGerman` and turns CI red
+  on every push to `master`. Short dialog titles are misread most often:
+  `feature-locked-title` "Sponsored function" came back as "sponsored event"
+  in 15 locales, German included (#419). When you reword a key, re-enter or
+  approve the German translation in Crowdin, give the string a context note,
+  then **Sync Now**. Check the German value in the `l10n_master` PR before
+  merging it. Crowdin's commits don't trigger `build.yml` (`on: push`), so
+  the required `Java 21 on Windows` check needs an empty commit pushed to
+  `l10n_master`.
 - **Release tags are plain `MAJOR.MINOR[.PATCH]`**, no `v` prefix.
 
 ## Contributing

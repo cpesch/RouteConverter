@@ -32,6 +32,8 @@ import org.junit.jupiter.api.Test;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.time.Duration;
+import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.IntPredicate;
@@ -62,9 +64,13 @@ class SegmentedXYAreaRendererTest {
     }
 
     private static Rendered render(double[] x, IntPredicate startsNewSegment) {
+        return render(x, Y, startsNewSegment);
+    }
+
+    private static Rendered render(double[] x, double[] y, IntPredicate startsNewSegment) {
         XYSeries series = new XYSeries("profile");
         for (int i = 0; i < x.length; i++)
-            series.add(x[i], Y[i]);
+            series.add(x[i], y[i]);
         JFreeChart chart = ChartFactory.createXYAreaChart(null, null, null, new XYSeriesCollection(series),
                 VERTICAL, false, false, false);
         XYPlot plot = chart.getXYPlot();
@@ -106,6 +112,35 @@ class SegmentedXYAreaRendererTest {
         assertEquals(BACKGROUND.getRGB(), rendered.argbAt(6, 1));
         assertEquals(AREA.getRGB(), rendered.argbAt(3, 1));
         assertEquals(AREA.getRGB(), rendered.argbAt(9, 1));
+    }
+
+    // cutting the gap out of an Area of the whole segment polygon grew superlinearly with the
+    // number of items: a noisy track like this one took many seconds for every repaint. Leaving
+    // a gap must cost about as much as drawing the same track without segments
+    @Test
+    void rendersALongNoisyTrackWithSegmentsAsFastAsWithout() {
+        int count = 20000;
+        double[] x = new double[count], y = new double[count];
+        Random random = new Random(1);
+        for (int i = 0; i < count; i++) {
+            x[i] = i;
+            y[i] = 100 + 50 * Math.sin(i / 1000.0) + random.nextDouble() * 20;
+        }
+        render(x, y, item -> false); // warm up
+
+        long start = System.nanoTime();
+        render(x, y, item -> false);
+        long withoutSegments = System.nanoTime() - start;
+        start = System.nanoTime();
+        Rendered rendered = assertTimeoutPreemptively(Duration.ofSeconds(30),
+                () -> render(x, y, item -> item == count / 2));
+        long withSegments = System.nanoTime() - start;
+
+        assertTrue(withSegments < 3 * withoutSegments + 500_000_000L,
+                "with segments " + withSegments / 1_000_000 + " ms, without " + withoutSegments / 1_000_000 + " ms");
+        assertEquals(BACKGROUND.getRGB(), rendered.argbAt(x[count / 2], 1));
+        assertEquals(AREA.getRGB(), rendered.argbAt(x[count / 4], 1));
+        assertEquals(AREA.getRGB(), rendered.argbAt(x[count * 3 / 4], 1));
     }
 
     @Test

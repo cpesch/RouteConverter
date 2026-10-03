@@ -55,6 +55,8 @@ public class SegmentedXYAreaRenderer extends XYAreaRenderer {
     // of a segment and of the first item of the next one are usually the same, since neither
     // the distance nor the time across a gap is counted, so the gap needs a width of its own
     static final double SEGMENT_GAP_PIXELS = 4.0;
+    // room around a segment's bounds so the clip that leaves out the gap strips never cuts its outline
+    private static final double CLIP_MARGIN_PIXELS = 10.0;
 
     private transient GeneralPath segment;
     private transient double segmentStartTransX;
@@ -127,22 +129,34 @@ public class SegmentedXYAreaRenderer extends XYAreaRenderer {
         segment.lineTo(transX, transZero);
         segment.closePath();
 
-        Area area = new Area(segment);
+        // leave the gap strips unfilled by clipping them away: cutting them out of an Area of the
+        // segment grows superlinearly with its items and took seconds per repaint on long noisy
+        // tracks, while this clip is built from rectangles only
+        Rectangle2D bounds = segment.getBounds2D();
+        Area visible = new Area(new Rectangle2D.Double(bounds.getX() - CLIP_MARGIN_PIXELS,
+                bounds.getY() - CLIP_MARGIN_PIXELS, bounds.getWidth() + 2 * CLIP_MARGIN_PIXELS,
+                bounds.getHeight() + 2 * CLIP_MARGIN_PIXELS));
         if (segmentStartsAfterBreak)
-            area.subtract(new Area(gapStrip(dataArea, segmentStartTransX)));
+            visible.subtract(new Area(gapStrip(dataArea, segmentStartTransX)));
         if (endsAtBreak)
-            area.subtract(new Area(gapStrip(dataArea, transX)));
+            visible.subtract(new Area(gapStrip(dataArea, transX)));
 
-        Paint paint = getUseFillPaint() ? lookupSeriesFillPaint(series) : getItemPaint(series, item);
-        if (paint instanceof GradientPaint gradientPaint)
-            paint = getGradientTransformer().transform(gradientPaint, dataArea);
-        g2.setPaint(paint);
-        g2.fill(area);
+        Shape previousClip = g2.getClip();
+        g2.clip(visible);
+        try {
+            Paint paint = getUseFillPaint() ? lookupSeriesFillPaint(series) : getItemPaint(series, item);
+            if (paint instanceof GradientPaint gradientPaint)
+                paint = getGradientTransformer().transform(gradientPaint, dataArea);
+            g2.setPaint(paint);
+            g2.fill(segment);
 
-        if (isOutline()) {
-            g2.setStroke(lookupSeriesOutlineStroke(series));
-            g2.setPaint(lookupSeriesOutlinePaint(series));
-            g2.draw(area);
+            if (isOutline()) {
+                g2.setStroke(lookupSeriesOutlineStroke(series));
+                g2.setPaint(lookupSeriesOutlinePaint(series));
+                g2.draw(segment);
+            }
+        } finally {
+            g2.setClip(previousClip);
         }
     }
 
