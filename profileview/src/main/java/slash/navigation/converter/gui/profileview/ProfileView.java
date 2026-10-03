@@ -121,6 +121,8 @@ public class ProfileView implements PositionsSelectionModel {
 
     private XYPlot createPlot(JFreeChart chart) {
         XYPlot plot = chart.getXYPlot();
+        // leave a gap where a GPX track segment starts instead of filling across it
+        plot.setRenderer(new SegmentedXYAreaRenderer(this::isSegmentStart));
         plot.setForegroundAlpha(0.65F);
         plot.setDomainGridlinesVisible(preferences.getBoolean(X_GRID_PREFERENCE, true));
         plot.setRangeGridlinesVisible(preferences.getBoolean(Y_GRID_PREFERENCE, true));
@@ -139,6 +141,11 @@ public class ProfileView implements PositionsSelectionModel {
 
         plot.getRenderer().setDefaultToolTipGenerator(null);
         return plot;
+    }
+
+    // the series item index is the position row, see PositionsModelToXYSeriesSynchronizer
+    private boolean isSegmentStart(int item) {
+        return item < positionsModel.getRowCount() && positionsModel.getPosition(item).isStartsNewSegment();
     }
 
     public Component getComponent() {
