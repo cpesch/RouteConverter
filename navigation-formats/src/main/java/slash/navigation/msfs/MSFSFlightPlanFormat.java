@@ -83,8 +83,8 @@ public class MSFSFlightPlanFormat extends XmlNavigationFormat<MSFSFlightPlanRout
 
     Double parseElevation(String elevation) {
         try {
-            Number number = ELEVATION_FORMAT.parse(elevation);
-            return number.doubleValue();
+            Number feet = ELEVATION_FORMAT.parse(elevation);
+            return feetToMeters(feet.doubleValue());
         } catch (ParseException e) {
             log.severe("Could not parse elevation '" + elevation + "'");
         }
@@ -129,7 +129,7 @@ public class MSFSFlightPlanFormat extends XmlNavigationFormat<MSFSFlightPlanRout
     String formatElevation(Double elevation) {
         if(elevation == null)
             elevation = 0.0;
-        return ELEVATION_FORMAT.format(elevation);
+        return ELEVATION_FORMAT.format(meterToFeets(elevation));
     }
 
     private SimBaseDocument createSimBaseDocument(MSFSFlightPlanRoute route, int startIndex, int endIndex) {
