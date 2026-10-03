@@ -38,8 +38,8 @@ stdout carries only the JSON payload.
 | `lengthM`         | integer or null | total length in metres, summed over all lists; `null` if not computable |
 | `lengthKind`      | string or null  | `"track"` \| `"straight-line"` \| `"routed"` (see below); `null` exactly when `lengthM` is `null` (no length computable) |
 | `durationS`       | integer or null | total duration in seconds derived from position timestamps only; `null` if no timestamps |
-| `elevationGainM`  | integer or null | cumulative ascent in metres; `null` if no elevation data |
-| `elevationLossM`  | integer or null | cumulative descent in metres; `null` if no elevation data |
+| `elevationGainM`  | integer or null | cumulative ascent in metres, counting only elevation changes of at least the hysteresis threshold (preference `elevationAscendDescendThreshold`, default 5 m) since the last counted point; `null` if no elevation data |
+| `elevationLossM`  | integer or null | cumulative descent in metres, counting only elevation changes of at least the hysteresis threshold (preference `elevationAscendDescendThreshold`, default 5 m) since the last counted point; `null` if no elevation data |
 | `startTime`       | string or null  | earliest position timestamp, ISO-8601 UTC (`2020-05-01T08:15:00Z`); `null` if none |
 | `firstName`       | string or null  | first non-empty route/track/waypoint-list name in the file; `null` if none. Used as the title for rescued routes (specs/00056) |
 | `extension`       | string or null  | the detected format's default file extension including the dot (e.g. `".gpx"`). Used to name rescued orphan-blob File rows (specs/00056) |

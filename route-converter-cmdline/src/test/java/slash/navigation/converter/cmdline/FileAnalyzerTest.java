@@ -62,7 +62,7 @@ public class FileAnalyzerTest {
                 "\"lengthKind\":\"track\"," +
                 "\"durationS\":780," +
                 "\"elevationGainM\":6," +
-                "\"elevationLossM\":7," +
+                "\"elevationLossM\":5," +
                 "\"startTime\":\"2020-05-01T08:00:00Z\"," +
                 "\"firstName\":\"Track A\"," +
                 "\"extension\":\".gpx\"" +
