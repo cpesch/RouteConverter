@@ -9,6 +9,7 @@
 ### Fixes
 
 - macOS: the app runs on macOS 11 and later again. 3.6 through 3.6.5 were built against macOS 26 by mistake, so on macOS 15 (Sequoia) and earlier the icon appeared crossed out and greyed and the app would not start at all (#393, thanks Edgar Kraus)
+- Microsoft Flight Simulator flight plans (.pln): altitudes are read and written in feet, as MSFS stores them. Before, a cruise waypoint at FL360 showed as 36,000 m instead of 10,973 m, and .pln files written by earlier versions carry meters in the feet field — re-export them to fix their altitudes (#417)
 
 ## 3.6 — 2026-08-23
 
