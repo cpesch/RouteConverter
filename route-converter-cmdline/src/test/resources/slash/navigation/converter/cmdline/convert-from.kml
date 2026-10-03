@@ -2,57 +2,270 @@
 <kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:xal="urn:oasis:names:tc:ciq:xsdschema:xAL:2.0">
     <Document>
         <open>true</open>
-        <Style id="routeStyle">
-            <LineStyle>
-                <color>7FFF0055</color>
-                <width>3.0</width>
-            </LineStyle>
-        </Style>
         <Style id="trackStyle">
             <LineStyle>
                 <color>FFFF00FF</color>
                 <width>3.0</width>
             </LineStyle>
         </Style>
-        <Placemark>
-            <name>1 Route</name>
-            <styleUrl>#routeStyle</styleUrl>
-            <MultiGeometry>
-                <LineString>
-                    <coordinates>10.40831,53.64174,298.0 10.46348,53.64352,76.0 10.76402,53.69937,5.0 10.69788,53.71293,44.0 10.6379,53.73403,18.0 10.57045,53.74867,30.0 10.31511,53.74202,35.0</coordinates>
-                </LineString>
-            </MultiGeometry>
-        </Placemark>
-        <Placemark>
-            <name>2 Track</name>
-            <styleUrl>#trackStyle</styleUrl>
-            <LineString>
-                <coordinates>6.328125,47.754097979680026,0.0 6.416015625,51.17934297928927,0.0 10.283203125,51.83577752045248,507.0</coordinates>
-            </LineString>
-        </Placemark>
+        <Style id="speedColor_0">
+            <LineStyle>
+                <color>FF00FFFF</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_1">
+            <LineStyle>
+                <color>FF008080</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_2">
+            <LineStyle>
+                <color>FF00FF00</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_3">
+            <LineStyle>
+                <color>FF008000</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_4">
+            <LineStyle>
+                <color>FFFFFF00</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_5">
+            <LineStyle>
+                <color>FF808000</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_6">
+            <LineStyle>
+                <color>FFFF0000</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_7">
+            <LineStyle>
+                <color>FF800000</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_8">
+            <LineStyle>
+                <color>FFFF00FF</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_9">
+            <LineStyle>
+                <color>FF800080</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_10">
+            <LineStyle>
+                <color>FF0000FF</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_11">
+            <LineStyle>
+                <color>FF000080</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_12">
+            <LineStyle>
+                <color>FF194C80</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
+        <Style id="speedColor_13">
+            <LineStyle>
+                <color>FF000000</color>
+                <width>5.0</width>
+            </LineStyle>
+        </Style>
         <Folder>
-            <name>Waypoints: 3</name>
+            <name>Track: Invented heath loop</name>
             <Placemark>
-                <name>D144, 70300 Brotte-lès-Luxeuil, Frankreich</name>
-                <visibility>false</visibility>
-                <Point>
-                    <coordinates>6.328125,47.754097979680026,298.0</coordinates>
-                </Point>
+                <styleUrl>#trackStyle</styleUrl>
+                <gx:Track>
+                    <when>2026-05-01T09:00:00Z</when>
+                    <when>2026-05-01T09:00:30Z</when>
+                    <when>2026-05-01T09:01:00Z</when>
+                    <when>2026-05-01T09:01:30Z</when>
+                    <when>2026-05-01T09:02:00Z</when>
+                    <when>2026-05-01T09:02:30Z</when>
+                    <when>2026-05-01T09:03:00Z</when>
+                    <when>2026-05-01T09:03:30Z</when>
+                    <when>2026-05-01T09:04:00Z</when>
+                    <when>2026-05-01T09:04:30Z</when>
+                    <when>2026-05-01T09:05:00Z</when>
+                    <when>2026-05-01T09:05:30Z</when>
+                    <when>2026-05-01T09:06:00Z</when>
+                    <when>2026-05-01T09:06:30Z</when>
+                    <when>2026-05-01T09:07:00Z</when>
+                    <when>2026-05-01T09:07:30Z</when>
+                    <when>2026-05-01T09:08:00Z</when>
+                    <when>2026-05-01T09:08:30Z</when>
+                    <when>2026-05-01T09:09:00Z</when>
+                    <when>2026-05-01T09:09:30Z</when>
+                    <when>2026-05-01T09:10:00Z</when>
+                    <when>2026-05-01T09:10:30Z</when>
+                    <when>2026-05-01T09:11:00Z</when>
+                    <when>2026-05-01T09:11:30Z</when>
+                    <when>2026-05-01T09:12:00Z</when>
+                    <when>2026-05-01T09:12:30Z</when>
+                    <when>2026-05-01T09:13:00Z</when>
+                    <when>2026-05-01T09:13:30Z</when>
+                    <when>2026-05-01T09:14:00Z</when>
+                    <when>2026-05-01T09:14:30Z</when>
+                    <when>2026-05-01T09:15:00Z</when>
+                    <when>2026-05-01T09:15:30Z</when>
+                    <when>2026-05-01T09:16:00Z</when>
+                    <when>2026-05-01T09:16:30Z</when>
+                    <when>2026-05-01T09:17:00Z</when>
+                    <when>2026-05-01T09:17:30Z</when>
+                    <when>2026-05-01T09:18:00Z</when>
+                    <when>2026-05-01T09:18:30Z</when>
+                    <when>2026-05-01T09:19:00Z</when>
+                    <when>2026-05-01T09:19:30Z</when>
+                    <when>2026-05-01T09:20:00Z</when>
+                    <when>2026-05-01T09:20:30Z</when>
+                    <when>2026-05-01T09:21:00Z</when>
+                    <when>2026-05-01T09:21:30Z</when>
+                    <when>2026-05-01T09:22:00Z</when>
+                    <when>2026-05-01T09:22:30Z</when>
+                    <when>2026-05-01T09:23:00Z</when>
+                    <when>2026-05-01T09:23:30Z</when>
+                    <when>2026-05-01T09:24:00Z</when>
+                    <when>2026-05-01T09:24:30Z</when>
+                    <when>2026-05-01T09:25:00Z</when>
+                    <when>2026-05-01T09:25:30Z</when>
+                    <when>2026-05-01T09:26:00Z</when>
+                    <when>2026-05-01T09:26:30Z</when>
+                    <when>2026-05-01T09:27:00Z</when>
+                    <when>2026-05-01T09:27:30Z</when>
+                    <when>2026-05-01T09:28:00Z</when>
+                    <when>2026-05-01T09:28:30Z</when>
+                    <when>2026-05-01T09:29:00Z</when>
+                    <when>2026-05-01T09:29:30Z</when>
+                    <gx:coord>9.916 53.2 75.0</gx:coord>
+                    <gx:coord>9.915912 53.201045 83.2</gx:coord>
+                    <gx:coord>9.91565 53.202079 90.4</gx:coord>
+                    <gx:coord>9.915217 53.20309 95.7</gx:coord>
+                    <gx:coord>9.914617 53.204067 98.8</gx:coord>
+                    <gx:coord>9.913856 53.205 99.7</gx:coord>
+                    <gx:coord>9.912944 53.205878 98.8</gx:coord>
+                    <gx:coord>9.91189 53.206691 96.9</gx:coord>
+                    <gx:coord>9.910706 53.207431 94.7</gx:coord>
+                    <gx:coord>9.909405 53.20809 92.8</gx:coord>
+                    <gx:coord>9.908 53.20866 91.5</gx:coord>
+                    <gx:coord>9.906508 53.209135 90.6</gx:coord>
+                    <gx:coord>9.904944 53.209511 89.7</gx:coord>
+                    <gx:coord>9.903327 53.209781 88.2</gx:coord>
+                    <gx:coord>9.901672 53.209945 85.4</gx:coord>
+                    <gx:coord>9.9 53.21 81.0</gx:coord>
+                    <gx:coord>9.898328 53.209945 75.0</gx:coord>
+                    <gx:coord>9.896673 53.209781 67.8</gx:coord>
+                    <gx:coord>9.895056 53.209511 60.3</gx:coord>
+                    <gx:coord>9.893492 53.209135 53.4</gx:coord>
+                    <gx:coord>9.892 53.20866 48.2</gx:coord>
+                    <gx:coord>9.890595 53.20809 45.2</gx:coord>
+                    <gx:coord>9.889294 53.207431 44.9</gx:coord>
+                    <gx:coord>9.88811 53.206691 47.1</gx:coord>
+                    <gx:coord>9.887056 53.205878 51.2</gx:coord>
+                    <gx:coord>9.886144 53.205 56.3</gx:coord>
+                    <gx:coord>9.885383 53.204067 61.6</gx:coord>
+                    <gx:coord>9.884783 53.20309 66.3</gx:coord>
+                    <gx:coord>9.88435 53.202079 70.0</gx:coord>
+                    <gx:coord>9.884088 53.201045 72.8</gx:coord>
+                    <gx:coord>9.884 53.2 75.0</gx:coord>
+                    <gx:coord>9.884088 53.198955 77.2</gx:coord>
+                    <gx:coord>9.88435 53.197921 80.0</gx:coord>
+                    <gx:coord>9.884783 53.19691 83.7</gx:coord>
+                    <gx:coord>9.885383 53.195933 88.4</gx:coord>
+                    <gx:coord>9.886144 53.195 93.7</gx:coord>
+                    <gx:coord>9.887056 53.194122 98.8</gx:coord>
+                    <gx:coord>9.88811 53.193309 102.9</gx:coord>
+                    <gx:coord>9.889294 53.192569 105.1</gx:coord>
+                    <gx:coord>9.890595 53.19191 104.8</gx:coord>
+                    <gx:coord>9.892 53.19134 101.8</gx:coord>
+                    <gx:coord>9.893492 53.190865 96.6</gx:coord>
+                    <gx:coord>9.895056 53.190489 89.7</gx:coord>
+                    <gx:coord>9.896673 53.190219 82.2</gx:coord>
+                    <gx:coord>9.898328 53.190055 75.0</gx:coord>
+                    <gx:coord>9.9 53.19 69.0</gx:coord>
+                    <gx:coord>9.901672 53.190055 64.6</gx:coord>
+                    <gx:coord>9.903327 53.190219 61.8</gx:coord>
+                    <gx:coord>9.904944 53.190489 60.3</gx:coord>
+                    <gx:coord>9.906508 53.190865 59.4</gx:coord>
+                    <gx:coord>9.908 53.19134 58.5</gx:coord>
+                    <gx:coord>9.909405 53.19191 57.2</gx:coord>
+                    <gx:coord>9.910706 53.192569 55.3</gx:coord>
+                    <gx:coord>9.91189 53.193309 53.1</gx:coord>
+                    <gx:coord>9.912944 53.194122 51.2</gx:coord>
+                    <gx:coord>9.913856 53.195 50.3</gx:coord>
+                    <gx:coord>9.914617 53.195933 51.2</gx:coord>
+                    <gx:coord>9.915217 53.19691 54.3</gx:coord>
+                    <gx:coord>9.91565 53.197921 59.6</gx:coord>
+                    <gx:coord>9.915912 53.198955 66.8</gx:coord>
+                </gx:Track>
             </Placemark>
-            <Placemark>
-                <name>Hütterbaum 37, 41069 Mönchengladbach, Deutschland</name>
+            <Folder>
+                <name>Marks [Km]</name>
                 <visibility>false</visibility>
-                <Point>
-                    <coordinates>6.416015625,51.17934297928927,79.0</coordinates>
-                </Point>
-            </Placemark>
-            <Placemark>
-                <name>Am Sanickel 25, 38709 Wildemann, Deutschland</name>
-                <visibility>false</visibility>
-                <Point>
-                    <coordinates>10.283203125,51.83577752045248,40.0</coordinates>
-                </Point>
-            </Placemark>
+                <open>false</open>
+                <Placemark>
+                    <name>1. Km</name>
+                    <visibility>false</visibility>
+                    <Point>
+                        <coordinates>9.9098408,53.2078682,0</coordinates>
+                    </Point>
+                </Placemark>
+                <Placemark>
+                    <name>2. Km</name>
+                    <visibility>false</visibility>
+                    <Point>
+                        <coordinates>9.8957623,53.2096293,0</coordinates>
+                    </Point>
+                </Placemark>
+                <Placemark>
+                    <name>3. Km</name>
+                    <visibility>false</visibility>
+                    <Point>
+                        <coordinates>9.8851815,53.2037397,0</coordinates>
+                    </Point>
+                </Placemark>
+                <Placemark>
+                    <name>4. Km</name>
+                    <visibility>false</visibility>
+                    <Point>
+                        <coordinates>9.8861021,53.1950535,0</coordinates>
+                    </Point>
+                </Placemark>
+                <Placemark>
+                    <name>5. Km</name>
+                    <visibility>false</visibility>
+                    <Point>
+                        <coordinates>9.8979247,53.1900953,0</coordinates>
+                    </Point>
+                </Placemark>
+                <Placemark>
+                    <name>6. Km</name>
+                    <visibility>false</visibility>
+                    <Point>
+                        <coordinates>9.9114517,53.193034,0</coordinates>
+                    </Point>
+                </Placemark>
+            </Folder>
         </Folder>
     </Document>
 </kml>
