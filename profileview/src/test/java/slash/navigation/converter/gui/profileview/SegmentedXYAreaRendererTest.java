@@ -98,6 +98,29 @@ class SegmentedXYAreaRendererTest {
         assertEquals(AREA.getRGB(), rendered.argbAt(18, 1));
     }
 
+    // the last item of a segment and the first item of the next must not have a hotspot
+    // that extends into the gap between them
+    @Test
+    void hotspotsDoNotCrossTheGap() {
+        Rendered rendered = render(item -> item == 4);
+
+        Rectangle2D dataArea = rendered.info().getPlotInfo().getDataArea();
+        double xAtItem3 = rendered.plot().getDomainAxis().valueToJava2D(X[3], dataArea, rendered.plot().getDomainAxisEdge());
+        double xAtItem4 = rendered.plot().getDomainAxis().valueToJava2D(X[4], dataArea, rendered.plot().getDomainAxisEdge());
+
+        for (Object entity : rendered.info().getEntityCollection().getEntities()) {
+            if (!(entity instanceof XYItemEntity itemEntity))
+                continue;
+            Rectangle2D bounds = itemEntity.getArea().getBounds2D();
+            if (itemEntity.getItem() == 3)
+                assertTrue(bounds.getMaxX() <= xAtItem3 + 1.0,
+                        "item 3 hotspot must not reach past its own x into the gap");
+            if (itemEntity.getItem() == 4)
+                assertTrue(bounds.getMinX() >= xAtItem4 - 1.0,
+                        "item 4 hotspot must not reach past its own x into the gap");
+        }
+    }
+
     // the item of an entity is the position row a click selects
     @Test
     void keepsOneEntityPerItem() {

@@ -135,10 +135,21 @@ public class SegmentedXYAreaRenderer extends XYAreaRenderer {
 
         int itemCount = dataset.getItemCount(series);
         int previous = Math.max(item - 1, 0), next = Math.min(item + 1, itemCount - 1);
-        double transX0 = domainAxis.valueToJava2D(dataset.getXValue(series, previous), dataArea, plot.getDomainAxisEdge());
-        double transY0 = rangeAxis.valueToJava2D(valueOrZero(dataset.getYValue(series, previous)), dataArea, plot.getRangeAxisEdge());
-        double transX2 = domainAxis.valueToJava2D(dataset.getXValue(series, next), dataArea, plot.getDomainAxisEdge());
-        double transY2 = rangeAxis.valueToJava2D(valueOrZero(dataset.getYValue(series, next)), dataArea, plot.getRangeAxisEdge());
+
+        // an item that starts a segment has no filled area towards its previous item, and an
+        // item right before the next segment starts has none towards its next item: clamp that
+        // side of the hotspot to the item's own x instead of reaching across the gap
+        boolean isSegmentStart = item == 0 || startsNewSegment.test(item);
+        boolean nextIsSegmentStart = next != item && startsNewSegment.test(next);
+
+        double transX0 = isSegmentStart ? transX1
+                : domainAxis.valueToJava2D(dataset.getXValue(series, previous), dataArea, plot.getDomainAxisEdge());
+        double transY0 = isSegmentStart ? transY1
+                : rangeAxis.valueToJava2D(valueOrZero(dataset.getYValue(series, previous)), dataArea, plot.getRangeAxisEdge());
+        double transX2 = nextIsSegmentStart ? transX1
+                : domainAxis.valueToJava2D(dataset.getXValue(series, next), dataArea, plot.getDomainAxisEdge());
+        double transY2 = nextIsSegmentStart ? transY1
+                : rangeAxis.valueToJava2D(valueOrZero(dataset.getYValue(series, next)), dataArea, plot.getRangeAxisEdge());
 
         GeneralPath hotspot = new GeneralPath();
         hotspot.moveTo((transX0 + transX1) / 2.0, transZero);
