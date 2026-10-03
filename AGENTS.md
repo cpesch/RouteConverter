@@ -177,6 +177,12 @@ Two traps:
 
 ## Notes for AI agents
 
+- **Never publish data that users sent in.** Sample and test files contributed by users
+  (the private samples checkout used by the `*FormatIT` tests) are confidential:
+  never copy them into this repository, test resources, screenshots, docs or examples,
+  not even renamed or trimmed. Invent test data (e.g. a hand-written GPX converted with
+  RouteConverter itself) or use RouteConverter catalog data, and hash-check every new
+  data file against the samples checkout (`shasum -a 256`) before pushing.
 - Continue autonomously when the next step is reversible and strongly implied by
   repo context; stop only for real product/compatibility/architecture decisions.
 - Always offer a recommendation when presenting options, and say why.
