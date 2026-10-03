@@ -36,6 +36,13 @@ runs only the hermetic ITs (the default coverage set); the live-service ITs
 (`*ServiceIT`, `DownloadManagerIT`, `RemoteRouteIT`, …) need network/credentials and
 run via `-Pintegration-test` / `-Ptest-all`.
 
+**Excluding a test class: `-Dtest` replaces surefire's includes.** `-Dtest='!FooTest'`
+does not subtract from the default set: it becomes the whole selection, so every class
+that is not `FooTest` runs in the unit phase, including `*IT`. That pulls the
+sample-dependent ITs (`ConvertIT`, `SplitIT`, …) into `mvn test`, and their failures look
+like regressions. Exclude the ITs too, and allow modules where nothing matches:
+`-Dtest='!FooTest,!*IT' -Dsurefire.failIfNoSpecifiedTests=false`.
+
 **The build is warning-free and enforced.** `<failOnWarning>true</failOnWarning>` on
 maven-compiler-plugin (spec 00017 Scope B, PR #268) turns javac warnings into build
 failures — a warning you introduce fails CI on all three matrix jobs. It only catches
