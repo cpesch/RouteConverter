@@ -318,6 +318,29 @@ public class BaseRouteTest {
         assertEquals("p0", route.getPosition(3).getDescription());
     }
 
+    private static Wgs84Position e(double latitude, Double elevation) {
+        return new Wgs84Position(0.0, latitude, elevation, null, null, null);
+    }
+
+    @Test
+    public void elevationAscendAndDescendIgnoreChangesBelowTheThreshold() {
+        Wgs84Route route = route(e(0.0, 100.0), e(1.0, 110.0), e(2.0, 108.0), e(3.0, 115.0), e(4.0, 100.0));
+
+        assertEquals(15.0, route.getElevationAscend(0, 4, 5.0), 0.0);
+        assertEquals(15.0, route.getElevationDescend(0, 4, 5.0), 0.0);
+        assertEquals(17.0, route.getElevationAscend(0, 4, 0.0), 0.0);
+        assertEquals(17.0, route.getElevationDescend(0, 4, 0.0), 0.0);
+    }
+
+    @Test
+    public void elevationAscendAndDescendOnlyConsiderTheRange() {
+        Wgs84Route route = route(e(0.0, 0.0), e(1.0, 100.0), e(2.0, 106.0), e(3.0, 112.0), e(4.0, 0.0));
+
+        assertEquals(12.0, route.getElevationAscend(1, 3, 5.0), 0.0);
+        assertEquals(0.0, route.getElevationDescend(1, 3, 5.0), 0.0);
+        assertEquals(0.0, route.getElevationAscend(3, 1, 5.0), 0.0);
+    }
+
     private static Wgs84Route timedRoute() {
         return route(
                 new Wgs84Position(0.0, 0.0, null, null, fromMillis(1000), "t0"),
