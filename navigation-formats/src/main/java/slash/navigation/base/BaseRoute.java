@@ -87,6 +87,7 @@ import slash.navigation.wbt.WintecWbt201Tk2Format;
 import slash.navigation.wbt.WintecWbt202TesFormat;
 
 import java.util.*;
+import java.util.prefs.Preferences;
 
 import static java.lang.Double.MAX_VALUE;
 import static java.lang.Math.*;
@@ -102,6 +103,8 @@ import static slash.common.type.CompactCalendar.*;
  */
 
 public abstract class BaseRoute<P extends BaseNavigationPosition, F extends BaseNavigationFormat<?>> {
+    private static final Preferences preferences = Preferences.userNodeForPackage(BaseRoute.class);
+    private static final String ELEVATION_ASCEND_DESCEND_THRESHOLD_PREFERENCE = "elevationAscendDescendThreshold";
     private static final String REVERSE_ROUTE_NAME_POSTFIX = " (rev)";
     private final F format;
     private RouteCharacteristics characteristics;
@@ -538,35 +541,31 @@ public abstract class BaseRoute<P extends BaseNavigationPosition, F extends Base
     }
 
     public double getElevationAscend(int startIndex, int endIndex) {
-        double result = 0;
-        List<P> positions = getPositions();
-        NavigationPosition previous = null;
-        for (int i = startIndex; i <= endIndex; i++) {
-            NavigationPosition next = positions.get(i);
-            if (previous != null) {
-                Double elevation = previous.calculateElevation(next);
-                if (elevation != null && elevation > 0)
-                    result += elevation;
-            }
-            previous = next;
-        }
-        return result;
+        return getElevationAscend(startIndex, endIndex, getElevationAscendDescendThreshold());
+    }
+
+    public double getElevationAscend(int startIndex, int endIndex, double threshold) {
+        return ElevationSums.ascend(getElevations(startIndex, endIndex), threshold);
     }
 
     public double getElevationDescend(int startIndex, int endIndex) {
-        double result = 0;
+        return getElevationDescend(startIndex, endIndex, getElevationAscendDescendThreshold());
+    }
+
+    public double getElevationDescend(int startIndex, int endIndex, double threshold) {
+        return ElevationSums.descend(getElevations(startIndex, endIndex), threshold);
+    }
+
+    private static double getElevationAscendDescendThreshold() {
+        return preferences.getDouble(ELEVATION_ASCEND_DESCEND_THRESHOLD_PREFERENCE, 5.0);
+    }
+
+    private List<Double> getElevations(int startIndex, int endIndex) {
         List<P> positions = getPositions();
-        NavigationPosition previous = null;
-        for (int i = startIndex; i <= endIndex; i++) {
-            NavigationPosition next = positions.get(i);
-            if (previous != null) {
-                Double elevation = previous.calculateElevation(next);
-                if (elevation != null && elevation < 0)
-                    result += abs(elevation);
-            }
-            previous = next;
-        }
-        return result;
+        List<Double> elevations = new ArrayList<>();
+        for (int i = startIndex; i <= endIndex; i++)
+            elevations.add(positions.get(i).getElevation());
+        return elevations;
     }
 
     public double getElevationDifference(int index) {
