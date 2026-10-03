@@ -58,9 +58,13 @@ class SegmentedXYAreaRendererTest {
     }
 
     private static Rendered render(IntPredicate startsNewSegment) {
+        return render(X, startsNewSegment);
+    }
+
+    private static Rendered render(double[] x, IntPredicate startsNewSegment) {
         XYSeries series = new XYSeries("profile");
-        for (int i = 0; i < X.length; i++)
-            series.add(X[i], Y[i]);
+        for (int i = 0; i < x.length; i++)
+            series.add(x[i], Y[i]);
         JFreeChart chart = ChartFactory.createXYAreaChart(null, null, null, new XYSeriesCollection(series),
                 VERTICAL, false, false, false);
         XYPlot plot = chart.getXYPlot();
@@ -89,6 +93,26 @@ class SegmentedXYAreaRendererTest {
         // inside both segments the area is filled
         assertEquals(AREA.getRGB(), rendered.argbAt(3, 1));
         assertEquals(AREA.getRGB(), rendered.argbAt(33, 1));
+    }
+
+    // neither the distance nor the time across a gap counts, so in the profile the last item
+    // of a segment and the first item of the next one share their x
+    private static final double[] X_WITHOUT_GAP_WIDTH = {0, 2, 4, 6, 6, 8, 10, 12};
+
+    @Test
+    void leavesAVisibleGapWhereTheGapHasNoWidth() {
+        Rendered rendered = render(X_WITHOUT_GAP_WIDTH, item -> item == 4);
+
+        assertEquals(BACKGROUND.getRGB(), rendered.argbAt(6, 1));
+        assertEquals(AREA.getRGB(), rendered.argbAt(3, 1));
+        assertEquals(AREA.getRGB(), rendered.argbAt(9, 1));
+    }
+
+    @Test
+    void fillsAcrossAGapWithoutWidthWithoutSegmentStarts() {
+        Rendered rendered = render(X_WITHOUT_GAP_WIDTH, item -> false);
+
+        assertEquals(AREA.getRGB(), rendered.argbAt(6, 1));
     }
 
     @Test

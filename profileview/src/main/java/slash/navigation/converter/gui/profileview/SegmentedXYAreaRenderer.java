@@ -51,7 +51,14 @@ import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 
 public class SegmentedXYAreaRenderer extends XYAreaRenderer {
     private final transient IntPredicate startsNewSegment;
+    // width in pixels of the strip left unfilled at a segment boundary: the x of the last item
+    // of a segment and of the first item of the next one are usually the same, since neither
+    // the distance nor the time across a gap is counted, so the gap needs a width of its own
+    static final double SEGMENT_GAP_PIXELS = 4.0;
+
     private transient GeneralPath segment;
+    private transient double segmentStartTransX;
+    private transient boolean segmentStartsAfterBreak;
     private transient double previousTransX;
     private transient boolean drawSegments;
 
@@ -93,35 +100,49 @@ public class SegmentedXYAreaRenderer extends XYAreaRenderer {
         if (item == 0 || startsNewSegment.test(item)) {
             // close the previous segment at its last item before the next one starts
             if (item > 0)
-                fillSegment(g2, dataArea, series, item - 1, previousTransX, transZero);
+                fillSegment(g2, dataArea, series, item - 1, previousTransX, transZero, true);
             segment = new GeneralPath();
             segment.moveTo(transX1, transZero);
+            segmentStartTransX = transX1;
+            segmentStartsAfterBreak = item > 0;
         }
         segment.lineTo(transX1, transY1);
         previousTransX = transX1;
 
         if (item == itemCount - 1)
-            fillSegment(g2, dataArea, series, item, transX1, transZero);
+            fillSegment(g2, dataArea, series, item, transX1, transZero, false);
 
         updateCrosshairValues(crosshairState, x1, y1, plot.indexOf(dataset), transX1, transY1, VERTICAL);
         addHotspot(state.getEntityCollection(), dataArea, plot, domainAxis, rangeAxis, dataset, series, item,
                 transX1, transY1, transZero);
     }
 
-    private void fillSegment(Graphics2D g2, Rectangle2D dataArea, int series, int item, double transX, double transZero) {
+    private static Rectangle2D gapStrip(Rectangle2D dataArea, double transX) {
+        return new Rectangle2D.Double(transX - SEGMENT_GAP_PIXELS / 2.0, dataArea.getMinY() - 1.0,
+                SEGMENT_GAP_PIXELS, dataArea.getHeight() + 2.0);
+    }
+
+    private void fillSegment(Graphics2D g2, Rectangle2D dataArea, int series, int item, double transX, double transZero,
+                             boolean endsAtBreak) {
         segment.lineTo(transX, transZero);
         segment.closePath();
+
+        Area area = new Area(segment);
+        if (segmentStartsAfterBreak)
+            area.subtract(new Area(gapStrip(dataArea, segmentStartTransX)));
+        if (endsAtBreak)
+            area.subtract(new Area(gapStrip(dataArea, transX)));
 
         Paint paint = getUseFillPaint() ? lookupSeriesFillPaint(series) : getItemPaint(series, item);
         if (paint instanceof GradientPaint gradientPaint)
             paint = getGradientTransformer().transform(gradientPaint, dataArea);
         g2.setPaint(paint);
-        g2.fill(segment);
+        g2.fill(area);
 
         if (isOutline()) {
             g2.setStroke(lookupSeriesOutlineStroke(series));
             g2.setPaint(lookupSeriesOutlinePaint(series));
-            g2.draw(segment);
+            g2.draw(area);
         }
     }
 
