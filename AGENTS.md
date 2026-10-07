@@ -222,3 +222,12 @@ Two traps:
   (it writes `specs/STATUS.md` itself — do NOT redirect `> specs/STATUS.md`, that
   races its own write). It warns on stale-dated active specs + status/dir
   mismatch. New-spec frontmatter follows `specs/_templates/project-overview-prompt.md`.
+- **Parallel agents and Maven.** Several agents running reactor builds (`-am`,
+  `install`) at once contend for the shared `~/.m2` and stall for minutes with no
+  output. Install the reactor once (`./mvnw -o install -Dskip.unit.tests=true
+  -Dskip.integration.tests=true -Djacoco.skip -Dspotbugs.skip`), then let each
+  agent build only its modules offline (`./mvnw -o -pl <mod1>,<mod2> verify`),
+  without `-am` or `install`. Run at most three Maven-heavy agents concurrently,
+  and start anything that may take longer than ~2 minutes in the background with
+  output to a log. Those snapshots go stale as soon as `master` moves: rebuild
+  them (or use `-am`) before trusting a single-module build after a merge.
