@@ -145,6 +145,21 @@ coordination with that codebase.
   merging it. Crowdin's commits don't trigger `build.yml` (`on: push`), so
   the required `Java 21 on Windows` check needs an empty commit pushed to
   `l10n_master`.
+- **A translation fixed in the repo must also go into Crowdin, or the next
+  sync reverts it.** The GitHub integration only reads the English source
+  and writes translations back; it never uploads edited
+  `RouteConverter_*.properties`. Push them with the Crowdin CLI (v4) from an
+  up-to-date `master`: export `CROWDIN_PROJECT_ID` and
+  `CROWDIN_PERSONAL_TOKEN` (`crowdin.yml` reads both from the environment),
+  then run, one language per call because `-l` keeps only the last flag:
+  `crowdin upload translations -b master -l <code> --auto-approve-imported`.
+  `-b master` is required: the integration keeps its files in Crowdin
+  branch `master`, so without it the CLI reports the source file "does not
+  exist" (`crowdin branch list`, `crowdin file list -b master` show where
+  they are). Without `--auto-approve-imported` the upload lands as a mere
+  suggestion and the approved machine translation stays. Then **Sync Now**:
+  a `l10n_master` PR with no change to the fixed keys proves Crowdin agrees
+  (#421 → #422).
 - **Release tags are plain `MAJOR.MINOR[.PATCH]`**, no `v` prefix.
 
 ## Contributing
