@@ -47,10 +47,13 @@ like regressions. Exclude the ITs too, and allow modules where nothing matches:
 maven-compiler-plugin (spec 00017 Scope B, PR #268) turns javac warnings into build
 failures — a warning you introduce fails CI on all three matrix jobs. It only catches
 **default-lint** warnings, though: plain `deprecation` and `unchecked` are javac *notes*
-and still pass, so a canary built on those compiles green and proves nothing. The
-categories that actually hold a line are the ones named explicitly in `<compilerArgs>`.
-The `-Xlint` bulk (`rawtypes` 318, `serial` 117, `this-escape` 57) is deliberately NOT
-enabled — see tracking issue #256 and spec `00018-rawtypes-generics-campaign`.
+and still pass on their own, so a canary built on those compiles green and proves
+nothing — unless the category is named explicitly in `<compilerArgs>`, which is now
+the case for all four of `rawtypes`, `deprecation`, `fallthrough` and `unchecked`
+(main sources, reactor-wide; test sources stay exempt from `rawtypes`). Spec
+`00018-rawtypes-generics-campaign` closed the rawtypes gap (shipped 2026-08-11) and
+issues #215/#222 measured the other three clean; `serial` (117) and `this-escape`
+(57) are the only categories still deliberately OFF — see tracking issue #256.
 
 **SpotBugs gates `verify` too.** `spotbugs:check` (threshold Medium, effort Max) runs in
 the verify phase and fails on any finding not excluded by `config/spotbugs-exclude.xml`.
