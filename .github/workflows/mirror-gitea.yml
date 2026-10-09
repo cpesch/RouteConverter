@@ -46,7 +46,11 @@ jobs:
           git remote add gitea "https://x-access-token:${GITEA_TOKEN}@${GITEA_HOST}/rc/RouteConverter.git"
           git fetch --no-tags gitea master
 
-          if [ -z "$(git rev-list origin/master..gitea/master)" ]; then
+          if ! new_commits="$(git rev-list origin/master..gitea/master)"; then
+            echo "::error::git rev-list origin/master..gitea/master failed; cannot determine mirror status." >&2
+            exit 1
+          fi
+          if [ -z "${new_commits}" ]; then
             echo "github master already contains gitea master; nothing to mirror."
             exit 0
           fi
