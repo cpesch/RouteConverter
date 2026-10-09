@@ -22,6 +22,7 @@ package slash.navigation.brouter;
 import btools.expressions.BExpressionMetaData;
 import btools.mapaccess.PhysicalFile;
 import btools.router.*;
+import slash.common.type.CompactCalendar;
 import slash.navigation.common.*;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.datasources.Downloadable;
@@ -76,6 +77,7 @@ public class BRouter extends BaseRoutingService {
     private static final String DIRECTORY_PREFERENCE = "directory";
     private static final String PROFILES_BASE_URL_PREFERENCE = "profilesBaseUrl";
     private static final String SEGMENTS_BASE_URL_PREFERENCE = "segmentsBaseUrl";
+    private static final String SEGMENTS_MAX_AGE_DAYS_PREFERENCE = "segmentsMaxAgeDays";
     private static final TravelMode CAR_ECO = new TravelMode("car-eco");
     public static final String DOT_BRF = ".brf";
     public static final String DOT_RD5 = ".rd5";
@@ -562,9 +564,8 @@ public class BRouter extends BaseRoutingService {
         return result;
     }
 
-    private boolean existAllSegmentsFromSameDay(Collection<Downloadable> segments) {
-        Checksum latestChecksum = null;
-
+    private List<Checksum> collectLocalChecksums(Collection<Downloadable> segments) {
+        List<Checksum> result = new ArrayList<>();
         for (Downloadable downloadable : segments) {
             File file = createSegmentFile(downloadable.getUri());
             Checksum fileChecksum = null;
@@ -573,19 +574,59 @@ public class BRouter extends BaseRoutingService {
             } catch (IOException e) {
                 log.warning(format("Cannot calculate checksum for %s: %s", file, e.getLocalizedMessage()));
             }
-
-            // file does not exist or failed to calculate checksum
-            if (fileChecksum == null)
-                return false;
-
-            if (latestChecksum == null)
-                latestChecksum = fileChecksum;
-
-            // file is from a different day than existing file
-            else if (!fileChecksum.sameDay(latestChecksum))
-                return false;
+            result.add(fileChecksum);
         }
-        return true;
+        return result;
+    }
+
+    /**
+     * Returns the oldest of {@code localChecksums} if all of them are present, have a known
+     * {@link Checksum#getLastModified()} and fall on the same day; {@code null} otherwise (a missing
+     * file, an unreadable checksum or tiles spanning more than one day each force a download, same as
+     * before this check existed).
+     */
+    private static Checksum oldestIfConsistent(List<Checksum> localChecksums) {
+        Checksum reference = null;
+        Checksum oldest = null;
+
+        for (Checksum checksum : localChecksums) {
+            if (checksum == null || checksum.getLastModified() == null)
+                return null;
+
+            if (reference == null)
+                reference = checksum;
+            else if (!checksum.sameDay(reference))
+                return null;
+
+            if (oldest == null || checksum.getLastModified().before(oldest.getLastModified()))
+                oldest = checksum;
+        }
+        return oldest;
+    }
+
+    private static boolean isOlderThan(Checksum checksum, CompactCalendar now, int maxAgeDays) {
+        long ageMillis = now.getTimeInMillis() - checksum.getLastModified().getTimeInMillis();
+        return ageMillis > maxAgeDays * 24L * 60 * 60 * 1000;
+    }
+
+    /**
+     * Decides whether {@code localChecksums} (one per requested segment, {@code null} for a missing
+     * or unreadable file) must be (re-)downloaded: a missing/unreadable file or a missing
+     * last-modified timestamp always forces a download, as does the existing rule that all segments
+     * must be from the same day. On top of that, segments older than {@code maxAgeDays} (measured
+     * from the oldest segment's last-modified timestamp to {@code now}) are considered stale and must
+     * be refreshed, e.g. because the underlying OSM data changed (road closures/reopenings, #423).
+     * {@code maxAgeDays <= 0} disables that age rule.
+     */
+    static boolean segmentsRequireDownload(List<Checksum> localChecksums, CompactCalendar now, int maxAgeDays) {
+        if (localChecksums.isEmpty())
+            return false;
+
+        Checksum oldest = oldestIfConsistent(localChecksums);
+        if (oldest == null)
+            return true;
+
+        return maxAgeDays > 0 && isOlderThan(oldest, now, maxAgeDays);
     }
 
     public DownloadFuture downloadRoutingDataFor(String mapIdentifier, List<LongitudeAndLatitude> longitudeAndLatitudes) {
@@ -599,9 +640,17 @@ public class BRouter extends BaseRoutingService {
         }
 
         Collection<Downloadable> segments = collectDownloadables(uris);
-        // if all segments exist locally and are from the same day, we don't need to download them
-        if(existAllSegmentsFromSameDay(segments))
+        List<Checksum> localChecksums = collectLocalChecksums(segments);
+        int maxAgeDays = preferences.getInt(SEGMENTS_MAX_AGE_DAYS_PREFERENCE, 7);
+        CompactCalendar now = CompactCalendar.now();
+
+        if (segmentsRequireDownload(localChecksums, now, maxAgeDays)) {
+            Checksum oldest = oldestIfConsistent(localChecksums);
+            if (oldest != null && maxAgeDays > 0 && isOlderThan(oldest, now, maxAgeDays))
+                log.info(format("Refreshing BRouter segments older than %d days: %s", maxAgeDays, uris));
+        } else {
             segments = new HashSet<>();
+        }
         return new DownloadFutureImpl(segments);
     }
 
