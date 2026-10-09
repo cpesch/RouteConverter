@@ -26,16 +26,22 @@ import slash.navigation.base.CmdLineNavigationFormatRegistry;
 import slash.navigation.base.NavigationFormatParser;
 import slash.navigation.base.ParserResult;
 import slash.navigation.base.RouteCharacteristics;
+import slash.navigation.gpx.Gpx11Format;
+import slash.navigation.gpx.GpxPosition;
+import slash.navigation.gpx.GpxRoute;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
  * Exercises {@link BRouterRouteLengthComputer} through the {@code RouteRouter}
@@ -117,6 +123,41 @@ public class BRouterRouteLengthComputerTest {
         RouteLengthComputer.LengthResult result = computer.computeLength(route);
         assertEquals("straight-line", result.kind());
         assertEquals(route.getDistance(), result.meters(), 0.0001);
+    }
+
+    @Test
+    public void sanityCheckUsesSameStraightLineAsTheFallbackForARouteWithACoordinateGap() {
+        // A -- (gap, no coordinates) -- B -- C, all three real points roughly
+        // evenly spaced. route.getDistance() drops both legs touching the gap
+        // (A-gap and gap-B), so it only counts B-C; a bearing sum over the
+        // coordinate-bearing points (A, B, C) instead bridges the gap and would
+        // count A-B *and* B-C, roughly twice as much. The sanity check must use
+        // the former (what the fallback below actually reports), not the latter.
+        GpxPosition a = new GpxPosition(10.0, 53.0, null, null, null, null);
+        GpxPosition gap = new GpxPosition(null, null, null, null, null, null);
+        GpxPosition b = new GpxPosition(10.3, 53.0, null, null, null, null);
+        GpxPosition c = new GpxPosition(10.6, 53.0, null, null, null, null);
+        BaseRoute<?, ?> route = new GpxRoute(new Gpx11Format(), RouteCharacteristics.Route,
+                "gapped", singletonList("gapped"), Arrays.asList(a, gap, b, c));
+
+        double bToC = calculateBearing(b.getLongitude(), b.getLatitude(), c.getLongitude(), c.getLatitude()).getDistance();
+        assertEquals(bToC, route.getDistance(), 0.0001);
+
+        double aToB = calculateBearing(a.getLongitude(), a.getLatitude(), b.getLongitude(), b.getLatitude()).getDistance();
+        double bridgedStraightLine = aToB + bToC;
+        // routed length clears the real (B-C only) straight line but stays well
+        // below the bridged (A-B plus B-C) one a gap-bridging sanity check would
+        // have used, so this value tells the two implementations apart
+        double routedMeters = bToC * 1.5;
+        assertTrue(routedMeters > route.getDistance());
+        assertTrue(routedMeters < bridgedStraightLine);
+
+        BRouterRouteLengthComputer.RouteRouter fake = (longitudes, latitudes) -> routedMeters;
+        RouteLengthComputer computer = new BRouterRouteLengthComputer(fake);
+
+        RouteLengthComputer.LengthResult result = computer.computeLength(route);
+        assertEquals("routed", result.kind());
+        assertEquals(routedMeters, result.meters(), 0.0001);
     }
 
     @Test
