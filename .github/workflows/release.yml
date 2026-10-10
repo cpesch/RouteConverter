@@ -128,6 +128,32 @@ jobs:
               sha256sum "$f" > "$f.sha256"
             done)
           done
+      # The XMLs are the PAD catalog (download portals, winget/chocolatey/
+      # homebrew manifests); edit them in .github/release/, not in rc-site.
+      # They ship with VERSION in release/ only — single source of the
+      # released version (rc-site symlinks + update check read it). Not
+      # release assets, not archived in previous-releases/.
+      - name: Render catalog + VERSION
+        env:
+          TAG:     ${{ steps.ver.outputs.tag }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          DATE=$(git -C src log -1 --format=%cs "$TAG")          # tag commit date YYYY-MM-DD
+          Y=${DATE:0:4}; M=${DATE:5:2}; D=${DATE:8:2}
+          mkdir -p latest-tree
+          cp artefacts/* latest-tree/
+          for f in RouteConverter.xml RouteConverter_de.xml; do
+            sed -E \
+              -e "s|<Program_Version>[^<]+</Program_Version>|<Program_Version>${VERSION}</Program_Version>|" \
+              -e "s|<Program_Release_Year>[^<]+</Program_Release_Year>|<Program_Release_Year>${Y}</Program_Release_Year>|" \
+              -e "s|<Program_Release_Month>[^<]+</Program_Release_Month>|<Program_Release_Month>${M}</Program_Release_Month>|" \
+              -e "s|<Program_Release_Day>[^<]+</Program_Release_Day>|<Program_Release_Day>${D}</Program_Release_Day>|" \
+              "src/.github/release/$f" > "latest-tree/$f"
+            grep -qF "<Program_Version>${VERSION}</Program_Version>" "latest-tree/$f"
+          done
+          printf '%s\n' "$VERSION" > latest-tree/VERSION
+          ls -la latest-tree/
       - name: Configure SSH
         env:
           DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
@@ -144,7 +170,7 @@ jobs:
           # --delete: /latest/ must only hold the current release; prunes prior-version
           # orphans (renamed/discontinued assets) that would otherwise serve stale builds
           rsync -av --delete --omit-dir-times --no-perms \
-            artefacts/ \
+            latest-tree/ \
             "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/downloads/release/"
       - name: Rsync to static.routeconverter.com/downloads/previous-releases/<v>/
         env:

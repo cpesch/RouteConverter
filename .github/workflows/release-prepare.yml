@@ -17,10 +17,7 @@ name: Release prepare
 #      silently un-fired. Afterwards open a fresh empty
 #      "## Next release" section on master.
 #   3. cuts and pushes a <version>-maintenance branch.
-#   4. Clones rc-site via Gitea PAT, bumps catalog XMLs, commits, pushes.
-#      (Previously fired a Gitea repository_dispatch into a separate
-#      rc-site/.gitea/workflows/catalog-bump.yml — collapsed into this
-#      workflow per Phase 5.8 plan-review O2 on 2026-06-07.)
+#   The PAD catalog XMLs are published by release.yml (.github/release/).
 #
 # Tag push from step 2 fires release.yml automatically.
 
@@ -34,7 +31,7 @@ on:
         description: 'Next development version (e.g. 3.6-SNAPSHOT). Must end -SNAPSHOT.'
         required: true
       dry_run:
-        description: 'Dry-run only (no commits, no tag, no push, no catalog bump)'
+        description: 'Dry-run only (no commits, no tag, no push)'
         type: boolean
         default: false
 
@@ -243,50 +240,3 @@ jobs:
         run: |
           find . -name '*.releaseBackup' -delete
           rm -f release.properties
-
-      - name: Bump catalog XMLs on rc-site
-        if: inputs.dry_run != true
-        env:
-          GITEA_TOKEN: ${{ secrets.RC_SITE_DISPATCH_TOKEN }}
-          GITEA_HOST:  ${{ secrets.RC_SITE_GITEA_HOST }}
-          VERSION:     ${{ inputs.release_version }}
-        run: |
-          set -euo pipefail
-          cd "$(mktemp -d)"
-          git clone --depth 1 \
-            "https://x-access-token:${GITEA_TOKEN}@${GITEA_HOST}/rc/rc-site.git" .
-          git config user.name  'github-actions[bot]'
-          git config user.email 'release-prepare@routeconverter.com'
-          today_year=$(date +%Y)
-          today_month=$(date +%m)
-          today_day=$(date +%d)
-          for f in static/downloads/RouteConverter.xml static/downloads/RouteConverter_de.xml; do
-            sed -i -E \
-              -e "s|<Program_Version>[^<]+</Program_Version>|<Program_Version>${VERSION}</Program_Version>|" \
-              -e "s|<Program_Release_Year>[^<]+</Program_Release_Year>|<Program_Release_Year>${today_year}</Program_Release_Year>|" \
-              -e "s|<Program_Release_Month>[^<]+</Program_Release_Month>|<Program_Release_Month>${today_month}</Program_Release_Month>|" \
-              -e "s|<Program_Release_Day>[^<]+</Program_Release_Day>|<Program_Release_Day>${today_day}</Program_Release_Day>|" \
-              "$f"
-          done
-          if git diff --quiet; then
-            echo "rc-site catalog XMLs already at ${VERSION} — no bump needed"
-            exit 0
-          fi
-          git add static/downloads/RouteConverter.xml static/downloads/RouteConverter_de.xml
-          git commit -m "downloads: bump catalog XMLs to ${VERSION} ($(date -I))"
-          # The Gitea host (strato) intermittently hits a PID/TasksMax cap;
-          # its pre-receive hook then dies with
-          #   runtime/cgo: pthread_create failed: Resource temporarily unavailable
-          # → SIGABRT → "pre-receive hook declined". That's transient host
-          # exhaustion, not a bad push — retry with backoff before failing
-          # the release.
-          for attempt in 1 2 3 4 5; do
-            if git push origin main; then
-              echo "catalog push ok (attempt ${attempt})"
-              exit 0
-            fi
-            echo "::warning::catalog push failed (attempt ${attempt}/5) — strato may be PID-capped; retrying"
-            sleep $(( attempt * 15 ))
-          done
-          echo "::error::catalog push still failing after 5 attempts — check the catalog host's PID/TasksMax cap"
-          exit 1

@@ -1,14 +1,15 @@
 name: Release scripts
 
 # Unit tests for the release helper scripts in .github/scripts
-# (release_notes.py is called by release-prepare.yml).
+# (release_notes.py is called by release-prepare.yml) and well-formedness
+# of the PAD catalog templates in .github/release (rendered by release.yml).
 
 on:
   pull_request:
-    paths: ['.github/scripts/**']
+    paths: ['.github/scripts/**', '.github/release/**']
   push:
     branches: [master]
-    paths: ['.github/scripts/**']
+    paths: ['.github/scripts/**', '.github/release/**']
 
 permissions:
   contents: read
@@ -20,3 +21,7 @@ jobs:
       - uses: actions/checkout@v7
       - name: unittest
         run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v
+      - name: xmllint PAD catalog templates
+        run: |
+          command -v xmllint >/dev/null || { sudo apt-get update -q && sudo apt-get install -y -q libxml2-utils; }
+          xmllint --noout .github/release/RouteConverter.xml .github/release/RouteConverter_de.xml

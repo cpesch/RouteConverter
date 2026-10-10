@@ -1,0 +1,97 @@
+<?xml version="1.0" ?>
+<XML_DIZ_INFO>
+	<MASTER_PAD_VERSION_INFO>
+		<MASTER_PAD_VERSION>4.0</MASTER_PAD_VERSION>
+		<MASTER_PAD_EDITOR>hand-maintained per PAD 4.0 spec</MASTER_PAD_EDITOR>
+		<MASTER_PAD_INFO>Portable Application Description, or PAD for short, is a data set that is used by software authors to disseminate information to anyone interested in their software products. To find out more see https://en.wikipedia.org/wiki/Portable_Application_Description</MASTER_PAD_INFO>
+		<CERTIFIED>N</CERTIFIED>
+	</MASTER_PAD_VERSION_INFO>
+	<Company_Info>
+		<Company_Name>Christian Pesch</Company_Name>
+		<Address_1 />
+		<Address_2 />
+		<City_Town>Hamburg</City_Town>
+		<State_Province />
+		<Zip_Postal_Code />
+		<Country>Germany</Country>
+		<Company_WebSite_URL>https://www.routeconverter.com</Company_WebSite_URL>
+		<Contact_Info>
+			<Author_First_Name>Christian</Author_First_Name>
+			<Author_Last_Name>Pesch</Author_Last_Name>
+			<Author_Email>support@routeconverter.com</Author_Email>
+			<Contact_First_Name>Christian</Contact_First_Name>
+			<Contact_Last_Name>Pesch</Contact_Last_Name>
+			<Contact_Email>support@routeconverter.com</Contact_Email>
+		</Contact_Info>
+		<Support_Info>
+			<Sales_Email>support@routeconverter.com</Sales_Email>
+			<Support_Email>support@routeconverter.com</Support_Email>
+			<General_Email>support@routeconverter.com</General_Email>
+			<Sales_Phone />
+			<Support_Phone />
+			<General_Phone />
+			<Fax_Phone />
+		</Support_Info>
+	</Company_Info>
+	<Program_Info>
+		<Program_Name>RouteConverter</Program_Name>
+		<Program_Version>3.7</Program_Version>
+		<Program_Release_Month>10</Program_Release_Month>
+		<Program_Release_Day>10</Program_Release_Day>
+		<Program_Release_Year>2026</Program_Release_Year>
+		<Program_Cost_Dollars>0</Program_Cost_Dollars>
+		<Program_Cost_Other_Code>EUR</Program_Cost_Other_Code>
+		<Program_Cost_Other>0</Program_Cost_Other>
+		<Program_Type>Freeware</Program_Type>
+		<Program_Release_Status>Minor Update</Program_Release_Status>
+		<Program_Install_Support>Install and Uninstall</Program_Install_Support>
+		<Program_OS_Support>WinOther,Mac OS X,Linux,Java</Program_OS_Support>
+		<Program_Language>Arabic,Catalan,Chinese,Croatian,Czech,Danish,Dutch,English,Finnish,French,German,Hungarian,Italian,Japanese,Korean,Latvian,Marathi,Polish,Portuguese,Russian,Serbian,Slovak,Spanish,Tamil,Turkish,Ukrainian</Program_Language>
+		<Program_Change_Info>Code-signierte Windows-Installer und eigenstaendige Java-Artefakte ueber SignPath, Laufzeit auf Java 21 umgestellt (gebuendelte JRE und Mindestanforderung), Stabilisierungs- und Validierungs-Korrekturen</Program_Change_Info>
+		<Program_Specific_Category>Business</Program_Specific_Category>
+		<Program_Category_Class>Business::Calculators &amp; Converters</Program_Category_Class>
+		<Program_System_Requirements>Java 21</Program_System_Requirements>
+		<Expire_Info>
+			<Has_Expire_Info>N</Has_Expire_Info>
+			<Expire_Count />
+			<Expire_Based_On>Days</Expire_Based_On>
+			<Expire_Other_Info />
+			<Expire_Month />
+			<Expire_Day />
+			<Expire_Year />
+		</Expire_Info>
+	</Program_Info>
+	<Program_Descriptions>
+		<English>
+			<Keywords>Route Converter konvertiert Routen iPhone iPad bcr bin crs gdb gpi gpx itn kml kmz nmea 0183 ov2 rte tcx tour trk wpt Google Earth Maps TomTom Navigon Mobile Navigator Map&amp;Guide Tourenplaner MapSource GPS Tuner CoPilot</Keywords>
+			<Char_Desc_45>RouteConverter bearbeitet, konvertiert</Char_Desc_45>
+			<Char_Desc_80>RouteConverter bearbeitet und konvertiert GPS Daten in ueber 87 Formaten.</Char_Desc_80>
+			<Char_Desc_250>RouteConverter zeigt, bearbeitet, komplettiert und konvertiert GPS Daten in ueber 87 Formaten.</Char_Desc_250>
+			<Char_Desc_450>RouteConverter zeigt, bearbeitet, komplettiert und konvertiert GPS Daten in ueber 87 Formaten. Es arbeitet ohne Installation unter Linux, Mac OS X und Windows, erkennt automatisch das Format einer Datei, unterstuetzt Drag and drop, Undo und Redo, bietet eine Kartenansicht auf die Positionen von Routen, Tracks und Wegpunkten, erlaubt es Position auf der Karte zu veraendern, unterstuetzt mehrere Routen in diversen Formaten und noch viel mehr.</Char_Desc_450>
+			<Char_Desc_2000>RouteConverter zeigt, bearbeitet, komplettiert und konvertiert GPS Daten zwischen ueber 87 Formaten. Es arbeitet ohne Installation unter Linux, Mac OS X und Windows, erkennt automatisch das Format einer Datei, unterstuetzt Drag and drop, Undo und Redo, bietet eine Kartenansicht auf die Positionen von Routen, Tracks und Wegpunkten, erlaubt es Position auf der Karte zu veraendern, unterstuetzt mehrere Routen in Google Earth, GPX und Garmin MapSource Dateien, erlaubt es doppelte Positionen zu entfernen um Tracks zu kuerzen, erlaubt es eine oder mehrere Positionen einer Route an den Beginn, ans Ende, nach oben und unten zu bewegen, erlaubt es Geschwindigkeit, Hoehe, Ortsnamen, Postadresse von Positionen von NASA SRTM3 und geonames.org zu beziehen, benutzt Datei- und Positionsnamen, die gut in die Anzeige eines TomTom Rider passen, benutzt Datei-, Routen und Positionsnamen, die gut in die Anzeige des Map&amp;Guide Motorrad Tourenplaner passen, merkt sich Sprache, Pfade, Fenstergroessen und -positionen.</Char_Desc_2000>
+		</English>
+	</Program_Descriptions>
+	<Web_Info>
+		<Application_URLs>
+			<Application_Info_URL>https://www.routeconverter.com/</Application_Info_URL>
+			<Application_Order_URL />
+			<Application_Screenshot_URL>https://static.routeconverter.com/images/routeconverter_thumbnail.png</Application_Screenshot_URL>
+			<Application_Icon_URL>https://static.routeconverter.com/images/routeconverter64x64.png</Application_Icon_URL>
+			<Application_XML_File_URL>https://releases.routeconverter.com/RouteConverter_de.xml</Application_XML_File_URL>
+		</Application_URLs>
+		<Download_URLs>
+			<Primary_Download_URL>https://releases.routeconverter.com/latest/RouteConverterWindows.exe</Primary_Download_URL>
+			<Secondary_Download_URL>https://releases.routeconverter.com/latest/RouteConverterLinux.jar</Secondary_Download_URL>
+			<Additional_Download_URL_1>https://releases.routeconverter.com/latest/RouteConverterMac-x64-app.zip</Additional_Download_URL_1>
+			<Additional_Download_URL_2>https://releases.routeconverter.com/latest/RouteConverterMac-aarch64-app.zip</Additional_Download_URL_2>
+		</Download_URLs>
+	</Web_Info>
+	<Permissions>
+		<Distribution_Permissions>RouteConverter is licensed under the GNU GENERAL PUBLIC LICENSE Version 2, June 1991</Distribution_Permissions>
+		<EULA>RouteConverter is licensed under the GNU GENERAL PUBLIC LICENSE Version 2, June 1991</EULA>
+	</Permissions>
+	<ASP>
+		<ASP_Member>N</ASP_Member>
+		<ASP_Member_Number />
+	</ASP>
+</XML_DIZ_INFO>
