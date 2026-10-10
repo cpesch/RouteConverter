@@ -25,6 +25,7 @@ import slash.navigation.converter.gui.BaseRouteConverter;
 import javax.swing.*;
 import java.awt.*;
 import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 /**
  * Renders the look-and-feel preference labels of the look-and-feel combo box.
@@ -35,14 +36,15 @@ import java.util.MissingResourceException;
 public class LookAndFeelListCellRenderer extends DefaultListCellRenderer {
     public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
         JLabel label = (JLabel) super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
-        String lookAndFeel = (String) value;
-        String text;
-        try {
-            text = BaseRouteConverter.getBundle().getString("look-and-feel-" + lookAndFeel);
-        } catch (MissingResourceException e) {
-            text = lookAndFeel;
-        }
-        label.setText(text);
+        label.setText(resolveText(BaseRouteConverter.getBundle(), (String) value));
         return label;
+    }
+
+    static String resolveText(ResourceBundle bundle, String lookAndFeel) {
+        try {
+            return bundle.getString("look-and-feel-" + lookAndFeel);
+        } catch (MissingResourceException e) {
+            return lookAndFeel;
+        }
     }
 }
