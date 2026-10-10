@@ -162,6 +162,9 @@ jobs:
         if: inputs.dry_run != true
         run: |
           python3 .github/scripts/release_notes.py open-next
+          # open-next is idempotent; skip the commit on a re-run that finds
+          # the section already open.
+          if git diff --quiet RELEASE_NOTES.md; then exit 0; fi
           git add RELEASE_NOTES.md
           git commit -m "docs(release-notes): open Next release after ${{ inputs.release_version }}"
           git push origin HEAD:master
