@@ -63,7 +63,9 @@ jobs:
         # `.build.number` as member-access, splitting the arg into
         # `-Dmaven` + `.build.number=NNN` → mvn sees the latter as a
         # lifecycle phase and dies.
-        run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" --update-snapshots verify
+        # JaCoCo skipped: coverage is uploaded from Linux Java 21 only, so the
+        # agent here just slows every test JVM down.
+        run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" "-Djacoco.skip=true" --update-snapshots verify
       - uses: actions/upload-artifact@v7
         with:
           name: RouteConverter Windows Prerelease built with Java ${{ matrix.java }}
