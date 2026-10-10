@@ -4,7 +4,6 @@ name: workflow-config-guard
 #     artifact-data-volume quota (the 2026-07 incident; PR #197), or
 # (b) break release signing, or
 # (c) remove the "fail if unsigned" verify gates from the build workflows.
-# See rc-meta specs/00043.
 
 on:
   pull_request:
@@ -54,7 +53,7 @@ jobs:
           chk "release build-windows .sign"   true "$(yq '.jobs["build-windows"].with.sign' "$R")" "$R"
           chk "release build-linux-mac policy" release-signing "$(yq '.jobs["build-linux-mac"].with["signing-policy-slug"]' "$R")" "$R"
           chk "release build-windows policy"   release-signing "$(yq '.jobs["build-windows"].with["signing-policy-slug"]' "$R")" "$R"
-          [[ $fail -eq 0 ]] || { echo "::error::SignPath signing config invariants violated (rc-meta specs/00043)"; exit 1; }
+          [[ $fail -eq 0 ]] || { echo "::error::SignPath signing config invariants violated"; exit 1; }
 
       - name: Assert unsigned-artifact verify gates still present
         run: |

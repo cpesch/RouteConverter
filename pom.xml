@@ -47,7 +47,7 @@
     <!-- No <distributionManagement>: this project does not publish to Maven
          Central or any Maven repository. Releases ship as raw .exe / .jar /
          .app.zip files via release.yml's rsync to static.routeconverter.com,
-         not as Maven artefacts. See rc-meta/specs/00018-release-automation-3.4.md. -->
+         not as Maven artefacts. -->
 
     <scm>
         <connection>scm:git:https://github.com/cpesch/RouteConverter</connection>
@@ -206,14 +206,14 @@
                     <configuration>
                         <!-- release (not source/target): validates against the target JDK's
                              API, so a build on a newer JDK (matrix 25) can't silently emit
-                             references to APIs absent from the Java 21 floor. See specs/00010. -->
+                             references to APIs absent from the Java 21 floor. -->
                         <release>${java.version}</release>
                         <encoding>UTF-8</encoding>
-                        <!-- spec 00017 Scope B: javac warnings fail the build, so a
+                        <!-- javac warnings fail the build, so a
                              warning-free compile cannot silently regress. rawtypes,
                              deprecation, fallthrough and unchecked have graduated out
                              of the -Xlint bulk and are enforced below for main sources
-                             (rawtypes measured clean at 9ec6c736f in specs/00018;
+                             (rawtypes measured clean at 9ec6c736f;
                              deprecation and fallthrough measured 0 reactor-wide,
                              main sources, on 2026-09-26, issue #215, host JDK 21 —
                              the CI matrix's other JDK, 25, isn't a separate risk here:
@@ -225,14 +225,13 @@
                              ObjectFactory classes — binding21/binding22/binding22beta,
                              see the @SuppressWarnings("unchecked") comments there).
                              serial and this-escape stay OFF deliberately: still the
-                             unmeasured -Xlint bulk — see the tracking issue and
-                             specs/00018. -->
+                             unmeasured -Xlint bulk — see the tracking issue. -->
                         <failOnWarning>true</failOnWarning>
                         <compilerArgs>
                             <arg>-Xlint:rawtypes,deprecation,fallthrough,unchecked</arg>
                             <!-- javac silently caps warning output at 100 by default;
                                  raise it so a future CI failure log shows the true count
-                                 instead of truncating (specs/00018 phase 1/2 both hit
+                                 instead of truncating (the rawtypes campaign's phase 1/2 both hit
                                  wrong headline numbers because of this cap). Does not
                                  change gate behaviour: failOnWarning already fires on
                                  the first warning regardless of the print cap. -->
@@ -243,7 +242,7 @@
                     <executions>
                         <execution>
                             <!-- Test sources deliberately stay exempt from -Xlint:rawtypes
-                                 (specs/00018 Decision) — combine.self="override" replaces
+                                 (rawtypes campaign decision) — combine.self="override" replaces
                                  the parent's compilerArgs for this execution instead of
                                  merging into it; without it Maven merges the -Xlint:rawtypes
                                  arg into the test-compile execution too. -->

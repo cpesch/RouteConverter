@@ -8,7 +8,6 @@
   - disable-library-validation: Java dlopen()s third-party dylibs (mapsforge,
     JNI libs) that are not signed by our Team ID.
   - allow-dyld-environment-variables: the launcher sets JAVA/DYLD env vars.
-  See rc-meta specs (macOS signing prep).
 -->
 <plist version="1.0"><dict>
   <key>com.apple.security.cs.allow-jit</key><true/>
