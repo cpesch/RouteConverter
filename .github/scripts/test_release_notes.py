@@ -1,6 +1,7 @@
 import contextlib
 import io
 import os
+import shutil
 import sys
 import tempfile
 import unittest
@@ -240,6 +241,181 @@ class ExtractTest(CliTestCase):
         self.assertEqual(0, code)
         self.assertEqual("", stdout)
         self.assertEqual(out, self.read(target))
+
+
+DRAFTS_NOTES = (
+    "# Release notes\n"
+    "\n"
+    "## 3.8 — 2026-12-01\n"
+    "\n"
+    "**GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.8\n"
+    "\n"
+    "### Highlights (EN)\n"
+    "\n"
+    "RouteConverter 3.8 is faster.\n"
+    "\n"
+    "### Was ist neu (DE)\n"
+    "\n"
+    "RouteConverter 3.8 ist schneller\n"
+    "und kann mehr.\n"
+    "\n"
+    "### New features\n"
+    "\n"
+    "- Reads the phone's `Timeline.json` export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
+    "- Maintainer's favourite: a font-size setting\n"
+    "\n"
+    "### Changes\n"
+    "\n"
+    "### Fixes\n"
+    "\n"
+    "- Starts again on macOS 15 (#393)\n"
+    "\n"
+    "### Known issues\n"
+    "\n"
+    "- Blurry text with display scaling (#343)\n"
+    "\n"
+    "## 3.7 — 2026-10-10\n"
+    "\n"
+    "### Fixes\n"
+    "\n"
+    "- Older fix.\n"
+)
+
+FORUM_EN = (
+    "RouteConverter 3.8 released\n"
+    "\n"
+    "RouteConverter 3.8 is available: https://www.routeconverter.com/downloads/\n"
+    "Release notes: https://www.routeconverter.com/releases/3-8/\n"
+    "\n"
+    "New features\n"
+    "\n"
+    "- Reads the phone's Timeline.json export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
+    "- Maintainer's favourite: a font-size setting\n"
+    "\n"
+    "Fixes\n"
+    "\n"
+    "- Starts again on macOS 15 (#393)\n"
+    "\n"
+    "Known issues\n"
+    "\n"
+    "- Blurry text with display scaling (#343)\n"
+)
+
+FORUM_DE = (
+    "RouteConverter 3.8 ist erschienen\n"
+    "\n"
+    "RouteConverter 3.8 steht zum Download bereit: https://www.routeconverter.de/downloads/\n"
+    "Versionshinweise: https://www.routeconverter.de/releases/3-8/\n"
+    "\n"
+    "RouteConverter 3.8 ist schneller und kann mehr.\n"
+    "\n"
+    "TODO: Stichpunkte übersetzen\n"
+    "\n"
+    "Neue Funktionen\n"
+    "\n"
+    "- Reads the phone's Timeline.json export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
+    "- Maintainer's favourite: a font-size setting\n"
+    "\n"
+    "Fehlerbehebungen\n"
+    "\n"
+    "- Starts again on macOS 15 (#393)\n"
+    "\n"
+    "Bekannte Probleme\n"
+    "\n"
+    "- Blurry text with display scaling (#343)\n"
+)
+
+PAGE_BULLETS = (
+    "- Reads the phone's `Timeline.json` export from the Google Maps app without dropping a single point of the recorded day's history (#351)\n"
+    "- Maintainer's favourite: a font-size setting\n"
+    "- Starts again on macOS 15 (#393)\n"
+)
+
+PAGE_EN = (
+    "---\n"
+    "title: Release 3.8 from 01.12.2026\n"
+    "slug: releases/3-8\n"
+    "surface: site\n"
+    "lang_status: translated\n"
+    "provenance: hand-authored\n"
+    "last_modified: '2026-12-01'\n"
+    "seo_title: 'RouteConverter 3.8 release notes (1 Dec 2026)'\n"
+    "description: 'What is new in RouteConverter 3.8 (1 Dec 2026): Reads the phone''s `Timeline.json` export from the Google Maps app without dropping a single point.'\n"
+    "categories:\n"
+    "- release\n"
+    "---\n"
+    "\n"
+    "# Release 3.8 from 01.12.2026\n"
+    "\n" + PAGE_BULLETS
+)
+
+PAGE_DE = (
+    "---\n"
+    "title: Release 3.8 vom 01.12.2026\n"
+    "slug: releases/3-8\n"
+    "surface: site\n"
+    "lang_status: translated\n"
+    "provenance: hand-authored\n"
+    "last_modified: '2026-12-01'\n"
+    "seo_title: 'RouteConverter 3.8 Release Notes (1. Dezember 2026)'\n"
+    "description: 'Neu in RouteConverter 3.8 (1. Dezember 2026): TODO'\n"
+    "categories:\n"
+    "- release\n"
+    "---\n"
+    "\n"
+    "# Release 3.8 vom 01.12.2026\n"
+    "\n"
+    "<!-- TODO: übersetzen -->\n"
+    "\n" + PAGE_BULLETS
+)
+
+
+class TruncateTest(unittest.TestCase):
+    def test_short_text_kept_without_final_period(self):
+        self.assertEqual("Faster startup", release_notes._truncate("Faster startup.", 120))
+
+    def test_drops_unclosed_parenthesis(self):
+        self.assertEqual("Reads exports from the app",
+                         release_notes._truncate("Reads exports from the app (`a.json` / `b.json`) fast", 40))
+
+    def test_drops_trailing_function_words(self):
+        self.assertEqual("Keeps every point", release_notes._truncate("Keeps every point of the day", 22))
+
+
+class DraftsTest(CliTestCase):
+    def setUp(self):
+        self.out = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, self.out)
+        path = self.write(DRAFTS_NOTES)
+        code, _, _ = self.run_cli("--file", path, "drafts", "3.8", "2026-12-01", "--out", self.out)
+        self.assertEqual(0, code)
+
+    def draft(self, name):
+        return self.read(os.path.join(self.out, name))
+
+    def test_writes_exactly_four_files(self):
+        self.assertEqual(
+            sorted(["forum-3.8-en.txt", "forum-3.8-de.txt",
+                    "rc-content-en-3-8-index.md", "rc-content-de-3-8-index.md"]),
+            sorted(os.listdir(self.out)))
+
+    def test_forum_en(self):
+        self.assertEqual(FORUM_EN, self.draft("forum-3.8-en.txt"))
+
+    def test_forum_de(self):
+        self.assertEqual(FORUM_DE, self.draft("forum-3.8-de.txt"))
+
+    def test_rc_content_en(self):
+        self.assertEqual(PAGE_EN, self.draft("rc-content-en-3-8-index.md"))
+
+    def test_rc_content_de(self):
+        self.assertEqual(PAGE_DE, self.draft("rc-content-de-3-8-index.md"))
+
+    def test_missing_version_fails(self):
+        path = self.write(DRAFTS_NOTES)
+        code, _, err = self.run_cli("--file", path, "drafts", "3.9", "2026-12-01", "--out", self.out)
+        self.assertEqual(1, code)
+        self.assertIn('no "## 3.9 — …" section', err)
 
 
 class ParseTest(unittest.TestCase):

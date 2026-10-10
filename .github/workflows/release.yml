@@ -198,6 +198,24 @@ jobs:
             --notes-file "$RUNNER_TEMP/release-notes.md" \
             --generate-notes \
             --verify-tag
+      # Phase 4b starting point: forum posts (EN/DE plain text) and rc-content
+      # release pages (EN/DE) generated from the curated section. Drafts only —
+      # committing/posting stays manual; a failure here never fails the release.
+      - name: Announcement drafts
+        continue-on-error: true
+        env:
+          TAG:     ${{ steps.ver.outputs.tag }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          python3 src/.github/scripts/release_notes.py --file src/RELEASE_NOTES.md \
+            drafts "$VERSION" "$(git -C src log -1 --format=%cs "$TAG")" \
+            --out "$RUNNER_TEMP/announcement-drafts"
+      - uses: actions/upload-artifact@v7
+        continue-on-error: true
+        with:
+          name: announcement-drafts
+          path: ${{ runner.temp }}/announcement-drafts
+          retention-days: 30
 
   bump-homebrew-cask:
     # Keep cpesch/homebrew-routeconverter's
