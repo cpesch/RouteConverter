@@ -1,15 +1,86 @@
 # Release notes
 
-## Next release
+## 3.7 — YYYY-MM-DD
+
+**GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.7
+
+### Highlights (EN)
+
+RouteConverter 3.7 reads Google Maps Timeline exports straight from your phone and adds the RTZ route format used by ship navigation systems. GPX track segments now survive reading and writing and show up as gaps on the map and in the elevation profile, and ascent/descent totals are no longer inflated by GPS elevation noise. You can select and delete pauses, set the font size of the user interface, and see on the map where maps, routing, elevation and POI data are available. On the fix side, the app starts again on macOS 15 and earlier, starts faster on Windows, follows your regional date and time settings, and stays responsive when you select thousands of positions. New ways to install: a Debian/Ubuntu package and a Homebrew cask.
+
+### Was ist neu (DE)
+
+RouteConverter 3.7 liest Google-Maps-Zeitachsen direkt vom Smartphone und kennt das RTZ-Routenformat der Schiffsnavigation. Segmente in GPX-Tracks bleiben beim Lesen und Schreiben erhalten und erscheinen als Lücke auf der Karte und im Höhenprofil; GPS-Höhenrauschen bläht die Summen für Anstieg und Abstieg nicht mehr auf. Neu sind außerdem: Pausen auswählen und löschen, eine einstellbare Schriftgröße für die Oberfläche und eine Kartenansicht, die zeigt, wo Karten, Routing-, Höhen- und POI-Daten verfügbar sind. Behoben: Auf macOS 15 und älter startet die App wieder, unter Windows startet sie schneller, Datum und Uhrzeit folgen den Regionseinstellungen, und auch bei tausenden ausgewählten Positionen bleibt sie flüssig. Neu zu installieren als Debian/Ubuntu-Paket und über Homebrew.
 
 ### New features
 
-- RTZ route exchange format (IEC 61174, ECDIS) — read and write
+- Google Maps Timeline: reads the on-device exports from the Google Maps app (`location-history.json` / `Timeline.json`) without dropping points (#351)
+- RTZ route exchange format (IEC 61174, used by ECDIS ship navigation): read for everyone, write for sponsors
+- GPX track segments are preserved when reading and writing. The map and the elevation profile leave a gap where a segment ends, and the time across the gap no longer counts toward the duration
+- Select and delete pause positions (speed 0), optionally shifting the times of the following positions so the track runs on without the pauses (#333)
+- Font-size setting for the user interface; on Windows the default follows the display scaling (#335, #338)
+- Coverage overlay (View menu): shows on the map where maps, routing, elevation and POI data are available
+- Command line: new `convert` command with explicit source/target formats, a one-line JSON result and distinct exit codes
+- New ways to install: `RouteConverterLinux.deb` for Debian/Ubuntu with bundled Java, a Homebrew cask for macOS (`brew install --cask cpesch/routeconverter/routeconverter`), and a `.sha256` checksum next to every download
+- The update dialog opens a release page with context instead of the raw download directory, uses buttons instead of links, nudges harder on very old versions and shows an end-of-life notice for Java 8 and RouteConverter 2.x
+- Support RouteConverter: About dialog and Help menu with Donate, a gentle reminder after 100 and 500 starts, and a dialog explaining sponsor features when you try one
+
+### Changes
+
+- Ascent and descent totals ignore elevation changes below 5 m, which suppresses GPS noise; totals are lower than before and closer to other tools (#409)
 
 ### Fixes
 
 - macOS: the app runs on macOS 11 and later again. 3.6 through 3.6.5 were built against macOS 26 by mistake, so on macOS 15 (Sequoia) and earlier the icon appeared crossed out and greyed and the app would not start at all (#393, thanks Edgar Kraus)
+- Dates and times now follow the system's region settings instead of a 12-hour, month-first format (#415, thanks xyzlabc)
+- BRouter kept using routing data downloaded once and never refreshed it, so roads that had reopened since stayed blocked (Blue Ridge Parkway); routing data older than 7 days is now downloaded again. Offline routing also skips a downloaded area that has no roads for the route (#423, thanks Kumba42)
+- Windows: the program no longer unpacks 60 MB on every start, which made startup slow (#372)
+- Windows Portable: the launcher could not start the program (#373)
+- Selecting or deselecting many positions froze the program; drawing large tracks, routes and waypoint lists on the map is faster (#356)
+- Copy and paste garbled descriptions with umlauts and other non-ASCII characters (#340)
+- "Complete coordinates" overwrote positions that already had coordinates (#339)
 - Microsoft Flight Simulator flight plans (.pln): altitudes are read and written in feet, as MSFS stores them. Before, a cruise waypoint at FL360 showed as 36,000 m instead of 10,973 m, and .pln files written by earlier versions carry meters in the feet field — re-export them to fix their altitudes (#417)
+- OutdoorActive maps showed no tiles (#395)
+- The world-map background left a grey hole after startup (#376)
+- BRouter defaulted to the slow "moped" profile (#341)
+- Downloads: an interrupted download that was resumed could replace a good local file with a truncated one (#383), temporary files were left behind (#342), the download table could freeze, the remaining size counted only one routing area, and a timeout was reported as "offline"
+- With Arabic or Persian language settings, times were written with Eastern Arabic digits, so other programs could not read the files
+- With Turkish language settings, file types were not recognized
+- Some large files (for example a 6.7 MB `.hst` track) were read as empty (regression in 3.6)
+- Dragging a position on the map follows the cursor again and grabs it at the pin tip
+- Deleting many positions at once is much faster
+- Running out of memory while inserting a route with GraphHopper is reported instead of failing silently (#337)
+- Failed elevation lookups are reported instead of skipped silently, and Google is available again as elevation fallback
+
+### Known issues
+
+- Windows with display scaling above 100%: text and icons are not rendered at native resolution; use the new font-size setting to enlarge the text (#343)
+
+### Downloads
+
+| OS | File | URL |
+|---|---|---|
+| Windows (includes JRE) | `RouteConverterWindows.exe` | https://releases.routeconverter.com/latest/RouteConverterWindows.exe |
+| Windows (Portable, includes JRE) | `RouteConverterPortable.paf.exe` | https://releases.routeconverter.com/latest/RouteConverterPortable.paf.exe |
+| Linux | `RouteConverterLinux.jar` | https://releases.routeconverter.com/latest/RouteConverterLinux.jar |
+| Linux (Debian/Ubuntu package, includes JRE) | `RouteConverterLinux.deb` | https://releases.routeconverter.com/latest/RouteConverterLinux.deb |
+| Mac (Intel x64) | `RouteConverterMac-x64-app.zip` | https://releases.routeconverter.com/latest/RouteConverterMac-x64-app.zip |
+| Mac (Apple Silicon aarch64) | `RouteConverterMac-aarch64-app.zip` | https://releases.routeconverter.com/latest/RouteConverterMac-aarch64-app.zip |
+| Mac (Homebrew) | `brew install --cask cpesch/routeconverter/routeconverter` | https://github.com/cpesch/homebrew-routeconverter |
+| CmdLine | `RouteConverterCmdLine.jar` | https://releases.routeconverter.com/latest/RouteConverterCmdLine.jar |
+| TimeAlbumPro (Win, includes JRE) | `TimeAlbumProWindows.exe` | https://releases.routeconverter.com/latest/TimeAlbumProWindows.exe |
+| TimeAlbumPro (Linux) | `TimeAlbumProLinux.jar` | https://releases.routeconverter.com/latest/TimeAlbumProLinux.jar |
+| TimeAlbumPro (Mac Intel x64) | `TimeAlbumProMac-x64-app.zip` | https://releases.routeconverter.com/latest/TimeAlbumProMac-x64-app.zip |
+| TimeAlbumPro (Mac Apple Silicon aarch64) | `TimeAlbumProMac-aarch64-app.zip` | https://releases.routeconverter.com/latest/TimeAlbumProMac-aarch64-app.zip |
+| Archive | All artefacts for 3.7 | https://releases.routeconverter.com/previous-releases/3.7/ |
+| API docs | Aggregated Javadoc (always current release) | https://static.routeconverter.com/javadoc/ |
+
+Every artefact has a `<file>.sha256` checksum next to it.
+
+### Acknowledgements
+
+- Bug reports: Edgar Kraus, Kumba42, xyzlabc, and the forum and support threads behind #333, #335, #356, #372, #395 and #409
+- Translators: the Crowdin community
 
 ## 3.6 — 2026-08-23
 
