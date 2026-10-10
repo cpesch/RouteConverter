@@ -72,6 +72,11 @@ jobs:
     needs: [build-linux-mac, build-windows, sign-mac]
     runs-on: ubuntu-latest
     steps:
+      # Tag checkout under src/ — keeps the repo out of the artefacts/ and
+      # previous-releases/ working dirs. Source of the curated release notes.
+      - uses: actions/checkout@v7
+        with:
+          path: src
       - name: Resolve version from tag
         id: ver
         run: |
@@ -156,9 +161,15 @@ jobs:
           TAG:      ${{ steps.ver.outputs.tag }}
           VERSION:  ${{ steps.ver.outputs.version }}
         run: |
+          # Curated "## VERSION — DATE" section first; gh appends the generated
+          # contributor notes below it. extract fails on a missing or
+          # bullet-less section, before any (empty-body) release is created.
+          python3 src/.github/scripts/release_notes.py --file src/RELEASE_NOTES.md \
+            extract "$VERSION" --out "$RUNNER_TEMP/release-notes.md"
           gh release create "$TAG" artefacts/* \
             --repo "$REPO" \
             --title "RouteConverter $VERSION" \
+            --notes-file "$RUNNER_TEMP/release-notes.md" \
             --generate-notes \
             --verify-tag
 

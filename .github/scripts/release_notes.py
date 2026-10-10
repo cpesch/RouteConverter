@@ -10,6 +10,7 @@ Subcommands:
   check-next              fail unless "## Next release" exists and has bullets
   stamp VERSION DATE      rename "## Next release" to "## VERSION — DATE"
   open-next               insert an empty "## Next release" section on top
+  extract VERSION         print the "## VERSION — DATE" section (or --out PATH)
 
 Python 3 stdlib only; other release tooling imports ``parse``.
 """
@@ -133,6 +134,25 @@ def open_next(text, path=DEFAULT_FILE):
     return "".join(lines)
 
 
+def extract(text, version, path=DEFAULT_FILE):
+    """Return the whole "## VERSION — …" section, heading included, up to the
+    next "## " heading, trailing blank lines trimmed, ending in one newline."""
+    lines = text.splitlines()
+    prefix = f"## {version} — "
+    for start, line in enumerate(lines):
+        if line.startswith(prefix):
+            end = start + 1
+            while end < len(lines) and not _is_section_heading(lines[end]):
+                end += 1
+            section = lines[start:end]
+            if not any(line.startswith("- ") for line in section[1:]):
+                raise ReleaseNotesError(f'section "{version}" has no bullets')
+            while section and not section[-1].strip():
+                section.pop()
+            return "\n".join(section) + "\n"
+    raise ReleaseNotesError(f'no "## {version} — …" section in {path}')
+
+
 def _read(path):
     with open(path, encoding="utf-8", newline="") as f:
         return f.read()
@@ -152,6 +172,9 @@ def main(argv=None):
     stamp_parser.add_argument("version")
     stamp_parser.add_argument("date")
     commands.add_parser("open-next", help='insert an empty "## Next release" section')
+    extract_parser = commands.add_parser("extract", help='print the "## VERSION — DATE" section')
+    extract_parser.add_argument("version")
+    extract_parser.add_argument("--out", help="write the section to this file instead of stdout")
     args = parser.parse_args(argv)
 
     try:
@@ -169,6 +192,12 @@ def main(argv=None):
             else:
                 _write(args.file, result)
                 print(f'{args.file}: opened "{NEXT_HEADING}"')
+        elif args.command == "extract":
+            section = extract(text, args.version, args.file)
+            if args.out:
+                _write(args.out, section)
+            else:
+                sys.stdout.write(section)
     except ReleaseNotesError as e:
         print(e, file=sys.stderr)
         return 1

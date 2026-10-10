@@ -172,6 +172,76 @@ class OpenNextTest(CliTestCase):
                          [s.title for s in sections])
 
 
+MIDDLE = (
+    "## 3.6 — 2026-08-01\n"
+    "\n"
+    "### Changes\n"
+    "\n"
+    "- Faster startup.\n"
+    "\n"
+    "\n"
+)
+
+OLDEST = (
+    "## 3.5 — 2026-06-01\n"
+    "\n"
+    "### Fixes\n"
+    "\n"
+    "- Older fix.\n"
+)
+
+NO_BULLETS = (
+    "## 3.6 — 2026-08-01\n"
+    "\n"
+    "Only a paragraph.\n"
+    "\n"
+)
+
+
+class ExtractTest(CliTestCase):
+    def test_middle_section_stops_before_next_heading(self):
+        path = self.write(NO_NEXT + OLDER + "\n" + MIDDLE + OLDEST)
+        code, out, _ = self.run_cli("--file", path, "extract", "3.6")
+        self.assertEqual(0, code)
+        self.assertEqual("## 3.6 — 2026-08-01\n\n### Changes\n\n- Faster startup.\n", out)
+
+    def test_newest_section(self):
+        path = self.write(NO_NEXT + OLDER + "\n" + MIDDLE + OLDEST)
+        code, out, _ = self.run_cli("--file", path, "extract", "3.7")
+        self.assertEqual(0, code)
+        self.assertEqual(OLDER, out)
+
+    def test_missing_version_fails(self):
+        path = self.write(NO_NEXT + OLDER)
+        code, out, err = self.run_cli("--file", path, "extract", "3.8")
+        self.assertEqual(1, code)
+        self.assertEqual("", out)
+        self.assertIn(f'no "## 3.8 — …" section in {path}', err)
+
+    def test_version_prefix_does_not_match_longer_version(self):
+        path = self.write(NO_NEXT + OLDER.replace("3.7", "3.7.1"))
+        code, _, err = self.run_cli("--file", path, "extract", "3.7")
+        self.assertEqual(1, code)
+        self.assertIn('no "## 3.7 — …" section', err)
+
+    def test_section_without_bullets_fails(self):
+        path = self.write(NO_NEXT + NO_BULLETS + OLDEST)
+        code, _, err = self.run_cli("--file", path, "extract", "3.6")
+        self.assertEqual(1, code)
+        self.assertIn('section "3.6" has no bullets', err)
+
+    def test_out_writes_same_bytes_as_stdout(self):
+        path = self.write(NO_NEXT + OLDER + "\n" + MIDDLE + OLDEST)
+        _, out, _ = self.run_cli("--file", path, "extract", "3.6")
+        fd, target = tempfile.mkstemp(suffix=".md")
+        os.close(fd)
+        self.addCleanup(os.remove, target)
+        code, stdout, _ = self.run_cli("--file", path, "extract", "3.6", "--out", target)
+        self.assertEqual(0, code)
+        self.assertEqual("", stdout)
+        self.assertEqual(out, self.read(target))
+
+
 class ParseTest(unittest.TestCase):
     def test_multi_line_bullet_joined(self):
         sections = release_notes.parse(
