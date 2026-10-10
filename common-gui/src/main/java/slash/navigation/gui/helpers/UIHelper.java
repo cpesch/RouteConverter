@@ -19,19 +19,31 @@
 */
 package slash.navigation.gui.helpers;
 
+import com.formdev.flatlaf.FlatDarkLaf;
+import com.formdev.flatlaf.FlatLaf;
+import com.formdev.flatlaf.FlatLightLaf;
+import com.formdev.flatlaf.themes.FlatMacDarkLaf;
+import com.formdev.flatlaf.themes.FlatMacLightLaf;
+
 import javax.swing.*;
 import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.function.BooleanSupplier;
 import java.util.prefs.Preferences;
+import java.util.regex.Pattern;
 
 import static java.awt.Cursor.DEFAULT_CURSOR;
 import static java.awt.Cursor.HAND_CURSOR;
 import static java.awt.Cursor.WAIT_CURSOR;
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static java.util.concurrent.TimeUnit.SECONDS;
 import static java.util.prefs.Preferences.userNodeForPackage;
 import static slash.common.system.Platform.*;
 
@@ -44,6 +56,11 @@ import static slash.common.system.Platform.*;
 public class UIHelper {
     private static final Preferences preferences = userNodeForPackage(UIHelper.class);
     private static final String LOOK_AND_FEEL_CLASS_PREFERENCE = "lookAndFeelClass";
+    public static final String AUTOMATIC_LOOK_AND_FEEL = "default";
+    public static final String LIGHT_LOOK_AND_FEEL = "light";
+    public static final String DARK_LOOK_AND_FEEL = "dark";
+    public static final String SYSTEM_LOOK_AND_FEEL = "system";
+    private static final Pattern WINDOWS_APPS_DARK_PATTERN = Pattern.compile("AppsUseLightTheme\\s+REG_DWORD\\s+0x0+\\s*$", Pattern.MULTILINE);
     private static final String UI_FONT_SCALE_PERCENTAGE_PREFERENCE = "uiFontScalePercentage";
     private static final int DEFAULT_UI_FONT_SCALE_PERCENTAGE = 100;
 
@@ -80,30 +97,77 @@ public class UIHelper {
         return font.deriveFont(newSize);
     }
 
-    public static void setLookAndFeel() {
+    public static String getLookAndFeelPreference() {
+        return preferences.get(LOOK_AND_FEEL_CLASS_PREFERENCE, AUTOMATIC_LOOK_AND_FEEL);
+    }
+
+    public static void setLookAndFeelPreference(String lookAndFeel) {
+        preferences.put(LOOK_AND_FEEL_CLASS_PREFERENCE, lookAndFeel);
+    }
+
+    /**
+     * Maps the look-and-feel preference to a look-and-feel class: FlatLaf light or dark
+     * following the operating system on Windows and Linux, the system look-and-feel (Aqua)
+     * on macOS, FlatLaf light or dark on request, the system look-and-feel on request, or
+     * any other value as a look-and-feel class name.
+     */
+    static String getLookAndFeelClassName(String preference, boolean mac, BooleanSupplier operatingSystemDark,
+                                          String systemLookAndFeelClassName) {
+        return switch (preference) {
+            case AUTOMATIC_LOOK_AND_FEEL -> mac ? systemLookAndFeelClassName :
+                    getFlatLookAndFeelClassName(false, operatingSystemDark.getAsBoolean());
+            case LIGHT_LOOK_AND_FEEL -> getFlatLookAndFeelClassName(mac, false);
+            case DARK_LOOK_AND_FEEL -> getFlatLookAndFeelClassName(mac, true);
+            case SYSTEM_LOOK_AND_FEEL -> systemLookAndFeelClassName;
+            default -> preference;
+        };
+    }
+
+    private static String getFlatLookAndFeelClassName(boolean mac, boolean dark) {
+        if (mac)
+            return dark ? FlatMacDarkLaf.class.getName() : FlatMacLightLaf.class.getName();
+        return dark ? FlatDarkLaf.class.getName() : FlatLightLaf.class.getName();
+    }
+
+    private static boolean isOperatingSystemDark() {
+        if (isWindows())
+            return isWindowsAppsDark(execute("reg", "query", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
+                    "/v", "AppsUseLightTheme"));
+        if (isLinux())
+            return isGnomeDark(execute("gsettings", "get", "org.gnome.desktop.interface", "color-scheme"),
+                    execute("gsettings", "get", "org.gnome.desktop.interface", "gtk-theme"));
+        return false;
+    }
+
+    static boolean isWindowsAppsDark(String regQueryOutput) {
+        return WINDOWS_APPS_DARK_PATTERN.matcher(regQueryOutput).find();
+    }
+
+    static boolean isGnomeDark(String colorScheme, String gtkTheme) {
+        return colorScheme.contains("prefer-dark") || gtkTheme.toLowerCase(Locale.ROOT).contains("dark");
+    }
+
+    private static String execute(String... command) {
         try {
-            String lookAndFeelClass = preferences.get(LOOK_AND_FEEL_CLASS_PREFERENCE, "default");
-            if ("default".equals(lookAndFeelClass))
-                lookAndFeelClass = UIManager.getSystemLookAndFeelClassName();
-            UIManager.setLookAndFeel(lookAndFeelClass);
-
-            int percentage = getUiFontScalePercentage();
-            if (percentage != DEFAULT_UI_FONT_SCALE_PERCENTAGE) {
-                UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-                // Iterate over a copy of keySet to avoid ConcurrentModificationException
-                for (Object key : new java.util.Vector<>(defaults.keySet())) {
-                    Object value = defaults.get(key);
-                    if (value instanceof FontUIResource) {
-                        defaults.put(key, new FontUIResource(scaleFont((Font) value, percentage)));
-                    }
-                }
+            Process process = new ProcessBuilder(command).redirectError(ProcessBuilder.Redirect.DISCARD).start();
+            if (!process.waitFor(2, SECONDS)) {
+                process.destroyForcibly();
+                return "";
             }
-        } catch (ReflectiveOperationException | UnsupportedLookAndFeelException | RuntimeException e) {
-            // intentionally do nothing
+            return new String(process.getInputStream().readAllBytes(), UTF_8);
+        } catch (IOException e) {
+            return "";
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return "";
         }
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        JDialog.setDefaultLookAndFeelDecorated(true);
+    }
 
+    private static boolean isFlatLookAndFeel(String lookAndFeelClass) {
+        return lookAndFeelClass.startsWith(FlatLaf.class.getPackageName() + ".");
+    }
+
+    public static void setLookAndFeel() {
         // to avoid blurred maps on Windows with a scaled UI
         if(isWindows())
             System.setProperty("sun.java2d.uiScale", "1.0");
@@ -122,6 +186,43 @@ public class UIHelper {
         // https://docs.oracle.com/javase/7/docs/technotes/guides/2d/flags.html#xrender
         if (isLinux())
             System.setProperty("sun.java2d.xrender", "true");
+
+        try {
+            String lookAndFeelClass = getLookAndFeelClassName(getLookAndFeelPreference(), isMac(),
+                    UIHelper::isOperatingSystemDark, UIManager.getSystemLookAndFeelClassName());
+            int percentage = getUiFontScalePercentage();
+
+            if (isFlatLookAndFeel(lookAndFeelClass)) {
+                // FlatLaf scales fonts, insets and icons itself; on Windows the JRE scaling is
+                // disabled above, elsewhere FlatLaf follows the desktop unless the user chose a size
+                if (isWindows() || preferences.get(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, null) != null)
+                    System.setProperty("flatlaf.uiScale", percentage + "%");
+                UIManager.setLookAndFeel(lookAndFeelClass);
+
+            } else {
+                UIManager.setLookAndFeel(lookAndFeelClass);
+
+                if (percentage != DEFAULT_UI_FONT_SCALE_PERCENTAGE) {
+                    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
+                    // Iterate over a copy of keySet to avoid ConcurrentModificationException
+                    for (Object key : new java.util.Vector<>(defaults.keySet())) {
+                        Object value = defaults.get(key);
+                        if (value instanceof FontUIResource) {
+                            defaults.put(key, new FontUIResource(scaleFont((Font) value, percentage)));
+                        }
+                    }
+                }
+            }
+        } catch (ReflectiveOperationException | UnsupportedLookAndFeelException | RuntimeException e) {
+            // intentionally do nothing
+        }
+        // FlatLaf draws its own title bars on Linux; on Windows it uses the native window decorations
+        JFrame.setDefaultLookAndFeelDecorated(true);
+        JDialog.setDefaultLookAndFeelDecorated(true);
+    }
+
+    public static boolean isDarkLookAndFeel() {
+        return UIManager.getLookAndFeel() instanceof FlatLaf && FlatLaf.isLafDark();
     }
 
     public static void startWaitCursor(JComponent component) {

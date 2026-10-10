@@ -5,6 +5,7 @@
 ### New features
 
 - RTZ route exchange format (IEC 61174, ECDIS) — read and write
+- Windows and Linux: modern FlatLaf look-and-feel, light or dark following the operating system setting; macOS keeps its native look. Options > General > Look and feel switches to Light, Dark or the old System look (requires restart) (#263)
 
 ### Fixes
 
