@@ -45,7 +45,8 @@ jobs:
       - name: Show Maven version
         run: mvn --version
       - name: Build with Maven
-        run: mvn --batch-mode -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
+        # -T 1C: parallel modules. Linux only; on Windows it was 13-18 % slower.
+        run: mvn --batch-mode -T 1C -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
       # Upload coverage once per build (Java 21 only — avoid duplicate uploads from the matrix)
       - name: Upload coverage to Codecov
         if: matrix.java == 21
