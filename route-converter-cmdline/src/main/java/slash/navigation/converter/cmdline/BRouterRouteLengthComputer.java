@@ -30,7 +30,6 @@ import java.util.logging.Logger;
 
 import static java.lang.String.format;
 import static slash.navigation.base.RouteCharacteristics.Route;
-import static slash.navigation.common.Bearing.calculateBearing;
 
 /**
  * BRouter-backed {@link RouteLengthComputer} for the {@code analyze} command
@@ -125,20 +124,18 @@ public class BRouterRouteLengthComputer implements RouteLengthComputer {
         // Sanity: an on-road route cannot be shorter than the straight line through
         // the same points. A routed length materially below the straight line signals
         // a wrong/partial result, so distrust it and fall back to the straight line.
-        double straightLineMeters = straightLineMeters(longitudes, latitudes);
+        // Use route.getDistance() here (the exact value PointToPointLengthComputer
+        // reports via the fallback below) rather than a separate bearing-sum over
+        // withCoordinates: that list bridges gaps left by missing-coordinate positions,
+        // while getDistance() drops both legs touching a gap, so the two would disagree
+        // on a gapped route despite both claiming to measure the same quantity.
+        double straightLineMeters = route.getDistance();
         if (routedMeters < straightLineMeters * (1 - STRAIGHT_LINE_SANITY_EPSILON)) {
             log.warning(format("BRouter routed length %.0f m is shorter than the %.0f m straight line; falling back to straight line",
                     routedMeters, straightLineMeters));
             return fallback.computeLength(route);
         }
         return new LengthResult(routedMeters, "routed");
-    }
-
-    private static double straightLineMeters(double[] longitudes, double[] latitudes) {
-        double meters = 0;
-        for (int i = 1; i < longitudes.length; i++)
-            meters += calculateBearing(longitudes[i - 1], latitudes[i - 1], longitudes[i], latitudes[i]).getDistance();
-        return meters;
     }
 
     private Double safeRoute(double[] longitudes, double[] latitudes) {
