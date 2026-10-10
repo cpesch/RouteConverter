@@ -46,7 +46,8 @@ jobs:
         run: mvn --version
       - name: Build with Maven
         # -T 1C: parallel modules. Linux only; on Windows it was 13-18 % slower.
-        run: mvn --batch-mode -T 1C -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
+        # SpotBugs runs once, in the spotbugs job; no test reads a shaded jar.
+        run: mvn --batch-mode -T 1C -Dmaven.build.number=${{ github.run_number }} -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots verify
       # Upload coverage once per build (Java 21 only — avoid duplicate uploads from the matrix)
       - name: Upload coverage to Codecov
         if: matrix.java == 21
@@ -54,6 +55,28 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: false
+
+  # SpotBugs once (~40 % of a serial build), next to the test jobs instead of
+  # inside each of them. Tests are compiled (test-jars feed other modules) but
+  # not run.
+  spotbugs:
+    runs-on: ubuntu-latest
+    name: SpotBugs
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: Cache Maven packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: SpotBugs with Maven
+        run: mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dshade.skip=true --update-snapshots verify
 
   prerelease:
     if: github.event_name != 'push' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/3.')
@@ -83,4 +106,5 @@ jobs:
         # lifecycle phase and dies.
         # -Djacoco.skip: Codecov only uploads from Linux Java 21, so the
         # Windows coverage agent only slows the tests down.
-        run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" "-Djacoco.skip=true" --update-snapshots verify
+        # SpotBugs runs in the spotbugs job; no test reads a shaded jar.
+        run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" "-Djacoco.skip=true" "-Dspotbugs.skip=true" "-Dshade.skip=true" --update-snapshots verify

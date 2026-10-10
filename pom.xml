@@ -58,6 +58,9 @@
     <properties>
         <skip.unit.tests>false</skip.unit.tests>
         <skip.integration.tests>true</skip.integration.tests>
+        <!-- CI test builds pass -Dshade.skip=true: no test reads a shaded jar.
+             The plugin has a skip parameter but no user property for it. -->
+        <shade.skip>false</shade.skip>
         <itCoverageAgent />
         <failsafe.hermetic.excludes>**/__never__.java</failsafe.hermetic.excludes>
 
@@ -349,6 +352,9 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>3.6.2</version>
+                    <configuration>
+                        <skip>${shade.skip}</skip>
+                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
