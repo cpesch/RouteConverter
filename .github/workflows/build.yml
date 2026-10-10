@@ -5,6 +5,15 @@ on: [push]
 permissions:
   contents: read
 
+# A newer push to a feature/factory branch cancels the older run on the same
+# ref; only the head SHA needs a status. master and 3.* (release/maintenance)
+# keep every run: they get a per-run group, because a shared group would still
+# let GitHub drop a *pending* run when a third push arrives, cancel-in-progress
+# or not.
+concurrency:
+  group: ${{ github.workflow }}-${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/3.')) && github.run_id || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -63,7 +72,9 @@ jobs:
         # `.build.number` as member-access, splitting the arg into
         # `-Dmaven` + `.build.number=NNN` → mvn sees the latter as a
         # lifecycle phase and dies.
-        run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" --update-snapshots verify
+        # -Djacoco.skip: Codecov only uploads from Linux Java 21, so the
+        # Windows coverage agent only slows the tests down.
+        run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" "-Djacoco.skip=true" --update-snapshots verify
       - uses: actions/upload-artifact@v7
         with:
           name: RouteConverter Windows Prerelease built with Java ${{ matrix.java }}
