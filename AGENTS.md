@@ -45,7 +45,7 @@ like regressions. Exclude the ITs too, and allow modules where nothing matches:
 
 **The build is warning-free and enforced.** `<failOnWarning>true</failOnWarning>` on
 maven-compiler-plugin (spec 00017 Scope B, PR #268) turns javac warnings into build
-failures — a warning you introduce fails CI on all three matrix jobs. It only catches
+failures — a warning you introduce fails every CI job. It only catches
 **default-lint** warnings, though: plain `deprecation` and `unchecked` are javac *notes*
 and still pass on their own, so a canary built on those compiles green and proves
 nothing — unless the category is named explicitly in `<compilerArgs>`, which is now
@@ -67,7 +67,14 @@ as `<compilerArgs><arg>-Xlint:all</arg></compilerArgs>`; and run with
 `MAVEN_OPTS="-Duser.language=en -Duser.country=US"` or javac emits localised messages
 that cannot be bucketed by category.
 
-CI runs the test matrix on **Java 21, 25** (21 is the minimum) plus a Windows smoke build.
+CI (`build.yml`) runs `mvn verify` on **Java 21** (the minimum) for every push; that
+job is the one required check on `master`. Java 25 and the Windows build
+(`Java 21 on Windows`) run only on `master` and `3.*` pushes, nightly, and on manual
+dispatch. They are skipped on feature and factory branches, so a Windows-only bug
+shows up after the merge. To check a branch on Windows first, run
+`gh workflow run build.yml --ref <branch>`. A newer push to a non-`master`/`3.*`
+branch cancels the older run. The Linux jobs build modules in parallel (`-T 1C`);
+Windows stays serial (it was slower with `-T`) and skips JaCoCo.
 The bundled-JRE version is the single source of truth `<jre.version>` in the root
 `pom.xml` — keep it in sync with the CI `setup-java` version on JDK bumps.
 
@@ -146,7 +153,7 @@ coordination with that codebase.
   approve the German translation in Crowdin, give the string a context note,
   then **Sync Now**. Check the German value in the `l10n_master` PR before
   merging it. Crowdin's commits don't trigger `build.yml` (`on: push`), so
-  the required `Java 21 on Windows` check needs an empty commit pushed to
+  the required `Java 21` check needs an empty commit pushed to
   `l10n_master`.
 - **A translation fixed in the repo must also go into Crowdin, or the next
   sync reverts it.** The GitHub integration only reads the English source
