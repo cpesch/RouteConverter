@@ -86,10 +86,11 @@ jobs:
         shell: bash
         env:
           GITEA_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_INPUT: ${{ github.event.inputs.pr || github.event.pull_request.number }}
         run: |
           set -uo pipefail
           # PR number: dispatch input, or the pull_request event payload.
-          PR='${{ github.event.inputs.pr || github.event.pull_request.number }}'
+          PR="$PR_INPUT"
           [[ -n "$PR" ]] || { echo "no PR number — skip comment"; exit 0; }
           SUMMARY="$(head -c 4000 /tmp/verify-summary.txt 2>/dev/null || echo 'no summary captured')"
           # A red job did not necessarily test anything. When the runner loses
