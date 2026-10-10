@@ -6,7 +6,7 @@
     <parent>
         <groupId>slash.navigation</groupId>
         <artifactId>RouteConverter</artifactId>
-        <version>3.7-SNAPSHOT</version>
+        <version>3.7</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -75,10 +75,8 @@
                                      instead of ns2:; xjc's own package-info lacks the xmlns block and would
                                      collide at compile time. packageLevelAnnotations=false does NOT suppress
                                      generation (tested with 4.2.0), so delete exactly these two files. -->
-                                <delete quiet="true"
-                                        file="${project.build.directory}/generated-sources/jaxb/slash/navigation/gpx/binding10/package-info.java"/>
-                                <delete quiet="true"
-                                        file="${project.build.directory}/generated-sources/jaxb/slash/navigation/gpx/binding11/package-info.java"/>
+                                <delete quiet="true" file="${project.build.directory}/generated-sources/jaxb/slash/navigation/gpx/binding10/package-info.java" />
+                                <delete quiet="true" file="${project.build.directory}/generated-sources/jaxb/slash/navigation/gpx/binding11/package-info.java" />
                             </target>
                         </configuration>
                     </execution>
