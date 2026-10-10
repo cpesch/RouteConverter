@@ -1,9 +1,7 @@
-# PR verification for factory workspaces (Option A of rc-meta#200,
-# specs/00069-factory-computational-verification.md).
+# PR verification for factory workspaces.
 #
-# CANONICAL COPY lives in rc-meta at factory/verify/verify.yml.template.
-# Deployed to <target repo>/.gitea/workflows/verify.yml (e.g.
-# rc/RouteConverter). Keep the two in sync — edit here, then re-deploy.
+# Deployed copy of the factory's verify.yml template — do not edit here;
+# change the template and re-deploy.
 #
 # Runs the repo's own test suite on the `verify` runner label: a separate
 # act_runner instance whose job container (verify-runner image) carries NO

@@ -46,7 +46,7 @@ jobs:
       artefact-name: release-linux-mac
       retention-days: 30
       sign: true
-      signing-policy-slug: release-signing   # production cert (rc-meta 00043); requires manual approval in the SignPath app during the build
+      signing-policy-slug: release-signing   # production cert; requires manual approval in the SignPath app during the build
     secrets: inherit
 
   build-windows:
@@ -56,7 +56,7 @@ jobs:
       artefact-name: release-windows
       retention-days: 30
       sign: true
-      signing-policy-slug: release-signing   # production cert (rc-meta 00043); requires manual approval in the SignPath app during the build
+      signing-policy-slug: release-signing   # production cert; requires manual approval in the SignPath app during the build
     secrets: inherit
 
   sign-mac:
@@ -163,7 +163,7 @@ jobs:
             --verify-tag
 
   bump-homebrew-cask:
-    # Spec 00059 P3 (rc-meta#583/#600): keep cpesch/homebrew-routeconverter's
+    # Keep cpesch/homebrew-routeconverter's
     # cask in lockstep with each release. Requires HOMEBREW_TAP_TOKEN -- a
     # fine-grained PAT scoped to Contents:write on that one repo only, added
     # as a repo secret by a maintainer (no CLI path to mint that token).
