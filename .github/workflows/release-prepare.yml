@@ -4,6 +4,8 @@ name: Release prepare
 # `mvn release:prepare` + `git push --follow-tags` ritual.
 #
 # What it does:
+#   0. Probe every release credential (job `credentials`, dry AND real
+#      runs) so a broken token fails here, not after the tag is pushed.
 #   1. Validate inputs (regex on release_version + development_version)
 #      and fail unless RELEASE_NOTES.md "## Next release" has bullets.
 #   2. Stamp "## Next release" as "## <version> — <date>" and commit, then
@@ -46,7 +48,71 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  # Credential probes — read-only / dry-run, run for dry AND real runs so the
+  # dry run exercises every credential the real run (and release.yml) uses.
+  # On 3.7 the dry run was green, then the real run hit broken credentials
+  # only after the tag was pushed.
+  #   - RC_RELEASE_PUSH_TOKEN: git push --dry-run to master
+  #   - HOMEBREW_TAP_TOKEN: git push --dry-run of an empty commit to a
+  #     non-existent branch (authenticates receive-pack, writes nothing;
+  #     ls-remote would only prove read access)
+  #   - RC_RELEASE_DEPLOY_SSH_KEY + RC_RELEASE_DEPLOY_HOST: rsync -n of an
+  #     empty dir into static/downloads/release/ (no --delete)
+  # Not probed: SignPath — no read-only probe of the SignPath GitHub App
+  # installation exists for a workflow token; its "Failed to retrieve GitHub
+  # App token" only surfaces at submit time.
+  credentials:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.RC_RELEASE_PUSH_TOKEN }}
+
+      - name: "Probe RC_RELEASE_PUSH_TOKEN"
+        run: |
+          set -euo pipefail
+          git push --dry-run origin HEAD:refs/heads/master || {
+            echo "::error::RC_RELEASE_PUSH_TOKEN cannot push to cpesch/RouteConverter (needs contents:write) — release:prepare would fail to push the tag"
+            exit 1
+          }
+
+      - name: "Probe HOMEBREW_TAP_TOKEN"
+        env:
+          HOMEBREW_TAP_TOKEN: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+        run: |
+          set -euo pipefail
+          d=$(mktemp -d) && cd "$d" && git init -q
+          git -c user.name=probe -c user.email=probe@routeconverter.com commit -q --allow-empty -m probe
+          git push --dry-run "https://x-access-token:${HOMEBREW_TAP_TOKEN}@github.com/cpesch/homebrew-routeconverter.git" HEAD:refs/heads/credential-probe || {
+            echo "::error::HOMEBREW_TAP_TOKEN cannot push to cpesch/homebrew-routeconverter (fine-grained PAT needs Contents: Read and write on that repo)"
+            exit 1
+          }
+
+      - name: Configure SSH
+        env:
+          DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -t ed25519 "$DEPLOY_HOST" >> ~/.ssh/known_hosts
+
+      - name: "Probe RC_RELEASE_DEPLOY_SSH_KEY + RC_RELEASE_DEPLOY_HOST"
+        env:
+          DEPLOY_HOST: ${{ secrets.RC_RELEASE_DEPLOY_HOST }}
+        run: |
+          set -euo pipefail
+          rsync -an --omit-dir-times --no-perms "$(mktemp -d)/" \
+            "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/downloads/release/" || {
+            echo "::error::release deploy SSH/rsync to static/downloads/release/ failed — check RC_RELEASE_DEPLOY_SSH_KEY / RC_RELEASE_DEPLOY_HOST"
+            exit 1
+          }
+
   prepare:
+    needs: credentials
     runs-on: ubuntu-latest
     steps:
       - name: Validate inputs
