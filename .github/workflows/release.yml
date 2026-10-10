@@ -309,3 +309,18 @@ jobs:
           rsync -av --delete --omit-dir-times --no-perms \
             target/reports/apidocs/ \
             "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/javadoc/"
+
+  # Post-publish verification: every automated surface shows the release.
+  # Read-only, so safe to re-run. Runs after a failed cask bump too, so one
+  # failure does not hide the other checks.
+  verify-published:
+    needs: [publish, publish-javadoc, bump-homebrew-cask]
+    if: always() && needs.publish.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify published release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION:  ${{ github.ref_name }}
+        run: bash .github/scripts/verify-published.sh "$VERSION"
