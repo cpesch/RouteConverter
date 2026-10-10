@@ -1,0 +1,22 @@
+name: Release scripts
+
+# Unit tests for the release helper scripts in .github/scripts
+# (release_notes.py is called by release-prepare.yml).
+
+on:
+  pull_request:
+    paths: ['.github/scripts/**']
+  push:
+    branches: [master]
+    paths: ['.github/scripts/**']
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: unittest
+        run: python3 -m unittest discover -s .github/scripts -p 'test_*.py' -v

@@ -4,13 +4,16 @@ name: Release prepare
 # `mvn release:prepare` + `git push --follow-tags` ritual.
 #
 # What it does:
-#   1. Validate inputs (regex on release_version + development_version).
-#   2. mvn release:prepare → tags the release + bumps master to the next
+#   1. Validate inputs (regex on release_version + development_version)
+#      and fail unless RELEASE_NOTES.md "## Next release" has bullets.
+#   2. Stamp "## Next release" as "## <version> — <date>" and commit, then
+#      mvn release:prepare → tags the release + bumps master to the next
 #      development version + auto-pushes both commits and the tag.
 #      Push uses RC_RELEASE_PUSH_TOKEN (a fine-grained PAT), NOT the
 #      workflow-issued GITHUB_TOKEN — the latter does not trigger
 #      downstream workflows, so the tag push would leave release.yml
-#      silently un-fired.
+#      silently un-fired. Afterwards open a fresh empty
+#      "## Next release" section on master.
 #   3. cuts and pushes a <version>-maintenance branch.
 #   4. Clones rc-site via Gitea PAT, bumps catalog XMLs, commits, pushes.
 #      (Previously fired a Gitea repository_dispatch into a separate
@@ -74,6 +77,12 @@ jobs:
           # the tag push.
           token: ${{ secrets.RC_RELEASE_PUSH_TOKEN }}
 
+      - name: "RELEASE_NOTES: Next release is curated"
+        # Runs in dry AND real runs, so an un-curated cut fails before any
+        # build work. Placed after checkout (not literally after "Validate
+        # inputs", which runs before the tree exists).
+        run: python3 .github/scripts/release_notes.py check-next
+
       - uses: actions/setup-java@v6
         with:
           distribution: zulu
@@ -121,6 +130,16 @@ jobs:
         # release:prepare fallback.
         run: git config url.'https://github.com/'.insteadOf 'git@github.com:'
 
+      - name: "RELEASE_NOTES: stamp ${{ inputs.release_version }}"
+        # Committed before release:prepare so the tag's tree carries the
+        # stamped notes; the plugin pushes this commit along with its own.
+        # Skipped on dry runs — the plugin's dry run needs a clean tree.
+        if: inputs.dry_run != true
+        run: |
+          python3 .github/scripts/release_notes.py stamp "${{ inputs.release_version }}" "$(TZ=Europe/Berlin date +%F)"
+          git add RELEASE_NOTES.md
+          git commit -m "docs(release-notes): stamp ${{ inputs.release_version }}"
+
       - name: mvn release:prepare
         # -Darguments passes flags to the forked Maven invocation that
         # release:prepare spawns for `clean verify`. Skip jacoco's
@@ -137,6 +156,15 @@ jobs:
             -DdevelopmentVersion='${{ inputs.development_version }}' \
             -Dtag='${{ inputs.release_version }}' \
             -Darguments='-Djacoco.skip=true -DskipITs'
+
+      - name: "RELEASE_NOTES: open Next release"
+        # master only — the maintenance branch is cut from the tag below.
+        if: inputs.dry_run != true
+        run: |
+          python3 .github/scripts/release_notes.py open-next
+          git add RELEASE_NOTES.md
+          git commit -m "docs(release-notes): open Next release after ${{ inputs.release_version }}"
+          git push origin HEAD:master
 
       - name: cut <version>-maintenance branch
         if: inputs.dry_run != true
