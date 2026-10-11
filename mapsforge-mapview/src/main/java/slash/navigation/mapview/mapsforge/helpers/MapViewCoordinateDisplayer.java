@@ -55,6 +55,8 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
         JPanel contentPane = (JPanel) window.getContentPane();
         contentPane.add(label);
         contentPane.setBackground(new Color(255, 255, 204));
+        // the background is always light yellow, so keep the text dark in dark look-and-feels, too
+        label.setForeground(Color.BLACK);
         contentPane.setBorder(new CompoundBorder(createEtchedBorder(), new EmptyBorder(2, 3, 2, 3)));
         label.setFont(label.getFont().deriveFont(9f));
 

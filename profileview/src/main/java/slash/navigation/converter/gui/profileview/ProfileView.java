@@ -25,6 +25,7 @@ import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.entity.ChartEntity;
 import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
@@ -52,6 +53,7 @@ import static org.jfree.chart.axis.NumberAxis.createStandardTickUnits;
 import static org.jfree.chart.plot.PlotOrientation.VERTICAL;
 import static org.jfree.chart.ui.Layer.FOREGROUND;
 import static slash.navigation.converter.gui.profileview.XAxisMode.Distance;
+import static slash.navigation.gui.helpers.UIHelper.isDarkLookAndFeel;
 
 /**
  * Displays the elevations of a {@link PositionsModel}.
@@ -139,8 +141,25 @@ public class ProfileView implements PositionsSelectionModel {
         domainAxis.setUpperMargin(0.0);
         domainAxis.setLabelFont(font);
 
+        if (isDarkLookAndFeel())
+            applyDarkColors(plot, UIManager.getColor("Label.foreground"), UIManager.getColor("Table.background"),
+                    UIManager.getColor("Table.gridColor"));
+
         plot.getRenderer().setDefaultToolTipGenerator(null);
         return plot;
+    }
+
+    // the JFreeChart default theme draws dark gray axes on a light gray plot
+    static void applyDarkColors(XYPlot plot, Color foreground, Color background, Color grid) {
+        plot.setBackgroundPaint(background);
+        plot.setDomainGridlinePaint(grid);
+        plot.setRangeGridlinePaint(grid);
+        for (ValueAxis axis : new ValueAxis[]{plot.getDomainAxis(), plot.getRangeAxis()}) {
+            axis.setLabelPaint(foreground);
+            axis.setTickLabelPaint(foreground);
+            axis.setAxisLinePaint(foreground);
+            axis.setTickMarkPaint(foreground);
+        }
     }
 
     // the series item index is the position row, see PositionsModelToXYSeriesSynchronizer
