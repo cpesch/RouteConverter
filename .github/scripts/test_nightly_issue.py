@@ -64,6 +64,21 @@ class StateTest(unittest.TestCase):
         self.assertIn('"new":2', body)
         self.assertEqual(ni.parse_state(body), {"new": 2})
 
+    def test_parse_write_round_trip_nested_state(self):
+        state = {"a": {"b": 1}, "c": [1, {"d": 2}]}
+        body = ni.write_state("", state)
+        self.assertEqual(ni.parse_state(body), state)
+
+    def test_write_state_replaces_nested_marker_without_dangling_brace(self):
+        body = ni.write_state(
+            'before\n<!-- nightly-state {"old": {"x": 1}} -->\nafter',
+            {"new": {"y": 2}},
+        )
+        self.assertIn("before\n", body)
+        self.assertIn("\nafter", body)
+        self.assertNotIn('"old"', body)
+        self.assertEqual(ni.parse_state(body), {"new": {"y": 2}})
+
     def test_invalid_json_gives_none(self):
         self.assertIsNone(ni.parse_state("<!-- nightly-state {not valid json} -->"))
         self.assertIsNone(ni.parse_state("no marker at all"))
