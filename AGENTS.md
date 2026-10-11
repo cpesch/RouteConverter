@@ -59,7 +59,8 @@ issues #215/#222 measured the other three clean; `serial` (117) and `this-escape
 the verify phase and fails on any finding not excluded by `config/spotbugs-exclude.xml`.
 Fix a finding in the code first; exclude only a deliberate pattern, with a targeted
 `<Match>` (class + method) that carries an XML comment giving the reason — no uncommented
-`<Match>`. `-Dspotbugs.skip` skips it locally. `mvn package` is unaffected.
+`<Match>`. `-Dspotbugs.skip` skips it locally. `mvn package` is unaffected. In CI it
+runs once, in the `SpotBugs` job; the test jobs skip it.
 
 To re-measure that backlog: maven-compiler-plugin 3.15 **ignores**
 `-Dmaven.compiler.compilerArgument=-Xlint:all`, so the flag has to go into the root pom
@@ -67,8 +68,11 @@ as `<compilerArgs><arg>-Xlint:all</arg></compilerArgs>`; and run with
 `MAVEN_OPTS="-Duser.language=en -Duser.country=US"` or javac emits localised messages
 that cannot be bucketed by category.
 
-CI (`build.yml`) runs `mvn verify` on **Java 21** (the minimum) for every push; that
-job is the one required check on `master`. Java 25 and the Windows build
+CI (`build.yml`) runs two jobs on every push: `Java 21` (the minimum; tests) and
+`SpotBugs` (compiles, runs no tests). Both are the required checks on `master`.
+CI test builds pass `-Dspotbugs.skip=true -Dshade.skip=true`: no test reads a
+shaded jar, and `shade.skip` (root pom, default `false`) exists only because the
+shade plugin has no user property for `skip`. Java 25 and the Windows build
 (`Java 21 on Windows`) run only on `master` and `3.*` pushes, nightly, and on manual
 dispatch. They are skipped on feature and factory branches, so a Windows-only bug
 shows up after the merge. To check a branch on Windows first, run
@@ -153,7 +157,7 @@ coordination with that codebase.
   approve the German translation in Crowdin, give the string a context note,
   then **Sync Now**. Check the German value in the `l10n_master` PR before
   merging it. Crowdin's commits don't trigger `build.yml` (`on: push`), so
-  the required `Java 21` check needs an empty commit pushed to
+  the required `Java 21` and `SpotBugs` checks need an empty commit pushed to
   `l10n_master`.
 - **A translation fixed in the repo must also go into Crowdin, or the next
   sync reverts it.** The GitHub integration only reads the English source
