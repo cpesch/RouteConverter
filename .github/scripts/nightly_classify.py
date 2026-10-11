@@ -16,6 +16,14 @@ from nightly_model import Finding, INFRA_PATTERNS, TestFailure
 
 FAILED_CONCLUSIONS = ("failure", "cancelled", "timed_out")
 
+# A "cancelled" job is only an artifact of a sibling's fail-fast abort when
+# another job in the same batch has one of these conclusions AND the
+# cancelled job itself never produced real log output (fail-fast aborts a
+# job before/soon after it starts); a lone or manually cancelled job that
+# was actually running (it has log content) is still a genuine failure to
+# triage even if an unrelated job happened to fail in the same run.
+_TRUE_FAILURE_CONCLUSIONS = ("failure", "timed_out")
+
 _FRAME_RE = re.compile(r"at (slash\.[\w.]+)\.\w+\(")
 
 _GITHUB_TIMESTAMP_RE = re.compile(r"^\S+Z ")
@@ -187,17 +195,33 @@ def _merge(findings):
     return sorted(merged.values(), key=lambda f: (f.klass, f.signature))
 
 
+def _fail_fast_cancelled_names(jobs):
+    """Names of jobs cancelled only because a sibling in the same run failed."""
+    return {
+        job.name
+        for job in jobs
+        if job.conclusion == "cancelled"
+        and not job.log.strip()
+        and any(other.conclusion in _TRUE_FAILURE_CONCLUSIONS for other in jobs if other is not job)
+    }
+
+
 def classify(workflow, first, rerun, reports):
     findings = []
+    fail_fast_cancelled = _fail_fast_cancelled_names(first)
 
     if workflow == "jdk-ea-canary":
         for job in first:
+            if job.name in fail_fast_cancelled:
+                continue
             if _is_failed(job):
                 findings.append(_build_finding("forward_compat", job, reports))
         return _merge(findings)
 
     rerun_by_name = {job.name: job for job in rerun} if rerun is not None else None
     for job in first:
+        if job.name in fail_fast_cancelled:
+            continue
         if not _is_failed(job):
             continue
         if rerun_by_name is None:
