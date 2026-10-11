@@ -501,7 +501,7 @@ public class MapsforgeMapView extends BaseMapView {
         mapSelector = new MapSelector(getMapManager(), mapView);
         mapViewMoverAndZoomer = new MapViewMoverAndZoomer(mapView, getLayerManager());
         mapViewCoordinateDisplayer.initialize(mapView, mapViewCallback);
-        new MapViewPopupMenu(mapView, createPopupMenu());
+        new MapViewPopupMenu(mapView, createPopupMenu(), this::enableMapActions);
 
         final ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
@@ -1355,6 +1355,23 @@ public class MapsforgeMapView extends BaseMapView {
                 mapView.getModel().mapViewPosition.getCenter();
     }
 
+    private boolean isPositionUnderMouse() {
+        LatLong latLong = getMousePosition();
+        return latLong != null && positionsModel.getClosestPosition(latLong.longitude, latLong.latitude, getThresholdForPixel(latLong)) != -1;
+    }
+
+    private boolean isPositionSelected() {
+        return selectionUpdater != null && !selectionUpdater.getPositionWithLayers().isEmpty();
+    }
+
+    /**
+     * Delete removes the position under the mouse or, if there is none, the selected positions.
+     */
+    private void enableMapActions() {
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        actionManager.enableLocal("delete", MAP, isPositionUnderMouse() || isPositionSelected());
+    }
+
     private double getThresholdForPixel(LatLong latLong) {
         return thresholdForPixel(latLong.latitude, mapView.getModel().mapViewPosition.getZoomLevel(), getTileSize(), SELECTION_CIRCLE_IN_PIXEL);
     }
@@ -1424,6 +1441,9 @@ public class MapsforgeMapView extends BaseMapView {
             log.info("Deleting position at " + latLong + " from row " + row);
             if (row != -1) {
                 positionsModel.remove(new int[]{row});
+            } else if (isPositionSelected()) {
+                log.info("Deleting selected positions");
+                Application.getInstance().getContext().getActionManager().run("delete-position");
             }
         }
 

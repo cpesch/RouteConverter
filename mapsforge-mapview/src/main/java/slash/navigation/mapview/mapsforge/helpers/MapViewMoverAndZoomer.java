@@ -78,8 +78,9 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     public void mousePressed(MouseEvent e) {
         grabbedMarker = getMarkerFor(e);
         dragging = false;
-        if (grabbedMarker == null)
-            lastMousePressPoint = e.getPoint();
+        // record every press, also on a marker: the popup actions Select, New and Delete work on the
+        // pressed point and must not fall back to a stale one; panning skips presses on a marker anyway
+        lastMousePressPoint = e.getPoint();
     }
 
     public void mouseDragged(MouseEvent e) {
