@@ -31,7 +31,6 @@ import java.awt.*;
  */
 
 public class AlternatingColorTableCellRenderer extends DefaultTableCellRenderer {
-    private static final Color BACKGROUND_COLOR = new Color(232, 232, 232);
     private static final Color SELECTED_BACKGROUND_COLOR = new Color(0, 9 * 16 + 9, 255);
 
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int rowIndex, int columnIndex) {
@@ -39,7 +38,20 @@ public class AlternatingColorTableCellRenderer extends DefaultTableCellRenderer 
         if (rowIndex % 2 == 0)
             label.setBackground(isSelected ? SELECTED_BACKGROUND_COLOR : table.getBackground());
         else
-            label.setBackground(isSelected ? SELECTED_BACKGROUND_COLOR : BACKGROUND_COLOR);
+            label.setBackground(isSelected ? SELECTED_BACKGROUND_COLOR : getAlternateBackground(table));
         return label;
+    }
+
+    // shifts the background 9% towards the foreground: a light gray on light themes, a lighter gray on dark themes
+    static Color getAlternateBackground(JTable table) {
+        Color background = table.getBackground();
+        Color foreground = table.getForeground();
+        return new Color(blend(background.getRed(), foreground.getRed()),
+                blend(background.getGreen(), foreground.getGreen()),
+                blend(background.getBlue(), foreground.getBlue()));
+    }
+
+    private static int blend(int background, int foreground) {
+        return Math.round(background + (foreground - background) * 0.09f);
     }
 }

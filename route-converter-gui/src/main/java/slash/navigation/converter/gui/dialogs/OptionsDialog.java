@@ -87,6 +87,12 @@ import static slash.navigation.googlemaps.GoogleMapsServer.*;
 import static slash.navigation.gui.helpers.JMenuHelper.setMnemonic;
 import static slash.navigation.gui.helpers.UIHelper.chooseDirectory;
 import static slash.navigation.gui.helpers.UIHelper.chooseFile;
+import static slash.navigation.gui.helpers.UIHelper.AUTOMATIC_LOOK_AND_FEEL;
+import static slash.navigation.gui.helpers.UIHelper.DARK_LOOK_AND_FEEL;
+import static slash.navigation.gui.helpers.UIHelper.LIGHT_LOOK_AND_FEEL;
+import static slash.navigation.gui.helpers.UIHelper.SYSTEM_LOOK_AND_FEEL;
+import static slash.navigation.gui.helpers.UIHelper.getLookAndFeelPreference;
+import static slash.navigation.gui.helpers.UIHelper.setLookAndFeelPreference;
 
 /**
  * Dialog to show options for the program.
@@ -144,6 +150,7 @@ public class OptionsDialog extends SimpleDialog {
     private JLabel labelMapboxApiKey;
     private JLabel labelGeonamesUserName;
     private JCheckBox checkBoxSendCrashReports;
+    private JComboBox<String> comboBoxLookAndFeel;
 
 
     public OptionsDialog() {
@@ -165,6 +172,21 @@ public class OptionsDialog extends SimpleDialog {
             }
             Locale locale = (Locale) e.getItem();
             Application.getInstance().setLocale(locale);
+        });
+
+        DefaultComboBoxModel<String> lookAndFeelModel = new DefaultComboBoxModel<>(new String[]{
+                AUTOMATIC_LOOK_AND_FEEL, LIGHT_LOOK_AND_FEEL, DARK_LOOK_AND_FEEL, SYSTEM_LOOK_AND_FEEL});
+        String lookAndFeel = getLookAndFeelPreference();
+        if (lookAndFeelModel.getIndexOf(lookAndFeel) == -1)
+            lookAndFeelModel.addElement(lookAndFeel);
+        lookAndFeelModel.setSelectedItem(lookAndFeel);
+        comboBoxLookAndFeel.setModel(lookAndFeelModel);
+        comboBoxLookAndFeel.setRenderer(new LookAndFeelListCellRenderer());
+        comboBoxLookAndFeel.addItemListener(e -> {
+            if (e.getStateChange() != SELECTED) {
+                return;
+            }
+            setLookAndFeelPreference((String) e.getItem());
         });
 
         List<MapViewImplementation> mapViews = r.getAvailableMapViews();
@@ -721,6 +743,7 @@ public class OptionsDialog extends SimpleDialog {
      */
     private void createUIComponents() {
         comboBoxLocale = new JComboBox<>();
+        comboBoxLookAndFeel = new JComboBox<>();
         comboBoxTimeZone = new JComboBox<>();
         comboBoxUnitSystem = new JComboBox<>();
         comboBoxDegreeFormat = new JComboBox<>();
@@ -773,7 +796,7 @@ public class OptionsDialog extends SimpleDialog {
         panel2.setLayout(new GridLayoutManager(5, 1, new Insets(5, 0, 0, 0), -1, -1));
         tabbedPane1.addTab(this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "general-options-tab"), panel2);
         final JPanel panel3 = new JPanel();
-        panel3.setLayout(new GridLayoutManager(5, 2, new Insets(3, 3, 3, 3), -1, -1));
+        panel3.setLayout(new GridLayoutManager(6, 2, new Insets(3, 3, 3, 3), -1, -1));
         panel2.add(panel3, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
@@ -795,19 +818,27 @@ public class OptionsDialog extends SimpleDialog {
         panel3.add(separator1,
                 new GridConstraints(1, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel labelLookAndFeel = new JLabel();
+        this.$$$loadLabelText$$$(labelLookAndFeel,
+                this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "look-and-feel-option"));
+        panel3.add(labelLookAndFeel,
+                new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                        GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        panel3.add(comboBoxLookAndFeel, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL,
+                GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         final JLabel label3 = new JLabel();
         this.$$$loadLabelText$$$(label3,
                 this.$$$getMessageFromBundle$$$("slash/navigation/converter/gui/RouteConverter", "send-crash-reports-option"));
         panel3.add(label3,
-                new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
+                new GridConstraints(4, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED,
                         GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         checkBoxSendCrashReports = new JCheckBox();
-        panel3.add(checkBoxSendCrashReports, new GridConstraints(3, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
+        panel3.add(checkBoxSendCrashReports, new GridConstraints(4, 1, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null,
                 null, 0, false));
         final JPanel panel4 = new JPanel();
         panel4.setLayout(new GridLayoutManager(1, 1, new Insets(6, 0, 0, 0), -1, -1));
-        panel3.add(panel4, new GridConstraints(4, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
+        panel3.add(panel4, new GridConstraints(5, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW,
                 GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JPanel panel5 = new JPanel();

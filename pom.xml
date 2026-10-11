@@ -93,6 +93,8 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <alephformatter.version>0.1.1</alephformatter.version>
+        <!-- FlatLaf look-and-feel, Apache License 2.0 (https://www.formdev.com/flatlaf/) -->
+        <flatlaf.version>3.7.2</flatlaf.version>
         <httpclient.version>5.6.4</httpclient.version>
         <jackson.version>2.22.3</jackson.version>
         <jackson-annotations.version>2.22</jackson-annotations.version>
