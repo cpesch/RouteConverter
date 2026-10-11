@@ -1,6 +1,15 @@
 $schema: 'https://raw.githubusercontent.com/crowdin/support/main/config-schema.json'
 project_id_env: CROWDIN_PROJECT_ID
 api_token_env: CROWDIN_PERSONAL_TOKEN
+# The native GitHub integration commits one file at a time and by default
+# appends service text with `[ci skip]`. GitHub honours that marker on a PR's
+# head commit, so build.yml never ran on l10n_master PRs and the required
+# Java 21 / SpotBugs checks stayed missing (rc/rc-meta#773). A custom message with
+# append_commit_message: false drops the marker; build.yml's concurrency
+# cancels the superseded per-file runs on the branch.
+commit_message: 'New translations %original_file_name% (%language%)'
+append_commit_message: false
+
 preserve_hierarchy: true
 files:
   - source: /route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_en.properties

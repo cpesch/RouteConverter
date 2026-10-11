@@ -165,14 +165,17 @@ coordination with that codebase.
   in 15 locales, German included (#419). When you reword a key, re-enter or
   approve the German translation in Crowdin, give the string a context note,
   then **Sync Now**. Check the German value in the `l10n_master` PR before
-  merging it. Crowdin's commits don't trigger `build.yml` (`on: push`), so
-  the required `Java 21` and `SpotBugs` checks need an empty commit pushed to
-  `l10n_master`.
+  merging it. Root `crowdin.yml` sets `commit_message` +
+  `append_commit_message: false` so Crowdin's commits carry no `[ci skip]`
+  and `build.yml` runs the required `Java 21` and `SpotBugs` checks on the
+  `l10n_master` PR (rc/rc-meta#773). No empty commit needed; if a PR still shows no
+  checks, the marker is back.
 - **A translation fixed in the repo must also go into Crowdin, or the next
   sync reverts it.** The GitHub integration only reads the English source
   and writes translations back; it never uploads edited
-  `RouteConverter_*.properties`. Push them with the Crowdin CLI (v4) from an
-  up-to-date `master`: export `CROWDIN_PROJECT_ID` and
+  `RouteConverter_*.properties`. `crowdin-upload-translations.yml` does that
+  on every push to `master` (#445). Manual fallback with the Crowdin CLI (v4)
+  from an up-to-date `master`: export `CROWDIN_PROJECT_ID` and
   `CROWDIN_PERSONAL_TOKEN` (`crowdin.yml` reads both from the environment),
   then run, one language per call because `-l` keeps only the last flag:
   `crowdin upload translations -b master -l <code> --auto-approve-imported`.
