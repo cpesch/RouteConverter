@@ -248,6 +248,21 @@ class ClassifyTest(unittest.TestCase):
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0].klass, "forward_compat")
 
+    def test_cancelled_job_from_fail_fast_is_not_a_flaky_finding(self):
+        log = "[ERROR] Tests run: 1, Failures: 1"
+        first = [
+            JobResult(name="Java 21", conclusion="failure", failed_step="Build with Maven", log=log),
+            JobResult(name="Java 25", conclusion="cancelled", failed_step="Build with Maven", log=""),
+        ]
+        rerun = [
+            JobResult(name="Java 21", conclusion="success", failed_step=None, log=""),
+            JobResult(name="Java 25", conclusion="success", failed_step=None, log=""),
+        ]
+        findings = nightly_classify.classify("build", first, rerun, {})
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].jobs, ("Java 21",))
+        self.assertEqual(findings[0].klass, "flaky")
+
     def test_two_jobs_with_same_signature_merge(self):
         log = "[ERROR] Tests run: 1, Failures: 1"
         first = [

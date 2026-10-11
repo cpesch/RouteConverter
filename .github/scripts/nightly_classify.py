@@ -14,7 +14,7 @@ import xml.etree.ElementTree as ET
 
 from nightly_model import Finding, INFRA_PATTERNS, TestFailure
 
-FAILED_CONCLUSIONS = ("failure", "cancelled", "timed_out")
+FAILED_CONCLUSIONS = ("failure", "timed_out")
 
 _FRAME_RE = re.compile(r"at (slash\.[\w.]+)\.\w+\(")
 
