@@ -252,6 +252,11 @@ def plan(findings, issues, ctx, settings):
     today_iso = ctx.today.isoformat()
     approved_count = sum(1 for i in issues if LABEL_AGENT_APPROVED in i.labels)
     matched_numbers = set()
+    # Two findings in one run can match the same issue (e.g. the same test
+    # class failing under different signatures across jobs); track the
+    # pending comment/update_state pair per issue so a second match folds
+    # into it instead of emitting a conflicting duplicate.
+    issue_updates = {}
     entries = []
 
     for finding in findings:
@@ -259,13 +264,44 @@ def plan(findings, issues, ctx, settings):
         if matched is not None:
             matched_numbers.add(matched.number)
             sort_key = (0, matched.number)
-            nights = list(matched.state.get("nights", ()))
-            entries.append((sort_key, Action("comment", matched.number, {"night": len(nights) + 1})))
-            jobs = sorted(set(matched.state.get("jobs", ())) | set(finding.jobs))
-            tests = sorted(set(matched.state.get("tests", ())) | {t.test_class for t in finding.tests})
-            entries.append(
-                (sort_key, Action("update_state", matched.number, {"nights": nights + [today_iso], "jobs": jobs, "tests": tests}))
-            )
+            pending = issue_updates.get(matched.number)
+            if pending is None:
+                nights = list(matched.state.get("nights", ())) + [today_iso]
+                jobs = set(matched.state.get("jobs", ())) | set(finding.jobs)
+                tests = set(matched.state.get("tests", ())) | {t.test_class for t in finding.tests}
+                entries.append((sort_key, Action("comment", matched.number, {"night": len(nights)})))
+                state_idx = len(entries)
+                entries.append(
+                    (
+                        sort_key,
+                        Action(
+                            "update_state",
+                            matched.number,
+                            {"nights": nights, "jobs": sorted(jobs), "tests": sorted(tests)},
+                        ),
+                    )
+                )
+                issue_updates[matched.number] = {
+                    "nights": nights,
+                    "jobs": jobs,
+                    "tests": tests,
+                    "state_idx": state_idx,
+                }
+            else:
+                pending["jobs"] |= set(finding.jobs)
+                pending["tests"] |= {t.test_class for t in finding.tests}
+                entries[pending["state_idx"]] = (
+                    sort_key,
+                    Action(
+                        "update_state",
+                        matched.number,
+                        {
+                            "nights": pending["nights"],
+                            "jobs": sorted(pending["jobs"]),
+                            "tests": sorted(pending["tests"]),
+                        },
+                    ),
+                )
         else:
             sort_key = (1, finding.signature)
 

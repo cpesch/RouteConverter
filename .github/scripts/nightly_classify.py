@@ -17,8 +17,11 @@ from nightly_model import Finding, INFRA_PATTERNS, TestFailure
 FAILED_CONCLUSIONS = ("failure", "cancelled", "timed_out")
 
 # A "cancelled" job is only an artifact of a sibling's fail-fast abort when
-# another job in the same batch has one of these conclusions; a lone or
-# manually cancelled job is still a genuine failure to triage.
+# another job in the same batch has one of these conclusions AND the
+# cancelled job itself never produced real log output (fail-fast aborts a
+# job before/soon after it starts); a lone or manually cancelled job that
+# was actually running (it has log content) is still a genuine failure to
+# triage even if an unrelated job happened to fail in the same run.
 _TRUE_FAILURE_CONCLUSIONS = ("failure", "timed_out")
 
 _FRAME_RE = re.compile(r"at (slash\.[\w.]+)\.\w+\(")
@@ -198,6 +201,7 @@ def _fail_fast_cancelled_names(jobs):
         job.name
         for job in jobs
         if job.conclusion == "cancelled"
+        and not job.log.strip()
         and any(other.conclusion in _TRUE_FAILURE_CONCLUSIONS for other in jobs if other is not job)
     }
 

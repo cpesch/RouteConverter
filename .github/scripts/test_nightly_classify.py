@@ -263,6 +263,20 @@ class ClassifyTest(unittest.TestCase):
         self.assertEqual(findings[0].jobs, ("Java 21",))
         self.assertEqual(findings[0].klass, "flaky")
 
+    def test_cancelled_job_with_log_content_is_still_triaged(self):
+        log = "[ERROR] Tests run: 1, Failures: 1"
+        first = [
+            JobResult(name="Java 21", conclusion="failure", failed_step="Build with Maven", log=log),
+            JobResult(name="Java 25", conclusion="cancelled", failed_step="Build with Maven", log=log),
+        ]
+        rerun = [
+            JobResult(name="Java 21", conclusion="failure", failed_step="Build with Maven", log=log),
+            JobResult(name="Java 25", conclusion="failure", failed_step="Build with Maven", log=log),
+        ]
+        findings = nightly_classify.classify("build", first, rerun, {})
+        names = {name for finding in findings for name in finding.jobs}
+        self.assertIn("Java 25", names)
+
     def test_two_jobs_with_same_signature_merge(self):
         log = "[ERROR] Tests run: 1, Failures: 1"
         first = [

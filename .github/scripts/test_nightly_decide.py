@@ -130,6 +130,34 @@ class MatchDedupeTest(unittest.TestCase):
         comment = by_kind(actions, "comment")[0]
         self.assertEqual(comment.data["night"], 3)
 
+    def test_two_findings_matching_same_issue_fold_into_one_update(self):
+        issue = make_issue(
+            number=9,
+            labels={"needs-triage"},
+            state={"sig": "oldsig", "jobs": ["Java 21"], "tests": ["pkg.FooTest"], "nights": ["2026-10-10"], "escalated": False},
+        )
+        finding_a = make_finding(
+            sig="newsig1",
+            jobs=("Java 21",),
+            tests=(TestFailure(test_class="pkg.FooTest", method="testX", exception="E", frames=()),),
+        )
+        finding_b = make_finding(
+            sig="newsig2",
+            jobs=("Java 25",),
+            tests=(TestFailure(test_class="pkg.FooTest", method="testY", exception="E", frames=()),),
+        )
+        ctx = make_ctx()
+        actions = nd.plan([finding_a, finding_b], [issue], ctx, make_settings())
+
+        comments = by_kind(actions, "comment")
+        state_updates = by_kind(actions, "update_state")
+        self.assertEqual(len(comments), 1)
+        self.assertEqual(comments[0].data["night"], 2)
+        self.assertEqual(len(state_updates), 1)
+        self.assertEqual(set(state_updates[0].data["jobs"]), {"Java 21", "Java 25"})
+        self.assertEqual(state_updates[0].data["nights"], ["2026-10-10", "2026-10-11"])
+        self.assertFalse(by_kind(actions, "open_issue"))
+
     def test_test_class_overlap_with_different_signature_is_a_comment(self):
         issue = make_issue(
             number=9,
