@@ -79,6 +79,10 @@ shows up after the merge. To check a branch on Windows first, run
 `gh workflow run build.yml --ref <branch>`. A newer push to a non-`master`/`3.*`
 branch cancels the older run. The Linux jobs build modules in parallel (`-T 1C`);
 Windows stays serial (it was slower with `-T`) and skips JaCoCo.
+All CI JVMs run C1-only (`JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1`) and the test
+jobs pass `-Dsurefire.forkCount=1` (pom property `surefire.forkCount`, default `1.5C`
+for local builds): with `-T 1C`, `1.5C` started 116 test JVMs on a 4-core runner.
+That took the Maven step from about 4 min to 1–2 min per job (2026-10-11 benchmark).
 The bundled-JRE version is the single source of truth `<jre.version>` in the root
 `pom.xml` — keep it in sync with the CI `setup-java` version on JDK bumps.
 
