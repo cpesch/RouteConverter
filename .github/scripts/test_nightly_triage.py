@@ -152,6 +152,8 @@ class GreenCloseTest(unittest.TestCase):
                 ],
                 ("GET", PULLS_PATH): [],
                 ("GET", RUNS_PATH): {"workflow_runs": []},
+                ("POST", f"/repos/{REPO}/issues/5/comments"): {},
+                ("PATCH", f"/repos/{REPO}/issues/5"): {},
             }
         )
         code, _, _ = run_triage(api)
