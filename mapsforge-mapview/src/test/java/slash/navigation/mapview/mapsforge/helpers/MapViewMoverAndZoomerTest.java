@@ -70,6 +70,11 @@ public class MapViewMoverAndZoomerTest {
 
     private final MapViewProjection projection = mock(MapViewProjection.class);
     private final AwtGraphicMapView mapView = mock(AwtGraphicMapView.class);
+
+    {
+        // no HiDPI scaling in the tests: logical and device pixels are the same
+        when(mapView.toDevicePoint(any())).thenAnswer(invocation -> invocation.getArgument(0));
+    }
     private final LayerManager layerManager = mock(LayerManager.class);
     private final LatLong draggedTo = new LatLong(11.0, 21.0);
     private final Container eventSource = new Container();

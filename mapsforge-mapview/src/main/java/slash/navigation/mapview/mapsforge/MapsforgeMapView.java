@@ -92,6 +92,7 @@ import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
+import static slash.navigation.gui.helpers.UIHelper.isMapRenderedInDeviceSpace;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
@@ -614,7 +615,14 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     protected float getDeviceScaleFactor() {
+        if (isMapRenderedInDeviceSpace() && preferences.get(DEVICE_SCALE_FACTOR, null) == null)
+            return (float) getDefaultScreenScale();
         return preferences.getInt(DEVICE_SCALE_FACTOR, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0f;
+    }
+
+    private static double getDefaultScreenScale() {
+        return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+                .getDefaultConfiguration().getDefaultTransform().getScaleX();
     }
 
     private AwtGraphicMapView createMapView() {
@@ -627,7 +635,8 @@ public class MapsforgeMapView extends BaseMapView {
 
         float deviceScaleFactor = getDeviceScaleFactor();
         DisplayModel.setDeviceScaleFactor(deviceScaleFactor);
-        log.info(format("Map is scaled with factor %f, screen resolution is %d dpi", deviceScaleFactor, Toolkit.getDefaultToolkit().getScreenResolution()));
+        log.info(format("Map is scaled with factor %f, screen resolution is %d dpi, screen scale is %f",
+                deviceScaleFactor, Toolkit.getDefaultToolkit().getScreenResolution(), getDefaultScreenScale()));
 
         AwtGraphicMapView mapView = new AwtGraphicMapView();
         new MapViewResizer(mapView, mapView.getModel().mapViewDimension);
@@ -1186,7 +1195,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private boolean isVisible(LatLong latLong) {
-        MapViewProjection projection = new MapViewProjection(mapView);
+        MapViewProjection projection = mapView.getMapViewProjection();
         LatLong upperLeft = projection.fromPixels(MINIMUM_VISIBLE_BORDER_IN_PIXEL, MINIMUM_VISIBLE_BORDER_IN_PIXEL);
         Dimension dimension = mapView.getDimension();
         LatLong lowerRight = projection.fromPixels(dimension.width - MINIMUM_VISIBLE_BORDER_IN_PIXEL, dimension.height - MINIMUM_VISIBLE_BORDER_IN_PIXEL);
@@ -1353,7 +1362,7 @@ public class MapsforgeMapView extends BaseMapView {
 
     private LatLong getMousePosition() {
         Point point = mapViewMoverAndZoomer.getLastMousePoint();
-        return point != null ? new MapViewProjection(mapView).fromPixels(point.getX(), point.getY()) :
+        return point != null ? mapView.getMapViewProjection().fromPixels(point.getX(), point.getY()) :
                 mapView.getModel().mapViewPosition.getCenter();
     }
 
