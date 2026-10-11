@@ -47,7 +47,6 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 import static org.mapsforge.map.awt.graphics.AwtGraphicFactory.*;
-import static slash.navigation.gui.helpers.UIHelper.isMapRenderedInDeviceSpace;
 
 /**
  * Implementation of a {@link org.mapsforge.map.view.MapView} {@link Container}.
@@ -132,11 +131,9 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
 
     /**
      * The factor between Swing's logical coordinates and the device pixels the map is rendered in:
-     * 1.0 unless the map is rendered in device space and Java scales the UI (e.g. 1.5 at 150%).
+     * the display scale Java applies to the UI (e.g. 1.5 at 150%, 2.0 on Retina), 1.0 without one.
      */
     public double getDeviceScale() {
-        if (!isMapRenderedInDeviceSpace())
-            return 1.0;
         GraphicsConfiguration configuration = getGraphicsConfiguration();
         return configuration != null ? configuration.getDefaultTransform().getScaleX() : 1.0;
     }
@@ -238,10 +235,10 @@ public class AwtGraphicMapView extends Container implements org.mapsforge.map.vi
 
         Graphics2D graphics2D = (Graphics2D) graphics;
         AffineTransform logical = graphics2D.getTransform();
-        // draw the already scaled tiles 1:1 into device pixels instead of letting Java2D resample them
-        if (isMapRenderedInDeviceSpace())
-            graphics2D.setTransform(AffineTransform.getTranslateInstance(Math.round(logical.getTranslateX()),
-                    Math.round(logical.getTranslateY())));
+        // Java scales Swing by the display scale on its own, but the tiles are already rendered for
+        // that scale: draw them 1:1 into device pixels instead of letting Java2D resample them
+        graphics2D.setTransform(AffineTransform.getTranslateInstance(Math.round(logical.getTranslateX()),
+                Math.round(logical.getTranslateY())));
         try {
             Canvas canvas = AwtGraphicFactory.createGraphicContext(graphics2D);
             frameBuffer.draw(canvas, model.mapViewPosition.getRotation());

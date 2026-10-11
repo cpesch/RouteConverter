@@ -41,15 +41,13 @@ public class TimeZoneModel {
     private final EventListenerList listenerList = new EventListenerList();
 
     public TimeZoneModel(String preferencesName, TimeZone defaultValue) {
-        this(preferencesName, defaultValue, Preferences.userNodeForPackage(TimeZoneModel.class));
+        this(Preferences.userNodeForPackage(TimeZoneModel.class), preferencesName, defaultValue);
     }
 
-    // package-private seam so tests can inject an isolated (in-memory) store
-    // instead of the shared OS node, which leaks test keys into user preferences
-    TimeZoneModel(String preferencesName, TimeZone defaultValue, Preferences preferences) {
+    TimeZoneModel(Preferences preferences, String preferencesName, TimeZone defaultValue) {
+        this.preferences = preferences;
         this.preferencesName = preferencesName;
         this.defaultValue = defaultValue;
-        this.preferences = preferences;
     }
 
     private TimeZone fromString(String timeZone) {
