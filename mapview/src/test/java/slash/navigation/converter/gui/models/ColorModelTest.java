@@ -20,9 +20,10 @@
 package slash.navigation.converter.gui.models;
 
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 
 import java.awt.*;
-import java.util.UUID;
+import java.util.prefs.Preferences;
 
 import static org.junit.Assert.*;
 
@@ -32,16 +33,20 @@ import static org.junit.Assert.*;
  * @author Christian Pesch
  */
 public class ColorModelTest {
+    private static final String PREFIX = "test";
 
-    /** Returns a fresh prefix that has never been written to Preferences. */
-    private static String freshPrefix() {
-        return "test-phase4-" + UUID.randomUUID();
+    // isolated in-memory store per test instance, so tests neither leak keys into
+    // the user's OS preferences nor clobber each other across concurrent forks
+    private final Preferences preferences = new InMemoryPreferences();
+
+    private ColorModel model(String defaultValue) {
+        return new ColorModel(PREFIX, defaultValue, preferences);
     }
 
     @Test
     public void testGetDefaultColorOpaque() {
         // "ffffffff" ARGB = alpha 255, R 255, G 255, B 255
-        ColorModel model = new ColorModel(freshPrefix(), "ffffffff");
+        ColorModel model = model("ffffffff");
         Color color = model.getColor();
         assertNotNull(color);
         assertEquals(255, color.getRed());
@@ -53,7 +58,7 @@ public class ColorModelTest {
     @Test
     public void testGetDefaultColorTransparent() {
         // "00000000" ARGB = fully transparent black
-        ColorModel model = new ColorModel(freshPrefix(), "00000000");
+        ColorModel model = model("00000000");
         Color color = model.getColor();
         assertNotNull(color);
         assertEquals(0, color.getRed());
@@ -64,12 +69,11 @@ public class ColorModelTest {
 
     @Test
     public void testSetAndGetColorRoundTrip() {
-        String prefix = freshPrefix();
-        ColorModel model = new ColorModel(prefix, "00000000");
+        ColorModel model = model("00000000");
         Color red = new Color(200, 50, 30, 180);
         model.setColor(red);
 
-        ColorModel model2 = new ColorModel(prefix, "ffffffff");
+        ColorModel model2 = model("ffffffff");
         Color result = model2.getColor();
         assertEquals(red.getRed(),   result.getRed());
         assertEquals(red.getGreen(), result.getGreen());
@@ -79,7 +83,7 @@ public class ColorModelTest {
 
     @Test
     public void testChangeListenerFiredOnSetColor() {
-        ColorModel model = new ColorModel(freshPrefix(), "00000000");
+        ColorModel model = model("00000000");
         int[] callCount = {0};
         model.addChangeListener(e -> callCount[0]++);
         model.setColor(Color.BLUE);
@@ -88,7 +92,7 @@ public class ColorModelTest {
 
     @Test
     public void testChangeListenerRemovedIsNotFired() {
-        ColorModel model = new ColorModel(freshPrefix(), "00000000");
+        ColorModel model = model("00000000");
         int[] callCount = {0};
         javax.swing.event.ChangeListener listener = e -> callCount[0]++;
         model.addChangeListener(listener);

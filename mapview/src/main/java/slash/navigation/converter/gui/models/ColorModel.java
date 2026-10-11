@@ -36,16 +36,23 @@ import static slash.common.type.HexadecimalNumber.encodeInt;
  * @author Christian Pesch
  */
 public class ColorModel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(ColorModel.class);
     private static final String COLOR_SUFFIX = "-color";
 
     private final EventListenerList listenerList = new EventListenerList();
+    private final Preferences preferences;
     private final String preferencesPrefix;
     private final String defaultValue;
 
     public ColorModel(String preferencesPrefix, String defaultValue) {
+        this(preferencesPrefix, defaultValue, Preferences.userNodeForPackage(ColorModel.class));
+    }
+
+    // package-private seam so tests can inject an isolated (in-memory) store
+    // instead of the shared OS node, which leaks test keys into user preferences
+    ColorModel(String preferencesPrefix, String defaultValue, Preferences preferences) {
         this.preferencesPrefix = preferencesPrefix;
         this.defaultValue = defaultValue;
+        this.preferences = preferences;
     }
 
     private Color fromString(String color) {
