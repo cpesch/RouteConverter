@@ -501,6 +501,8 @@ public class MapsforgeMapView extends BaseMapView {
         mapSelector = new MapSelector(getMapManager(), mapView);
         mapViewMoverAndZoomer = new MapViewMoverAndZoomer(mapView, getLayerManager());
         mapViewCoordinateDisplayer.initialize(mapView, mapViewCallback);
+        // the listener only reacts to changes, so apply the stored setting once
+        mapViewCoordinateDisplayer.setShowCoordinates(preferencesModel.getShowCoordinatesModel().getBoolean());
         new MapViewPopupMenu(mapView, createPopupMenu(), this::enableMapActions);
 
         final ActionManager actionManager = Application.getInstance().getContext().getActionManager();
