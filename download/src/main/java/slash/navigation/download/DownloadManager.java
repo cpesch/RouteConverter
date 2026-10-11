@@ -279,6 +279,13 @@ public class DownloadManager {
             if (queued.getAction().equals(Head) || queued.getAction().equals(GetRange))
                 model.removeDownload(queued);
             else {
+                // the caller's expected checksums are current, the queued ones may be from an earlier
+                // session: a catalog file is queued without any, and a stale one fails every fresh
+                // download of a changed catalog, so it is downloaded in full on each start (#440)
+                queued.setFile(download.getFile());
+                queued.setFragments(download.getFragments());
+                model.updateDownload(queued);
+
                 if (COMPLETED.contains(queued.getState()) && startExecutor) {
                     log.fine("Restarting completed download " + download);
                     startExecutor(queued);

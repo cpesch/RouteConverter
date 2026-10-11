@@ -32,6 +32,8 @@ import static java.io.File.createTempFile;
 import static java.util.Collections.singletonList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static slash.navigation.download.Action.Copy;
 import static slash.navigation.download.State.Succeeded;
 
@@ -134,5 +136,22 @@ public class DownloadManagerQueuePersistenceTest {
         List<Download> downloads = persisted();
         assertEquals(1, downloads.size());
         assertNotNull(find(downloads, EARLY_URL));
+    }
+
+    /**
+     * A catalog file is queued without an expected checksum. The queued entry from an earlier
+     * session carries the checksum of the previous catalog, which every fresh download of a changed
+     * catalog fails: it was downloaded in full on each start (#440 follow-up).
+     */
+    @Test
+    public void requeueAdoptsTheCallersExpectedChecksums() throws IOException {
+        manager.loadQueue();
+        Download queued = manager.getModel().getDownload(STORED_URL);
+        queued.setFile(new FileAndChecksum(storedTarget, new Checksum(null, 14180L, "5DE512F6ADCA44DB26046FF734CCDA9BE59F7033")));
+
+        Download requeued = manager.queue(new Download("stored", STORED_URL, Copy, new FileAndChecksum(storedTarget, null), null), false);
+
+        assertSame(queued, requeued);
+        assertTrue(requeued.getFile().getExpectedChecksums().isEmpty());
     }
 }
