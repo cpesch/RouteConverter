@@ -249,6 +249,24 @@ public class MapViewMoverAndZoomerTest {
         assertEquals(draggedTo, marker.getLatLong());
     }
 
+    /**
+     * Select, New and Delete from the map popup work on the last pressed point. A press on a
+     * marker -- e.g. a right-click on a position to delete it -- must record that point, too:
+     * otherwise Delete ran on the point of an earlier press, found nothing there or removed a
+     * different position -- #439.
+     */
+    @Test
+    public void testPressOnAMarkerRecordsThePressedPoint() {
+        draggableMarkerUnderTheCursor();
+        MapViewMoverAndZoomer moverAndZoomer = new MapViewMoverAndZoomer(mapView, layerManager, projection);
+
+        moverAndZoomer.mousePressed(mouseEvent(MOUSE_PRESSED, 30, 40));
+        moverAndZoomer.mousePressed(mouseEvent(MOUSE_PRESSED, 100, 175));
+
+        assertTrue(moverAndZoomer.isMousePressedOnMarker());
+        assertEquals(new java.awt.Point(100, 175), moverAndZoomer.getLastMousePoint());
+    }
+
     private FakeDraggableMarker draggableMarkerUnderTheCursor() {
         LatLong markerPosition = new LatLong(10.0, 20.0);
         FakeDraggableMarker marker = new FakeDraggableMarker(markerPosition, true);
