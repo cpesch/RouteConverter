@@ -92,7 +92,6 @@ import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
-import static slash.navigation.gui.helpers.UIHelper.isMapRenderedInDeviceSpace;
 import static slash.common.system.Platform.isWindows;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;

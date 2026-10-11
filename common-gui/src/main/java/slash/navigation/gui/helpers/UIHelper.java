@@ -44,14 +44,6 @@ public class UIHelper {
     private static final Preferences preferences = userNodeForPackage(UIHelper.class);
     private static final String LOOK_AND_FEEL_CLASS_PREFERENCE = "lookAndFeelClass";
 
-    /**
-     * Java scales Swing by the display scale on its own. The map's tiles are already rendered for
-     * that scale and blur if Java2D scales them again, so the map is drawn in device pixels.
-     */
-    public static boolean isMapRenderedInDeviceSpace() {
-        return true;
-    }
-
     public static void setLookAndFeel() {
         try {
             String lookAndFeelClass = preferences.get(LOOK_AND_FEEL_CLASS_PREFERENCE, "default");
