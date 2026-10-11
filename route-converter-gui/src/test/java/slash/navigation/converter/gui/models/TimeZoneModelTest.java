@@ -20,11 +20,12 @@
 package slash.navigation.converter.gui.models;
 
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 
 import javax.swing.event.ChangeListener;
 import java.util.TimeZone;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.prefs.Preferences;
 
 import static org.junit.Assert.*;
 
@@ -37,14 +38,17 @@ public class TimeZoneModelTest {
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
     private static final TimeZone BERLIN = TimeZone.getTimeZone("Europe/Berlin");
 
-    // a unique preference key per instance keeps the persistent Preferences store test-isolated
-    private static String key() {
-        return "test.timezone." + UUID.randomUUID();
+    // isolated in-memory store per test instance, so tests neither leak keys into
+    // the user's OS preferences nor clobber each other across concurrent forks
+    private final Preferences preferences = new InMemoryPreferences();
+
+    private TimeZoneModel model() {
+        return new TimeZoneModel("test.timezone", UTC, preferences);
     }
 
     @Test
     public void returnsTheDefaultUntilChanged() {
-        TimeZoneModel model = new TimeZoneModel(key(), UTC);
+        TimeZoneModel model = model();
 
         assertEquals("UTC", model.getTimeZoneId());
         assertEquals(UTC, model.getTimeZone());
@@ -52,7 +56,7 @@ public class TimeZoneModelTest {
 
     @Test
     public void setTimeZonePersistsTheNewValue() {
-        TimeZoneModel model = new TimeZoneModel(key(), UTC);
+        TimeZoneModel model = model();
 
         model.setTimeZone(BERLIN);
 
@@ -62,7 +66,7 @@ public class TimeZoneModelTest {
 
     @Test
     public void setTimeZoneNotifiesChangeListeners() {
-        TimeZoneModel model = new TimeZoneModel(key(), UTC);
+        TimeZoneModel model = model();
         AtomicInteger changes = new AtomicInteger();
         model.addChangeListener(e -> changes.incrementAndGet());
 
@@ -73,7 +77,7 @@ public class TimeZoneModelTest {
 
     @Test
     public void removedListenerStopsReceivingEvents() {
-        TimeZoneModel model = new TimeZoneModel(key(), UTC);
+        TimeZoneModel model = model();
         AtomicInteger changes = new AtomicInteger();
         ChangeListener listener = e -> changes.incrementAndGet();
         model.addChangeListener(listener);

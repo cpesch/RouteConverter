@@ -34,16 +34,22 @@ import java.util.prefs.Preferences;
  */
 
 public class TimeZoneModel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(TimeZoneModel.class);
-
+    private final Preferences preferences;
     private final String preferencesName;
     private final TimeZone defaultValue;
 
     private final EventListenerList listenerList = new EventListenerList();
 
     public TimeZoneModel(String preferencesName, TimeZone defaultValue) {
+        this(preferencesName, defaultValue, Preferences.userNodeForPackage(TimeZoneModel.class));
+    }
+
+    // package-private seam so tests can inject an isolated (in-memory) store
+    // instead of the shared OS node, which leaks test keys into user preferences
+    TimeZoneModel(String preferencesName, TimeZone defaultValue, Preferences preferences) {
         this.preferencesName = preferencesName;
         this.defaultValue = defaultValue;
+        this.preferences = preferences;
     }
 
     private TimeZone fromString(String timeZone) {
