@@ -145,7 +145,12 @@ coordination with that codebase.
   the old `.github/workflows/crowdin.yml` Action (`l10n` branch) is disabled
   to avoid duplicate/competing PRs — don't re-enable both at once. Root
   `crowdin.yml` still governs file mapping/language codes (e.g. `nb→nb_NO`)
-  for whichever path runs.
+  for whichever path runs. A hand-added locale value is fine when master
+  needs it (e.g. a new key the German test requires): on push to `master`,
+  `.github/workflows/crowdin-upload-translations.yml` uploads it to Crowdin
+  (branch `master`, auto-approved), so the next `l10n_master` PR keeps it
+  instead of dropping it (#445). Upload-only — it opens no PR and does not
+  compete with the native integration.
 - **Rewording an English source string drops every locale's translation.**
   Crowdin treats the changed text as a new string: the next sync deletes the
   key from all `RouteConverter_*.properties`, and machine translation refills
