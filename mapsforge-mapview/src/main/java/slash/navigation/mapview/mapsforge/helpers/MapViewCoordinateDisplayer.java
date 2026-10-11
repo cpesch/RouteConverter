@@ -55,6 +55,8 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
         JPanel contentPane = (JPanel) window.getContentPane();
         contentPane.add(label);
         contentPane.setBackground(new Color(255, 255, 204));
+        // the background is always light yellow, so keep the text dark in dark look-and-feels, too
+        label.setForeground(Color.BLACK);
         contentPane.setBorder(new CompoundBorder(createEtchedBorder(), new EmptyBorder(2, 3, 2, 3)));
         label.setFont(label.getFont().deriveFont(9f));
 
@@ -76,6 +78,11 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
 
     private void display(Point locationOnScreen, Point devicePoint) {
         LatLong latLong = mapView.getMapViewProjection().fromPixels(devicePoint.x, devicePoint.y);
+        // null while the map has no size or position yet, e.g. when the mouse moves over it during startup
+        if (latLong == null) {
+            hide();
+            return;
+        }
         label.setText(mapViewCallback.createCoordinates(latLong.longitude, latLong.latitude));
         window.pack();
         window.setLocation(locationOnScreen.x + 16, locationOnScreen.y + 15);

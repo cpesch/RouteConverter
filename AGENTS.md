@@ -85,6 +85,18 @@ for local builds): with `-T 1C`, `1.5C` started 116 test JVMs on a 4-core runner
 That took the Maven step from about 4 min to 1–2 min per job (2026-10-11 benchmark).
 The bundled-JRE version is the single source of truth `<jre.version>` in the root
 `pom.xml` — keep it in sync with the CI `setup-java` version on JDK bumps.
+A push whose head commit message contains `[full-ci]` runs all four jobs (`Java 21`, `Java 25`, `SpotBugs`,
+`Java 21 on Windows`) on a feature branch — the alternative to `gh workflow run build.yml --ref <branch>`.
+`nightly-triage.yml` triages failed scheduled runs: it re-runs the failed jobs once — green means `flaky` (a
+ledger issue, or an issue after 2 flaky nights in 7); red with an infra signature means ntfy only. Anything else
+is `deterministic`: one issue per signature labelled `from:nightly` + `nightly:deterministic`, auto-approved only
+with a resolvable `### Files` list, under caps (1 attempt/signature/day, at most 3 open, escalation to `needs-triage` +
+ntfy after 2 failed attempts); issues close themselves when their jobs pass again. Other labels: `nightly:flaky`,
+`nightly:infra`, `nightly:forward-compat`. Rolling issues `nightly: flaky ledger`, `nightly: infra streak`,
+`nightly: drift log` hold state in an HTML comment — don't edit it by hand. Kill switches: repo variables
+`NIGHTLY_TRIAGE=0` (whole loop) and `NIGHTLY_AUTOAPPROVE=0` (no automatic `agent:approved`). Replay a run:
+`gh workflow run nightly-triage.yml -f run_id=<id> -f dry_run=true`. Fixes to nightly issues must not delete or
+loosen assertions or add `@Disabled`/`assume` skips without a stated reason in the PR body.
 
 Source is **UTF-8** (compiler / surefire / javadoc / `propertiesEncoding`). The one
 exception: the **maven-resources-plugin `<encoding>` stays `ISO-8859-1`** — resource

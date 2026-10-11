@@ -92,7 +92,7 @@ import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
-import static slash.navigation.gui.helpers.UIHelper.isMapRenderedInDeviceSpace;
+import static slash.common.system.Platform.isWindows;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
@@ -615,9 +615,10 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     protected float getDeviceScaleFactor() {
-        if (isMapRenderedInDeviceSpace() && preferences.get(DEVICE_SCALE_FACTOR, null) == null)
-            return (float) getDefaultScreenScale();
-        return preferences.getInt(DEVICE_SCALE_FACTOR, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0f;
+        float factor = preferences.getInt(DEVICE_SCALE_FACTOR, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0f;
+        // the map is drawn in device pixels: Windows reports the screen resolution including the
+        // display scale, macOS and Linux report it without, so apply the scale there
+        return isWindows() ? factor : (float) (factor * getDefaultScreenScale());
     }
 
     private static double getDefaultScreenScale() {
