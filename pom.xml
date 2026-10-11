@@ -61,6 +61,8 @@
         <!-- CI test builds pass -Dshade.skip=true: no test reads a shaded jar.
              The plugin has a skip parameter but no user property for it. -->
         <shade.skip>false</shade.skip>
+        <!-- Test JVMs per module; CI may override with -Dsurefire.forkCount. -->
+        <surefire.forkCount>1.5C</surefire.forkCount>
         <itCoverageAgent />
         <failsafe.hermetic.excludes>**/__never__.java</failsafe.hermetic.excludes>
 
@@ -530,7 +532,7 @@
                         <exclude>**/*IntegrationTest.java</exclude>
                     </excludes>
                     <!-- optional: works also when skipped -->
-                    <forkCount>1.5C</forkCount>
+                    <forkCount>${surefire.forkCount}</forkCount>
                 </configuration>
             </plugin>
 
