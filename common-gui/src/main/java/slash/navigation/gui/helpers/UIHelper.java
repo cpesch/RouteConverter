@@ -49,7 +49,7 @@ public class UIHelper {
      * that scale and blur if Java2D scales them again, so the map is drawn in device pixels.
      */
     public static boolean isMapRenderedInDeviceSpace() {
-        return isWindows();
+        return true;
     }
 
     public static void setLookAndFeel() {
