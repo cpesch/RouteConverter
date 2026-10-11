@@ -219,6 +219,7 @@ def _plan_deterministic_matched(issue, ctx, settings, approved_count, sort_key, 
             entries.append((sort_key, Action("remove_label", issue.number, {"label": LABEL_AGENT_APPROVED})))
         else:
             approved_count += 1
+            entries.append((sort_key, Action("remove_label", issue.number, {"label": LABEL_NEEDS_TRIAGE})))
         entries.append((sort_key, Action("add_label", issue.number, {"label": LABEL_AGENT_APPROVED})))
         new_attempts = attempts + [{"date": today_iso, "result": "pending"}]
         entries.append((sort_key, Action("update_state", issue.number, {"attempts": new_attempts})))
