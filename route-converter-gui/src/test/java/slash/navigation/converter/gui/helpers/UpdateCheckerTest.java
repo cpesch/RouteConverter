@@ -21,17 +21,17 @@
 package slash.navigation.converter.gui.helpers;
 
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 
 import java.util.prefs.Preferences;
 
 import static org.junit.Assert.*;
 
 public class UpdateCheckerTest {
+    // a fresh in-memory node per test: the OS-level user preferences are shared by every JVM
+    // of the user, so concurrent test runs flipped the shown flags under each other
     private Preferences supportNudgePreferences() {
-        Preferences preferences = Preferences.userNodeForPackage(UpdateCheckerTest.class).node("supportNudgeTest");
-        preferences.putBoolean(UpdateChecker.SupportNudge.NUDGE_100_SHOWN_PREFERENCE, false);
-        preferences.putBoolean(UpdateChecker.SupportNudge.NUDGE_500_SHOWN_PREFERENCE, false);
-        return preferences;
+        return new InMemoryPreferences();
     }
 
     /**
