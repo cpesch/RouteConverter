@@ -58,7 +58,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     private boolean dragging;
 
     public MapViewMoverAndZoomer(AwtGraphicMapView mapView, LayerManager layerManager) {
-        this(mapView, layerManager, new MapViewProjection(mapView));
+        this(mapView, layerManager, mapView.getMapViewProjection());
     }
 
     MapViewMoverAndZoomer(AwtGraphicMapView mapView, LayerManager layerManager, MapViewProjection projection) {
@@ -72,7 +72,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
 
     public void mouseClicked(MouseEvent e) {
         // enables Select and New from context menu
-        lastMousePressPoint = e.getPoint();
+        lastMousePressPoint = mapView.toDevicePoint(e.getPoint());
     }
 
     public void mousePressed(MouseEvent e) {
@@ -80,7 +80,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
         dragging = false;
         // record every press, also on a marker: the popup actions Select, New and Delete work on the
         // pressed point and must not fall back to a stale one; panning skips presses on a marker anyway
-        lastMousePressPoint = e.getPoint();
+        lastMousePressPoint = mapView.toDevicePoint(e.getPoint());
     }
 
     public void mouseDragged(MouseEvent e) {
@@ -91,7 +91,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
                 requestRedraw();
 
             } else if (getLastMousePoint() != null) {
-                Point point = e.getPoint();
+                Point point = mapView.toDevicePoint(e.getPoint());
                 int moveHorizontal = point.x - lastMousePressPoint.x;
                 int moveVertical = point.y - lastMousePressPoint.y;
                 mapView.getModel().mapViewPosition.moveCenter(moveHorizontal, moveVertical);
@@ -117,7 +117,8 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
      * RouteConverter did up to 3.6, so grabbing the pin by its head stays predictable.
      */
     private LatLong draggedTo(MouseEvent e) {
-        return projection.fromPixels(e.getX() + grabbedMarker.offsetX(), e.getY() + grabbedMarker.offsetY());
+        Point point = mapView.toDevicePoint(e.getPoint());
+        return projection.fromPixels(point.x + grabbedMarker.offsetX(), point.y + grabbedMarker.offsetY());
     }
 
     /**
@@ -132,7 +133,7 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
     }
 
     public void mouseWheelMoved(MouseWheelEvent e) {
-        lastMousePressPoint = e.getPoint();
+        lastMousePressPoint = mapView.toDevicePoint(e.getPoint());
         zoomToMousePosition((byte) -e.getWheelRotation());
     }
 
@@ -170,8 +171,9 @@ public class MapViewMoverAndZoomer extends MouseAdapter {
 
     private GrabbedMarker getMarkerFor(MouseEvent e) {
         if((e.getModifiersEx() & CTRL_DOWN_MASK) != CTRL_DOWN_MASK) {
-            LatLong tapLatLong = projection.fromPixels(e.getX(), e.getY());
-            org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(e.getX(), e.getY());
+            Point point = mapView.toDevicePoint(e.getPoint());
+            LatLong tapLatLong = projection.fromPixels(point.x, point.y);
+            org.mapsforge.core.model.Point tapXY = new org.mapsforge.core.model.Point(point.x, point.y);
 
             DraggableMarker marker = findDraggableMarkerAt(layerManager.getLayers().getLayers(), projection, tapLatLong, tapXY);
             if (marker != null) {

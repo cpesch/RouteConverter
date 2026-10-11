@@ -47,28 +47,20 @@ public class UIHelper {
     private static final String UI_FONT_SCALE_PERCENTAGE_PREFERENCE = "uiFontScalePercentage";
     private static final int DEFAULT_UI_FONT_SCALE_PERCENTAGE = 100;
 
+    /**
+     * Java scales Swing by the display scale on its own. The map's tiles are already rendered for
+     * that scale and blur if Java2D scales them again, so the map is drawn in device pixels.
+     */
+    public static boolean isMapRenderedInDeviceSpace() {
+        return isWindows();
+    }
+
     public static int getUiFontScalePercentage() {
-        return preferences.getInt(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, getDefaultUiFontScalePercentage());
+        return preferences.getInt(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, DEFAULT_UI_FONT_SCALE_PERCENTAGE);
     }
 
     public static void setUiFontScalePercentage(int percentage) {
         preferences.putInt(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, percentage);
-    }
-
-    private static int getDefaultUiFontScalePercentage() {
-        if (!isWindows())
-            return DEFAULT_UI_FONT_SCALE_PERCENTAGE;
-        try {
-            int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-            return dpiToPercentage(dpi);
-        } catch (HeadlessException e) {
-            return DEFAULT_UI_FONT_SCALE_PERCENTAGE;
-        }
-    }
-
-    static int dpiToPercentage(int dpi) {
-        int percentage = Math.round(dpi / 96f * 100f);
-        return Math.max(50, Math.min(200, percentage));
     }
 
     public static Font scaleFont(Font font, int percentage) {
@@ -103,10 +95,6 @@ public class UIHelper {
         }
         JFrame.setDefaultLookAndFeelDecorated(true);
         JDialog.setDefaultLookAndFeelDecorated(true);
-
-        // to avoid blurred maps on Windows with a scaled UI
-        if(isWindows())
-            System.setProperty("sun.java2d.uiScale", "1.0");
 
         // to get menus out of the window and into the menu bar
         // https://developer.apple.com/library/content/documentation/Java/Conceptual/Java14Development/04-JavaUIToolkits/JavaUIToolkits.html
