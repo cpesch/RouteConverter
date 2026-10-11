@@ -110,7 +110,7 @@ def maven_error(log):
 def signature(tests, module, goal, error_line):
     if tests:
         first = min(tests, key=lambda t: (t.test_class, t.method))
-        key = f"test|{first.exception}|{first.test_class}"
+        key = f"test|{first.exception}|{first.test_class}|{first.method}"
     else:
         key = f"build|{module or ''}|{goal or ''}|{error_line or ''}"
     return hashlib.sha1(key.encode("utf-8")).hexdigest()[:12]
@@ -201,11 +201,11 @@ def classify(workflow, first, rerun, reports):
         if not _is_failed(job):
             continue
         if rerun_by_name is None:
-            klass = "infra"
+            klass = "infra" if is_infra(job) else "deterministic"
         else:
             rerun_job = rerun_by_name.get(job.name)
             if rerun_job is None:
-                klass = "infra"
+                klass = "infra" if is_infra(job) else "deterministic"
             elif not _is_failed(rerun_job):
                 klass = "flaky"
             elif is_infra(rerun_job):

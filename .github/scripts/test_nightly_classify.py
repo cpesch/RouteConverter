@@ -122,6 +122,33 @@ class SignatureTest(unittest.TestCase):
         sig_windows = nightly_classify.signature(tests, None, None, None)
         self.assertEqual(sig_linux, sig_windows)
 
+    def test_differs_by_method_within_same_class_and_exception(self):
+        failure_a = nightly_classify.parse_surefire_reports(
+            [
+                surefire_xml(
+                    "slash.navigation.gpx.GpxFormatTest",
+                    "testRead",
+                    "java.lang.AssertionError",
+                    "boom",
+                    [],
+                )
+            ]
+        )
+        failure_b = nightly_classify.parse_surefire_reports(
+            [
+                surefire_xml(
+                    "slash.navigation.gpx.GpxFormatTest",
+                    "testWrite",
+                    "java.lang.AssertionError",
+                    "boom",
+                    [],
+                )
+            ]
+        )
+        sig_a = nightly_classify.signature(tuple(failure_a), None, None, None)
+        sig_b = nightly_classify.signature(tuple(failure_b), None, None, None)
+        self.assertNotEqual(sig_a, sig_b)
+
     def test_unchanged_when_second_class_sorts_after_first(self):
         first_class_failure = nightly_classify.parse_surefire_reports(
             [
@@ -197,10 +224,23 @@ class ClassifyTest(unittest.TestCase):
         self.assertEqual(findings[0].klass, "infra")
 
     def test_infra_when_rerun_is_none(self):
-        first = [JobResult(name="Java 21", conclusion="failure", failed_step="Build with Maven", log="[ERROR] boom")]
+        first = [
+            JobResult(
+                name="Java 21",
+                conclusion="failure",
+                failed_step="Build with Maven",
+                log="Connection reset by peer",
+            )
+        ]
         findings = nightly_classify.classify("build", first, None, {})
         self.assertEqual(len(findings), 1)
         self.assertEqual(findings[0].klass, "infra")
+
+    def test_deterministic_when_rerun_is_none_without_infra_signal(self):
+        first = [JobResult(name="Java 21", conclusion="failure", failed_step="Build with Maven", log="[ERROR] boom")]
+        findings = nightly_classify.classify("build", first, None, {})
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].klass, "deterministic")
 
     def test_forward_compat_for_jdk_ea_canary(self):
         first = [JobResult(name="Java 25-ea", conclusion="failure", failed_step="Build with Maven", log="[ERROR] boom")]
