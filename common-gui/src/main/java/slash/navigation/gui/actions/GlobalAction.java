@@ -37,6 +37,7 @@ import static slash.navigation.gui.actions.ActionManager.perform;
 class GlobalAction extends FrameAction {
     private final String globalName;
     private final Map<String, String> actionMap = new HashMap<>();
+    private final Map<String, Boolean> enabledMap = new HashMap<>();
 
     public GlobalAction(String globalName) {
         this.globalName = globalName;
@@ -57,6 +58,22 @@ class GlobalAction extends FrameAction {
             throw new IllegalArgumentException("No action '" + mappedName + "' found");
 
         perform(action, getEvent());
+    }
+
+    /**
+     * Remembers whether the action is enabled for the given local name, so that switching the
+     * local name restores it instead of keeping the state another local name left behind.
+     */
+    void setEnabled(String localName, boolean enable) {
+        enabledMap.put(localName, enable);
+    }
+
+    /**
+     * Applies the state remembered for the given local name; a local name nobody enabled or
+     * disabled yet is enabled.
+     */
+    void activate(String localName) {
+        setEnabled(enabledMap.getOrDefault(localName, true));
     }
 
     void registerLocal(String localName, String actionName) {

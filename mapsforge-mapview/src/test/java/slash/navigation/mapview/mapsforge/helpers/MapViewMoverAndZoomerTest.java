@@ -70,6 +70,11 @@ public class MapViewMoverAndZoomerTest {
 
     private final MapViewProjection projection = mock(MapViewProjection.class);
     private final AwtGraphicMapView mapView = mock(AwtGraphicMapView.class);
+
+    {
+        // no HiDPI scaling in the tests: logical and device pixels are the same
+        when(mapView.toDevicePoint(any())).thenAnswer(invocation -> invocation.getArgument(0));
+    }
     private final LayerManager layerManager = mock(LayerManager.class);
     private final LatLong draggedTo = new LatLong(11.0, 21.0);
     private final Container eventSource = new Container();
@@ -247,6 +252,24 @@ public class MapViewMoverAndZoomerTest {
         // the anchor stays 25px below the pointer: 260 + (200 - 175)
         verify(projection).fromPixels(140.0, 285.0);
         assertEquals(draggedTo, marker.getLatLong());
+    }
+
+    /**
+     * Select, New and Delete from the map popup work on the last pressed point. A press on a
+     * marker -- e.g. a right-click on a position to delete it -- must record that point, too:
+     * otherwise Delete ran on the point of an earlier press, found nothing there or removed a
+     * different position -- #439.
+     */
+    @Test
+    public void testPressOnAMarkerRecordsThePressedPoint() {
+        draggableMarkerUnderTheCursor();
+        MapViewMoverAndZoomer moverAndZoomer = new MapViewMoverAndZoomer(mapView, layerManager, projection);
+
+        moverAndZoomer.mousePressed(mouseEvent(MOUSE_PRESSED, 30, 40));
+        moverAndZoomer.mousePressed(mouseEvent(MOUSE_PRESSED, 100, 175));
+
+        assertTrue(moverAndZoomer.isMousePressedOnMarker());
+        assertEquals(new java.awt.Point(100, 175), moverAndZoomer.getLastMousePoint());
     }
 
     private FakeDraggableMarker draggableMarkerUnderTheCursor() {

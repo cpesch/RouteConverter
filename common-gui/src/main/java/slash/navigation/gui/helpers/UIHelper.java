@@ -26,7 +26,6 @@ import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
 
 import javax.swing.*;
-import javax.swing.plaf.FontUIResource;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -61,41 +60,6 @@ public class UIHelper {
     public static final String DARK_LOOK_AND_FEEL = "dark";
     public static final String SYSTEM_LOOK_AND_FEEL = "system";
     private static final Pattern WINDOWS_APPS_DARK_PATTERN = Pattern.compile("AppsUseLightTheme\\s+REG_DWORD\\s+0x0+\\s*$", Pattern.MULTILINE);
-    private static final String UI_FONT_SCALE_PERCENTAGE_PREFERENCE = "uiFontScalePercentage";
-    private static final int DEFAULT_UI_FONT_SCALE_PERCENTAGE = 100;
-
-    public static int getUiFontScalePercentage() {
-        return preferences.getInt(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, getDefaultUiFontScalePercentage());
-    }
-
-    public static void setUiFontScalePercentage(int percentage) {
-        preferences.putInt(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, percentage);
-    }
-
-    private static int getDefaultUiFontScalePercentage() {
-        if (!isWindows())
-            return DEFAULT_UI_FONT_SCALE_PERCENTAGE;
-        try {
-            int dpi = Toolkit.getDefaultToolkit().getScreenResolution();
-            return dpiToPercentage(dpi);
-        } catch (HeadlessException e) {
-            return DEFAULT_UI_FONT_SCALE_PERCENTAGE;
-        }
-    }
-
-    static int dpiToPercentage(int dpi) {
-        int percentage = Math.round(dpi / 96f * 100f);
-        return Math.max(50, Math.min(200, percentage));
-    }
-
-    public static Font scaleFont(Font font, int percentage) {
-        float newSize = Math.round(font.getSize2D() * percentage / 100f);
-        // Clamp to minimum of 1 to prevent invalid font size
-        if (newSize < 1) {
-            newSize = 1;
-        }
-        return font.deriveFont(newSize);
-    }
 
     public static String getLookAndFeelPreference() {
         return preferences.get(LOOK_AND_FEEL_CLASS_PREFERENCE, AUTOMATIC_LOOK_AND_FEEL);
@@ -163,15 +127,7 @@ public class UIHelper {
         }
     }
 
-    private static boolean isFlatLookAndFeel(String lookAndFeelClass) {
-        return lookAndFeelClass.startsWith(FlatLaf.class.getPackageName() + ".");
-    }
-
     public static void setLookAndFeel() {
-        // to avoid blurred maps on Windows with a scaled UI
-        if(isWindows())
-            System.setProperty("sun.java2d.uiScale", "1.0");
-
         // to get menus out of the window and into the menu bar
         // https://developer.apple.com/library/content/documentation/Java/Conceptual/Java14Development/04-JavaUIToolkits/JavaUIToolkits.html
         if(isMac())
@@ -190,29 +146,7 @@ public class UIHelper {
         try {
             String lookAndFeelClass = getLookAndFeelClassName(getLookAndFeelPreference(), isMac(),
                     UIHelper::isOperatingSystemDark, UIManager.getSystemLookAndFeelClassName());
-            int percentage = getUiFontScalePercentage();
-
-            if (isFlatLookAndFeel(lookAndFeelClass)) {
-                // FlatLaf scales fonts, insets and icons itself; on Windows the JRE scaling is
-                // disabled above, elsewhere FlatLaf follows the desktop unless the user chose a size
-                if (isWindows() || preferences.get(UI_FONT_SCALE_PERCENTAGE_PREFERENCE, null) != null)
-                    System.setProperty("flatlaf.uiScale", percentage + "%");
-                UIManager.setLookAndFeel(lookAndFeelClass);
-
-            } else {
-                UIManager.setLookAndFeel(lookAndFeelClass);
-
-                if (percentage != DEFAULT_UI_FONT_SCALE_PERCENTAGE) {
-                    UIDefaults defaults = UIManager.getLookAndFeelDefaults();
-                    // Iterate over a copy of keySet to avoid ConcurrentModificationException
-                    for (Object key : new java.util.Vector<>(defaults.keySet())) {
-                        Object value = defaults.get(key);
-                        if (value instanceof FontUIResource) {
-                            defaults.put(key, new FontUIResource(scaleFont((Font) value, percentage)));
-                        }
-                    }
-                }
-            }
+            UIManager.setLookAndFeel(lookAndFeelClass);
         } catch (ReflectiveOperationException | UnsupportedLookAndFeelException | RuntimeException e) {
             // intentionally do nothing
         }

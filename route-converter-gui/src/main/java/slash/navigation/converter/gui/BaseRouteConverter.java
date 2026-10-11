@@ -1357,11 +1357,9 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
                     getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
         }
 
-        initializeRoutingServices();
-        initializeElevationServices();
-        initializeGeocodingServices();
-
-        // make sure the queue is loaded before any components uses it
+        // make sure the queue is loaded before any component uses it: routing initialization
+        // already downloads (BRouter refreshes a stale lookups.dat) and would otherwise start
+        // without the stored ETags (see GitHub #440)
         try {
             getDownloadManager().loadQueue();
         } catch (Exception e) {
@@ -1369,6 +1367,10 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
             getContext().getNotificationManager().showNotification(MessageFormat.format(
                     getBundle().getString("datasource-initialization-error"), getLocalizedMessage(e)), null);
         }
+
+        initializeRoutingServices();
+        initializeElevationServices();
+        initializeGeocodingServices();
 
         BackgroundExecutor.submit("DataSourceUpdater", () -> {
             scanLocalMapsAndThemes();

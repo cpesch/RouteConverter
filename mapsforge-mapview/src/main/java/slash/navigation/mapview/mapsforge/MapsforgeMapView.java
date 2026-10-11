@@ -92,6 +92,7 @@ import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
+import static slash.common.system.Platform.isWindows;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
@@ -501,7 +502,9 @@ public class MapsforgeMapView extends BaseMapView {
         mapSelector = new MapSelector(getMapManager(), mapView);
         mapViewMoverAndZoomer = new MapViewMoverAndZoomer(mapView, getLayerManager());
         mapViewCoordinateDisplayer.initialize(mapView, mapViewCallback);
-        new MapViewPopupMenu(mapView, createPopupMenu());
+        // the listener only reacts to changes, so apply the stored setting once
+        mapViewCoordinateDisplayer.setShowCoordinates(preferencesModel.getShowCoordinatesModel().getBoolean());
+        new MapViewPopupMenu(mapView, createPopupMenu(), this::enableMapActions);
 
         final ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         mapSelector.getMapViewPanel().registerKeyboardAction(new FrameAction() {
@@ -612,7 +615,15 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     protected float getDeviceScaleFactor() {
-        return preferences.getInt(DEVICE_SCALE_FACTOR, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0f;
+        float factor = preferences.getInt(DEVICE_SCALE_FACTOR, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0f;
+        // the map is drawn in device pixels: Windows reports the screen resolution including the
+        // display scale, macOS and Linux report it without, so apply the scale there
+        return isWindows() ? factor : (float) (factor * getDefaultScreenScale());
+    }
+
+    private static double getDefaultScreenScale() {
+        return GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice()
+                .getDefaultConfiguration().getDefaultTransform().getScaleX();
     }
 
     private AwtGraphicMapView createMapView() {
@@ -625,7 +636,8 @@ public class MapsforgeMapView extends BaseMapView {
 
         float deviceScaleFactor = getDeviceScaleFactor();
         DisplayModel.setDeviceScaleFactor(deviceScaleFactor);
-        log.info(format("Map is scaled with factor %f, screen resolution is %d dpi", deviceScaleFactor, Toolkit.getDefaultToolkit().getScreenResolution()));
+        log.info(format("Map is scaled with factor %f, screen resolution is %d dpi, screen scale is %f",
+                deviceScaleFactor, Toolkit.getDefaultToolkit().getScreenResolution(), getDefaultScreenScale()));
 
         AwtGraphicMapView mapView = new AwtGraphicMapView();
         new MapViewResizer(mapView, mapView.getModel().mapViewDimension);
@@ -1184,7 +1196,7 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     private boolean isVisible(LatLong latLong) {
-        MapViewProjection projection = new MapViewProjection(mapView);
+        MapViewProjection projection = mapView.getMapViewProjection();
         LatLong upperLeft = projection.fromPixels(MINIMUM_VISIBLE_BORDER_IN_PIXEL, MINIMUM_VISIBLE_BORDER_IN_PIXEL);
         Dimension dimension = mapView.getDimension();
         LatLong lowerRight = projection.fromPixels(dimension.width - MINIMUM_VISIBLE_BORDER_IN_PIXEL, dimension.height - MINIMUM_VISIBLE_BORDER_IN_PIXEL);
@@ -1351,8 +1363,25 @@ public class MapsforgeMapView extends BaseMapView {
 
     private LatLong getMousePosition() {
         Point point = mapViewMoverAndZoomer.getLastMousePoint();
-        return point != null ? new MapViewProjection(mapView).fromPixels(point.getX(), point.getY()) :
+        return point != null ? mapView.getMapViewProjection().fromPixels(point.getX(), point.getY()) :
                 mapView.getModel().mapViewPosition.getCenter();
+    }
+
+    private boolean isPositionUnderMouse() {
+        LatLong latLong = getMousePosition();
+        return latLong != null && positionsModel.getClosestPosition(latLong.longitude, latLong.latitude, getThresholdForPixel(latLong)) != -1;
+    }
+
+    private boolean isPositionSelected() {
+        return selectionUpdater != null && !selectionUpdater.getPositionWithLayers().isEmpty();
+    }
+
+    /**
+     * Delete removes the position under the mouse or, if there is none, the selected positions.
+     */
+    private void enableMapActions() {
+        ActionManager actionManager = Application.getInstance().getContext().getActionManager();
+        actionManager.enableLocal("delete", MAP, isPositionUnderMouse() || isPositionSelected());
     }
 
     private double getThresholdForPixel(LatLong latLong) {
@@ -1424,6 +1453,9 @@ public class MapsforgeMapView extends BaseMapView {
             log.info("Deleting position at " + latLong + " from row " + row);
             if (row != -1) {
                 positionsModel.remove(new int[]{row});
+            } else if (isPositionSelected()) {
+                log.info("Deleting selected positions");
+                Application.getInstance().getContext().getActionManager().run("delete-position");
             }
         }
 

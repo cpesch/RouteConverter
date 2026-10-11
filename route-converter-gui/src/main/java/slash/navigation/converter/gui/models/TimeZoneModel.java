@@ -34,14 +34,18 @@ import java.util.prefs.Preferences;
  */
 
 public class TimeZoneModel {
-    private static final Preferences preferences = Preferences.userNodeForPackage(TimeZoneModel.class);
-
+    private final Preferences preferences;
     private final String preferencesName;
     private final TimeZone defaultValue;
 
     private final EventListenerList listenerList = new EventListenerList();
 
     public TimeZoneModel(String preferencesName, TimeZone defaultValue) {
+        this(Preferences.userNodeForPackage(TimeZoneModel.class), preferencesName, defaultValue);
+    }
+
+    TimeZoneModel(Preferences preferences, String preferencesName, TimeZone defaultValue) {
+        this.preferences = preferences;
         this.preferencesName = preferencesName;
         this.defaultValue = defaultValue;
     }

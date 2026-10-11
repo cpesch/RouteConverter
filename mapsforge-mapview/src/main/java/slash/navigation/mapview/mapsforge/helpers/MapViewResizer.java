@@ -43,9 +43,9 @@ public class MapViewResizer extends ComponentAdapter {
     }
 
     public void componentResized(ComponentEvent componentEvent) {
-        Dimension container = mapView.getSize();
+        org.mapsforge.core.model.Dimension container = mapView.getDimension();
         org.mapsforge.core.model.Dimension mapView = mapViewDimension.getDimension();
         if (mapView == null || container.height != mapView.height || container.width != mapView.width)
-            mapViewDimension.setDimension(new org.mapsforge.core.model.Dimension(container.width, container.height));
+            mapViewDimension.setDimension(container);
     }
 }

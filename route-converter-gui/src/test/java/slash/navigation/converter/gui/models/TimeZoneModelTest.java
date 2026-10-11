@@ -20,11 +20,12 @@
 package slash.navigation.converter.gui.models;
 
 import org.junit.Test;
+import slash.common.prefs.InMemoryPreferences;
 
 import javax.swing.event.ChangeListener;
 import java.util.TimeZone;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.prefs.Preferences;
 
 import static org.junit.Assert.*;
 
@@ -37,14 +38,19 @@ public class TimeZoneModelTest {
     private static final TimeZone UTC = TimeZone.getTimeZone("UTC");
     private static final TimeZone BERLIN = TimeZone.getTimeZone("Europe/Berlin");
 
-    // a unique preference key per instance keeps the persistent Preferences store test-isolated
-    private static String key() {
-        return "test.timezone." + UUID.randomUUID();
+    private static final String KEY = "timeZone";
+
+    // a fresh in-memory node per test: the OS-level user preferences are shared by every JVM
+    // of the user and lose writes under concurrent test runs, even for unique keys
+    private final Preferences preferences = new InMemoryPreferences();
+
+    private TimeZoneModel createModel() {
+        return new TimeZoneModel(preferences, KEY, UTC);
     }
 
     @Test
     public void returnsTheDefaultUntilChanged() {
-        TimeZoneModel model = new TimeZoneModel(key(), UTC);
+        TimeZoneModel model = createModel();
 
         assertEquals("UTC", model.getTimeZoneId());
         assertEquals(UTC, model.getTimeZone());
@@ -52,17 +58,25 @@ public class TimeZoneModelTest {
 
     @Test
     public void setTimeZonePersistsTheNewValue() {
-        TimeZoneModel model = new TimeZoneModel(key(), UTC);
+        TimeZoneModel model = createModel();
 
         model.setTimeZone(BERLIN);
 
         assertEquals("Europe/Berlin", model.getTimeZoneId());
         assertEquals(BERLIN, model.getTimeZone());
+        assertEquals("Europe/Berlin", preferences.get(KEY, null));
+    }
+
+    @Test
+    public void anotherModelReadsThePersistedValue() {
+        createModel().setTimeZone(BERLIN);
+
+        assertEquals(BERLIN, createModel().getTimeZone());
     }
 
     @Test
     public void setTimeZoneNotifiesChangeListeners() {
-        TimeZoneModel model = new TimeZoneModel(key(), UTC);
+        TimeZoneModel model = createModel();
         AtomicInteger changes = new AtomicInteger();
         model.addChangeListener(e -> changes.incrementAndGet());
 
@@ -73,7 +87,7 @@ public class TimeZoneModelTest {
 
     @Test
     public void removedListenerStopsReceivingEvents() {
-        TimeZoneModel model = new TimeZoneModel(key(), UTC);
+        TimeZoneModel model = createModel();
         AtomicInteger changes = new AtomicInteger();
         ChangeListener listener = e -> changes.incrementAndGet();
         model.addChangeListener(listener);

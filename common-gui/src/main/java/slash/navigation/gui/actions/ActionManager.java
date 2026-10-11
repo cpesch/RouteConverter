@@ -60,6 +60,10 @@ public class ActionManager {
 
     public void setLocalName(String localName) {
         this.localName = localName;
+        for (Action action : actionMap.values()) {
+            if (action instanceof GlobalAction globalAction)
+                globalAction.activate(localName);
+        }
     }
 
     public Action get(String actionName) {
@@ -130,6 +134,7 @@ public class ActionManager {
         GlobalAction found = (GlobalAction) actionMap.get(globalName);
         if (found == null)
             throw new IllegalArgumentException("No action registered for '" + globalName + "'");
+        found.setEnabled(localName, enable);
         if(localName.equals(getLocalName()))
             found.setEnabled(enable);
     }

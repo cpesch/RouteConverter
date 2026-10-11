@@ -20,8 +20,6 @@
 package slash.navigation.mapview.mapsforge.helpers;
 
 import org.mapsforge.core.model.LatLong;
-import org.mapsforge.map.util.MapViewProjection;
-import org.mapsforge.map.view.MapView;
 import slash.navigation.gui.Application;
 import slash.navigation.gui.SingleFrameApplication;
 import slash.navigation.mapview.MapViewCallback;
@@ -43,7 +41,7 @@ import static javax.swing.BorderFactory.createEtchedBorder;
  */
 
 public class MapViewCoordinateDisplayer extends MouseAdapter {
-    private MapView mapView;
+    private AwtGraphicMapView mapView;
     private MapViewCallback mapViewCallback;
     private JWindow window;
     private final JLabel label = new JLabel();
@@ -78,8 +76,8 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
             return null;
     }
 
-    private void display(Point locationOnScreen, int mouseX, int mouseY) {
-        LatLong latLong = new MapViewProjection(mapView).fromPixels(mouseX, mouseY);
+    private void display(Point locationOnScreen, Point devicePoint) {
+        LatLong latLong = mapView.getMapViewProjection().fromPixels(devicePoint.x, devicePoint.y);
         label.setText(mapViewCallback.createCoordinates(latLong.longitude, latLong.latitude));
         window.pack();
         window.setLocation(locationOnScreen.x + 16, locationOnScreen.y + 15);
@@ -98,7 +96,7 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
 
     public void mouseMoved(MouseEvent e) {
         if (showCoordinates)
-            display(e.getLocationOnScreen(), e.getX(), e.getY());
+            display(e.getLocationOnScreen(), mapView.toDevicePoint(e.getPoint()));
         else
             hide();
     }

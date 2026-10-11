@@ -40,11 +40,18 @@ import static slash.navigation.mapview.mapsforge.models.LocalNames.MAP;
 public class MapViewPopupMenu extends MouseAdapter {
     private final Component component;
     private final JPopupMenu popupMenu;
+    private final Runnable beforeShow;
 
-    public MapViewPopupMenu(Component component, JPopupMenu popupMenu) {
+    public MapViewPopupMenu(Component component, JPopupMenu popupMenu, Runnable beforeShow) {
         this.component = component;
         this.popupMenu = popupMenu;
+        this.beforeShow = beforeShow;
         component.addMouseListener(this);
+    }
+
+    private void show(MouseEvent e) {
+        beforeShow.run();
+        popupMenu.show(component, e.getX(), e.getY());
     }
 
     public void mousePressed(MouseEvent e) {
@@ -66,7 +73,7 @@ public class MapViewPopupMenu extends MouseAdapter {
             else if (!shiftKey && altKey && ctrlKey)
                 actionManager.run("delete");
         } else if (e.isPopupTrigger()) {
-            popupMenu.show(component, e.getX(), e.getY());
+            show(e);
         }
     }
 
@@ -77,7 +84,7 @@ public class MapViewPopupMenu extends MouseAdapter {
         // show the popup on release too, for platforms that fire the popup trigger there
         // (Windows); never for a left-button gesture, keeping Ctrl+click as "new position"
         if (!isLeftMouseButton(e) && e.isPopupTrigger())
-            popupMenu.show(component, e.getX(), e.getY());
+            show(e);
     }
 }
 

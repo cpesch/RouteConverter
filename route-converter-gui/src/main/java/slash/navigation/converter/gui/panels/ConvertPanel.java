@@ -275,6 +275,17 @@ public class ConvertPanel implements PanelInTab {
         r.getUnitSystemModel().addChangeListener(e -> positionsModel.fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS));
         r.getTimeZone().addChangeListener(e -> positionsModel.fireTableRowsUpdated(0, MAX_VALUE, ALL_COLUMNS));
 
+        // working with the positions list makes its actions the ones Delete, New, etc. run
+        tablePositions.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent e) {
+                r.getContext().getActionManager().setLocalName(POSITIONS);
+            }
+        });
+        tablePositions.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent e) {
+                r.getContext().getActionManager().setLocalName(POSITIONS);
+            }
+        });
         tablePositions.getSelectionModel().addListSelectionListener(e -> {
             if (e.getValueIsAdjusting()) {
                 return;

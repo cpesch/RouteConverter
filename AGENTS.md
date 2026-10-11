@@ -59,7 +59,8 @@ issues #215/#222 measured the other three clean; `serial` (117) and `this-escape
 the verify phase and fails on any finding not excluded by `config/spotbugs-exclude.xml`.
 Fix a finding in the code first; exclude only a deliberate pattern, with a targeted
 `<Match>` (class + method) that carries an XML comment giving the reason — no uncommented
-`<Match>`. `-Dspotbugs.skip` skips it locally. `mvn package` is unaffected.
+`<Match>`. `-Dspotbugs.skip` skips it locally. `mvn package` is unaffected. In CI it
+runs once, in the `SpotBugs` job; the test jobs skip it.
 
 To re-measure that backlog: maven-compiler-plugin 3.15 **ignores**
 `-Dmaven.compiler.compilerArgument=-Xlint:all`, so the flag has to go into the root pom
@@ -67,14 +68,21 @@ as `<compilerArgs><arg>-Xlint:all</arg></compilerArgs>`; and run with
 `MAVEN_OPTS="-Duser.language=en -Duser.country=US"` or javac emits localised messages
 that cannot be bucketed by category.
 
-CI (`build.yml`) runs `mvn verify` on **Java 21** (the minimum) for every push; that
-job is the one required check on `master`. Java 25 and the Windows build
+CI (`build.yml`) runs two jobs on every push: `Java 21` (the minimum; tests) and
+`SpotBugs` (compiles, runs no tests). Both are the required checks on `master`.
+CI test builds pass `-Dspotbugs.skip=true -Dshade.skip=true`: no test reads a
+shaded jar, and `shade.skip` (root pom, default `false`) exists only because the
+shade plugin has no user property for `skip`. Java 25 and the Windows build
 (`Java 21 on Windows`) run only on `master` and `3.*` pushes, nightly, and on manual
 dispatch. They are skipped on feature and factory branches, so a Windows-only bug
 shows up after the merge. To check a branch on Windows first, run
 `gh workflow run build.yml --ref <branch>`. A newer push to a non-`master`/`3.*`
 branch cancels the older run. The Linux jobs build modules in parallel (`-T 1C`);
 Windows stays serial (it was slower with `-T`) and skips JaCoCo.
+All CI JVMs run C1-only (`JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1`) and the test
+jobs pass `-Dsurefire.forkCount=1` (pom property `surefire.forkCount`, default `1.5C`
+for local builds): with `-T 1C`, `1.5C` started 116 test JVMs on a 4-core runner.
+That took the Maven step from about 4 min to 1–2 min per job (2026-10-11 benchmark).
 The bundled-JRE version is the single source of truth `<jre.version>` in the root
 `pom.xml` — keep it in sync with the CI `setup-java` version on JDK bumps.
 
@@ -141,7 +149,12 @@ coordination with that codebase.
   the old `.github/workflows/crowdin.yml` Action (`l10n` branch) is disabled
   to avoid duplicate/competing PRs — don't re-enable both at once. Root
   `crowdin.yml` still governs file mapping/language codes (e.g. `nb→nb_NO`)
-  for whichever path runs.
+  for whichever path runs. A hand-added locale value is fine when master
+  needs it (e.g. a new key the German test requires): on push to `master`,
+  `.github/workflows/crowdin-upload-translations.yml` uploads it to Crowdin
+  (branch `master`, auto-approved), so the next `l10n_master` PR keeps it
+  instead of dropping it (#445). Upload-only — it opens no PR and does not
+  compete with the native integration.
 - **Rewording an English source string drops every locale's translation.**
   Crowdin treats the changed text as a new string: the next sync deletes the
   key from all `RouteConverter_*.properties`, and machine translation refills
@@ -152,14 +165,17 @@ coordination with that codebase.
   in 15 locales, German included (#419). When you reword a key, re-enter or
   approve the German translation in Crowdin, give the string a context note,
   then **Sync Now**. Check the German value in the `l10n_master` PR before
-  merging it. Crowdin's commits don't trigger `build.yml` (`on: push`), so
-  the required `Java 21` check needs an empty commit pushed to
-  `l10n_master`.
+  merging it. Root `crowdin.yml` sets `commit_message` +
+  `append_commit_message: false` so Crowdin's commits carry no `[ci skip]`
+  and `build.yml` runs the required `Java 21` and `SpotBugs` checks on the
+  `l10n_master` PR (rc/rc-meta#773). No empty commit needed; if a PR still shows no
+  checks, the marker is back.
 - **A translation fixed in the repo must also go into Crowdin, or the next
   sync reverts it.** The GitHub integration only reads the English source
   and writes translations back; it never uploads edited
-  `RouteConverter_*.properties`. Push them with the Crowdin CLI (v4) from an
-  up-to-date `master`: export `CROWDIN_PROJECT_ID` and
+  `RouteConverter_*.properties`. `crowdin-upload-translations.yml` does that
+  on every push to `master` (#445). Manual fallback with the Crowdin CLI (v4)
+  from an up-to-date `master`: export `CROWDIN_PROJECT_ID` and
   `CROWDIN_PERSONAL_TOKEN` (`crowdin.yml` reads both from the environment),
   then run, one language per call because `-l` keeps only the last flag:
   `crowdin upload translations -b master -l <code> --auto-approve-imported`.

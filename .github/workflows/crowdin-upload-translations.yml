@@ -1,0 +1,50 @@
+name: Crowdin upload translations
+
+# Pushes locale values committed to master into Crowdin, so the next
+# download PR from Crowdin's native GitHub integration (l10n_master) keeps
+# them instead of dropping keys Crowdin never saw. Hand-added values (e.g.
+# feature-locked-title in #421) otherwise vanish on the next sync and turn
+# ResourceBundleTest red on master (#416, #445).
+#
+# Upload-only: no source upload, no download, no branch, no PR — so it does
+# not compete with the native integration (see the banner in crowdin.yml).
+# A merged l10n_master PR re-uploads values identical to Crowdin's, which
+# Crowdin skips.
+#
+# The native integration keeps the files under the Crowdin branch `master`;
+# without crowdin_branch_name the CLI fails with "Source file ... does not
+# exist in the project".
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_*.properties"
+      - "!route-converter-gui/src/main/resources/slash/navigation/converter/gui/RouteConverter_en.properties"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: crowdin-upload-translations
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Upload translations to Crowdin
+        uses: crowdin/github-action@v3
+        with:
+          crowdin_branch_name: master
+          upload_sources: false
+          upload_translations: true
+          auto_approve_imported: true
+          download_translations: false
+          create_pull_request: false
+        env:
+          CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+          CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}

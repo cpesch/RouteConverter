@@ -63,6 +63,9 @@ public class DownloadManager {
     private final Map<Download,Future<?>> downloadToFutures = new HashMap<>();
     private final Map<Download,DownloadExecutor> downloadToExecutors = new HashMap<>();
     private final ThreadPoolExecutor pool;
+    // saving before the persisted queue is loaded would overwrite it with the few early
+    // downloads in memory and lose the stored ETags of all other entries (see GitHub #440)
+    private volatile boolean queueLoaded;
 
     public DownloadManager(File queueFile) {
         this.queueFile = queueFile;
@@ -98,6 +101,9 @@ public class DownloadManager {
             // don't re-attach the throwable here: QueuePersister already logged it once
             // with the throwable attached, so this would double-count the failure
             log.severe(format("Could not load download queue from '%s': %s", queueFile, e));
+        } finally {
+            // also after a failed load: the file is unreadable anyway and must not block saving forever
+            queueLoaded = true;
         }
 
         restartDownloadsWithState(Running, Resuming, Downloading, Processing, Queued);
@@ -159,6 +165,11 @@ public class DownloadManager {
     }
 
     public void saveQueue() {
+        if (!queueLoaded) {
+            log.fine(format("Not saving download queue to '%s' before it has been loaded", queueFile));
+            return;
+        }
+
         try {
             new QueuePersister().save(queueFile, model.getDownloads());
         } catch (Exception e) {
@@ -171,6 +182,8 @@ public class DownloadManager {
     public void clearQueue() {
         for (Download download : model.getDownloads())
             model.removeDownload(download);
+        // the persisted queue is deliberately discarded, so saving may replace it
+        queueLoaded = true;
     }
 
     public void dispose() {
@@ -266,6 +279,13 @@ public class DownloadManager {
             if (queued.getAction().equals(Head) || queued.getAction().equals(GetRange))
                 model.removeDownload(queued);
             else {
+                // the caller's expected checksums are current, the queued ones may be from an earlier
+                // session: a catalog file is queued without any, and a stale one fails every fresh
+                // download of a changed catalog, so it is downloaded in full on each start (#440)
+                queued.setFile(download.getFile());
+                queued.setFragments(download.getFragments());
+                model.updateDownload(queued);
+
                 if (COMPLETED.contains(queued.getState()) && startExecutor) {
                     log.fine("Restarting completed download " + download);
                     startExecutor(queued);

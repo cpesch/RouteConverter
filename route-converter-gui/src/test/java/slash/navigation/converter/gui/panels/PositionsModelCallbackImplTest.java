@@ -55,7 +55,7 @@ public class PositionsModelCallbackImplTest {
         originalLocale = Locale.getDefault();
         Locale.setDefault(Locale.GERMAN);
 
-        timeZoneModel = new TimeZoneModel("unittest."+getClass().getSimpleName(), ZONE_UTC);
+        timeZoneModel = new InMemoryTimeZoneModel(ZONE_UTC);
 
         sut = new PositionsModelCallbackImpl(timeZoneModel);
         position = mock(NavigationPosition.class);
@@ -669,6 +669,30 @@ public class PositionsModelCallbackImplTest {
 
         CompactCalendar calendar = cal(year, month, day, hour, minute, second);
         return new GpxPosition(1.2, 3.4, 5.6, 7.8, calendar, "test");
+    }
+
+    /**
+     * Keeps the time zone in a field instead of java.util.prefs: the user preferences
+     * are shared by every JVM of the user, so concurrent test runs (e.g. parallel
+     * builds in several checkouts) flipped the zone between UTC and Berlin
+     * in the middle of a test.
+     */
+    private static class InMemoryTimeZoneModel extends TimeZoneModel {
+        private String timeZoneId;
+
+        InMemoryTimeZoneModel(TimeZone timeZone) {
+            super("unused", timeZone);
+            this.timeZoneId = timeZone.getID();
+        }
+
+        public String getTimeZoneId() {
+            return timeZoneId;
+        }
+
+        public void setTimeZone(TimeZone timeZone) {
+            this.timeZoneId = timeZone.getID();
+            fireChanged();
+        }
     }
 
     private static CompactCalendar cal(int year, int month, int day, int hour, int minute, int second) {
