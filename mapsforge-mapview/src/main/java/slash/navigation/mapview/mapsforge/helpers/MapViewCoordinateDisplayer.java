@@ -76,6 +76,11 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
 
     private void display(Point locationOnScreen, Point devicePoint) {
         LatLong latLong = mapView.getMapViewProjection().fromPixels(devicePoint.x, devicePoint.y);
+        // null while the map has no size or position yet, e.g. when the mouse moves over it during startup
+        if (latLong == null) {
+            hide();
+            return;
+        }
         label.setText(mapViewCallback.createCoordinates(latLong.longitude, latLong.latitude));
         window.pack();
         window.setLocation(locationOnScreen.x + 16, locationOnScreen.y + 15);
