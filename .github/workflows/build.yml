@@ -1,16 +1,33 @@
 name: RouteConverter CI
 
-on: [push]
+# Feature/factory branches run only Java 21 on Linux (the required check).
+# Java 25 and Windows run on master and 3.* pushes, nightly, and on manual
+# dispatch (to check a branch on Windows before merging it).
+on:
+  push:
+  schedule:
+    - cron: '0 2 * * *'   # an hour before prerelease.yml
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+# A newer push to a feature/factory branch cancels the older run on the same
+# ref; only the head SHA needs a status. master and 3.* (release/maintenance)
+# keep every run: they get a per-run group, because a shared group would still
+# let GitHub drop a *pending* run when a third push arrives, cancel-in-progress
+# or not. The event name keeps a manual or nightly run apart from push runs.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/3.')) && github.run_id || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 21, 25 ]
+        # Same condition as the Windows job's `if:` below.
+        java: ${{ fromJSON((github.event_name != 'push' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/3.')) && '[21, 25]' || '[21]') }}
     name: Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v7
@@ -28,7 +45,8 @@ jobs:
       - name: Show Maven version
         run: mvn --version
       - name: Build with Maven
-        run: mvn --batch-mode -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
+        # -T 1C: parallel modules. Linux only; on Windows it was 13-18 % slower.
+        run: mvn --batch-mode -T 1C -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
       # Upload coverage once per build (Java 21 only — avoid duplicate uploads from the matrix)
       - name: Upload coverage to Codecov
         if: matrix.java == 21
@@ -38,18 +56,18 @@ jobs:
           fail_ci_if_error: false
 
   prerelease:
+    if: github.event_name != 'push' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/3.')
     runs-on: windows-latest
-    strategy:
-      matrix:
-        java: [ 21 ]
-    name: Java ${{ matrix.java }} on Windows
+    # Fixed name, no matrix: a skipped matrix job reports its check under the
+    # unexpanded name, which never matches the required check.
+    name: Java 21 on Windows
     steps:
       - uses: actions/checkout@v7
-      - name: Set up JDK ${{ matrix.java }}
+      - name: Set up JDK 21
         uses: actions/setup-java@v6
         with:
           distribution: 'zulu'
-          java-version: ${{ matrix.java }}
+          java-version: 21
       - name: Cache Maven packages
         uses: actions/cache@v6
         with:
@@ -63,11 +81,6 @@ jobs:
         # `.build.number` as member-access, splitting the arg into
         # `-Dmaven` + `.build.number=NNN` → mvn sees the latter as a
         # lifecycle phase and dies.
-        run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" --update-snapshots verify
-      - uses: actions/upload-artifact@v7
-        with:
-          name: RouteConverter Windows Prerelease built with Java ${{ matrix.java }}
-          # The needs-Java launch4j .exe is gone (specs/00044); this PR-smoke
-          # build runs `mvn verify` (no NSIS), so upload the shaded launcher jar.
-          path: RouteConverterWindows/target/RouteConverterWindows.jar
-          overwrite: true
+        # -Djacoco.skip: Codecov only uploads from Linux Java 21, so the
+        # Windows coverage agent only slows the tests down.
+        run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" "-Djacoco.skip=true" --update-snapshots verify

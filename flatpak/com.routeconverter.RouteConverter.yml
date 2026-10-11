@@ -40,7 +40,7 @@ modules:
       - install -Dm644 RouteConverter.png /app/share/icons/hicolor/256x256/apps/com.routeconverter.RouteConverter.png
     sources:
       - type: file
-        # Immutable per-version URL (rc-meta#146 pins release artifacts
+        # Immutable per-version URL (release artifacts are pinned
         # under previous-releases/<version>/; /latest/ mutates on every
         # release and must never be used as a Flatpak source URL).
         url: https://releases.routeconverter.com/previous-releases/3.6/RouteConverterLinux.jar

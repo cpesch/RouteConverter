@@ -49,7 +49,8 @@ java -jar RouteConverterCmdLine/target/RouteConverterCmdLine.jar
 > On macOS/Linux, if `java` isn't on your `PATH`, activate a JDK 21 first
 > (e.g. via [sdkman](https://sdkman.io/): `sdk use java 21`).
 
-CI builds and tests on **Java 21 and 25** plus a Windows smoke build.
+CI builds and tests on **Java 21** for every push, and on **Java 25** and Windows
+for `master`, nightly and manual runs.
 
 ## Contributing
 

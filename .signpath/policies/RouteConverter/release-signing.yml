@@ -3,7 +3,7 @@
 # Without an origin policy, anyone holding the submitter API token can get an
 # artifact signed. This locks production signing to builds that actually ran on
 # GitHub-hosted runners (the project's hard constraint — self-hosted voids OSS
-# eligibility, see rc-meta specs/00043). Extend with branch_rulesets once the
+# eligibility). Extend with branch_rulesets once the
 # prod cert is live if tighter provenance is wanted.
 #
 # Path convention: .signpath/policies/<project-slug>/<signing-policy-slug>.yml

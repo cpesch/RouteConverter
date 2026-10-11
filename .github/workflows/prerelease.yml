@@ -27,8 +27,8 @@ jobs:
       sign: false
       # Prereleases are NOT submitted to SignPath — SignPath signing is reserved
       # for real releases (release.yml, release-signing) to conserve the OSS
-      # artifact-data-volume quota, which daily prerelease signing was draining
-      # (rc-meta specs/00043). Mac notarisation (sign-mac) is Apple Developer ID,
+      # artifact-data-volume quota, which daily prerelease signing was draining.
+      # Mac notarisation (sign-mac) is Apple Developer ID,
       # not SignPath, so it is unaffected and still runs below.
     secrets: inherit
 
@@ -44,8 +44,7 @@ jobs:
       sign: false
       # Prereleases are NOT submitted to SignPath — SignPath signing is reserved
       # for real releases (release.yml, release-signing) to conserve the OSS
-      # artifact-data-volume quota, which daily prerelease signing was draining
-      # (rc-meta specs/00043).
+      # artifact-data-volume quota, which daily prerelease signing was draining.
     secrets: inherit
 
   sign-mac:

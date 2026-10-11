@@ -17,8 +17,6 @@ name: Build Mac JRE
 # Triggers:
 #   workflow_dispatch — manual rebuild
 #   push paths — automatic when the jlink recipe changes
-#
-# Plan: rc-meta specs/00018-release-automation-3.4.md Phase 5.4e.
 
 on:
   workflow_dispatch:

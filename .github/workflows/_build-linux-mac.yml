@@ -6,8 +6,6 @@ name: _build-linux-mac
 # Called by:
 #   - prerelease.yml (artefact-name: prerelease-linux-mac)
 #   - release.yml    (artefact-name: release-linux-mac)
-#
-# See rc-meta/specs/00018-release-automation-3.4.md Phase 5.2.
 
 on:
   workflow_call:
@@ -189,7 +187,7 @@ jobs:
           cp RouteConverterMac/target/RouteConverterMac-x64-app.zip artefacts/
           cp RouteConverterMac/target/RouteConverterMac-aarch64-app.zip artefacts/
           cp RouteConverterCmdLine/target/RouteConverterCmdLine.* artefacts/
-          # Internal ops tools consumed by the rc-meta update-catalog timer
+          # Internal ops tools consumed by the server-side update-catalog timer
           # (keeps the brouter-segments checksum set current, #155/#156/#161).
           # UpdateCatalog only *updates* a catalog that SnapshotCatalog must
           # download locally first, so both jars ship. Not user-facing, so they

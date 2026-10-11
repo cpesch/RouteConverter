@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------
-# DISABLED MANUALLY (see rc/rc-meta#127) — do not re-enable without review.
+# DISABLED MANUALLY — do not re-enable without review.
 #
 # This workflow pushes translation commits and opens pull requests using
 # repo secrets (GITHUB_TOKEN, CROWDIN_PROJECT_ID, CROWDIN_PERSONAL_TOKEN).
@@ -30,7 +30,7 @@ permissions:
 
 jobs:
   synchronize:
-    if: vars.CROWDIN_SYNC_ENABLED == 'true' # unset = disabled — see banner above (rc/rc-meta#127)
+    if: vars.CROWDIN_SYNC_ENABLED == 'true' # unset = disabled — see banner above
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7

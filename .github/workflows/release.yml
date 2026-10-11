@@ -46,7 +46,7 @@ jobs:
       artefact-name: release-linux-mac
       retention-days: 30
       sign: true
-      signing-policy-slug: release-signing   # production cert (rc-meta 00043); requires manual approval in the SignPath app during the build
+      signing-policy-slug: release-signing   # production cert; requires manual approval in the SignPath app during the build
     secrets: inherit
 
   build-windows:
@@ -56,7 +56,7 @@ jobs:
       artefact-name: release-windows
       retention-days: 30
       sign: true
-      signing-policy-slug: release-signing   # production cert (rc-meta 00043); requires manual approval in the SignPath app during the build
+      signing-policy-slug: release-signing   # production cert; requires manual approval in the SignPath app during the build
     secrets: inherit
 
   sign-mac:
@@ -72,6 +72,11 @@ jobs:
     needs: [build-linux-mac, build-windows, sign-mac]
     runs-on: ubuntu-latest
     steps:
+      # Tag checkout under src/ — keeps the repo out of the artefacts/ and
+      # previous-releases/ working dirs. Source of the curated release notes.
+      - uses: actions/checkout@v7
+        with:
+          path: src
       - name: Resolve version from tag
         id: ver
         run: |
@@ -123,6 +128,32 @@ jobs:
               sha256sum "$f" > "$f.sha256"
             done)
           done
+      # The XMLs are the PAD catalog (download portals, winget/chocolatey/
+      # homebrew manifests); edit them in .github/release/, not in rc-site.
+      # They ship with VERSION in release/ only — single source of the
+      # released version (rc-site symlinks + update check read it). Not
+      # release assets, not archived in previous-releases/.
+      - name: Render catalog + VERSION
+        env:
+          TAG:     ${{ steps.ver.outputs.tag }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          set -euo pipefail
+          DATE=$(git -C src log -1 --format=%cs "$TAG")          # tag commit date YYYY-MM-DD
+          Y=${DATE:0:4}; M=${DATE:5:2}; D=${DATE:8:2}
+          mkdir -p latest-tree
+          cp artefacts/* latest-tree/
+          for f in RouteConverter.xml RouteConverter_de.xml; do
+            sed -E \
+              -e "s|<Program_Version>[^<]+</Program_Version>|<Program_Version>${VERSION}</Program_Version>|" \
+              -e "s|<Program_Release_Year>[^<]+</Program_Release_Year>|<Program_Release_Year>${Y}</Program_Release_Year>|" \
+              -e "s|<Program_Release_Month>[^<]+</Program_Release_Month>|<Program_Release_Month>${M}</Program_Release_Month>|" \
+              -e "s|<Program_Release_Day>[^<]+</Program_Release_Day>|<Program_Release_Day>${D}</Program_Release_Day>|" \
+              "src/.github/release/$f" > "latest-tree/$f"
+            grep -qF "<Program_Version>${VERSION}</Program_Version>" "latest-tree/$f"
+          done
+          printf '%s\n' "$VERSION" > latest-tree/VERSION
+          ls -la latest-tree/
       - name: Configure SSH
         env:
           DEPLOY_KEY:  ${{ secrets.RC_RELEASE_DEPLOY_SSH_KEY }}
@@ -139,7 +170,7 @@ jobs:
           # --delete: /latest/ must only hold the current release; prunes prior-version
           # orphans (renamed/discontinued assets) that would otherwise serve stale builds
           rsync -av --delete --omit-dir-times --no-perms \
-            artefacts/ \
+            latest-tree/ \
             "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/downloads/release/"
       - name: Rsync to static.routeconverter.com/downloads/previous-releases/<v>/
         env:
@@ -156,14 +187,38 @@ jobs:
           TAG:      ${{ steps.ver.outputs.tag }}
           VERSION:  ${{ steps.ver.outputs.version }}
         run: |
+          # Curated "## VERSION — DATE" section first; gh appends the generated
+          # contributor notes below it. extract fails on a missing or
+          # bullet-less section, before any (empty-body) release is created.
+          python3 src/.github/scripts/release_notes.py --file src/RELEASE_NOTES.md \
+            extract "$VERSION" --out "$RUNNER_TEMP/release-notes.md"
           gh release create "$TAG" artefacts/* \
             --repo "$REPO" \
             --title "RouteConverter $VERSION" \
+            --notes-file "$RUNNER_TEMP/release-notes.md" \
             --generate-notes \
             --verify-tag
+      # Phase 4b starting point: forum posts (EN/DE plain text) and rc-content
+      # release pages (EN/DE) generated from the curated section. Drafts only —
+      # committing/posting stays manual; a failure here never fails the release.
+      - name: Announcement drafts
+        continue-on-error: true
+        env:
+          TAG:     ${{ steps.ver.outputs.tag }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          python3 src/.github/scripts/release_notes.py --file src/RELEASE_NOTES.md \
+            drafts "$VERSION" "$(git -C src log -1 --format=%cs "$TAG")" \
+            --out "$RUNNER_TEMP/announcement-drafts"
+      - uses: actions/upload-artifact@v7
+        continue-on-error: true
+        with:
+          name: announcement-drafts
+          path: ${{ runner.temp }}/announcement-drafts
+          retention-days: 30
 
   bump-homebrew-cask:
-    # Spec 00059 P3 (rc-meta#583/#600): keep cpesch/homebrew-routeconverter's
+    # Keep cpesch/homebrew-routeconverter's
     # cask in lockstep with each release. Requires HOMEBREW_TAP_TOKEN -- a
     # fine-grained PAT scoped to Contents:write on that one repo only, added
     # as a repo secret by a maintainer (no CLI path to mint that token).
@@ -254,3 +309,18 @@ jobs:
           rsync -av --delete --omit-dir-times --no-perms \
             target/reports/apidocs/ \
             "rc-release-deploy@${DEPLOY_HOST}:/var/www/routeconverter.com/static/javadoc/"
+
+  # Post-publish verification: every automated surface shows the release.
+  # Read-only, so safe to re-run. Runs after a failed cask bump too, so one
+  # failure does not hide the other checks.
+  verify-published:
+    needs: [publish, publish-javadoc, bump-homebrew-cask]
+    if: always() && needs.publish.result == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Verify published release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION:  ${{ github.ref_name }}
+        run: bash .github/scripts/verify-published.sh "$VERSION"

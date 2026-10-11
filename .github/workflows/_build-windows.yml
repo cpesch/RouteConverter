@@ -11,8 +11,6 @@ name: _build-windows
 # Called by:
 #   - prerelease.yml (artefact-name: prerelease-windows)
 #   - release.yml    (artefact-name: release-windows)
-#
-# See rc-meta/specs/00018-release-automation-3.4.md Phase 5.2.
 
 on:
   workflow_call:
