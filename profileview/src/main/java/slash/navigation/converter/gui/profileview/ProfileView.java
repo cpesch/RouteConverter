@@ -142,18 +142,18 @@ public class ProfileView implements PositionsSelectionModel {
         domainAxis.setLabelFont(font);
 
         if (isDarkLookAndFeel())
-            applyDarkColors(plot);
+            applyDarkColors(plot, UIManager.getColor("Label.foreground"), UIManager.getColor("Table.background"),
+                    UIManager.getColor("Table.gridColor"));
 
         plot.getRenderer().setDefaultToolTipGenerator(null);
         return plot;
     }
 
     // the JFreeChart default theme draws dark gray axes on a light gray plot
-    private void applyDarkColors(XYPlot plot) {
-        Color foreground = UIManager.getColor("Label.foreground");
-        plot.setBackgroundPaint(UIManager.getColor("Table.background"));
-        plot.setDomainGridlinePaint(UIManager.getColor("Table.gridColor"));
-        plot.setRangeGridlinePaint(UIManager.getColor("Table.gridColor"));
+    static void applyDarkColors(XYPlot plot, Color foreground, Color background, Color grid) {
+        plot.setBackgroundPaint(background);
+        plot.setDomainGridlinePaint(grid);
+        plot.setRangeGridlinePaint(grid);
         for (ValueAxis axis : new ValueAxis[]{plot.getDomainAxis(), plot.getRangeAxis()}) {
             axis.setLabelPaint(foreground);
             axis.setTickLabelPaint(foreground);
