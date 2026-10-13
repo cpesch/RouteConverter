@@ -82,25 +82,43 @@ jobs:
           # install dir so `makensis` resolves in later cmd / bash steps.
           Add-Content $env:GITHUB_PATH "C:\Program Files (x86)\NSIS"
 
+      # The published zip is rebuilt under the same name whenever
+      # scripts/jre-modules.txt changes, so key the cache on its sha256, not on
+      # the name: a name-only key served a pre-#415 JRE to 3.7 (issue #470).
+      - name: Fetch stripped JRE sha256 (cache key + verify)
+        id: jresha
+        shell: bash
+        run: |
+          mkdir -p jre-sha
+          # --retry-all-errors so a mid-transfer "connection reset by peer"
+          # (curl exit 35) is retried, not just connection-refused errors.
+          curl_opts=(-fsSL --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 30)
+          curl "${curl_opts[@]}" -o "jre-sha/${JRE_BASE}.zip.sha256" \
+               "https://static.routeconverter.com/build/windows/${JRE_BASE}.zip.sha256"
+          sha=$(cut -c1-12 "jre-sha/${JRE_BASE}.zip.sha256")
+          [[ "$sha" =~ ^[0-9a-f]{12}$ ]] || { echo "::error::unexpected sha256 sidecar content for ${JRE_BASE}.zip"; exit 1; }
+          echo "sha=$sha"       >> "$GITHUB_OUTPUT"
+          echo "JRE_HASH=$sha"  >> "$GITHUB_ENV"
+
       - name: Cache stripped JRE
         id: jre-cache
         uses: actions/cache@v6
         with:
           path: jre-cache
-          key: ${{ env.JRE_BASE }}-v1
+          key: ${{ env.JRE_BASE }}-${{ steps.jresha.outputs.sha }}
 
       - name: Download stripped JRE (cache miss only)
         if: steps.jre-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
           mkdir -p jre-cache
-          cd jre-cache
-          # --retry-all-errors so a mid-transfer "connection reset by peer"
-          # (curl exit 35) is retried, not just connection-refused errors.
-          curl_opts=(-fsSLO --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 30)
-          curl "${curl_opts[@]}" "https://static.routeconverter.com/build/windows/${JRE_BASE}.zip"
-          curl "${curl_opts[@]}" "https://static.routeconverter.com/build/windows/${JRE_BASE}.zip.sha256"
-          sha256sum -c "${JRE_BASE}.zip.sha256"
+          curl_opts=(-fsSL --retry 5 --retry-all-errors --retry-delay 5 --connect-timeout 30)
+          curl "${curl_opts[@]}" -o "jre-cache/${JRE_BASE}.zip" \
+               "https://static.routeconverter.com/build/windows/${JRE_BASE}.zip"
+
+      - name: Verify stripped JRE against the published sha256
+        shell: bash
+        run: cd jre-cache && sha256sum -c "../jre-sha/${JRE_BASE}.zip.sha256"
 
       - name: Extract JRE into both bundle modules
         shell: bash
@@ -112,15 +130,38 @@ jobs:
           ls RouteConverterWindows/jre-${JRE_VERSION}/bin/java.exe
           ls TimeAlbumProWindows/jre-${JRE_VERSION}/bin/java.exe
 
+      # A missing module is no NoClassDefFoundError for locale data: the JRE
+      # silently falls back to US formats (#415), so the class-load gate never
+      # sees it. Compare the bundled JRE against the module list instead; the
+      # zip carries no 'release' file, so ask java.exe.
+      - name: Verify bundled JRE has every module of scripts/jre-modules.txt
+        shell: bash
+        run: |
+          expected=$(grep -vE '^[[:space:]]*(#|$)' scripts/jre-modules.txt \
+                     | tr -d '\r' | sed 's/[[:space:]]*$//' | LC_ALL=C sort -u)
+          fail=0
+          for m in RouteConverterWindows TimeAlbumProWindows; do
+            actual=$("$m/jre-${JRE_VERSION}/bin/java.exe" --list-modules \
+                     | tr -d '\r' | sed 's/@.*$//' | LC_ALL=C sort -u)
+            missing=$(LC_ALL=C comm -23 <(echo "$expected") <(echo "$actual") | tr '\n' ' ')
+            if [[ -n "${missing// /}" ]]; then
+              echo "::error::bundled JRE in $m lacks modules: ${missing}— the cached/hosted zip predates scripts/jre-modules.txt; re-run Build Windows JRE"
+              fail=1
+            else
+              echo "OK  $m: $(echo "$actual" | wc -l) modules, all $(echo "$expected" | wc -l) required present"
+            fi
+          done
+          exit $fail
+
       - name: makensis RouteConverterWindows
         shell: cmd
         working-directory: RouteConverterWindows
-        run: makensis "target\RouteConverter.nsi"
+        run: makensis "/DJRE_HASH=%JRE_HASH%" "target\RouteConverter.nsi"
 
       - name: makensis TimeAlbumProWindows
         shell: cmd
         working-directory: TimeAlbumProWindows
-        run: makensis "target\TimeAlbumPro.nsi"
+        run: makensis "/DJRE_HASH=%JRE_HASH%" "target\TimeAlbumPro.nsi"
 
       - name: Smoke test — bundled-jar warm-launch caching (issue #372)
         shell: pwsh

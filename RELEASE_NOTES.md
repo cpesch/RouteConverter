@@ -10,6 +10,8 @@
 
 ### Fixes
 
+- Windows: dates, times and numbers follow the regional settings again — the 3.7 installer bundled a Java runtime without locale data (#415, #470)
+
 ## 3.7 — 2026-10-10
 
 **GitHub Release:** https://github.com/cpesch/RouteConverter/releases/tag/3.7

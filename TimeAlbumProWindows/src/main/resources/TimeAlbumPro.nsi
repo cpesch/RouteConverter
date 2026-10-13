@@ -9,14 +9,21 @@ ShowInstDetails hide
 !define JRE "${jre.version}"
 ; build-time source of the bundled JRE (relative to this .nsi in target/)
 !define JRE_SRC "..\jre-${JRE}"
+; the JRE zip is rebuilt under the same jre.version whenever its module set
+; changes; with SetOverwrite off a version-only directory would keep a stale
+; lib\modules forever, so namespace it by the zip's sha256 too (issue #470).
+!ifndef JRE_HASH
+  !error "JRE_HASH undefined: pass makensis /DJRE_HASH=<first 12 hex chars of the JRE zip sha256>"
+!endif
+!define JRE_DIRNAME "jre-${JRE}-${JRE_HASH}"
 ; runtime extraction target (persisted across launches, namespaced under LocalAppData)
-!define JRE_DIR "$LOCALAPPDATA\TimeAlbumPro\jre-${JRE}"
+!define JRE_DIR "$LOCALAPPDATA\TimeAlbumPro\${JRE_DIRNAME}"
 ; app jar generation, namespaced by build so a running instance's directory can
 ; never be pulled out from under it; see issue #372.
 !define VERSION "${project.version}-${maven.build.number}"
 !define PRODUCT_DIR "$LOCALAPPDATA\TimeAlbumPro"
 !define APP_DIR "${PRODUCT_DIR}\app-${VERSION}"
-!define STAMP_CONTENT "${VERSION}|${JRE}"
+!define STAMP_CONTENT "${VERSION}|${JRE_DIRNAME}"
 OutFile "TimeAlbumProWindows.exe"
 
 Icon "TimeAlbumPro.ico"
@@ -52,7 +59,7 @@ Section
       StrCmp $4 "." pruneNext
       StrCmp $4 ".." pruneNext
       StrCmp $4 "app-${VERSION}" pruneNext
-      StrCmp $4 "jre-${JRE}" pruneNext
+      StrCmp $4 "${JRE_DIRNAME}" pruneNext
       RMDir /r "${PRODUCT_DIR}\$4"
       pruneNext:
       FindNext $3 $4
