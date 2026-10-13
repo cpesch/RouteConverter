@@ -21,6 +21,7 @@ import sys
 import time
 import traceback
 import urllib.error
+import urllib.parse
 import urllib.request
 import zipfile
 from datetime import date
@@ -40,6 +41,21 @@ REPRO = (
 )
 
 _SIG_RE = re.compile(r"\b[0-9a-f]{12}\b")
+
+
+class _DropAuthOnRedirect(urllib.request.HTTPRedirectHandler):
+    """Job logs and artifact zips answer with a 302 to signed blob storage on another
+    host, which rejects a forwarded `Authorization` header with 401. urllib keeps the
+    header on redirects, so drop it whenever the redirect leaves the original host."""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        new = super().redirect_request(req, fp, code, msg, headers, newurl)
+        if new is not None and urllib.parse.urlsplit(newurl).netloc != urllib.parse.urlsplit(req.full_url).netloc:
+            new.remove_header("Authorization")
+        return new
+
+
+_OPENER = urllib.request.build_opener(_DropAuthOnRedirect)
 
 
 class Api:
@@ -62,7 +78,7 @@ class Api:
         for attempt in range(len(delays) + 1):
             req = urllib.request.Request(url, data=data, headers=headers, method=method)
             try:
-                with urllib.request.urlopen(req) as resp:
+                with _OPENER.open(req) as resp:
                     return dict(resp.headers), resp.read()
             except urllib.error.HTTPError as exc:
                 if exc.code >= 500 and attempt < len(delays):
