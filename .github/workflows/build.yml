@@ -56,6 +56,17 @@ jobs:
         # forkCount=1: one test JVM per module. With -T 1C, the pom's 1.5C
         # started 116 test JVMs on 4 cores (279 -> 78 s with C1).
         run: mvn --batch-mode -T 1C -Dsurefire.forkCount=1 -Dmaven.build.number=${{ github.run_number }} -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots verify
+      # nightly-triage.yml reads the reports of a failed job from the artifact
+      # `surefire-<job name, spaces -> '-'>`. Keep every Maven step named
+      # `... with Maven`: the triage classifies a failure in any other step as
+      # infra.
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-Java-${{ matrix.java }}
+          path: '**/target/surefire-reports/TEST-*.xml'
+          retention-days: 7
       # Upload coverage once per build (Java 21 only — avoid duplicate uploads from the matrix)
       - name: Upload coverage to Codecov
         if: matrix.java == 21
@@ -116,3 +127,10 @@ jobs:
         # Windows coverage agent only slows the tests down.
         # SpotBugs runs in the spotbugs job; no test reads a shaded jar.
         run: mvn --batch-mode "-Dmaven.build.number=${{ github.run_number }}" "-Djacoco.skip=true" "-Dspotbugs.skip=true" "-Dshade.skip=true" "-Dsurefire.forkCount=1" --update-snapshots verify
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-Java-21-on-Windows
+          path: '**/target/surefire-reports/TEST-*.xml'
+          retention-days: 7
