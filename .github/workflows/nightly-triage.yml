@@ -1,0 +1,60 @@
+name: Nightly triage
+
+# specs/00078 (rc-meta): turns a failed nightly run of RouteConverter CI into
+# triaged issues. One job re-runs the failed jobs, polls for the re-run,
+# classifies (flaky / infra / deterministic) and files, comments on or closes
+# `from:nightly` issues (.github/scripts/nightly_triage.py).
+#
+# Kill switches (repo variables): NIGHTLY_TRIAGE=0 stops the whole loop;
+# NIGHTLY_AUTOAPPROVE stops the triage adding `agent:approved`. Unset counts as
+# 0 here, so the loop stays in shadow mode until the variable is set to 1.
+#
+# Replay a recorded run without writes:
+#   gh workflow run nightly-triage.yml -f run_id=<id> -f dry_run=true
+on:
+  workflow_run:
+    workflows: [RouteConverter CI]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: RouteConverter CI run id to triage
+        required: true
+        type: string
+      dry_run:
+        description: '"true" prints the planned actions and writes nothing'
+        required: false
+        default: 'true'
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+  actions: write
+  pull-requests: write
+
+# Serialised, never cancelled: two completions must not race on one issue.
+concurrency:
+  group: nightly-triage
+  cancel-in-progress: false
+
+jobs:
+  triage:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.event == 'schedule'
+    runs-on: ubuntu-latest
+    # The script stops polling for the re-run after 25 min and calls it infra.
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - name: Triage
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NIGHTLY_TRIAGE: ${{ vars.NIGHTLY_TRIAGE }}
+          NIGHTLY_AUTOAPPROVE: ${{ vars.NIGHTLY_AUTOAPPROVE || '0' }}
+          NTFY_PUBLISHER_TOKEN: ${{ secrets.NTFY_PUBLISHER_TOKEN }}
+          RUN_ID: ${{ github.event_name == 'workflow_dispatch' && inputs.run_id || github.event.workflow_run.id }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+        run: |
+          args=(--run-id "$RUN_ID")
+          [ "$DRY_RUN" = "true" ] && args+=(--dry-run)
+          python3 .github/scripts/nightly_triage.py "${args[@]}"
