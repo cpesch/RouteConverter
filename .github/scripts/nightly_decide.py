@@ -258,6 +258,7 @@ def plan(findings, issues, ctx, settings):
     # into it instead of emitting a conflicting duplicate.
     issue_updates = {}
     entries = []
+    infra_ledger_seen = False
 
     for finding in findings:
         matched = _match(finding, issues_sorted)
@@ -308,7 +309,13 @@ def plan(findings, issues, ctx, settings):
         if finding.klass == "flaky":
             entries.extend(_plan_flaky(finding, matched, ctx, settings, sort_key, today_iso))
         elif finding.klass == "infra":
-            entries.extend(_plan_infra(finding, matched, ctx, settings, sort_key, today_iso))
+            for entry in _plan_infra(finding, matched, ctx, settings, sort_key, today_iso):
+                action = entry[1]
+                if action.kind == "update_ledger" and action.data.get("kind") == "infra":
+                    if infra_ledger_seen:
+                        continue
+                    infra_ledger_seen = True
+                entries.append(entry)
         elif finding.klass == "forward_compat":
             entries.extend(_plan_forward_compat(finding, matched, sort_key, today_iso))
         elif finding.klass == "deterministic":
@@ -321,6 +328,9 @@ def plan(findings, issues, ctx, settings):
                     matched, ctx, settings, approved_count, sort_key, today_iso
                 )
             entries.extend(new_entries)
+
+    if not infra_ledger_seen and ctx.infra_streak > 0:
+        entries.append(((1, ""), Action("update_ledger", None, {"kind": "infra", "streak": 0})))
 
     entries.extend(_plan_close(issues_sorted, matched_numbers, ctx))
 

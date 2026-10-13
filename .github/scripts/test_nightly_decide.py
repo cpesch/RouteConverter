@@ -205,6 +205,58 @@ class InfraTest(unittest.TestCase):
         self.assertFalse(by_kind(actions, "open_issue"))
         self.assertTrue(by_kind(actions, "ntfy"))
 
+    def test_no_infra_finding_resets_nonzero_streak(self):
+        finding = make_finding(klass="deterministic", sig="detsig")
+        ctx = make_ctx(infra_streak=2, files_by_sig={"detsig": ["a.java"]})
+        actions = nd.plan([finding], [], ctx, make_settings())
+        ledger_actions = [
+            a for a in by_kind(actions, "update_ledger") if a.data.get("kind") == "infra"
+        ]
+        self.assertEqual(len(ledger_actions), 1)
+        self.assertEqual(ledger_actions[0].data["streak"], 0)
+
+    def test_green_night_with_no_findings_resets_nonzero_streak(self):
+        ctx = make_ctx(infra_streak=2)
+        actions = nd.plan([], [], ctx, make_settings())
+        self.assertEqual(len(actions), 1)
+        self.assertEqual(actions[0].kind, "update_ledger")
+        self.assertEqual(actions[0].data, {"kind": "infra", "streak": 0})
+
+    def test_zero_streak_and_no_infra_finding_emits_nothing(self):
+        finding = make_finding(klass="deterministic", sig="detsig")
+        ctx = make_ctx(infra_streak=0, files_by_sig={"detsig": ["a.java"]})
+        actions = nd.plan([finding], [], ctx, make_settings())
+        self.assertFalse(by_kind(actions, "update_ledger"))
+
+    def test_two_infra_findings_in_one_night_emit_one_ledger_update(self):
+        finding_a = make_finding(klass="infra", sig="infrasig1")
+        finding_b = make_finding(klass="infra", sig="infrasig2")
+        ctx = make_ctx(infra_streak=1)
+        actions = nd.plan([finding_a, finding_b], [], ctx, make_settings())
+        ledger_actions = by_kind(actions, "update_ledger")
+        self.assertEqual(len(ledger_actions), 1)
+        self.assertEqual(ledger_actions[0].data, {"kind": "infra", "streak": 2})
+        self.assertEqual(len(by_kind(actions, "ntfy")), 2)
+
+    def test_reset_night_then_infra_night_does_not_open_issue(self):
+        settings = make_settings()
+
+        ctx1 = make_ctx(infra_streak=2)
+        actions1 = nd.plan([], [], ctx1, settings)
+        self.assertEqual(actions1[0].data["streak"], 0)
+
+        ctx2 = make_ctx(infra_streak=0)
+        actions2 = nd.plan([], [], ctx2, settings)
+        self.assertEqual(actions2, [])
+
+        finding = make_finding(klass="infra", sig="infrasig")
+        ctx3 = make_ctx(infra_streak=0)
+        actions3 = nd.plan([finding], [], ctx3, settings)
+        ledger_actions = by_kind(actions3, "update_ledger")
+        self.assertEqual(len(ledger_actions), 1)
+        self.assertEqual(ledger_actions[0].data["streak"], 1)
+        self.assertFalse(by_kind(actions3, "open_issue"))
+
 
 class ForwardCompatTest(unittest.TestCase):
     def test_new_forward_compat_is_never_approved(self):
