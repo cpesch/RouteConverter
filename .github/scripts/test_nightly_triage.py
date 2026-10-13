@@ -4,6 +4,7 @@ import os
 import sys
 import tempfile
 import unittest
+import urllib.request
 import zipfile
 from unittest import mock
 
@@ -337,11 +338,30 @@ class ApiPaginateTest(unittest.TestCase):
             {"Link": '<https://api.github.com/repos/o/r/issues?page=2>; rel="next"'},
         )
         page2 = FakeResponse(b'[{"n": 3}]', {})
-        with mock.patch("urllib.request.urlopen", side_effect=[page1, page2]) as urlopen:
+        with mock.patch.object(nightly_triage._OPENER, "open", side_effect=[page1, page2]) as urlopen:
             items = list(api.paginate("/repos/o/r/issues?page=1"))
         self.assertEqual([item["n"] for item in items], [1, 2, 3])
         self.assertEqual(urlopen.call_count, 2)
         self.assertEqual(urlopen.call_args_list[1].args[0].full_url, "https://api.github.com/repos/o/r/issues?page=2")
+
+
+class RedirectAuthTest(unittest.TestCase):
+    def _redirect(self, newurl):
+        req = urllib.request.Request(
+            "https://api.github.com/repos/o/r/actions/jobs/1/logs",
+            headers={"Authorization": "Bearer token", "Accept": "application/vnd.github+json"},
+        )
+        handler = nightly_triage._DropAuthOnRedirect()
+        return handler.redirect_request(req, None, 302, "Found", {}, newurl)
+
+    def test_cross_host_redirect_drops_authorization(self):
+        new = self._redirect("https://productionresultssa1.blob.core.windows.net/logs/1.txt?sig=x")
+        self.assertFalse(new.has_header("Authorization"))
+        self.assertEqual(new.get_header("Accept"), "application/vnd.github+json")
+
+    def test_same_host_redirect_keeps_authorization(self):
+        new = self._redirect("https://api.github.com/repositories/1/actions/jobs/1/logs")
+        self.assertEqual(new.get_header("Authorization"), "Bearer token")
 
 
 class FakeResponse:
