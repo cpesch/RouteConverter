@@ -220,7 +220,10 @@ def fetch_drift(api, repo, run_id):
     Returns ``{}`` (never raises) when the artifact, its ``drift.json`` member, or the
     zip itself is missing or unreadable.
     """
-    data = api.request("GET", f"/repos/{repo}/actions/runs/{run_id}/artifacts") or {}
+    try:
+        data = api.request("GET", f"/repos/{repo}/actions/runs/{run_id}/artifacts") or {}
+    except urllib.error.HTTPError:
+        return {}
     artifact = next(
         (a for a in data.get("artifacts", []) if a.get("name") == "drift-snapshot" and not a.get("expired")),
         None,
@@ -250,6 +253,8 @@ def _previous_scheduled(runs, run_id):
     """
     current = next((run for run in runs if str(run.get("id")) == str(run_id)), None)
     current_started = _started(current) if current is not None else None
+    if not current_started:
+        return None
     best = None
     for run in runs:
         if str(run.get("id")) == str(run_id):
@@ -259,7 +264,7 @@ def _previous_scheduled(runs, run_id):
         if run.get("conclusion") not in ("success", "failure"):
             continue
         started = _started(run)
-        if current_started and started >= current_started:
+        if started >= current_started:
             continue
         if best is None or started > _started(best):
             best = run
