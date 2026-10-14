@@ -1,5 +1,6 @@
 import contextlib
 import io
+import json
 import os
 import sys
 import tempfile
@@ -85,6 +86,13 @@ def surefire_zip(classname, method):
     return buf.getvalue()
 
 
+def drift_zip(mapping, member="drift.json"):
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w") as zf:
+        zf.writestr(member, json.dumps(mapping))
+    return buf.getvalue()
+
+
 class FakeApi:
     """Records calls and serves canned responses; ``queues`` is a per-path FIFO."""
 
@@ -149,6 +157,7 @@ class GreenCloseTest(unittest.TestCase):
             {
                 ("GET", RUN_PATH): run(conclusion="success"),
                 ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "success", 1)),
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": []},
                 ("GET", ISSUES_PATH): [
                     issue(5, "nightly: FooTest [abc123def456]", state, ["from:nightly", "nightly:deterministic"])
                 ],
@@ -557,6 +566,275 @@ class CancelledJobTest(unittest.TestCase):
         create = create_issue_call(api)
         self.assertIn("Java 21", create[2]["body"])
         self.assertNotIn("Java 25", create[2]["body"])
+
+
+class FetchDriftTest(unittest.TestCase):
+    def test_missing_artifact_returns_empty(self):
+        api = FakeApi({("GET", f"/repos/{REPO}/actions/runs/{RUN_ID}/artifacts"): {"artifacts": []}})
+        self.assertEqual(nightly_triage.fetch_drift(api, REPO, RUN_ID), {})
+
+    def test_zip_without_member_returns_empty(self):
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, "w") as zf:
+            zf.writestr("other.json", "{}")
+        api = FakeApi(
+            {
+                ("GET", f"/repos/{REPO}/actions/runs/{RUN_ID}/artifacts"): {
+                    "artifacts": [{"id": 1, "name": "drift-snapshot"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/1/zip"): buf.getvalue(),
+            }
+        )
+        self.assertEqual(nightly_triage.fetch_drift(api, REPO, RUN_ID), {})
+
+    def test_present_artifact_parses_drift_json(self):
+        api = FakeApi(
+            {
+                ("GET", f"/repos/{REPO}/actions/runs/{RUN_ID}/artifacts"): {
+                    "artifacts": [{"id": 1, "name": "drift-snapshot"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/1/zip"): drift_zip({"java": "21"}),
+            }
+        )
+        self.assertEqual(nightly_triage.fetch_drift(api, REPO, RUN_ID), {"java": "21"})
+
+
+class PreviousScheduledTest(unittest.TestCase):
+    def test_skips_push_and_in_progress_picks_latest_earlier_scheduled(self):
+        runs = [
+            run(id=RUN_ID, event="schedule", status="completed", run_started_at="2026-10-12T03:00:00Z"),
+            run(id=200, event="push", status="completed", run_started_at="2026-10-11T12:00:00Z"),
+            run(id=201, event="schedule", status="in_progress", run_started_at="2026-10-11T03:00:00Z"),
+            run(id=202, event="schedule", status="completed", run_started_at="2026-10-10T03:00:00Z"),
+            run(id=203, event="schedule", status="completed", run_started_at="2026-10-09T03:00:00Z"),
+        ]
+        previous = nightly_triage._previous_scheduled(runs, RUN_ID)
+        self.assertEqual(previous["id"], 202)
+
+    def test_no_previous_scheduled_run_returns_none(self):
+        runs = [run(id=RUN_ID, event="schedule", status="completed")]
+        self.assertIsNone(nightly_triage._previous_scheduled(runs, RUN_ID))
+
+
+class DriftCommentTest(unittest.TestCase):
+    def test_changed_drift_comments_on_existing_ledger_issue(self):
+        current_zip = drift_zip({"java": "21.0.1"})
+        previous_zip = drift_zip({"java": "21.0.0"})
+        api = FakeApi(
+            {
+                ("GET", RUN_PATH): run(conclusion="success"),
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "success", 1)),
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": [{"id": 1, "name": "drift-snapshot"}]},
+                ("GET", f"/repos/{REPO}/actions/artifacts/1/zip"): current_zip,
+                ("GET", ISSUES_PATH): [issue(60, "nightly: drift log", {}, ["from:nightly"])],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {
+                    "workflow_runs": [
+                        run(conclusion="success"),
+                        run(id=100, run_started_at="2026-10-10T03:00:00Z", created_at="2026-10-10T03:00:00Z"),
+                    ]
+                },
+                ("GET", f"/repos/{REPO}/actions/runs/100/artifacts"): {
+                    "artifacts": [{"id": 2, "name": "drift-snapshot"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/2/zip"): previous_zip,
+                ("POST", f"/repos/{REPO}/issues/60/comments"): {},
+            }
+        )
+        code, _, _ = run_triage(api)
+        self.assertEqual(code, 0)
+        writes = [c for c in api.calls if c[0] in ("POST", "PATCH", "DELETE")]
+        self.assertEqual(len(writes), 1)
+        self.assertEqual(writes[0][1], f"/repos/{REPO}/issues/60/comments")
+        self.assertIn("java", writes[0][2]["body"])
+
+    def test_creates_drift_ledger_issue_when_missing(self):
+        current_zip = drift_zip({"java": "21.0.1"})
+        previous_zip = drift_zip({"java": "21.0.0"})
+        api = FakeApi(
+            {
+                ("GET", RUN_PATH): run(conclusion="success"),
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "success", 1)),
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": [{"id": 1, "name": "drift-snapshot"}]},
+                ("GET", f"/repos/{REPO}/actions/artifacts/1/zip"): current_zip,
+                ("GET", ISSUES_PATH): [],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {
+                    "workflow_runs": [
+                        run(conclusion="success"),
+                        run(id=100, run_started_at="2026-10-10T03:00:00Z", created_at="2026-10-10T03:00:00Z"),
+                    ]
+                },
+                ("GET", f"/repos/{REPO}/actions/runs/100/artifacts"): {
+                    "artifacts": [{"id": 2, "name": "drift-snapshot"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/2/zip"): previous_zip,
+                ("POST", f"/repos/{REPO}/issues"): {"number": 51},
+                ("POST", f"/repos/{REPO}/issues/51/comments"): {},
+            }
+        )
+        code, _, _ = run_triage(api)
+        self.assertEqual(code, 0)
+        create = create_issue_call(api)
+        self.assertEqual(create[2]["title"], "nightly: drift log")
+        self.assertEqual(create[2]["labels"], ["from:nightly"])
+        comments = [c for c in api.calls if c[0] == "POST" and c[1] == f"/repos/{REPO}/issues/51/comments"]
+        self.assertEqual(len(comments), 1)
+
+    def test_identical_snapshots_no_comment(self):
+        same_zip = drift_zip({"java": "21.0.1"})
+        api = FakeApi(
+            {
+                ("GET", RUN_PATH): run(conclusion="success"),
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "success", 1)),
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": [{"id": 1, "name": "drift-snapshot"}]},
+                ("GET", f"/repos/{REPO}/actions/artifacts/1/zip"): same_zip,
+                ("GET", ISSUES_PATH): [],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {
+                    "workflow_runs": [
+                        run(conclusion="success"),
+                        run(id=100, run_started_at="2026-10-10T03:00:00Z", created_at="2026-10-10T03:00:00Z"),
+                    ]
+                },
+                ("GET", f"/repos/{REPO}/actions/runs/100/artifacts"): {
+                    "artifacts": [{"id": 2, "name": "drift-snapshot"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/2/zip"): same_zip,
+            }
+        )
+        code, _, _ = run_triage(api)
+        self.assertEqual(code, 0)
+        writes = [c for c in api.calls if c[0] in ("POST", "PATCH", "DELETE")]
+        self.assertEqual(writes, [])
+
+    def test_no_previous_run_means_no_diff_and_no_comment(self):
+        current_zip = drift_zip({"java": "21.0.1"})
+        api = FakeApi(
+            {
+                ("GET", RUN_PATH): run(conclusion="success"),
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "success", 1)),
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": [{"id": 1, "name": "drift-snapshot"}]},
+                ("GET", f"/repos/{REPO}/actions/artifacts/1/zip"): current_zip,
+                ("GET", ISSUES_PATH): [],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {"workflow_runs": [run(conclusion="success")]},
+            }
+        )
+        code, _, _ = run_triage(api)
+        self.assertEqual(code, 0)
+        writes = [c for c in api.calls if c[0] in ("POST", "PATCH", "DELETE")]
+        self.assertEqual(writes, [])
+
+    def test_missing_current_artifact_no_comment(self):
+        previous_zip = drift_zip({"java": "21.0.0"})
+        api = FakeApi(
+            {
+                ("GET", RUN_PATH): run(conclusion="success"),
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "success", 1)),
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": []},
+                ("GET", ISSUES_PATH): [],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {
+                    "workflow_runs": [
+                        run(conclusion="success"),
+                        run(id=100, run_started_at="2026-10-10T03:00:00Z", created_at="2026-10-10T03:00:00Z"),
+                    ]
+                },
+                ("GET", f"/repos/{REPO}/actions/runs/100/artifacts"): {
+                    "artifacts": [{"id": 2, "name": "drift-snapshot"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/2/zip"): previous_zip,
+            }
+        )
+        code, _, _ = run_triage(api)
+        self.assertEqual(code, 0)
+        writes = [c for c in api.calls if c[0] in ("POST", "PATCH", "DELETE")]
+        self.assertEqual(writes, [])
+
+
+class DeterministicWithDriftTest(unittest.TestCase):
+    def test_open_issue_body_includes_env_diff_table(self):
+        surefire_zipped = surefire_zip("slash.nav.FooTest", "testFoo")
+        current_drift_zip = drift_zip({"java": "21.0.1"})
+        previous_drift_zip = drift_zip({"java": "21.0.0"})
+        api = FakeApi(
+            {
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "failure", 1, failed=True)),
+                ("GET", f"/repos/{REPO}/actions/jobs/1/logs"): LOG,
+                ("GET", f"{RUN_PATH}/artifacts"): {
+                    "artifacts": [
+                        {"id": 9, "name": "surefire-Java-21"},
+                        {"id": 1, "name": "drift-snapshot"},
+                    ]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/9/zip"): surefire_zipped,
+                ("GET", f"/repos/{REPO}/actions/artifacts/1/zip"): current_drift_zip,
+                ("POST", f"{RUN_PATH}/rerun-failed-jobs"): {},
+                ("GET", f"{RUN_PATH}/attempts/2/jobs"): jobs_response(job("Java 21", "failure", 1, failed=True)),
+                ("GET", ISSUES_PATH): [issue(60, "nightly: drift log", {}, ["from:nightly"])],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {
+                    "workflow_runs": [
+                        run(),
+                        run(id=100, run_started_at="2026-10-10T03:00:00Z", created_at="2026-10-10T03:00:00Z"),
+                    ]
+                },
+                ("GET", f"/repos/{REPO}/actions/runs/100/artifacts"): {
+                    "artifacts": [{"id": 2, "name": "drift-snapshot"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/2/zip"): previous_drift_zip,
+                ("POST", f"/repos/{REPO}/issues"): {"number": 42},
+                ("POST", f"/repos/{REPO}/issues/42/labels"): [],
+                ("POST", f"/repos/{REPO}/issues/60/comments"): {},
+            },
+            queues={("GET", RUN_PATH): [run(), run(run_attempt=2)]},
+        )
+        code, _, _ = run_triage(api, ls_files=["src/test/java/slash/nav/FooTest.java"])
+        self.assertEqual(code, 0)
+        create = create_issue_call(api)
+        self.assertIn("### Env diff vs last green nightly", create[2]["body"])
+        self.assertIn("| java | 21.0.0 | 21.0.1 |", create[2]["body"])
+        comment = next(c for c in api.calls if c[0] == "POST" and c[1] == f"/repos/{REPO}/issues/60/comments")
+        self.assertIn("java", comment[2]["body"])
+
+
+class DriftDryRunTest(unittest.TestCase):
+    def test_dry_run_prints_drift_comment_line_and_no_writes(self):
+        current_zip = drift_zip({"java": "21.0.1"})
+        previous_zip = drift_zip({"java": "21.0.0"})
+        api = FakeApi(
+            {
+                ("GET", RUN_PATH): run(conclusion="success"),
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "success", 1)),
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": [{"id": 1, "name": "drift-snapshot"}]},
+                ("GET", f"/repos/{REPO}/actions/artifacts/1/zip"): current_zip,
+                ("GET", ISSUES_PATH): [issue(60, "nightly: drift log", {}, ["from:nightly"])],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {
+                    "workflow_runs": [
+                        run(conclusion="success"),
+                        run(id=100, run_started_at="2026-10-10T03:00:00Z", created_at="2026-10-10T03:00:00Z"),
+                    ]
+                },
+                ("GET", f"/repos/{REPO}/actions/runs/100/artifacts"): {
+                    "artifacts": [{"id": 2, "name": "drift-snapshot"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/2/zip"): previous_zip,
+            }
+        )
+        code, out, _ = run_triage(api, dry_run=True)
+        self.assertEqual(code, 0)
+        self.assertIn("DRY-RUN drift-comment #60 1 keys", out)
+        writes = [c for c in api.calls if c[0] in ("POST", "PATCH", "DELETE")]
+        self.assertEqual(writes, [])
 
 
 if __name__ == "__main__":
