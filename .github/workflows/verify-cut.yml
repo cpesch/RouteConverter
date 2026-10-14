@@ -145,8 +145,13 @@ jobs:
 
       - name: ntfy on failure
         if: failure()
+        # The ntfy server denies anonymous posts, and the factory topic is
+        # factory-rc: the old anonymous post to /factory was rejected (403) and
+        # the `|| true` hid it. Still never fails the job over a lost alert.
         env:
           TAG: ${{ steps.ctx.outputs.tag }}
+          NTFY_PUBLISHER_TOKEN: ${{ secrets.NTFY_PUBLISHER_TOKEN }}
         run: |
-          curl -fsS -X POST -d "verify-cut FAILED for $TAG -- see GitHub Actions run ${{ github.run_id }}" \
-            https://ntfy.routeconverter.com/factory || true
+          curl -fsS -X POST -H "Authorization: Bearer $NTFY_PUBLISHER_TOKEN" -H "Title: verify-cut failed" \
+            -d "verify-cut FAILED for $TAG -- see GitHub Actions run ${{ github.run_id }}" \
+            https://ntfy.routeconverter.com/factory-rc || echo "::warning::ntfy post failed"
