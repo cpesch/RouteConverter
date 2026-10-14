@@ -301,8 +301,10 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      # `package`, not `compile`: dependency:list resolves the test scope too, and the
+      # reactor's test-jars (common, common-gui) only exist after `package` (#481).
       - name: Resolve dependencies with Maven
-        run: mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots compile dependency:list -DoutputFile=target/deps.txt -DexcludeGroupIds=slash.navigation
+        run: mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots package dependency:list -DoutputFile=target/deps.txt -DexcludeGroupIds=slash.navigation
       - name: Write drift.json
         run: |
           set -euo pipefail
