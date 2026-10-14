@@ -1,0 +1,47 @@
+name: JDK EA canary
+
+# specs/00078 (rc-meta) Phase 3: compiles (no tests) on the newest early-access
+# JDK, so a javac or JDK change that will break the build surfaces months
+# before that JDK ships. Its own workflow, not a continue-on-error job in
+# build.yml: that would hide the failure from nightly-triage.yml and count a
+# red check as a green nightly. nightly_classify keys on this file name
+# (`jdk-ea-canary`) and files every failure as forward-compat, needs-triage:
+# the cause is often the JDK, not the code.
+on:
+  schedule:
+    - cron: '30 2 * * *'   # after build.yml's nightly
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compile:
+    runs-on: ubuntu-latest
+    name: Compile on JDK EA
+    steps:
+      - uses: actions/checkout@v7
+      - name: Resolve latest EA feature version
+        id: ea
+        # most_recent_feature_version is the newest feature release with
+        # builds, GA or not; on the GA day it moves on to the next EA.
+        run: |
+          set -euo pipefail
+          v="$(curl -fsSL --retry 5 --retry-all-errors https://api.adoptium.net/v3/info/available_releases \
+            | python3 -c 'import json,sys; print(json.load(sys.stdin)["most_recent_feature_version"])')"
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+      - name: Set up JDK ${{ steps.ea.outputs.version }}-ea
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'temurin'
+          java-version: ${{ steps.ea.outputs.version }}-ea
+      - name: Cache Maven packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Show Maven version
+        run: mvn --version
+      - name: Compile with Maven
+        run: mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots test-compile
