@@ -156,6 +156,16 @@ class RenderTitleTest(unittest.TestCase):
         finding = make_finding(tests=(), module="common", goal="compile", sig="feedface")
         self.assertEqual(ni.render_title(finding), "nightly: common:compile [feedface]")
 
+    def test_title_without_module_and_goal_never_prints_none(self):
+        finding = make_finding(tests=(), module=None, goal=None, jobs=("Drift snapshot",), sig="18bb70b72028")
+        title = ni.render_title(finding)
+        self.assertNotIn("None", title)
+        self.assertEqual(title, "nightly: build failure in Drift snapshot [18bb70b72028]")
+
+    def test_title_with_module_only(self):
+        finding = make_finding(tests=(), module="rest", goal=None, sig="aa")
+        self.assertEqual(ni.render_title(finding), "nightly: rest [aa]")
+
     def test_title_capped_at_120_characters(self):
         finding = make_finding(
             sig="s",

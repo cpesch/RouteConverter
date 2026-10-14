@@ -205,6 +205,8 @@ def _list_runs(api, repo, run):
     workflow_id = run.get("workflow_id")
     if workflow_id is None:
         return []
+    # `/actions/runs` ignores a `workflow_id` filter and returns every workflow's runs;
+    # the per-workflow endpoint is the one that filters (#480).
     data = api.request("GET", f"/repos/{repo}/actions/workflows/{workflow_id}/runs?per_page=100") or {}
     return data.get("workflow_runs", [])
 
@@ -213,41 +215,20 @@ def _started(run):
     return run.get("run_started_at") or run.get("created_at") or ""
 
 
-def _find_last_green(runs, run_id):
-    for run in runs:
-        if str(run.get("id")) == str(run_id):
-            continue
-        if run.get("event") == "schedule" and run.get("conclusion") == "success":
-            return run
-    return None
-
-
-_PREVIOUS_NIGHT_CONCLUSIONS = ("success", "failure")
-
-
-def _find_previous_night(runs, run_id, run):
-    started = _started(run)
-    candidates = [
-        candidate
-        for candidate in runs
-        if str(candidate.get("id")) != str(run_id)
-        and candidate.get("event") == "schedule"
-        and candidate.get("status") == "completed"
-        and candidate.get("conclusion") in _PREVIOUS_NIGHT_CONCLUSIONS
-        and _started(candidate) < started
-    ]
-    if not candidates:
-        return None
-    return max(candidates, key=_started)
-
-
 def fetch_drift(api, repo, run_id):
-    data = api.request("GET", f"/repos/{repo}/actions/runs/{run_id}/artifacts") or {}
-    artifact = None
-    for candidate in data.get("artifacts", []):
-        if candidate.get("name") == "drift-snapshot" and not candidate.get("expired"):
-            artifact = candidate
-            break
+    """Download the ``drift-snapshot`` artifact of ``run_id`` and parse its ``drift.json``.
+
+    Returns ``{}`` (never raises) when the artifact, its ``drift.json`` member, or the
+    zip itself is missing or unreadable.
+    """
+    try:
+        data = api.request("GET", f"/repos/{repo}/actions/runs/{run_id}/artifacts") or {}
+    except urllib.error.HTTPError:
+        return {}
+    artifact = next(
+        (a for a in data.get("artifacts", []) if a.get("name") == "drift-snapshot" and not a.get("expired")),
+        None,
+    )
     if artifact is None:
         return {}
     try:
@@ -262,6 +243,42 @@ def fetch_drift(api, repo, run_id):
     except (zipfile.BadZipFile, KeyError):
         return {}
     return nightly_drift.parse(text)
+
+
+def _previous_scheduled(runs, run_id):
+    """Most recent scheduled, completed run in ``runs`` that started before ``run_id``.
+
+    ``runs`` (as returned by :func:`_list_runs`) is expected to include the entry for
+    ``run_id`` itself; its start time anchors the "before" comparison. Any conclusion
+    counts, because the comparison is night to night.
+    """
+    current = next((run for run in runs if str(run.get("id")) == str(run_id)), None)
+    current_started = _started(current) if current is not None else None
+    if not current_started:
+        return None
+    best = None
+    for run in runs:
+        if str(run.get("id")) == str(run_id):
+            continue
+        if run.get("event") != "schedule" or run.get("status") != "completed":
+            continue
+        if run.get("conclusion") not in ("success", "failure"):
+            continue
+        started = _started(run)
+        if started >= current_started:
+            continue
+        if best is None or started > _started(best):
+            best = run
+    return best
+
+
+def _find_last_green(runs, run_id):
+    for run in runs:
+        if str(run.get("id")) == str(run_id):
+            continue
+        if run.get("event") == "schedule" and run.get("conclusion") == "success":
+            return run
+    return None
 
 
 def _default_branch(api, repo):
@@ -470,19 +487,11 @@ def _do_update_state(api, repo, action):
     api.request("PATCH", f"/repos/{repo}/issues/{action.issue}", {"body": new_body})
 
 
-def _do_update_ledger(api, repo, action, ledger_numbers, render_ctx):
+def _do_update_ledger(api, repo, action, ledger_numbers):
     kind = action.data["kind"]
     title = nightly_issue.LEDGER_TITLES[kind]
     number = ledger_numbers.get(kind)
-    if kind == "drift":
-        if number is None:
-            body = nightly_issue.ledger_body(kind, {})
-            created = api.request("POST", f"/repos/{repo}/issues", {"title": title, "body": body, "labels": ["from:nightly"]})
-            number = created["number"]
-            ledger_numbers[kind] = number
-        comment = nightly_drift.drift_comment(action.data["diff"], render_ctx["run_url"])
-        api.request("POST", f"/repos/{repo}/issues/{number}/comments", {"body": comment})
-    elif kind == "flaky":
+    if kind == "flaky":
         signature = action.data["sig"]
         date_str = action.data["date"]
         if number is None:
@@ -548,11 +557,27 @@ def _execute(api, repo, actions, render_ctx, files_by_sig, ledger_numbers, env, 
         elif action.kind == "update_state":
             _do_update_state(api, repo, action)
         elif action.kind == "update_ledger":
-            _do_update_ledger(api, repo, action, ledger_numbers, render_ctx)
+            _do_update_ledger(api, repo, action, ledger_numbers)
         elif action.kind == "ntfy":
             _do_ntfy(env, action, repo, run)
         else:
             print(f"unknown action kind: {action.kind}", file=sys.stderr)
+
+
+def _drift_log_comment(api, repo, env_diff, run_url, open_issues, dry_run):
+    if not env_diff:
+        return
+    title = nightly_issue.LEDGER_TITLES["drift"]
+    number = next((issue["number"] for issue in open_issues if issue.get("title") == title), None)
+    if dry_run:
+        print(f"DRY-RUN update_ledger #{number if number is not None else 0} drift ({len(env_diff)} keys)")
+        return
+    if number is None:
+        body = nightly_issue.ledger_body("drift", {})
+        created = api.request("POST", f"/repos/{repo}/issues", {"title": title, "body": body, "labels": ["from:nightly"]})
+        number = created["number"]
+    comment = nightly_drift.drift_comment(env_diff, run_url)
+    api.request("POST", f"/repos/{repo}/issues/{number}/comments", {"body": comment})
 
 
 def _dry_run_line(action):
@@ -576,7 +601,7 @@ def _dry_run_line(action):
     return f"DRY-RUN {action.kind} #{issue} {short}".rstrip()
 
 
-def _step_summary(actions, env):
+def _step_summary(actions, env, env_diff):
     path = env.get("GITHUB_STEP_SUMMARY")
     if not path:
         return
@@ -591,6 +616,8 @@ def _step_summary(actions, env):
         jobs = ", ".join(finding.jobs) if finding else ""
         issue = str(action.issue) if action.issue is not None else "-"
         lines.append(f"| {klass} | {signature} | {jobs} | {action.kind} | {issue} |")
+    if env_diff:
+        lines.append(f"Environment drift: {len(env_diff)} keys changed")
     with open(path, "a", encoding="utf-8") as f:
         f.write("\n".join(lines) + "\n")
 
@@ -625,6 +652,11 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
     last_green = _find_last_green(runs, run_id)
     default_branch = _default_branch(api, repo)
 
+    current_drift = fetch_drift(api, repo, run_id)
+    previous_run = _previous_scheduled(runs, run_id)
+    previous_drift = fetch_drift(api, repo, previous_run["id"]) if previous_run is not None else {}
+    env_diff = nightly_drift.diff(previous_drift, current_drift) if current_drift and previous_drift else {}
+
     trunk_overlap_sigs, trunk_all = _build_trunk_overlap(
         api, repo, run, workflow, prs, runs, last_green, default_branch
     )
@@ -650,16 +682,6 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
     )
     actions = nightly_decide.plan(findings, issues, ctx, settings)
 
-    previous_night = _find_previous_night(runs, run_id, run)
-    env_diff = {}
-    if previous_night is not None:
-        tonight_drift = fetch_drift(api, repo, run_id)
-        previous_drift = fetch_drift(api, repo, previous_night["id"])
-        if tonight_drift and previous_drift:
-            env_diff = nightly_drift.diff(previous_drift, tonight_drift)
-    if env_diff:
-        actions = actions + [nightly_decide.Action("update_ledger", None, {"kind": "drift", "diff": env_diff})]
-
     render_ctx = _render_ctx(run, last_green, commits, env_diff)
 
     if dry_run:
@@ -668,7 +690,9 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
     else:
         _execute(api, repo, actions, render_ctx, files_by_sig, ledger_numbers, env, run)
 
-    _step_summary(actions, env)
+    _drift_log_comment(api, repo, env_diff, render_ctx["run_url"], open_issues, dry_run)
+
+    _step_summary(actions, env, env_diff)
     return 0
 
 
