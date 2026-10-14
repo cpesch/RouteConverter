@@ -28,6 +28,7 @@ from datetime import date
 
 import nightly_classify
 import nightly_decide
+import nightly_drift
 import nightly_issue
 from nightly_model import JobResult
 
@@ -204,7 +205,7 @@ def _list_runs(api, repo, run):
     workflow_id = run.get("workflow_id")
     if workflow_id is None:
         return []
-    data = api.request("GET", f"/repos/{repo}/actions/runs?workflow_id={workflow_id}&per_page=100") or {}
+    data = api.request("GET", f"/repos/{repo}/actions/workflows/{workflow_id}/runs?per_page=100") or {}
     return data.get("workflow_runs", [])
 
 
@@ -219,6 +220,48 @@ def _find_last_green(runs, run_id):
         if run.get("event") == "schedule" and run.get("conclusion") == "success":
             return run
     return None
+
+
+_PREVIOUS_NIGHT_CONCLUSIONS = ("success", "failure")
+
+
+def _find_previous_night(runs, run_id, run):
+    started = _started(run)
+    candidates = [
+        candidate
+        for candidate in runs
+        if str(candidate.get("id")) != str(run_id)
+        and candidate.get("event") == "schedule"
+        and candidate.get("status") == "completed"
+        and candidate.get("conclusion") in _PREVIOUS_NIGHT_CONCLUSIONS
+        and _started(candidate) < started
+    ]
+    if not candidates:
+        return None
+    return max(candidates, key=_started)
+
+
+def fetch_drift(api, repo, run_id):
+    data = api.request("GET", f"/repos/{repo}/actions/runs/{run_id}/artifacts") or {}
+    artifact = None
+    for candidate in data.get("artifacts", []):
+        if candidate.get("name") == "drift-snapshot" and not candidate.get("expired"):
+            artifact = candidate
+            break
+    if artifact is None:
+        return {}
+    try:
+        payload = api.request("GET", f"/repos/{repo}/actions/artifacts/{artifact['id']}/zip", raw=True)
+    except urllib.error.HTTPError:
+        return {}
+    if not payload:
+        return {}
+    try:
+        with zipfile.ZipFile(io.BytesIO(payload)) as zf:
+            text = zf.read("drift.json").decode("utf-8", "replace")
+    except (zipfile.BadZipFile, KeyError):
+        return {}
+    return nightly_drift.parse(text)
 
 
 def _default_branch(api, repo):
@@ -357,7 +400,7 @@ def _files_by_sig(findings):
     return {finding.signature: nightly_issue.resolve_files(finding, ls_files) for finding in findings}
 
 
-def _render_ctx(run, last_green, commits):
+def _render_ctx(run, last_green, commits, env_diff):
     return {
         "run_url": run.get("html_url") or "",
         "last_green": (
@@ -367,7 +410,7 @@ def _render_ctx(run, last_green, commits):
         "commits": commits,
         "repro": REPRO,
         "seed": None,
-        "env_diff": {},
+        "env_diff": env_diff,
     }
 
 
@@ -427,11 +470,19 @@ def _do_update_state(api, repo, action):
     api.request("PATCH", f"/repos/{repo}/issues/{action.issue}", {"body": new_body})
 
 
-def _do_update_ledger(api, repo, action, ledger_numbers):
+def _do_update_ledger(api, repo, action, ledger_numbers, render_ctx):
     kind = action.data["kind"]
     title = nightly_issue.LEDGER_TITLES[kind]
     number = ledger_numbers.get(kind)
-    if kind == "flaky":
+    if kind == "drift":
+        if number is None:
+            body = nightly_issue.ledger_body(kind, {})
+            created = api.request("POST", f"/repos/{repo}/issues", {"title": title, "body": body, "labels": ["from:nightly"]})
+            number = created["number"]
+            ledger_numbers[kind] = number
+        comment = nightly_drift.drift_comment(action.data["diff"], render_ctx["run_url"])
+        api.request("POST", f"/repos/{repo}/issues/{number}/comments", {"body": comment})
+    elif kind == "flaky":
         signature = action.data["sig"]
         date_str = action.data["date"]
         if number is None:
@@ -497,7 +548,7 @@ def _execute(api, repo, actions, render_ctx, files_by_sig, ledger_numbers, env, 
         elif action.kind == "update_state":
             _do_update_state(api, repo, action)
         elif action.kind == "update_ledger":
-            _do_update_ledger(api, repo, action, ledger_numbers)
+            _do_update_ledger(api, repo, action, ledger_numbers, render_ctx)
         elif action.kind == "ntfy":
             _do_ntfy(env, action, repo, run)
         else:
@@ -599,7 +650,17 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
     )
     actions = nightly_decide.plan(findings, issues, ctx, settings)
 
-    render_ctx = _render_ctx(run, last_green, commits)
+    previous_night = _find_previous_night(runs, run_id, run)
+    env_diff = {}
+    if previous_night is not None:
+        tonight_drift = fetch_drift(api, repo, run_id)
+        previous_drift = fetch_drift(api, repo, previous_night["id"])
+        if tonight_drift and previous_drift:
+            env_diff = nightly_drift.diff(previous_drift, tonight_drift)
+    if env_diff:
+        actions = actions + [nightly_decide.Action("update_ledger", None, {"kind": "drift", "diff": env_diff})]
+
+    render_ctx = _render_ctx(run, last_green, commits, env_diff)
 
     if dry_run:
         for action in actions:
