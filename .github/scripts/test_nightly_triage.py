@@ -723,7 +723,7 @@ class DriftLedgerTest(unittest.TestCase):
         code, _, _ = run_triage(api, ls_files=["src/test/java/slash/nav/FooTest.java"])
         self.assertEqual(code, 0)
         create = create_issue_call(api)
-        self.assertIn("### Env diff vs last green nightly", create[2]["body"])
+        self.assertIn("### Env diff vs previous night", create[2]["body"])
         self.assertIn("21.0.12+7", create[2]["body"])
         self.assertNotIn("_no change_", create[2]["body"])
         comment = next(c for c in api.calls if c[0] == "POST" and c[1] == f"/repos/{REPO}/issues/50/comments")

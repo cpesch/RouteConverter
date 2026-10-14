@@ -180,7 +180,7 @@ def render_body(finding, files, ctx):
     if ctx.get("seed"):
         lines.append(f"Seed: {ctx['seed']}")
 
-    lines.extend(["", "### Env diff vs last green nightly"])
+    lines.extend(["", "### Env diff vs previous night"])
     env_diff = ctx.get("env_diff") or {}
     if env_diff:
         lines.append("| Key | Old | New |")
