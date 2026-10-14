@@ -65,6 +65,9 @@
         <surefire.forkCount>1.5C</surefire.forkCount>
         <itCoverageAgent />
         <failsafe.hermetic.excludes>**/__never__.java</failsafe.hermetic.excludes>
+        <!-- Extra failsafe exclude for CI, where the private samples checkout
+             is absent (build.yml's nightly Hermetic ITs job). -->
+        <failsafe.ci.excludes>**/__never__.java</failsafe.ci.excludes>
 
         <!-- Fallback for local builds. CI workflows override at invocation
              time with -Dmaven.build.number=${{ github.run_number }}. -->
@@ -557,6 +560,7 @@
                             </includes>
                             <excludes>
                                 <exclude>${failsafe.hermetic.excludes}</exclude>
+                                <exclude>${failsafe.ci.excludes}</exclude>
                             </excludes>
                             <!-- When using '@Categrory('MyIntegrationtest'): <groups>MyIntegrationTest</groups>-->
                             <reuseForks>true</reuseForks>

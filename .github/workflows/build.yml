@@ -147,3 +147,186 @@ jobs:
           name: surefire-Java-21-on-Windows
           path: '**/target/surefire-reports/TEST-*.xml'
           retention-days: 7
+
+  # ---------------------------------------------------------------------------
+  # Nightly-only checks (spec 00078 Phase 3). Scheduled runs only: they cover
+  # what a push run never sees, and nightly-triage.yml files their failures.
+  # Every Maven step is named `... with Maven`: the triage classifies a
+  # failure in any other step as infra. A failing test job uploads its reports
+  # as `surefire-<job name, spaces -> '-'>`.
+  # ---------------------------------------------------------------------------
+
+  # The ITs that need no network and no credentials (pom profile
+  # hermetic-integration-test excludes the live-service ones). Unit tests are
+  # skipped: the build job ran them. navigation-formats' ITs read the private
+  # samples checkout, which CI doesn't have (38 of its 46 IT classes error
+  # without it), so failsafe.ci.excludes drops that module's IT packages.
+  hermetic-its:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    name: Hermetic ITs
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: Cache Maven packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Integration tests with Maven
+        run: mvn --batch-mode -T 1C -Phermetic-integration-test "-Dfailsafe.ci.excludes=%regex[.*slash/navigation/(babel|base|bcr|columbus|csv|excel|gopal|gpx|itn|kml|lmx|nmn|ovl|photo|simple|tour|url|wbt|zip)/[^/]*IT\.class]" -Dsurefire.forkCount=1 -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots verify
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-Hermetic-ITs
+          path: |
+            **/target/surefire-reports/TEST-*.xml
+            **/target/failsafe-reports/TEST-*.xml
+          retention-days: 7
+
+  # The build as a developer runs it: pom defaults (forkCount 1.5C), C2 JIT,
+  # shading and SpotBugs inline. Catches tests that depend on order or shared
+  # state, which forkCount=1 hides, and breakage only the full build shows.
+  local-parity:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    name: Local parity
+    env:
+      JAVA_TOOL_OPTIONS: ''
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: Cache Maven packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build with Maven
+        run: mvn --batch-mode -Dmaven.build.number=${{ github.run_number }} --update-snapshots verify
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-Local-parity
+          path: |
+            **/target/surefire-reports/TEST-*.xml
+            **/target/failsafe-reports/TEST-*.xml
+          retention-days: 7
+
+  # Unit tests in random order; the seed is the run id, so a red night
+  # reproduces with -Dsurefire.runOrder.random.seed=<run id>.
+  random-order:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    name: Random test order
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: Cache Maven packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Build with Maven
+        run: mvn --batch-mode -T 1C -Dsurefire.forkCount=1 -Dsurefire.runOrder=random -Dsurefire.runOrder.random.seed=${{ github.run_id }} -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots verify
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: surefire-Random-test-order
+          path: |
+            **/target/surefire-reports/TEST-*.xml
+            **/target/failsafe-reports/TEST-*.xml
+          retention-days: 7
+
+  # The release packaging (shading included) that the CI test jobs skip, with
+  # dummy values for the secrets release.yml passes in.
+  package:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    name: Package
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'zulu'
+          java-version: 21
+      - name: Cache Maven packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Package with Maven
+        run: mvn --batch-mode -Prouteconverter -Dmaven.build.number=${{ github.run_number }} -DcrashReportSecret=nightly-dummy -DtimeAlbumGoogleMapsApiKey=nightly-dummy -DskipTests -Dspotbugs.skip=true --update-snapshots package
+
+  # Environment snapshot for the drift comparison (nightly_drift.py): artifact
+  # `drift-snapshot` with `drift.json`, a flat string -> string object.
+  # java.<job name> is the JDK setup-java resolves tonight for that job
+  # (same distribution), image.* the runner image, snapshot.<group:artifact>
+  # every resolved third-party SNAPSHOT dependency.
+  drift-snapshot:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    name: Drift snapshot
+    steps:
+      - uses: actions/checkout@v7
+      - name: Set up JDK 21 and 25
+        uses: actions/setup-java@v6
+        with:
+          distribution: 'zulu'
+          java-version: |
+            25
+            21
+      - name: Cache Maven packages
+        uses: actions/cache@v6
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Resolve dependencies with Maven
+        run: mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dspotbugs.skip=true -Dshade.skip=true --update-snapshots compile dependency:list -DoutputFile=target/deps.txt -DexcludeGroupIds=slash.navigation
+      - name: Write drift.json
+        run: |
+          set -euo pipefail
+          jv() { "$1/bin/java" -XshowSettings:properties -version 2>&1 | sed -n 's/^ *java.runtime.version = //p'; }
+          JAVA_21="$(jv "$JAVA_HOME_21_X64")" JAVA_25="$(jv "$JAVA_HOME_25_X64")" python3 - <<'EOF'
+          import glob, json, os, re
+          snap = {}
+          for path in glob.glob("**/target/deps.txt", recursive=True):
+              for line in open(path, encoding="utf-8"):
+                  m = re.match(r"\s*([^:\s]+):([^:]+):[^:]+:(?:[^:]+:)?([^:]*SNAPSHOT[^:]*):", line)
+                  if m:
+                      snap[f"snapshot.{m.group(1)}:{m.group(2)}"] = m.group(3)
+          data = {
+              "java.Java 21": os.environ["JAVA_21"],
+              "java.Java 25": os.environ["JAVA_25"],
+              "image.os": os.environ.get("ImageOS", ""),
+              "image.version": os.environ.get("ImageVersion", ""),
+              **snap,
+          }
+          json.dump(data, open("drift.json", "w"), indent=2, sort_keys=True)
+          print(json.dumps(data, indent=2, sort_keys=True))
+          EOF
+      - uses: actions/upload-artifact@v7
+        with:
+          name: drift-snapshot
+          path: drift.json
+          retention-days: 14
