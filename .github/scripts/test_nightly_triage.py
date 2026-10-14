@@ -19,6 +19,7 @@ RUN_PATH = f"/repos/{REPO}/actions/runs/{RUN_ID}"
 ISSUES_PATH = f"/repos/{REPO}/issues?labels=from:nightly&state=open"
 PULLS_PATH = f"/repos/{REPO}/pulls?state=all&sort=updated&direction=desc&per_page=100"
 RUNS_PATH = f"/repos/{REPO}/actions/runs?workflow_id=77&per_page=100"
+REPO_PATH = f"/repos/{REPO}"
 
 LOG = b"[ERROR] Tests run: 1, Failures: 1"
 
@@ -153,6 +154,7 @@ class GreenCloseTest(unittest.TestCase):
                 ],
                 ("GET", PULLS_PATH): [],
                 ("GET", RUNS_PATH): {"workflow_runs": []},
+                ("GET", REPO_PATH): {"default_branch": "master"},
                 ("POST", f"/repos/{REPO}/issues/5/comments"): {},
                 ("PATCH", f"/repos/{REPO}/issues/5"): {},
             }
@@ -176,6 +178,7 @@ class FlakyRerunTest(unittest.TestCase):
                 ("GET", ISSUES_PATH): [],
                 ("GET", PULLS_PATH): [],
                 ("GET", RUNS_PATH): {"workflow_runs": []},
+                ("GET", REPO_PATH): {"default_branch": "master"},
                 ("POST", f"/repos/{REPO}/issues"): {"number": 99},
             },
             queues={("GET", RUN_PATH): [run(), run(run_attempt=2)]},
@@ -201,6 +204,7 @@ class DeterministicOpenTest(unittest.TestCase):
                 ("GET", ISSUES_PATH): [],
                 ("GET", PULLS_PATH): [],
                 ("GET", RUNS_PATH): {"workflow_runs": []},
+                ("GET", REPO_PATH): {"default_branch": "master"},
                 ("POST", f"/repos/{REPO}/issues"): {"number": 42},
                 ("POST", f"/repos/{REPO}/issues/42/labels"): [],
             },
@@ -231,6 +235,7 @@ class TimeoutInfraTest(unittest.TestCase):
                 ("GET", ISSUES_PATH): [],
                 ("GET", PULLS_PATH): [],
                 ("GET", RUNS_PATH): {"workflow_runs": []},
+                ("GET", REPO_PATH): {"default_branch": "master"},
                 ("POST", f"/repos/{REPO}/issues"): {"number": 99},
             },
             queues={("GET", RUN_PATH): [run(), run()]},
@@ -255,6 +260,7 @@ class DryRunTest(unittest.TestCase):
                 ("GET", ISSUES_PATH): [],
                 ("GET", PULLS_PATH): [],
                 ("GET", RUNS_PATH): {"workflow_runs": []},
+                ("GET", REPO_PATH): {"default_branch": "master"},
             }
         )
         code, out, _ = run_triage(api, dry_run=True, ls_files=["src/test/java/slash/nav/FooTest.java"])
@@ -285,6 +291,7 @@ class TrunkOverlapTest(unittest.TestCase):
                 ("GET", ISSUES_PATH): [],
                 ("GET", PULLS_PATH): [trunk_pr],
                 ("GET", RUNS_PATH): {"workflow_runs": []},
+                ("GET", REPO_PATH): {"default_branch": "master"},
                 ("POST", f"/repos/{REPO}/issues"): {"number": 42},
                 ("POST", f"/repos/{REPO}/issues/42/comments"): {},
             },
@@ -297,6 +304,149 @@ class TrunkOverlapTest(unittest.TestCase):
         self.assertIn("needs-triage", create[2]["labels"])
         comment = next(c for c in api.calls if c[0] == "POST" and c[1] == f"/repos/{REPO}/issues/42/comments")
         self.assertIn("trunk", comment[2]["body"])
+
+    def test_no_trunk_overlap_with_autoapprove_gets_approved(self):
+        scratch_push_run = {
+            "id": 555,
+            "event": "push",
+            "head_branch": "scratch/x",
+            "conclusion": "failure",
+            "run_started_at": "2026-10-12T03:00:00Z",
+            "created_at": "2026-10-12T03:00:00Z",
+            "head_sha": "ccc",
+            "html_url": f"https://github.com/{REPO}/actions/runs/555",
+        }
+        zipped = surefire_zip("slash.nav.FooTest", "testFoo")
+        api = FakeApi(
+            {
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "failure", 1, failed=True)),
+                ("GET", f"/repos/{REPO}/actions/jobs/1/logs"): LOG,
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": [{"id": 9, "name": "surefire-Java-21"}]},
+                ("GET", f"/repos/{REPO}/actions/artifacts/9/zip"): zipped,
+                ("POST", f"{RUN_PATH}/rerun-failed-jobs"): {},
+                ("GET", f"{RUN_PATH}/attempts/2/jobs"): jobs_response(job("Java 21", "failure", 1, failed=True)),
+                ("GET", ISSUES_PATH): [],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {"workflow_runs": [scratch_push_run]},
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("GET", f"/repos/{REPO}/actions/runs/555/attempts/1/jobs"): jobs_response(
+                    job("Java 21", "failure", 1, failed=True)
+                ),
+                ("GET", f"/repos/{REPO}/actions/runs/555/artifacts"): {"artifacts": []},
+                ("POST", f"/repos/{REPO}/issues"): {"number": 42},
+                ("POST", f"/repos/{REPO}/issues/42/labels"): [],
+            },
+            queues={("GET", RUN_PATH): [run(head_branch="scratch/x"), run(head_branch="scratch/x", run_attempt=2)]},
+        )
+        code, _, _ = run_triage(api, env={"NIGHTLY_AUTOAPPROVE": "1"}, ls_files=["src/test/java/slash/nav/FooTest.java"])
+        self.assertEqual(code, 0)
+        create = create_issue_call(api)
+        self.assertNotIn("agent:approved", create[2]["labels"])
+        label_calls = [c for c in api.calls if c[0] == "POST" and c[1] == f"/repos/{REPO}/issues/42/labels"]
+        self.assertEqual(len(label_calls), 1)
+        self.assertEqual(label_calls[0][2], {"labels": ["agent:approved"]})
+
+    def test_trunk_overlap_when_master_push_run_shares_signature(self):
+        master_push_run = {
+            "id": 555,
+            "event": "push",
+            "head_branch": "master",
+            "conclusion": "failure",
+            "run_started_at": "2026-10-12T03:00:00Z",
+            "created_at": "2026-10-12T03:00:00Z",
+            "head_sha": "ccc",
+            "html_url": f"https://github.com/{REPO}/actions/runs/555",
+        }
+        zipped = surefire_zip("slash.nav.FooTest", "testFoo")
+        api = FakeApi(
+            {
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "failure", 1, failed=True)),
+                ("GET", f"/repos/{REPO}/actions/jobs/1/logs"): LOG,
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": [{"id": 9, "name": "surefire-Java-21"}]},
+                ("GET", f"/repos/{REPO}/actions/artifacts/9/zip"): zipped,
+                ("POST", f"{RUN_PATH}/rerun-failed-jobs"): {},
+                ("GET", f"{RUN_PATH}/attempts/2/jobs"): jobs_response(job("Java 21", "failure", 1, failed=True)),
+                ("GET", ISSUES_PATH): [],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {"workflow_runs": [master_push_run]},
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("GET", f"/repos/{REPO}/actions/runs/555/attempts/1/jobs"): jobs_response(
+                    job("Java 21", "failure", 1, failed=True)
+                ),
+                ("GET", f"/repos/{REPO}/actions/runs/555/artifacts"): {
+                    "artifacts": [{"id": 10, "name": "surefire-Java-21"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/10/zip"): zipped,
+                ("POST", f"/repos/{REPO}/issues"): {"number": 42},
+                ("POST", f"/repos/{REPO}/issues/42/comments"): {},
+            },
+            queues={("GET", RUN_PATH): [run(head_branch="scratch/x"), run(head_branch="scratch/x", run_attempt=2)]},
+        )
+        code, _, _ = run_triage(api, ls_files=["src/test/java/slash/nav/FooTest.java"])
+        self.assertEqual(code, 0)
+        create = create_issue_call(api)
+        self.assertNotIn("agent:approved", create[2]["labels"])
+        self.assertIn("needs-triage", create[2]["labels"])
+        comment = next(c for c in api.calls if c[0] == "POST" and c[1] == f"/repos/{REPO}/issues/42/comments")
+        self.assertIn("trunk", comment[2]["body"])
+
+    def test_nightly_run_on_master_still_overlaps_with_master_push_run(self):
+        master_push_run = {
+            "id": 555,
+            "event": "push",
+            "head_branch": "master",
+            "conclusion": "failure",
+            "run_started_at": "2026-10-12T03:00:00Z",
+            "created_at": "2026-10-12T03:00:00Z",
+            "head_sha": "ccc",
+            "html_url": f"https://github.com/{REPO}/actions/runs/555",
+        }
+        zipped = surefire_zip("slash.nav.FooTest", "testFoo")
+        api = FakeApi(
+            {
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "failure", 1, failed=True)),
+                ("GET", f"/repos/{REPO}/actions/jobs/1/logs"): LOG,
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": [{"id": 9, "name": "surefire-Java-21"}]},
+                ("GET", f"/repos/{REPO}/actions/artifacts/9/zip"): zipped,
+                ("POST", f"{RUN_PATH}/rerun-failed-jobs"): {},
+                ("GET", f"{RUN_PATH}/attempts/2/jobs"): jobs_response(job("Java 21", "failure", 1, failed=True)),
+                ("GET", ISSUES_PATH): [],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {"workflow_runs": [master_push_run]},
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("GET", f"/repos/{REPO}/actions/runs/555/attempts/1/jobs"): jobs_response(
+                    job("Java 21", "failure", 1, failed=True)
+                ),
+                ("GET", f"/repos/{REPO}/actions/runs/555/artifacts"): {
+                    "artifacts": [{"id": 10, "name": "surefire-Java-21"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/10/zip"): zipped,
+                ("POST", f"/repos/{REPO}/issues"): {"number": 42},
+                ("POST", f"/repos/{REPO}/issues/42/comments"): {},
+            },
+            queues={("GET", RUN_PATH): [run(), run(run_attempt=2)]},
+        )
+        code, _, _ = run_triage(api, ls_files=["src/test/java/slash/nav/FooTest.java"])
+        self.assertEqual(code, 0)
+        create = create_issue_call(api)
+        self.assertNotIn("agent:approved", create[2]["labels"])
+        self.assertIn("needs-triage", create[2]["labels"])
+        comment = next(c for c in api.calls if c[0] == "POST" and c[1] == f"/repos/{REPO}/issues/42/comments")
+        self.assertIn("trunk", comment[2]["body"])
+
+
+class DefaultBranchTest(unittest.TestCase):
+    def test_falls_back_to_master_when_field_missing(self):
+        api = FakeApi({("GET", REPO_PATH): {}})
+        self.assertEqual(nightly_triage._default_branch(api, REPO), "master")
+
+    def test_falls_back_to_master_when_field_empty(self):
+        api = FakeApi({("GET", REPO_PATH): {"default_branch": ""}})
+        self.assertEqual(nightly_triage._default_branch(api, REPO), "master")
+
+    def test_uses_returned_default_branch(self):
+        api = FakeApi({("GET", REPO_PATH): {"default_branch": "main"}})
+        self.assertEqual(nightly_triage._default_branch(api, REPO), "main")
 
 
 class StepSummaryTest(unittest.TestCase):
@@ -313,6 +463,7 @@ class StepSummaryTest(unittest.TestCase):
                 ("GET", ISSUES_PATH): [],
                 ("GET", PULLS_PATH): [],
                 ("GET", RUNS_PATH): {"workflow_runs": []},
+                ("GET", REPO_PATH): {"default_branch": "master"},
                 ("POST", f"/repos/{REPO}/issues"): {"number": 42},
                 ("POST", f"/repos/{REPO}/issues/42/labels"): [],
             },
@@ -395,6 +546,7 @@ class CancelledJobTest(unittest.TestCase):
                 ("GET", ISSUES_PATH): [],
                 ("GET", PULLS_PATH): [],
                 ("GET", RUNS_PATH): {"workflow_runs": []},
+                ("GET", REPO_PATH): {"default_branch": "master"},
                 ("POST", f"/repos/{REPO}/issues"): {"number": 42},
             },
             queues={("GET", RUN_PATH): [run(), run(run_attempt=2)]},
