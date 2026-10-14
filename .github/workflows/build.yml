@@ -1,8 +1,10 @@
 name: RouteConverter CI
 
 # Feature/factory branches run only Java 21 on Linux (the required check).
-# Java 25 and Windows run on master and 3.* pushes, nightly, and on manual
-# dispatch (to check a branch on Windows before merging it).
+# Java 25 and Windows run on master and 3.* pushes, nightly, on manual
+# dispatch (to check a branch on Windows before merging it), and on any push
+# whose head commit message contains `[full-ci]` (fix PRs for nightly
+# failures, spec 00078). The `scope` job decides this once.
 on:
   push:
   schedule:
@@ -28,12 +30,22 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  scope:
+    runs-on: ubuntu-latest
+    outputs:
+      full: ${{ steps.scope.outputs.full }}
+    steps:
+      - id: scope
+        env:
+          FULL: ${{ github.event_name != 'push' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/3.') || contains(github.event.head_commit.message, '[full-ci]') }}
+        run: echo "full=$FULL" >> "$GITHUB_OUTPUT"
+
   build:
+    needs: scope
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        # Same condition as the Windows job's `if:` below.
-        java: ${{ fromJSON((github.event_name != 'push' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/3.')) && '[21, 25]' || '[21]') }}
+        java: ${{ fromJSON(needs.scope.outputs.full == 'true' && '[21, 25]' || '[21]') }}
     name: Java ${{ matrix.java }}
     steps:
       - uses: actions/checkout@v7
@@ -98,7 +110,8 @@ jobs:
         run: mvn --batch-mode -T 1C -Dskip.unit.tests=true -Dskip.integration.tests=true -Djacoco.skip=true -Dshade.skip=true --update-snapshots verify
 
   prerelease:
-    if: github.event_name != 'push' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/3.')
+    needs: scope
+    if: needs.scope.outputs.full == 'true'
     runs-on: windows-latest
     # Fixed name, no matrix: a skipped matrix job reports its check under the
     # unexpanded name, which never matches the required check.
