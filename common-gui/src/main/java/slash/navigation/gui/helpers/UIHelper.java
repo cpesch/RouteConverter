@@ -24,6 +24,7 @@ import com.formdev.flatlaf.FlatLaf;
 import com.formdev.flatlaf.FlatLightLaf;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
+import com.formdev.flatlaf.util.UIScale;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,8 +34,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.function.BooleanSupplier;
+import java.util.regex.Matcher;
 import java.util.prefs.Preferences;
 import java.util.regex.Pattern;
 
@@ -60,6 +63,45 @@ public class UIHelper {
     public static final String DARK_LOOK_AND_FEEL = "dark";
     public static final String SYSTEM_LOOK_AND_FEEL = "system";
     private static final Pattern WINDOWS_APPS_DARK_PATTERN = Pattern.compile("AppsUseLightTheme\\s+REG_DWORD\\s+0x0+\\s*$", Pattern.MULTILINE);
+    private static final Pattern PORTAL_COLOR_SCHEME_PATTERN = Pattern.compile("uint32 (\\d+)");
+    private static final Pattern XFT_DPI_PATTERN = Pattern.compile("^Xft\\.dpi:\\s*(\\d+)", Pattern.MULTILINE);
+    private static final String UI_SCALE_PROPERTY = "sun.java2d.uiScale";
+
+    /**
+     * On Linux, Java2D scales only by GDK_SCALE, J2D_UISCALE or the deprecated GNOME
+     * scaling-factor setting, so on a scaled GNOME or KDE desktop Swing renders at 100 %:
+     * FlatLaf enlarges its own components, but the map and the icons stay small.
+     * Derive the integer display scale from Xft.dpi of the X resources and hand it to
+     * Java2D. Must run before AWT initializes, Java2D reads the property only once.
+     */
+    public static void initializeDisplayScale() {
+        if (!isLinux() || System.getProperty(UI_SCALE_PROPERTY) != null ||
+                System.getenv("GDK_SCALE") != null || System.getenv("J2D_UISCALE") != null ||
+                System.getenv("DISPLAY") == null)
+            return;
+        int scale = getDisplayScale(execute("xrdb", "-query"));
+        if (scale > 1)
+            System.setProperty(UI_SCALE_PROPERTY, String.valueOf(scale));
+    }
+
+    /**
+     * Java2D scales X11 by integers only; the remainder of a fractional scale or a larger
+     * text size stays with FlatLaf, which scales fonts by Xft.dpi relative to that.
+     */
+    static int getDisplayScale(String xrdbQueryOutput) {
+        Matcher matcher = XFT_DPI_PATTERN.matcher(xrdbQueryOutput);
+        if (!matcher.find())
+            return 1;
+        return Math.max(1, Integer.parseInt(matcher.group(1)) / 96);
+    }
+
+    /**
+     * The factor FlatLaf enlarges fonts, insets and icons by on top of the Java2D scale,
+     * 1 for other look-and-feels.
+     */
+    public static float getLookAndFeelScale() {
+        return UIManager.getLookAndFeel() instanceof FlatLaf ? UIScale.getUserScaleFactor() : 1f;
+    }
 
     public static String getLookAndFeelPreference() {
         return preferences.get(LOOK_AND_FEEL_CLASS_PREFERENCE, AUTOMATIC_LOOK_AND_FEEL);
@@ -97,10 +139,33 @@ public class UIHelper {
         if (isWindows())
             return isWindowsAppsDark(execute("reg", "query", "HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize",
                     "/v", "AppsUseLightTheme"));
-        if (isLinux())
+        if (isLinux()) {
+            // the settings portal answers inside the Flatpak sandbox, too, where gsettings only sees defaults
+            Optional<Boolean> portalDark = isPortalDark(execute("gdbus", "call", "--session", "--timeout", "2",
+                    "--dest", "org.freedesktop.portal.Desktop", "--object-path", "/org/freedesktop/portal/desktop",
+                    "--method", "org.freedesktop.portal.Settings.ReadOne", "org.freedesktop.appearance", "color-scheme"));
+            if (portalDark.isPresent())
+                return portalDark.get();
             return isGnomeDark(execute("gsettings", "get", "org.gnome.desktop.interface", "color-scheme"),
                     execute("gsettings", "get", "org.gnome.desktop.interface", "gtk-theme"));
+        }
         return false;
+    }
+
+    /**
+     * Parses the org.freedesktop.appearance color-scheme of the settings portal:
+     * 1 prefers dark, 2 prefers light, 0 has no preference and anything else is unknown,
+     * which both leave the decision to the desktop settings.
+     */
+    static Optional<Boolean> isPortalDark(String gdbusOutput) {
+        Matcher matcher = PORTAL_COLOR_SCHEME_PATTERN.matcher(gdbusOutput);
+        if (!matcher.find())
+            return Optional.empty();
+        return switch (matcher.group(1)) {
+            case "1" -> Optional.of(true);
+            case "2" -> Optional.of(false);
+            default -> Optional.empty();
+        };
     }
 
     static boolean isWindowsAppsDark(String regQueryOutput) {

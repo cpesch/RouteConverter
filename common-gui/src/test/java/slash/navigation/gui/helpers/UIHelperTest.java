@@ -21,6 +21,8 @@ package slash.navigation.gui.helpers;
 
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -83,5 +85,29 @@ public class UIHelperTest {
         assertTrue(UIHelper.isGnomeDark("'default'\n", "'Adwaita-dark'\n"));
         assertFalse(UIHelper.isGnomeDark("'default'\n", "'Adwaita'\n"));
         assertFalse(UIHelper.isGnomeDark("", ""));
+    }
+
+    @Test
+    public void testGetDisplayScale() {
+        String xrdb = "Xcursor.size:\t24\nXcursor.theme:\tYaru\nXft.antialias:\t1\nXft.dpi:\t%d\nXft.hinting:\t1\n";
+        assertEquals(1, UIHelper.getDisplayScale(String.format(xrdb, 96)));
+        assertEquals(1, UIHelper.getDisplayScale(String.format(xrdb, 120)));
+        assertEquals(1, UIHelper.getDisplayScale(String.format(xrdb, 144)));
+        assertEquals(2, UIHelper.getDisplayScale(String.format(xrdb, 192)));
+        assertEquals(2, UIHelper.getDisplayScale(String.format(xrdb, 240)));
+        assertEquals(3, UIHelper.getDisplayScale(String.format(xrdb, 288)));
+        assertEquals(1, UIHelper.getDisplayScale(String.format(xrdb, 48)));
+        assertEquals(1, UIHelper.getDisplayScale(""));
+        assertEquals(1, UIHelper.getDisplayScale("Xcursor.size:\t24\n"));
+    }
+
+    @Test
+    public void testIsPortalDark() {
+        assertEquals(Optional.of(true), UIHelper.isPortalDark("(<uint32 1>,)\n"));
+        assertEquals(Optional.of(false), UIHelper.isPortalDark("(<uint32 2>,)\n"));
+        assertEquals(Optional.empty(), UIHelper.isPortalDark("(<uint32 0>,)\n"));
+        assertEquals(Optional.empty(), UIHelper.isPortalDark("(<<uint32 3>>,)\n"));
+        assertEquals(Optional.empty(), UIHelper.isPortalDark(""));
+        assertEquals(Optional.empty(), UIHelper.isPortalDark("Error: GDBus.Error:org.freedesktop.portal.Error.NotFound: Requested setting not found\n"));
     }
 }
