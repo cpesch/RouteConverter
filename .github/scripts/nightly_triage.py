@@ -35,7 +35,8 @@ from nightly_model import JobResult
 DEFAULT_API_URL = "https://api.github.com"
 DEFAULT_POLL_TIMEOUT_S = 1500
 POLL_INTERVAL_S = 30
-NTFY_URL = "https://ntfy.routeconverter.com/factory"
+# The factory topic; the publisher user may write nowhere else (anonymous: deny-all).
+NTFY_URL = "https://ntfy.routeconverter.com/factory-rc"
 REPRO = (
     "JAVA_TOOL_OPTIONS=-XX:TieredStopAtLevel=1 mvn --batch-mode -T 1C "
     "-Dsurefire.forkCount=1 -Dspotbugs.skip=true -Dshade.skip=true verify"
