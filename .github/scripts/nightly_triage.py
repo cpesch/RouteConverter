@@ -220,6 +220,11 @@ def _find_last_green(runs, run_id):
     return None
 
 
+def _default_branch(api, repo):
+    data = api.request("GET", f"/repos/{repo}") or {}
+    return data.get("default_branch") or "master"
+
+
 def _push_runs(runs, run_id, branch, last_green, cap=5):
     result = []
     last_green_started = _started(last_green) if last_green is not None else None
@@ -243,7 +248,7 @@ def _signature_in(text):
     return match.group(0) if match else None
 
 
-def _build_trunk_overlap(api, repo, run, workflow, prs, runs, last_green):
+def _build_trunk_overlap(api, repo, run, workflow, prs, runs, last_green, default_branch):
     sigs = set()
     trunk_all = False
     for pr in prs:
@@ -254,7 +259,7 @@ def _build_trunk_overlap(api, repo, run, workflow, prs, runs, last_green):
                 sigs.add(signature)
             else:
                 trunk_all = True
-    for red_run in _push_runs(runs, run.get("id"), run.get("head_branch"), last_green):
+    for red_run in _push_runs(runs, run.get("id"), default_branch, last_green):
         jobs = fetch_jobs(api, repo, red_run["id"], 1)
         reports = fetch_reports(api, repo, red_run["id"], jobs)
         for finding in nightly_classify.classify(workflow, jobs, None, reports):
@@ -566,8 +571,11 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
 
     runs = _list_runs(api, repo, run)
     last_green = _find_last_green(runs, run_id)
+    default_branch = _default_branch(api, repo)
 
-    trunk_overlap_sigs, trunk_all = _build_trunk_overlap(api, repo, run, workflow, prs, runs, last_green)
+    trunk_overlap_sigs, trunk_all = _build_trunk_overlap(
+        api, repo, run, workflow, prs, runs, last_green, default_branch
+    )
     if trunk_all:
         trunk_overlap_sigs |= {finding.signature for finding in findings if finding.klass == "deterministic"}
 
