@@ -204,7 +204,9 @@ def _list_runs(api, repo, run):
     workflow_id = run.get("workflow_id")
     if workflow_id is None:
         return []
-    data = api.request("GET", f"/repos/{repo}/actions/runs?workflow_id={workflow_id}&per_page=100") or {}
+    # `/actions/runs` ignores a `workflow_id` filter and returns every workflow's runs;
+    # the per-workflow endpoint is the one that filters (#480).
+    data = api.request("GET", f"/repos/{repo}/actions/workflows/{workflow_id}/runs?per_page=100") or {}
     return data.get("workflow_runs", [])
 
 
@@ -219,10 +221,16 @@ def fetch_drift(api, repo, run_id):
     zip itself is missing or unreadable.
     """
     data = api.request("GET", f"/repos/{repo}/actions/runs/{run_id}/artifacts") or {}
-    artifact = next((a for a in data.get("artifacts", []) if a.get("name") == "drift-snapshot"), None)
+    artifact = next(
+        (a for a in data.get("artifacts", []) if a.get("name") == "drift-snapshot" and not a.get("expired")),
+        None,
+    )
     if artifact is None:
         return {}
-    payload = api.request("GET", f"/repos/{repo}/actions/artifacts/{artifact['id']}/zip", raw=True)
+    try:
+        payload = api.request("GET", f"/repos/{repo}/actions/artifacts/{artifact['id']}/zip", raw=True)
+    except urllib.error.HTTPError:
+        return {}
     if not payload:
         return {}
     try:
@@ -247,6 +255,8 @@ def _previous_scheduled(runs, run_id):
         if str(run.get("id")) == str(run_id):
             continue
         if run.get("event") != "schedule" or run.get("status") != "completed":
+            continue
+        if run.get("conclusion") not in ("success", "failure"):
             continue
         started = _started(run)
         if current_started and started >= current_started:
@@ -554,7 +564,7 @@ def _drift_log_comment(api, repo, env_diff, run_url, open_issues, dry_run):
     title = nightly_issue.LEDGER_TITLES["drift"]
     number = next((issue["number"] for issue in open_issues if issue.get("title") == title), None)
     if dry_run:
-        print(f"DRY-RUN drift-comment #{number if number is not None else 'new'} {len(env_diff)} keys")
+        print(f"DRY-RUN update_ledger #{number if number is not None else 0} drift ({len(env_diff)} keys)")
         return
     if number is None:
         body = nightly_issue.ledger_body("drift", {})

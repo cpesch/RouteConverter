@@ -5,6 +5,7 @@ import os
 import sys
 import tempfile
 import unittest
+import urllib.error
 import urllib.request
 import zipfile
 from unittest import mock
@@ -19,7 +20,7 @@ RUN_ID = 123
 RUN_PATH = f"/repos/{REPO}/actions/runs/{RUN_ID}"
 ISSUES_PATH = f"/repos/{REPO}/issues?labels=from:nightly&state=open"
 PULLS_PATH = f"/repos/{REPO}/pulls?state=all&sort=updated&direction=desc&per_page=100"
-RUNS_PATH = f"/repos/{REPO}/actions/runs?workflow_id=77&per_page=100"
+RUNS_PATH = f"/repos/{REPO}/actions/workflows/77/runs?per_page=100"
 REPO_PATH = f"/repos/{REPO}"
 
 LOG = b"[ERROR] Tests run: 1, Failures: 1"
@@ -599,6 +600,31 @@ class FetchDriftTest(unittest.TestCase):
         self.assertEqual(nightly_triage.fetch_drift(api, REPO, RUN_ID), {"java": "21"})
 
 
+class FetchDriftEdgeTest(unittest.TestCase):
+    def test_expired_artifact_counts_as_missing(self):
+        api = FakeApi({("GET", f"/repos/{REPO}/actions/runs/{RUN_ID}/artifacts"): {
+            "artifacts": [{"id": 1, "name": "drift-snapshot", "expired": True}]}})
+        self.assertEqual(nightly_triage.fetch_drift(api, REPO, RUN_ID), {})
+        self.assertNotIn(("GET", f"/repos/{REPO}/actions/artifacts/1/zip"), [c[:2] for c in api.calls])
+
+    def test_http_error_on_download_returns_empty(self):
+        class ErrApi(FakeApi):
+            def request(self, method, path, body=None, raw=False):
+                if path.endswith("/zip"):
+                    raise urllib.error.HTTPError(path, 410, "Gone", {}, None)
+                return super().request(method, path, body, raw)
+        api = ErrApi({("GET", f"/repos/{REPO}/actions/runs/{RUN_ID}/artifacts"): {
+            "artifacts": [{"id": 1, "name": "drift-snapshot"}]}})
+        self.assertEqual(nightly_triage.fetch_drift(api, REPO, RUN_ID), {})
+
+
+class ListRunsTest(unittest.TestCase):
+    def test_uses_per_workflow_endpoint(self):
+        api = FakeApi({("GET", RUNS_PATH): {"workflow_runs": [{"id": 1}]}})
+        self.assertEqual(nightly_triage._list_runs(api, REPO, {"workflow_id": 77}), [{"id": 1}])
+        self.assertEqual(api.calls[0][:2], ("GET", f"/repos/{REPO}/actions/workflows/77/runs?per_page=100"))
+
+
 class PreviousScheduledTest(unittest.TestCase):
     def test_skips_push_and_in_progress_picks_latest_earlier_scheduled(self):
         runs = [
@@ -610,6 +636,14 @@ class PreviousScheduledTest(unittest.TestCase):
         ]
         previous = nightly_triage._previous_scheduled(runs, RUN_ID)
         self.assertEqual(previous["id"], 202)
+
+    def test_cancelled_previous_night_is_skipped(self):
+        runs = [
+            run(id=RUN_ID, event="schedule", status="completed", run_started_at="2026-10-12T03:00:00Z"),
+            run(id=301, event="schedule", status="completed", conclusion="cancelled", run_started_at="2026-10-11T03:00:00Z"),
+            run(id=302, event="schedule", status="completed", conclusion="failure", run_started_at="2026-10-10T03:00:00Z"),
+        ]
+        self.assertEqual(nightly_triage._previous_scheduled(runs, RUN_ID)["id"], 302)
 
     def test_no_previous_scheduled_run_returns_none(self):
         runs = [run(id=RUN_ID, event="schedule", status="completed")]
@@ -832,7 +866,7 @@ class DriftDryRunTest(unittest.TestCase):
         )
         code, out, _ = run_triage(api, dry_run=True)
         self.assertEqual(code, 0)
-        self.assertIn("DRY-RUN drift-comment #60 1 keys", out)
+        self.assertIn("DRY-RUN update_ledger #60 drift (1 keys)", out)
         writes = [c for c in api.calls if c[0] in ("POST", "PATCH", "DELETE")]
         self.assertEqual(writes, [])
 
