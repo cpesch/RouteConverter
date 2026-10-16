@@ -30,6 +30,7 @@ import java.util.*;
 import java.util.logging.Logger;
 
 import static java.util.Arrays.sort;
+import static slash.common.helpers.ExceptionHelper.getMessageWithCauses;
 
 /**
  * A geocoding service that tries to find the best available geocoding service.
@@ -77,6 +78,7 @@ public class AutomaticGeocodingService extends BaseGeocodingService {
                 }
 
             } catch (IOException e) {
+                log.warning("Cannot retrieve positions from " + service.getName() + " for " + address + ": " + getMessageWithCauses(e));
                 lastException = e;
             }
         }

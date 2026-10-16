@@ -85,6 +85,21 @@ public class MapsforgePoiLookup {
             "GROUP BY poi_index.id, poi_data.data " +
             "LIMIT ?";
 
+    // Q1 for a trigram index: the files of the mapsforge POI writer create poi_data_fts with
+    // tokenize='trigram' and detail='none', which rejects every MATCH on a word of more than three
+    // characters ("phrase queries are not supported"). Such an index serves LIKE instead, infix
+    // matches included, for patterns with at least three characters and scans otherwise.
+    static final String Q1_TRIGRAM_SQL = SELECT_COLUMNS_V4 +
+            "FROM poi_data_fts " +
+            "JOIN poi_index ON poi_index.id = poi_data_fts.rowid " +
+            "JOIN poi_data ON poi_index.id = poi_data.id " +
+            "LEFT JOIN poi_category_map ON poi_index.id = poi_category_map.id " +
+            "LEFT JOIN poi_categories ON poi_category_map.category = poi_categories.id " +
+            "WHERE poi_data_fts.data LIKE ? " +
+            "AND poi_index.minLat <= ? AND poi_index.minLon <= ? AND poi_index.maxLat >= ? AND poi_index.maxLon >= ? " +
+            "GROUP BY poi_index.id, poi_data.data " +
+            "LIMIT ?";
+
     // Q1 fallback: FTS5 only matches token prefixes, so an infix query (e.g. "stelle" in "Tankstelle")
     // needs a plain LIKE scan of poi_data.
     private static final String Q1_LIKE_SQL = SELECT_COLUMNS_V4 +
@@ -387,13 +402,16 @@ public class MapsforgePoiLookup {
         return 3;
     }
 
-    private boolean hasFullTextSearchTable(Connection connection) {
+    private FullTextIndex readFullTextIndex(Connection connection) {
         try (Statement statement = connection.createStatement();
              ResultSet resultSet = statement.executeQuery(
-                     "SELECT 1 FROM sqlite_master WHERE type = 'table' AND name = 'poi_data_fts'")) {
-            return resultSet.next();
+                     "SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'poi_data_fts'")) {
+            if (!resultSet.next())
+                return FullTextIndex.NONE;
+            String sql = resultSet.getString("sql");
+            return sql != null && sql.toLowerCase(Locale.ROOT).contains("trigram") ? FullTextIndex.TRIGRAM : FullTextIndex.WORDS;
         } catch (SQLException e) {
-            return false;
+            return FullTextIndex.NONE;
         }
     }
 
@@ -622,14 +640,28 @@ public class MapsforgePoiLookup {
             return runQuery(connection, Q3_BBOX_SQL, north, east, south, west, MAX_DATABASE_ROWS);
 
         LinkedHashMap<Long, SqlRow> rows = new LinkedHashMap<>();
-        String ftsExpression = useLikeFallback ? null : toFtsMatchExpression(query);
-        if (ftsExpression != null && hasFullTextSearchTable(connection))
-            mergeInto(rows, runQuery(connection, Q1_FTS_SQL, ftsExpression, north, east, south, west, MAX_DATABASE_ROWS));
-        else
-            mergeInto(rows, runQuery(connection, Q1_LIKE_SQL, "%" + query + "%", north, east, south, west, MAX_DATABASE_ROWS));
-
+        mergeInto(rows, searchText(connection, query, useLikeFallback, north, east, south, west));
         mergeInto(rows, runQuery(connection, Q2_CATEGORY_SQL, "%" + query + "%", north, east, south, west, MAX_DATABASE_ROWS));
         return rows;
+    }
+
+    private LinkedHashMap<Long, SqlRow> searchText(Connection connection, String query, boolean useLikeFallback,
+                                                   double north, double east, double south, double west) throws SQLException {
+        String pattern = "%" + query + "%";
+        FullTextIndex index = readFullTextIndex(connection);
+        // a trigram index finds infix matches itself, so it serves the LIKE fallback, too
+        if (index == FullTextIndex.TRIGRAM)
+            return runQuery(connection, Q1_TRIGRAM_SQL, pattern, north, east, south, west, MAX_DATABASE_ROWS);
+
+        String ftsExpression = useLikeFallback ? null : toFtsMatchExpression(query);
+        if (ftsExpression != null && index == FullTextIndex.WORDS) {
+            try {
+                return runQuery(connection, Q1_FTS_SQL, ftsExpression, north, east, south, west, MAX_DATABASE_ROWS);
+            } catch (SQLException e) {
+                log.log(Level.FINE, "Cannot search full-text index, falling back to LIKE", e);
+            }
+        }
+        return runQuery(connection, Q1_LIKE_SQL, pattern, north, east, south, west, MAX_DATABASE_ROWS);
     }
 
     private void mergeInto(LinkedHashMap<Long, SqlRow> target, Map<Long, SqlRow> source) {
@@ -700,6 +732,8 @@ public class MapsforgePoiLookup {
 
     private record PoiMatch(CategorizedNavigationPosition position, String description, double distanceMeters) {
     }
+
+    private enum FullTextIndex {NONE, WORDS, TRIGRAM}
 
     private record SqlRow(double lat, double lon, String data, String categories) {
     }

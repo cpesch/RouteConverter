@@ -267,6 +267,71 @@ public class MapsforgePoiLookupTest {
     }
 
     @Test
+    public void searchesNamePrefixInfixAndCategoryOnTrigramIndexV4() throws Exception {
+        File poiFile = createPoiFileV4WithTrigramIndex();
+        insertPoiV4(poiFile, 1, 52.5200, 13.4050, tags("name", "Mundsburg", "railway", "station"));
+        insertPoiV4(poiFile, 2, 52.5210, 13.4100, tags("name", "Tankstelle"), "fuel");
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
+
+        List<CategorizedNavigationPosition> name = lookup.search(poiFile, normalize("Mundsburg"), VISIBLE_BOUNDS, CENTER);
+        assertEquals(1, name.size());
+        assertEquals("Mundsburg", name.get(0).getDescription());
+
+        List<CategorizedNavigationPosition> prefix = lookup.search(poiFile, normalize("Mundsb"), VISIBLE_BOUNDS, CENTER);
+        assertEquals(1, prefix.size());
+        assertEquals("Mundsburg", prefix.get(0).getDescription());
+
+        List<CategorizedNavigationPosition> infix = lookup.search(poiFile, normalize("stelle"), VISIBLE_BOUNDS, CENTER);
+        assertEquals(1, infix.size());
+        assertEquals("Tankstelle", infix.get(0).getDescription());
+
+        List<CategorizedNavigationPosition> category = lookup.search(poiFile, normalize("fuel"), VISIBLE_BOUNDS, CENTER);
+        assertEquals(1, category.size());
+        assertEquals("Tankstelle", category.get(0).getDescription());
+
+        // shorter than a trigram: no index lookup, but still a match
+        List<CategorizedNavigationPosition> shortQuery = lookup.search(poiFile, normalize("Mu"), VISIBLE_BOUNDS, CENTER);
+        assertEquals(1, shortQuery.size());
+        assertEquals("Mundsburg", shortQuery.get(0).getDescription());
+
+        assertTrue(lookup.search(poiFile, normalize("Hauptbahnhof"), VISIBLE_BOUNDS, CENTER).isEmpty());
+    }
+
+    @Test
+    public void explainPlanForTrigramSearchIsDrivenByFts5Index() throws Exception {
+        File poiFile = createPoiFileV4WithTrigramIndex();
+        insertPoiV4(poiFile, 1, 52.5200, 13.4050, tags("name", "Mundsburg"));
+
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + poiFile.getAbsolutePath());
+             PreparedStatement statement = connection.prepareStatement("EXPLAIN QUERY PLAN " + MapsforgePoiLookup.Q1_TRIGRAM_SQL)) {
+            statement.setString(1, "%mundsburg%");
+            statement.setDouble(2, 90);
+            statement.setDouble(3, 180);
+            statement.setDouble(4, -90);
+            statement.setDouble(5, -180);
+            statement.setInt(6, MapsforgePoiLookup.MAX_DATABASE_ROWS);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                assertTrue(resultSet.next());
+                assertTrue("plan should scan poi_data_fts first, was: " + resultSet.getString("detail"),
+                        resultSet.getString("detail").contains("poi_data_fts"));
+            }
+        }
+    }
+
+    @Test
+    public void fallsBackToLikeWhenFullTextIndexRejectsMatchV4() throws Exception {
+        // splitting "mundsburg" at 'u' turns the query into a phrase, which detail='none' rejects
+        File poiFile = createPoiFileV4(", tokenize=\"unicode61 separators 'u'\", detail='none'");
+        insertPoiV4(poiFile, 1, 52.5200, 13.4050, tags("name", "Mundsburg"));
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
+
+        List<CategorizedNavigationPosition> result = lookup.search(poiFile, normalize("Mundsburg"), VISIBLE_BOUNDS, CENTER);
+
+        assertEquals(1, result.size());
+        assertEquals("Mundsburg", result.get(0).getDescription());
+    }
+
+    @Test
     public void remoteV4BeatsLocalV3WithIdenticalBoundingBox() {
         MapsforgePoiLookup.PoiDescriptor localV3 = new MapsforgePoiLookup.PoiDescriptor(
                 new File("germany.poi"), null, MAP_BOUNDS, 3, "mapsforge-pois");
@@ -776,11 +841,20 @@ public class MapsforgePoiLookupTest {
     }
 
     private File createPoiFileV4() throws Exception {
+        return createPoiFileV4("");
+    }
+
+    // the schema the mapsforge POI writer creates
+    private File createPoiFileV4WithTrigramIndex() throws Exception {
+        return createPoiFileV4(", tokenize='trigram', detail='none'");
+    }
+
+    private File createPoiFileV4(String fullTextOptions) throws Exception {
         File file = temporaryFolder.newFile("test-v4.poi");
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath()); Statement statement = connection.createStatement()) {
             statement.executeUpdate("CREATE VIRTUAL TABLE poi_index USING rtree(id, minLat, maxLat, minLon, maxLon)");
             statement.executeUpdate("CREATE TABLE poi_data (id INTEGER, data TEXT, PRIMARY KEY (id))");
-            statement.executeUpdate("CREATE VIRTUAL TABLE poi_data_fts USING fts5(data, content='poi_data', content_rowid='id')");
+            statement.executeUpdate("CREATE VIRTUAL TABLE poi_data_fts USING fts5(data, content='poi_data', content_rowid='id'" + fullTextOptions + ")");
             statement.executeUpdate("CREATE TABLE poi_categories (id INTEGER, name TEXT, parent INTEGER, PRIMARY KEY (id))");
             statement.executeUpdate("CREATE TABLE poi_category_map (id INTEGER, category INTEGER, PRIMARY KEY (id, category))");
             statement.executeUpdate("CREATE TABLE metadata (name TEXT, value TEXT)");

@@ -12,6 +12,7 @@
 ### Fixes
 
 - Windows: dates, times and numbers follow the regional settings again — the 3.7 installer bundled a Java runtime without locale data (#415, #470)
+- Find places finds matches in the downloaded offline POI data; with the current POI downloads it found none (#276)
 
 ## 3.7 — 2026-10-10
 
