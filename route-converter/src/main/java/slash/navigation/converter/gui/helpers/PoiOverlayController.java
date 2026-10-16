@@ -75,7 +75,7 @@ public class PoiOverlayController {
             new Color(0xbcbd22), new Color(0x393b79), new Color(0xad494a), new Color(0x7f7f7f)
     };
 
-    public enum State {OFF, ZOOM_IN, NO_DATA, SHOWN, TRUNCATED}
+    public enum State {OFF, ZOOM_IN, NO_DATA, SHOWN}
 
     private final MapsforgePoiOverlayService service;
     private final Supplier<MapView> mapViewSupplier;
@@ -244,7 +244,7 @@ public class PoiOverlayController {
                 if (found == null)
                     update(view, State.NO_DATA, emptyList());
                 else
-                    update(view, found.truncated() ? State.TRUNCATED : State.SHOWN, toMarkers(found));
+                    update(view, State.SHOWN, toMarkers(found));
             });
         });
     }

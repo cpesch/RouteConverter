@@ -187,7 +187,6 @@ public class ShowPoisDialog extends SimpleDialog {
                 case ZOOM_IN -> BaseRouteConverter.getBundle().getString("show-pois-zoom-in");
                 case NO_DATA -> BaseRouteConverter.getBundle().getString("show-pois-no-data");
                 case SHOWN -> MessageFormat.format(BaseRouteConverter.getBundle().getString("show-pois-shown"), controller.getCount());
-                case TRUNCATED -> MessageFormat.format(BaseRouteConverter.getBundle().getString("show-pois-truncated"), controller.getCount());
             };
         }
         labelState.setText(text);

@@ -131,14 +131,15 @@ public class PoiOverlayControllerTest {
     }
 
     @Test
-    public void reportsTruncationAndMissingData() throws Exception {
+    public void reportsShownPoisAndMissingData() throws Exception {
         when(mapView.getBoundingBox()).thenReturn(CITY);
         when(service.search(any(), anySet(), anyInt())).thenReturn(new CategoryPoiResult(List.of(poi("Bank", null, 0)), true));
         PoiOverlayController controller = createController();
         controller.setEnabled(true);
         controller.setSelectedKeys(Set.of("Banks"));
         drainEventQueue();
-        assertEquals(TRUNCATED, controller.getState());
+        assertEquals(SHOWN, controller.getState());
+        assertEquals(1, controller.getCount());
 
         when(service.search(any(), anySet(), anyInt())).thenReturn(null);
         controller.setSelectedKeys(Set.of("Shop"));
