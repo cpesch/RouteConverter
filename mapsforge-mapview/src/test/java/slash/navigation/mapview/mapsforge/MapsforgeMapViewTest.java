@@ -22,6 +22,7 @@ package slash.navigation.mapview.mapsforge;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapsforge.core.graphics.GraphicFactory;
+import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
@@ -280,6 +281,98 @@ public class MapsforgeMapViewTest {
         Field field = MapsforgeMapView.class.getDeclaredField(fieldName);
         field.setAccessible(true);
         return field.get(target);
+    }
+
+    // --- re-fit decision after a map dimension change (issue #274) -----------------------------
+    // On macOS, fitAndCenter() can run before the frame layout has settled (the profile pane below
+    // the map has not taken its height yet), fitting the route against a taller-than-final map and
+    // picking a zoom one level too close. shouldRefitAfterResize() is the pure decision of whether
+    // a dimension change shortly afterwards should redo that fit -- extracted so it is testable
+    // without a real window, mirroring testDeviceScaleFactor() below. The window is always measured
+    // from the original fit (refitAfterResize() never resets the stored timestamp), and either a
+    // zoom or a pan since the fit counts as user interaction that abandons it.
+
+    @Test
+    public void testRefitsWhenFitPendingAndDimensionChangedWithinWindow() {
+        assertEquals(true, MapsforgeMapView.shouldRefitAfterResize(true, true, 0, 2000, false));
+        assertEquals(true, MapsforgeMapView.shouldRefitAfterResize(true, true, 2000, 2000, false));
+    }
+
+    @Test
+    public void testDoesNotRefitWithoutAPendingFit() {
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(false, true, 0, 2000, false));
+    }
+
+    @Test
+    public void testDoesNotRefitWhenDimensionDidNotChange() {
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, false, 0, 2000, false));
+    }
+
+    @Test
+    public void testDoesNotRefitOutsideTheTimeWindow() {
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, 2001, 2000, false));
+    }
+
+    @Test
+    public void testDoesNotRefitAfterUserInteraction() {
+        // a fit the user has zoomed away from must not be repeated, even if still within the window
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, 0, 2000, true));
+    }
+
+    @Test
+    public void testRefitWindowIsMeasuredFromTheOriginalFitAcrossAChainOfResizes() {
+        // three resizes arrive 1500ms apart; if the window were reset on every refit instead of
+        // kept from the original fit, the third would still land inside a fresh 2000ms window and
+        // wrongly refit again -- it must not, however many resizes arrived in between
+        long refitWindowMillis = 2000;
+        long firstResizeMillisSinceOriginalFit = 1500;
+        long secondResizeMillisSinceOriginalFit = 3000;
+        long thirdResizeMillisSinceOriginalFit = 4500;
+
+        assertEquals(true, MapsforgeMapView.shouldRefitAfterResize(true, true, firstResizeMillisSinceOriginalFit, refitWindowMillis, false));
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, secondResizeMillisSinceOriginalFit, refitWindowMillis, false));
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, thirdResizeMillisSinceOriginalFit, refitWindowMillis, false));
+    }
+
+    @Test
+    public void testDoesNotRefitAfterUserPanned() {
+        // a pan (center changed, zoom unchanged) must abandon the pending fit just like a zoom
+        // does -- refitAfterResize() folds zoomChanged || centerChanged into this single flag
+        boolean zoomChanged = false;
+        boolean centerChanged = true;
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, 0, 2000, zoomChanged || centerChanged));
+    }
+
+    // --- isPannedSinceFit(): whether the map's live center counts as moved away from the fit's
+    // target (issue #274 follow-up) -----------------------------------------------------------
+    // fitAndCenter() must store the center the fit is heading for, not the live center
+    // read back immediately after calling animateTo() -- that animation is still in progress and
+    // the live center legitimately differs from the target without any user action.
+
+    @Test
+    public void testIsPannedSinceFitWhenAnimationInProgress() {
+        LatLong current = new LatLong(1.0, 1.0);
+        LatLong target = new LatLong(2.0, 2.0);
+        assertEquals(false, MapsforgeMapView.isPannedSinceFit(true, current, target));
+    }
+
+    @Test
+    public void testIsPannedSinceFitWhenCenterDiffersAndNoAnimation() {
+        LatLong current = new LatLong(1.0, 1.0);
+        LatLong target = new LatLong(2.0, 2.0);
+        assertEquals(true, MapsforgeMapView.isPannedSinceFit(false, current, target));
+    }
+
+    @Test
+    public void testIsPannedSinceFitWhenCenterEqualsTargetAndNoAnimation() {
+        LatLong center = new LatLong(1.0, 1.0);
+        assertEquals(false, MapsforgeMapView.isPannedSinceFit(false, center, center));
+    }
+
+    @Test
+    public void testIsPannedSinceFitWithNullTargetIsNotAPan() {
+        LatLong current = new LatLong(1.0, 1.0);
+        assertEquals(false, MapsforgeMapView.isPannedSinceFit(false, current, null));
     }
 
     @Test
