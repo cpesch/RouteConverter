@@ -153,6 +153,10 @@ public class MapsforgeMapView extends BaseMapView {
     private static final int SELECTION_CIRCLE_IN_PIXEL = 15;
     private static final byte MINIMUM_ZOOM_LEVEL = 2;
     private static final byte MAXIMUM_ZOOM_LEVEL = 22;
+    // a route fit is redone once more if the map dimension changes within this window after it,
+    // to catch a layout still settling (issue #274); a later resize, or any zoom the user did in
+    // the meantime, must not trigger another fit
+    private static final long REFIT_WINDOW_MILLIS = 2000;
 
     private PositionsModel positionsModel;
     private PositionListsModel positionListsModel;
@@ -229,6 +233,12 @@ public class MapsforgeMapView extends BaseMapView {
     private EventMapUpdater routeUpdater, trackUpdater, waypointUpdater;
     private UpdateDecoupler updateDecoupler;
     private final GroupLayer waypointLayer = new GroupLayer();
+
+    // the most recent route fit that a layout still settling (e.g. on macOS) may need repeating;
+    // null once consumed, expired or abandoned because the user zoomed since
+    private org.mapsforge.core.model.BoundingBox pendingFitBoundingBox;
+    private byte pendingFitZoomLevel;
+    private long pendingFitTimestamp;
 
     // initialization
 
@@ -649,7 +659,7 @@ public class MapsforgeMapView extends BaseMapView {
                 deviceScaleFactor, Toolkit.getDefaultToolkit().getScreenResolution(), getDefaultScreenScale()));
 
         AwtGraphicMapView mapView = new AwtGraphicMapView();
-        new MapViewResizer(mapView, mapView.getModel().mapViewDimension);
+        new MapViewResizer(mapView, mapView.getModel().mapViewDimension, this::refitAfterResize);
         mapView.getMapScaleBar().setVisible(true);
         ((DefaultMapScaleBar) mapView.getMapScaleBar()).setScaleBarMode(SINGLE);
         return mapView;
@@ -1252,10 +1262,45 @@ public class MapsforgeMapView extends BaseMapView {
             return;
         byte zoom = zoomForBounds(dimension, boundingBox, getTileSize());
         setZoom(zoom);
+
+        pendingFitBoundingBox = boundingBox;
+        pendingFitZoomLevel = zoom;
+        pendingFitTimestamp = currentTimeMillis();
     }
 
     private void zoomToBounds(BoundingBox boundingBox) {
         zoomToBounds(asMapsforgeBoundingBox(boundingBox));
+    }
+
+    // called by MapViewResizer whenever the map component's dimension changes; redoes a route fit
+    // that ran against a layout still settling (e.g. macOS not yet having given the profile pane
+    // its final height, issue #274), but only once, only shortly after the fit, and never once the
+    // user has zoomed since -- a fit the user zoomed away from must not be repeated
+    private void refitAfterResize(Dimension newDimension) {
+        if (pendingFitBoundingBox == null)
+            return;
+
+        long millisSinceFit = currentTimeMillis() - pendingFitTimestamp;
+        boolean userZoomedSinceFit = getZoom() != pendingFitZoomLevel;
+        if (!shouldRefitAfterResize(true, true, millisSinceFit, REFIT_WINDOW_MILLIS, userZoomedSinceFit)) {
+            pendingFitBoundingBox = null;
+            return;
+        }
+
+        byte zoom = zoomForBounds(newDimension, pendingFitBoundingBox, getTileSize());
+        if (zoom != pendingFitZoomLevel)
+            setZoom(zoom);
+        pendingFitZoomLevel = zoom;
+        pendingFitTimestamp = currentTimeMillis();
+    }
+
+    // pure decision extracted for unit testing without a real window: a pending fit is redone
+    // only if the dimension actually changed, the change arrived within the re-fit window, and
+    // the user has not zoomed (hence not deliberately moved away from the fit) since
+    static boolean shouldRefitAfterResize(boolean fitPending, boolean dimensionChanged, long millisSinceFit,
+                                           long refitWindowMillis, boolean userInteractedSinceFit) {
+        return fitPending && dimensionChanged && !userInteractedSinceFit
+                && millisSinceFit >= 0 && millisSinceFit <= refitWindowMillis;
     }
 
     public /*for DraggableMarker*/ MapView getMapView() {

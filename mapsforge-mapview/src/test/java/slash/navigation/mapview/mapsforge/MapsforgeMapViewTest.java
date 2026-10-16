@@ -282,6 +282,40 @@ public class MapsforgeMapViewTest {
         return field.get(target);
     }
 
+    // --- re-fit decision after a map dimension change (issue #274) -----------------------------
+    // On macOS, zoomToBounds() can run before the frame layout has settled (the profile pane below
+    // the map has not taken its height yet), fitting the route against a taller-than-final map and
+    // picking a zoom one level too close. shouldRefitAfterResize() is the pure decision of whether
+    // a dimension change shortly afterwards should redo that fit -- extracted so it is testable
+    // without a real window, mirroring testDeviceScaleFactor() below.
+
+    @Test
+    public void testRefitsWhenFitPendingAndDimensionChangedWithinWindow() {
+        assertEquals(true, MapsforgeMapView.shouldRefitAfterResize(true, true, 0, 2000, false));
+        assertEquals(true, MapsforgeMapView.shouldRefitAfterResize(true, true, 2000, 2000, false));
+    }
+
+    @Test
+    public void testDoesNotRefitWithoutAPendingFit() {
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(false, true, 0, 2000, false));
+    }
+
+    @Test
+    public void testDoesNotRefitWhenDimensionDidNotChange() {
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, false, 0, 2000, false));
+    }
+
+    @Test
+    public void testDoesNotRefitOutsideTheTimeWindow() {
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, 2001, 2000, false));
+    }
+
+    @Test
+    public void testDoesNotRefitAfterUserInteraction() {
+        // a fit the user has zoomed away from must not be repeated, even if still within the window
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, 0, 2000, true));
+    }
+
     @Test
     public void testDeviceScaleFactor() {
         // Windows: the screen resolution already contains the display scale
