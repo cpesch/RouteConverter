@@ -81,12 +81,12 @@ jobs:
           # failing test off on long suites (rc-meta#777).
           LOG=/tmp/verify-mvn.log
           {
-            grep -E '<<< (FAILURE|ERROR)!' "$LOG" | head -40
-            grep -E '^\[ERROR\]   [^ ]+:[0-9]+' "$LOG" | head -40
-            grep -E '^\[INFO\] .* (FAILURE|SKIPPED)( \[.*\])?$' "$LOG" | head -40
+            grep -E '<<< (FAILURE|ERROR)!' "$LOG" | head -40 || true
+            grep -E '^\[ERROR\]   [^ ]+:[0-9]+' "$LOG" | head -40 || true
+            grep -E '^\[INFO\] .* (FAILURE|SKIPPED)( \[.*\])?$' "$LOG" | head -40 || true
             grep -E '^\[INFO\] BUILD' "$LOG" || true
-            grep -E '^\[ERROR\]' "$LOG" | head -40
-            grep -E 'Tests run:' "$LOG" | tail -60
+            grep -E '^\[ERROR\]' "$LOG" | head -40 || true
+            grep -E 'Tests run:' "$LOG" | tail -60 || true
           } | awk '!seen[$0]++' > /tmp/verify-summary.txt || true
           exit "$RC"
 
@@ -121,7 +121,7 @@ jobs:
             # Maven produced output but no verdict: it was killed mid-run
             # (runner/OOM/timeout). Calling that "did not pass" sent debugging
             # to the diff; a re-run of the same commit passed (rc-meta#777).
-            LAST="$(grep -E '^\[INFO\] Building ' /tmp/verify-mvn.log | tail -1 | sed -E 's/^\[INFO\] Building //')"
+            LAST="$(grep -E '^\[INFO\] Building ' /tmp/verify-mvn.log | tail -1 | sed -E 's/^\[INFO\] Building //' || true)"
             HEADLINE="🤖 **verify inconclusive** — Maven exited without a verdict (rc=${MVN_RC:-?}) after module ${LAST:-unknown}. Runner fault likely, not your diff: re-dispatch verify on this branch."
             echo "::warning::verify inconclusive: Maven exited without a BUILD verdict (rc=${MVN_RC:-?})"
           else
