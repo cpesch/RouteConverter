@@ -134,13 +134,13 @@ public class RouteConverter extends BaseRouteConverter {
             addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-routing", CoverageOverlayController.Category.ROUTING, false);
             addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-elevation", CoverageOverlayController.Category.ELEVATION, false);
             addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-poi", CoverageOverlayController.Category.POI, false);
-            viewMenu.add(createItem("show-pois"), 2);
-            viewMenu.add(createItem("show-themes"), 3);
-            viewMenu.add(createItem("show-theme-styles"), 4);
+            viewMenu.add(createItem("show-themes"), 2);
+            viewMenu.add(createItem("show-theme-styles"), 3);
             JMenu overlaysMenu = createMenu("show-overlays");
-            viewMenu.add(overlaysMenu, 5);
+            viewMenu.add(overlaysMenu, 4);
             new OverlaysMenu(overlaysMenu, getTileServerMapManager().getAvailableOverlaysModel(), getTileServerMapManager().getAppliedOverlaysModel());
-            viewMenu.add(createCheckBoxItem("show-shaded-hills", getMapPreferencesModel().getShowShadedHills()), 6);
+            viewMenu.add(createCheckBoxItem("show-shaded-hills", getMapPreferencesModel().getShowShadedHills()), 5);
+            viewMenu.add(createItem("show-pois"), 6);
             viewMenu.add(new JPopupMenu.Separator(), 7);
         }
     }
