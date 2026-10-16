@@ -36,6 +36,7 @@ import static java.util.logging.Logger.getLogger;
 import static java.util.prefs.Preferences.userNodeForPackage;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.helpers.ProxyHelper.setUseSystemProxies;
+import static slash.navigation.gui.helpers.UIHelper.initializeDisplayScale;
 import static slash.navigation.gui.helpers.UIHelper.setLookAndFeel;
 
 /**
@@ -150,6 +151,8 @@ public abstract class Application {
     }
 
     public static <T extends Application> void launch(final Class<T> applicationClass, final List<String> bundleNames, final String[] args) {
+        // before invokeLater() initializes AWT
+        initializeDisplayScale();
         installDefaultUncaughtExceptionHandler();
 
         Runnable doCreateAndShowGUI = () -> {
