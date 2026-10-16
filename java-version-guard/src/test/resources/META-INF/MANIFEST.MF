@@ -1,0 +1,5 @@
+Manifest-Version: 1.0
+Guarded-Main-Class: slash.navigation.javaguard.JavaVersionGuardTest$Target
+Required-Java-Version: 8
+Application-Name: GuardTest
+

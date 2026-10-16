@@ -31,7 +31,12 @@
                                         <Specification-Vendor>Christian Pesch</Specification-Vendor>
                                         <Implementation-Version>${maven.build.timestamp.clone}</Implementation-Version>
                                         <Implementation-Vendor>Linux</Implementation-Vendor>
-                                        <Main-Class>slash.navigation.converter.gui.RouteConverter</Main-Class>
+                                        <!-- runs on the user's own Java: the guard, compiled for
+                                             Java 8, says which Java to install when this one is
+                                             older than the bytecode needs, then starts the app -->
+                                        <Main-Class>slash.navigation.javaguard.JavaVersionGuard</Main-Class>
+                                        <Guarded-Main-Class>slash.navigation.converter.gui.RouteConverter</Guarded-Main-Class>
+                                        <Required-Java-Version>${java.version}</Required-Java-Version>
                                         <Enable-Native-Access>ALL-UNNAMED</Enable-Native-Access>
                                         <SplashScreen-Image>slash/navigation/converter/gui/RouteConverter.png</SplashScreen-Image>
                                         <Permissions>all-permissions</Permissions>
@@ -79,6 +84,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>java-version-guard</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>route-converter</artifactId>

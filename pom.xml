@@ -945,6 +945,7 @@
         <module>gpx</module>
         <module>graphhopper</module>
         <module>hgt</module>
+        <module>java-version-guard</module>
         <module>kml</module>
         <module>mapsforge-maps</module>
         <module>mapsforge-poi</module>
