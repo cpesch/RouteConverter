@@ -15,6 +15,7 @@ import slash.navigation.geocoding.CategorizedNavigationPosition;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
@@ -129,6 +130,72 @@ public class MapsforgeMapLookupTest {
         assertEquals(geometryPoint.latitude, results.get(0).getLatitude(), 0.0);
         assertEquals("Geometry Way", results.get(0).getDescription());
         assertEquals("service", categoryOf(results.get(0)));
+    }
+
+    @Test
+    public void readsCategoriesFromPoiTagsOfHeader() {
+        MapFile mapFile = mock(MapFile.class);
+        MapsforgeMapLookup lookup = spy(new MapsforgeMapLookup());
+        doReturn(new Tag[]{new Tag("shop", "bakery"), new Tag("amenity", "fast_food"), new Tag("amenity", "bank"),
+                new Tag("name", "ignored"), new Tag("ele", "%f"), new Tag("natural", "%s")}).when(lookup).readPoiTags(mapFile);
+
+        List<PoiCategory> categories = lookup.readCategories(mapFile);
+
+        assertEquals(List.of("amenity", "shop"), categories.stream().map(PoiCategory::key).toList());
+        assertEquals(List.of("amenity=bank", "amenity=fast_food"), categories.get(0).children().stream().map(PoiCategory::key).toList());
+        assertEquals("fast food", categories.get(0).children().get(1).label());
+        assertTrue(categories.get(0).children().get(0).children().isEmpty());
+    }
+
+    @Test
+    public void searchesSelectedKeysAndValuesNearestFirstAtMaximumZoom() {
+        MapFile mapFile = mock(MapFile.class);
+        MapsforgeMapLookup lookup = spy(new MapsforgeMapLookup());
+        doReturn(new Tag[]{new Tag("amenity", "bank"), new Tag("amenity", "toilets"), new Tag("shop", "bakery")}).when(lookup).readPoiTags(mapFile);
+        doReturn((byte) 20).when(lookup).readMaximumZoomLevel(mapFile);
+        NavigationPosition center = VISIBLE_BOUNDS.getCenter();
+        when(mapFile.readPoiData(any(Tile.class), any(Tile.class))).thenReturn(readResult(
+                poi(center.getLongitude(), center.getLatitude() + 0.02, new Tag("name", "Far Bank"), new Tag("amenity", "bank")),
+                poi(center.getLongitude(), center.getLatitude() + 0.001, new Tag("name", "Near Bank"), new Tag("amenity", "bank")),
+                poi(center.getLongitude(), center.getLatitude() + 0.01, new Tag("amenity", "toilets")),
+                poi(center.getLongitude(), center.getLatitude(), new Tag("name", "Bakery"), new Tag("shop", "bakery")),
+                poi(12.0, 51.0, new Tag("name", "Outside Bank"), new Tag("amenity", "bank"))
+        ));
+
+        CategoryPoiResult result = lookup.searchCategories(mapFile, VISIBLE_BOUNDS, Set.of("amenity=bank", "shop"), 10);
+
+        assertFalse(result.truncated());
+        assertEquals(List.of("Near Bank", "Far Bank", "Bakery"), result.pois().stream().map(poi -> poi.position().getDescription()).toList());
+        assertEquals(List.of(0, 0, 1), result.pois().stream().map(CategoryPoi::group).toList());
+        verify(mapFile).readPoiData(argThat(tile -> tile.zoomLevel == 20), any(Tile.class));
+    }
+
+    @Test
+    public void limitsEachKeyAndReportsTruncation() {
+        MapFile mapFile = mock(MapFile.class);
+        MapsforgeMapLookup lookup = spy(new MapsforgeMapLookup());
+        doReturn(new Tag[]{new Tag("amenity", "bank")}).when(lookup).readPoiTags(mapFile);
+        doReturn((byte) 17).when(lookup).readMaximumZoomLevel(mapFile);
+        NavigationPosition center = VISIBLE_BOUNDS.getCenter();
+        List<PointOfInterest> pois = new ArrayList<>();
+        for (int i = 0; i < 4; i++)
+            pois.add(poi(center.getLongitude(), center.getLatitude() + i * 0.001, new Tag("name", "Bank " + i), new Tag("amenity", "bank")));
+        when(mapFile.readPoiData(any(Tile.class), any(Tile.class))).thenReturn(readResult(pois.toArray(new PointOfInterest[0])));
+
+        CategoryPoiResult result = lookup.searchCategories(mapFile, VISIBLE_BOUNDS, Set.of("amenity"), 2);
+
+        assertTrue(result.truncated());
+        assertEquals(List.of("Bank 0", "Bank 1"), result.pois().stream().map(poi -> poi.position().getDescription()).toList());
+    }
+
+    @Test
+    public void searchesNothingWithoutSelectedKeys() {
+        MapFile mapFile = mock(MapFile.class);
+        MapsforgeMapLookup lookup = new MapsforgeMapLookup();
+
+        assertTrue(lookup.searchCategories(mapFile, VISIBLE_BOUNDS, Set.of(), 10).pois().isEmpty());
+        assertTrue(lookup.searchCategories(mapFile, null, Set.of("amenity"), 10).pois().isEmpty());
+        verifyNoInteractions(mapFile);
     }
 
     private String categoryOf(NavigationPosition position) {

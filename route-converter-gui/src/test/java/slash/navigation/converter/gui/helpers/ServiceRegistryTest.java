@@ -27,6 +27,7 @@ import slash.navigation.converter.gui.models.PositionListsModel;
 import slash.navigation.converter.gui.models.PositionsModel;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
+import slash.navigation.mapview.PoiMarker;
 
 import javax.swing.*;
 import java.awt.Component;
@@ -269,6 +270,9 @@ public class ServiceRegistryTest {
         }
 
         public void showPositionMagnifier(List<NavigationPosition> positions) {
+        }
+
+        public void showPoiOverlay(List<PoiMarker> markers) {
         }
 
         public NavigationPosition getCenter() {

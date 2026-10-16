@@ -53,6 +53,7 @@ import slash.navigation.gui.models.BooleanModel;
 import slash.navigation.maps.tileserver.TileServerMapManager;
 import slash.navigation.mapview.MapView;
 import slash.navigation.mapview.MapViewCallback;
+import slash.navigation.mapview.PoiMarker;
 import slash.navigation.rest.Credentials;
 
 import javax.swing.*;
@@ -886,6 +887,12 @@ public abstract class BaseRouteConverter extends SingleFrameApplication {
     public void showPositionMagnifier(List<NavigationPosition> positions) {
         if (isMapViewAvailable()) {
             getMapView().showPositionMagnifier(positions);
+        }
+    }
+
+    public void showPoiOverlay(List<PoiMarker> markers) {
+        if (isMapViewAvailable()) {
+            getMapView().showPoiOverlay(markers);
         }
     }
 

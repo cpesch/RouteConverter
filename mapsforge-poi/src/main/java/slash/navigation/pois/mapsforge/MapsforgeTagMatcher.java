@@ -46,6 +46,10 @@ final class MapsforgeTagMatcher {
     private MapsforgeTagMatcher() {
     }
 
+    static boolean isCategoryKey(String key) {
+        return key != null && CATEGORY_TAGS.contains(key);
+    }
+
     static MapsforgeTagMatcher.Match findMatch(List<Tag> tags, Collection<String> categories, String query, boolean exactOnly) {
         if (query == null || query.isEmpty())
             return null;

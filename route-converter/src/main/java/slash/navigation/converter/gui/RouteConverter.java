@@ -22,6 +22,7 @@ package slash.navigation.converter.gui;
 import slash.navigation.brouter.BRouter;
 import slash.navigation.converter.gui.actions.SelectCoverageAction;
 import slash.navigation.converter.gui.actions.ShowMapsAction;
+import slash.navigation.converter.gui.actions.ShowPoisAction;
 import slash.navigation.converter.gui.actions.ShowThemeStyleAction;
 import slash.navigation.converter.gui.actions.ShowThemesAction;
 import slash.navigation.converter.gui.helpers.AutomaticElevationService;
@@ -29,6 +30,7 @@ import slash.navigation.converter.gui.helpers.AutomaticGeocodingService;
 import slash.navigation.converter.gui.helpers.CoverageOverlayController;
 import slash.navigation.converter.gui.helpers.MapViewImplementation;
 import slash.navigation.converter.gui.helpers.OverlaysMenu;
+import slash.navigation.converter.gui.helpers.PoiOverlayController;
 import slash.navigation.datasources.DataSource;
 import slash.navigation.geonames.GeoNamesService;
 import slash.navigation.googlemaps.GoogleElevationService;
@@ -49,6 +51,7 @@ import slash.navigation.photon.PhotonService;
 import slash.navigation.pois.mapsforge.MapsforgeMapGeocodingService;
 import slash.navigation.pois.mapsforge.MapsforgePoiGeocodingService;
 import slash.navigation.pois.mapsforge.MapsforgePoiLookup;
+import slash.navigation.pois.mapsforge.MapsforgePoiOverlayService;
 import slash.navigation.routing.StraightLine;
 
 import javax.swing.*;
@@ -77,6 +80,7 @@ public class RouteConverter extends BaseRouteConverter {
     private MapsforgeMapManager mapsforgeMapManager;
     private MapsforgePoiLookup mapsforgePoiLookup;
     private CoverageOverlayController coverageOverlayController;
+    private PoiOverlayController poiOverlayController;
     private LocalMap mapAfterStart;
 
     public static void main(String[] args) {
@@ -107,6 +111,9 @@ public class RouteConverter extends BaseRouteConverter {
         mapsforgeMapManager = new MapsforgeMapManager(getDataSourceManager(), getTileServerMapManager());
         mapsforgePoiLookup = new MapsforgePoiLookup(getDataSourceManager());
         coverageOverlayController = new CoverageOverlayController();
+        poiOverlayController = new PoiOverlayController(new MapsforgePoiOverlayService(mapsforgePoiLookup, mapsforgeMapManager),
+                this::getMapView);
+        poiOverlayController.start();
         mapAfterStart = getMapsforgeMapManager().getDisplayedMapModel().getItem();
     }
 
@@ -115,6 +122,7 @@ public class RouteConverter extends BaseRouteConverter {
         getContext().getActionManager().register("show-maps", new ShowMapsAction());
         getContext().getActionManager().register("show-theme-styles", new ShowThemeStyleAction());
         getContext().getActionManager().register("show-themes", new ShowThemesAction());
+        getContext().getActionManager().register("show-pois", new ShowPoisAction());
         JMenu viewMenu = findMenu(getContext().getMenuBar(), "view");
         if (viewMenu != null) {
             viewMenu.add(createItem("show-maps"), 0);
@@ -126,13 +134,14 @@ public class RouteConverter extends BaseRouteConverter {
             addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-routing", CoverageOverlayController.Category.ROUTING, false);
             addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-elevation", CoverageOverlayController.Category.ELEVATION, false);
             addCoverageMenuItem(coverageMenu, coverageGroup, "show-coverage-poi", CoverageOverlayController.Category.POI, false);
-            viewMenu.add(createItem("show-themes"), 2);
-            viewMenu.add(createItem("show-theme-styles"), 3);
+            viewMenu.add(createItem("show-pois"), 2);
+            viewMenu.add(createItem("show-themes"), 3);
+            viewMenu.add(createItem("show-theme-styles"), 4);
             JMenu overlaysMenu = createMenu("show-overlays");
-            viewMenu.add(overlaysMenu, 4);
+            viewMenu.add(overlaysMenu, 5);
             new OverlaysMenu(overlaysMenu, getTileServerMapManager().getAvailableOverlaysModel(), getTileServerMapManager().getAppliedOverlaysModel());
-            viewMenu.add(createCheckBoxItem("show-shaded-hills", getMapPreferencesModel().getShowShadedHills()), 5);
-            viewMenu.add(new JPopupMenu.Separator(), 6);
+            viewMenu.add(createCheckBoxItem("show-shaded-hills", getMapPreferencesModel().getShowShadedHills()), 6);
+            viewMenu.add(new JPopupMenu.Separator(), 7);
         }
     }
 
@@ -158,6 +167,10 @@ public class RouteConverter extends BaseRouteConverter {
 
     public CoverageOverlayController getCoverageOverlayController() {
         return coverageOverlayController;
+    }
+
+    public PoiOverlayController getPoiOverlayController() {
+        return poiOverlayController;
     }
 
     protected MapsforgeMapViewCallback getMapViewCallback() {

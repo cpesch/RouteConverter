@@ -63,6 +63,7 @@ import slash.navigation.maps.mapsforge.MapsforgeMapManager;
 import slash.navigation.maps.mapsforge.ThemeStyle;
 import slash.navigation.mapview.BaseMapView;
 import slash.navigation.mapview.MapViewCallback;
+import slash.navigation.mapview.PoiMarker;
 import slash.navigation.mapview.mapsforge.helpers.*;
 import slash.navigation.mapview.mapsforge.lines.Polyline;
 import slash.navigation.mapview.mapsforge.models.ThemeStyleImpl;
@@ -73,6 +74,7 @@ import slash.navigation.mapview.mapsforge.renderer.BorderPainter;
 import slash.navigation.mapview.mapsforge.renderer.MagnifierPainter;
 import slash.navigation.mapview.mapsforge.renderer.MapViewLayerOperations;
 import slash.navigation.mapview.mapsforge.renderer.NonSelectedPositionListsRenderer;
+import slash.navigation.mapview.mapsforge.renderer.PoiOverlayRenderer;
 import slash.navigation.mapview.mapsforge.renderer.RouteRenderer;
 import slash.navigation.mapview.mapsforge.renderer.TrackRenderer;
 import slash.navigation.mapview.mapsforge.tiles.DefaultTileLayerFactory;
@@ -163,6 +165,7 @@ public class MapsforgeMapView extends BaseMapView {
     private MapPreferencesModel preferencesModel;
     private MapsforgeMapViewCallback mapViewCallback;
     private NonSelectedPositionListsRenderer nonSelectedPositionListsRenderer;
+    private PoiOverlayRenderer poiOverlayRenderer;
 
     private final TableModelListener positionsModelListener = new PositionsModelListener();
     private final ListDataListener positionListsModelListener = new PositionListsModelListener();
@@ -448,6 +451,7 @@ public class MapsforgeMapView extends BaseMapView {
         nonSelectedPositionListsRenderer = new NonSelectedPositionListsRenderer(this, positionListsModel,
                 preferencesModel.getRouteColorModel(), preferencesModel.getTrackColorModel(),
                 preferencesModel.getRouteLineWidthModel(), preferencesModel.getTrackLineWidthModel(), GRAPHIC_FACTORY);
+        poiOverlayRenderer = new PoiOverlayRenderer(this);
     }
 
     private static boolean initializedActions = false;
@@ -462,6 +466,7 @@ public class MapsforgeMapView extends BaseMapView {
             actionManager.register("select-position", new SelectPositionAction());
             actionManager.register("extend-selection", new ExtendSelectionAction());
             actionManager.register("new-position-map", new AddPositionAction());
+            actionManager.register("add-poi", new AddPoiAction());
             actionManager.registerLocal("new-position", MAP, "new-position-map");
             actionManager.register("delete-position-map", new DeletePositionAction());
             actionManager.registerLocal("delete", MAP, "delete-position-map");
@@ -519,6 +524,10 @@ public class MapsforgeMapView extends BaseMapView {
         mapViewCoordinateDisplayer.initialize(mapView, mapViewCallback);
         // the listener only reacts to changes, so apply the stored setting once
         mapViewCoordinateDisplayer.setShowCoordinates(preferencesModel.getShowCoordinatesModel().getBoolean());
+        mapViewCoordinateDisplayer.setPoiLabeler(point -> {
+            PoiMarker poi = getPoiAt(point);
+            return poi != null ? poi.label() : null;
+        });
         new MapViewPopupMenu(mapView, createPopupMenu(), this::enableMapActions);
 
         final ActionManager actionManager = Application.getInstance().getContext().getActionManager();
@@ -728,10 +737,14 @@ public class MapsforgeMapView extends BaseMapView {
         }
     }
 
+    private JMenuItem addPoiItem;
+
     private JPopupMenu createPopupMenu() {
         JPopupMenu menu = new JPopupMenu();
         menu.add(createItem("select-position"));
         menu.add(createItem("new-position"));
+        addPoiItem = createItem("add-poi");
+        menu.add(addPoiItem);
         menu.add(createItem("delete"));
         menu.add(createItem("snap-to-road"));
         menu.addSeparator();
@@ -809,6 +822,7 @@ public class MapsforgeMapView extends BaseMapView {
         handleOverlays();
         handleTrackLayer();
         handleNonSelectedPositionLists();
+        handlePoiOverlay();
 
         // then start download layer threads
         if (layer instanceof TileDownloadLayer tileDownloadLayer)
@@ -895,6 +909,19 @@ public class MapsforgeMapView extends BaseMapView {
         if (!layers.contains(waypointLayer)) {
             layers.add(waypointLayer);
         }
+    }
+
+    private void handlePoiOverlay() {
+        Layer poiLayer = poiOverlayRenderer.getLayer();
+        Layers layers = getLayerManager().getLayers();
+        layers.remove(poiLayer);
+
+        // insert directly above the map (and background) layers so that every position list,
+        // the gray set included, is drawn on top of the POIs
+        int index = 0;
+        for (Layer layer : mapsToLayers.values())
+            index = max(index, layers.indexOf(layer) + 1);
+        layers.add(index, poiLayer);
     }
 
     private void updateNonSelectedPositionLists() {
@@ -1023,6 +1050,25 @@ public class MapsforgeMapView extends BaseMapView {
 
     public void showPositionMagnifier(List<NavigationPosition> positions) {
         magnifierPainter.showPositionMagnifier(positions);
+    }
+
+    public void showPoiOverlay(List<PoiMarker> markers) {
+        if (poiOverlayRenderer != null)
+            poiOverlayRenderer.show(markers);
+    }
+
+    private static final int POI_SELECTION_RADIUS_IN_PIXEL = 10;
+
+    private PoiMarker getPoiAt(Point devicePoint) {
+        if (poiOverlayRenderer == null || devicePoint == null)
+            return null;
+        return poiOverlayRenderer.getMarkerAt(position -> mapView.getMapViewProjection().toPixels(asLatLong(position)),
+                new org.mapsforge.core.model.Point(devicePoint.x, devicePoint.y),
+                POI_SELECTION_RADIUS_IN_PIXEL * DisplayModel.getDeviceScaleFactor());
+    }
+
+    private PoiMarker getPoiUnderMouse() {
+        return getPoiAt(mapViewMoverAndZoomer.getLastMousePoint());
     }
 
     public DisplayModel getDisplayModel() {
@@ -1460,6 +1506,9 @@ public class MapsforgeMapView extends BaseMapView {
     private void enableMapActions() {
         ActionManager actionManager = Application.getInstance().getContext().getActionManager();
         actionManager.enableLocal("delete", MAP, isPositionUnderMouse() || isPositionSelected());
+        // only offered on a POI of the POI overlay, which is off most of the time
+        if (addPoiItem != null)
+            addPoiItem.setVisible(getPoiUnderMouse() != null);
     }
 
     private double getThresholdForPixel(LatLong latLong) {
@@ -1494,13 +1543,13 @@ public class MapsforgeMapView extends BaseMapView {
         }
     }
 
-    private class AddPositionAction extends FrameAction {
-        private int getAddRow() {
-            List<PositionWithLayer> lastSelectedPositions = selectionUpdater.getPositionWithLayers();
-            NavigationPosition lastSelected = !lastSelectedPositions.isEmpty() ? lastSelectedPositions.get(lastSelectedPositions.size() - 1).getPosition() : null;
-            return computeAddRow(lastSelected, positionsModel);
-        }
+    private int getAddRow() {
+        List<PositionWithLayer> lastSelectedPositions = selectionUpdater.getPositionWithLayers();
+        NavigationPosition lastSelected = !lastSelectedPositions.isEmpty() ? lastSelectedPositions.get(lastSelectedPositions.size() - 1).getPosition() : null;
+        return computeAddRow(lastSelected, positionsModel);
+    }
 
+    private class AddPositionAction extends FrameAction {
         private void insertPosition(int row, Double longitude, Double latitude) {
             positionsModel.add(row, longitude, latitude, null, null, null, mapViewCallback.createDescription(positionsModel.getRowCount() + 1, null));
             int[] rows = new int[]{row};
@@ -1522,6 +1571,26 @@ public class MapsforgeMapView extends BaseMapView {
                 log.info("Adding position at " + latLong + " to row " + row);
                 insertPosition(row, latLong.longitude, latLong.latitude);
             }
+        }
+    }
+
+    /**
+     * Inserts the POI under the mouse with its name, like Find Place inserts a search result:
+     * no snapping to a road, and the description is kept instead of being looked up.
+     */
+    private class AddPoiAction extends FrameAction {
+        public void run() {
+            PoiMarker poi = getPoiUnderMouse();
+            if (poi == null)
+                return;
+
+            NavigationPosition position = poi.position();
+            int row = getAddRow();
+            log.info("Adding POI " + position + " to row " + row);
+            positionsModel.add(row, position.getLongitude(), position.getLatitude(), null, null, null, position.getDescription());
+            int[] rows = new int[]{row};
+            mapViewCallback.complementData(rows, false, true, true, true, false);
+            mapViewCallback.setSelectedPositions(rows, true);
         }
     }
 

@@ -34,11 +34,14 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static java.lang.Math.min;
+import static java.lang.String.format;
 import static java.util.Collections.emptyList;
+import static java.util.stream.Collectors.joining;
 import static java.util.Collections.singletonList;
 import static slash.common.io.Directories.getApplicationDirectory;
 import static slash.common.io.Files.collectFiles;
@@ -118,11 +121,40 @@ public class MapsforgePoiLookup {
             "GROUP BY poi_index.id, poi_data.data " +
             "LIMIT ?";
 
+    // Q4: category match for the POI overlay, nearest to the viewport center first. The category ids
+    // are inlined (they are numbers read from the database itself) since a selected top-level
+    // category can expand to hundreds of ids, more than SQLite allows as bind parameters in old
+    // versions. The membership subquery keeps group_concat returning all categories, as in Q2.
+    private static final String Q4_CATEGORY_IDS_SQL_V4 = SELECT_COLUMNS_V4 +
+            "FROM poi_index " +
+            "JOIN poi_data ON poi_index.id = poi_data.id " +
+            "LEFT JOIN poi_category_map ON poi_index.id = poi_category_map.id " +
+            "LEFT JOIN poi_categories ON poi_category_map.category = poi_categories.id " +
+            "WHERE poi_index.id IN (SELECT id FROM poi_category_map WHERE category IN (%s)) " +
+            "AND poi_index.minLat <= ? AND poi_index.minLon <= ? AND poi_index.maxLat >= ? AND poi_index.maxLon >= ? " +
+            "GROUP BY poi_index.id, poi_data.data " +
+            "ORDER BY ((poi_index.minLat + poi_index.maxLat) / 2 - ?) * ((poi_index.minLat + poi_index.maxLat) / 2 - ?) + " +
+            "((poi_index.minLon + poi_index.maxLon) / 2 - ?) * ((poi_index.minLon + poi_index.maxLon) / 2 - ?) * ? " +
+            "LIMIT ?";
+
+    private static final String Q4_CATEGORY_IDS_SQL_V3 =
+            "SELECT poi_index.id, poi_index.lat, poi_index.lon, poi_data.data, " +
+                    "group_concat(poi_categories.name, '\r') categories " +
+                    "FROM poi_index JOIN poi_data ON poi_index.id = poi_data.id " +
+                    "LEFT JOIN poi_category_map ON poi_index.id = poi_category_map.id " +
+                    "LEFT JOIN poi_categories ON poi_category_map.category = poi_categories.id " +
+                    "WHERE poi_index.id IN (SELECT id FROM poi_category_map WHERE category IN (%s)) " +
+                    "AND poi_index.lat <= ? AND poi_index.lon <= ? AND poi_index.lat >= ? AND poi_index.lon >= ? " +
+                    "GROUP BY poi_index.id, poi_index.lat, poi_index.lon, poi_data.data " +
+                    "ORDER BY (poi_index.lat - ?) * (poi_index.lat - ?) + (poi_index.lon - ?) * (poi_index.lon - ?) * ? " +
+                    "LIMIT ?";
+
     // Datasource ids known to serve the v4 schema; every id not listed here defaults to version 3.
     private static final Map<String, Integer> DATASOURCE_SPEC_VERSIONS = Map.of("mapsforge-pois-4", 4);
     private static final int DEFAULT_SPEC_VERSION = 3;
 
     private final DataSourceManager dataSourceManager;
+    private final Map<File, CachedBoundsAndVersion> boundsAndVersionCache = new ConcurrentHashMap<>();
 
     public MapsforgePoiLookup(DataSourceManager dataSourceManager) {
         this.dataSourceManager = dataSourceManager;
@@ -183,10 +215,27 @@ public class MapsforgePoiLookup {
 
     PoiFile findPoiFile(BoundingBox mapBoundingBox) {
         List<PoiDescriptor> descriptors = findPoiDescriptors(mapBoundingBox);
+        return descriptors.isEmpty() ? null : resolve(descriptors.get(0));
+    }
+
+    /**
+     * Finds the POI file for a map viewport: unlike {@link #findPoiFile(BoundingBox)} for a whole
+     * map, a file that only touches the edge of the viewport must not win over the one covering
+     * its center just because it is smaller. Without {@code download} only local files are used:
+     * the overlay calls this on every pan and must never start downloading regions on its own.
+     */
+    PoiFile findPoiFile(BoundingBox viewport, boolean download) {
+        List<PoiDescriptor> descriptors = download ? findPoiDescriptors(viewport) : collectLocalPoiDescriptors(viewport);
         if (descriptors.isEmpty())
             return null;
 
-        PoiDescriptor descriptor = descriptors.get(0);
+        NavigationPosition center = viewport.getCenter();
+        descriptors.sort(Comparator.comparing((PoiDescriptor d) -> d.boundingBox() == null || !d.boundingBox().contains(center))
+                .thenComparing(descriptorPreference()));
+        return resolve(descriptors.get(0));
+    }
+
+    private PoiFile resolve(PoiDescriptor descriptor) {
         if (descriptor.localFile() != null)
             return new PoiFile(descriptor.localFile(), descriptor.dataSourceName());
 
@@ -272,7 +321,19 @@ public class MapsforgePoiLookup {
         return readBoundsAndVersion(file).bounds();
     }
 
+    // collectLocalPoiDescriptors() reads the bounds of every local POI file, and the POI overlay
+    // runs it on every pan: cache them per file as long as the file is unchanged
     private BoundsAndVersion readBoundsAndVersion(File file) {
+        CachedBoundsAndVersion cached = boundsAndVersionCache.get(file);
+        if (cached != null && cached.lastModified() == file.lastModified() && cached.length() == file.length())
+            return cached.boundsAndVersion();
+
+        BoundsAndVersion boundsAndVersion = readBoundsAndVersionFromFile(file);
+        boundsAndVersionCache.put(file, new CachedBoundsAndVersion(boundsAndVersion, file.lastModified(), file.length()));
+        return boundsAndVersion;
+    }
+
+    private BoundsAndVersion readBoundsAndVersionFromFile(File file) {
         try (Connection connection = open(file)) {
             BoundingBox fromMetadata = readBoundsFromMetadata(connection);
             int specVersion = readVersion(connection);
@@ -380,6 +441,114 @@ public class MapsforgePoiLookup {
 
         PoiMatch nearest = matches.get(0);
         return nearest.distanceMeters() <= REVERSE_LOOKUP_RADIUS_METERS ? nearest.description() : null;
+    }
+
+    /**
+     * Reads the category tree of a POI database, sorted by label. The mapsforge POI writer puts a
+     * single {@code root} category above the real top-level ones ({@code Amenities}, {@code Shop},
+     * ...), which is skipped. Category names are unique within a database - writers pad duplicate
+     * titles with spaces - so the untrimmed name is the key.
+     */
+    List<PoiCategory> readCategories(File poiFile) throws IOException {
+        try (Connection connection = open(poiFile)) {
+            return readCategoryNodes(connection).stream().map(CategoryNode::toPoiCategory).toList();
+        } catch (SQLException e) {
+            throw new IOException("Cannot read categories of Mapsforge POI database " + poiFile, e);
+        }
+    }
+
+    /**
+     * Finds the POIs of the selected categories and their subcategories within the bounds: at most
+     * {@code limitPerGroup} per top-level category, those nearest to the center of the bounds first.
+     */
+    CategoryPoiResult searchCategories(File poiFile, BoundingBox bounds, Set<String> keys, int limitPerGroup) throws IOException {
+        if (bounds == null || keys.isEmpty())
+            return CategoryPoiResult.EMPTY;
+
+        NavigationPosition center = bounds.getCenter();
+        double longitudeScale = Math.cos(Math.toRadians(center.getLatitude()));
+        try (Connection connection = open(poiFile)) {
+            List<CategoryNode> groups = readCategoryNodes(connection);
+            String sql = readVersion(connection) >= 4 ? Q4_CATEGORY_IDS_SQL_V4 : Q4_CATEGORY_IDS_SQL_V3;
+
+            List<CategoryPoi> pois = new ArrayList<>();
+            Set<Long> found = new HashSet<>();
+            boolean truncated = false;
+            for (int group = 0; group < groups.size(); group++) {
+                Set<Long> categoryIds = new LinkedHashSet<>();
+                groups.get(group).collectSelectedIds(keys, false, categoryIds);
+                if (categoryIds.isEmpty())
+                    continue;
+
+                Map<Long, SqlRow> rows = runQuery(connection, format(sql, joinIds(categoryIds)),
+                        bounds.northEast().getLatitude(), bounds.northEast().getLongitude(),
+                        bounds.southWest().getLatitude(), bounds.southWest().getLongitude(),
+                        center.getLatitude(), center.getLatitude(), center.getLongitude(), center.getLongitude(),
+                        longitudeScale * longitudeScale, limitPerGroup + 1);
+                if (rows.size() > limitPerGroup)
+                    truncated = true;
+
+                int count = 0;
+                for (Map.Entry<Long, SqlRow> entry : rows.entrySet()) {
+                    if (count++ == limitPerGroup)
+                        break;
+                    // a POI in the categories of two selected groups is shown once, for the first
+                    if (found.add(entry.getKey()))
+                        pois.add(new CategoryPoi(toCategorizedPosition(entry.getValue()), group));
+                }
+            }
+            return new CategoryPoiResult(pois, truncated);
+        } catch (SQLException e) {
+            throw new IOException("Cannot search categories of Mapsforge POI database " + poiFile, e);
+        }
+    }
+
+    private List<CategoryNode> readCategoryNodes(Connection connection) throws SQLException {
+        Map<Long, CategoryNode> nodes = new LinkedHashMap<>();
+        Map<Long, Long> parents = new HashMap<>();
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery("SELECT id, name, parent FROM poi_categories ORDER BY id")) {
+            while (resultSet.next()) {
+                long id = resultSet.getLong("id");
+                String name = resultSet.getString("name");
+                long parent = resultSet.getLong("parent");
+                boolean hasParent = !resultSet.wasNull();
+                if (name == null || name.isBlank())
+                    continue;
+                nodes.put(id, new CategoryNode(id, name, new ArrayList<>()));
+                if (hasParent)
+                    parents.put(id, parent);
+            }
+        }
+
+        List<CategoryNode> roots = new ArrayList<>();
+        for (CategoryNode node : nodes.values()) {
+            Long parentId = parents.get(node.id());
+            CategoryNode parent = parentId != null ? nodes.get(parentId) : null;
+            if (parent != null && parent != node)
+                parent.children().add(node);
+            else
+                roots.add(node);
+        }
+
+        List<CategoryNode> topLevel = roots.size() == 1 && !roots.get(0).children().isEmpty() ? roots.get(0).children() : roots;
+        sortByLabel(topLevel);
+        return topLevel;
+    }
+
+    private void sortByLabel(List<CategoryNode> nodes) {
+        nodes.sort(Comparator.comparing(node -> node.label().toLowerCase(Locale.ROOT)));
+        for (CategoryNode node : nodes)
+            sortByLabel(node.children());
+    }
+
+    private static String joinIds(Set<Long> ids) {
+        return ids.stream().map(String::valueOf).collect(joining(","));
+    }
+
+    private CategorizedNavigationPosition toCategorizedPosition(SqlRow row) {
+        return buildDescriptionAndCategory(new LatLong(row.lat(), row.lon()), parseTags(row.data()),
+                parseCategories(row.categories()), null, "Unnamed POI");
     }
 
     /**
@@ -533,5 +702,27 @@ public class MapsforgePoiLookup {
     }
 
     private record SqlRow(double lat, double lon, String data, String categories) {
+    }
+
+    private record CachedBoundsAndVersion(BoundsAndVersion boundsAndVersion, long lastModified, long length) {
+    }
+
+    private record CategoryNode(long id, String name, List<CategoryNode> children) {
+        String label() {
+            return name.trim();
+        }
+
+        PoiCategory toPoiCategory() {
+            return new PoiCategory(name, label(), children.stream().map(CategoryNode::toPoiCategory).toList());
+        }
+
+        // a selected category selects its whole subtree
+        void collectSelectedIds(Set<String> keys, boolean parentSelected, Set<Long> ids) {
+            boolean selected = parentSelected || keys.contains(name);
+            if (selected)
+                ids.add(id);
+            for (CategoryNode child : children)
+                child.collectSelectedIds(keys, selected, ids);
+        }
     }
 }

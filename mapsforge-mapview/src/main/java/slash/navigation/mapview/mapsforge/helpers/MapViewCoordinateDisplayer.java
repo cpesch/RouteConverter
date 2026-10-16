@@ -31,11 +31,12 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.function.Function;
 
 import static javax.swing.BorderFactory.createEtchedBorder;
 
 /**
- * Show coordinates upon to mouse events of the {@link AwtGraphicMapView}.
+ * Show coordinates, or the POI under the mouse, upon to mouse events of the {@link AwtGraphicMapView}.
  *
  * @author Christian Pesch
  */
@@ -46,6 +47,7 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
     private JWindow window;
     private final JLabel label = new JLabel();
     private boolean showCoordinates;
+    private Function<Point, String> poiLabeler = point -> null;
 
     public void initialize(AwtGraphicMapView mapView, MapViewCallback mapViewCallback) {
         this.mapView = mapView;
@@ -68,6 +70,13 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
         this.showCoordinates = showCoordinates;
     }
 
+    /**
+     * @param poiLabeler returns the label of the POI at a device point or {@code null} if there is none
+     */
+    public void setPoiLabeler(Function<Point, String> poiLabeler) {
+        this.poiLabeler = poiLabeler;
+    }
+
     private JFrame getFrame() {
         Application application = Application.getInstance();
         if (application instanceof SingleFrameApplication singleFrameApplication)
@@ -76,14 +85,18 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
             return null;
     }
 
-    private void display(Point locationOnScreen, Point devicePoint) {
+    private void displayCoordinates(Point locationOnScreen, Point devicePoint) {
         LatLong latLong = mapView.getMapViewProjection().fromPixels(devicePoint.x, devicePoint.y);
         // null while the map has no size or position yet, e.g. when the mouse moves over it during startup
         if (latLong == null) {
             hide();
             return;
         }
-        label.setText(mapViewCallback.createCoordinates(latLong.longitude, latLong.latitude));
+        display(locationOnScreen, mapViewCallback.createCoordinates(latLong.longitude, latLong.latitude));
+    }
+
+    private void display(Point locationOnScreen, String text) {
+        label.setText(text);
         window.pack();
         window.setLocation(locationOnScreen.x + 16, locationOnScreen.y + 15);
         show();
@@ -100,8 +113,12 @@ public class MapViewCoordinateDisplayer extends MouseAdapter {
     }
 
     public void mouseMoved(MouseEvent e) {
-        if (showCoordinates)
-            display(e.getLocationOnScreen(), mapView.toDevicePoint(e.getPoint()));
+        Point devicePoint = mapView.toDevicePoint(e.getPoint());
+        String poiLabel = poiLabeler.apply(devicePoint);
+        if (poiLabel != null)
+            display(e.getLocationOnScreen(), poiLabel);
+        else if (showCoordinates)
+            displayCoordinates(e.getLocationOnScreen(), devicePoint);
         else
             hide();
     }

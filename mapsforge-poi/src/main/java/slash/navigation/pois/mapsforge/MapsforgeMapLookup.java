@@ -20,6 +20,7 @@
 package slash.navigation.pois.mapsforge;
 
 import org.mapsforge.core.model.LatLong;
+import org.mapsforge.core.model.Tag;
 import org.mapsforge.core.model.Tile;
 import org.mapsforge.core.util.MercatorProjection;
 import org.mapsforge.map.datastore.MapReadResult;
@@ -33,6 +34,10 @@ import slash.navigation.geocoding.CategorizedNavigationPosition;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
@@ -73,6 +78,102 @@ class MapsforgeMapLookup {
 
         FeatureMatch nearest = matches.get(0);
         return nearest.distanceMeters() <= REVERSE_LOOKUP_RADIUS_METERS ? nearest.description() : null;
+    }
+
+    /**
+     * A {@code .map} file has no category table, but its header lists every tag its POIs carry.
+     * The category tags among them become the categories: their key as the top-level category,
+     * {@code key=value} below it.
+     */
+    List<PoiCategory> readCategories(MapFile mapFile) {
+        Map<String, Set<String>> valuesByKey = new TreeMap<>();
+        Tag[] poiTags = readPoiTags(mapFile);
+        if (poiTags != null) {
+            for (Tag tag : poiTags) {
+                // variable values like ele=%f are placeholders, not categories
+                if (tag == null || !isCategoryKey(tag.key) || tag.value == null || tag.value.isBlank() || tag.value.startsWith("%"))
+                    continue;
+                valuesByKey.computeIfAbsent(tag.key, key -> new TreeSet<>()).add(tag.value);
+            }
+        }
+
+        List<PoiCategory> result = new ArrayList<>();
+        for (Map.Entry<String, Set<String>> entry : valuesByKey.entrySet()) {
+            String key = entry.getKey();
+            List<PoiCategory> values = entry.getValue().stream()
+                    .map(value -> new PoiCategory(key + "=" + value, asLabel(value), emptyList()))
+                    .toList();
+            result.add(new PoiCategory(key, asLabel(key), values));
+        }
+        return result;
+    }
+
+    // package-private for testing: only the map file reader itself can create a MapFileInfo
+    Tag[] readPoiTags(MapFile mapFile) {
+        return mapFile.getMapFileInfo().poiTags;
+    }
+
+    byte readMaximumZoomLevel(MapFile mapFile) {
+        return mapFile.getMapFileInfo().zoomLevelMax;
+    }
+
+    private static String asLabel(String tagPart) {
+        return tagPart.replace('_', ' ');
+    }
+
+    /**
+     * Finds the POIs of the selected categories within the bounds: at most {@code limitPerGroup}
+     * per tag key, those nearest to the center of the bounds first. Reads at the highest zoom level
+     * of the file since a query only returns the POIs that appear up to its zoom level, and most
+     * appear late. Ways are left out: named ones are mostly streets, the overlay shows places.
+     */
+    CategoryPoiResult searchCategories(MapFile mapFile, BoundingBox bounds, Set<String> keys, int limitPerGroup) {
+        if (bounds == null || keys.isEmpty())
+            return CategoryPoiResult.EMPTY;
+
+        List<String> groupKeys = readCategories(mapFile).stream().map(PoiCategory::key).toList();
+        TileRange tileRange = createTileRange(bounds, readMaximumZoomLevel(mapFile));
+        MapReadResult readResult = mapFile.readPoiData(tileRange.upperLeft(), tileRange.lowerRight());
+        if (readResult == null)
+            return CategoryPoiResult.EMPTY;
+
+        NavigationPosition center = bounds.getCenter();
+        Map<Integer, List<FeatureMatch>> matchesByGroup = new TreeMap<>();
+        for (PointOfInterest poi : readResult.deduplicate().pois) {
+            if (poi == null || poi.position == null)
+                continue;
+            Tag tag = findSelectedTag(poi.tags, keys);
+            int group = tag != null ? groupKeys.indexOf(tag.key) : -1;
+            if (group == -1)
+                continue;
+
+            CategorizedNavigationPosition position = buildDescriptionAndCategory(poi.position, poi.tags, emptyList(), null, "Unnamed POI");
+            if (!bounds.contains(position))
+                continue;
+            matchesByGroup.computeIfAbsent(group, g -> new ArrayList<>()).add(toFeatureMatch(position, poi.position, center));
+        }
+
+        List<CategoryPoi> pois = new ArrayList<>();
+        boolean truncated = false;
+        for (Map.Entry<Integer, List<FeatureMatch>> entry : matchesByGroup.entrySet()) {
+            List<FeatureMatch> matches = entry.getValue();
+            matches.sort(Comparator.comparingDouble(FeatureMatch::distanceMeters));
+            if (matches.size() > limitPerGroup)
+                truncated = true;
+            for (FeatureMatch match : matches.subList(0, min(matches.size(), limitPerGroup)))
+                pois.add(new CategoryPoi(match.position(), entry.getKey()));
+        }
+        return new CategoryPoiResult(pois, truncated);
+    }
+
+    private static Tag findSelectedTag(List<Tag> tags, Set<String> keys) {
+        if (tags == null)
+            return null;
+        for (Tag tag : tags) {
+            if (tag != null && isCategoryKey(tag.key) && (keys.contains(tag.key) || keys.contains(tag.key + "=" + tag.value)))
+                return tag;
+        }
+        return null;
     }
 
     private List<FeatureMatch> searchMatches(MapFile mapFile, BoundingBox bounds, String query,

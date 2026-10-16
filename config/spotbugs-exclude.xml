@@ -66,6 +66,11 @@
         <Class name="slash.navigation.mapview.mapsforge.renderer.NonSelectedPositionListsRenderer"/>
         <Method name="rebuild"/>
     </Match>
+    <Match>
+        <Bug pattern="USO_UNSAFE_ACCESSIBLE_OBJECT_SYNCHRONIZATION"/>
+        <Class name="slash.navigation.mapview.mapsforge.renderer.PoiOverlayRenderer"/>
+        <Method name="show"/>
+    </Match>
 
     <!-- RouteConverter never uses Java serialization; comparators and Swing
          components are Serializable only by inheritance -->

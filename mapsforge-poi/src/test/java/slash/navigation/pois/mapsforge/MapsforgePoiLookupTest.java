@@ -25,12 +25,14 @@ import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static slash.common.io.Directories.getApplicationDirectory;
@@ -506,6 +508,191 @@ public class MapsforgePoiLookupTest {
         List<BoundingBox> coverage = lookup.findLocalPoiCoverage(viewport);
 
         assertEquals(List.of(presentBounds), coverage);
+    }
+
+    @Test
+    public void readsCategoryTreeBelowRootSortedByLabel() throws Exception {
+        File poiFile = createPoiFileV4();
+        insertCategoryTree(poiFile);
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
+
+        List<PoiCategory> categories = lookup.readCategories(poiFile);
+
+        assertEquals(List.of("Amenities", "Shop"), categories.stream().map(PoiCategory::label).toList());
+        PoiCategory financial = categories.get(0).children().get(0);
+        assertEquals("Financial institutes", financial.key());
+        assertEquals(List.of("ATMs", "Banks"), financial.children().stream().map(PoiCategory::label).toList());
+        PoiCategory toilets = categories.get(0).children().get(1);
+        assertEquals("Toilets ", toilets.key());
+        assertEquals("Toilets", toilets.label());
+        assertTrue(toilets.children().isEmpty());
+    }
+
+    @Test
+    public void readsCategoriesWithoutRootAsTopLevel() throws Exception {
+        File poiFile = createPoiFile();
+        insertCategory(poiFile, 1, "Fuel", null);
+        insertCategory(poiFile, 2, "Banks", null);
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
+
+        assertEquals(List.of("Banks", "Fuel"), lookup.readCategories(poiFile).stream().map(PoiCategory::key).toList());
+    }
+
+    @Test
+    public void searchesSelectedCategoryWithSubcategoriesNearestFirstV4() throws Exception {
+        File poiFile = createPoiFileV4();
+        insertCategoryTree(poiFile);
+        NavigationPosition center = VISIBLE_BOUNDS.getCenter();
+        insertPoiInCategories(poiFile, true, 1, center.getLatitude() + 0.02, center.getLongitude(), tags("name", "Far Bank", "amenity", "bank"), BANKS);
+        insertPoiInCategories(poiFile, true, 2, center.getLatitude() + 0.001, center.getLongitude(), tags("name", "Near Bank", "amenity", "bank"), BANKS);
+        insertPoiInCategories(poiFile, true, 3, center.getLatitude() + 0.01, center.getLongitude(), tags("amenity", "atm"), ATMS);
+        insertPoiInCategories(poiFile, true, 4, center.getLatitude(), center.getLongitude() + 0.001, tags("name", "Bakery", "shop", "bakery"), BAKERIES);
+        insertPoiInCategories(poiFile, true, 5, 51.0, 12.0, tags("name", "Outside Bank", "amenity", "bank"), BANKS);
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
+
+        CategoryPoiResult result = lookup.searchCategories(poiFile, VISIBLE_BOUNDS, Set.of("Financial institutes"), 10);
+
+        assertFalse(result.truncated());
+        assertEquals(List.of("Near Bank", "atm", "Far Bank"), descriptions(result));
+        assertEquals("bank", categoryOf(result.pois().get(0).position()));
+        assertTrue(result.pois().stream().allMatch(poi -> poi.group() == 0));
+    }
+
+    @Test
+    public void limitsEachGroupAndReportsTruncationV3() throws Exception {
+        File poiFile = createPoiFile();
+        insertCategoryTree(poiFile);
+        NavigationPosition center = VISIBLE_BOUNDS.getCenter();
+        for (int i = 0; i < 5; i++)
+            insertPoiInCategories(poiFile, false, i + 1, center.getLatitude() + i * 0.001, center.getLongitude(), tags("name", "Bank " + i), BANKS);
+        insertPoiInCategories(poiFile, false, 10, center.getLatitude(), center.getLongitude(), tags("name", "Bakery"), BAKERIES);
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
+
+        CategoryPoiResult result = lookup.searchCategories(poiFile, VISIBLE_BOUNDS, Set.of("Banks", "Shop"), 3);
+
+        assertTrue(result.truncated());
+        assertEquals(List.of("Bank 0", "Bank 1", "Bank 2", "Bakery"), descriptions(result));
+        assertEquals(List.of(0, 0, 0, 1), result.pois().stream().map(CategoryPoi::group).toList());
+    }
+
+    @Test
+    public void showsPoiOfTwoSelectedGroupsOnce() throws Exception {
+        File poiFile = createPoiFileV4();
+        insertCategoryTree(poiFile);
+        NavigationPosition center = VISIBLE_BOUNDS.getCenter();
+        insertPoiInCategories(poiFile, true, 1, center.getLatitude(), center.getLongitude(), tags("name", "Bank Shop"), BANKS, BAKERIES);
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
+
+        CategoryPoiResult result = lookup.searchCategories(poiFile, VISIBLE_BOUNDS, Set.of("Amenities", "Shop"), 10);
+
+        assertEquals(List.of("Bank Shop"), descriptions(result));
+        assertEquals(0, result.pois().get(0).group());
+    }
+
+    @Test
+    public void searchesNothingWithoutSelectedCategory() throws Exception {
+        File poiFile = createPoiFileV4();
+        insertCategoryTree(poiFile);
+        insertPoiInCategories(poiFile, true, 1, 52.5, 13.4, tags("name", "Bank"), BANKS);
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
+
+        assertTrue(lookup.searchCategories(poiFile, VISIBLE_BOUNDS, Set.of(), 10).pois().isEmpty());
+        assertTrue(lookup.searchCategories(poiFile, VISIBLE_BOUNDS, Set.of("Unknown"), 10).pois().isEmpty());
+        assertTrue(lookup.searchCategories(poiFile, null, Set.of("Banks"), 10).pois().isEmpty());
+    }
+
+    @Test
+    public void prefersLocalPoiFileCoveringViewportCenterAndNeverDownloads() throws Exception {
+        String directory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(directory));
+        DataSource localDataSource = mock(DataSource.class);
+        when(localDataSource.getId()).thenReturn("local");
+        when(localDataSource.getName()).thenReturn("local");
+        when(localDataSource.getDirectory()).thenReturn(directory);
+        when(localDataSource.getFiles()).thenReturn(emptyList());
+        // the small file only touches the edge of the viewport, the large one covers its center
+        createLocalPoiFile(directory, "edge.poi", "52.55,13.55,52.65,13.65");
+        File center = createLocalPoiFile(directory, "center.poi", "52.0,13.0,53.0,14.0");
+
+        String remoteDirectory = "test-pois/" + UUID.randomUUID();
+        applicationDirectoriesToDelete.add(getApplicationDirectory(remoteDirectory));
+        DataSource remoteDataSource = mock(DataSource.class);
+        when(remoteDataSource.getId()).thenReturn("remote");
+        when(remoteDataSource.getDirectory()).thenReturn(remoteDirectory);
+        slash.navigation.datasources.File remoteFile = mock(slash.navigation.datasources.File.class);
+        when(remoteFile.getUri()).thenReturn("tiny.poi");
+        when(remoteFile.getBoundingBox()).thenReturn(new BoundingBox(13.46, 52.46, 13.44, 52.44));
+        when(remoteFile.getDataSource()).thenReturn(remoteDataSource);
+        when(remoteDataSource.getFiles()).thenReturn(List.of(remoteFile));
+
+        DataSourceService dataSourceService = new DataSourceService();
+        dataSourceService.getDataSources().add(localDataSource);
+        dataSourceService.getDataSources().add(remoteDataSource);
+        DataSourceManager dataSourceManager = mock(DataSourceManager.class);
+        when(dataSourceManager.getDataSourceService()).thenReturn(dataSourceService);
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(dataSourceManager);
+
+        MapsforgePoiLookup.PoiFile poiFile = lookup.findPoiFile(VISIBLE_BOUNDS, false);
+
+        assertEquals(center, poiFile.file());
+        verify(dataSourceManager, never()).queueForDownload(any(), any());
+    }
+
+    private static final long BANKS = 6, ATMS = 7, BAKERIES = 5;
+
+    // root > Amenities > Financial institutes > Banks, ATMs; Amenities > "Toilets "; root > Shop > Bakeries
+    private void insertCategoryTree(File poiFile) throws Exception {
+        insertCategory(poiFile, 1, "root", null);
+        insertCategory(poiFile, 2, "Shop", 1L);
+        insertCategory(poiFile, 3, "Amenities", 1L);
+        insertCategory(poiFile, 4, "Financial institutes", 3L);
+        insertCategory(poiFile, BAKERIES, "Bakeries", 2L);
+        insertCategory(poiFile, BANKS, "Banks", 4L);
+        insertCategory(poiFile, ATMS, "ATMs", 4L);
+        insertCategory(poiFile, 8, "Toilets ", 3L);
+    }
+
+    private void insertCategory(File file, long id, String name, Long parent) throws Exception {
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO poi_categories VALUES (?, ?, ?)")) {
+            statement.setLong(1, id);
+            statement.setString(2, name);
+            if (parent != null)
+                statement.setLong(3, parent);
+            else
+                statement.setNull(3, Types.INTEGER);
+            statement.executeUpdate();
+        }
+    }
+
+    private void insertPoiInCategories(File file, boolean v4, long id, double latitude, double longitude, String data,
+                                       long... categoryIds) throws Exception {
+        if (v4)
+            insertPoiV4(file, id, latitude, longitude, data);
+        else
+            insertPoi(file, id, latitude, longitude, data);
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
+             PreparedStatement statement = connection.prepareStatement("INSERT INTO poi_category_map VALUES (?, ?)")) {
+            for (long categoryId : categoryIds) {
+                statement.setLong(1, id);
+                statement.setLong(2, categoryId);
+                statement.executeUpdate();
+            }
+        }
+    }
+
+    private File createLocalPoiFile(String directory, String name, String bounds) throws Exception {
+        File file = new File(getApplicationDirectory(directory), name);
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
+             Statement statement = connection.createStatement()) {
+            statement.executeUpdate("CREATE TABLE metadata (name TEXT, value TEXT)");
+        }
+        insertMetadata(file, "bounds", bounds);
+        return file;
+    }
+
+    private List<String> descriptions(CategoryPoiResult result) {
+        return result.pois().stream().map(poi -> poi.position().getDescription()).toList();
     }
 
     private DataSource poiDataSource(String directory, FileType... fileTypes) {

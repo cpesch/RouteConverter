@@ -57,6 +57,7 @@ public interface MapView extends PositionsSelectionModel {
     void showMapBorder(BoundingBox mapBoundingBox); // only MapsforgeMapView
     void showCoverageOverlay(BoundingBox mapBoundingBox, String category, Map<BoundingBox, Boolean> coverageTiles); // only MapsforgeMapView
     void showPositionMagnifier(List<NavigationPosition> positions);
+    void showPoiOverlay(List<PoiMarker> markers); // only MapsforgeMapView
 
     NavigationPosition getCenter();
     void setCenter(NavigationPosition position);
