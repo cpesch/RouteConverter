@@ -11,6 +11,8 @@
 #   - PAD catalog XMLs (EN+DE) carry VERSION
 #   - latest/VERSION (the update check's source) equals VERSION; the
 #     update-check API itself is not called: every call writes a Program row
+#   - latest/JAVA (the update check's minimum Java for Linux clients) equals
+#     the pom's <java.version>
 #   - GitHub Release body starts with the curated "## VERSION — " section
 # Needs GH_TOKEN for the GitHub Release check; writes nothing anywhere.
 
@@ -137,6 +139,21 @@ check_version_file() {
   fi
 }
 
+check_java_file() {
+  local file="$WORK/JAVA" actual expected
+  if ! fetch "$RELEASES/latest/JAVA" "$file"; then
+    fail "update check minimum Java" "cannot fetch $RELEASES/latest/JAVA"
+    return
+  fi
+  actual=$(tr -d '[:space:]' < "$file")
+  expected=$(sed -nE 's|.*<java\.version>([0-9]+)</java\.version>.*|\1|p' pom.xml 2>/dev/null | head -1)
+  if [[ "$actual" =~ ^[0-9]+$ && ( -z "$expected" || "$actual" == "$expected" ) ]]; then
+    ok "update check minimum Java latest/JAVA = $actual"
+  else
+    fail "update check minimum Java" "latest/JAVA is \"$actual\", pom.xml <java.version> is \"$expected\""
+  fi
+}
+
 check_release_body() {
   local body
   if ! body=$(gh release view "$VERSION" --repo cpesch/RouteConverter --json body --jq .body); then
@@ -157,6 +174,7 @@ check_contains "javadoc" "$STATIC/javadoc/" "$VERSION API"
 check_contains "PAD catalog EN" "$RELEASES/latest/RouteConverter.xml" "<Program_Version>$VERSION</Program_Version>"
 check_contains "PAD catalog DE" "$RELEASES/latest/RouteConverter_de.xml" "<Program_Version>$VERSION</Program_Version>"
 check_version_file
+check_java_file
 check_release_body
 
 exit "$FAILED"

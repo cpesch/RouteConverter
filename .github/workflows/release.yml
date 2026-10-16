@@ -153,6 +153,12 @@ jobs:
             grep -qF "<Program_Version>${VERSION}</Program_Version>" "latest-tree/$f"
           done
           printf '%s\n' "$VERSION" > latest-tree/VERSION
+          # Minimum Java of this release (the pom's bytecode target): rc-site's
+          # update check offers Linux clients on an older Java that Java instead
+          # of a RouteConverter they cannot start.
+          JAVA=$(sed -nE 's|.*<java\.version>([0-9]+)</java\.version>.*|\1|p' src/pom.xml | head -1)
+          [[ -n "$JAVA" ]] || { echo "::error::cannot read <java.version> from pom.xml"; exit 1; }
+          printf '%s\n' "$JAVA" > latest-tree/JAVA
           ls -la latest-tree/
       - name: Configure SSH
         env:
