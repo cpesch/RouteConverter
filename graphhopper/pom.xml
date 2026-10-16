@@ -56,6 +56,15 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- PbfUtil reads PBF headers with osmpbf, not with graphhopper-core 11.1's
+             osmosis-osm-binary 0.48.3: that gencode predates protobuf 22, so
+             protobuf-java 4.x logs "Vulnerable protobuf generated type" for it
+             (GHSA-h4h5-3hr4-j3g2). GraphHopper 12 moves to osmpbf as well. -->
+        <dependency>
+            <groupId>org.openstreetmap.pbf</groupId>
+            <artifactId>osmpbf</artifactId>
+            <version>1.8.0</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>

@@ -19,8 +19,8 @@
 */
 package slash.navigation.graphhopper;
 
-import org.openstreetmap.osmosis.osmbinary.Fileformat;
-import org.openstreetmap.osmosis.osmbinary.Osmformat;
+import crosby.binary.Fileformat;
+import crosby.binary.Osmformat;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.SimpleNavigationPosition;
 
