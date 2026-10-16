@@ -22,6 +22,7 @@ package slash.navigation.mapview.mapsforge;
 import org.junit.Before;
 import org.junit.Test;
 import org.mapsforge.core.graphics.GraphicFactory;
+import org.mapsforge.core.model.LatLong;
 import org.mapsforge.map.reader.MapFile;
 import org.mapsforge.map.rendertheme.XmlRenderThemeMenuCallback;
 import org.mapsforge.map.rendertheme.XmlRenderThemeStyleLayer;
@@ -340,6 +341,38 @@ public class MapsforgeMapViewTest {
         boolean zoomChanged = false;
         boolean centerChanged = true;
         assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, 0, 2000, zoomChanged || centerChanged));
+    }
+
+    // --- isPannedSinceFit(): whether the map's live center counts as moved away from the fit's
+    // target (issue #274 follow-up) -----------------------------------------------------------
+    // recordPendingFitCenter() must store the center the fit is heading for, not the live center
+    // read back immediately after calling animateTo() -- that animation is still in progress and
+    // the live center legitimately differs from the target without any user action.
+
+    @Test
+    public void testIsPannedSinceFitWhenAnimationInProgress() {
+        LatLong current = new LatLong(1.0, 1.0);
+        LatLong target = new LatLong(2.0, 2.0);
+        assertEquals(false, MapsforgeMapView.isPannedSinceFit(true, current, target));
+    }
+
+    @Test
+    public void testIsPannedSinceFitWhenCenterDiffersAndNoAnimation() {
+        LatLong current = new LatLong(1.0, 1.0);
+        LatLong target = new LatLong(2.0, 2.0);
+        assertEquals(true, MapsforgeMapView.isPannedSinceFit(false, current, target));
+    }
+
+    @Test
+    public void testIsPannedSinceFitWhenCenterEqualsTargetAndNoAnimation() {
+        LatLong center = new LatLong(1.0, 1.0);
+        assertEquals(false, MapsforgeMapView.isPannedSinceFit(false, center, center));
+    }
+
+    @Test
+    public void testIsPannedSinceFitWithNullTargetIsNotAPan() {
+        LatLong current = new LatLong(1.0, 1.0);
+        assertEquals(false, MapsforgeMapView.isPannedSinceFit(false, current, null));
     }
 
     @Test

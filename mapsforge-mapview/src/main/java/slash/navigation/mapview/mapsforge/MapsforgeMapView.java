@@ -235,7 +235,9 @@ public class MapsforgeMapView extends BaseMapView {
     private final GroupLayer waypointLayer = new GroupLayer();
 
     // the most recent route fit that a layout still settling (e.g. on macOS) may need repeating;
-    // null once consumed, expired or abandoned because the user zoomed or panned since.
+    // redone on every dimension change within the re-fit window, and cleared only once that window
+    // expires or the user zooms or pans away -- not cleared after a successful refit, since a
+    // layout may still settle in more than one step.
     // pendingFitTimestamp is the original fit's timestamp only -- refitAfterResize() never
     // touches it, so the re-fit window is always measured from the original fit, not the latest
     // resize, however many resizes arrive while it is pending
@@ -997,9 +999,9 @@ public class MapsforgeMapView extends BaseMapView {
         if (!positions.isEmpty()) {
             BoundingBox both = asBoundingBox(positions);
             boolean fitted = zoomToBounds(both);
-            setCenter(both.getCenter(), true);
+            LatLong targetCenter = setCenter(both.getCenter(), true);
             if (fitted)
-                recordPendingFitCenter();
+                recordPendingFitCenter(targetCenter);
         }
     }
 
@@ -1188,9 +1190,9 @@ public class MapsforgeMapView extends BaseMapView {
             BoundingBox both = asBoundingBox(positions);
             if (alwaysZoom) {
                 boolean fitted = zoomToBounds(both);
-                setCenter(both.getCenter(), alwaysRecenter);
+                LatLong targetCenter = setCenter(both.getCenter(), alwaysRecenter);
                 if (fitted)
-                    recordPendingFitCenter();
+                    recordPendingFitCenter(targetCenter);
             } else {
                 setCenter(both.getCenter(), alwaysRecenter);
             }
@@ -1242,13 +1244,20 @@ public class MapsforgeMapView extends BaseMapView {
             setCenter(position, true);
     }
 
-    private void setCenter(NavigationPosition center, boolean alwaysRecenter) {
-        setCenter(asLatLong(center), alwaysRecenter);
+    // returns the center the map is actually heading for: the requested center if this call
+    // moves the map, or the map's current (unchanged) center otherwise -- callers that need to
+    // remember a fit's reference center (recordPendingFitCenter()) must use this return value,
+    // not the requested center, since animateTo() has not reached it yet
+    private LatLong setCenter(NavigationPosition center, boolean alwaysRecenter) {
+        return setCenter(asLatLong(center), alwaysRecenter);
     }
 
-    private void setCenter(LatLong center, boolean alwaysRecenter) {
-        if (alwaysRecenter || mapViewCallback.isRecenterAfterZooming() || !isVisible(center))
+    private LatLong setCenter(LatLong center, boolean alwaysRecenter) {
+        if (alwaysRecenter || mapViewCallback.isRecenterAfterZooming() || !isVisible(center)) {
             mapView.getModel().mapViewPosition.animateTo(center);
+            return center;
+        }
+        return mapView.getModel().mapViewPosition.getCenter();
     }
 
     public BoundingBox getBoundingBox() {
@@ -1285,11 +1294,13 @@ public class MapsforgeMapView extends BaseMapView {
         return true;
     }
 
-    // called by callers of zoomToBounds() once they have also set the map's center, so the
-    // pending fit's reference center is the one the fit actually produced, not a stale value
-    // from before setCenter() ran
-    private void recordPendingFitCenter() {
-        pendingFitCenter = mapView.getModel().mapViewPosition.getCenter();
+    // called by callers of zoomToBounds() with the target center setCenter() just returned, so
+    // the pending fit's reference center is the one the fit is heading for, not
+    // mapViewPosition.getCenter() read back immediately afterwards -- animateTo() is still
+    // mid-animation at that point, so that center has not arrived yet and differs from the
+    // target on every normal start (issue #274 follow-up)
+    private void recordPendingFitCenter(LatLong targetCenter) {
+        pendingFitCenter = targetCenter;
     }
 
     private boolean zoomToBounds(BoundingBox boundingBox) {
@@ -1298,16 +1309,18 @@ public class MapsforgeMapView extends BaseMapView {
 
     // called by MapViewResizer whenever the map component's dimension changes; redoes a route fit
     // that ran against a layout still settling (e.g. macOS not yet having given the profile pane
-    // its final height, issue #274), but only once, only within REFIT_WINDOW_MILLIS of the
-    // original fit, and never once the user has zoomed or panned since -- a fit the user has
-    // moved away from must not be repeated
+    // its final height, issue #274) on every dimension change that arrives within
+    // REFIT_WINDOW_MILLIS of the original fit, and never once the user has zoomed or panned since
+    // -- a fit the user has moved away from must not be repeated
     private void refitAfterResize(Dimension newDimension) {
         if (pendingFitBoundingBox == null)
             return;
 
+        MapViewPosition mapViewPosition = mapView.getModel().mapViewPosition;
         long millisSinceFit = currentTimeMillis() - pendingFitTimestamp;
         boolean zoomChanged = getZoom() != pendingFitZoomLevel;
-        boolean centerChanged = !mapView.getModel().mapViewPosition.getCenter().equals(pendingFitCenter);
+        boolean centerChanged = isPannedSinceFit(mapViewPosition.animationInProgress(),
+                mapViewPosition.getCenter(), pendingFitCenter);
         if (!shouldRefitAfterResize(true, true, millisSinceFit, REFIT_WINDOW_MILLIS, zoomChanged || centerChanged)) {
             pendingFitBoundingBox = null;
             return;
@@ -1317,17 +1330,26 @@ public class MapsforgeMapView extends BaseMapView {
         if (zoom != pendingFitZoomLevel)
             setZoom(zoom);
         pendingFitZoomLevel = zoom;
-        // the center is untouched by a refit; re-recorded for symmetry with the original fit
-        recordPendingFitCenter();
+        // the center is untouched by a refit -- pendingFitCenter stays the original fit's target
     }
 
     // pure decision extracted for unit testing without a real window: a pending fit is redone
     // only if the dimension actually changed, the change arrived within the re-fit window, and
-    // the user has not zoomed (hence not deliberately moved away from the fit) since
+    // the user has not zoomed or panned (hence not deliberately moved away from the fit) since
     static boolean shouldRefitAfterResize(boolean fitPending, boolean dimensionChanged, long millisSinceFit,
                                            long refitWindowMillis, boolean userInteractedSinceFit) {
         return fitPending && dimensionChanged && !userInteractedSinceFit
                 && millisSinceFit >= 0 && millisSinceFit <= refitWindowMillis;
+    }
+
+    // a fit's target center counts as panned away from only once the map has actually settled on
+    // a different center: mid-animation (animateTo() still running) the live center legitimately
+    // differs from the target without any user action, and a null target (no fit recorded yet)
+    // cannot have been panned away from either
+    static boolean isPannedSinceFit(boolean animationInProgress, LatLong currentCenter, LatLong targetCenter) {
+        if (targetCenter == null)
+            return false;
+        return !animationInProgress && !currentCenter.equals(targetCenter);
     }
 
     public /*for DraggableMarker*/ MapView getMapView() {
