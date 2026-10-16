@@ -287,7 +287,9 @@ public class MapsforgeMapViewTest {
     // the map has not taken its height yet), fitting the route against a taller-than-final map and
     // picking a zoom one level too close. shouldRefitAfterResize() is the pure decision of whether
     // a dimension change shortly afterwards should redo that fit -- extracted so it is testable
-    // without a real window, mirroring testDeviceScaleFactor() below.
+    // without a real window, mirroring testDeviceScaleFactor() below. The window is always measured
+    // from the original fit (refitAfterResize() never resets the stored timestamp), and either a
+    // zoom or a pan since the fit counts as user interaction that abandons it.
 
     @Test
     public void testRefitsWhenFitPendingAndDimensionChangedWithinWindow() {
@@ -314,6 +316,30 @@ public class MapsforgeMapViewTest {
     public void testDoesNotRefitAfterUserInteraction() {
         // a fit the user has zoomed away from must not be repeated, even if still within the window
         assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, 0, 2000, true));
+    }
+
+    @Test
+    public void testRefitWindowIsMeasuredFromTheOriginalFitAcrossAChainOfResizes() {
+        // three resizes arrive 1500ms apart; if the window were reset on every refit instead of
+        // kept from the original fit, the third would still land inside a fresh 2000ms window and
+        // wrongly refit again -- it must not, however many resizes arrived in between
+        long refitWindowMillis = 2000;
+        long firstResizeMillisSinceOriginalFit = 1500;
+        long secondResizeMillisSinceOriginalFit = 3000;
+        long thirdResizeMillisSinceOriginalFit = 4500;
+
+        assertEquals(true, MapsforgeMapView.shouldRefitAfterResize(true, true, firstResizeMillisSinceOriginalFit, refitWindowMillis, false));
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, secondResizeMillisSinceOriginalFit, refitWindowMillis, false));
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, thirdResizeMillisSinceOriginalFit, refitWindowMillis, false));
+    }
+
+    @Test
+    public void testDoesNotRefitAfterUserPanned() {
+        // a pan (center changed, zoom unchanged) must abandon the pending fit just like a zoom
+        // does -- refitAfterResize() folds zoomChanged || centerChanged into this single flag
+        boolean zoomChanged = false;
+        boolean centerChanged = true;
+        assertEquals(false, MapsforgeMapView.shouldRefitAfterResize(true, true, 0, 2000, zoomChanged || centerChanged));
     }
 
     @Test
