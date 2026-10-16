@@ -20,6 +20,8 @@
 
 package slash.navigation.gui;
 
+import slash.navigation.gui.helpers.UIHelper;
+
 import javax.swing.*;
 import java.awt.*;
 import java.net.URI;
@@ -139,9 +141,7 @@ public class HelpManager {
     private void browse(String url) {
         if (Boolean.getBoolean(DRY_RUN)) { System.out.println("HelpManager dry-run: " + url); return; }
         try {
-            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE))
-                Desktop.getDesktop().browse(URI.create(url));
-            else log.warning("Desktop browse unsupported; cannot open " + url);
+            UIHelper.browse(URI.create(url));
         } catch (Exception e) { log.warning("Failed to open help URL " + url + ": " + e); }
     }
 }

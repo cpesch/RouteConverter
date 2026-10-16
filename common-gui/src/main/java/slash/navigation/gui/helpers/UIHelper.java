@@ -32,6 +32,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.Optional;
@@ -218,6 +219,35 @@ public class UIHelper {
         // FlatLaf draws its own title bars on Linux; on Windows it uses the native window decorations
         JFrame.setDefaultLookAndFeelDecorated(true);
         JDialog.setDefaultLookAndFeelDecorated(true);
+    }
+
+    public static void browse(URI uri) throws IOException {
+        if (isDesktopActionSupported(Desktop.Action.BROWSE))
+            Desktop.getDesktop().browse(uri);
+        else
+            openWithXdgOpen(uri);
+    }
+
+    public static void mail(URI uri) throws IOException {
+        if (isDesktopActionSupported(Desktop.Action.MAIL))
+            Desktop.getDesktop().mail(uri);
+        else
+            openWithXdgOpen(uri);
+    }
+
+    private static boolean isDesktopActionSupported(Desktop.Action action) {
+        return Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(action);
+    }
+
+    // inside the Flatpak sandbox Java's GTK desktop integration finds no browser and no
+    // mail program; xdg-open hands the URI to the desktop through the OpenURI portal there
+    private static void openWithXdgOpen(URI uri) throws IOException {
+        if (!isLinux())
+            throw new UnsupportedOperationException("No desktop support to open " + uri);
+        new ProcessBuilder("xdg-open", uri.toString())
+                .redirectOutput(ProcessBuilder.Redirect.DISCARD)
+                .redirectError(ProcessBuilder.Redirect.DISCARD)
+                .start();
     }
 
     public static boolean isDarkLookAndFeel() {

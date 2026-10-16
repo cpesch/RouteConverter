@@ -27,13 +27,13 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.util.logging.Logger;
 
-import static java.awt.Desktop.getDesktop;
-import static java.awt.Desktop.isDesktopSupported;
 import static java.util.Locale.GERMAN;
 import static java.util.Locale.getDefault;
 import static slash.navigation.gui.helpers.WindowHelper.showError;
 import static slash.common.helpers.ExceptionHelper.getLocalizedMessage;
 import static slash.common.helpers.LocaleHelper.resolveDomain;
+import static slash.navigation.gui.helpers.UIHelper.browse;
+import static slash.navigation.gui.helpers.UIHelper.mail;
 
 /**
  * Knows how to cope with external programs like mail.
@@ -119,10 +119,7 @@ public class ExternalPrograms {
 
     public static void startBrowser(Window window, String uri) {
         try {
-            if (!isDesktopSupported())
-                throw new UnsupportedOperationException("No desktop support available");
-
-            getDesktop().browse(new URI(uri));
+            browse(new URI(uri));
         } catch (Exception e) {
             log.severe("Start browser error: " + e);
 
@@ -134,10 +131,7 @@ public class ExternalPrograms {
 
     private static void startMail(Window window, String uri) {
         try {
-            if (!isDesktopSupported())
-                throw new UnsupportedOperationException("No desktop support available");
-
-            getDesktop().mail(new URI(uri));
+            mail(new URI(uri));
         } catch (Exception e) {
             log.severe("Start mail error: " + e);
 
