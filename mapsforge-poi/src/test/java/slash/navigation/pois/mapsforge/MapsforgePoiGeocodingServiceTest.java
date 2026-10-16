@@ -47,7 +47,7 @@ public class MapsforgePoiGeocodingServiceTest {
 
 	@Test
 	public void returnsNullWhenNoDisplayedMapExistsAndEmptyListForBlankSearch() throws Exception {
-		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(mockDataSourceManager(), mockMapManager(null), () -> VISIBLE_BOUNDS);
+		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(new MapsforgePoiLookup(mockDataSourceManager()), mockMapManager(null), () -> VISIBLE_BOUNDS);
 		assertNull(service.getPositionsFor("Berlin"));
 		assertNull(service.getAddressFor(CENTER));
 		assertTrue(service.getPositionsFor("   ").isEmpty());
@@ -100,9 +100,44 @@ public class MapsforgePoiGeocodingServiceTest {
 		assertEquals("Test 49", results.get(49).getPosition().getDescription());
 	}
 
+	@Test
+	public void searchesDownloadedPoiFileOfVisibleAreaWhenOnlineMapIsDisplayed() throws Exception {
+		String dataSourceDirectory = createDataSourceDirectory();
+		File poiFile = createPoiFile(dataSourceDirectory);
+		insertPoi(poiFile, 1, 52.8000, 13.8000, tags("name", "Outside View", "place", "village"));
+		insertPoi(poiFile, 2, 52.5200, 13.4050, tags("name", "Prague", "place", "city"));
+		DataSourceManager dataSourceManager = mockDataSourceManager(dataSourceDirectory);
+		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(new MapsforgePoiLookup(dataSourceManager), mockMapManager(onlineMap()), () -> VISIBLE_BOUNDS);
+
+		List<GeocodingResult> inView = service.getPositionsFor("Prague");
+		assertEquals(1, inView.size());
+		assertEquals("Prague", inView.get(0).getPosition().getDescription());
+		assertEquals("test", inView.get(0).getGeocodingServiceName());
+
+		List<GeocodingResult> elsewhereInFile = service.getPositionsFor("Outside");
+		assertEquals(1, elsewhereInFile.size());
+		assertEquals("Outside View", elsewhereInFile.get(0).getPosition().getDescription());
+
+		// positions added on an online map keep their address descriptions
+		assertNull(service.getAddressFor(new SimpleNavigationPosition(13.4050, 52.5200)));
+	}
+
+	@Test
+	public void neverDownloadsPoiFileWhenOnlineMapIsDisplayed() throws Exception {
+		String dataSourceDirectory = createDataSourceDirectory();
+		File poiFile = createPoiFile(dataSourceDirectory);
+		insertPoi(poiFile, 1, 48.1374, 11.5755, tags("name", "Marienplatz", "place", "square"));
+		DataSourceManager dataSourceManager = mockDataSourceManager(dataSourceDirectory);
+		addRemotePoiFile(dataSourceManager, "berlin.poi", VISIBLE_BOUNDS);
+		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(new MapsforgePoiLookup(dataSourceManager), mockMapManager(onlineMap()), () -> VISIBLE_BOUNDS);
+
+		assertNull(service.getPositionsFor("Marienplatz"));
+		verify(dataSourceManager, never()).queueForDownload(any(), any());
+	}
+
 	private MapsforgePoiGeocodingService serviceFor(String dataSourceDirectory, BoundingBox visibleBounds) throws Exception {
 		File mapFile = temporaryFolder.newFile("test.map");
-		return new MapsforgePoiGeocodingService(mockDataSourceManager(dataSourceDirectory), mockMapManager(new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString())), () -> visibleBounds);
+		return new MapsforgePoiGeocodingService(new MapsforgePoiLookup(mockDataSourceManager(dataSourceDirectory)), mockMapManager(new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString())), () -> visibleBounds);
 	}
 
 	private String categoryOf(NavigationPosition position) {
@@ -125,6 +160,20 @@ public class MapsforgePoiGeocodingServiceTest {
 		}
 		when(dataSourceManager.getDataSourceService()).thenReturn(dataSourceService);
 		return dataSourceManager;
+	}
+
+	private void addRemotePoiFile(DataSourceManager dataSourceManager, String uri, BoundingBox boundingBox) {
+		DataSource dataSource = dataSourceManager.getDataSourceService().getDataSources().get(0);
+		slash.navigation.datasources.File remoteFile = mock(slash.navigation.datasources.File.class);
+		when(remoteFile.getUri()).thenReturn(uri);
+		when(remoteFile.getBoundingBox()).thenReturn(boundingBox);
+		when(remoteFile.getDataSource()).thenReturn(dataSource);
+		when(dataSource.getFiles()).thenReturn(List.of(remoteFile));
+	}
+
+	// an online map like TileDownloadMap has no bounding box
+	private LocalMap onlineMap() {
+		return new TestLocalMap(null, "OpenStreetMap");
 	}
 
 	@SuppressWarnings("unchecked")
