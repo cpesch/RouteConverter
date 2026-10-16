@@ -284,7 +284,7 @@ public class MapsforgeMapViewTest {
     }
 
     // --- re-fit decision after a map dimension change (issue #274) -----------------------------
-    // On macOS, zoomToBounds() can run before the frame layout has settled (the profile pane below
+    // On macOS, fitAndCenter() can run before the frame layout has settled (the profile pane below
     // the map has not taken its height yet), fitting the route against a taller-than-final map and
     // picking a zoom one level too close. shouldRefitAfterResize() is the pure decision of whether
     // a dimension change shortly afterwards should redo that fit -- extracted so it is testable
@@ -345,7 +345,7 @@ public class MapsforgeMapViewTest {
 
     // --- isPannedSinceFit(): whether the map's live center counts as moved away from the fit's
     // target (issue #274 follow-up) -----------------------------------------------------------
-    // recordPendingFitCenter() must store the center the fit is heading for, not the live center
+    // fitAndCenter() must store the center the fit is heading for, not the live center
     // read back immediately after calling animateTo() -- that animation is still in progress and
     // the live center legitimately differs from the target without any user action.
 

@@ -234,13 +234,11 @@ public class MapsforgeMapView extends BaseMapView {
     private UpdateDecoupler updateDecoupler;
     private final GroupLayer waypointLayer = new GroupLayer();
 
-    // the most recent route fit that a layout still settling (e.g. on macOS) may need repeating;
-    // redone on every dimension change within the re-fit window, and cleared only once that window
-    // expires or the user zooms or pans away -- not cleared after a successful refit, since a
-    // layout may still settle in more than one step.
-    // pendingFitTimestamp is the original fit's timestamp only -- refitAfterResize() never
-    // touches it, so the re-fit window is always measured from the original fit, not the latest
-    // resize, however many resizes arrive while it is pending
+    // the most recent route fit that a still-settling layout (e.g. macOS) may need repeating; the
+    // four fields are set together by fitAndCenter(), never cleared after a successful refit since
+    // the layout may settle in more than one step, and pendingFitTimestamp is never touched by
+    // refitAfterResize() -- so the re-fit window is always measured from the original fit, however
+    // many resizes arrive while it is pending
     private org.mapsforge.core.model.BoundingBox pendingFitBoundingBox;
     private byte pendingFitZoomLevel;
     private LatLong pendingFitCenter;
@@ -998,10 +996,7 @@ public class MapsforgeMapView extends BaseMapView {
         List<NavigationPosition> positions = (List<NavigationPosition>) (List) positionsModel.getRoute().getPositions();
         if (!positions.isEmpty()) {
             BoundingBox both = asBoundingBox(positions);
-            boolean fitted = zoomToBounds(both);
-            LatLong targetCenter = setCenter(both.getCenter(), true);
-            if (fitted)
-                recordPendingFitCenter(targetCenter);
+            fitAndCenter(both, true);
         }
     }
 
@@ -1189,10 +1184,7 @@ public class MapsforgeMapView extends BaseMapView {
         if (!positions.isEmpty()) {
             BoundingBox both = asBoundingBox(positions);
             if (alwaysZoom) {
-                boolean fitted = zoomToBounds(both);
-                LatLong targetCenter = setCenter(both.getCenter(), alwaysRecenter);
-                if (fitted)
-                    recordPendingFitCenter(targetCenter);
+                fitAndCenter(both, alwaysRecenter);
             } else {
                 setCenter(both.getCenter(), alwaysRecenter);
             }
@@ -1245,9 +1237,9 @@ public class MapsforgeMapView extends BaseMapView {
     }
 
     // returns the center the map is actually heading for: the requested center if this call
-    // moves the map, or the map's current (unchanged) center otherwise -- callers that need to
-    // remember a fit's reference center (recordPendingFitCenter()) must use this return value,
-    // not the requested center, since animateTo() has not reached it yet
+    // moves the map, or the map's current (unchanged) center otherwise -- fitAndCenter() records
+    // this return value as the pending fit's reference center, not the requested center, since
+    // animateTo() has not reached it yet
     private LatLong setCenter(NavigationPosition center, boolean alwaysRecenter) {
         return setCenter(asLatLong(center), alwaysRecenter);
     }
@@ -1276,42 +1268,29 @@ public class MapsforgeMapView extends BaseMapView {
         mapView.setZoomLevel((byte) zoom);
     }
 
-    // returns whether a fit actually happened, so the caller knows whether to record the pending
-    // fit's reference center once it has set it -- a null dimension (layout not realized yet)
-    // must leave any unrelated, still-pending fit's bookkeeping untouched
-    private boolean zoomToBounds(org.mapsforge.core.model.BoundingBox boundingBox) {
+    // sets the four pendingFit* fields together, so refitAfterResize() never sees a half-written
+    // fit, and only once the fit actually ran -- a null dimension means the layout is not
+    // realized yet, so there is nothing to refit later
+    private void fitAndCenter(BoundingBox both, boolean alwaysRecenter) {
+        org.mapsforge.core.model.BoundingBox mapsforgeBoundingBox = asMapsforgeBoundingBox(both);
         Dimension dimension = mapView.getModel().mapViewDimension.getDimension();
-        if (dimension == null)
-            return false;
-        byte zoom = zoomForBounds(dimension, boundingBox, getTileSize());
-        setZoom(zoom);
+        if (dimension == null) {
+            setCenter(both.getCenter(), alwaysRecenter);
+            return;
+        }
 
-        pendingFitBoundingBox = boundingBox;
+        byte zoom = zoomForBounds(dimension, mapsforgeBoundingBox, getTileSize());
+        setZoom(zoom);
+        LatLong targetCenter = setCenter(both.getCenter(), alwaysRecenter);
+
+        pendingFitBoundingBox = mapsforgeBoundingBox;
         pendingFitZoomLevel = zoom;
         pendingFitTimestamp = currentTimeMillis();
-        // pendingFitCenter is recorded by the caller, after it has set the actual map center
-        // (zoomToBounds() runs before that setCenter() call, so the center isn't final here yet)
-        return true;
-    }
-
-    // called by callers of zoomToBounds() with the target center setCenter() just returned, so
-    // the pending fit's reference center is the one the fit is heading for, not
-    // mapViewPosition.getCenter() read back immediately afterwards -- animateTo() is still
-    // mid-animation at that point, so that center has not arrived yet and differs from the
-    // target on every normal start (issue #274 follow-up)
-    private void recordPendingFitCenter(LatLong targetCenter) {
         pendingFitCenter = targetCenter;
     }
 
-    private boolean zoomToBounds(BoundingBox boundingBox) {
-        return zoomToBounds(asMapsforgeBoundingBox(boundingBox));
-    }
-
-    // called by MapViewResizer whenever the map component's dimension changes; redoes a route fit
-    // that ran against a layout still settling (e.g. macOS not yet having given the profile pane
-    // its final height, issue #274) on every dimension change that arrives within
-    // REFIT_WINDOW_MILLIS of the original fit, and never once the user has zoomed or panned since
-    // -- a fit the user has moved away from must not be repeated
+    // redoes a pending fit against the corrected dimension; shouldRefitAfterResize() decides,
+    // based on the window from the original fit and whether the user has zoomed or panned since
     private void refitAfterResize(Dimension newDimension) {
         if (pendingFitBoundingBox == null)
             return;
@@ -1333,19 +1312,15 @@ public class MapsforgeMapView extends BaseMapView {
         // the center is untouched by a refit -- pendingFitCenter stays the original fit's target
     }
 
-    // pure decision extracted for unit testing without a real window: a pending fit is redone
-    // only if the dimension actually changed, the change arrived within the re-fit window, and
-    // the user has not zoomed or panned (hence not deliberately moved away from the fit) since
+    // pure decision extracted for unit testing without a real window
     static boolean shouldRefitAfterResize(boolean fitPending, boolean dimensionChanged, long millisSinceFit,
                                            long refitWindowMillis, boolean userInteractedSinceFit) {
         return fitPending && dimensionChanged && !userInteractedSinceFit
                 && millisSinceFit >= 0 && millisSinceFit <= refitWindowMillis;
     }
 
-    // a fit's target center counts as panned away from only once the map has actually settled on
-    // a different center: mid-animation (animateTo() still running) the live center legitimately
-    // differs from the target without any user action, and a null target (no fit recorded yet)
-    // cannot have been panned away from either
+    // an animation in progress is not a pan -- the live center legitimately differs from the
+    // target while animateTo() is still mid-flight, without any user action
     static boolean isPannedSinceFit(boolean animationInProgress, LatLong currentCenter, LatLong targetCenter) {
         if (targetCenter == null)
             return false;
