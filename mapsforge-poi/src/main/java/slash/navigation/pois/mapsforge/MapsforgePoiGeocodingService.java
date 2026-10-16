@@ -72,18 +72,15 @@ public class MapsforgePoiGeocodingService extends BaseGeocodingService {
         if (query.isEmpty())
             return emptyList();
 
-        PoiContext context = getContext();
+        SearchContext context = getSearchContext();
         if (context == null)
             return null;
 
-        MapsforgePoiLookup.PoiFile poiFile = lookup.findPoiFile(context.mapBoundingBox());
-        if (poiFile == null)
-            return null;
-
-        NavigationPosition center = context.mapBoundingBox().getCenter();
+        MapsforgePoiLookup.PoiFile poiFile = context.poiFile();
+        NavigationPosition center = context.searchBounds().getCenter();
         List<CategorizedNavigationPosition> positions = lookup.search(poiFile.file(), query, context.visibleBounds(), center);
-        if (positions.isEmpty() && !Objects.equals(context.visibleBounds(), context.mapBoundingBox()))
-            positions = lookup.search(poiFile.file(), query, context.mapBoundingBox(), center);
+        if (positions.isEmpty() && !Objects.equals(context.visibleBounds(), context.searchBounds()))
+            positions = lookup.search(poiFile.file(), query, context.searchBounds(), center);
         return asGeocodingResults(positions, poiFile.dataSourceName());
     }
 
@@ -91,27 +88,47 @@ public class MapsforgePoiGeocodingService extends BaseGeocodingService {
         if (position == null || !position.hasCoordinates())
             return null;
 
-        PoiContext context = getContext();
-        if (context == null)
+        BoundingBox mapBoundingBox = getDisplayedMapBoundingBox();
+        if (mapBoundingBox == null)
             return null;
 
-        MapsforgePoiLookup.PoiFile poiFile = lookup.findPoiFile(context.mapBoundingBox());
+        MapsforgePoiLookup.PoiFile poiFile = lookup.findPoiFile(mapBoundingBox);
         if (poiFile == null)
             return null;
 
         return lookup.lookup(poiFile.file(), position);
     }
 
-    private PoiContext getContext() {
+    private BoundingBox getDisplayedMapBoundingBox() {
         LocalMap localMap = mapsforgeMapManager.getDisplayedMapModel().getItem();
-        BoundingBox mapBoundingBox = localMap != null ? localMap.getBoundingBox() : null;
-        if (mapBoundingBox == null)
-            return null;
-
-        BoundingBox visibleBounds = mapBoundingBox.intersect(visibleBoundsSupplier.get());
-        return new PoiContext(mapBoundingBox, visibleBounds != null ? visibleBounds : mapBoundingBox);
+        return localMap != null ? localMap.getBoundingBox() : null;
     }
 
-    private record PoiContext(BoundingBox mapBoundingBox, BoundingBox visibleBounds) {
+    private SearchContext getSearchContext() {
+        BoundingBox visibleBounds = visibleBoundsSupplier.get();
+        BoundingBox mapBoundingBox = getDisplayedMapBoundingBox();
+        if (mapBoundingBox != null) {
+            MapsforgePoiLookup.PoiFile poiFile = lookup.findPoiFile(mapBoundingBox);
+            if (poiFile == null)
+                return null;
+
+            BoundingBox visibleMapBounds = mapBoundingBox.intersect(visibleBounds);
+            return new SearchContext(poiFile, mapBoundingBox, visibleMapBounds != null ? visibleMapBounds : mapBoundingBox);
+        }
+
+        // an online map has no bounding box: like the POI overlay, search the downloaded POI file
+        // covering the visible area, and never start a download for it
+        if (visibleBounds == null)
+            return null;
+
+        MapsforgePoiLookup.PoiFile poiFile = lookup.findPoiFile(visibleBounds, false);
+        if (poiFile == null)
+            return null;
+
+        BoundingBox fileBounds = lookup.readBounds(poiFile.file());
+        return new SearchContext(poiFile, fileBounds != null ? fileBounds : visibleBounds, visibleBounds);
+    }
+
+    private record SearchContext(MapsforgePoiLookup.PoiFile poiFile, BoundingBox searchBounds, BoundingBox visibleBounds) {
     }
 }
