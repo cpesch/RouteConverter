@@ -35,6 +35,9 @@ _DIGIT_RUN_RE = re.compile(r"\d+")
 _MAVEN_GOAL_RE = re.compile(
     r"Failed to execute goal [\w.-]+:[\w.-]+:[\w.-]+:(\w+)\s*(?:\([^)]*\))?\s*on project ([\w.-]+)"
 )
+# A failure before any plugin runs names no goal: "Failed to execute goal on
+# project rest: Could not resolve dependencies for project …" (#481).
+_MAVEN_NO_GOAL_RE = re.compile(r"Failed to execute goal on project ([\w.-]+): (Could not resolve dependencies)?")
 
 _ZERO_WIDTH_SPACE = "​"
 
@@ -111,6 +114,11 @@ def maven_error(log):
     if match:
         goal = match.group(1)
         module = match.group(2)
+    else:
+        match = _MAVEN_NO_GOAL_RE.search(log)
+        if match:
+            module = match.group(1)
+            goal = "dependency-resolution" if match.group(2) else "build"
 
     return module, goal, error_line
 

@@ -13,12 +13,12 @@ name: Nightly triage
 #   gh workflow run nightly-triage.yml -f run_id=<id> -f dry_run=true
 on:
   workflow_run:
-    workflows: [RouteConverter CI]
+    workflows: [RouteConverter CI, JDK EA canary]
     types: [completed]
   workflow_dispatch:
     inputs:
       run_id:
-        description: RouteConverter CI run id to triage
+        description: RouteConverter CI or JDK EA canary run id to triage
         required: true
         type: string
       dry_run:

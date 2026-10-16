@@ -79,6 +79,20 @@ class IsInfraTest(unittest.TestCase):
 
 
 class MavenErrorTest(unittest.TestCase):
+    def test_dependency_resolution_failure_without_plugin_goal(self):
+        log = (
+            "[ERROR] Failed to execute goal on project rest: Could not resolve dependencies for project "
+            "slash.navigation:rest:jar:3.8-SNAPSHOT\n"
+            "[ERROR] dependency: slash.navigation:common:jar:tests:3.8-SNAPSHOT (test)"
+        )
+        module, goal, _ = nightly_classify.maven_error(log)
+        self.assertEqual(module, "rest")
+        self.assertEqual(goal, "dependency-resolution")
+
+    def test_other_failure_without_plugin_goal(self):
+        module, goal, _ = nightly_classify.maven_error("[ERROR] Failed to execute goal on project gui: something else")
+        self.assertEqual((module, goal), ("gui", "build"))
+
     def test_extracts_module_and_goal(self):
         log = (
             "[ERROR] Failed to execute goal org.apache.maven.plugins:maven-surefire-plugin:3.2.5:test "

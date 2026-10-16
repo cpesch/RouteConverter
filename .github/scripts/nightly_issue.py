@@ -132,7 +132,7 @@ def render_title(finding):
         simple = finding.tests[0].test_class.rsplit(".", 1)[-1]
         title = f"nightly: {simple} [{finding.signature}]"
     else:
-        title = f"nightly: {finding.module}:{finding.goal} [{finding.signature}]"
+        title = f"nightly: {_build_subject(finding)} [{finding.signature}]"
     return title[:120]
 
 
@@ -142,10 +142,19 @@ def _jobs_summary(jobs):
     return ", ".join(jobs)
 
 
+def _build_subject(finding):
+    """``module:goal`` for a build failure, without printing ``None`` for a part the
+    log didn't name (#481: "nightly: None:None")."""
+    parts = [part for part in (finding.module, finding.goal) if part]
+    if parts:
+        return ":".join(parts)
+    return "build failure in " + ", ".join(finding.jobs) if finding.jobs else "build failure"
+
+
 def _subject(finding):
     if finding.tests:
         return finding.tests[0].test_class
-    return f"{finding.module}:{finding.goal}"
+    return _build_subject(finding)
 
 
 def render_body(finding, files, ctx):
