@@ -83,6 +83,8 @@ public class ShowPoisDialog extends SimpleDialog {
         treeCategories.setRootVisible(false);
         treeCategories.setShowsRootHandles(true);
         treeCategories.setCellRenderer(new CategoryRenderer());
+        // the look and feel's fixed row height is made for a label and clips the check box
+        treeCategories.setRowHeight(0);
         treeCategories.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 // a click on the expand handle has no path, so it only expands
