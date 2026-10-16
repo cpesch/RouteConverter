@@ -9,8 +9,9 @@ command: routeconverter
 finish-args:
   - --share=ipc
   - --share=network
-  - --socket=fallback-x11
-  - --socket=wayland
+  # Java's AWT talks X11 only; under a Wayland desktop it runs through
+  # Xwayland, which fallback-x11 would not grant next to wayland
+  - --socket=x11
   - --device=dri
   - --filesystem=xdg-documents
   - --filesystem=xdg-download

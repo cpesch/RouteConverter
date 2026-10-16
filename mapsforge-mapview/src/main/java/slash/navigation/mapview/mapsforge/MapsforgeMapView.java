@@ -93,6 +93,7 @@ import java.util.stream.Collectors;
 
 import static java.awt.event.InputEvent.CTRL_DOWN_MASK;
 import static slash.common.system.Platform.isWindows;
+import static slash.navigation.gui.helpers.UIHelper.getLookAndFeelScale;
 import static java.awt.event.KeyEvent.*;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.max;
@@ -616,9 +617,17 @@ public class MapsforgeMapView extends BaseMapView {
 
     protected float getDeviceScaleFactor() {
         float factor = preferences.getInt(DEVICE_SCALE_FACTOR, Toolkit.getDefaultToolkit().getScreenResolution()) / 96.0f;
-        // the map is drawn in device pixels: Windows reports the screen resolution including the
-        // display scale, macOS and Linux report it without, so apply the scale there
-        return isWindows() ? factor : (float) (factor * getDefaultScreenScale());
+        return getDeviceScaleFactor(factor, isWindows(), getDefaultScreenScale(), getLookAndFeelScale());
+    }
+
+    /**
+     * The map is drawn in device pixels: Windows reports the screen resolution including the
+     * display scale, macOS and Linux report it without, so apply the scale there. Where Java2D
+     * does not scale but the look-and-feel does (FlatLaf on a scaled Linux desktop without
+     * GDK_SCALE), follow the look-and-feel so the map matches the size of the rest of the UI.
+     */
+    static float getDeviceScaleFactor(float resolutionFactor, boolean windows, double screenScale, float lookAndFeelScale) {
+        return windows ? resolutionFactor : (float) (resolutionFactor * Math.max(screenScale, lookAndFeelScale));
     }
 
     private static double getDefaultScreenScale() {

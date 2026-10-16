@@ -45,7 +45,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 import static com.intellij.uiDesigner.core.GridConstraints.*;
-import static java.awt.Desktop.getDesktop;
 import static java.awt.event.ItemEvent.SELECTED;
 import static java.lang.Integer.MAX_VALUE;
 import static java.lang.Math.min;
@@ -53,6 +52,7 @@ import static java.util.Arrays.asList;
 import static slash.common.io.Transfer.toArray;
 import static slash.common.system.Platform.isWindows;
 import static slash.navigation.gui.events.Range.asRange;
+import static slash.navigation.gui.helpers.UIHelper.browse;
 import static slash.navigation.gui.helpers.UIHelper.getMaxWidth;
 import static slash.navigation.maps.tileserver.TileServerMapManager.extractCopyrightHref;
 import static slash.navigation.mapview.mapsforge.renderer.LocalMapListCellRenderer.DOWNLOAD_MAP;
@@ -132,7 +132,7 @@ public class MapSelector {
                 if (uri != null) {
                     try {
                         // should be ExternalPrograms#startBrowser
-                        getDesktop().browse(new URI(uri));
+                        browse(new URI(uri));
                     } catch (Exception e) {
                         // intentionally left empty
                     }

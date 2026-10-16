@@ -281,5 +281,19 @@ public class MapsforgeMapViewTest {
         field.setAccessible(true);
         return field.get(target);
     }
-}
 
+    @Test
+    public void testDeviceScaleFactor() {
+        // Windows: the screen resolution already contains the display scale
+        assertEquals(1.5f, MapsforgeMapView.getDeviceScaleFactor(1.5f, true, 1.5, 1f), 0.001f);
+        // macOS Retina and Linux with GDK_SCALE: Java2D scales
+        assertEquals(2f, MapsforgeMapView.getDeviceScaleFactor(1f, false, 2.0, 1f), 0.001f);
+        // Linux desktop scaled without GDK_SCALE: only FlatLaf scales
+        assertEquals(2f, MapsforgeMapView.getDeviceScaleFactor(1f, false, 1.0, 2f), 0.001f);
+        assertEquals(1.5f, MapsforgeMapView.getDeviceScaleFactor(1f, false, 1.0, 1.5f), 0.001f);
+        // a larger text size on top of the display scale does not enlarge the map further
+        assertEquals(2f, MapsforgeMapView.getDeviceScaleFactor(1f, false, 2.0, 1.25f), 0.001f);
+        // unscaled
+        assertEquals(1f, MapsforgeMapView.getDeviceScaleFactor(1f, false, 1.0, 1f), 0.001f);
+    }
+}
