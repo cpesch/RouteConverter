@@ -47,7 +47,7 @@ public class MapsforgePoiGeocodingServiceTest {
 
 	@Test
 	public void returnsNullWhenNoDisplayedMapExistsAndEmptyListForBlankSearch() throws Exception {
-		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(mockDataSourceManager(), mockMapManager(null), () -> VISIBLE_BOUNDS);
+		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(new MapsforgePoiLookup(mockDataSourceManager()), mockMapManager(null), () -> VISIBLE_BOUNDS);
 		assertNull(service.getPositionsFor("Berlin"));
 		assertNull(service.getAddressFor(CENTER));
 		assertTrue(service.getPositionsFor("   ").isEmpty());
@@ -107,7 +107,7 @@ public class MapsforgePoiGeocodingServiceTest {
 		insertPoi(poiFile, 1, 52.8000, 13.8000, tags("name", "Outside View", "place", "village"));
 		insertPoi(poiFile, 2, 52.5200, 13.4050, tags("name", "Prague", "place", "city"));
 		DataSourceManager dataSourceManager = mockDataSourceManager(dataSourceDirectory);
-		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(dataSourceManager, mockMapManager(onlineMap()), () -> VISIBLE_BOUNDS);
+		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(new MapsforgePoiLookup(dataSourceManager), mockMapManager(onlineMap()), () -> VISIBLE_BOUNDS);
 
 		List<GeocodingResult> inView = service.getPositionsFor("Prague");
 		assertEquals(1, inView.size());
@@ -129,7 +129,7 @@ public class MapsforgePoiGeocodingServiceTest {
 		insertPoi(poiFile, 1, 48.1374, 11.5755, tags("name", "Marienplatz", "place", "square"));
 		DataSourceManager dataSourceManager = mockDataSourceManager(dataSourceDirectory);
 		addRemotePoiFile(dataSourceManager, "berlin.poi", VISIBLE_BOUNDS);
-		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(dataSourceManager, mockMapManager(onlineMap()), () -> VISIBLE_BOUNDS);
+		MapsforgePoiGeocodingService service = new MapsforgePoiGeocodingService(new MapsforgePoiLookup(dataSourceManager), mockMapManager(onlineMap()), () -> VISIBLE_BOUNDS);
 
 		assertNull(service.getPositionsFor("Marienplatz"));
 		verify(dataSourceManager, never()).queueForDownload(any(), any());
@@ -137,7 +137,7 @@ public class MapsforgePoiGeocodingServiceTest {
 
 	private MapsforgePoiGeocodingService serviceFor(String dataSourceDirectory, BoundingBox visibleBounds) throws Exception {
 		File mapFile = temporaryFolder.newFile("test.map");
-		return new MapsforgePoiGeocodingService(mockDataSourceManager(dataSourceDirectory), mockMapManager(new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString())), () -> visibleBounds);
+		return new MapsforgePoiGeocodingService(new MapsforgePoiLookup(mockDataSourceManager(dataSourceDirectory)), mockMapManager(new TestLocalMap(MAP_BOUNDS, mapFile.toURI().toString())), () -> visibleBounds);
 	}
 
 	private String categoryOf(NavigationPosition position) {

@@ -202,7 +202,7 @@ public class RouteConverter extends BaseRouteConverter {
         getGeocodingServiceFacade().addGeocodingService(service);
         getGeocodingServiceFacade().setPreferredGeocodingService(service);
 
-        getGeocodingServiceFacade().addGeocodingService(new MapsforgePoiGeocodingService(getDataSourceManager(),
+        getGeocodingServiceFacade().addGeocodingService(new MapsforgePoiGeocodingService(getMapsforgePoiLookup(),
                 getMapsforgeMapManager(), this::getMapBoundingBox));
         getGeocodingServiceFacade().addGeocodingService(new MapsforgeMapGeocodingService(getMapsforgeMapManager(),
                 this::getMapBoundingBox));

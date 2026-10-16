@@ -21,7 +21,6 @@ package slash.navigation.pois.mapsforge;
 
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.NavigationPosition;
-import slash.navigation.datasources.DataSourceManager;
 import slash.navigation.geocoding.BaseGeocodingService;
 import slash.navigation.geocoding.CategorizedNavigationPosition;
 import slash.navigation.geocoding.GeocodingResult;
@@ -47,12 +46,12 @@ public class MapsforgePoiGeocodingService extends BaseGeocodingService {
     private final Supplier<BoundingBox> visibleBoundsSupplier;
     private final MapsforgePoiLookup lookup;
 
-    public MapsforgePoiGeocodingService(DataSourceManager dataSourceManager,
+    public MapsforgePoiGeocodingService(MapsforgePoiLookup lookup,
                                         MapsforgeMapManager mapsforgeMapManager,
                                         Supplier<BoundingBox> visibleBoundsSupplier) {
+        this.lookup = lookup;
         this.mapsforgeMapManager = mapsforgeMapManager;
         this.visibleBoundsSupplier = visibleBoundsSupplier;
-        this.lookup = new MapsforgePoiLookup(dataSourceManager);
     }
 
     public String getName() {
