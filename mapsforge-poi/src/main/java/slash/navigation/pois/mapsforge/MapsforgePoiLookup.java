@@ -21,6 +21,7 @@ package slash.navigation.pois.mapsforge;
 
 import org.mapsforge.core.model.LatLong;
 import org.mapsforge.core.model.Tag;
+import org.sqlite.Function;
 import slash.navigation.common.BoundingBox;
 import slash.navigation.common.MapDescriptor;
 import slash.navigation.common.NavigationPosition;
@@ -37,6 +38,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import static java.lang.Math.min;
 import static java.lang.String.format;
@@ -436,11 +438,25 @@ public class MapsforgePoiLookup {
     }
 
     List<CategorizedNavigationPosition> search(File poiFile, String query, BoundingBox bounds, NavigationPosition center) throws IOException {
-        List<PoiMatch> matches = searchMatches(poiFile, bounds, query, center, true, true, false);
-        if (matches.isEmpty())
-            matches = searchMatches(poiFile, bounds, query, center, true, false, false);
-        if (matches.isEmpty())
-            matches = searchMatches(poiFile, bounds, query, center, true, false, true);
+        if (bounds == null)
+            return emptyList();
+
+        List<PoiMatch> matches;
+        try (Connection connection = open(poiFile)) {
+            if (query != null && !isAscii(query))
+                foldCaseOfAllLettersInLike(connection);
+
+            // exact matches first, partial ones from the same rows next
+            Map<Long, SqlRow> rows = searchRows(connection, bounds, query, true, false);
+            matches = toPoiMatches(rows, query, center, true, true);
+            if (matches.isEmpty())
+                matches = toPoiMatches(rows, query, center, true, false);
+            // only for a word index the LIKE fallback reads other rows
+            if (matches.isEmpty() && readVersion(connection) >= 4 && readFullTextIndex(connection) == FullTextIndex.WORDS)
+                matches = toPoiMatches(searchRows(connection, bounds, query, true, true), query, center, true, false);
+        } catch (SQLException e) {
+            throw new IOException("Cannot search Mapsforge POI database " + poiFile, e);
+        }
 
         List<CategorizedNavigationPosition> result = new ArrayList<>(min(matches.size(), MAX_RESULTS));
         for (PoiMatch match : matches) {
@@ -453,7 +469,12 @@ public class MapsforgePoiLookup {
 
     String lookup(File poiFile, NavigationPosition position) throws IOException {
         BoundingBox searchBounds = createBoundsAround(position, REVERSE_LOOKUP_RADIUS_METERS);
-        List<PoiMatch> matches = searchMatches(poiFile, searchBounds, null, position, false, false, false);
+        List<PoiMatch> matches;
+        try (Connection connection = open(poiFile)) {
+            matches = toPoiMatches(searchRows(connection, searchBounds, null, false, false), null, position, false, false);
+        } catch (SQLException e) {
+            throw new IOException("Cannot search Mapsforge POI database " + poiFile, e);
+        }
         if (matches.isEmpty())
             return null;
 
@@ -573,32 +594,28 @@ public class MapsforgePoiLookup {
      * @param useLikeFallback forces the text branch (v4 only) to use a plain {@code LIKE} scan instead
      *                         of the FTS5 index, catching infix matches that FTS5's prefix matching misses.
      */
-    private List<PoiMatch> searchMatches(File poiFile, BoundingBox bounds, String query, NavigationPosition reference,
-                                         boolean requireQueryMatch, boolean exactOnly, boolean useLikeFallback) throws IOException {
-        if (bounds == null)
-            return emptyList();
+    private Map<Long, SqlRow> searchRows(Connection connection, BoundingBox bounds, String query,
+                                         boolean requireQueryMatch, boolean useLikeFallback) throws SQLException {
+        return readVersion(connection) >= 4 ?
+                searchV4(connection, bounds, query, requireQueryMatch, useLikeFallback) :
+                searchV3(connection, bounds, query, requireQueryMatch);
+    }
 
+    private List<PoiMatch> toPoiMatches(Map<Long, SqlRow> rows, String query, NavigationPosition reference,
+                                        boolean requireQueryMatch, boolean exactOnly) {
         List<PoiMatch> matches = new ArrayList<>();
-        try (Connection connection = open(poiFile)) {
-            Map<Long, SqlRow> rows = readVersion(connection) >= 4 ?
-                    searchV4(connection, bounds, query, requireQueryMatch, useLikeFallback) :
-                    searchV3(connection, bounds, query, requireQueryMatch);
+        for (SqlRow row : rows.values()) {
+            LatLong latLong = new LatLong(row.lat(), row.lon());
+            List<Tag> tags = parseTags(row.data());
+            List<String> categories = parseCategories(row.categories());
+            Match tagMatch = findMatch(tags, categories, query, exactOnly);
+            if (requireQueryMatch && tagMatch == null)
+                continue;
+            if (!requireQueryMatch && !MapsforgeTagMatcher.hasUsefulDescription(tags, categories))
+                continue;
 
-            for (SqlRow row : rows.values()) {
-                LatLong latLong = new LatLong(row.lat(), row.lon());
-                List<Tag> tags = parseTags(row.data());
-                List<String> categories = parseCategories(row.categories());
-                Match tagMatch = findMatch(tags, categories, query, exactOnly);
-                if (requireQueryMatch && tagMatch == null)
-                    continue;
-                if (!requireQueryMatch && !MapsforgeTagMatcher.hasUsefulDescription(tags, categories))
-                    continue;
-
-                CategorizedNavigationPosition position = buildDescriptionAndCategory(latLong, tags, categories, tagMatch, "Unnamed POI");
-                matches.add(toPoiMatch(position, latLong, reference));
-            }
-        } catch (SQLException e) {
-            throw new IOException("Cannot search Mapsforge POI database " + poiFile, e);
+            CategorizedNavigationPosition position = buildDescriptionAndCategory(latLong, tags, categories, tagMatch, "Unnamed POI");
+            matches.add(toPoiMatch(position, latLong, reference));
         }
         matches.sort(Comparator.comparingDouble(PoiMatch::distanceMeters).thenComparing(PoiMatch::description));
         return matches;
@@ -696,6 +713,51 @@ public class MapsforgePoiLookup {
 
     private Connection open(File file) throws SQLException {
         return DriverManager.getConnection("jdbc:sqlite:" + file.getAbsolutePath());
+    }
+
+    private static boolean isAscii(String text) {
+        return text.chars().allMatch(c -> c < 128);
+    }
+
+    // SQLite's built-in LIKE and lower() fold the case of ASCII letters only, so "überseering" missed
+    // "Überseering". For a query with other characters, LIKE on this connection is replaced by a
+    // function that folds the case of all letters; ASCII queries keep the faster built-in LIKE. The
+    // FTS5 trigram index folds the case of all letters itself and still serves the replaced LIKE.
+    private void foldCaseOfAllLettersInLike(Connection connection) throws SQLException {
+        Function.create(connection, "like", new CaseInsensitiveLike(), 2, Function.FLAG_DETERMINISTIC);
+    }
+
+    static Pattern likeToRegex(String likePattern) {
+        StringBuilder builder = new StringBuilder();
+        for (int codePoint : likePattern.codePoints().toArray()) {
+            if (codePoint == '%')
+                builder.append(".*");
+            else if (codePoint == '_')
+                builder.append('.');
+            else
+                builder.append(Pattern.quote(new String(Character.toChars(codePoint))));
+        }
+        return Pattern.compile(builder.toString(), Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE | Pattern.DOTALL);
+    }
+
+    private static class CaseInsensitiveLike extends Function {
+        private String likePattern;
+        private Pattern regex;
+
+        protected void xFunc() throws SQLException {
+            // LIKE(pattern, text) is the function form of "text LIKE pattern"
+            String pattern = value_text(0);
+            String text = value_text(1);
+            if (pattern == null || text == null) {
+                result();
+                return;
+            }
+            if (!pattern.equals(likePattern)) {
+                likePattern = pattern;
+                regex = likeToRegex(pattern);
+            }
+            result(regex.matcher(text).matches() ? 1 : 0);
+        }
     }
 
     private PoiMatch toPoiMatch(CategorizedNavigationPosition position, LatLong point, NavigationPosition reference) {

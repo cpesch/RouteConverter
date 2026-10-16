@@ -319,6 +319,48 @@ public class MapsforgePoiLookupTest {
     }
 
     @Test
+    public void foldsCaseOfNonAsciiLettersOnV3() throws Exception {
+        File poiFile = createPoiFile();
+        insertPoi(poiFile, 1, 52.5200, 13.4050, tags("name", "Ölmühle"));
+        insertPoi(poiFile, 2, 52.5210, 13.4100, tags("name", "Kiosk"), "Öffentliche Toilette");
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
+
+        List<CategorizedNavigationPosition> name = lookup.search(poiFile, normalize("ÖLMÜHLE"), VISIBLE_BOUNDS, CENTER);
+        assertEquals(1, name.size());
+        assertEquals("Ölmühle", name.get(0).getDescription());
+
+        List<CategorizedNavigationPosition> category = lookup.search(poiFile, normalize("öffentliche"), VISIBLE_BOUNDS, CENTER);
+        assertEquals(1, category.size());
+        assertEquals("Kiosk", category.get(0).getDescription());
+    }
+
+    @Test
+    public void foldsCaseOfNonAsciiLettersOnTrigramIndexV4() throws Exception {
+        File poiFile = createPoiFileV4WithTrigramIndex();
+        insertPoiV4(poiFile, 1, 52.5200, 13.4050, tags("name", "Überseering"));
+        insertPoiV4(poiFile, 2, 52.5210, 13.4100, tags("name", "Kiosk"), "Öffentliche Toilette");
+        MapsforgePoiLookup lookup = new MapsforgePoiLookup(mockDataSourceManager());
+
+        List<CategorizedNavigationPosition> name = lookup.search(poiFile, normalize("überseering"), VISIBLE_BOUNDS, CENTER);
+        assertEquals(1, name.size());
+        assertEquals("Überseering", name.get(0).getDescription());
+
+        List<CategorizedNavigationPosition> category = lookup.search(poiFile, normalize("ÖFFENTLICHE"), VISIBLE_BOUNDS, CENTER);
+        assertEquals(1, category.size());
+        assertEquals("Kiosk", category.get(0).getDescription());
+    }
+
+    @Test
+    public void translatesLikePatternToRegexThatFoldsCaseOfAllLetters() {
+        assertTrue(MapsforgePoiLookup.likeToRegex("%überseering%").matcher("name=Überseering\rplace=square").matches());
+        assertTrue(MapsforgePoiLookup.likeToRegex("m_ller").matcher("MÜLLER").matches());
+        assertFalse(MapsforgePoiLookup.likeToRegex("m_ller").matcher("Mueller").matches());
+        assertFalse(MapsforgePoiLookup.likeToRegex("ller").matcher("Müller").matches());
+        assertTrue(MapsforgePoiLookup.likeToRegex("%(a+b)%").matcher("x (A+B) y").matches());
+        assertFalse(MapsforgePoiLookup.likeToRegex("%(a+b)%").matcher("aab").matches());
+    }
+
+    @Test
     public void fallsBackToLikeWhenFullTextIndexRejectsMatchV4() throws Exception {
         // splitting "mundsburg" at 'u' turns the query into a phrase, which detail='none' rejects
         File poiFile = createPoiFileV4(", tokenize=\"unicode61 separators 'u'\", detail='none'");
