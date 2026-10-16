@@ -15,6 +15,7 @@
 #   #4 forced-init sweep      -- Class.forName(.,true,.) under a stripped JRE
 #   #3 end-to-end smoke       -- run RouteConverterCmdLine on the stripped JRE
 #   #6 GUI boot smoke         -- boot the Swing app under a virtual display
+#   #7 silent-gap probe       -- charsets + locale data the JRE drops without an error
 #
 # The stripped verify-JRE is jlinked here from scripts/jre-modules.txt -- the
 # same list the shipped Mac/Windows JREs use -- so a missing module fails
@@ -154,6 +155,17 @@ if [[ -n "$cmdline_jar" && -f "$cmdline_jar" ]]; then
 else
   echo
   echo "==> [#3] no cmdline-jar argument; skipping end-to-end smoke"
+fi
+
+# ---- #7: silent-gap probe on the stripped JRE -------------------------------
+# A missing jdk.charsets or jdk.localedata throws nothing for #3/#4 to catch:
+# files in Shift_JIS/GB2312/... turn to mojibake, dates fall back to US format.
+echo
+echo "==> [#7] silent-gap probe (charsets, locale data) on the stripped JRE"
+javac -d "$work" "$here/SilentGapProbe.java"
+if ! "$verify_jre/bin/java" -cp "$work" SilentGapProbe; then
+  echo "::error::the stripped JRE lacks charsets/locale data (see above) -- add the module to jre-modules.txt"
+  fail=1
 fi
 
 # ---- #6: GUI boot smoke on the stripped JRE ---------------------------------

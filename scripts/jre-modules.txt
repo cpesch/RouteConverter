@@ -27,6 +27,10 @@ java.security.jgss
 java.sql
 java.xml
 java.xml.crypto
+# Extended charsets (Shift_JIS, GB2312, Big5, windows-1255, ...). Without it a
+# GPX/KML declaring one of them is read through the windows-1252 Garble
+# fallback as mojibake, and POI logs "Unsupported charset". ~1.4 MB zipped.
+jdk.charsets
 jdk.crypto.ec
 # Locale data beyond en-US (en_GB, de, fr, ...). Without it DateFormat/NumberFormat
 # fall back to US formats on the bundled JRE (issue #415).
