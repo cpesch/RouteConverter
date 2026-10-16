@@ -84,7 +84,7 @@ jobs:
             grep -E '<<< (FAILURE|ERROR)!' "$LOG" | head -40
             grep -E '^\[ERROR\]   [^ ]+:[0-9]+' "$LOG" | head -40
             grep -E '^\[INFO\] .* (FAILURE|SKIPPED)( \[.*\])?$' "$LOG" | head -40
-            grep -E '^\[INFO\] BUILD' "$LOG"
+            grep -E '^\[INFO\] BUILD' "$LOG" || true
             grep -E '^\[ERROR\]' "$LOG" | head -40
             grep -E 'Tests run:' "$LOG" | tail -60
           } | awk '!seen[$0]++' > /tmp/verify-summary.txt || true
