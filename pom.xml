@@ -846,6 +846,14 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <!-- poi-ooxml 5.5.1 -> commons-compress 1.28.0 pulls commons-lang3 3.18.0, whose
+                 FastDateParser makes JDK 24+ print "three-letter time zone ID" warnings;
+                 3.20.0 maps the deprecated short IDs (commons-lang #1483) -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.21.0</version>
+            </dependency>
             <dependency>
                 <groupId>com.google.protobuf</groupId>
                 <artifactId>protobuf-java</artifactId>

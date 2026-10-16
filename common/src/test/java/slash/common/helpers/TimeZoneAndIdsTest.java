@@ -22,6 +22,8 @@ package slash.common.helpers;
 
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -76,6 +78,12 @@ public class TimeZoneAndIdsTest {
         for (int i = 1; i < zones.length; i++) {
             assertTrue(zones[i - 1].id().compareTo(zones[i].id()) <= 0);
         }
+    }
+
+    @Test
+    public void testNoDeprecatedThreeLetterIds() {
+        for (TimeZoneAndId tz : TimeZoneAndIds.getInstance().getTimeZones())
+            assertFalse(ZoneId.SHORT_IDS.containsKey(tz.timeZone().getID()), "Deprecated id: " + tz.timeZone().getID());
     }
 
     @Test

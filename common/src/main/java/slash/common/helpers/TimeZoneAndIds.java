@@ -19,6 +19,7 @@
 */
 package slash.common.helpers;
 
+import java.time.ZoneId;
 import java.util.*;
 
 import static java.util.Arrays.sort;
@@ -54,6 +55,10 @@ public class TimeZoneAndIds {
 
         List<TimeZoneAndId> tzi = new ArrayList<>();
         for (String id : ids) {
+            // JDK 1.1 three-letter aliases ("PST", "EST", ...): deprecated, and JDK 24+ prints
+            // a warning for each TimeZone.getTimeZone() of one; the region IDs cover them
+            if (ZoneId.SHORT_IDS.containsKey(id))
+                continue;
             TimeZone timeZone = TimeZone.getTimeZone(id);
             tzi.add(new TimeZoneAndId(modifyId(id), timeZone));
         }

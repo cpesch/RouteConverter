@@ -24,6 +24,7 @@ package slash.navigation.converter.gui.models;
 
 import javax.swing.event.ChangeListener;
 import javax.swing.event.EventListenerList;
+import java.time.ZoneId;
 import java.util.TimeZone;
 import java.util.prefs.Preferences;
 
@@ -59,7 +60,14 @@ public class TimeZoneModel {
     }
 
     public String getTimeZoneId() {
-        return preferences.get(preferencesName, toString(defaultValue));
+        return normalize(preferences.get(preferencesName, toString(defaultValue)));
+    }
+
+    // older versions offered the deprecated three-letter IDs ("PST", "EST", ...); JDK 24+ prints a
+    // warning for each TimeZone.getTimeZone() of one, so map a stored one to its ZoneId.SHORT_IDS target
+    private static String normalize(String timeZoneId) {
+        return ZoneId.SHORT_IDS.containsKey(timeZoneId) ?
+                TimeZone.getTimeZone(ZoneId.of(timeZoneId, ZoneId.SHORT_IDS)).getID() : timeZoneId;
     }
 
     public TimeZone getTimeZone() {

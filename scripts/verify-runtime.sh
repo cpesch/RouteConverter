@@ -125,7 +125,8 @@ jlink --add-modules "$allowed_csv" --output "$verify_jre" \
 echo
 echo "==> [#4] forced static-init sweep on the stripped JRE"
 javac -d "$work" "$here/ForceInit.java"
-if "$verify_jre/bin/java" -Djava.awt.headless=true -cp "$work:$fat_jar" \
+# -cp ignores the fat jar's Enable-Native-Access manifest entry; mirror it (JDK 21 accepts the flag)
+if "$verify_jre/bin/java" --enable-native-access=ALL-UNNAMED -Djava.awt.headless=true -cp "$work:$fat_jar" \
       ForceInit "$fat_jar" "$init_prefixes"; then
   echo "    OK: all swept classes initialized on the stripped JRE"
 else

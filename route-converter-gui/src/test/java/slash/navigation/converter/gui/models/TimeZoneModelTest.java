@@ -23,6 +23,7 @@ import org.junit.Test;
 import slash.common.prefs.InMemoryPreferences;
 
 import javax.swing.event.ChangeListener;
+import java.time.ZoneId;
 import java.util.TimeZone;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.prefs.Preferences;
@@ -72,6 +73,16 @@ public class TimeZoneModelTest {
         createModel().setTimeZone(BERLIN);
 
         assertEquals(BERLIN, createModel().getTimeZone());
+    }
+
+    @Test
+    public void mapsAStoredDeprecatedThreeLetterId() {
+        preferences.put(KEY, "PST");
+        assertEquals("America/Los_Angeles", createModel().getTimeZoneId());
+        preferences.put(KEY, "EST");
+        // JDK 21 maps EST to "-05:00", JDK 25 (tzdata 2024b) to "America/Panama": both fixed UTC-5
+        assertFalse(ZoneId.SHORT_IDS.containsKey(createModel().getTimeZoneId()));
+        assertEquals(-5 * 3600 * 1000, createModel().getTimeZone().getRawOffset());
     }
 
     @Test
