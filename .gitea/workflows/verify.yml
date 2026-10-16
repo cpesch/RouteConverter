@@ -53,7 +53,7 @@ jobs:
           set -uo pipefail
           if [[ -x ./mvnw ]]; then MVN=./mvnw; else MVN=mvn; fi
           RC=0
-          "$MVN" -B -ntp -DskipTests compile 2>&1 | tee /tmp/verify-compile.log | tail -c 200000 || RC=$?
+          "$MVN" -B -ntp -DskipTests compile 2>&1 | tee /tmp/verify-compile.log || RC=$?
           if [[ "$RC" -ne 0 ]]; then
             grep -E "^\[ERROR\]" /tmp/verify-compile.log | head -60 > /tmp/verify-summary.txt || true
             : > /tmp/verify-compile-failed
@@ -68,15 +68,26 @@ jobs:
           # mvnw when the repo carries the wrapper (pinned maven), distro
           # mvn otherwise. -DskipITs: unit tests only — integration tests
           # need network fixtures the jail doesn't provide.
+          # `tee` only, no `| tail -c`: tail prints nothing until Maven exits,
+          # so a run killed mid-suite left an empty step log (rc-meta#777).
           if [[ -x ./mvnw ]]; then MVN=./mvnw; else MVN=mvn; fi
           RC=0
-          "$MVN" -B -ntp -DskipITs test 2>&1 | tee /tmp/verify-mvn.log | tail -c 200000 || RC=$?
+          "$MVN" -B -ntp -DskipITs test 2>&1 | tee /tmp/verify-mvn.log || RC=$?
           echo "rc=$RC" >> "$GITHUB_OUTPUT"
-          # Failure summary for the PR comment: last reactor summary +
-          # first failed-test blocks, capped hard.
+          # Failure summary for the PR comment, which keeps only its first
+          # 4000 chars: failures first (failed tests, their assertion lines,
+          # failed/skipped reactor modules, the verdict), passing `Tests run:`
+          # lines only after them. Sorting passing lines first cut the one
+          # failing test off on long suites (rc-meta#777).
+          LOG=/tmp/verify-mvn.log
           {
-            grep -E "^\[ERROR\]|^\[INFO\] BUILD|Tests run:" /tmp/verify-mvn.log | tail -60
-          } > /tmp/verify-summary.txt || true
+            grep -E '<<< (FAILURE|ERROR)!' "$LOG" | head -40 || true
+            grep -E '^\[ERROR\]   [^ ]+:[0-9]+' "$LOG" | head -40 || true
+            grep -E '^\[INFO\] .* (FAILURE|SKIPPED)( \[.*\])?$' "$LOG" | head -40 || true
+            grep -E '^\[INFO\] BUILD' "$LOG" || true
+            grep -E '^\[ERROR\]' "$LOG" | head -40 || true
+            grep -E 'Tests run:' "$LOG" | tail -60 || true
+          } | awk '!seen[$0]++' > /tmp/verify-summary.txt || true
           exit "$RC"
 
       - name: report failure on PR
@@ -85,6 +96,7 @@ jobs:
         env:
           GITEA_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR_INPUT: ${{ github.event.inputs.pr || github.event.pull_request.number }}
+          MVN_RC: ${{ steps.mvn.outputs.rc }}
         run: |
           set -uo pipefail
           # PR number: dispatch input, or the pull_request event payload.
@@ -103,8 +115,15 @@ jobs:
           # at all — name it instead of calling the run inconclusive
           if [[ -e /tmp/verify-compile-failed ]]; then
             HEADLINE='🤖 **verify failed** — the sources do not compile (the test suite never ran).'
-          elif grep -qE '^\[INFO\] BUILD (SUCCESS|FAILURE)|Tests run:' /tmp/verify-mvn.log 2>/dev/null; then
+          elif grep -qE '^\[INFO\] BUILD (SUCCESS|FAILURE)' /tmp/verify-mvn.log 2>/dev/null; then
             HEADLINE='🤖 **verify failed** — test suite did not pass.'
+          elif [[ -s /tmp/verify-mvn.log ]]; then
+            # Maven produced output but no verdict: it was killed mid-run
+            # (runner/OOM/timeout). Calling that "did not pass" sent debugging
+            # to the diff; a re-run of the same commit passed (rc-meta#777).
+            LAST="$(grep -E '^\[INFO\] Building ' /tmp/verify-mvn.log | tail -1 | sed -E 's/^\[INFO\] Building //' || true)"
+            HEADLINE="🤖 **verify inconclusive** — Maven exited without a verdict (rc=${MVN_RC:-?}) after module ${LAST:-unknown}. Runner fault likely, not your diff: re-dispatch verify on this branch."
+            echo "::warning::verify inconclusive: Maven exited without a BUILD verdict (rc=${MVN_RC:-?})"
           else
             HEADLINE='🤖 **verify inconclusive** — the runner produced no build output (infra fault, not your diff). Re-dispatch verify on this branch.'
             echo "::warning::verify inconclusive: no Maven output in /tmp/verify-mvn.log — runner fault, not a test failure"
