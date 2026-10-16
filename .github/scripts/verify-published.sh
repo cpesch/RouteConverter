@@ -150,8 +150,12 @@ check_release_body() {
 
 check_artefacts
 check_contains "javadoc" "$STATIC/javadoc/" "$VERSION API"
-check_contains "PAD catalog EN" "$STATIC/downloads/RouteConverter.xml" "<Program_Version>$VERSION</Program_Version>"
-check_contains "PAD catalog DE" "$STATIC/downloads/RouteConverter_de.xml" "<Program_Version>$VERSION</Program_Version>"
+# PAD catalog: check the files release.yml itself publishes into latest/.
+# static/downloads/RouteConverter*.xml only follows once rc-site turns them
+# into symlinks into release/ (rc/rc-site#154) — checking those would fail
+# every release until then.
+check_contains "PAD catalog EN" "$RELEASES/latest/RouteConverter.xml" "<Program_Version>$VERSION</Program_Version>"
+check_contains "PAD catalog DE" "$RELEASES/latest/RouteConverter_de.xml" "<Program_Version>$VERSION</Program_Version>"
 check_version_file
 check_release_body
 
