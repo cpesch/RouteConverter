@@ -31,6 +31,6 @@ public class NightlyCanary {
      * The answer to the ultimate question; see NightlyCanaryIT.
      */
     public static int answer() {
-        return 41;
+        return 42;
     }
 }
