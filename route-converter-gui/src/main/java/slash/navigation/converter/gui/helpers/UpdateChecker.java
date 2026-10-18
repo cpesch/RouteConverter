@@ -49,6 +49,7 @@ import static slash.navigation.gui.helpers.WindowHelper.showInformation;
 import static slash.navigation.gui.helpers.WindowHelper.showInformationWithAction;
 import static javax.swing.SwingUtilities.invokeLater;
 import static slash.common.io.Transfer.trim;
+import static slash.common.system.Platform.isBundledJava;
 import static slash.common.system.Version.parseVersionFromManifest;
 import static slash.feature.client.Feature.initializeFeatures;
 import static slash.feature.client.Feature.initializePreferences;
@@ -144,6 +145,7 @@ public class UpdateChecker {
                     getStartCount(),
                     myJavaVersion,
                     System.getProperty("sun.arch.data.model"),
+                    isBundledJava() ? "bundled" : "system",
                     System.getProperty("os.name"),
                     System.getProperty("os.version"),
                     System.getProperty("os.arch"),

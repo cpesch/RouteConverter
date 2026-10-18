@@ -29,6 +29,12 @@ import java.util.Locale;
  */
 
 public class Platform {
+    /**
+     * Set by the launchers of the packages that bring their own Java: the Mac .app,
+     * the Windows .exe, the Linux .deb and the Flatpak.
+     */
+    public static final String BUNDLED_JRE_PROPERTY = "routeconverter.bundledJre";
+
     public static boolean isLinux() {
         return getOperationSystem().contains("linux");
     }
@@ -84,6 +90,20 @@ public class Platform {
         if (osArch.endsWith("86"))
             return "x86";
         return canonical(osArch);
+    }
+
+    /**
+     * Whether RouteConverter runs on the Java its package brings along, not on one the
+     * user installed. jpackage.app-path (set by the .deb's launcher) and FLATPAK_ID (set
+     * in every Flatpak sandbox) also cover packages whose launcher predates the property.
+     */
+    public static boolean isBundledJava() {
+        return isBundledJava(System.getProperty(BUNDLED_JRE_PROPERTY),
+                System.getProperty("jpackage.app-path"), System.getenv("FLATPAK_ID"));
+    }
+
+    static boolean isBundledJava(String bundledJreProperty, String jpackageAppPath, String flatpakId) {
+        return Boolean.parseBoolean(bundledJreProperty) || jpackageAppPath != null || flatpakId != null;
     }
 
     public static long getMaximumMemory() {

@@ -200,7 +200,7 @@ public class RouteFeedback {
     }
 
     public String checkForUpdate(String routeConverterVersion, String routeConverterBits, long startCount,
-                                 String javaVersion, String javaBits,
+                                 String javaVersion, String javaBits, String javaRuntime,
                                  String osName, String osVersion, String osArch,
                                  String javaMaxMemory, String osTotalMemory, String screenResolution,
                                  long startTime, String featureLocks) throws IOException {
@@ -209,6 +209,9 @@ public class RouteFeedback {
         request.addString("id", valueOf(startTime));
         request.addString("javaBits", javaBits);
         request.addString("javaVersion", javaVersion);
+        // bundled or system: rc-site offers a Java update instead of a release only to
+        // clients on their own too-old Java (rc-meta specs/00010 bundled-runtime-marker)
+        request.addString("javaRuntime", javaRuntime);
         request.addString("javaMaxMemory", javaMaxMemory);
         request.addString("locale", getDefault().toString());
         request.addString("osArch", osArch);

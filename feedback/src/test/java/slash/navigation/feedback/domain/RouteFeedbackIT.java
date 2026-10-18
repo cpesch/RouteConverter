@@ -128,7 +128,7 @@ public class RouteFeedbackIT extends RouteFeedbackServiceBase {
     public void testCanCheckForUpdateAnonymous() throws IOException {
         RouteFeedback anonymous = new RouteFeedback(API, null);
         String result = anonymous.checkForUpdate("1",
-                "2", 3, "4", "5",
+                "2", 3, "4", "5", "system",
                 "7", "8", "9", "11", "12", "13", 10, "");
         assertTrue(result.contains("version"));
         assertTrue(result.contains("feature"));
@@ -137,7 +137,7 @@ public class RouteFeedbackIT extends RouteFeedbackServiceBase {
     @Test
     public void testCanCheckForUpdate() throws IOException {
         String result = routeFeedback.checkForUpdate("2",
-                "3", 4, "5", "6",
+                "3", 4, "5", "6", "bundled",
                 "8", "9", "10", "12", "13", "14", 11, "fpl-g1000:s3,c1,l0");
         assertTrue(result.contains("feature"));
     }
@@ -146,7 +146,7 @@ public class RouteFeedbackIT extends RouteFeedbackServiceBase {
     public void testCanCheckForUpdateWrongCredentials() throws IOException {
         RouteFeedback anonymous = new RouteFeedback(API, new SimpleCredentials("UnknownUser" + System.currentTimeMillis(), WRONG_PASSWORD));
         String result = anonymous.checkForUpdate("1",
-                "2", 3, "4", "5",
+                "2", 3, "4", "5", "system",
                 "7", "8", "9", "11", "12", "13", 10, "");
         assertTrue(result.contains("version"));
         assertTrue(result.contains("feature"));

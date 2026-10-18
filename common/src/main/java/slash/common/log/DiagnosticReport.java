@@ -32,6 +32,7 @@ import static slash.common.helpers.ExceptionHelper.getRootCause;
 import static slash.common.helpers.ExceptionHelper.printStackTrace;
 import static slash.common.system.Platform.getJava;
 import static slash.common.system.Platform.getPlatform;
+import static slash.common.system.Platform.isBundledJava;
 
 /**
  * An allowlist-only diagnostic payload assembled from an uncaught {@link Throwable}
@@ -60,7 +61,6 @@ public class DiagnosticReport {
     // so never deleted). A truncated report is still useful; an undeliverable one is not.
     static final int MAXIMUM_FIELD_LENGTH = 24 * 1024;
     static final String TRUNCATION_MARKER = "\n... [truncated]";
-    static final String BUNDLED_JRE_PROPERTY = "routeconverter.bundledJre";
     static final String HOME_PLACEHOLDER = "<USER_HOME>";
     static final String USER_PLACEHOLDER = "<USER>";
     static final String PATH_PLACEHOLDER = "<PATH>";
@@ -112,7 +112,7 @@ public class DiagnosticReport {
         this.build = build;
         this.os = getPlatform();
         this.java = getJava();
-        this.bundledJre = Boolean.getBoolean(BUNDLED_JRE_PROPERTY);
+        this.bundledJre = isBundledJava();
     }
 
     String getRootCauseClass() {

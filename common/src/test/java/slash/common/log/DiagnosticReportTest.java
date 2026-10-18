@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static slash.common.log.DiagnosticReport.BUNDLED_JRE_PROPERTY;
+import static slash.common.system.Platform.BUNDLED_JRE_PROPERTY;
 
 public class DiagnosticReportTest {
 

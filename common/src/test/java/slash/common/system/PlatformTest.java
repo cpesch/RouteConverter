@@ -77,4 +77,13 @@ public class PlatformTest {
         assertTrue(isJavaLaterThan("15", 15));
         assertTrue(isJavaLaterThan("16", 15));
     }
+
+    @Test
+    public void bundledJavaFromTheLauncherPropertyOrThePackageEnvironment() {
+        assertTrue(isBundledJava("true", null, null));
+        assertTrue(isBundledJava(null, "/opt/routeconverter/bin/RouteConverter", null));
+        assertTrue(isBundledJava(null, null, "com.routeconverter.RouteConverter"));
+        assertFalse(isBundledJava(null, null, null));
+        assertFalse(isBundledJava("false", null, null));
+    }
 }

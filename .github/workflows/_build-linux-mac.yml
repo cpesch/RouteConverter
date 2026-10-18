@@ -169,6 +169,7 @@ jobs:
             --input deb-input \
             --main-jar RouteConverterLinux.jar \
             --main-class slash.navigation.converter.gui.RouteConverter \
+            --java-options -Drouteconverter.bundledJre=true \
             --icon RouteConverterLinux/src/main/app-resources/RouteConverter.png \
             --app-version "$APP_VERSION" \
             --vendor "Christian Pesch" \
