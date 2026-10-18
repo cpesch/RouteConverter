@@ -239,7 +239,7 @@ class TimeoutInfraTest(unittest.TestCase):
         api = FakeApi(
             {
                 ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(job("Java 21", "failure", 1, failed=True)),
-                ("GET", f"/repos/{REPO}/actions/jobs/1/logs"): b"Connection reset by peer",
+                ("GET", f"/repos/{REPO}/actions/jobs/1/logs"): LOG,
                 ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": []},
                 ("POST", f"{RUN_PATH}/rerun-failed-jobs"): {},
                 ("GET", ISSUES_PATH): [],
@@ -567,6 +567,50 @@ class CancelledJobTest(unittest.TestCase):
         create = create_issue_call(api)
         self.assertIn("Java 21", create[2]["body"])
         self.assertNotIn("Java 25", create[2]["body"])
+
+
+class CancelledRunTest(unittest.TestCase):
+    def test_cancelled_run_is_not_triaged(self):
+        fd, summary_path = tempfile.mkstemp()
+        os.close(fd)
+        self.addCleanup(os.remove, summary_path)
+        api = FakeApi({("GET", RUN_PATH): run(conclusion="cancelled")})
+        code, _, _ = run_triage(api, env={"GITHUB_STEP_SUMMARY": summary_path})
+        self.assertEqual(code, 0)
+        self.assertEqual([(m, p) for m, p, _ in api.calls], [("GET", RUN_PATH)])
+        with open(summary_path, encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn(f"run {RUN_ID} was cancelled — not triaged", content)
+
+
+class ArtifactNameTest(unittest.TestCase):
+    def test_job_name_with_slash_is_sanitised(self):
+        zipped = surefire_zip("slash.nav.FooTest", "testFoo")
+        api = FakeApi(
+            {
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(
+                    job("build-windows / build", "failure", 1, failed=True)
+                ),
+                ("GET", f"/repos/{REPO}/actions/jobs/1/logs"): LOG,
+                ("GET", f"{RUN_PATH}/artifacts"): {
+                    "artifacts": [{"id": 9, "name": "surefire-build-windows-build"}]
+                },
+                ("GET", f"/repos/{REPO}/actions/artifacts/9/zip"): zipped,
+                ("POST", f"{RUN_PATH}/rerun-failed-jobs"): {},
+                ("GET", f"{RUN_PATH}/attempts/2/jobs"): jobs_response(
+                    job("build-windows / build", "failure", 1, failed=True)
+                ),
+                ("GET", ISSUES_PATH): [],
+                ("GET", PULLS_PATH): [],
+                ("GET", RUNS_PATH): {"workflow_runs": []},
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("POST", f"/repos/{REPO}/issues"): {"number": 42},
+            },
+            queues={("GET", RUN_PATH): [run(), run(run_attempt=2)]},
+        )
+        code, _, _ = run_triage(api, ls_files=[])
+        self.assertEqual(code, 0)
+        self.assertIn(("GET", f"/repos/{REPO}/actions/artifacts/9/zip"), [c[:2] for c in api.calls])
 
 
 class FetchDriftTest(unittest.TestCase):

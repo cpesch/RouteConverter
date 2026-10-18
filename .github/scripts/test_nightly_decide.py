@@ -11,7 +11,7 @@ from nightly_model import Finding, TestFailure  # noqa: E402
 TODAY = date(2026, 10, 11)
 
 
-def make_finding(klass="deterministic", sig="sig1", jobs=("Java 21",), tests=()):
+def make_finding(klass="deterministic", sig="sig1", jobs=("Java 21",), tests=(), workflow="build"):
     return Finding(
         klass=klass,
         signature=sig,
@@ -21,6 +21,7 @@ def make_finding(klass="deterministic", sig="sig1", jobs=("Java 21",), tests=())
         goal=None,
         error_line=None,
         excerpt="",
+        workflow=workflow,
     )
 
 
@@ -47,7 +48,8 @@ def make_ctx(**overrides):
         "files_by_sig": {},
         "trunk_overlap_sigs": frozenset(),
         "flaky_ledger": {},
-        "infra_streak": 0,
+        "infra_streaks": {},
+        "workflow": "build",
     }
     defaults.update(overrides)
     return nd.Context(**defaults)
@@ -193,21 +195,21 @@ class FlakyTest(unittest.TestCase):
 class InfraTest(unittest.TestCase):
     def test_streak_reaches_threshold_opens_issue(self):
         finding = make_finding(klass="infra", sig="infrasig")
-        ctx = make_ctx(infra_streak=2)
+        ctx = make_ctx(infra_streaks={"build": 2})
         actions = nd.plan([finding], [], ctx, make_settings())
         self.assertTrue(by_kind(actions, "open_issue"))
         self.assertTrue(by_kind(actions, "ntfy"))
 
     def test_streak_below_threshold_does_not_open_issue(self):
         finding = make_finding(klass="infra", sig="infrasig")
-        ctx = make_ctx(infra_streak=1)
+        ctx = make_ctx(infra_streaks={"build": 1})
         actions = nd.plan([finding], [], ctx, make_settings())
         self.assertFalse(by_kind(actions, "open_issue"))
         self.assertTrue(by_kind(actions, "ntfy"))
 
     def test_no_infra_finding_resets_nonzero_streak(self):
         finding = make_finding(klass="deterministic", sig="detsig")
-        ctx = make_ctx(infra_streak=2, files_by_sig={"detsig": ["a.java"]})
+        ctx = make_ctx(infra_streaks={"build": 2}, files_by_sig={"detsig": ["a.java"]})
         actions = nd.plan([finding], [], ctx, make_settings())
         ledger_actions = [
             a for a in by_kind(actions, "update_ledger") if a.data.get("kind") == "infra"
@@ -216,46 +218,97 @@ class InfraTest(unittest.TestCase):
         self.assertEqual(ledger_actions[0].data["streak"], 0)
 
     def test_green_night_with_no_findings_resets_nonzero_streak(self):
-        ctx = make_ctx(infra_streak=2)
+        ctx = make_ctx(infra_streaks={"build": 2})
         actions = nd.plan([], [], ctx, make_settings())
         self.assertEqual(len(actions), 1)
         self.assertEqual(actions[0].kind, "update_ledger")
-        self.assertEqual(actions[0].data, {"kind": "infra", "streak": 0})
+        self.assertEqual(actions[0].data, {"kind": "infra", "workflow": "build", "streak": 0})
 
     def test_zero_streak_and_no_infra_finding_emits_nothing(self):
         finding = make_finding(klass="deterministic", sig="detsig")
-        ctx = make_ctx(infra_streak=0, files_by_sig={"detsig": ["a.java"]})
+        ctx = make_ctx(files_by_sig={"detsig": ["a.java"]})
         actions = nd.plan([finding], [], ctx, make_settings())
         self.assertFalse(by_kind(actions, "update_ledger"))
 
     def test_two_infra_findings_in_one_night_emit_one_ledger_update(self):
         finding_a = make_finding(klass="infra", sig="infrasig1")
         finding_b = make_finding(klass="infra", sig="infrasig2")
-        ctx = make_ctx(infra_streak=1)
+        ctx = make_ctx(infra_streaks={"build": 1})
         actions = nd.plan([finding_a, finding_b], [], ctx, make_settings())
         ledger_actions = by_kind(actions, "update_ledger")
         self.assertEqual(len(ledger_actions), 1)
-        self.assertEqual(ledger_actions[0].data, {"kind": "infra", "streak": 2})
+        self.assertEqual(ledger_actions[0].data, {"kind": "infra", "workflow": "build", "streak": 2})
         self.assertEqual(len(by_kind(actions, "ntfy")), 2)
 
     def test_reset_night_then_infra_night_does_not_open_issue(self):
         settings = make_settings()
 
-        ctx1 = make_ctx(infra_streak=2)
+        ctx1 = make_ctx(infra_streaks={"build": 2})
         actions1 = nd.plan([], [], ctx1, settings)
         self.assertEqual(actions1[0].data["streak"], 0)
 
-        ctx2 = make_ctx(infra_streak=0)
+        ctx2 = make_ctx()
         actions2 = nd.plan([], [], ctx2, settings)
         self.assertEqual(actions2, [])
 
         finding = make_finding(klass="infra", sig="infrasig")
-        ctx3 = make_ctx(infra_streak=0)
+        ctx3 = make_ctx()
         actions3 = nd.plan([finding], [], ctx3, settings)
         ledger_actions = by_kind(actions3, "update_ledger")
         self.assertEqual(len(ledger_actions), 1)
         self.assertEqual(ledger_actions[0].data["streak"], 1)
         self.assertFalse(by_kind(actions3, "open_issue"))
+
+
+class WorkflowScopedTest(unittest.TestCase):
+    def test_prerelease_finding_with_build_signature_opens_new_issue(self):
+        issue = make_issue(
+            number=1,
+            labels={"needs-triage"},
+            state={
+                "sig": "sig1",
+                "jobs": ["Java 21"],
+                "tests": [],
+                "nights": ["2026-10-09"],
+                "escalated": False,
+            },
+        )
+        finding = make_finding(sig="sig1", workflow="prerelease")
+        actions = nd.plan([finding], [issue], make_ctx(), make_settings())
+        opens = by_kind(actions, "open_issue")
+        self.assertEqual(len(opens), 1)
+        self.assertEqual(opens[0].data["finding"].signature, "sig1")
+        self.assertFalse(by_kind(actions, "comment"))
+
+    def test_legacy_marker_without_workflow_matches_build_finding(self):
+        issue = make_issue(
+            number=1,
+            labels={"needs-triage"},
+            state={
+                "sig": "sig1",
+                "jobs": ["Java 21"],
+                "tests": [],
+                "nights": ["2026-10-09"],
+                "escalated": False,
+            },
+        )
+        finding = make_finding(sig="sig1", workflow="build")
+        actions = nd.plan([finding], [issue], make_ctx(), make_settings())
+        self.assertFalse(by_kind(actions, "open_issue"))
+        self.assertTrue(by_kind(actions, "comment"))
+
+    def test_green_jdk_ea_canary_run_does_not_reset_build_streak(self):
+        ctx = make_ctx(workflow="jdk-ea-canary", infra_streaks={"build": 2})
+        actions = nd.plan([], [], ctx, make_settings())
+        self.assertEqual(actions, [])
+
+    def test_legacy_streak_plus_infra_build_night_opens_issue(self):
+        finding = make_finding(klass="infra", sig="infrasig", workflow="build")
+        ctx = make_ctx(workflow="build", infra_streaks=nd.infra_streaks({"streak": 2}))
+        actions = nd.plan([finding], [], ctx, make_settings())
+        self.assertTrue(by_kind(actions, "open_issue"))
+        ledger = [a for a in by_kind(actions, "update_ledger") if a.data.get("kind") == "infra"]
+        self.assertEqual(ledger[0].data, {"kind": "infra", "workflow": "build", "streak": 3})
 
 
 class ForwardCompatTest(unittest.TestCase):

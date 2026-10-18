@@ -77,6 +77,15 @@ class IsInfraTest(unittest.TestCase):
         )
         self.assertFalse(nightly_classify.is_infra(job))
 
+    def test_unable_to_connect_to_source_log_is_infra(self):
+        job = JobResult(
+            name="Java 21",
+            conclusion="failure",
+            failed_step="Build with Maven",
+            log="Unable to connect to source 'https://community.chocolatey.org/api/v2/'",
+        )
+        self.assertTrue(nightly_classify.is_infra(job))
+
 
 class MavenErrorTest(unittest.TestCase):
     def test_dependency_resolution_failure_without_plugin_goal(self):
@@ -206,6 +215,13 @@ class ExcerptTest(unittest.TestCase):
         self.assertIn("@​someone", result)
         self.assertLessEqual(len(result.splitlines()), 10)
 
+    def test_anchors_on_gha_error_line_when_no_maven_error(self):
+        lines = [f"cleanup {i}" for i in range(100)]
+        lines[30] = "##[error]The process 'choco.exe' failed"
+        log = "\n".join(lines)
+        result = nightly_classify.excerpt(log, max_lines=10)
+        self.assertEqual(result.splitlines()[0], "##[error]The process 'choco.exe' failed")
+
 
 class ClassifyTest(unittest.TestCase):
     def test_flaky_when_rerun_succeeds(self):
@@ -304,6 +320,37 @@ class ClassifyTest(unittest.TestCase):
         findings = nightly_classify.classify("build", first, rerun, {})
         self.assertEqual(len(findings), 1)
         self.assertEqual(set(findings[0].jobs), {"Java 21", "Java 21 on Windows"})
+
+    def test_cancelled_rerun_job_falls_back_to_first_attempt_class(self):
+        log = "[ERROR] Tests run: 1, Failures: 1"
+        first = [JobResult(name="Java 21", conclusion="failure", failed_step="Build with Maven", log=log)]
+        rerun = [JobResult(name="Java 21", conclusion="cancelled", failed_step=None, log="")]
+        findings = nightly_classify.classify("build", first, rerun, {})
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].klass, "deterministic")
+
+    def test_cancelled_rerun_job_preserves_infra_first_attempt(self):
+        first = [
+            JobResult(
+                name="Java 21",
+                conclusion="failure",
+                failed_step="Build with Maven",
+                log="Connection reset by peer",
+            )
+        ]
+        rerun = [JobResult(name="Java 21", conclusion="cancelled", failed_step=None, log="")]
+        findings = nightly_classify.classify("build", first, rerun, {})
+        self.assertEqual(len(findings), 1)
+        self.assertEqual(findings[0].klass, "infra")
+
+    def test_timeout_sentinel_classifies_every_red_job_as_infra(self):
+        first = [
+            JobResult(name="Java 21", conclusion="failure", failed_step="Build with Maven", log="[ERROR] boom"),
+            JobResult(name="Java 25", conclusion="failure", failed_step="Build with Maven", log="[ERROR] kaboom"),
+        ]
+        findings = nightly_classify.classify("build", first, nightly_classify.TIMEOUT, {})
+        self.assertEqual(len(findings), 2)
+        self.assertEqual({finding.klass for finding in findings}, {"infra"})
 
 
 if __name__ == "__main__":
