@@ -127,9 +127,16 @@ public abstract class HttpRequest {
                 }
             }
         } catch (Exception e) {
-            log.severe("Exception while finding proxy for " + uri + ": " + getLocalizedMessage(e));
+            log.severe("Exception while finding proxy for " + withoutQuery(uri) + ": " + getLocalizedMessage(e));
         }
         return NO_PROXY;
+    }
+
+    // the query may carry API keys and search terms, which must not end up in the log and in error reports
+    static String withoutQuery(URI uri) {
+        String string = uri.toString();
+        int queryStart = string.indexOf('?');
+        return queryStart != -1 ? string.substring(0, queryStart) : string;
     }
 
     public <T> T execute(HttpClientResponseHandler<T> responseHandler) throws IOException {
@@ -139,7 +146,7 @@ public abstract class HttpRequest {
             SocketAddress address = proxy.address();
             if(address instanceof InetSocketAddress inetSocketAddress) {
                 clientBuilder.setProxy(new HttpHost(inetSocketAddress.getHostName(), inetSocketAddress.getPort()));
-                log.info(format("Using proxy %s for %s", proxy, uri));
+                log.info(format("Using proxy %s for %s", proxy, withoutQuery(uri)));
             }
         }
 
@@ -191,7 +198,7 @@ public abstract class HttpRequest {
             }
         });
         if (!isSuccessful() && body != null)
-            log.warning(format("Body of %s is not null: %s", getURI(), body));
+            log.warning(format("Body of %s is not null: %s", withoutQuery(getURI()), body));
         return body;
     }
 

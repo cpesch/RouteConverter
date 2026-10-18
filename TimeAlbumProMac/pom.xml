@@ -37,6 +37,9 @@
                                         <Permissions>all-permissions</Permissions>
                                         <Codebase>www.routeconverter.com www.routeconverter.de</Codebase>
                                         <Application-Name>TimeAlbumPro</Application-Name>
+                                        <!-- keeps FlatLaf's Java 9+ classes (HiDPI icon support, #271) usable
+                                             instead of silently falling back to its Java 8 code path -->
+                                        <Multi-Release>true</Multi-Release>
                                     </manifestEntries>
                                 </transformer>
                             </transformers>
@@ -59,7 +62,9 @@
                                         <exclude>META-INF/*</exclude>
                                         <exclude>META-INF/jb/**</exclude>
                                         <exclude>META-INF/maven/**</exclude>
-                                        <exclude>META-INF/versions/**</exclude>
+                                        <!-- keep META-INF/versions/**, see Multi-Release manifest entry above (#271);
+                                             module-info.class there is still dropped, same as the unversioned class -->
+                                        <exclude>META-INF/versions/*/module-info.class</exclude>
                                         <exclude>mozilla/**</exclude>
                                         <exclude>repackage/**</exclude>
                                         <exclude>res/**</exclude>

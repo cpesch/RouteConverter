@@ -347,6 +347,28 @@ public class Transfer {
         return URLEncoder.encode(uri, UTF_8);
     }
 
+    /**
+     * Removes every query parameter with the given name from the url, e.g. an API key before the
+     * url is logged or shown.
+     */
+    public static String removeQueryParameter(String url, String name) {
+        if (url == null)
+            return null;
+        int queryStart = url.indexOf('?');
+        if (queryStart == -1)
+            return url;
+
+        StringBuilder builder = new StringBuilder(url.substring(0, queryStart));
+        char separator = '?';
+        for (String parameter : url.substring(queryStart + 1).split("&")) {
+            if (parameter.equals(name) || parameter.startsWith(name + "="))
+                continue;
+            builder.append(separator).append(parameter);
+            separator = '&';
+        }
+        return builder.toString();
+    }
+
     public static String encodeUmlauts(String string) {
         return string.replace("\u00fc", "ue")
                 .replace("\u00f6", "oe")
