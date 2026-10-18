@@ -32,6 +32,8 @@ on:
     secrets:
       SIGNPATH_API_TOKEN:
         required: false
+      NTFY_PUBLISHER_TOKEN:
+        required: false
       CRASH_REPORT_HMAC_SECRET:
         required: false
       TIMEALBUM_GOOGLE_MAPS_API_KEY:
@@ -214,6 +216,18 @@ jobs:
           name: unsigned-jars-${{ inputs.artefact-name }}
           path: to-sign/
           retention-days: ${{ inputs.retention-days }}
+
+      - name: Ask for SignPath approval (jars)
+        if: ${{ inputs.sign && inputs.signing-policy-slug == 'release-signing' }}
+        env:
+          NTFY_PUBLISHER_TOKEN: ${{ secrets.NTFY_PUBLISHER_TOKEN }}
+        run: |
+          msg="${GITHUB_REF_NAME}: approve the SignPath 'jars' signing request now (release-signing, times out after 30 min) — https://app.signpath.io — run ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+          echo "::notice title=SignPath approval needed::$msg"
+          { echo "### SignPath approval needed"; echo "$msg"; } >> "$GITHUB_STEP_SUMMARY"
+          curl -fsS -X POST -H "Authorization: Bearer $NTFY_PUBLISHER_TOKEN" \
+            -H "Title: SignPath approval needed" -H "Priority: high" -d "$msg" \
+            https://ntfy.routeconverter.com/factory-rc || echo "::warning::ntfy post failed"
 
       - name: Submit signing request to SignPath
         if: ${{ inputs.sign }}
