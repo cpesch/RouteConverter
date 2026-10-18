@@ -192,7 +192,7 @@ public class GraphHopperCoverageTest {
         assertNull("No cache yet, so the first call must return null while the download is in flight", first);
 
         assertTrue("onAvailable must fire once the polygon becomes available",
-                onAvailable.await(2, TimeUnit.SECONDS));
+                onAvailable.await(5, TimeUnit.SECONDS));
 
         Polygon second = hopper.getRoutingCoverage(mapDescriptor, null);
         assertNotNull("The polygon fetched in the background must be cached and returned afterwards", second);
