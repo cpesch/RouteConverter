@@ -1,4 +1,4 @@
-"""Classify a red nightly ``build.yml`` run into deduplicated findings.
+"""Classify a red nightly workflow run into deduplicated findings.
 
 Turns the raw per-job results of a scheduled run (plus an optional re-run,
 used to tell flaky failures from deterministic ones) into a sorted list of
@@ -12,7 +12,7 @@ import hashlib
 import re
 import xml.etree.ElementTree as ET
 
-from nightly_model import Finding, INFRA_PATTERNS, TestFailure
+from nightly_model import Finding, INFRA_PATTERNS, TestFailure, TIMEOUT
 
 FAILED_CONCLUSIONS = ("failure", "cancelled", "timed_out")
 
@@ -139,6 +139,11 @@ def excerpt(log, max_lines=80):
         if "[ERROR]" in line or "FAILURE!" in line:
             start = i
             break
+    if start is None:
+        for i, line in enumerate(lines):
+            if "##[error]" in line:
+                start = i
+                break
     selected = lines[-max_lines:] if start is None else lines[start : start + max_lines]
 
     cleaned = []
@@ -157,7 +162,7 @@ def _is_failed(job):
     return job.conclusion in FAILED_CONCLUSIONS
 
 
-def _build_finding(klass, job, reports):
+def _build_finding(klass, job, reports, workflow):
     tests = tuple(
         sorted(
             parse_surefire_reports(reports.get(job.name, [])),
@@ -174,6 +179,7 @@ def _build_finding(klass, job, reports):
         goal=goal,
         error_line=error_line,
         excerpt=excerpt(job.log),
+        workflow=workflow,
     )
 
 
@@ -199,6 +205,7 @@ def _merge(findings):
             goal=existing.goal,
             error_line=existing.error_line,
             excerpt=existing.excerpt,
+            workflow=existing.workflow,
         )
     return sorted(merged.values(), key=lambda f: (f.klass, f.signature))
 
@@ -223,20 +230,23 @@ def classify(workflow, first, rerun, reports):
             if job.name in fail_fast_cancelled:
                 continue
             if _is_failed(job):
-                findings.append(_build_finding("forward_compat", job, reports))
+                findings.append(_build_finding("forward_compat", job, reports, workflow))
         return _merge(findings)
 
-    rerun_by_name = {job.name: job for job in rerun} if rerun is not None else None
+    timeout = rerun is TIMEOUT
+    rerun_by_name = None if (timeout or rerun is None) else {job.name: job for job in rerun}
     for job in first:
         if job.name in fail_fast_cancelled:
             continue
         if not _is_failed(job):
             continue
-        if rerun_by_name is None:
+        if timeout:
+            klass = "infra"
+        elif rerun_by_name is None:
             klass = "infra" if is_infra(job) else "deterministic"
         else:
             rerun_job = rerun_by_name.get(job.name)
-            if rerun_job is None:
+            if rerun_job is None or rerun_job.conclusion == "cancelled":
                 klass = "infra" if is_infra(job) else "deterministic"
             elif not _is_failed(rerun_job):
                 klass = "flaky"
@@ -244,6 +254,6 @@ def classify(workflow, first, rerun, reports):
                 klass = "infra"
             else:
                 klass = "deterministic"
-        findings.append(_build_finding(klass, job, reports))
+        findings.append(_build_finding(klass, job, reports, workflow))
 
     return _merge(findings)

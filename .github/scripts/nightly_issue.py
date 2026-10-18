@@ -159,9 +159,12 @@ def _subject(finding):
 
 def render_body(finding, files, ctx):
     title = render_title(finding)
+    subject_line = f"`{_subject(finding)}` — Affected jobs: {_jobs_summary(finding.jobs)}"
+    if finding.klass == "infra":
+        subject_line += f" — Workflow: {finding.workflow}"
     lines = [
         f"## Nightly failure: {title[len('nightly: '):]}",
-        f"`{_subject(finding)}` — Affected jobs: {_jobs_summary(finding.jobs)}",
+        subject_line,
         "",
         "### Files",
     ]

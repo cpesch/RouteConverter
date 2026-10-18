@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Nightly failure-triage CLI: wire a ``build.yml`` run to the decision engine.
+"""Nightly failure-triage CLI: wire a scheduled workflow run to the decision engine.
 
 Entry point for the ``nightly-triage`` workflow. Fetches a scheduled run,
 re-runs the failed jobs, classifies the outcome into deduplicated
@@ -30,7 +30,7 @@ import nightly_classify
 import nightly_decide
 import nightly_drift
 import nightly_issue
-from nightly_model import JobResult
+from nightly_model import JobResult, TIMEOUT
 
 DEFAULT_API_URL = "https://api.github.com"
 DEFAULT_POLL_TIMEOUT_S = 1500
@@ -170,7 +170,7 @@ def fetch_reports(api, repo, run_id, jobs):
     by_name = {artifact.get("name"): artifact for artifact in data.get("artifacts", [])}
     reports = {}
     for job in failed:
-        name = "surefire-" + job.name.replace(" ", "-")
+        name = "surefire-" + re.sub(r"[^A-Za-z0-9._-]+", "-", job.name)
         artifact = by_name.get(name)
         if artifact is None:
             reports[job.name] = []
@@ -196,7 +196,7 @@ def rerun_and_poll(api, repo, run_id, env):
         if run.get("run_attempt", 1) >= 2 and run.get("status") == "completed":
             break
         if time.monotonic() >= deadline:
-            return None
+            return TIMEOUT
         time.sleep(POLL_INTERVAL_S)
     return fetch_jobs(api, repo, run_id, 2)
 
@@ -350,15 +350,15 @@ def _match_prs(issue_number, prs):
 
 def _ledgers(open_issues):
     flaky_ledger = {}
-    infra_streak = 0
+    infra_streaks = {}
     for issue in open_issues:
         title = issue.get("title")
         state = nightly_issue.parse_state(issue.get("body") or "") or {}
         if title == nightly_issue.LEDGER_TITLES["flaky"]:
             flaky_ledger = state
         elif title == nightly_issue.LEDGER_TITLES["infra"]:
-            infra_streak = state.get("streak", 0)
-    return flaky_ledger, infra_streak
+            infra_streaks = nightly_decide.infra_streaks(state)
+    return flaky_ledger, infra_streaks
 
 
 def _ledger_numbers(open_issues):
@@ -506,15 +506,19 @@ def _do_update_ledger(api, repo, action, ledger_numbers):
         api.request("PATCH", f"/repos/{repo}/issues/{number}", {"body": nightly_issue.write_state(issue.get("body") or "", new_state)})
     elif kind == "infra":
         streak = action.data["streak"]
+        workflow = action.data["workflow"]
         if number is None:
-            body = nightly_issue.ledger_body(kind, {"streak": streak})
+            body = nightly_issue.ledger_body(kind, {"streaks": {workflow: streak}})
             created = api.request("POST", f"/repos/{repo}/issues", {"title": title, "body": body, "labels": ["from:nightly"]})
             ledger_numbers[kind] = created["number"]
             return
         issue = api.request("GET", f"/repos/{repo}/issues/{number}")
         old = nightly_issue.parse_state(issue.get("body") or "") or {}
-        new_body = nightly_issue.write_state(issue.get("body") or "", {**old, "streak": streak})
-        api.request("PATCH", f"/repos/{repo}/issues/{number}", {"body": new_body})
+        streaks = nightly_decide.infra_streaks(old)
+        streaks[workflow] = streak
+        new_state = {key: value for key, value in old.items() if key != "streak"}
+        new_state["streaks"] = streaks
+        api.request("PATCH", f"/repos/{repo}/issues/{number}", {"body": nightly_issue.write_state(issue.get("body") or "", new_state)})
 
 
 def ntfy_publish(url, title, body, token):
@@ -601,6 +605,14 @@ def _dry_run_line(action):
     return f"DRY-RUN {action.kind} #{issue} {short}".rstrip()
 
 
+def _cancelled_summary(env, run_id):
+    path = env.get("GITHUB_STEP_SUMMARY")
+    if not path:
+        return
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(f"run {run_id} was cancelled — not triaged\n")
+
+
 def _step_summary(actions, env, env_diff):
     path = env.get("GITHUB_STEP_SUMMARY")
     if not path:
@@ -634,6 +646,9 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
     workflow = _workflow_name(run)
     if run.get("run_attempt", 1) > 1 or run.get("event") not in ("schedule", "workflow_dispatch"):
         return 0
+    if run.get("conclusion") == "cancelled":
+        _cancelled_summary(env, run_id)
+        return 0
 
     first_jobs = fetch_jobs(api, repo, run_id, 1)
     reports = fetch_reports(api, repo, run_id, first_jobs)
@@ -663,11 +678,11 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
     if trunk_all:
         trunk_overlap_sigs |= {finding.signature for finding in findings if finding.klass == "deterministic"}
 
-    flaky_ledger, infra_streak = _ledgers(open_issues)
+    flaky_ledger, infra_streaks = _ledgers(open_issues)
     issues = _build_issues(open_issues, prs)
     ledger_numbers = _ledger_numbers(open_issues)
 
-    final_jobs = rerun_jobs if rerun_jobs is not None else first_jobs
+    final_jobs = first_jobs if (rerun_jobs is None or rerun_jobs is TIMEOUT) else rerun_jobs
     green_jobs = frozenset(job.name for job in final_jobs if job.conclusion == "success")
     files_by_sig = _files_by_sig(findings)
     commits = _commits(api, repo, run, last_green)
@@ -678,7 +693,8 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
         files_by_sig=files_by_sig,
         trunk_overlap_sigs=frozenset(trunk_overlap_sigs),
         flaky_ledger=flaky_ledger,
-        infra_streak=infra_streak,
+        infra_streaks=infra_streaks,
+        workflow=workflow,
     )
     actions = nightly_decide.plan(findings, issues, ctx, settings)
 
@@ -697,7 +713,7 @@ def triage(api, repo, run_id, dry_run=False, settings=None, env=None):
 
 
 def parse_args(argv=None):
-    parser = argparse.ArgumentParser(description="Nightly failure triage for the build.yml workflow")
+    parser = argparse.ArgumentParser(description="Nightly failure triage for a scheduled workflow run")
     parser.add_argument("--run-id", type=int, required=True, help="GitHub Actions run id to triage")
     parser.add_argument("--dry-run", action="store_true", help="compute and print actions, but make no write calls")
     parser.add_argument("--repo", help="owner/name (default $GITHUB_REPOSITORY)")
