@@ -266,9 +266,18 @@ jobs:
           grep -F "$SHA_AARCH64" "$f"
           grep -F "$SHA_X64" "$f"
       - name: Commit and push
+        # The update step already checked the version and both hashes, so a
+        # clean tree means the cask is current (a hand bump, or a re-run of
+        # this job): nothing to do. 3.7's re-run went red on `git commit`'s
+        # "nothing to commit" exit code.
         env:
           VERSION: ${{ steps.ver.outputs.version }}
         run: |
+          set -euo pipefail
+          if git diff --quiet; then
+            echo "::notice::cask already at ${VERSION} with matching hashes; nothing to push"
+            exit 0
+          fi
           git config user.name "RouteConverter release bot"
           git config user.email "release@routeconverter.com"
           git commit -am "routeconverter ${VERSION}"
