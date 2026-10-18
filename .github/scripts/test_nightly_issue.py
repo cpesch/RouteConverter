@@ -17,6 +17,7 @@ def make_finding(
     goal=None,
     error_line=None,
     excerpt="",
+    workflow="build",
 ):
     return Finding(
         klass=klass,
@@ -27,6 +28,7 @@ def make_finding(
         goal=goal,
         error_line=error_line,
         excerpt=excerpt,
+        workflow=workflow,
     )
 
 
@@ -205,6 +207,16 @@ class RenderBodyTest(unittest.TestCase):
         )
         self.assertIn("| A | 1 | 2 |", body)
         self.assertIn("Seed: 1234", body)
+
+    def test_infra_issue_body_names_workflow(self):
+        finding = make_finding(klass="infra", sig="abc123", workflow="prerelease")
+        body = ni.render_body(finding, [], make_ctx())
+        self.assertIn("Workflow: prerelease", body)
+
+    def test_non_infra_issue_body_omits_workflow(self):
+        finding = make_finding(klass="deterministic", sig="abc123", workflow="prerelease")
+        body = ni.render_body(finding, [], make_ctx())
+        self.assertNotIn("Workflow: prerelease", body)
 
 
 class CommentHelpersTest(unittest.TestCase):

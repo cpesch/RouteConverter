@@ -44,7 +44,8 @@ class Context:
     files_by_sig: dict
     trunk_overlap_sigs: frozenset[str]
     flaky_ledger: dict
-    infra_streak: int
+    infra_streaks: dict
+    workflow: str = "build"
 
 
 @dataclass(frozen=True)
@@ -57,6 +58,8 @@ class Action:
 def _match(finding, issues):
     test_classes = {t.test_class for t in finding.tests}
     for issue in issues:
+        if issue.state.get("workflow", "build") != finding.workflow:
+            continue
         if issue.state.get("sig") == finding.signature:
             return issue
         if test_classes & set(issue.state.get("tests", ())):
@@ -64,9 +67,22 @@ def _match(finding, issues):
     return None
 
 
+def infra_streaks(state):
+    """Normalise the infra-streak ledger state to ``{workflow_stem: count}``.
+
+    The legacy single-workflow format ``{"streak": n}`` predates per-workflow
+    tracking and means ``{"build": n}``.
+    """
+    streaks = state.get("streaks")
+    if isinstance(streaks, dict):
+        return dict(streaks)
+    return {"build": state.get("streak", 0)}
+
+
 def _new_state(finding, today_iso):
     return {
         "sig": finding.signature,
+        "workflow": finding.workflow,
         "jobs": sorted(finding.jobs),
         "tests": sorted({t.test_class for t in finding.tests}),
         "nights": [today_iso],
@@ -106,8 +122,10 @@ def _plan_flaky(finding, matched, ctx, settings, sort_key, today_iso):
 def _plan_infra(finding, matched, ctx, settings, sort_key, today_iso):
     entries = []
     entries.append((sort_key, Action("ntfy", matched.number if matched else None, {"reason": "infra", "jobs": finding.jobs})))
-    streak = ctx.infra_streak + 1
-    entries.append((sort_key, Action("update_ledger", None, {"kind": "infra", "streak": streak})))
+    streak = ctx.infra_streaks.get(ctx.workflow, 0) + 1
+    entries.append(
+        (sort_key, Action("update_ledger", None, {"kind": "infra", "workflow": ctx.workflow, "streak": streak}))
+    )
     if matched is None and streak >= settings.infra_streak_threshold:
         entries.append(
             (
@@ -329,8 +347,10 @@ def plan(findings, issues, ctx, settings):
                 )
             entries.extend(new_entries)
 
-    if not infra_ledger_seen and ctx.infra_streak > 0:
-        entries.append(((1, ""), Action("update_ledger", None, {"kind": "infra", "streak": 0})))
+    if not infra_ledger_seen and ctx.infra_streaks.get(ctx.workflow, 0) > 0:
+        entries.append(
+            ((1, ""), Action("update_ledger", None, {"kind": "infra", "workflow": ctx.workflow, "streak": 0}))
+        )
 
     entries.extend(_plan_close(issues_sorted, matched_numbers, ctx))
 
