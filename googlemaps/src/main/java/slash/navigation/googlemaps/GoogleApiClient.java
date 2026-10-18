@@ -27,6 +27,7 @@ import slash.navigation.rest.exception.ServiceUnavailableException;
 import java.util.Locale;
 import java.util.logging.Logger;
 
+import static slash.common.io.Transfer.removeQueryParameter;
 import static slash.navigation.googlemaps.GoogleMapsServer.getGoogleMapsServer;
 
 /**
@@ -61,16 +62,18 @@ class GoogleApiClient {
     }
 
     void checkForError(String callerName, String url, String status) throws ServiceUnavailableException {
+        // the url ends up in the log and in error reports, the API key must not
+        String urlWithoutKey = removeQueryParameter(url, "key");
         if (status.equals("OVER_QUERY_LIMIT")) {
             overQueryLimitCount++;
-            log.warning("Google API is over query limit, count: " + overQueryLimitCount + ", url: " + url);
-            throw new ServiceUnavailableException(callerName, url, status);
+            log.warning("Google API is over query limit, count: " + overQueryLimitCount + ", url: " + urlWithoutKey);
+            throw new ServiceUnavailableException(callerName, urlWithoutKey, status);
         }
 
         if (status.equals("REQUEST_DENIED")) {
             deniedCount++;
-            log.warning("Google API access is denied, count: " + deniedCount + ", url: " + url);
-            throw new ServiceUnavailableException(callerName, url, status);
+            log.warning("Google API access is denied, count: " + deniedCount + ", url: " + urlWithoutKey);
+            throw new ServiceUnavailableException(callerName, urlWithoutKey, status);
         }
     }
 }

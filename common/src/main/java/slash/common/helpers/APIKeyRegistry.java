@@ -90,9 +90,11 @@ public class APIKeyRegistry {
                     }
                 }
 
+                // the log ends up in error reports and forum posts, so name the source of the key, not the key
                 String apiKey = getAPIKey(serviceName, "usage");
                 if (apiKey != null)
-                    log.info(serviceName + " API key: " + apiKey + " usage:" + builder);
+                    log.info(serviceName + " API key: " + (apiKey.equals(trim(getAPIKeyPreference(serviceName))) ? "own" : "built-in") +
+                            " usage:" + builder);
             }
 
         } catch (BackingStoreException e) {

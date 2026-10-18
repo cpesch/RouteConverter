@@ -43,6 +43,7 @@ import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static slash.common.io.Transfer.parseInteger;
+import static slash.common.io.Transfer.removeQueryParameter;
 import static slash.common.io.Transfer.trim;
 
 /**
@@ -103,15 +104,17 @@ public class GeoNamesService extends BaseGeocodingService implements ElevationSe
     }
 
     private void checkCurrentlyOverloaded(String url, String result) throws ServiceUnavailableException {
+        // the url ends up in the log and in error reports, the API user name must not
+        String urlWithoutUserName = removeQueryParameter(url, "username");
         if (result.contains("limit") && (result.contains("overloaded") || result.contains("exceeded"))) {
             overQueryLimitCount++;
-            log.warning("geonames API is over query limit, count: " + overQueryLimitCount + ", url: " + url);
-            throw new ServiceUnavailableException(getClass().getSimpleName(), url, result);
+            log.warning("geonames API is over query limit, count: " + overQueryLimitCount + ", url: " + urlWithoutUserName);
+            throw new ServiceUnavailableException(getClass().getSimpleName(), urlWithoutUserName, result);
         }
 
         if(result.contains("user does not exist")) {
-            log.warning("geonames API reports user does not exist, url: " + url);
-            throw new ServiceUnavailableException(getClass().getSimpleName(), url, result);
+            log.warning("geonames API reports user does not exist, url: " + urlWithoutUserName);
+            throw new ServiceUnavailableException(getClass().getSimpleName(), urlWithoutUserName, result);
         }
     }
 

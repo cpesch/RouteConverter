@@ -307,4 +307,16 @@ public class TransferTest {
         assertNull(calendar.getFractionalSecond());
         assertEquals(FIELD_UNDEFINED, calendar.getMillisecond());
     }
+
+    @Test
+    public void testRemoveQueryParameter() {
+        assertEquals("https://maps.googleapis.com/maps/api/geocode/xml?address=Mundsburg&sensor=false&language=de",
+                removeQueryParameter("https://maps.googleapis.com/maps/api/geocode/xml?address=Mundsburg&sensor=false&language=de&key=secret", "key"));
+        assertEquals("https://host/path?b=2", removeQueryParameter("https://host/path?key=secret&b=2", "key"));
+        assertEquals("https://host/path", removeQueryParameter("https://host/path?key=secret", "key"));
+        assertEquals("https://host/path?a=1", removeQueryParameter("https://host/path?a=1&key=one&key=two", "key"));
+        assertEquals("https://host/path?keyword=x", removeQueryParameter("https://host/path?keyword=x&key", "key"));
+        assertEquals("https://host/path", removeQueryParameter("https://host/path", "key"));
+        assertNull(removeQueryParameter(null, "key"));
+    }
 }

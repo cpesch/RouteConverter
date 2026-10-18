@@ -27,11 +27,18 @@ import slash.common.prefs.InMemoryPreferences;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import java.util.prefs.Preferences;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests for {@link APIKeyRegistry}.
@@ -87,6 +94,37 @@ public class APIKeyRegistryTest {
         APIKeyRegistry registry = APIKeyRegistry.getInstance();
         registry.setAPIKeyPreference("mapbox", null);
         assertEquals("", registry.getAPIKeyPreference("mapbox"));
+    }
+
+    @Test
+    public void testLogUsageNamesSourceOfKeyInsteadOfKey() {
+        APIKeyRegistry registry = APIKeyRegistry.getInstance();
+        registry.setAPIKeyPreference("mapbox", "secret-api-key");
+        registry.getAPIKey("mapbox", "tiles");
+
+        List<String> messages = new ArrayList<>();
+        Logger logger = Logger.getLogger(APIKeyRegistry.class.getName());
+        Handler handler = new Handler() {
+            public void publish(LogRecord record) {
+                messages.add(record.getMessage());
+            }
+
+            public void flush() {
+            }
+
+            public void close() {
+            }
+        };
+        logger.addHandler(handler);
+        try {
+            registry.logUsage();
+        } finally {
+            logger.removeHandler(handler);
+        }
+
+        assertEquals(1, messages.size());
+        assertTrue(messages.get(0).startsWith("mapbox API key: own usage:"), messages.get(0));
+        assertFalse(messages.get(0).contains("secret-api-key"), messages.get(0));
     }
 
     // mirrors getDefaultAPIKey: apikey.properties is Maven-filtered, so a plain
