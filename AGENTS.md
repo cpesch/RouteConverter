@@ -210,6 +210,16 @@ Bugs and feature requests: [github.com/cpesch/RouteConverter/issues](https://git
    may comment; that's advisory.
 3. Keep the CI matrix green; never commit secrets.
 
+## Release notes
+
+Every change a user can notice (behaviour, UI, file formats, fixes of visible bugs)
+adds one bullet under `## Next release` in `RELEASE_NOTES.md`, in the matching
+`### New features` / `### Changes` / `### Fixes` subsection. Write it for users: the
+symptom, not the code; reference the GitHub issue (`#NNN`) when there is one; no
+class names. Purely internal changes add none, and the maintainer labels the PR
+`no-user-impact`. `release-notes-check.yml` enforces this on PRs that change a
+module's `src/main` (translated `*_xx.properties` excepted; `_en` counts).
+
 ## CI & releases
 
 GitHub Actions builds + tests on push/PR. Windows installers are Authenticode-signed

@@ -1,0 +1,61 @@
+name: Release notes check
+
+# A PR that changes shipped code (a module's src/main; translated
+# *_xx[_YY].properties excepted, the English source _en counts) must add a
+# bullet under "## Next release" in RELEASE_NOTES.md, so curating a release
+# means editing that list instead of reconstructing it from commits (#490). Exempt: Dependabot, the Crowdin branch
+# l10n_master, and PRs labelled no-user-impact. Re-runs on label changes.
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+    branches: [master]
+
+permissions:
+  contents: read
+
+jobs:
+  release-notes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Require a Next release bullet
+        # PR metadata goes in via env, never interpolated into the script
+        env:
+          AUTHOR: ${{ github.event.pull_request.user.login }}
+          HEAD_REF: ${{ github.head_ref }}
+          BASE_REF: ${{ github.base_ref }}
+          NO_USER_IMPACT: ${{ contains(github.event.pull_request.labels.*.name, 'no-user-impact') }}
+        run: |
+          set -euo pipefail
+          if [[ "$AUTHOR" == "dependabot[bot]" ]]; then
+            echo "Exempt: Dependabot PR."; exit 0
+          fi
+          if [[ "$HEAD_REF" == "l10n_master" ]]; then
+            echo "Exempt: Crowdin translation PR (l10n_master)."; exit 0
+          fi
+          if [[ "$NO_USER_IMPACT" == "true" ]]; then
+            echo "Exempt: labelled no-user-impact."; exit 0
+          fi
+
+          changed=$(git diff --name-only "origin/${BASE_REF}...HEAD")
+          # Translations don't count; the English source (_en) is UI text and does.
+          shipped=$(grep -E '^[^/]+/src/main/' <<<"$changed" \
+            | awk '/_en\.properties$/ || !/_[a-z][a-z](_[A-Z][A-Z])?\.properties$/' || true)
+          if [[ -z "$shipped" ]]; then
+            echo "No shipped code changed."; exit 0
+          fi
+          echo "Shipped code changed:"
+          echo "$shipped"
+
+          base="$RUNNER_TEMP/RELEASE_NOTES.base.md"
+          git show "origin/${BASE_REF}:RELEASE_NOTES.md" > "$base"
+          if ! added=$(python3 .github/scripts/release_notes.py added-next "$base" RELEASE_NOTES.md); then
+            echo '::error::This PR changes shipped code — add a bullet under "## Next release" in RELEASE_NOTES.md (user-facing wording, see the 3.7 section for tone), or label the PR no-user-impact.'
+            exit 1
+          fi
+          echo "New Next release bullets:"
+          echo "$added"

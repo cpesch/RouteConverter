@@ -173,6 +173,51 @@ class OpenNextTest(CliTestCase):
                          [s.title for s in sections])
 
 
+NEW_FIX = "- Opens GPX files with a BOM again (#490).\n"
+
+
+class AddedNextTest(CliTestCase):
+    def added_next(self, base, head):
+        return self.run_cli("added-next", self.write(base), self.write(head))
+
+    def test_new_fixes_bullet_passes_and_is_printed(self):
+        code, out, _ = self.added_next(EMPTY_NEXT + OLDER, EMPTY_NEXT + NEW_FIX + "\n" + OLDER)
+        self.assertEqual(0, code)
+        self.assertEqual("Opens GPX files with a BOM again (#490).\n", out)
+
+    def test_identical_fails(self):
+        code, out, err = self.added_next(CURATED_NEXT + OLDER, CURATED_NEXT + OLDER)
+        self.assertEqual(1, code)
+        self.assertEqual("", out)
+        self.assertIn('no new bullet under "## Next release" in RELEASE_NOTES.md', err)
+
+    def test_reworded_bullet_counts_as_new(self):
+        head = CURATED_NEXT.replace("Stamp the release date", "Stamp the release date and time")
+        code, out, _ = self.added_next(CURATED_NEXT + OLDER, head + OLDER)
+        self.assertEqual(0, code)
+        self.assertEqual("Stamp the release date and time (#427).\n", out)
+
+    def test_existing_bullets_not_printed(self):
+        code, out, _ = self.added_next(CURATED_NEXT + OLDER, CURATED_NEXT + NEW_FIX + "\n" + OLDER)
+        self.assertEqual(0, code)
+        self.assertEqual("Opens GPX files with a BOM again (#490).\n", out)
+
+    def test_base_without_section_counts_as_empty(self):
+        code, out, _ = self.added_next(NO_NEXT + OLDER, CURATED_NEXT + OLDER)
+        self.assertEqual(0, code)
+        self.assertEqual("Stamp the release date (#427).\n", out)
+
+    def test_head_without_section_fails(self):
+        code, _, err = self.added_next(CURATED_NEXT + OLDER, NO_NEXT + OLDER)
+        self.assertEqual(1, code)
+        self.assertIn('no new bullet under "## Next release"', err)
+
+    def test_bullet_under_older_section_fails(self):
+        code, _, err = self.added_next(EMPTY_NEXT + OLDER, EMPTY_NEXT + OLDER + NEW_FIX)
+        self.assertEqual(1, code)
+        self.assertIn('no new bullet under "## Next release"', err)
+
+
 MIDDLE = (
     "## 3.6 — 2026-08-01\n"
     "\n"

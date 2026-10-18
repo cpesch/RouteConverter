@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Maintain RELEASE_NOTES.md during release-prepare.
+"""Maintain RELEASE_NOTES.md during release-prepare and PR checks.
 
 Shape (see RELEASE_NOTES.md): line 1 ``# Release notes``, then version
 sections ``## <title>``, each with ``### <subsection>`` blocks of ``- ``
@@ -12,6 +12,8 @@ Subcommands:
   open-next               insert an empty "## Next release" section on top
   extract VERSION         print the "## VERSION — DATE" section (or --out PATH)
   drafts VERSION DATE     write forum posts + rc-content pages into --out DIR
+  added-next BASE HEAD    print "## Next release" bullets HEAD adds over BASE,
+                          fail if none (ignores --file)
 
 Python 3 stdlib only; other release tooling imports ``parse``.
 """
@@ -105,6 +107,26 @@ def check_next(text, path=DEFAULT_FILE):
         raise ReleaseNotesError(
             f'{path}: "{NEXT_HEADING}" has no bullets — curate it before cutting a release')
     return lines, start
+
+
+def _next_bullets(text):
+    """Return the bullets of all subsections of Next release, [] without one."""
+    for section in parse(text):
+        if f"## {section.title}" == NEXT_HEADING:
+            return [bullet for bullets in section.subsections.values() for bullet in bullets]
+    return []
+
+
+def added_next(base_text, head_text):
+    """Return the Next release bullets of HEAD missing from BASE, in HEAD order.
+
+    A reworded bullet counts as new; bullets of other sections never count.
+    """
+    known = set(_next_bullets(base_text))
+    added = [bullet for bullet in _next_bullets(head_text) if bullet not in known]
+    if not added:
+        raise ReleaseNotesError(f'no new bullet under "{NEXT_HEADING}" in {DEFAULT_FILE}')
+    return added
 
 
 def stamp(text, version, date, path=DEFAULT_FILE):
@@ -320,9 +342,16 @@ def main(argv=None):
     drafts_parser.add_argument("version")
     drafts_parser.add_argument("date", help="release date YYYY-MM-DD")
     drafts_parser.add_argument("--out", required=True, help="directory for the draft files")
+    added_parser = commands.add_parser("added-next", help='print "## Next release" bullets HEAD adds over BASE')
+    added_parser.add_argument("base_file", help="release notes of the PR base")
+    added_parser.add_argument("head_file", help="release notes of the PR head")
     args = parser.parse_args(argv)
 
     try:
+        if args.command == "added-next":
+            for bullet in added_next(_read(args.base_file), _read(args.head_file)):
+                print(bullet)
+            return 0
         text = _read(args.file)
         if args.command == "check-next":
             check_next(text, args.file)
