@@ -59,7 +59,9 @@ jobs:
               last_code=000
               for attempt in 1 2 3; do
                 body_file=$(mktemp)
-                code=$(curl -sS -o "$body_file" -w '%{http_code}' --max-time 15 -A "$ua" "$url" || echo 000)
+                # curl -w already prints 000 on a DNS/connect/TLS failure
+                code=$(curl -sS -o "$body_file" -w '%{http_code}' --max-time 15 -A "$ua" "$url") || true
+                [[ -n "$code" ]] || code=000
                 last_code="$code"
                 if [[ "$code" == "$expected" ]] && { [[ -z "$want_body" ]] || grep -qF "$want_body" "$body_file"; }; then
                   rm -f "$body_file"
