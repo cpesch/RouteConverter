@@ -45,14 +45,14 @@ def run(**overrides):
     return data
 
 
-def job(name, conclusion, job_id, failed=False):
+def job(name, conclusion, job_id, failed=False, failed_step="Build with Maven"):
     if failed:
         steps = [
             {"name": "Set up JDK", "conclusion": "success"},
-            {"name": "Build with Maven", "conclusion": "failure"},
+            {"name": failed_step, "conclusion": "failure"},
         ]
     elif conclusion == "success":
-        steps = [{"name": "Build with Maven", "conclusion": "success"}]
+        steps = [{"name": failed_step, "conclusion": "success"}]
     else:
         steps = []
     return {"id": job_id, "name": name, "conclusion": conclusion, "steps": steps}
@@ -255,6 +255,47 @@ class TimeoutInfraTest(unittest.TestCase):
         self.assertIn("ntfy skipped", err)
         create = create_issue_call(api)
         self.assertEqual(create[2]["title"], "nightly: infra streak")
+
+
+class PrereleaseInfraTest(unittest.TestCase):
+    def test_pin_nsis_failure_is_infra_no_issue_streak_increments_under_prerelease(self):
+        prerelease_runs_path = f"/repos/{REPO}/actions/workflows/88/runs?per_page=100"
+        api = FakeApi(
+            {
+                ("GET", f"{RUN_PATH}/attempts/1/jobs"): jobs_response(
+                    job("build-windows / build", "failure", 1, failed=True, failed_step="Pin NSIS 3.11")
+                ),
+                ("GET", f"/repos/{REPO}/actions/jobs/1/logs"): b"Unable to connect to source",
+                ("GET", f"{RUN_PATH}/artifacts"): {"artifacts": []},
+                ("POST", f"{RUN_PATH}/rerun-failed-jobs"): {},
+                ("GET", f"{RUN_PATH}/attempts/2/jobs"): jobs_response(
+                    job("build-windows / build", "failure", 1, failed=True, failed_step="Pin NSIS 3.11")
+                ),
+                ("GET", ISSUES_PATH): [],
+                ("GET", PULLS_PATH): [],
+                ("GET", prerelease_runs_path): {"workflow_runs": []},
+                ("GET", REPO_PATH): {"default_branch": "master"},
+                ("POST", f"/repos/{REPO}/issues"): {"number": 77},
+            },
+            queues={
+                ("GET", RUN_PATH): [
+                    run(path=".github/workflows/prerelease.yml", workflow_id=88),
+                    run(path=".github/workflows/prerelease.yml", workflow_id=88, run_attempt=2),
+                ]
+            },
+        )
+        fd, summary_path = tempfile.mkstemp()
+        os.close(fd)
+        self.addCleanup(os.remove, summary_path)
+        code, _, _ = run_triage(api, env={"GITHUB_STEP_SUMMARY": summary_path}, ls_files=[])
+        self.assertEqual(code, 0)
+        self.assertEqual([c for c in api.calls if c[0] == "POST" and c[1] == f"/repos/{REPO}/issues"][0][2]["title"], "nightly: infra streak")
+        self.assertEqual([c for c in api.calls if c[0] == "POST" and c[1] == f"/repos/{REPO}/issues"][0][2]["labels"], ["from:nightly"])
+        created_body = [c for c in api.calls if c[0] == "POST" and c[1] == f"/repos/{REPO}/issues"][0][2]["body"]
+        self.assertEqual(nightly_issue.parse_state(created_body), {"streaks": {"prerelease": 1}})
+        with open(summary_path, encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("Workflow: prerelease", content)
 
 
 class DryRunTest(unittest.TestCase):

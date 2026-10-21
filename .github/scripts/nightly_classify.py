@@ -41,6 +41,24 @@ _MAVEN_NO_GOAL_RE = re.compile(r"Failed to execute goal on project ([\w.-]+): (C
 
 _ZERO_WIDTH_SPACE = "​"
 
+# Prerelease steps that fetch, cache, sign or publish rather than build or gate
+# the packaging itself; a failure there is infra, not a real packaging-gate
+# regression (`is_infra`, workflow == "prerelease").
+PRERELEASE_INFRA_STEP_PREFIXES = (
+    "Set up job",
+    "Run actions/",
+    "Post ",
+    "Pin ",
+    "Fetch ",
+    "Download ",
+    "Cache ",
+    "Configure SSH",
+    "Rsync ",
+    "Update rolling",
+    "Upload ",
+    "Submit signing request",
+)
+
 
 def parse_surefire_reports(xml_texts):
     """Parse JUnit ``TEST-*.xml`` texts into failed/errored testcases.
@@ -85,9 +103,13 @@ def _extract_frames(text):
     return tuple(frames)
 
 
-def is_infra(job):
-    if job.failed_step is not None and not job.failed_step.endswith("with Maven"):
-        return True
+def is_infra(job, workflow):
+    if job.failed_step is not None:
+        if workflow == "prerelease":
+            if job.failed_step.startswith(PRERELEASE_INFRA_STEP_PREFIXES):
+                return True
+        elif not job.failed_step.endswith("with Maven"):
+            return True
     return any(pattern.search(job.log) for pattern in INFRA_PATTERNS)
 
 
@@ -243,14 +265,14 @@ def classify(workflow, first, rerun, reports):
         if timeout:
             klass = "infra"
         elif rerun_by_name is None:
-            klass = "infra" if is_infra(job) else "deterministic"
+            klass = "infra" if is_infra(job, workflow) else "deterministic"
         else:
             rerun_job = rerun_by_name.get(job.name)
             if rerun_job is None or rerun_job.conclusion == "cancelled":
-                klass = "infra" if is_infra(job) else "deterministic"
+                klass = "infra" if is_infra(job, workflow) else "deterministic"
             elif not _is_failed(rerun_job):
                 klass = "flaky"
-            elif is_infra(rerun_job):
+            elif is_infra(rerun_job, workflow):
                 klass = "infra"
             else:
                 klass = "deterministic"
