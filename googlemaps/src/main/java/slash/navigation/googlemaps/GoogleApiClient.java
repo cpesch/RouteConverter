@@ -25,6 +25,7 @@ import slash.navigation.rest.Get;
 import slash.navigation.rest.exception.ServiceUnavailableException;
 
 import java.util.Locale;
+import java.util.function.BooleanSupplier;
 import java.util.logging.Logger;
 
 import static slash.common.io.Transfer.removeQueryParameter;
@@ -44,10 +45,20 @@ import static slash.navigation.googlemaps.GoogleMapsServer.getGoogleMapsServer;
 
 class GoogleApiClient {
     private static final Logger log = Logger.getLogger(GoogleApiClient.class.getName());
+    private final BooleanSupplier hasApiKey;
     private int overQueryLimitCount, deniedCount;
 
+    GoogleApiClient() {
+        this(() -> APIKeyRegistry.getInstance().hasAPIKey("google"));
+    }
+
+    GoogleApiClient(BooleanSupplier hasApiKey) {
+        this.hasApiKey = hasApiKey;
+    }
+
+    // without a key Google denies every request, so treat it like being over the limit
     boolean isOverQueryLimit() {
-        return overQueryLimitCount > 5 || deniedCount > 5;
+        return !hasApiKey.getAsBoolean() || overQueryLimitCount > 5 || deniedCount > 5;
     }
 
     String getGoogleApiUrl(String apiType, String payload) {

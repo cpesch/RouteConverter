@@ -68,4 +68,14 @@ public class GoogleApiClientTest {
         for (String message : messages)
             assertFalse(message, message.contains("secret-api-key"));
     }
+
+    @Test
+    public void isOverQueryLimitWithoutApiKey() {
+        assertTrue(new GoogleApiClient(() -> false).isOverQueryLimit());
+    }
+
+    @Test
+    public void isNotOverQueryLimitWithApiKey() {
+        assertFalse(new GoogleApiClient(() -> true).isOverQueryLimit());
+    }
 }
