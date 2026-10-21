@@ -1,0 +1,112 @@
+name: Uptime canary
+
+# Off-host uptime probe for rc's public surface (host review 2026-10-21,
+# rc/rc-meta#907..912 - this is "C"). Every existing rc watcher - host-canary,
+# apache-wedge-watchdog, ... - runs ON rc and alerts through
+# ntfy.routeconverter.com, which is ALSO on rc: if the host itself goes dark
+# (kernel hang, provider outage, network or firewall break), nothing pages the
+# maintainer. This workflow runs on GitHub's infrastructure instead and alerts
+# via ntfy.sh (a service rc does not depend on), so it still reaches the
+# maintainer's phone while rc is unreachable - and deliberately never pushes
+# to ntfy.routeconverter.com itself: when rc is down that endpoint can't be
+# reached either, and when rc is up host-canary already reports through it.
+# Targets cpesch/RouteConverter specifically (not a mirror, not a private
+# repo): GitHub auto-disables a scheduled workflow after 60 days with no
+# commits, which never happens here, and public-repo Actions minutes are free.
+# The User-Agent spoofs a browser because the forum's anti-spider.conf 403s a
+# bare `curl/...` UA (rc-meta#581/#608), which would otherwise look like an
+# outage. Each target is probed in its own background process, so one fully
+# down target (3 attempts, 20s apart) can't eat the whole 6-minute job budget.
+#
+# Run by hand: gh workflow run uptime-canary.yml --repo cpesch/RouteConverter
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Probe rc endpoints
+        env:
+          UPTIME_NTFY_TOPIC: ${{ secrets.UPTIME_NTFY_TOPIC }}
+        run: |
+          set -uo pipefail
+
+          ua='Mozilla/5.0 (X11; Linux x86_64) rc-uptime-canary'
+          targets=(
+            'https://www.routeconverter.com/|200|'
+            'https://www.routeconverter.de/|200|'
+            'https://forum.routeconverter.com/|200|'
+            'https://api.routeconverter.com/v1/|200|'
+            'https://git.routeconverter.com/|200|'
+            'https://releases.routeconverter.com/|301|'
+            'https://ntfy.routeconverter.com/v1/health|200|"healthy":true'
+          )
+
+          results_dir=$(mktemp -d)
+          pids=()
+          i=0
+          for target in "${targets[@]}"; do
+            i=$((i + 1))
+            (
+              IFS='|' read -r url expected want_body <<< "$target"
+              last_code=000
+              for attempt in 1 2 3; do
+                body_file=$(mktemp)
+                code=$(curl -sS -o "$body_file" -w '%{http_code}' --max-time 15 -A "$ua" "$url" || echo 000)
+                last_code="$code"
+                if [[ "$code" == "$expected" ]] && { [[ -z "$want_body" ]] || grep -qF "$want_body" "$body_file"; }; then
+                  rm -f "$body_file"
+                  echo "ok" > "$results_dir/$i.status"
+                  exit 0
+                fi
+                rm -f "$body_file"
+                [[ "$attempt" -lt 3 ]] && sleep 20
+              done
+              echo "${url} → ${last_code} (want ${expected})" > "$results_dir/$i.status"
+            ) &
+            pids+=("$!")
+          done
+
+          for pid in "${pids[@]}"; do
+            wait "$pid"
+          done
+
+          failures=()
+          for status_file in "$results_dir"/*.status; do
+            line=$(cat "$status_file")
+            if [[ "$line" == "ok" ]]; then
+              continue
+            fi
+            echo "::error::${line}"
+            failures+=("$line")
+          done
+
+          total=${#targets[@]}
+          if [[ ${#failures[@]} -eq 0 ]]; then
+            echo "all ${total} targets ok"
+            exit 0
+          fi
+
+          echo "::error::${#failures[@]} of ${total} targets failed"
+
+          if [[ -z "${UPTIME_NTFY_TOPIC:-}" ]]; then
+            echo "::warning::UPTIME_NTFY_TOPIC unset — outage not pushed"
+          else
+            run_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            body="$(printf '%s\n' "${failures[@]}" "$run_url")"
+            curl -fsS -X POST \
+              -H "Title: rc DOWN: ${#failures[@]} of ${total}" \
+              -H "Priority: urgent" \
+              -H "Tags: rotating_light" \
+              -d "$body" \
+              "https://ntfy.sh/${UPTIME_NTFY_TOPIC}" || echo "::warning::ntfy.sh post failed"
+          fi
+
+          exit 1
