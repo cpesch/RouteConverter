@@ -110,7 +110,7 @@ public class RouteConverterCmdLine {
             return 15;
         }
 
-        String baseName = removeExtension(args[2]);
+        String baseName = removeExtension(args[2], registry.getExtensions());
         File target = absolutize(new File(baseName + format.getExtension()));
         if (target.exists()) {
             log.severe("Target '" + target.getAbsolutePath() + "' already exists; stopping.");
@@ -200,7 +200,7 @@ public class RouteConverterCmdLine {
             parser.write(result.getAllRoutes(), (MultipleRoutesFormat) format, target);
         } else {
             int fileCount = getNumberOfFilesToWriteFor(result.getTheRoute(), format, false);
-            File[] targets = createTargetFiles(target, fileCount, format.getExtension(), format.getMaximumFileNameLength());
+            File[] targets = createTargetFiles(target, fileCount, format.getExtension(), format.getMaximumFileNameLength(), registry.getExtensions());
             for (File t : targets) {
                 if (t.exists()) {
                     log.severe("Target '" + t.getAbsolutePath() + "' already exists; stopping.");

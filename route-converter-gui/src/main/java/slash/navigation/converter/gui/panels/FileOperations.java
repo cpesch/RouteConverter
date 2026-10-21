@@ -193,7 +193,7 @@ class FileOperations {
             }
         }
 
-        File[] targets = createTargetFiles(file, fileCount, format.getExtension(), 255);
+        File[] targets = createTargetFiles(file, fileCount, format.getExtension(), 255, panel.getNavigationFormatRegistry().getExtensions());
         if (confirmOverwrite) {
             for (File target : targets) {
                 if (target.exists()) {

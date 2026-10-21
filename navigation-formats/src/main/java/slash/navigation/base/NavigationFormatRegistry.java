@@ -78,8 +78,11 @@ import slash.navigation.wbt.WintecWbt202TesFormat;
 import slash.navigation.zip.ZipFormat;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Locale.ROOT;
 
@@ -324,6 +327,20 @@ public class NavigationFormatRegistry {
         result.removeAll(preferredFormats);
         result.addAll(0, preferredFormats);
         return result;
+    }
+
+    /**
+     * @return the extensions of every registered format, read and write, lowercase and
+     * dot-prefixed - the set of extensions RouteConverter recognizes as its own.
+     */
+    public Set<String> getExtensions() {
+        Set<String> result = new LinkedHashSet<>();
+        for (NavigationFormat<BaseRoute<?, ?>> format : getFormatInstances(true, true)) {
+            String extension = format.getExtension();
+            if (extension != null && !extension.isEmpty())
+                result.add(extension.toLowerCase(ROOT));
+        }
+        return Collections.unmodifiableSet(result);
     }
 
     public List<NavigationFormat<?>> getReadFormatsWithPreferredFormat(NavigationFormat<?> preferredFormat) {
